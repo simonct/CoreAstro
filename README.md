@@ -28,7 +28,7 @@ This is an initial list of design goals. Not all of these exist in the code but 
 What's in the package
 ---------------------
 
-CoreAstro is made up of two components; a framework and an app. The CoreAstro framework is really where the bulk of the code lives, the app is a simple image acquisition program that is both useful in it's own right and acts as a development harness for the framework. In the short term, the two are combined but this will change soon. There's also quite a bit of code that will move from the app to the framework as the various divisions of responsibilities are worked out.
+CoreAstro is made up of two components; a framework and an app. The CoreAstro framework is really where the bulk of the code lives, the app is a simple image acquisition program that is both useful in it's own right and acts as a development harness for the framework. There's also quite a bit of code that will move from the app to the framework as the various divisions of responsibilities are worked out.
 
 The app is really designed to be as simple to use as possible. The general idea is to provide an incredibly simple, integrated acquisition system that works out of the box and lets the new camera owner get out there and start taking great pictures almost straight away.
 
