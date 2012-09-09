@@ -67,8 +67,6 @@
 - (void)setVendorID:(UInt32)vendorID;
 - (UInt32)productID;
 - (void)setProductID:(UInt32)productID;
-- (UInt32)locationID;
-- (void)setLocationID:(UInt32)locationID;
 - (BusProbeClass *)deviceClassInfo;
 - (void)setDeviceClassInfo:(BusProbeClass *)classInfo;
 - (BusProbeClass *)lastInterfaceClassInfo;
