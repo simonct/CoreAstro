@@ -37,7 +37,7 @@ The app and framework run on Mac OS X 10.7 Lion and higher
 Supported Devices
 -----------------
 
-CoreAstro currently supports [SX](http://sxccd.com) cameras. This is entirely down to Terry and Michael's generous technical support and my sincere thanks to them ! __Please note that this project is in no way affiliated with SX Imaging. Any bugs or problems are entirely down to me, don't go calling them and complaining !__
+CoreAstro currently supports [SX](http://sxccd.com) cameras. This is entirely down to Terry and Michael's generous technical support - thank you both ! __Please note that this project is in no way affiliated with SX Imaging. Any bugs or problems are entirely down to me, don't go calling them and complaining !__
 
 __Also, this is very beta software. There are known bugs and deficiencies. You are welcome to download and use it but you do so entirely at your own risk. If it manages to reformat your hard-drive, blow up your camera and lose you your job then sadly that's your problem :)__ There's also no guarantees for backwards compatibility with future versions of the app and framework either in terms of source code or file formats.
 
