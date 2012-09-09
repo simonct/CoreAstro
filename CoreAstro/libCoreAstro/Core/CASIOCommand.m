@@ -1,0 +1,74 @@
+//
+//  CASIOCommand.m
+//  CoreAstro
+//
+//  Copyright (c) 2012, Simon Taylor
+// 
+//  Permission is hereby granted, free of charge, to any person obtaining a copy 
+//  of this software and associated documentation files (the "Software"), to deal 
+//  in the Software without restriction, including without limitation the rights 
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+//  copies of the Software, and to permit persons to whom the Software is furnished 
+//  to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in 
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+//  IN THE SOFTWARE.
+//
+
+#import "CASIOCommand.h"
+#import "CASIOTransport.h"
+
+@implementation CASIOCommand
+
+- (NSData*)toDataRepresentation {
+    return nil;
+}
+
+- (NSInteger) readSize {
+    return 0;
+}
+
+- (BOOL) allowsUnderrun {
+    return NO;
+}
+
+- (NSError*)fromDataRepresentation:(NSData*)data {
+    return nil;
+}
+
+- (void)submit:(id<CASIOTransport>)transport block:(void (^)(NSError*))block {
+    
+    NSError* error = [transport send:[self toDataRepresentation]];
+    if (!error){
+        const NSInteger readSize = [self readSize];
+        if (readSize > 0){
+            NSMutableData* responseData = [NSMutableData dataWithLength:readSize];
+            // sleep/suspend in the case of expose ?
+            error = [transport receive:responseData];
+            if (!error){
+                if ([responseData length] < readSize && !self.allowsUnderrun){
+                    error = [NSError errorWithDomain:@"CASIOCommand" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"CASIOCommand: requested %ld bytes, %lu",readSize,[responseData length]],NSLocalizedDescriptionKey,nil]];
+                }
+                else {
+                    [self fromDataRepresentation:responseData];
+                }
+            }
+        }
+    }
+    
+    if (block){
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            block(error);
+        }];
+    }
+}
+
+@end

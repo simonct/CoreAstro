@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd"> 
+<dictionary title="CoreAstro Terminology">
+    
+    <!--
+     CASS SUITE
+     -->
+    <suite name="CoreAstro Suite" code="CASS" description="CoreAstro specific classes and commands."> 
+        
+        <!-- Classes -->
+        
+        <class name="application" code="capp" description="An application's top level scripting object.">
+            
+            <cocoa class="NSApplication"/>
+            
+            <element type="camera" access="r">
+                <cocoa key="cameraControllers"/>
+            </element>
+            
+            <element type="exposure" access="r">
+                <cocoa key="exposures"/>
+            </element>
+
+        </class>
+        
+        <class name="camera" plural="cameras" code="CASC" description="A camera object." inherits="item"> 
+            
+            <cocoa class="CASCameraController"/> 
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the camera">
+                <cocoa key="uniqueID"/>
+            </property>
+                       
+            <property name="name" code="Name" type="text" access="r" description="The name of the camera">
+                <cocoa key="scriptingDeviceName"/>
+            </property>
+
+            <property name="vendor" code="Vend" type="text" access="r" description="The vendor of the camera">
+                <cocoa key="scriptingVendorName"/>
+            </property>
+            
+            <property name="temperature" code="Temp" type="number" description="The temperature of the camera">
+                <cocoa key="scriptingTemperature"/>
+            </property>
+            
+            <responds-to name="capture">
+                <cocoa method="scriptingCapture:"/>
+            </responds-to>
+
+        </class> 
+        
+        <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item"> 
+            
+            <cocoa class="CASCCDExposure"/> 
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the exposure">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="date" code="Date" type="date" access="r" description="The date of the exposure">
+                <cocoa key="date"/>
+            </property>
+
+            <property name="width" code="Widt" type="integer" access="r" description="The width of the exposure">
+                <cocoa key="scriptingWidth"/>
+            </property>
+
+            <property name="height" code="Heig" type="integer" access="r" description="The height of the exposure">
+                <cocoa key="scriptingHeight"/>
+            </property>
+
+            <property name="milliseconds" code="MS  " type="integer" access="r" description="The duration of the exposure in ms">
+                <cocoa key="scriptingMilliseconds"/>
+            </property>
+
+            <property name="type" code="Type" type="exposure type" description="The type of the exposure">
+                <cocoa key="scriptingType"/>
+            </property>
+
+            <property name="note" code="Note" type="text" description="The note of the exposure">
+                <cocoa key="scriptingNote"/>
+            </property>
+
+            <property name="path" code="Path" type="text" access="r" description="The path of the exposure">
+                <cocoa key="scriptingPath"/>
+            </property>
+
+        </class>
+
+        <!-- Commands -->
+        
+        <command name="capture" code="CASSCAPT" description="Capture an image.">
+            
+            <cocoa class="CASCaptureCommand"/>
+            
+            <direct-parameter description="The camera to capture the image from.">
+                <type type="camera" list="no"/>
+            </direct-parameter> 
+
+            <parameter name="milliseconds" code="Ms  " optional="no" description="exposure time in ms.">
+                <cocoa key="milliseconds"/>
+                <type type="integer" list="no"/>
+            </parameter>  
+
+            <parameter name="bin" code="Bin " optional="yes" description="exposure binning.">
+                <cocoa key="bin"/>
+                <type type="integer" list="no"/>
+            </parameter>  
+
+            <result description="The exposure">
+                <type type="exposure" list="no"/>
+            </result>
+            
+        </command>
+
+        <!-- Enumerations -->
+        
+        <enumeration name="exposure type" code="Dark">
+            <enumerator name="light" code="Ligt" description="A light frame."/>
+            <enumerator name="dark" code="Dark" description="A dark frame."/>
+            <enumerator name="bias" code="Bias" description="A bias frame."/>
+            <enumerator name="flat" code="Flat" description="A flat frame."/>
+        </enumeration>
+
+    </suite>
+    
+</dictionary>
