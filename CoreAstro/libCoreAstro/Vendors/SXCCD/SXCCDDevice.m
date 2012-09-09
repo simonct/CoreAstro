@@ -70,7 +70,7 @@
 
 - (NSImage*)deviceImage {
     NSString* image = [[self deviceParams] objectForKey:@"image"];
-    return image ? [NSImage imageNamed:image] : nil;
+    return image ? [[NSImage alloc] initByReferencingFile:[[NSBundle bundleForClass:[self class]] pathForImageResource:image]] : nil;
 }
 
 - (NSDictionary*)deviceParams {

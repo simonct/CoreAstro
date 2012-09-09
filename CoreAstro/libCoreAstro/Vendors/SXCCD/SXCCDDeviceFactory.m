@@ -40,7 +40,8 @@ static NSDictionary* _deviceLookup = nil;
 + (NSDictionary*)deviceLookup {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _deviceLookup = [[NSDictionary alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"SXDevices" ofType:@"plist"]];
+        _deviceLookup = [[NSDictionary alloc] initWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"SXDevices" ofType:@"plist"]];
+        NSAssert(_deviceLookup, @"SXCCDDeviceFactory: no lookup table !");
     });
     return _deviceLookup;
 }
