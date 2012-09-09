@@ -695,6 +695,8 @@
     }
 }
 
+#pragma mark - Actions
+
 - (IBAction)capture:(id)sender
 {
     self.progressIndicator.maxValue = 1;
@@ -716,8 +718,8 @@
             if (cameraController == self.cameraController){
                 
                 if (self.cameraController.continuous){
-                    [self displayExposure:exposure];
                     [self.exposuresController setSelectedObjects:nil];
+                    [self displayExposure:exposure]; // do this *after* clearing the selection
                 }
                 else {
                     
