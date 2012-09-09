@@ -30,6 +30,7 @@
 #import "CASCCDExposure.h"
 
 @interface SXCCDDevice ()
+@property (nonatomic,assign) BOOL connected;
 @property (nonatomic,strong) SXCCDParams* params;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
 - (void)fetchTemperature;
@@ -57,6 +58,7 @@
 
 - (void)disconnect
 {
+    self.connected = NO;
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 
@@ -91,9 +93,16 @@
 
 - (void)connect:(void (^)(NSError*))block {
     
+    if (self.connected){
+        return;
+    }
+    
+    self.connected = YES; // take this to mean connecting as well
+    
     [self reset:^(NSError* error) {
        
         if (error){
+            self.connected = NO;
             if (block){
                 block(error);
             }
@@ -102,8 +111,10 @@
             
             [self getParams:^(NSError* error, SXCCDParams* params) {
                 
-                // ignore the read params as they may have been incorrectly set by a firmware upload
-                if (!error){
+                if (error){
+                    self.connected = NO;
+                }
+                else{
                     
                     NSDictionary* storedParams = [[self deviceParams] objectForKey:@"params"];
                     if (storedParams){

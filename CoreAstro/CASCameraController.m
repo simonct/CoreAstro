@@ -59,21 +59,10 @@
         }
         else {
             
-            [self.camera reset:^(NSError *error) {
+            [self.camera flush:^(NSError *error) {
                 
-                if (error){
-                    if (block){
-                        block(error);
-                    }
-                }
-                else {
-                    
-                    [self.camera flush:^(NSError *error) {
-                        
-                        if (block){
-                            block(error);
-                        }
-                    }];
+                if (block){
+                    block(error);
                 }
             }];
         }

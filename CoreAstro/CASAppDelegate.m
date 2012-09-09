@@ -133,55 +133,29 @@
     for (CASDevice* device in devices){
         
         SXCCDDevice* sxccd = (SXCCDDevice*)device;
-        if ([sxccd isKindOfClass:[SXCCDDevice class]]){
+        if ([sxccd isKindOfClass:[SXCCDDevice class]]){ // todo: should be device.type == kCASDeviceTypeCamera
             
-            NSLog(@"Issuing reset");
-            
-            [sxccd reset:^(NSError *error) {
-                
-                NSLog(@"Reset complete, error = %@",error);
-
-                if (error){
-                    [NSApp presentError:error];
+            if (![self.windows count]){
+                CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
+                cameraWindow.delegate = self;
+                cameraWindow.shouldCascadeWindows = NO;
+                [cameraWindow.window makeKeyAndOrderFront:nil];
+                [self.windows addObject:cameraWindow];
+            }
+            CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:sxccd];
+            if (cameraController){
+                cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+                cameraController.autoGuider = [CASAutoGuider autoGuiderWithIdentifier:nil];
+                [self willChangeValueForKey:@"cameraControllers"];
+                [self.cameraControllers addObject:cameraController];
+                [self didChangeValueForKey:@"cameraControllers"];
+            }
+            if ([self.windows count] == 1){
+                CASCameraWindowController* cameraWindow = [self.windows lastObject];
+                if (!cameraWindow.cameraController){
+                    cameraWindow.cameraController = cameraController;
                 }
-                else {
-                    
-                    NSLog(@"Issuing get params");
-
-                    [sxccd getParams:^(NSError *error,SXCCDParams* params) {
-                        
-                        NSLog(@"Get params complete, error = %@",error);
-
-                        if (error){
-                            [NSApp presentError:error];
-                        }
-                        else {
-                        
-                            if (![self.windows count]){
-                                CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
-                                cameraWindow.delegate = self;
-                                cameraWindow.shouldCascadeWindows = NO;
-                                [cameraWindow.window makeKeyAndOrderFront:nil];
-                                [self.windows addObject:cameraWindow];
-                            }
-                            CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:sxccd];
-                            if (cameraController){
-                                cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-                                cameraController.autoGuider = [CASAutoGuider autoGuiderWithIdentifier:nil];
-                                [self willChangeValueForKey:@"cameraControllers"];
-                                [self.cameraControllers addObject:cameraController];
-                                [self didChangeValueForKey:@"cameraControllers"];
-                            }
-                            if ([self.windows count] == 1){
-                                CASCameraWindowController* cameraWindow = [self.windows lastObject];
-                                if (!cameraWindow.cameraController){
-                                    cameraWindow.cameraController = cameraController;
-                                }
-                            }
-                        }
-                    }];
-                }
-            }];
+            }
         }
     }
 }
