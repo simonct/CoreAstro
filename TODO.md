@@ -10,7 +10,7 @@ In no particualr order...
 * Temperature, guiding history overlays
 * Hide/show options for histogram, temperature, guiding overlays
 * Get camera serial number, use this to key images in the library
-* Ability to customise library locaiton
+* Ability to customise library location
 * Night mode using fade reservation
 * Enhanced library UI
 * Image acquisition sessions, appear as folders in library
@@ -25,4 +25,4 @@ Known bugs
 * Fairly regular crash in IKImageView when swapping in a new image
 * Camera not always detected on insert - race condition in the USB code ?
 * Numerous cosmetic bugs
-* Doubtless any more...
+* Doubtless many more...
