@@ -18,6 +18,7 @@ In no particualr order...
 * Autoguiding, focussing modules
 * Filter wheel, serial port, Star2K support
 * Refactor CASCameraWindowController into a host for a set of NSViewControllers
+* Debayer support for colour cameras
 
 Known bugs
 ----------

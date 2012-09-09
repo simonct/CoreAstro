@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'CoreAstro Framework' target in the 'CoreAstro Framework' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

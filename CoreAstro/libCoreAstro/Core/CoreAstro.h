@@ -1,5 +1,5 @@
 //
-//  NSApplication+CASScripting.m
+//  CoreAstro.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,26 +22,24 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
+//  CoreAstro framework header file
 
-#import "NSApplication+CASScripting.h"
-#import "CASAppDelegate.h"
-#import <CoreAstro/CoreAstro.h>
+#import <Foundation/Foundation.h>
 
-@implementation NSApplication (CASScripting)
-
-- (CASAppDelegate*)casDelegate
-{
-    return (CASAppDelegate*)self.delegate;
-}
-
-- (NSArray*)cameraControllers
-{
-    return self.casDelegate.cameraControllers;
-}
-
-- (NSArray*)exposures // todo: move this to the camera controller ?
-{
-    return [[CASCCDExposureLibrary sharedLibrary] exposures];
-}
-
-@end
+#import <CoreAstro/CASAutoGuider.h>
+#import <CoreAstro/CASCCDExposure.h>
+#import <CoreAstro/CASCCDExposureIO.h>
+#import <CoreAstro/CASCCDExposureLibrary.h>
+#import <CoreAstro/CASCCDImage.h>
+#import <CoreAstro/CASCCDParams.h>
+#import <CoreAstro/CASDevice.h>
+#import <CoreAstro/CASDeviceBrowser.h>
+#import <CoreAstro/CASDeviceFactory.h>
+#import <CoreAstro/CASDeviceManager.h>
+#import <CoreAstro/CASImageProcessor.h>
+#import <CoreAstro/CASIOCommand.h>
+#import <CoreAstro/CASIOTransport.h>
+#import <CoreAstro/CASIOUSBTransport.h>
+#import <CoreAstro/CASPluginManager.h>
+#import <CoreAstro/CASScriptableObject.h>
+#import <CoreAstro/CASUSBDeviceBrowser.h>

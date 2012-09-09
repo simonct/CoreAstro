@@ -24,11 +24,7 @@
 //
 
 #import "CASCameraWindowController.h"
-#import "CASDeviceManager.h"
-#import "CASDevice.h"
-#import "CASCCDImage.h"
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
-#import "CASCCDExposureLibrary.h"
 #import "CASHistogramView.h"
 
 @interface CASImageControlsView : NSView

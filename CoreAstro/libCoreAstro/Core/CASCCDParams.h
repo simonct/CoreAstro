@@ -85,6 +85,7 @@ NS_INLINE CASExposeParams CASExposeParamsMake(NSInteger w,NSInteger h,NSInteger 
 }
 
 NS_INLINE NSString* NSStringFromCASExposeParams(CASExposeParams exp) {
+    // todo: make this a dictionary, this is getting slightly ridiculous...
     return [NSString stringWithFormat:@"{%@|%@|%@|%@|%ld|%ld}",NSStringFromCASSize(exp.origin),NSStringFromCASSize(exp.size),NSStringFromCASSize(exp.bin),NSStringFromCASSize(exp.frame),exp.bps,exp.ms];
 }
 
@@ -101,8 +102,8 @@ NS_INLINE CASExposeParams CASExposeParamsFromNSString(NSString* s) {
                 .size = CASSizeFromNSString([comps objectAtIndex:1]),
                 .bin = CASSizeFromNSString([comps objectAtIndex:2]),
                 .frame = CASSizeFromNSString([comps objectAtIndex:3]),
-                .bps = [[comps objectAtIndex:4] integerValue],
-                .ms = [[comps objectAtIndex:5] integerValue]
+                .bps = (NSUInteger)[[comps objectAtIndex:4] integerValue],
+                .ms = (NSUInteger)[[comps objectAtIndex:5] integerValue]
             };
             params = exp;
         }

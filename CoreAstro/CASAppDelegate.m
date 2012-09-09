@@ -24,11 +24,9 @@
 //
 
 #import "CASAppDelegate.h"
-#import "CASDeviceManager.h"
-#import "CASDevice.h"
-#import "SXCCDDevice.h"
 #import "CASCameraWindowController.h"
 #import "CASCameraController.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASTemperatureTransformer : NSValueTransformer
 @end

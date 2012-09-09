@@ -23,10 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "SXCCDDevice.h" // -> CASCCDDevice
-#import "CASScriptableObject.h"
-#import "CASImageProcessor.h"
-#import "CASAutoGuider.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASCameraController : CASScriptableObject
 
