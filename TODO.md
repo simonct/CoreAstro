@@ -19,6 +19,10 @@ In no particualr order...
 * Filter wheel, serial port, Star2K support
 * Refactor CASCameraWindowController into a host for a set of NSViewControllers
 * Debayer support for colour cameras
+* Move SX-specific code out of the app delegate and camera controller
+* Make CASCCDExposure support NSDiscardableContent
+* CoreData-based exposures library index
+* coreastrod with command line options, launchd integration watching for USB devices ?
 
 Known bugs
 ----------
