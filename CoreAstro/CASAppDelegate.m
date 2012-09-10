@@ -64,7 +64,7 @@
 
     [[CASDeviceManager sharedManager] scan];
 
-    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"mutableDevices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil]; // figure out how to observe 'devices'
+    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
     
     [self applicationOpenUntitledFile:NSApp];
 }

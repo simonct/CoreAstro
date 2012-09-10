@@ -30,14 +30,14 @@
 
 @interface CASDeviceManager ()
 @property (nonatomic,strong) CASPluginManager* pluginManager;
-@property (nonatomic,strong) NSMutableArray* mutableDevices;
-
 @end
 
-@implementation CASDeviceManager
+@implementation CASDeviceManager {
+    NSMutableArray* _devices;
+}
 
 @synthesize pluginManager;
-@synthesize mutableDevices = _mutableDevices;
+@synthesize devices = _devices;
 
 + (NSArray*)browserClasses {
     return [NSArray arrayWithObject:@"CASUSBDeviceBrowser"]; // load these from the plugin manager in future
@@ -66,7 +66,7 @@
 }
 
 - (NSArray*) devices {
-    return [NSArray arrayWithArray:_mutableDevices];
+    return [_devices copy]; // ensure we return an immutable copy to clients
 }
 
 - (id)deviceWithPath:(NSString*)path {
@@ -92,7 +92,7 @@
                 CASDevice* device = [self deviceWithPath:path];
                 if (device){
                     NSLog(@"Removed device %@",device);
-                    [[self mutableArrayValueForKey:@"mutableDevices"] removeObject:device];
+                    [[self mutableArrayValueForKey:@"devices"] removeObject:device];
                 }
                 
                 return (CASDevice*)nil;
@@ -103,8 +103,8 @@
                 CASDevice* device = nil;
                 if (![self deviceWithPath:path]){
                     
-                    if (!_mutableDevices){
-                        _mutableDevices = [[NSMutableArray alloc] initWithCapacity:10];
+                    if (!_devices){
+                        _devices = [[NSMutableArray alloc] initWithCapacity:10];
                     }
                     for (id<CASDeviceFactory> factory in self.pluginManager.factories){
                         device = [factory createDeviceWithDeviceRef:dev path:path properties:props];
@@ -116,7 +116,7 @@
                             }
                             else {
                                 NSLog(@"Added device %@",device);
-                                [[self mutableArrayValueForKey:@"mutableDevices"] addObject:device];
+                                [[self mutableArrayValueForKey:@"devices"] addObject:device];
                             }
                             break;
                         }
