@@ -462,7 +462,7 @@
         }
         else {
             
-            SXCCDDevice* camera = self.cameraController.camera;
+            CASCCDDevice* camera = self.cameraController.camera;
 
             [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.params.width,camera.params.height]];
             [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.params.bitsPerPixel]];

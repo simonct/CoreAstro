@@ -1,5 +1,5 @@
 //
-//  CASCameraController.h
+//  CASDevice.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -23,28 +23,45 @@
 //  IN THE SOFTWARE.
 //
 
-#import <CoreAstro/CoreAstro.h>
+#import "CASCCDDevice.h"
 
-@interface CASCameraController : CASScriptableObject
+@interface CASCCDDevice ()
+@end
 
-@property (nonatomic,readonly,strong) CASCCDDevice* camera;
-@property (nonatomic,readonly) BOOL capturing;
-@property (nonatomic,assign) BOOL continuous;
-@property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
-@property (nonatomic,assign) NSInteger exposure;
-@property (nonatomic,assign) NSInteger exposureUnits;
-@property (nonatomic,assign) NSInteger binningIndex;
-@property (nonatomic,assign) NSInteger interval;
-@property (nonatomic,assign) CGRect subframe;
-@property (nonatomic,strong) NSDate* exposureStart;
-@property (nonatomic,strong) CASImageProcessor* imageProcessor;
-@property (nonatomic,strong) CASAutoGuider* autoGuider;
+@implementation CASCCDDevice
 
-- (id)initWithCamera:(CASCCDDevice*)camera;
+@synthesize temperature, targetTemperature, params, exposureTemperatures;
 
-- (void)connect:(void(^)(NSError*))block;
-- (void)disconnect;
+- (CASDeviceType)type {
+    return kCASDeviceTypeCamera;   
+}
 
-- (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block;
+- (void)disconnect {
+}
+
+- (void)reset:(void (^)(NSError*))block {
+    if (block){
+        block(nil);
+    }
+}
+
+- (void)getParams:(void (^)(NSError*,CASCCDParams* params))block {
+    if (block){
+        block(nil,nil);
+    }
+}
+
+- (void)flush:(void (^)(NSError*))block {
+    if (block){
+        block(nil);
+    }
+}
+
+- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block {
+    if (block){
+        block(nil,nil);
+    }
+}
 
 @end
+

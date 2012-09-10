@@ -1,5 +1,5 @@
 //
-//  CASCameraController.h
+//  CASDevice.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,29 +22,31 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
+//  This is the base class of all CoreAstro CCD devices. Make this a protocol ?
 
-#import <CoreAstro/CoreAstro.h>
+#import "CASDevice.h"
+#import "CASCCDParams.h"
 
-@interface CASCameraController : CASScriptableObject
+@class CASCCDExposure;
 
-@property (nonatomic,readonly,strong) CASCCDDevice* camera;
-@property (nonatomic,readonly) BOOL capturing;
-@property (nonatomic,assign) BOOL continuous;
-@property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
-@property (nonatomic,assign) NSInteger exposure;
-@property (nonatomic,assign) NSInteger exposureUnits;
-@property (nonatomic,assign) NSInteger binningIndex;
-@property (nonatomic,assign) NSInteger interval;
-@property (nonatomic,assign) CGRect subframe;
-@property (nonatomic,strong) NSDate* exposureStart;
-@property (nonatomic,strong) CASImageProcessor* imageProcessor;
-@property (nonatomic,strong) CASAutoGuider* autoGuider;
+@interface CASCCDDevice : CASDevice
 
-- (id)initWithCamera:(CASCCDDevice*)camera;
+@property (nonatomic,strong,readonly) CASCCDParams* params;
+@property (nonatomic,readonly) BOOL isColour, hasCooler;
+@property (nonatomic,assign) CGFloat temperature; // temp in °C
+@property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
+@property (nonatomic,readonly) NSInteger temperatureFrequency;
+@property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
 
-- (void)connect:(void(^)(NSError*))block;
 - (void)disconnect;
 
-- (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block;
+- (void)reset:(void (^)(NSError*))block;
+
+- (void)getParams:(void (^)(NSError*,CASCCDParams* params))block;
+
+- (void)flush:(void (^)(NSError*))block;
+
+- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
 @end
+

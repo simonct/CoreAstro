@@ -27,7 +27,7 @@
 
 @interface CASCameraController ()
 @property (nonatomic,assign) BOOL capturing;
-@property (nonatomic,strong) SXCCDDevice* camera;
+@property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
 @end
 
@@ -37,7 +37,7 @@
 @synthesize camera = _camera, capturing, continuous = _continuous, interval, exposureStart, exposure = _exposure, exposureUnits, binningIndex, subframe = _subframe;
 @synthesize continuousNextExposureTime;
 
-- (id)initWithCamera:(SXCCDDevice*)camera
+- (id)initWithCamera:(CASCCDDevice*)camera
 {
     self = [super init];
     if (self){

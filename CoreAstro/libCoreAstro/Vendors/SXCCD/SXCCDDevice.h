@@ -23,20 +23,16 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASDevice.h"
+#import "CASCCDDevice.h"
 #import "CASCCDExposure.h"
 #import "SXCCDParams.h"
 
 @class CASCCDExposure;
 
-@interface SXCCDDevice : CASDevice // from CASCCDDevice which has the basic command interface
+@interface SXCCDDevice : CASCCDDevice 
 
 @property (nonatomic,strong,readonly) SXCCDParams* params;
-@property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider, isColour, hasCooler;
-@property (nonatomic,assign) CGFloat temperature; // temp in °C
-@property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
-@property (nonatomic,readonly) NSInteger temperatureFrequency;
-@property (nonatomic,strong,readonly) NSMutableArray* exposureTemperatures;
+@property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider;
 @property (nonatomic,assign) NSInteger productID;
 
 - (void)disconnect;

@@ -192,7 +192,7 @@
     [self.io deleteExposure:self error:nil];
 }
 
-+ (id)exposureWithPixels:(NSData*)pixels camera:(SXCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
++ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
 {
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
     

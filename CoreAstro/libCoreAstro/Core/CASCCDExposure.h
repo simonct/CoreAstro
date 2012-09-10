@@ -25,11 +25,10 @@
 
 #import "CASCCDParams.h"
 #import "CASCCDImage.h"
-
-@class SXCCDDevice;
-@class CASCCDExposureIO;
-#import "SXCCDDevice.h" // -> CASCCDDevice
+#import "CASCCDDevice.h"
 #import "CASScriptableObject.h"
+
+@class CASCCDExposureIO;
 
 @interface CASCCDExposure : CASScriptableObject
 
@@ -73,6 +72,6 @@ typedef enum {
 
 - (void)deleteExposure;
 
-+ (id)exposureWithPixels:(NSData*)pixels camera:(SXCCDDevice*)camera params:(CASExposeParams)params time:(NSDate*)time;
++ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)params time:(NSDate*)time;
 
 @end
