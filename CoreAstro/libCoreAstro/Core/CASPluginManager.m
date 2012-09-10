@@ -44,11 +44,11 @@
 }
 
 - (NSArray*)browserClasses {
-    return [NSArray arrayWithObject:@"CASUSBDeviceBrowser"]; // get these from loadable bundles in future
+    return [NSArray arrayWithObject:@"CASUSBDeviceBrowser"]; // todo: get these from loadable bundles in future from the frameworks Plugins directory and NSSearchDirectories
 }
 
 - (NSArray*)factoryClasses {
-    return [NSArray arrayWithObject:@"SXCCDDeviceFactory"]; // get these from loadable bundles in future
+    return [NSArray arrayWithObject:@"SXCCDDeviceFactory"]; // todo: get these from loadable bundles in future from the frameworks Plugins directory and NSSearchDirectories
 }
 
 - (NSArray*)createInstancesFromClasses:(NSArray*)classes {
