@@ -56,13 +56,6 @@
 		F44EDF4415FCC701003B1B4C /* BusProbeDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E534B15A995350018DC75 /* BusProbeDevice.m */; };
 		F44EDF4515FCC701003B1B4C /* BusProberSharedFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E534D15A995350018DC75 /* BusProberSharedFunctions.m */; };
 		F44EDF4615FCC701003B1B4C /* DecodeDeviceDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E534F15A995350018DC75 /* DecodeDeviceDescriptor.m */; };
-		F44EDF4815FCC70C003B1B4C /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */; };
-		F44EDF4915FCC70C003B1B4C /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A84E1A15C52B7300B1164F /* SXCCDParams.m */; };
-		F44EDF4A15FCC70C003B1B4C /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
-		F44EDF4B15FCC70C003B1B4C /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
-		F44EDF4C15FCC716003B1B4C /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F49E53E015B899680018DC75 /* SXDevices.plist */; };
-		F44EDF4D15FCC716003B1B4C /* H694.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68B15DD4E450035F015 /* H694.png */; };
-		F44EDF4E15FCC716003B1B4C /* superstar.png in Resources */ = {isa = PBXBuildFile; fileRef = F4125F1115D7A7D300E04052 /* superstar.png */; };
 		F44EDF4F15FCC74D003B1B4C /* CASIOUSBTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = F49E537E15A99BF40018DC75 /* CASIOUSBTransport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44EDF5015FCC74D003B1B4C /* CASUSBDeviceBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = F49E534315A995350018DC75 /* CASUSBDeviceBrowser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44EDF5115FCC754003B1B4C /* BusProbeClass.h in Headers */ = {isa = PBXBuildFile; fileRef = F49E534815A995350018DC75 /* BusProbeClass.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -76,11 +69,22 @@
 		F44EDF6015FCC925003B1B4C /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */ = {isa = PBXBuildFile; fileRef = F44EDF6315FCD59C003B1B4C /* CoreAstro.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F457B68C15DD4E450035F015 /* H36.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68A15DD4E450035F015 /* H36.png */; };
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
+		F498A51A15FE7F96006E8376 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
+		F498A52015FE7F96006E8376 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F498A51E15FE7F96006E8376 /* InfoPlist.strings */; };
+		F498A52515FE7FC9006E8376 /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */; };
+		F498A52615FE7FCE006E8376 /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A84E1A15C52B7300B1164F /* SXCCDParams.m */; };
+		F498A52715FE7FD1006E8376 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
+		F498A52815FE7FD5006E8376 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
+		F498A52915FE7FD8006E8376 /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F49E53E015B899680018DC75 /* SXDevices.plist */; };
+		F498A52D15FE7FE2006E8376 /* H36.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68A15DD4E450035F015 /* H36.png */; };
+		F498A52E15FE7FE2006E8376 /* H694.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68B15DD4E450035F015 /* H694.png */; };
+		F498A52F15FE7FE2006E8376 /* superstar.png in Resources */ = {isa = PBXBuildFile; fileRef = F4125F1115D7A7D300E04052 /* superstar.png */; };
+		F498A53715FE8148006E8376 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
+		F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */; };
 		F49E52C215A971610018DC75 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F49E52CC15A971610018DC75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F49E52CA15A971610018DC75 /* InfoPlist.strings */; };
 		F49E52CE15A971610018DC75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E52CD15A971610018DC75 /* main.m */; };
@@ -140,6 +144,20 @@
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = CorePlot;
 		};
+		F498A53515FE8106006E8376 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F498A53815FE81E3006E8376 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F498A51815FE7F96006E8376;
+			remoteInfo = SXDevicesPlugin;
+		};
 		F49E52E215A971620018DC75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F49E52B415A971610018DC75 /* Project object */;
@@ -158,6 +176,16 @@
 			files = (
 				F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */,
 				F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F498A53A15FE8210006E8376 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
+			dstSubfolderSpec = 10;
+			files = (
+				F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +227,10 @@
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SXDevicesPlugin.casPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SXDevicesPlugin-Info.plist"; sourceTree = "<group>"; };
+		F498A51F15FE7F96006E8376 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F498A52115FE7F96006E8376 /* SXDevicesPlugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SXDevicesPlugin-Prefix.pch"; sourceTree = "<group>"; };
 		F49E52BD15A971610018DC75 /* CoreAstro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreAstro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49E52C115A971610018DC75 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F49E52C415A971610018DC75 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -239,25 +271,25 @@
 		F49E536715A995570018DC75 /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOTransport.h; sourceTree = "<group>"; };
 		F49E536815A995570018DC75 /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOTransport.m; sourceTree = "<group>"; };
 		F49E537515A995800018DC75 /* CASDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceFactory.h; sourceTree = "<group>"; };
-		F49E537615A995F40018DC75 /* SXCCDDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDDeviceFactory.h; sourceTree = "<group>"; };
-		F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDDeviceFactory.m; sourceTree = "<group>"; };
+		F49E537615A995F40018DC75 /* SXCCDDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDDeviceFactory.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDeviceFactory.h; sourceTree = "<group>"; };
+		F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDDeviceFactory.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDeviceFactory.m; sourceTree = "<group>"; };
 		F49E537A15A9962F0018DC75 /* CASPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPluginManager.h; sourceTree = "<group>"; };
 		F49E537B15A9962F0018DC75 /* CASPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPluginManager.m; sourceTree = "<group>"; };
 		F49E537E15A99BF40018DC75 /* CASIOUSBTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOUSBTransport.h; sourceTree = "<group>"; };
 		F49E537F15A99BF40018DC75 /* CASIOUSBTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOUSBTransport.m; sourceTree = "<group>"; };
-		F49E538615A9A2AF0018DC75 /* SXCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDDevice.h; sourceTree = "<group>"; };
-		F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDDevice.m; sourceTree = "<group>"; };
-		F49E538F15A9D8240018DC75 /* SXCCDIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDIOCommand.h; sourceTree = "<group>"; };
-		F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDIOCommand.m; sourceTree = "<group>"; };
-		F49E53E015B899680018DC75 /* SXDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SXDevices.plist; sourceTree = "<group>"; };
+		F49E538615A9A2AF0018DC75 /* SXCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDDevice.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDevice.h; sourceTree = "<group>"; };
+		F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDDevice.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDevice.m; sourceTree = "<group>"; };
+		F49E538F15A9D8240018DC75 /* SXCCDIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDIOCommand.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDIOCommand.h; sourceTree = "<group>"; };
+		F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDIOCommand.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDIOCommand.m; sourceTree = "<group>"; };
+		F49E53E015B899680018DC75 /* SXDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SXDevices.plist; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXDevices.plist; sourceTree = "<group>"; };
 		F4A0E3AF15C70FD4002878C9 /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDImage.h; sourceTree = "<group>"; };
 		F4A0E3B015C70FD4002878C9 /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
 		F4A0E3B215C71049002878C9 /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDParams.h; sourceTree = "<group>"; };
 		F4A0E3B315C71049002878C9 /* CASCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDParams.m; sourceTree = "<group>"; };
 		F4A561C315EA5DE100130D4A /* CASHistogramView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHistogramView.h; sourceTree = "<group>"; };
 		F4A561C415EA5DE100130D4A /* CASHistogramView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHistogramView.m; sourceTree = "<group>"; };
-		F4A84E1915C52B7300B1164F /* SXCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDParams.h; sourceTree = "<group>"; };
-		F4A84E1A15C52B7300B1164F /* SXCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDParams.m; sourceTree = "<group>"; };
+		F4A84E1915C52B7300B1164F /* SXCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDParams.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDParams.h; sourceTree = "<group>"; };
+		F4A84E1A15C52B7300B1164F /* SXCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDParams.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDParams.m; sourceTree = "<group>"; };
 		F4A9FB7515D440F70084788B /* CASCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraController.h; sourceTree = "<group>"; };
 		F4A9FB7615D440F70084788B /* CASCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraController.m; sourceTree = "<group>"; };
 		F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
@@ -296,6 +328,15 @@
 				F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */,
 				F44EDF0D15FCC386003B1B4C /* Cocoa.framework in Frameworks */,
 				F44EDF1015FCC386003B1B4C /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F498A51615FE7F96006E8376 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F498A53715FE8148006E8376 /* CoreAstro.framework in Frameworks */,
+				F498A51A15FE7F96006E8376 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +458,7 @@
 				F4125F1115D7A7D300E04052 /* superstar.png */,
 			);
 			name = Images;
+			path = ../CoreAstro/libCoreAstro/Vendors/SXCCD;
 			sourceTree = "<group>";
 		};
 		F45963FD15EA420E0041AF7D /* Products */ = {
@@ -426,6 +468,35 @@
 				F459640815EA420F0041AF7D /* UnitTests.octest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F498A51B15FE7F96006E8376 /* SXCCD */ = {
+			isa = PBXGroup;
+			children = (
+				F49E538615A9A2AF0018DC75 /* SXCCDDevice.h */,
+				F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */,
+				F4A84E1915C52B7300B1164F /* SXCCDParams.h */,
+				F4A84E1A15C52B7300B1164F /* SXCCDParams.m */,
+				F49E538F15A9D8240018DC75 /* SXCCDIOCommand.h */,
+				F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */,
+				F49E537615A995F40018DC75 /* SXCCDDeviceFactory.h */,
+				F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */,
+				F49E53E015B899680018DC75 /* SXDevices.plist */,
+				F457B68F15DD4E480035F015 /* Images */,
+				F498A51C15FE7F96006E8376 /* Supporting Files */,
+			);
+			name = SXCCD;
+			path = ../../../SXDevicesPlugin;
+			sourceTree = "<group>";
+		};
+		F498A51C15FE7F96006E8376 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */,
+				F498A51E15FE7F96006E8376 /* InfoPlist.strings */,
+				F498A52115FE7F96006E8376 /* SXDevicesPlugin-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F49E52B215A971610018DC75 = {
@@ -448,6 +519,7 @@
 				F49E52DE15A971620018DC75 /* CoreAstroTests.octest */,
 				F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */,
 				F44EDF0B15FCC386003B1B4C /* CoreAstro FrameworkTests.octest */,
+				F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -568,27 +640,10 @@
 		F49E535015A995350018DC75 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
-				F49E535115A995350018DC75 /* SXCCD */,
+				F498A51B15FE7F96006E8376 /* SXCCD */,
 			);
 			name = Vendors;
 			path = ../CoreAstro/libCoreAstro/Vendors;
-			sourceTree = "<group>";
-		};
-		F49E535115A995350018DC75 /* SXCCD */ = {
-			isa = PBXGroup;
-			children = (
-				F49E538615A9A2AF0018DC75 /* SXCCDDevice.h */,
-				F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */,
-				F4A84E1915C52B7300B1164F /* SXCCDParams.h */,
-				F4A84E1A15C52B7300B1164F /* SXCCDParams.m */,
-				F49E538F15A9D8240018DC75 /* SXCCDIOCommand.h */,
-				F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */,
-				F49E537615A995F40018DC75 /* SXCCDDeviceFactory.h */,
-				F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */,
-				F49E53E015B899680018DC75 /* SXDevices.plist */,
-				F457B68F15DD4E480035F015 /* Images */,
-			);
-			path = SXCCD;
 			sourceTree = "<group>";
 		};
 		F49E535F15A995570018DC75 /* Core */ = {
@@ -674,6 +729,7 @@
 				F44EDEF615FCC385003B1B4C /* Frameworks */,
 				F44EDEF715FCC385003B1B4C /* Headers */,
 				F44EDEF815FCC385003B1B4C /* Resources */,
+				F498A53D15FE8754006E8376 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -703,6 +759,24 @@
 			productReference = F44EDF0B15FCC386003B1B4C /* CoreAstro FrameworkTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		F498A51815FE7F96006E8376 /* SXDevicesPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F498A52215FE7F96006E8376 /* Build configuration list for PBXNativeTarget "SXDevicesPlugin" */;
+			buildPhases = (
+				F498A51515FE7F96006E8376 /* Sources */,
+				F498A51615FE7F96006E8376 /* Frameworks */,
+				F498A51715FE7F96006E8376 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F498A53615FE8106006E8376 /* PBXTargetDependency */,
+			);
+			name = SXDevicesPlugin;
+			productName = SXDevicesPlugin;
+			productReference = F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */;
+			productType = "com.apple.product-type.bundle";
+		};
 		F49E52BC15A971610018DC75 /* CoreAstro */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F49E52EF15A971620018DC75 /* Build configuration list for PBXNativeTarget "CoreAstro" */;
@@ -711,10 +785,12 @@
 				F49E52BA15A971610018DC75 /* Frameworks */,
 				F49E52BB15A971610018DC75 /* Resources */,
 				F459640E15EA42D50041AF7D /* CopyFiles */,
+				F498A53A15FE8210006E8376 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F498A53915FE81E3006E8376 /* PBXTargetDependency */,
 				F44EDF5F15FCC920003B1B4C /* PBXTargetDependency */,
 				F459640B15EA42250041AF7D /* PBXTargetDependency */,
 			);
@@ -774,6 +850,7 @@
 				F49E52DD15A971620018DC75 /* CoreAstroTests */,
 				F44EDEF915FCC385003B1B4C /* CoreAstro Framework */,
 				F44EDF0A15FCC386003B1B4C /* CoreAstro FrameworkTests */,
+				F498A51815FE7F96006E8376 /* SXDevicesPlugin */,
 			);
 		};
 /* End PBXProject section */
@@ -801,9 +878,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */,
-				F44EDF4C15FCC716003B1B4C /* SXDevices.plist in Resources */,
-				F44EDF4D15FCC716003B1B4C /* H694.png in Resources */,
-				F44EDF4E15FCC716003B1B4C /* superstar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,6 +886,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				F44EDF1615FCC386003B1B4C /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F498A51715FE7F96006E8376 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F498A52015FE7F96006E8376 /* InfoPlist.strings in Resources */,
+				F498A52915FE7FD8006E8376 /* SXDevices.plist in Resources */,
+				F498A52D15FE7FE2006E8376 /* H36.png in Resources */,
+				F498A52E15FE7FE2006E8376 /* H694.png in Resources */,
+				F498A52F15FE7FE2006E8376 /* superstar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -824,7 +910,6 @@
 				F49E52D815A971620018DC75 /* MainMenu.xib in Resources */,
 				F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */,
 				F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */,
-				F457B68C15DD4E450035F015 /* H36.png in Resources */,
 				F422B05E15FC8D5B00D86260 /* README.md in Resources */,
 				F412975915FCA977009C215E /* move.pdf in Resources */,
 				F412975A15FCA977009C215E /* selection.pdf in Resources */,
@@ -861,6 +946,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		F498A53D15FE8754006E8376 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/ln -sf Versions/Current/PlugIns ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/PlugIns\n";
 		};
 		F49E52DC15A971620018DC75 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -900,10 +998,6 @@
 				F44EDF4415FCC701003B1B4C /* BusProbeDevice.m in Sources */,
 				F44EDF4515FCC701003B1B4C /* BusProberSharedFunctions.m in Sources */,
 				F44EDF4615FCC701003B1B4C /* DecodeDeviceDescriptor.m in Sources */,
-				F44EDF4815FCC70C003B1B4C /* SXCCDDevice.m in Sources */,
-				F44EDF4915FCC70C003B1B4C /* SXCCDParams.m in Sources */,
-				F44EDF4A15FCC70C003B1B4C /* SXCCDIOCommand.m in Sources */,
-				F44EDF4B15FCC70C003B1B4C /* SXCCDDeviceFactory.m in Sources */,
 				F44EDF5D15FCC872003B1B4C /* CASScriptableObject.m in Sources */,
 				F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */,
 			);
@@ -914,6 +1008,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				F44EDF1915FCC386003B1B4C /* CoreAstro_FrameworkTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F498A51515FE7F96006E8376 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F498A52515FE7FC9006E8376 /* SXCCDDevice.m in Sources */,
+				F498A52615FE7FCE006E8376 /* SXCCDParams.m in Sources */,
+				F498A52715FE7FD1006E8376 /* SXCCDIOCommand.m in Sources */,
+				F498A52815FE7FD5006E8376 /* SXCCDDeviceFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -958,6 +1063,16 @@
 			name = CorePlot;
 			targetProxy = F459640A15EA42250041AF7D /* PBXContainerItemProxy */;
 		};
+		F498A53615FE8106006E8376 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
+			targetProxy = F498A53515FE8106006E8376 /* PBXContainerItemProxy */;
+		};
+		F498A53915FE81E3006E8376 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F498A51815FE7F96006E8376 /* SXDevicesPlugin */;
+			targetProxy = F498A53815FE81E3006E8376 /* PBXContainerItemProxy */;
+		};
 		F49E52E315A971620018DC75 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F49E52BC15A971610018DC75 /* CoreAstro */;
@@ -978,6 +1093,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				F44EDF1515FCC386003B1B4C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F498A51E15FE7F96006E8376 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F498A51F15FE7F96006E8376 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1030,6 +1153,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks/";
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1048,6 +1172,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks/";
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1082,6 +1207,38 @@
 				INFOPLIST_FILE = "CoreAstro FrameworkTests/CoreAstro FrameworkTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		F498A52315FE7F96006E8376 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SXDevicesPlugin/SXDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "SXDevicesPlugin/SXDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = casPlugin;
+			};
+			name = Debug;
+		};
+		F498A52415FE7F96006E8376 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SXDevicesPlugin/SXDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "SXDevicesPlugin/SXDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = casPlugin;
 			};
 			name = Release;
 		};
@@ -1207,6 +1364,15 @@
 			buildConfigurations = (
 				F44EDF1E15FCC386003B1B4C /* Debug */,
 				F44EDF1F15FCC386003B1B4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F498A52215FE7F96006E8376 /* Build configuration list for PBXNativeTarget "SXDevicesPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F498A52315FE7F96006E8376 /* Debug */,
+				F498A52415FE7F96006E8376 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

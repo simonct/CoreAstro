@@ -25,13 +25,18 @@
 
 #import "CASPluginManager.h"
 
-@implementation CASPluginManager
+static NSString* const kCASPluginManagerPluginExtension = @"casPlugin";
+static NSString* const kCASPluginManagerPluginClassesKey = @"CASClasses";
+static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClass";
+
+@implementation CASPluginManager {
+    NSMutableArray* _factoryClasses;
+}
 
 @synthesize browsers = _browsers;
 @synthesize factories = _factories;
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         [self loadBundles];
@@ -39,8 +44,76 @@
     return self;
 }
 
+- (void)loadBundleAtPath:(NSString*)path {
+    
+    NSLog(@"Attempting to load bundle at %@",path);
+    
+    NSBundle* pluginBundle = [NSBundle bundleWithPath:path];
+    if (pluginBundle){
+        
+        NSDictionary* pluginInfo = [pluginBundle infoDictionary];
+        
+        NSDictionary* pluginClasses = [pluginInfo objectForKey:kCASPluginManagerPluginClassesKey];
+        if (![pluginClasses isKindOfClass:[NSDictionary class]] || ![pluginClasses count]){
+            NSLog(@"Entry for %@ is either not a dictionary or empty",kCASPluginManagerPluginClassesKey);
+        }
+        else{
+        
+            // handle factories (other class types to follow)
+            NSArray* pluginFactories = [pluginClasses objectForKey:kCASPluginManagerPluginFactoryClassKey];
+            if (![pluginFactories isKindOfClass:[NSArray class]] || ![pluginFactories count]){
+                NSLog(@"Entry for %@ is either not an array or empty",kCASPluginManagerPluginFactoryClassKey);
+            }
+            else{
+            
+                // filter out bundles containing duplicate classes
+                BOOL foundClass = NO;
+                for (NSString* factoryName in pluginFactories){
+                    if ([_factoryClasses containsObject:factoryName]){
+                        NSLog(@"Already loaded %@, ignoring this bundle",factoryName); // todo: add 'from <bundle>', keep track of bundles where classes come from
+                        foundClass = YES;
+                    }
+                }
+                
+                if (!foundClass){
+                    
+                    // todo: lazy load plugins
+                    NSError* error = nil;
+                    if (![pluginBundle loadAndReturnError:&error]){
+                        NSLog(@"Failed to load %@ (%@)",[[pluginBundle bundlePath] lastPathComponent],error);
+                    }
+                    else {
+                        [_factoryClasses addObjectsFromArray:pluginFactories];
+                        NSLog(@"Bundle loaded, factory classes are %@",_factoryClasses);
+                    }
+                }
+            }
+        }
+    }
+}
+
 - (void)loadBundles {
-    // scan for and load extension bundles
+    
+    _factoryClasses = [NSMutableArray arrayWithCapacity:5];
+
+    // currently just search the framework plugins folder, in future use NSSearchDirectories to locate external plugin folders as well
+    // (will need to deal with plugin versions e.g. scan all and pick the highest one before picking one to load)
+    NSArray* paths = [NSArray arrayWithObjects:
+                      [[NSBundle bundleForClass:[self class]] builtInPlugInsPath], // search framework PlugIns folder
+                      [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent], // search same folder as executable
+                      nil];
+    for (NSString* path in paths){
+        
+        for (NSString* pluginPath in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil]){
+           
+            if ([pluginPath hasPrefix:@"."]){
+                continue;
+            }
+            if ([[pluginPath pathExtension] isEqualToString:kCASPluginManagerPluginExtension]){
+                [self loadBundleAtPath:[path stringByAppendingPathComponent:pluginPath]];
+            }
+        }
+    }
 }
 
 - (NSArray*)browserClasses {
@@ -48,7 +121,7 @@
 }
 
 - (NSArray*)factoryClasses {
-    return [NSArray arrayWithObject:@"SXCCDDeviceFactory"]; // todo: get these from loadable bundles in future from the frameworks Plugins directory and NSSearchDirectories
+    return [_factoryClasses copy];
 }
 
 - (NSArray*)createInstancesFromClasses:(NSArray*)classes {
