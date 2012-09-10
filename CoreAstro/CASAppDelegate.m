@@ -132,30 +132,39 @@
 {
     for (CASDevice* device in devices){
         
-        SXCCDDevice* sxccd = (SXCCDDevice*)device;
-        if ([sxccd isKindOfClass:[SXCCDDevice class]]){ // todo: should be device.type == kCASDeviceTypeCamera
-            
-            if (![self.windows count]){
-                CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
-                cameraWindow.delegate = self;
-                cameraWindow.shouldCascadeWindows = NO;
-                [cameraWindow.window makeKeyAndOrderFront:nil];
-                [self.windows addObject:cameraWindow];
-            }
-            CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:sxccd];
-            if (cameraController){
-                cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-                cameraController.autoGuider = [CASAutoGuider autoGuiderWithIdentifier:nil];
-                [self willChangeValueForKey:@"cameraControllers"];
-                [self.cameraControllers addObject:cameraController];
-                [self didChangeValueForKey:@"cameraControllers"];
-            }
-            if ([self.windows count] == 1){
-                CASCameraWindowController* cameraWindow = [self.windows lastObject];
-                if (!cameraWindow.cameraController){
-                    cameraWindow.cameraController = cameraController;
+        CASCCDDevice* ccd = (CASCCDDevice*)device;
+        if ([ccd isKindOfClass:[CASCCDDevice class]]){
+                        
+            [ccd connect:^(NSError* error) {
+                                
+                if (error){
+                    [NSApp presentError:error]; // todo: specific error message
                 }
-            }
+                else {
+                    
+                    if (![self.windows count]){
+                        CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
+                        cameraWindow.delegate = self;
+                        cameraWindow.shouldCascadeWindows = NO;
+                        [cameraWindow.window makeKeyAndOrderFront:nil];
+                        [self.windows addObject:cameraWindow];
+                    }
+                    CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
+                    if (cameraController){
+                        cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+                        cameraController.autoGuider = [CASAutoGuider autoGuiderWithIdentifier:nil];
+                        [self willChangeValueForKey:@"cameraControllers"];
+                        [self.cameraControllers addObject:cameraController];
+                        [self didChangeValueForKey:@"cameraControllers"];
+                    }
+                    if ([self.windows count] == 1){
+                        CASCameraWindowController* cameraWindow = [self.windows lastObject];
+                        if (!cameraWindow.cameraController){
+                            cameraWindow.cameraController = cameraController;
+                        }
+                    }
+                }
+            }];
         }
     }
 }
