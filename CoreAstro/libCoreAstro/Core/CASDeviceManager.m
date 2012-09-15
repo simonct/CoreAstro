@@ -39,14 +39,6 @@
 @synthesize pluginManager;
 @synthesize devices = _devices;
 
-+ (NSArray*)browserClasses {
-    return [NSArray arrayWithObject:@"CASUSBDeviceBrowser"]; // load these from the plugin manager in future
-}
-
-+ (NSArray*)factoryClasses {
-    return [NSArray arrayWithObject:@"SXCCDDeviceFactory"]; // load these from the plugin manager in future
-}
-
 + (CASDeviceManager*)sharedManager {
     static CASDeviceManager* manager = nil;
     static dispatch_once_t onceToken;
