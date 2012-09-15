@@ -1,5 +1,5 @@
 //
-//  CASIOTransport.h
+//  CASIOHIDTransport.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,28 +22,13 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  This is the base class of all CoreAstro IO Transports.
+//  Implements IO over a HID
 
-#import <Foundation/Foundation.h>
+#import "CASIOTransport.h"
+#import <IOKit/hid/IOHIDLib.h>
 
-typedef enum {
-    kCASTransportTypeNone = 0,
-    kCASTransportTypeUSB,
-    kCASTransportTypeFirewire,
-    kCASTransportTypeEthernet,
-    kCASTransportTypeHID
-} CASIOTransportType;
+@interface CASIOHIDTransport : CASIOTransport
 
-@class CASIOCommand;
+- (id)initWithDeviceRef:(IOHIDDeviceRef)device;
 
-@protocol CASIOTransport <NSObject> // NSStream ?
-- (NSError*)send:(NSData*)data;
-- (NSError*)receive:(NSMutableData*)data;
 @end
-
-@interface CASIOTransport : NSObject<CASIOTransport>
-@property (nonatomic,readonly) CASIOTransportType type;
-- (void)submit:(CASIOCommand*)command block:(void (^)(NSError*))block;
-- (void)submit:(CASIOCommand*)command when:(NSDate*)when block:(void (^)(NSError*))block;
-@end
-

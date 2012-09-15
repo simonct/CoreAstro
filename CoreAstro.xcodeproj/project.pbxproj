@@ -104,6 +104,24 @@
 		F4EAFCAA15D7E749001B7993 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */; };
 		F4EAFCB315D7EDAB001B7993 /* CASScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCB215D7EDAB001B7993 /* CASScriptCommand.m */; };
 		F4EAFCB615D7EDDC001B7993 /* CASCaptureCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCB515D7EDDC001B7993 /* CASCaptureCommand.m */; };
+		F4EEF2701604662100547009 /* CASHIDDeviceBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF26C1604662100547009 /* CASHIDDeviceBrowser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4EEF2711604662100547009 /* CASHIDDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF26D1604662100547009 /* CASHIDDeviceBrowser.m */; };
+		F4EEF2721604662100547009 /* CASIOHIDTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF26E1604662100547009 /* CASIOHIDTransport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF26F1604662100547009 /* CASIOHIDTransport.m */; };
+		F4EEF2AA1604692600547009 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2931604692600547009 /* HID_Utilities.c */; };
+		F4EEF2AB1604692600547009 /* HID_Utilities_External.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF2941604692600547009 /* HID_Utilities_External.h */; };
+		F4EEF2AD1604692600547009 /* ImmrHIDUtilAddOn.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2971604692600547009 /* ImmrHIDUtilAddOn.c */; };
+		F4EEF2AE1604692600547009 /* ImmrHIDUtilAddOn.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF2981604692600547009 /* ImmrHIDUtilAddOn.h */; };
+		F4EEF2AF1604692600547009 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2991604692600547009 /* IOHIDDevice_.c */; };
+		F4EEF2B01604692600547009 /* IOHIDDevice_.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF29A1604692600547009 /* IOHIDDevice_.h */; };
+		F4EEF2B11604692600547009 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF29B1604692600547009 /* IOHIDElement_.c */; };
+		F4EEF2B21604692600547009 /* IOHIDElement_.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF29C1604692600547009 /* IOHIDElement_.h */; };
+		F4EEF2B31604692600547009 /* IOHIDLib_.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EEF29D1604692600547009 /* IOHIDLib_.h */; };
+		F4EEF2BF1604699600547009 /* HID_Config_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BB1604699600547009 /* HID_Config_Utilities.c */; };
+		F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BC1604699600547009 /* HID_Error_Handler.c */; };
+		F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BD1604699600547009 /* HID_Name_Lookup.c */; };
+		F4EEF2C21604699600547009 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BE1604699600547009 /* HID_Queue_Utilities.c */; };
+		F4EEF2D31604AF9E00547009 /* SXFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2D21604AF9E00547009 /* SXFWDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 /* End PBXBuildFile section */
@@ -301,6 +319,25 @@
 		F4EAFCB215D7EDAB001B7993 /* CASScriptCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptCommand.m; sourceTree = "<group>"; };
 		F4EAFCB415D7EDDB001B7993 /* CASCaptureCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCaptureCommand.h; sourceTree = "<group>"; };
 		F4EAFCB515D7EDDC001B7993 /* CASCaptureCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCaptureCommand.m; sourceTree = "<group>"; };
+		F4EEF26C1604662100547009 /* CASHIDDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHIDDeviceBrowser.h; sourceTree = "<group>"; };
+		F4EEF26D1604662100547009 /* CASHIDDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHIDDeviceBrowser.m; sourceTree = "<group>"; };
+		F4EEF26E1604662100547009 /* CASIOHIDTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOHIDTransport.h; sourceTree = "<group>"; };
+		F4EEF26F1604662100547009 /* CASIOHIDTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOHIDTransport.m; sourceTree = "<group>"; };
+		F4EEF2931604692600547009 /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
+		F4EEF2941604692600547009 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
+		F4EEF2971604692600547009 /* ImmrHIDUtilAddOn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ImmrHIDUtilAddOn.c; sourceTree = "<group>"; };
+		F4EEF2981604692600547009 /* ImmrHIDUtilAddOn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmrHIDUtilAddOn.h; sourceTree = "<group>"; };
+		F4EEF2991604692600547009 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		F4EEF29A1604692600547009 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		F4EEF29B1604692600547009 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		F4EEF29C1604692600547009 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
+		F4EEF29D1604692600547009 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
+		F4EEF2BB1604699600547009 /* HID_Config_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Config_Utilities.c; sourceTree = "<group>"; };
+		F4EEF2BC1604699600547009 /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Error_Handler.c; sourceTree = "<group>"; };
+		F4EEF2BD1604699600547009 /* HID_Name_Lookup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Name_Lookup.c; sourceTree = "<group>"; };
+		F4EEF2BE1604699600547009 /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
+		F4EEF2D11604AF9E00547009 /* SXFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXFWDevice.h; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXFWDevice.h; sourceTree = SOURCE_ROOT; };
+		F4EEF2D21604AF9E00547009 /* SXFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXFWDevice.m; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXFWDevice.m; sourceTree = SOURCE_ROOT; };
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
@@ -473,6 +510,8 @@
 		F498A51B15FE7F96006E8376 /* SXCCD */ = {
 			isa = PBXGroup;
 			children = (
+				F4EEF2D11604AF9E00547009 /* SXFWDevice.h */,
+				F4EEF2D21604AF9E00547009 /* SXFWDevice.m */,
 				F49E538615A9A2AF0018DC75 /* SXCCDDevice.h */,
 				F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */,
 				F4A84E1915C52B7300B1164F /* SXCCDParams.h */,
@@ -604,6 +643,7 @@
 		F49E534115A995350018DC75 /* Transports */ = {
 			isa = PBXGroup;
 			children = (
+				F4EEF26B1604662100547009 /* HID */,
 				F49E534215A995350018DC75 /* USB */,
 			);
 			name = Transports;
@@ -685,6 +725,46 @@
 			path = ../CoreAstro/libCoreAstro/Core;
 			sourceTree = "<group>";
 		};
+		F4EEF26B1604662100547009 /* HID */ = {
+			isa = PBXGroup;
+			children = (
+				F4EEF26E1604662100547009 /* CASIOHIDTransport.h */,
+				F4EEF26F1604662100547009 /* CASIOHIDTransport.m */,
+				F4EEF26C1604662100547009 /* CASHIDDeviceBrowser.h */,
+				F4EEF26D1604662100547009 /* CASHIDDeviceBrowser.m */,
+				F4EEF2821604692600547009 /* HID_Utilities */,
+			);
+			path = HID;
+			sourceTree = "<group>";
+		};
+		F4EEF2821604692600547009 /* HID_Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F4EEF2BB1604699600547009 /* HID_Config_Utilities.c */,
+				F4EEF2BC1604699600547009 /* HID_Error_Handler.c */,
+				F4EEF2BD1604699600547009 /* HID_Name_Lookup.c */,
+				F4EEF2BE1604699600547009 /* HID_Queue_Utilities.c */,
+				F4EEF2931604692600547009 /* HID_Utilities.c */,
+				F4EEF2941604692600547009 /* HID_Utilities_External.h */,
+				F4EEF2961604692600547009 /* IOHIDManager */,
+			);
+			path = HID_Utilities;
+			sourceTree = "<group>";
+		};
+		F4EEF2961604692600547009 /* IOHIDManager */ = {
+			isa = PBXGroup;
+			children = (
+				F4EEF2971604692600547009 /* ImmrHIDUtilAddOn.c */,
+				F4EEF2981604692600547009 /* ImmrHIDUtilAddOn.h */,
+				F4EEF2991604692600547009 /* IOHIDDevice_.c */,
+				F4EEF29A1604692600547009 /* IOHIDDevice_.h */,
+				F4EEF29B1604692600547009 /* IOHIDElement_.c */,
+				F4EEF29C1604692600547009 /* IOHIDElement_.h */,
+				F4EEF29D1604692600547009 /* IOHIDLib_.h */,
+			);
+			path = IOHIDManager;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -715,6 +795,13 @@
 				F44EDF5C15FCC872003B1B4C /* CASScriptableObject.h in Headers */,
 				F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */,
 				F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */,
+				F4EEF2701604662100547009 /* CASHIDDeviceBrowser.h in Headers */,
+				F4EEF2721604662100547009 /* CASIOHIDTransport.h in Headers */,
+				F4EEF2AB1604692600547009 /* HID_Utilities_External.h in Headers */,
+				F4EEF2AE1604692600547009 /* ImmrHIDUtilAddOn.h in Headers */,
+				F4EEF2B01604692600547009 /* IOHIDDevice_.h in Headers */,
+				F4EEF2B21604692600547009 /* IOHIDElement_.h in Headers */,
+				F4EEF2B31604692600547009 /* IOHIDLib_.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,6 +921,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				English,
 			);
 			mainGroup = F49E52B215A971610018DC75;
 			productRefGroup = F49E52BE15A971610018DC75 /* Products */;
@@ -1000,6 +1088,16 @@
 				F44EDF4615FCC701003B1B4C /* DecodeDeviceDescriptor.m in Sources */,
 				F44EDF5D15FCC872003B1B4C /* CASScriptableObject.m in Sources */,
 				F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */,
+				F4EEF2711604662100547009 /* CASHIDDeviceBrowser.m in Sources */,
+				F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */,
+				F4EEF2AA1604692600547009 /* HID_Utilities.c in Sources */,
+				F4EEF2AD1604692600547009 /* ImmrHIDUtilAddOn.c in Sources */,
+				F4EEF2AF1604692600547009 /* IOHIDDevice_.c in Sources */,
+				F4EEF2B11604692600547009 /* IOHIDElement_.c in Sources */,
+				F4EEF2BF1604699600547009 /* HID_Config_Utilities.c in Sources */,
+				F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */,
+				F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */,
+				F4EEF2C21604699600547009 /* HID_Queue_Utilities.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1019,6 +1117,7 @@
 				F498A52615FE7FCE006E8376 /* SXCCDParams.m in Sources */,
 				F498A52715FE7FD1006E8376 /* SXCCDIOCommand.m in Sources */,
 				F498A52815FE7FD5006E8376 /* SXCCDDeviceFactory.m in Sources */,
+				F4EEF2D31604AF9E00547009 /* SXFWDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

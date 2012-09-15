@@ -1,5 +1,5 @@
 //
-//  CASIOTransport.h
+//  SXFWDevice.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,28 +22,13 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  This is the base class of all CoreAstro IO Transports.
 
-#import <Foundation/Foundation.h>
+#import "CASDevice.h"
 
-typedef enum {
-    kCASTransportTypeNone = 0,
-    kCASTransportTypeUSB,
-    kCASTransportTypeFirewire,
-    kCASTransportTypeEthernet,
-    kCASTransportTypeHID
-} CASIOTransportType;
+@interface SXFWDevice : CASDevice // -> CASFWDevice
 
-@class CASIOCommand;
+@property (nonatomic,assign,readonly) NSInteger filterCount; // 0 until calibration is complete
+@property (nonatomic,assign) NSInteger currentFilter; // 0 -> filterCount-1
 
-@protocol CASIOTransport <NSObject> // NSStream ?
-- (NSError*)send:(NSData*)data;
-- (NSError*)receive:(NSMutableData*)data;
-@end
-
-@interface CASIOTransport : NSObject<CASIOTransport>
-@property (nonatomic,readonly) CASIOTransportType type;
-- (void)submit:(CASIOCommand*)command block:(void (^)(NSError*))block;
-- (void)submit:(CASIOCommand*)command when:(NSDate*)when block:(void (^)(NSError*))block;
 @end
 

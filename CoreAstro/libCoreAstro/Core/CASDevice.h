@@ -32,7 +32,8 @@ typedef enum {
     kCASDeviceTypeVideo,
     kCASDeviceTypeMount,
     kCASDeviceTypeFocusser,
-    kCASDeviceTypeSkySensor
+    kCASDeviceTypeSkySensor,
+    kCASDeviceTypeFilterWheel
 } CASDeviceType;
 
 @class CASIOTransport;

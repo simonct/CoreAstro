@@ -25,8 +25,9 @@
 
 #import "SXCCDDeviceFactory.h"
 #import "SXCCDDevice.h"
+#import "SXFWDevice.h"
 
-@interface SXCCDDeviceFactory ()
+@interface SXCCDDeviceFactory () // -> SXDeviceFactory
 @end
 
 @implementation SXCCDDeviceFactory
@@ -46,28 +47,51 @@ static NSDictionary* _deviceLookup = nil;
     return _deviceLookup;
 }
 
-- (BOOL)supportedProductID:(NSNumber*)productID {
-    return ([[[self class] deviceLookup] objectForKey:[productID stringValue]] != nil);
+- (NSDictionary*)productInfoForProductID:(NSNumber*)productID {
+    return [[[self class] deviceLookup] objectForKey:[productID stringValue]];
 }
 
 - (CASDevice*)createDeviceWithDeviceRef:(void*)dev path:(NSString*)path properties:(NSDictionary*)properties {
     
-    SXCCDDevice* result = nil;
+    CASDevice* result = nil;
     
     NSNumber* vendorID = [properties objectForKey:@"idVendor"];
     if ([vendorID isEqualToNumber:[NSNumber numberWithInteger:[[self class] vendorID]]]){
     
         NSNumber* productID = [properties objectForKey:@"idProduct"];
-        if (![self supportedProductID:productID]){
-            NSLog(@"Unsuported SX pid: %@",productID);            
+        NSDictionary* productInfo = [self productInfoForProductID:productID];
+        if (!productInfo){
+            NSLog(@"SXCCDDeviceFactory: unsupported SX pid: %@",productID);            
         }
         else{
             
-            result = [[SXCCDDevice alloc] init]; // subclass depending on exact type ?
-            result.device = dev;
-            result.path = path;
-            result.properties = properties;
-            result.productID = [productID integerValue];
+            // check device type e.g. camera, filter wheel, etc
+            const NSInteger productType = [[productInfo objectForKey:@"type"] integerValue];
+            switch (productType) {
+                
+                    // CCD cameras
+                case 0: {
+                    SXCCDDevice* ccd = [[SXCCDDevice alloc] init]; // subclass depending on exact type ?
+                    ccd.device = dev;
+                    ccd.path = path;
+                    ccd.properties = properties;
+                    ccd.productID = [productID integerValue];
+                    result = ccd;
+                }
+                    break;
+                    
+                    // Filter wheel
+                case 1: {
+                    SXFWDevice* fw = [[SXFWDevice alloc] init];
+                    fw.device = dev;
+                    result = fw;
+                }
+                    break;
+                    
+                default:
+                    NSLog(@"SXCCDDeviceFactory: unsupported SX device type: %ld",productType);
+                    break;
+            }
         }
     }
     
