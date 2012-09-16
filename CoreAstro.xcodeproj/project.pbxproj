@@ -74,11 +74,6 @@
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
 		F498A51A15FE7F96006E8376 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
-		F498A52015FE7F96006E8376 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F498A51E15FE7F96006E8376 /* InfoPlist.strings */; };
-		F498A52515FE7FC9006E8376 /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */; };
-		F498A52615FE7FCE006E8376 /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A84E1A15C52B7300B1164F /* SXCCDParams.m */; };
-		F498A52715FE7FD1006E8376 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
-		F498A52815FE7FD5006E8376 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
 		F498A52915FE7FD8006E8376 /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F49E53E015B899680018DC75 /* SXDevices.plist */; };
 		F498A52D15FE7FE2006E8376 /* H36.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68A15DD4E450035F015 /* H36.png */; };
 		F498A52E15FE7FE2006E8376 /* H694.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68B15DD4E450035F015 /* H694.png */; };
@@ -121,7 +116,15 @@
 		F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BC1604699600547009 /* HID_Error_Handler.c */; };
 		F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BD1604699600547009 /* HID_Name_Lookup.c */; };
 		F4EEF2C21604699600547009 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2BE1604699600547009 /* HID_Queue_Utilities.c */; };
-		F4EEF2D31604AF9E00547009 /* SXFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2D21604AF9E00547009 /* SXFWDevice.m */; };
+		F4EEF2F51606226100547009 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
+		F4EEF2F61606226100547009 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
+		F4EEF30A1606233000547009 /* CASSHDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF3091606233000547009 /* CASSHDeviceFactory.m */; };
+		F4EEF3181606244100547009 /* SHDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */; };
+		F4EEF31C1606272D00547009 /* SXFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF2D21604AF9E00547009 /* SXFWDevice.m */; };
+		F4EEF31D1606273000547009 /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E538715A9A2AF0018DC75 /* SXCCDDevice.m */; };
+		F4EEF31E1606273400547009 /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A84E1A15C52B7300B1164F /* SXCCDParams.m */; };
+		F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
+		F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 /* End PBXBuildFile section */
@@ -183,6 +186,20 @@
 			remoteGlobalIDString = F49E52BC15A971610018DC75;
 			remoteInfo = CoreAstro;
 		};
+		F4EEF2ED1606226100547009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F4EEF3191606244900547009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4EEF2EB1606226100547009;
+			remoteInfo = SHDevicesPlugin;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -203,6 +220,7 @@
 			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
 			dstSubfolderSpec = 10;
 			files = (
+				F4EEF3181606244100547009 /* SHDevicesPlugin.casPlugin in CopyFiles */,
 				F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -338,6 +356,12 @@
 		F4EEF2BE1604699600547009 /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
 		F4EEF2D11604AF9E00547009 /* SXFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXFWDevice.h; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXFWDevice.h; sourceTree = SOURCE_ROOT; };
 		F4EEF2D21604AF9E00547009 /* SXFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXFWDevice.m; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXFWDevice.m; sourceTree = SOURCE_ROOT; };
+		F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SHDevicesPlugin.casPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4EEF304160622AE00547009 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4EEF305160622AE00547009 /* SHDevicesPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SHDevicesPlugin-Info.plist"; sourceTree = "<group>"; };
+		F4EEF306160622AE00547009 /* SHDevicesPlugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SHDevicesPlugin-Prefix.pch"; sourceTree = "<group>"; };
+		F4EEF3081606233000547009 /* CASSHDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHDeviceFactory.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.h; sourceTree = SOURCE_ROOT; };
+		F4EEF3091606233000547009 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = SOURCE_ROOT; };
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
@@ -396,6 +420,15 @@
 			files = (
 				F49E52E015A971620018DC75 /* SenTestingKit.framework in Frameworks */,
 				F49E52E115A971620018DC75 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4EEF2F41606226100547009 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4EEF2F51606226100547009 /* CoreAstro.framework in Frameworks */,
+				F4EEF2F61606226100547009 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,7 +540,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F498A51B15FE7F96006E8376 /* SXCCD */ = {
+		F498A51B15FE7F96006E8376 /* SXI */ = {
 			isa = PBXGroup;
 			children = (
 				F4EEF2D11604AF9E00547009 /* SXFWDevice.h */,
@@ -524,15 +557,15 @@
 				F457B68F15DD4E480035F015 /* Images */,
 				F498A51C15FE7F96006E8376 /* Supporting Files */,
 			);
-			name = SXCCD;
+			name = SXI;
 			path = ../../../SXDevicesPlugin;
 			sourceTree = "<group>";
 		};
 		F498A51C15FE7F96006E8376 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */,
 				F498A51E15FE7F96006E8376 /* InfoPlist.strings */,
+				F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */,
 				F498A52115FE7F96006E8376 /* SXDevicesPlugin-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -559,6 +592,7 @@
 				F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */,
 				F44EDF0B15FCC386003B1B4C /* CoreAstro FrameworkTests.octest */,
 				F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */,
+				F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -680,7 +714,8 @@
 		F49E535015A995350018DC75 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
-				F498A51B15FE7F96006E8376 /* SXCCD */,
+				F498A51B15FE7F96006E8376 /* SXI */,
+				F4EEF302160622AE00547009 /* Shoestring */,
 			);
 			name = Vendors;
 			path = ../CoreAstro/libCoreAstro/Vendors;
@@ -763,6 +798,27 @@
 				F4EEF29D1604692600547009 /* IOHIDLib_.h */,
 			);
 			path = IOHIDManager;
+			sourceTree = "<group>";
+		};
+		F4EEF302160622AE00547009 /* Shoestring */ = {
+			isa = PBXGroup;
+			children = (
+				F4EEF3081606233000547009 /* CASSHDeviceFactory.h */,
+				F4EEF3091606233000547009 /* CASSHDeviceFactory.m */,
+				F4EEF307160622EF00547009 /* Supporting Files */,
+			);
+			name = Shoestring;
+			path = SHDevicesPlugin;
+			sourceTree = SOURCE_ROOT;
+		};
+		F4EEF307160622EF00547009 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4EEF303160622AE00547009 /* InfoPlist.strings */,
+				F4EEF305160622AE00547009 /* SHDevicesPlugin-Info.plist */,
+				F4EEF306160622AE00547009 /* SHDevicesPlugin-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -877,6 +933,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4EEF31A1606244900547009 /* PBXTargetDependency */,
 				F498A53915FE81E3006E8376 /* PBXTargetDependency */,
 				F44EDF5F15FCC920003B1B4C /* PBXTargetDependency */,
 				F459640B15EA42250041AF7D /* PBXTargetDependency */,
@@ -903,6 +960,24 @@
 			name = CoreAstroTests;
 			productName = CoreAstroTests;
 			productReference = F49E52DE15A971620018DC75 /* CoreAstroTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F4EEF2EB1606226100547009 /* SHDevicesPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4EEF2FD1606226100547009 /* Build configuration list for PBXNativeTarget "SHDevicesPlugin" */;
+			buildPhases = (
+				F4EEF2EE1606226100547009 /* Sources */,
+				F4EEF2F41606226100547009 /* Frameworks */,
+				F4EEF2F71606226100547009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4EEF2EC1606226100547009 /* PBXTargetDependency */,
+			);
+			name = SHDevicesPlugin;
+			productName = SXDevicesPlugin;
+			productReference = F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -939,6 +1014,7 @@
 				F44EDEF915FCC385003B1B4C /* CoreAstro Framework */,
 				F44EDF0A15FCC386003B1B4C /* CoreAstro FrameworkTests */,
 				F498A51815FE7F96006E8376 /* SXDevicesPlugin */,
+				F4EEF2EB1606226100547009 /* SHDevicesPlugin */,
 			);
 		};
 /* End PBXProject section */
@@ -981,7 +1057,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F498A52015FE7F96006E8376 /* InfoPlist.strings in Resources */,
 				F498A52915FE7FD8006E8376 /* SXDevices.plist in Resources */,
 				F498A52D15FE7FE2006E8376 /* H36.png in Resources */,
 				F498A52E15FE7FE2006E8376 /* H694.png in Resources */,
@@ -1016,6 +1091,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F49E52E915A971620018DC75 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4EEF2F71606226100547009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1113,11 +1195,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F498A52515FE7FC9006E8376 /* SXCCDDevice.m in Sources */,
-				F498A52615FE7FCE006E8376 /* SXCCDParams.m in Sources */,
-				F498A52715FE7FD1006E8376 /* SXCCDIOCommand.m in Sources */,
-				F498A52815FE7FD5006E8376 /* SXCCDDeviceFactory.m in Sources */,
-				F4EEF2D31604AF9E00547009 /* SXFWDevice.m in Sources */,
+				F4EEF31C1606272D00547009 /* SXFWDevice.m in Sources */,
+				F4EEF31D1606273000547009 /* SXCCDDevice.m in Sources */,
+				F4EEF31E1606273400547009 /* SXCCDParams.m in Sources */,
+				F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */,
+				F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1141,6 +1223,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F49E52EC15A971620018DC75 /* CoreAstroTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4EEF2EE1606226100547009 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4EEF30A1606233000547009 /* CASSHDeviceFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1176,6 +1266,16 @@
 			isa = PBXTargetDependency;
 			target = F49E52BC15A971610018DC75 /* CoreAstro */;
 			targetProxy = F49E52E215A971620018DC75 /* PBXContainerItemProxy */;
+		};
+		F4EEF2EC1606226100547009 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
+			targetProxy = F4EEF2ED1606226100547009 /* PBXContainerItemProxy */;
+		};
+		F4EEF31A1606244900547009 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4EEF2EB1606226100547009 /* SHDevicesPlugin */;
+			targetProxy = F4EEF3191606244900547009 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1232,6 +1332,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				F49E52E815A971620018DC75 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4EEF303160622AE00547009 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4EEF304160622AE00547009 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1446,6 +1554,38 @@
 			};
 			name = Release;
 		};
+		F4EEF2FE1606226100547009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SHDevicesPlugin/SHDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "SHDevicesPlugin/SHDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = SHDevicesPlugin;
+				WRAPPER_EXTENSION = casPlugin;
+			};
+			name = Debug;
+		};
+		F4EEF2FF1606226100547009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SHDevicesPlugin/SHDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "SHDevicesPlugin/SHDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = SHDevicesPlugin;
+				WRAPPER_EXTENSION = casPlugin;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1499,6 +1639,15 @@
 			buildConfigurations = (
 				F49E52F315A971620018DC75 /* Debug */,
 				F49E52F415A971620018DC75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4EEF2FD1606226100547009 /* Build configuration list for PBXNativeTarget "SHDevicesPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4EEF2FE1606226100547009 /* Debug */,
+				F4EEF2FF1606226100547009 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
