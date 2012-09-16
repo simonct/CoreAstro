@@ -158,8 +158,6 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
         self.scanned = YES;
         [self scanForDevices];
     }
-    
-    // register for HID notifications
 }
 
 - (CASIOTransport*)createTransportWithDevice:(CASDevice*)device {
