@@ -125,6 +125,7 @@
 		F4EEF31E1606273400547009 /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A84E1A15C52B7300B1164F /* SXCCDParams.m */; };
 		F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
 		F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
+		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 /* End PBXBuildFile section */
@@ -362,6 +363,8 @@
 		F4EEF306160622AE00547009 /* SHDevicesPlugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SHDevicesPlugin-Prefix.pch"; sourceTree = "<group>"; };
 		F4EEF3081606233000547009 /* CASSHDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHDeviceFactory.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.h; sourceTree = SOURCE_ROOT; };
 		F4EEF3091606233000547009 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = SOURCE_ROOT; };
+		F4EEF321160629D800547009 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHGPUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.h; sourceTree = SOURCE_ROOT; };
+		F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHGPUSBDevice.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.m; sourceTree = SOURCE_ROOT; };
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
@@ -805,6 +808,8 @@
 			children = (
 				F4EEF3081606233000547009 /* CASSHDeviceFactory.h */,
 				F4EEF3091606233000547009 /* CASSHDeviceFactory.m */,
+				F4EEF321160629D800547009 /* CASSHGPUSBDevice.h */,
+				F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */,
 				F4EEF307160622EF00547009 /* Supporting Files */,
 			);
 			name = Shoestring;
@@ -1231,6 +1236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4EEF30A1606233000547009 /* CASSHDeviceFactory.m in Sources */,
+				F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
