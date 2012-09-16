@@ -30,33 +30,93 @@
 @interface CASHIDDeviceBrowser ()
 @property (nonatomic,assign) BOOL scanned;
 @property (nonatomic,copy) CASDeviceBrowserCallback callback;
+- (void)deviceAdded:(IOHIDDeviceRef)device;
+- (void)deviceRemoved:(IOHIDDeviceRef)device;
 @end
 
 @implementation CASHIDDeviceBrowser {
-    NSArray* _devices;
+    CFRunLoopRef _runLoop;
+    NSMutableArray* _devices;
     IOHIDManagerRef _hidManager;
 }
 
 @synthesize deviceRemoved;
 
-// ---------------------------------
-// used to sort the CFDevice array after copying it from the (unordered) (CF)set.
-// we compare based on the location ID's since they're consistant (across boots & launches).
-//
-static CFComparisonResult CFDeviceArrayComparatorFunction(const void *val1, const void *val2, void *context) {
-#pragma unused( context )
-	CFComparisonResult result = kCFCompareEqualTo;
-	
-	long loc1 = IOHIDDevice_GetLocationID( (IOHIDDeviceRef) val1 );
-	long loc2 = IOHIDDevice_GetLocationID( (IOHIDDeviceRef) val2 );
-	if ( loc1 < loc2 ) {
-		result = kCFCompareLessThan;
-	} else if ( loc1 > loc2 ) {
-		result = kCFCompareGreaterThan;
-	}
-	
-	return (result);
-}   // CFDeviceArrayComparatorFunction
+static void CASIOHIDDeviceRemovedCallback (void *                  context,
+                                           IOReturn                result,
+                                           void *                  sender,
+                                           IOHIDDeviceRef          device) {
+    
+    CASHIDDeviceBrowser* browser = (__bridge CASHIDDeviceBrowser*)context;
+    
+    [browser deviceRemoved:device];
+}
+
+static void CASIOHIDDeviceMatchedCallback (void *                  context,
+                                           IOReturn                result,
+                                           void *                  sender,
+                                           IOHIDDeviceRef          device) {
+    
+    CASHIDDeviceBrowser* browser = (__bridge CASHIDDeviceBrowser*)context;
+    
+    [browser deviceAdded:device];
+}
+
+- (void)dealloc
+{
+    if (_hidManager && _runLoop){
+        IOHIDManagerUnscheduleFromRunLoop(_hidManager,_runLoop,kCFRunLoopCommonModes);
+    }
+}
+
+- (void)invokeCallback:(CASDeviceBrowserCallback)callback withDevice:(IOHIDDeviceRef)device {
+    
+    NSParameterAssert(device);
+    NSParameterAssert(callback);
+
+    const long location = IOHIDDevice_GetLocationID(device);
+    NSString* const transport = (__bridge NSString*)IOHIDDevice_GetTransport(device);
+    if (transport){
+        
+        const long vendor = IOHIDDevice_GetVendorID(device);
+        const long product = IOHIDDevice_GetProductID(device);
+        
+        NSString* path = [NSString stringWithFormat:@"hid://%@/%ld",transport,location];
+        
+        NSDictionary* properties = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [NSNumber numberWithLong:vendor],@"idVendor",
+                                    [NSNumber numberWithLong:product],@"idProduct",
+                                    nil];
+        
+        NSLog(@"%@: %@",path,properties);
+        callback(device,path,properties);
+    }
+}
+
+- (void)deviceAdded:(IOHIDDeviceRef)device {
+    
+    NSLog(@"HID device added: %@",device);
+    
+    if (!_devices){
+        _devices = [[NSMutableArray alloc] initWithCapacity:10];
+    }
+    [_devices addObject:(__bridge id)(device)];
+    
+    if (self.callback){
+        [self invokeCallback:self.callback withDevice:device];
+    }
+}
+
+- (void)deviceRemoved:(IOHIDDeviceRef)device {
+    
+    NSLog(@"HID device removed: %@",device);
+
+    if (self.deviceRemoved){
+        [self invokeCallback:self.deviceRemoved withDevice:device];
+    }
+
+    [_devices removeObject:(__bridge id)(device)];
+}
 
 - (void)scanForDevices {
 
@@ -75,40 +135,14 @@ static CFComparisonResult CFDeviceArrayComparatorFunction(const void *val1, cons
 		}
         else {
             
-			IOHIDManagerSetDeviceMatching( _hidManager, NULL );
-			NSSet* deviceSet = (__bridge NSSet*)IOHIDManagerCopyDevices( _hidManager );
-			if ( deviceSet ) {
-                
-                _devices = [[deviceSet allObjects] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                    return CFDeviceArrayComparatorFunction((__bridge const void *)(obj1),(__bridge const void *)(obj2),nil);
-                }];
-			}
-		}
-        
-        if (self.callback){
+            // register for device added/removed notifications
+            IOHIDManagerSetDeviceMatching( _hidManager, NULL );
+            IOHIDManagerRegisterDeviceRemovalCallback(_hidManager,CASIOHIDDeviceRemovedCallback,(__bridge void *)(self));
+            IOHIDManagerRegisterDeviceMatchingCallback(_hidManager,CASIOHIDDeviceMatchedCallback,(__bridge void *)(self));
             
-            for (id device in _devices){
-                
-                IOHIDDeviceRef deviceRef = (__bridge IOHIDDeviceRef)device;
-
-                const long location = IOHIDDevice_GetLocationID(deviceRef);
-                NSString* const transport = (__bridge NSString*)IOHIDDevice_GetTransport(deviceRef);
-                if (transport){
-                    
-                    const long vendor = IOHIDDevice_GetVendorID(deviceRef);
-                    const long product = IOHIDDevice_GetProductID(deviceRef);
-
-                    NSString* path = [NSString stringWithFormat:@"hid://%@/%ld",transport,location];
-                    
-                    NSDictionary* properties = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                [NSNumber numberWithLong:vendor],@"idVendor",
-                                                [NSNumber numberWithLong:product],@"idProduct",
-                                                nil];
-                    
-                    self.callback((__bridge void *)(device),path,properties);
-                }
-            }
-        }
+            _runLoop = CFRunLoopGetCurrent();
+            IOHIDManagerScheduleWithRunLoop(_hidManager,_runLoop,kCFRunLoopCommonModes);
+		}
 	}
 }
 
