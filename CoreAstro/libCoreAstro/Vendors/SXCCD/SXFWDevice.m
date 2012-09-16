@@ -27,6 +27,8 @@
 #import "CASIOTransport.h"
 #import "CASIOCommand.h"
 
+#pragma mark Commands
+
 @interface SXFWIOCommand : CASIOCommand
 @end
 
@@ -79,7 +81,7 @@
     uint8_t buffer[2];
     if ([data length] == sizeof(buffer)){
         [data getBytes:buffer length:sizeof(buffer)];
-        _index = buffer[0] - 1;
+        _index = buffer[0];
         _count = buffer[1];
     }
     return nil;
@@ -94,7 +96,7 @@
 @implementation SXFWIOSetFilterIndexCommand
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[2] = {0x80 | (self.index + 1), 0 };
+    uint8_t buffer[2] = {0x80 | self.index, 0 };
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -114,12 +116,20 @@
 
 @implementation SXFWDevice {
     BOOL _connected;
-    BOOL _calibrated;
     NSInteger _filterCount;
     NSInteger _currentFilter;
 }
 
 #pragma mark - Device
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _currentFilter = NSNotFound;
+    }
+    return self;
+}
 
 - (CASDeviceType)type {
     return kCASDeviceTypeFilterWheel;
@@ -133,6 +143,24 @@
     return @"Starlight Xpress";
 }
 
+- (void)_getCountUntilCalibrated {
+    
+    [self getFilterCount:^(NSError* error, NSInteger count) {
+        
+        if (error){
+            _connected = NO;
+        }
+        else{
+            if (count){
+                _filterCount = count;
+            }
+            else {
+                [self _getCountUntilCalibrated];
+            }
+        }
+    }];
+}
+
 - (void)connect:(void (^)(NSError*))block {
     
     if (_connected){
@@ -141,26 +169,15 @@
         }
     }
     else {
-        
         _connected = YES;
-        [self getFilterIndex:^(NSError* error, NSInteger index, NSInteger count) {
-            
-            if (!error){
-                _calibrated = YES;
-                _filterCount = count;
-                _currentFilter = index;
-            }
-            if (block){
-                block(error);
-            }
-        }];
+        [self _getCountUntilCalibrated];
     }
 }
 
 #pragma mark - Properties
 
 - (NSInteger) filterCount {
-    return _calibrated ? _filterCount : 0;
+    return _filterCount;
 }
 
 - (void)setCurrentFilter:(NSInteger)currentFilter {
@@ -173,6 +190,18 @@
 }
 
 #pragma mark - Commands
+
+- (void)getFilterCount:(void (^)(NSError*,NSInteger count))block {
+    
+    SXFWIOGetFilterCountCommand* getCount = [[SXFWIOGetFilterCountCommand alloc] init];
+    
+    [self.transport submit:getCount block:^(NSError* error){
+        
+        if (block){
+            block(error,getCount.count);
+        }
+    }];
+}
 
 - (void)getFilterIndex:(void (^)(NSError*,NSInteger index,NSInteger count))block {
     
