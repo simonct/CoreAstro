@@ -35,7 +35,7 @@ typedef enum {
     kCASGuiderDirection_DecMinus
 } CASGuiderDirection;
 
-- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*,CASGuiderDirection))block;
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
 
 @end
 

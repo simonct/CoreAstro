@@ -212,8 +212,19 @@ enum {
 
 #pragma mark Guider
 
-- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*,CASGuiderDirection))block {
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block {
+    
     NSLog(@"pulse: %d duration: %ld",direction,durationMS);
+
+    self.guideDirection = direction;
+    
+    const double delayInSeconds = durationMS/1000.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        
+        // check still connected ?
+        self.guideDirection = kCASGuiderDirection_None;
+    });
 }
 
 #pragma mark HID Transport
