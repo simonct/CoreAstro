@@ -161,7 +161,14 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
 }
 
 - (CASIOTransport*)createTransportWithDevice:(CASDevice*)device {
-    return [[CASIOHIDTransport alloc] initWithDeviceRef:(IOHIDDeviceRef)device.device];
+    CASIOHIDTransport* transport = [[CASIOHIDTransport alloc] initWithDeviceRef:(IOHIDDeviceRef)device.device];
+    if ([device conformsToProtocol:@protocol(CASIOHIDTransportDelegate)]){
+        transport.delegate = (id<CASIOHIDTransportDelegate>)device;
+    }
+    else {
+        NSLog(@"CASHIDDeviceBrowser: device doesn't conform to CASIOHIDTransportDelegate");
+    }
+    return transport;
 }
 
 @end

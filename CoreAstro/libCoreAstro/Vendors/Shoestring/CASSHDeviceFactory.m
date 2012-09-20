@@ -24,6 +24,7 @@
 //
 
 #import "CASSHDeviceFactory.h"
+#import "CASSHGPUSBDevice.h"
 
 @interface CASSHDeviceFactory ()
 @end
@@ -57,7 +58,9 @@
                 
                 // GPUSB
             case 0x9020: {
-                NSLog(@"CASSHDeviceFactory: recognised GPUSB");
+                CASSHGPUSBDevice* gpusb = [[CASSHGPUSBDevice alloc] init];
+                gpusb.device = dev;
+                result = gpusb;
             }
                 break;
         }

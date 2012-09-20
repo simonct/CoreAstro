@@ -32,6 +32,25 @@
 @implementation CASIOHIDTransport {
     BOOL _open;
     IOHIDDeviceRef _device;
+    NSMutableData* _inputBuffer;
+}
+
+static void CASIOHIDReportCallback (void *                  context,
+                                    IOReturn                result,
+                                    void *                  sender,
+                                    IOHIDReportType         type,
+                                    uint32_t                reportID,
+                                    uint8_t *               report,
+                                    CFIndex                 reportLength) {
+    
+//    NSLog(@"CASIOHIDReportCallback: %d %d (%x)",reportID,type,*report);
+    
+    CASIOHIDTransport* transport = (__bridge CASIOHIDTransport*)context;
+    
+    if (type == kIOHIDReportTypeInput){
+        
+        [transport.delegate receivedInputReport:[NSData dataWithBytesNoCopy:report length:reportLength freeWhenDone:NO]];
+    }
 }
 
 - (id)initWithDeviceRef:(IOHIDDeviceRef)device {
@@ -53,7 +72,27 @@
             NSLog(@"IOHIDDeviceOpen: %d",result);
         }
         else {
-            _open = YES;
+            
+            const long size = IOHIDDevice_GetMaxInputReportSize(_device);
+            if (size < 1){
+                NSLog(@"IOHIDDevice_GetMaxInputReportSize: %ld",size);
+            }
+            else {
+                
+                _inputBuffer = [NSMutableData dataWithLength:size];
+                
+                IOHIDDeviceScheduleWithRunLoop(_device,
+                                               CFRunLoopGetCurrent(),
+                                               CFSTR("CASIOHIDTransport"));
+                
+                IOHIDDeviceRegisterInputReportCallback(_device,
+                                                       [_inputBuffer mutableBytes],
+                                                       [_inputBuffer length],
+                                                       CASIOHIDReportCallback,
+                                                       (__bridge void *)(self));
+                
+                _open = YES;
+            }
         }
     }
     
@@ -85,29 +124,7 @@
 }
 
 - (NSError*)receive:(NSMutableData*)data {
-    
-    NSError* error = nil;
-    
-    if ([data length]){
-        
-        IOReturn result = [self _openDevice];
-        if (result == kIOReturnSuccess){
-            
-            // hopefully sufficient for the devices we're dealing with but if not might have to use a local run loop and IOHIDDeviceGetReportWithCallback
-            CFIndex length = [data length];
-            result = IOHIDDeviceGetReport(_device,
-                                          kIOHIDReportTypeInput,
-                                          0,
-                                          [data mutableBytes],
-                                          &length);
-        }
-        
-        if (result != kIOReturnSuccess){
-            error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
-        }
-    }
-    
-    return error;
+    return nil;
 }
 
 @end

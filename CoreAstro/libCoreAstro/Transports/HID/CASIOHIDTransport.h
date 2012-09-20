@@ -27,7 +27,13 @@
 #import "CASIOTransport.h"
 #import <IOKit/hid/IOHIDLib.h>
 
+@protocol CASIOHIDTransportDelegate <NSObject>
+- (void)receivedInputReport:(NSData*)data;
+@end
+
 @interface CASIOHIDTransport : CASIOTransport
+
+@property (nonatomic,weak) id<CASIOHIDTransportDelegate> delegate;
 
 - (id)initWithDeviceRef:(IOHIDDeviceRef)device;
 

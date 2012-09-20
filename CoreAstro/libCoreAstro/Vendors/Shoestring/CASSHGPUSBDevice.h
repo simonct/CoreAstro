@@ -25,17 +25,25 @@
 
 #import "CASDevice.h"
 
-@interface CASSHGPUSBDevice : CASDevice
+@protocol CASGuider <NSObject>
 
 typedef enum {
-    kCASSHGPUSB_None = 0,
-    kCASSHGPUSB_RAPlus,
-    kCASSHGPUSB_RAMinus,
-    kCASSHGPUSB_DecPlus,
-    kCASSHGPUSB_DecMinus
-} CASSHGPUSBDeviceDirection;
+    kCASGuiderDirection_None = 0,
+    kCASGuiderDirection_RAPlus,
+    kCASGuiderDirection_RAMinus,
+    kCASGuiderDirection_DecPlus,
+    kCASGuiderDirection_DecMinus
+} CASGuiderDirection;
 
-- (void)pulse:(CASSHGPUSBDeviceDirection)direction block:(void (^)(NSError*,CASSHGPUSBDeviceDirection))block;
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*,CASGuiderDirection))block;
+
+@end
+
+@interface CASSHGPUSBDevice : CASDevice<CASGuider>
+
+@property (nonatomic,assign) BOOL ledOn;
+@property (nonatomic,assign) BOOL ledRed;
+@property (nonatomic,assign) CASGuiderDirection guideDirection; // assuming only one is active at a time ?
 
 @end
 
