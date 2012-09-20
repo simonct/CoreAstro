@@ -36,11 +36,11 @@
 @implementation CASSHGPUSBIOCommand
 @end
 
-@interface CASSHGPUSBIOPulseMountCommand : CASSHGPUSBIOCommand
+@interface CASSHGPUSBIOGuideCommand : CASSHGPUSBIOCommand
 @property (nonatomic,assign) CASGuiderDirection direction;
 @end
 
-@implementation CASSHGPUSBIOPulseMountCommand
+@implementation CASSHGPUSBIOGuideCommand
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer = 0;
@@ -65,25 +65,21 @@
 
 @end
 
-@interface CASSHGPUSBIOLEDCommandCommand : CASSHGPUSBIOCommand
+@interface CASSHGPUSBIOLEDCommand : CASSHGPUSBIOCommand
 @property (nonatomic,assign) BOOL on;
 @property (nonatomic,assign) BOOL red;
 @end
 
-@implementation CASSHGPUSBIOLEDCommandCommand
+@implementation CASSHGPUSBIOLEDCommand
 
 - (NSData*)toDataRepresentation {
-    
     uint8_t buffer = 0;
-
     if (self.on){
         buffer |= (1 << 5);
     }
-    
     if (self.red){
         buffer |= (1 << 4);
     }
-
     return [NSData dataWithBytes:&buffer length:sizeof(buffer)];
 }
 
@@ -133,7 +129,7 @@
 
 - (void)setLedOn:(BOOL)ledOn {
     
-    CASSHGPUSBIOLEDCommandCommand* led = [[CASSHGPUSBIOLEDCommandCommand alloc] init];
+    CASSHGPUSBIOLEDCommand* led = [[CASSHGPUSBIOLEDCommand alloc] init];
     
     led.on = ledOn;
     
@@ -151,7 +147,7 @@
 
 - (void)setLedRed:(BOOL)ledRed {
     
-    CASSHGPUSBIOLEDCommandCommand* led = [[CASSHGPUSBIOLEDCommandCommand alloc] init];
+    CASSHGPUSBIOLEDCommand* led = [[CASSHGPUSBIOLEDCommand alloc] init];
     
     led.on = self.ledOn;
     led.red = ledRed;
@@ -182,7 +178,7 @@
 
 - (void)setGuideDirection:(CASGuiderDirection)guideDirection {
     
-    CASSHGPUSBIOPulseMountCommand* pulse = [[CASSHGPUSBIOPulseMountCommand alloc] init];
+    CASSHGPUSBIOGuideCommand* pulse = [[CASSHGPUSBIOGuideCommand alloc] init];
     
     pulse.direction = guideDirection;
     
