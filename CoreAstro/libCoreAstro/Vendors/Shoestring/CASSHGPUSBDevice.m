@@ -28,6 +28,15 @@
 #import "CASIOCommand.h"
 #import "CASIOHIDTransport.h"
 
+enum {
+    kCASSHGPUSBDevice_RAMinusMask = (1 << 0),
+    kCASSHGPUSBDevice_RAPlusMask = (1 << 1),
+    kCASSHGPUSBDevice_DecMinusMask = (1 << 2),
+    kCASSHGPUSBDevice_DecPlusMask = (1 << 3),
+    kCASSHGPUSBDevice_LedRedMask = (1 << 4),
+    kCASSHGPUSBDevice_LedOnMask = (1 << 5),
+};
+
 #pragma mark Commands
 
 @interface CASSHGPUSBIOCommand : CASIOCommand
@@ -36,50 +45,44 @@
 @implementation CASSHGPUSBIOCommand
 @end
 
-@interface CASSHGPUSBIOGuideCommand : CASSHGPUSBIOCommand
-@property (nonatomic,assign) CASGuiderDirection direction;
+@interface CASSHGPUSBIOSetStateCommand : CASSHGPUSBIOCommand
+@property (nonatomic,assign) BOOL ledOn;
+@property (nonatomic,assign) BOOL ledRed;
+@property (nonatomic,assign) CASGuiderDirection guideDirection;
 @end
 
-@implementation CASSHGPUSBIOGuideCommand
+@implementation CASSHGPUSBIOSetStateCommand
 
 - (NSData*)toDataRepresentation {
+    
     uint8_t buffer = 0;
-    switch (self.direction) {
+    
+    // set guide state
+    switch (self.guideDirection) {
         case kCASGuiderDirection_RAPlus:
-            buffer |= (1 << 1);
+            buffer |= kCASSHGPUSBDevice_RAPlusMask;
             break;
         case kCASGuiderDirection_RAMinus:
-            buffer |= (1 << 0);
+            buffer |= kCASSHGPUSBDevice_RAMinusMask;
             break;
         case kCASGuiderDirection_DecPlus:
-            buffer |= (1 << 4);
+            buffer |= kCASSHGPUSBDevice_DecPlusMask;
             break;
         case kCASGuiderDirection_DecMinus:
-            buffer |= (1 << 3);
+            buffer |= kCASSHGPUSBDevice_DecMinusMask;
             break;
         default:
             break;
     }
-    return [NSData dataWithBytes:&buffer length:sizeof(buffer)];
-}
-
-@end
-
-@interface CASSHGPUSBIOLEDCommand : CASSHGPUSBIOCommand
-@property (nonatomic,assign) BOOL on;
-@property (nonatomic,assign) BOOL red;
-@end
-
-@implementation CASSHGPUSBIOLEDCommand
-
-- (NSData*)toDataRepresentation {
-    uint8_t buffer = 0;
-    if (self.on){
-        buffer |= (1 << 5);
+    
+    // set led state
+    if (self.ledOn){
+        buffer |= kCASSHGPUSBDevice_LedOnMask;
     }
-    if (self.red){
-        buffer |= (1 << 4);
+    if (self.ledRed){
+        buffer |= kCASSHGPUSBDevice_LedRedMask;
     }
+    
     return [NSData dataWithBytes:&buffer length:sizeof(buffer)];
 }
 
@@ -123,17 +126,28 @@
     }
 }
 
+- (CASSHGPUSBIOSetStateCommand*)createStateCommand {
+    
+    CASSHGPUSBIOSetStateCommand* state = [[CASSHGPUSBIOSetStateCommand alloc] init];
+    
+    state.ledOn = self.ledOn;
+    state.ledRed = self.ledRed;
+    state.guideDirection = self.guideDirection;
+    
+    return state;
+}
+
 - (BOOL)ledOn {
-    return (_state & (1 << 5)) != 0;
+    return (_state & kCASSHGPUSBDevice_LedOnMask) != 0;
 }
 
 - (void)setLedOn:(BOOL)ledOn {
     
-    CASSHGPUSBIOLEDCommand* led = [[CASSHGPUSBIOLEDCommand alloc] init];
+    CASSHGPUSBIOSetStateCommand* state = [self createStateCommand];
     
-    led.on = ledOn;
-    
-    [self.transport submit:led block:^(NSError* error){
+    state.ledOn = ledOn;
+
+    [self.transport submit:state block:^(NSError* error){
         
         if (error){
             NSLog(@"setLedOn: %@",error);
@@ -142,17 +156,16 @@
 }
 
 - (BOOL)ledRed {
-    return (_state & (1 << 4)) != 0;
+    return (_state & kCASSHGPUSBDevice_LedRedMask) != 0;
 }
 
 - (void)setLedRed:(BOOL)ledRed {
     
-    CASSHGPUSBIOLEDCommand* led = [[CASSHGPUSBIOLEDCommand alloc] init];
+    CASSHGPUSBIOSetStateCommand* state = [self createStateCommand];
     
-    led.on = self.ledOn;
-    led.red = ledRed;
+    state.ledRed = ledRed;
     
-    [self.transport submit:led block:^(NSError* error){
+    [self.transport submit:state block:^(NSError* error){
         
         if (error){
             NSLog(@"setLedRed: %@",error);
@@ -161,28 +174,28 @@
 }
 
 - (CASGuiderDirection)guideDirection {
-    if (_state & (1 << 1)){
+    if (_state & kCASSHGPUSBDevice_RAPlusMask){
         return kCASGuiderDirection_RAPlus;
     }
-    else if (_state & (1 << 0)){
+    else if (_state & kCASSHGPUSBDevice_RAMinusMask){
         return kCASGuiderDirection_RAMinus;
     }
-    else if (_state & (1 << 4)){
+    else if (_state & kCASSHGPUSBDevice_DecPlusMask){
         return kCASGuiderDirection_DecPlus;
     }
-    else if (_state & (1 << 3)){
+    else if (_state & kCASSHGPUSBDevice_DecMinusMask){
         return kCASGuiderDirection_DecMinus;
     }
     return kCASGuiderDirection_None;
 }
 
 - (void)setGuideDirection:(CASGuiderDirection)guideDirection {
+        
+    CASSHGPUSBIOSetStateCommand* state = [self createStateCommand];
     
-    CASSHGPUSBIOGuideCommand* pulse = [[CASSHGPUSBIOGuideCommand alloc] init];
+    state.guideDirection = guideDirection;
     
-    pulse.direction = guideDirection;
-    
-    [self.transport submit:pulse block:^(NSError* error){
+    [self.transport submit:state block:^(NSError* error){
         
         if (error){
             NSLog(@"setGuideDirection: %@",error);
