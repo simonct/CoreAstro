@@ -25,6 +25,7 @@
 //  This is the base class of all CoreAstro devices. Make this a protocol ?
 
 #import <Foundation/Foundation.h>
+#import <AppKit/NSImage.h>
 
 typedef enum {
     kCASDeviceTypeNone = 0,
