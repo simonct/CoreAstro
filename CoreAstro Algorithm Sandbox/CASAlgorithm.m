@@ -36,7 +36,10 @@
 - (void) executeWithDictionary: (NSDictionary*) dataD
                completionBlock: (void(^)(NSDictionary*)) block;
 {
-    NSLog(@"%s : block is nil? %@ : dataD = %@",
+    NSLog(@"%s: This is the default implementation of this method, which executes the block "
+          "passing an empty dictionary. It's most likely NOT what you meant to do...", __FUNCTION__);
+
+    NSLog(@"%s : block == nil? %@ : dataD = %@",
           __FUNCTION__, (block ? @"NO" : @"YES"), dataD);
 
     if (block)
