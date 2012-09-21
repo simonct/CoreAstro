@@ -1,0 +1,624 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F40D8C461608FF4700723E16 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40D8C451608FF4700723E16 /* Cocoa.framework */; };
+		F40D8C501608FF4700723E16 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C4E1608FF4700723E16 /* InfoPlist.strings */; };
+		F40D8C521608FF4700723E16 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C511608FF4700723E16 /* main.m */; };
+		F40D8C561608FF4700723E16 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C541608FF4700723E16 /* Credits.rtf */; };
+		F40D8C591608FF4700723E16 /* MKOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C581608FF4700723E16 /* MKOAppDelegate.m */; };
+		F40D8C5C1608FF4700723E16 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C5A1608FF4700723E16 /* MainMenu.xib */; };
+		F40D8C641608FF4700723E16 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40D8C631608FF4700723E16 /* SenTestingKit.framework */; };
+		F40D8C651608FF4700723E16 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40D8C451608FF4700723E16 /* Cocoa.framework */; };
+		F40D8C6D1608FF4700723E16 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C6B1608FF4700723E16 /* InfoPlist.strings */; };
+		F40D8C701608FF4700723E16 /* gpusb_testTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C6F1608FF4700723E16 /* gpusb_testTests.m */; };
+		F40D8C7B1608FF5C00723E16 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C7A1608FF5C00723E16 /* CASSHGPUSBDevice.m */; };
+		F40D8C7D1608FF8E00723E16 /* CASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C7C1608FF8E00723E16 /* CASDevice.m */; };
+		F40D8C831608FFB100723E16 /* CASIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C801608FFB100723E16 /* CASIOCommand.m */; };
+		F40D8C841608FFB100723E16 /* CASIOTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C821608FFB100723E16 /* CASIOTransport.m */; };
+		F40D8C891608FFD600723E16 /* CASIOHIDTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C861608FFD600723E16 /* CASIOHIDTransport.m */; };
+		F40D8C8A1608FFD600723E16 /* CASHIDDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C881608FFD600723E16 /* CASHIDDeviceBrowser.m */; };
+		F40D8CAA1608FFF300723E16 /* HID_cookie_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C8C1608FFF300723E16 /* HID_cookie_strings.plist */; };
+		F40D8CAB1608FFF300723E16 /* HID_device_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C8E1608FFF300723E16 /* HID_device_usage_strings.plist */; };
+		F40D8CAC1608FFF300723E16 /* HID_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C901608FFF300723E16 /* HID_usage_strings.plist */; };
+		F40D8CAD1608FFF300723E16 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C921608FFF300723E16 /* InfoPlist.strings */; };
+		F40D8CAE1608FFF300723E16 /* HID_Config_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C981608FFF300723E16 /* HID_Config_Utilities.c */; };
+		F40D8CAF1608FFF300723E16 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C991608FFF300723E16 /* HID_Error_Handler.c */; };
+		F40D8CB01608FFF300723E16 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C9A1608FFF300723E16 /* HID_Name_Lookup.c */; };
+		F40D8CB11608FFF300723E16 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C9B1608FFF300723E16 /* HID_Queue_Utilities.c */; };
+		F40D8CB21608FFF300723E16 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8C9C1608FFF300723E16 /* HID_Utilities.c */; };
+		F40D8CB31608FFF300723E16 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D8C9E1608FFF300723E16 /* Info.plist */; };
+		F40D8CB41608FFF300723E16 /* ImmrHIDUtilAddOn.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8CA01608FFF300723E16 /* ImmrHIDUtilAddOn.c */; };
+		F40D8CB51608FFF300723E16 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8CA21608FFF300723E16 /* IOHIDDevice_.c */; };
+		F40D8CB61608FFF300723E16 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D8CA41608FFF300723E16 /* IOHIDElement_.c */; };
+		F40D8CBF1609000500723E16 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40D8CBE1609000500723E16 /* IOKit.framework */; };
+		F40D8CC21609009D00723E16 /* CASSHDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D8CC11609009D00723E16 /* CASSHDeviceFactory.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F40D8C661608FF4700723E16 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F40D8C381608FF4700723E16 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F40D8C401608FF4700723E16;
+			remoteInfo = "gpusb-test";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F40D8C411608FF4700723E16 /* gpusb-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "gpusb-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40D8C451608FF4700723E16 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F40D8C481608FF4700723E16 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F40D8C491608FF4700723E16 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F40D8C4A1608FF4700723E16 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F40D8C4D1608FF4700723E16 /* gpusb-test-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "gpusb-test-Info.plist"; sourceTree = "<group>"; };
+		F40D8C4F1608FF4700723E16 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F40D8C511608FF4700723E16 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F40D8C531608FF4700723E16 /* gpusb-test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "gpusb-test-Prefix.pch"; sourceTree = "<group>"; };
+		F40D8C551608FF4700723E16 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F40D8C571608FF4700723E16 /* MKOAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MKOAppDelegate.h; sourceTree = "<group>"; };
+		F40D8C581608FF4700723E16 /* MKOAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MKOAppDelegate.m; sourceTree = "<group>"; };
+		F40D8C5B1608FF4700723E16 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F40D8C621608FF4700723E16 /* gpusb-testTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "gpusb-testTests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40D8C631608FF4700723E16 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		F40D8C6A1608FF4700723E16 /* gpusb-testTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "gpusb-testTests-Info.plist"; sourceTree = "<group>"; };
+		F40D8C6C1608FF4700723E16 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F40D8C6E1608FF4700723E16 /* gpusb_testTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gpusb_testTests.h; sourceTree = "<group>"; };
+		F40D8C6F1608FF4700723E16 /* gpusb_testTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gpusb_testTests.m; sourceTree = "<group>"; };
+		F40D8C791608FF5C00723E16 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHGPUSBDevice.h; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.h; sourceTree = "<group>"; };
+		F40D8C7A1608FF5C00723E16 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHGPUSBDevice.m; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.m; sourceTree = "<group>"; };
+		F40D8C7C1608FF8E00723E16 /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASDevice.m; path = ../../../CoreAstro/libCoreAstro/Core/CASDevice.m; sourceTree = "<group>"; };
+		F40D8C7E1608FF9400723E16 /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASDevice.h; path = ../../../CoreAstro/libCoreAstro/Core/CASDevice.h; sourceTree = "<group>"; };
+		F40D8C7F1608FFB100723E16 /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOCommand.h; path = ../../../CoreAstro/libCoreAstro/Core/CASIOCommand.h; sourceTree = "<group>"; };
+		F40D8C801608FFB100723E16 /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOCommand.m; path = ../../../CoreAstro/libCoreAstro/Core/CASIOCommand.m; sourceTree = "<group>"; };
+		F40D8C811608FFB100723E16 /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOTransport.h; path = ../../../CoreAstro/libCoreAstro/Core/CASIOTransport.h; sourceTree = "<group>"; };
+		F40D8C821608FFB100723E16 /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOTransport.m; path = ../../../CoreAstro/libCoreAstro/Core/CASIOTransport.m; sourceTree = "<group>"; };
+		F40D8C851608FFD600723E16 /* CASIOHIDTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOHIDTransport.h; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASIOHIDTransport.h; sourceTree = "<group>"; };
+		F40D8C861608FFD600723E16 /* CASIOHIDTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOHIDTransport.m; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASIOHIDTransport.m; sourceTree = "<group>"; };
+		F40D8C871608FFD600723E16 /* CASHIDDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASHIDDeviceBrowser.h; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASHIDDeviceBrowser.h; sourceTree = "<group>"; };
+		F40D8C881608FFD600723E16 /* CASHIDDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASHIDDeviceBrowser.m; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASHIDDeviceBrowser.m; sourceTree = "<group>"; };
+		F40D8C8D1608FFF300723E16 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_cookie_strings.plist; sourceTree = "<group>"; };
+		F40D8C8F1608FFF300723E16 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_device_usage_strings.plist; sourceTree = "<group>"; };
+		F40D8C911608FFF300723E16 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_usage_strings.plist; sourceTree = "<group>"; };
+		F40D8C931608FFF300723E16 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F40D8C971608FFF300723E16 /* HID Utilities_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HID Utilities_Prefix.pch"; sourceTree = "<group>"; };
+		F40D8C981608FFF300723E16 /* HID_Config_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Config_Utilities.c; sourceTree = "<group>"; };
+		F40D8C991608FFF300723E16 /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Error_Handler.c; sourceTree = "<group>"; };
+		F40D8C9A1608FFF300723E16 /* HID_Name_Lookup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Name_Lookup.c; sourceTree = "<group>"; };
+		F40D8C9B1608FFF300723E16 /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
+		F40D8C9C1608FFF300723E16 /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
+		F40D8C9D1608FFF300723E16 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
+		F40D8C9E1608FFF300723E16 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F40D8CA01608FFF300723E16 /* ImmrHIDUtilAddOn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ImmrHIDUtilAddOn.c; sourceTree = "<group>"; };
+		F40D8CA11608FFF300723E16 /* ImmrHIDUtilAddOn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmrHIDUtilAddOn.h; sourceTree = "<group>"; };
+		F40D8CA21608FFF300723E16 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		F40D8CA31608FFF300723E16 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		F40D8CA41608FFF300723E16 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		F40D8CA51608FFF300723E16 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
+		F40D8CA61608FFF300723E16 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
+		F40D8CBE1609000500723E16 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		F40D8CC01609009D00723E16 /* CASSHDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHDeviceFactory.h; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.h; sourceTree = "<group>"; };
+		F40D8CC11609009D00723E16 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F40D8C3E1608FF4700723E16 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8CBF1609000500723E16 /* IOKit.framework in Frameworks */,
+				F40D8C461608FF4700723E16 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D8C5E1608FF4700723E16 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8C641608FF4700723E16 /* SenTestingKit.framework in Frameworks */,
+				F40D8C651608FF4700723E16 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F40D8C361608FF4700723E16 = {
+			isa = PBXGroup;
+			children = (
+				F40D8C4B1608FF4700723E16 /* gpusb-test */,
+				F40D8C681608FF4700723E16 /* gpusb-testTests */,
+				F40D8C441608FF4700723E16 /* Frameworks */,
+				F40D8C421608FF4700723E16 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F40D8C421608FF4700723E16 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C411608FF4700723E16 /* gpusb-test.app */,
+				F40D8C621608FF4700723E16 /* gpusb-testTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F40D8C441608FF4700723E16 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8CBE1609000500723E16 /* IOKit.framework */,
+				F40D8C451608FF4700723E16 /* Cocoa.framework */,
+				F40D8C631608FF4700723E16 /* SenTestingKit.framework */,
+				F40D8C471608FF4700723E16 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F40D8C471608FF4700723E16 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C481608FF4700723E16 /* AppKit.framework */,
+				F40D8C491608FF4700723E16 /* CoreData.framework */,
+				F40D8C4A1608FF4700723E16 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F40D8C4B1608FF4700723E16 /* gpusb-test */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C571608FF4700723E16 /* MKOAppDelegate.h */,
+				F40D8C581608FF4700723E16 /* MKOAppDelegate.m */,
+				F40D8C5A1608FF4700723E16 /* MainMenu.xib */,
+				F40D8C7E1608FF9400723E16 /* CASDevice.h */,
+				F40D8C7C1608FF8E00723E16 /* CASDevice.m */,
+				F40D8C7F1608FFB100723E16 /* CASIOCommand.h */,
+				F40D8C801608FFB100723E16 /* CASIOCommand.m */,
+				F40D8C811608FFB100723E16 /* CASIOTransport.h */,
+				F40D8C821608FFB100723E16 /* CASIOTransport.m */,
+				F40D8C791608FF5C00723E16 /* CASSHGPUSBDevice.h */,
+				F40D8C7A1608FF5C00723E16 /* CASSHGPUSBDevice.m */,
+				F40D8CC01609009D00723E16 /* CASSHDeviceFactory.h */,
+				F40D8CC11609009D00723E16 /* CASSHDeviceFactory.m */,
+				F40D8C851608FFD600723E16 /* CASIOHIDTransport.h */,
+				F40D8C861608FFD600723E16 /* CASIOHIDTransport.m */,
+				F40D8C871608FFD600723E16 /* CASHIDDeviceBrowser.h */,
+				F40D8C881608FFD600723E16 /* CASHIDDeviceBrowser.m */,
+				F40D8C8B1608FFF300723E16 /* HID_Utilities */,
+				F40D8C4C1608FF4700723E16 /* Supporting Files */,
+			);
+			path = "gpusb-test";
+			sourceTree = "<group>";
+		};
+		F40D8C4C1608FF4700723E16 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C4D1608FF4700723E16 /* gpusb-test-Info.plist */,
+				F40D8C4E1608FF4700723E16 /* InfoPlist.strings */,
+				F40D8C511608FF4700723E16 /* main.m */,
+				F40D8C531608FF4700723E16 /* gpusb-test-Prefix.pch */,
+				F40D8C541608FF4700723E16 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F40D8C681608FF4700723E16 /* gpusb-testTests */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C6E1608FF4700723E16 /* gpusb_testTests.h */,
+				F40D8C6F1608FF4700723E16 /* gpusb_testTests.m */,
+				F40D8C691608FF4700723E16 /* Supporting Files */,
+			);
+			path = "gpusb-testTests";
+			sourceTree = "<group>";
+		};
+		F40D8C691608FF4700723E16 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C6A1608FF4700723E16 /* gpusb-testTests-Info.plist */,
+				F40D8C6B1608FF4700723E16 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F40D8C8B1608FFF300723E16 /* HID_Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8C8C1608FFF300723E16 /* HID_cookie_strings.plist */,
+				F40D8C8E1608FFF300723E16 /* HID_device_usage_strings.plist */,
+				F40D8C901608FFF300723E16 /* HID_usage_strings.plist */,
+				F40D8C921608FFF300723E16 /* InfoPlist.strings */,
+				F40D8C971608FFF300723E16 /* HID Utilities_Prefix.pch */,
+				F40D8C981608FFF300723E16 /* HID_Config_Utilities.c */,
+				F40D8C991608FFF300723E16 /* HID_Error_Handler.c */,
+				F40D8C9A1608FFF300723E16 /* HID_Name_Lookup.c */,
+				F40D8C9B1608FFF300723E16 /* HID_Queue_Utilities.c */,
+				F40D8C9C1608FFF300723E16 /* HID_Utilities.c */,
+				F40D8C9D1608FFF300723E16 /* HID_Utilities_External.h */,
+				F40D8C9E1608FFF300723E16 /* Info.plist */,
+				F40D8C9F1608FFF300723E16 /* IOHIDManager */,
+			);
+			name = HID_Utilities;
+			path = ../../../CoreAstro/libCoreAstro/Transports/HID/HID_Utilities;
+			sourceTree = "<group>";
+		};
+		F40D8C9F1608FFF300723E16 /* IOHIDManager */ = {
+			isa = PBXGroup;
+			children = (
+				F40D8CA01608FFF300723E16 /* ImmrHIDUtilAddOn.c */,
+				F40D8CA11608FFF300723E16 /* ImmrHIDUtilAddOn.h */,
+				F40D8CA21608FFF300723E16 /* IOHIDDevice_.c */,
+				F40D8CA31608FFF300723E16 /* IOHIDDevice_.h */,
+				F40D8CA41608FFF300723E16 /* IOHIDElement_.c */,
+				F40D8CA51608FFF300723E16 /* IOHIDElement_.h */,
+				F40D8CA61608FFF300723E16 /* IOHIDLib_.h */,
+			);
+			path = IOHIDManager;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F40D8C401608FF4700723E16 /* gpusb-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40D8C731608FF4700723E16 /* Build configuration list for PBXNativeTarget "gpusb-test" */;
+			buildPhases = (
+				F40D8C3D1608FF4700723E16 /* Sources */,
+				F40D8C3E1608FF4700723E16 /* Frameworks */,
+				F40D8C3F1608FF4700723E16 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "gpusb-test";
+			productName = "gpusb-test";
+			productReference = F40D8C411608FF4700723E16 /* gpusb-test.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F40D8C611608FF4700723E16 /* gpusb-testTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40D8C761608FF4700723E16 /* Build configuration list for PBXNativeTarget "gpusb-testTests" */;
+			buildPhases = (
+				F40D8C5D1608FF4700723E16 /* Sources */,
+				F40D8C5E1608FF4700723E16 /* Frameworks */,
+				F40D8C5F1608FF4700723E16 /* Resources */,
+				F40D8C601608FF4700723E16 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40D8C671608FF4700723E16 /* PBXTargetDependency */,
+			);
+			name = "gpusb-testTests";
+			productName = "gpusb-testTests";
+			productReference = F40D8C621608FF4700723E16 /* gpusb-testTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F40D8C381608FF4700723E16 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = MKO;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Simon Taylor";
+			};
+			buildConfigurationList = F40D8C3B1608FF4700723E16 /* Build configuration list for PBXProject "gpusb-test" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+			);
+			mainGroup = F40D8C361608FF4700723E16;
+			productRefGroup = F40D8C421608FF4700723E16 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F40D8C401608FF4700723E16 /* gpusb-test */,
+				F40D8C611608FF4700723E16 /* gpusb-testTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F40D8C3F1608FF4700723E16 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8C501608FF4700723E16 /* InfoPlist.strings in Resources */,
+				F40D8C561608FF4700723E16 /* Credits.rtf in Resources */,
+				F40D8C5C1608FF4700723E16 /* MainMenu.xib in Resources */,
+				F40D8CAA1608FFF300723E16 /* HID_cookie_strings.plist in Resources */,
+				F40D8CAB1608FFF300723E16 /* HID_device_usage_strings.plist in Resources */,
+				F40D8CAC1608FFF300723E16 /* HID_usage_strings.plist in Resources */,
+				F40D8CAD1608FFF300723E16 /* InfoPlist.strings in Resources */,
+				F40D8CB31608FFF300723E16 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D8C5F1608FF4700723E16 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8C6D1608FF4700723E16 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F40D8C601608FF4700723E16 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F40D8C3D1608FF4700723E16 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8C521608FF4700723E16 /* main.m in Sources */,
+				F40D8C591608FF4700723E16 /* MKOAppDelegate.m in Sources */,
+				F40D8C7B1608FF5C00723E16 /* CASSHGPUSBDevice.m in Sources */,
+				F40D8C7D1608FF8E00723E16 /* CASDevice.m in Sources */,
+				F40D8C831608FFB100723E16 /* CASIOCommand.m in Sources */,
+				F40D8C841608FFB100723E16 /* CASIOTransport.m in Sources */,
+				F40D8C891608FFD600723E16 /* CASIOHIDTransport.m in Sources */,
+				F40D8C8A1608FFD600723E16 /* CASHIDDeviceBrowser.m in Sources */,
+				F40D8CAE1608FFF300723E16 /* HID_Config_Utilities.c in Sources */,
+				F40D8CAF1608FFF300723E16 /* HID_Error_Handler.c in Sources */,
+				F40D8CB01608FFF300723E16 /* HID_Name_Lookup.c in Sources */,
+				F40D8CB11608FFF300723E16 /* HID_Queue_Utilities.c in Sources */,
+				F40D8CB21608FFF300723E16 /* HID_Utilities.c in Sources */,
+				F40D8CB41608FFF300723E16 /* ImmrHIDUtilAddOn.c in Sources */,
+				F40D8CB51608FFF300723E16 /* IOHIDDevice_.c in Sources */,
+				F40D8CB61608FFF300723E16 /* IOHIDElement_.c in Sources */,
+				F40D8CC21609009D00723E16 /* CASSHDeviceFactory.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D8C5D1608FF4700723E16 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D8C701608FF4700723E16 /* gpusb_testTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F40D8C671608FF4700723E16 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F40D8C401608FF4700723E16 /* gpusb-test */;
+			targetProxy = F40D8C661608FF4700723E16 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F40D8C4E1608FF4700723E16 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C4F1608FF4700723E16 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F40D8C541608FF4700723E16 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C551608FF4700723E16 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F40D8C5A1608FF4700723E16 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C5B1608FF4700723E16 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F40D8C6B1608FF4700723E16 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C6C1608FF4700723E16 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F40D8C8C1608FFF300723E16 /* HID_cookie_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C8D1608FFF300723E16 /* English */,
+			);
+			name = HID_cookie_strings.plist;
+			sourceTree = "<group>";
+		};
+		F40D8C8E1608FFF300723E16 /* HID_device_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C8F1608FFF300723E16 /* English */,
+			);
+			name = HID_device_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F40D8C901608FFF300723E16 /* HID_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C911608FFF300723E16 /* English */,
+			);
+			name = HID_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F40D8C921608FFF300723E16 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D8C931608FFF300723E16 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F40D8C711608FF4700723E16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F40D8C721608FF4700723E16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F40D8C741608FF4700723E16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "gpusb-test/gpusb-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = "/Users/simon/Documents/Projects/CoreAstro-github/CoreAstro/**";
+				INFOPLIST_FILE = "gpusb-test/gpusb-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F40D8C751608FF4700723E16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "gpusb-test/gpusb-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = "/Users/simon/Documents/Projects/CoreAstro-github/CoreAstro/**";
+				INFOPLIST_FILE = "gpusb-test/gpusb-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F40D8C771608FF4700723E16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/gpusb-test.app/Contents/MacOS/gpusb-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "gpusb-test/gpusb-test-Prefix.pch";
+				INFOPLIST_FILE = "gpusb-testTests/gpusb-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		F40D8C781608FF4700723E16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/gpusb-test.app/Contents/MacOS/gpusb-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "gpusb-test/gpusb-test-Prefix.pch";
+				INFOPLIST_FILE = "gpusb-testTests/gpusb-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F40D8C3B1608FF4700723E16 /* Build configuration list for PBXProject "gpusb-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40D8C711608FF4700723E16 /* Debug */,
+				F40D8C721608FF4700723E16 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F40D8C731608FF4700723E16 /* Build configuration list for PBXNativeTarget "gpusb-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40D8C741608FF4700723E16 /* Debug */,
+				F40D8C751608FF4700723E16 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		F40D8C761608FF4700723E16 /* Build configuration list for PBXNativeTarget "gpusb-testTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40D8C771608FF4700723E16 /* Debug */,
+				F40D8C781608FF4700723E16 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F40D8C381608FF4700723E16 /* Project object */;
+}
