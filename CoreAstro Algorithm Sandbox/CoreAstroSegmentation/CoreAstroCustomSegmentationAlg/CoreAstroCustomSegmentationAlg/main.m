@@ -23,7 +23,7 @@ int main(int argc, const char * argv[])
         if (argc != 2)
         {
             NSLog(@"This command line tool requires a single argument, a path to an exposure.");
-            return 0;
+            return -1;
         }
         NSString* path = [NSString stringWithCString: argv[1] encoding: NSASCIIStringEncoding];
         NSLog(@"Loading exposure at path:\r'%@'", path);
@@ -37,14 +37,13 @@ int main(int argc, const char * argv[])
         if (!readSuccess || error)
         {
             NSLog(@"Unable to load exposure at path:\n'%@'", path);
+            return -1;
         }
-        else
-        {
-            CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: @"CustomSegmAlg"];
-            [guider locateStars: exposure]; // ignoring the result because the implementation of
-                                            // -locateStars will return nil immediately and run
-                                            // itself in a background thread.
-        }
+
+        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: @"CustomSegmAlg"];
+        [guider locateStars: exposure]; // ignoring the result because the implementation of
+                                        // -locateStars will return nil immediately and run
+                                        // itself in a background thread.
     }
 
     return 0;
