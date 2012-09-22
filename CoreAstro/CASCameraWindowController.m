@@ -26,86 +26,11 @@
 #import "CASCameraWindowController.h"
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
 #import "CASHistogramView.h"
+#import "CASImageControlsView.h"
+#import "CASExposuresController.h"
+#import "CASExposureTableView.h"
+#import "CASImageView.h"
 
-@interface CASImageControlsView : NSView
-
-@end
-
-@implementation CASImageControlsView
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [[NSColor colorWithCalibratedRed:0.9 green:0.9 blue:0.9 alpha:1] set];
-    NSRectFill(dirtyRect);
-}
-
-@end
-
-@interface CASExposuresController : NSArrayController // make part of CASCCDExposures ?
-- (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
-- (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes;
-@end
-
-@interface CASExposureTableView : NSTableView
-@property (nonatomic,weak) IBOutlet CASExposuresController* exposuresController;
-@end
-
-@implementation CASExposureTableView
-
-@synthesize exposuresController;
-
-- (void)keyDown:(NSEvent *)event
-{
-    if([[event charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter) {
-        
-        const NSInteger count = [[self selectedRowIndexes] count];
-        NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
-        
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
-                                         defaultButton:nil
-                                       alternateButton:@"Cancel"
-                                           otherButton:nil
-                             informativeTextWithFormat:message,nil];
-        
-        [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
-    }
-    
-    [super keyDown:event];
-}
-
-- (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
-{
-    if (returnCode == NSAlertDefaultReturn){
-        [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self selectedRowIndexes]];
-    }
-}
-
-@end
-
-@implementation CASExposuresController
-
-- (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index
-{
-    if (index != NSNotFound){
-        [[[self arrangedObjects] objectAtIndex:index] deleteExposure];
-        [super removeObjectAtArrangedObjectIndex:index];
-    }
-}
-
-- (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes
-{
-    if ([indexes count]){
-        if ([indexes count] == 1){
-            [self removeObjectAtArrangedObjectIndex:[indexes firstIndex]];
-        }
-        else {
-            [[[self arrangedObjects] objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
-            [super removeObjectsAtArrangedObjectIndexes:indexes];
-        }
-    }
-}
-
-@end
 
 @interface CASCameraWindowController ()
 @property (nonatomic,assign) BOOL invert;
@@ -161,40 +86,6 @@
 
 - (void)zoomImageToActualSize:sender {
     [self.cameraController.imageView zoomImageToActualSize:sender];
-}
-
-@end
-
-@interface IKImageView (Private)
-- (CGRect)selectionRect; // great, a private method to get the selection...
-@end
-
-@interface CASImageView : IKImageView
-@property (nonatomic,assign) BOOL firstShowEditPanel;
-@end
-
-@implementation CASImageView
-
-@synthesize firstShowEditPanel;
-
-- (BOOL)hasEffectsMode
-{
-    return NO;
-}
-
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    if (theEvent.clickCount == 2){
-        [IKImageEditPanel sharedImageEditPanel].dataSource = (id<IKImageEditPanelDataSource>)self;
-        if (!self.firstShowEditPanel){
-            self.firstShowEditPanel = YES;
-            const NSRect frame = [IKImageEditPanel sharedImageEditPanel].frame;
-            const NSRect windowFrame = self.window.frame;
-            [[IKImageEditPanel sharedImageEditPanel] setFrameOrigin:NSMakePoint(NSMinX(windowFrame) + NSWidth(windowFrame)/2 - NSWidth(frame)/2, NSMinY(windowFrame) + NSHeight(windowFrame)/2 - NSHeight(frame)/2)];
-        }
-        [[IKImageEditPanel sharedImageEditPanel] makeKeyAndOrderFront:nil];
-        [[IKImageEditPanel sharedImageEditPanel] setHidesOnDeactivate:YES];
-    }
 }
 
 @end

@@ -73,6 +73,10 @@
 		F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
+		F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00C160E46A800190D3E /* CASImageControlsView.m */; };
+		F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00F160E46F300190D3E /* CASExposuresController.m */; };
+		F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF012160E475B00190D3E /* CASExposureTableView.m */; };
+		F48DF016160E47B800190D3E /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF015160E47B800190D3E /* CASImageView.m */; };
 		F498A51A15FE7F96006E8376 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F498A52915FE7FD8006E8376 /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F49E53E015B899680018DC75 /* SXDevices.plist */; };
 		F498A52D15FE7FE2006E8376 /* H36.png in Resources */ = {isa = PBXBuildFile; fileRef = F457B68A15DD4E450035F015 /* H36.png */; };
@@ -274,6 +278,14 @@
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F48DF00B160E46A800190D3E /* CASImageControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageControlsView.h; sourceTree = "<group>"; };
+		F48DF00C160E46A800190D3E /* CASImageControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageControlsView.m; sourceTree = "<group>"; };
+		F48DF00E160E46F300190D3E /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresController.h; sourceTree = "<group>"; };
+		F48DF00F160E46F300190D3E /* CASExposuresController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposuresController.m; sourceTree = "<group>"; };
+		F48DF011160E475B00190D3E /* CASExposureTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureTableView.h; sourceTree = "<group>"; };
+		F48DF012160E475B00190D3E /* CASExposureTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureTableView.m; sourceTree = "<group>"; };
+		F48DF014160E47B800190D3E /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageView.h; sourceTree = "<group>"; };
+		F48DF015160E47B800190D3E /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageView.m; sourceTree = "<group>"; };
 		F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SXDevicesPlugin.casPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SXDevicesPlugin-Info.plist"; sourceTree = "<group>"; };
 		F498A51F15FE7F96006E8376 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -681,8 +693,16 @@
 				F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */,
 				F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */,
 				F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */,
+				F48DF014160E47B800190D3E /* CASImageView.h */,
+				F48DF015160E47B800190D3E /* CASImageView.m */,
+				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
+				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
+				F48DF011160E475B00190D3E /* CASExposureTableView.h */,
+				F48DF012160E475B00190D3E /* CASExposureTableView.m */,
 				F4A561C315EA5DE100130D4A /* CASHistogramView.h */,
 				F4A561C415EA5DE100130D4A /* CASHistogramView.m */,
+				F48DF00B160E46A800190D3E /* CASImageControlsView.h */,
+				F48DF00C160E46A800190D3E /* CASImageControlsView.m */,
 				F413F14315D7FF7B00CA105B /* Scripting */,
 				F412974F15FCA977009C215E /* Resources */,
 				F49E52C815A971610018DC75 /* Supporting Files */,
@@ -1276,6 +1296,10 @@
 				F4EAFCB315D7EDAB001B7993 /* CASScriptCommand.m in Sources */,
 				F4EAFCB615D7EDDC001B7993 /* CASCaptureCommand.m in Sources */,
 				F4A561C515EA5DE100130D4A /* CASHistogramView.m in Sources */,
+				F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */,
+				F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */,
+				F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */,
+				F48DF016160E47B800190D3E /* CASImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
