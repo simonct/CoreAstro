@@ -91,37 +91,6 @@
 @end
 
 @implementation CASCameraWindowController
-@synthesize zoomControl;
-@synthesize zoomFitControl;
-@synthesize selectionControl;
-@synthesize devicesToggleControl;
-@synthesize sensorSizeField;
-@synthesize sensorDepthField;
-@synthesize sensorPixelsField;
-@synthesize subframeDisplay;
-@synthesize exposuresController;
-@synthesize devicesArrayController;
-@synthesize devicesTableView;
-@synthesize detailContainerView;
-@synthesize delegate;
-@synthesize toolbar;
-@synthesize progressIndicator;
-@synthesize progressStatusText;
-@synthesize captureButton;
-@synthesize exposureField;
-@synthesize binningPopup;
-@synthesize continuousCheckbox;
-@synthesize imageView, cameraController = _cameraController, equalise = _equalise;
-@synthesize rotationAngle, zoomFactor;
-@synthesize currentExposure = _currentExposure;
-@synthesize detailLeadingConstraint;
-@synthesize subtractDark = _subtractDark;
-@synthesize divideFlat = _divideFlat;
-@synthesize invert = _invert;
-@synthesize darksController;
-@synthesize flatsController;
-@synthesize imageProcessor;
-@synthesize histogramView;
 
 - (id)initWithWindow:(NSWindow *)window
 {
