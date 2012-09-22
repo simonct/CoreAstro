@@ -50,28 +50,28 @@
 		3B1F3F27160D0F77004E700D /* CASCustomSegmentationAlg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCustomSegmentationAlg.m; sourceTree = "<group>"; };
 		3B1F3F29160D13A6004E700D /* CASAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAlgorithm.h; path = ../../../CASAlgorithm.h; sourceTree = "<group>"; };
 		3B1F3F2A160D13A6004E700D /* CASAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAlgorithm.m; path = ../../../CASAlgorithm.m; sourceTree = "<group>"; };
-		3B1F3F2C160D1B7D004E700D /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAutoGuider.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASAutoGuider.h; sourceTree = "<group>"; };
-		3B1F3F2D160D1B7D004E700D /* CASAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAutoGuider.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASAutoGuider.m; sourceTree = "<group>"; };
+		3B1F3F2C160D1B7D004E700D /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
+		3B1F3F2D160D1B7D004E700D /* CASAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAutoGuider.m; sourceTree = "<group>"; };
 		3B1F3F30160D1D0F004E700D /* CASCustomAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCustomAutoGuider.h; sourceTree = "<group>"; };
 		3B1F3F31160D1D0F004E700D /* CASCustomAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCustomAutoGuider.m; sourceTree = "<group>"; };
-		3B1F3F33160D21B7004E700D /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDExposure.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDExposure.h; sourceTree = "<group>"; };
-		3B1F3F34160D21B7004E700D /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDExposure.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDExposure.m; sourceTree = "<group>"; };
-		3B1F3F36160D28AE004E700D /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDParams.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDParams.h; sourceTree = "<group>"; };
-		3B1F3F37160D28AE004E700D /* CASCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDParams.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDParams.m; sourceTree = "<group>"; };
-		3B1F3F39160D2983004E700D /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDExposureIO.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDExposureIO.h; sourceTree = "<group>"; };
-		3B1F3F3A160D2983004E700D /* CASCCDExposureIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDExposureIO.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDExposureIO.m; sourceTree = "<group>"; };
-		3B1F3F3C160D2A14004E700D /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDImage.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDImage.h; sourceTree = "<group>"; };
-		3B1F3F3D160D2A14004E700D /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDImage.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDImage.m; sourceTree = "<group>"; };
-		3B1F3F3F160D2A40004E700D /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDDevice.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDDevice.h; sourceTree = "<group>"; };
-		3B1F3F40160D2A40004E700D /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDDevice.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASCCDDevice.m; sourceTree = "<group>"; };
-		3B1F3F42160D2ABB004E700D /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASScriptableObject.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.h; sourceTree = "<group>"; };
-		3B1F3F43160D2ABB004E700D /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASScriptableObject.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.m; sourceTree = "<group>"; };
-		3B1F3F45160D2AD7004E700D /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASDevice.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASDevice.h; sourceTree = "<group>"; };
-		3B1F3F46160D2AD8004E700D /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASDevice.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASDevice.m; sourceTree = "<group>"; };
-		3B1F3F48160D2AFC004E700D /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOCommand.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASIOCommand.h; sourceTree = "<group>"; };
-		3B1F3F49160D2AFD004E700D /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOCommand.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASIOCommand.m; sourceTree = "<group>"; };
-		3B1F3F4B160D2B28004E700D /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOTransport.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASIOTransport.h; sourceTree = "<group>"; };
-		3B1F3F4C160D2B28004E700D /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOTransport.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASIOTransport.m; sourceTree = "<group>"; };
+		3B1F3F33160D21B7004E700D /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
+		3B1F3F34160D21B7004E700D /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
+		3B1F3F36160D28AE004E700D /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDParams.h; sourceTree = "<group>"; };
+		3B1F3F37160D28AE004E700D /* CASCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDParams.m; sourceTree = "<group>"; };
+		3B1F3F39160D2983004E700D /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureIO.h; sourceTree = "<group>"; };
+		3B1F3F3A160D2983004E700D /* CASCCDExposureIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureIO.m; sourceTree = "<group>"; };
+		3B1F3F3C160D2A14004E700D /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDImage.h; sourceTree = "<group>"; };
+		3B1F3F3D160D2A14004E700D /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
+		3B1F3F3F160D2A40004E700D /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
+		3B1F3F40160D2A40004E700D /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
+		3B1F3F42160D2ABB004E700D /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
+		3B1F3F43160D2ABB004E700D /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
+		3B1F3F45160D2AD7004E700D /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDevice.h; sourceTree = "<group>"; };
+		3B1F3F46160D2AD8004E700D /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDevice.m; sourceTree = "<group>"; };
+		3B1F3F48160D2AFC004E700D /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOCommand.h; sourceTree = "<group>"; };
+		3B1F3F49160D2AFD004E700D /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOCommand.m; sourceTree = "<group>"; };
+		3B1F3F4B160D2B28004E700D /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOTransport.h; sourceTree = "<group>"; };
+		3B1F3F4C160D2B28004E700D /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOTransport.m; sourceTree = "<group>"; };
 		3B1F3F4E160D2BFB004E700D /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		3B1F3F50160D2C24004E700D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		3B1F3F52160D2C6B004E700D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -175,6 +175,7 @@
 				3B1F3F4C160D2B28004E700D /* CASIOTransport.m */,
 			);
 			name = "CoreAstro framework classes";
+			path = ../../../../../CoreAstro/libCoreAstro/Core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -306,6 +307,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstroCustomSegmentationAlg/CoreAstroCustomSegmentationAlg-Prefix.pch";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -315,6 +317,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstroCustomSegmentationAlg/CoreAstroCustomSegmentationAlg-Prefix.pch";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
