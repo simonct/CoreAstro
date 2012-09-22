@@ -32,7 +32,7 @@
     id result = nil;
     
     if (!ident){
-        result = [[CASAutoGuider alloc] init];
+        result = [[self alloc] init];
     }
     else {
         // consult plugin manager for a plugin of the appropriate type and identifier

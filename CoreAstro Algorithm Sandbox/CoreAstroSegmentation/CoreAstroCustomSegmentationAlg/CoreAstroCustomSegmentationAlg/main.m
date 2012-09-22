@@ -36,8 +36,6 @@ int main(int argc, const char * argv[])
 {
     @autoreleasepool {
 
-        // WLT-QQQ: How do I keep the command line tool running until the alg has finished processing the image?
-
         if (argc != 2)
         {
             NSLog(@"This command line tool requires a single argument, a path to an exposure.");
@@ -59,10 +57,12 @@ int main(int argc, const char * argv[])
             return -1;
         }
 
-        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: @"CustomSegmAlg"];
+        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
         [guider locateStars: exposure]; // ignoring the result because the implementation of
                                         // -locateStars will return nil immediately and run
                                         // itself in a background thread.
+
+        dispatch_main();
     }
 
     return 0;
