@@ -62,8 +62,8 @@
         NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
         
         NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
-                                         defaultButton:@"Cancel"
-                                       alternateButton:@"OK"
+                                         defaultButton:nil
+                                       alternateButton:@"Cancel"
                                            otherButton:nil
                              informativeTextWithFormat:message,nil];
         
@@ -75,7 +75,7 @@
 
 - (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
-    if (returnCode == 0){
+    if (returnCode == NSAlertDefaultReturn){
         [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self selectedRowIndexes]];
     }
 }
