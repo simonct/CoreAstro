@@ -59,7 +59,7 @@ int main(int argc, const char * argv[])
             return -1;
         }
 
-        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: @"CustomSegmAlg"];
+        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
         [guider locateStars: exposure]; // ignoring the result because the implementation of
                                         // -locateStars will return nil immediately and run
                                         // itself in a background thread.
