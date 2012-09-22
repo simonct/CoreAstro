@@ -55,6 +55,7 @@ int main(int argc, const char * argv[])
         if (!readSuccess || error)
         {
             NSLog(@"Unable to load exposure at path:\n'%@'", path);
+            NSLog(@"Error: %@", error);
             return -1;
         }
 
