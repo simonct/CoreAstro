@@ -44,8 +44,8 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
 + (void)initialize {
     if (self == [CASIOUSBTransport class]){
         [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                 [NSNumber numberWithInteger:10 * 1000],kCASIOUSBTransportNoDataTimeoutDefaultsKey,
-                                                                 [NSNumber numberWithInteger:10 * 1000],kCASIOUSBTransportCompletionTimeoutDefaultsKey, 
+                                                                 [NSNumber numberWithInteger:30 * 1000],kCASIOUSBTransportNoDataTimeoutDefaultsKey,
+                                                                 [NSNumber numberWithInteger:30 * 1000],kCASIOUSBTransportCompletionTimeoutDefaultsKey,
                                                                  nil]];
     }
 }
