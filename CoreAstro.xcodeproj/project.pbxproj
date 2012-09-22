@@ -135,13 +135,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3B1F3F1E160D05E7004E700D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3B1F3F16160D05E6004E700D /* CoreAstroCustomSegmentationAlg.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3B1F3EFE160D050F004E700D;
-			remoteInfo = CoreAstroCustomSegmentationAlg;
-		};
 		F44EDF0E15FCC386003B1B4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F49E52B415A971610018DC75 /* Project object */;
@@ -240,9 +233,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3B1F3F16160D05E6004E700D /* CoreAstroCustomSegmentationAlg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = CoreAstroCustomSegmentationAlg.xcodeproj; sourceTree = "<group>"; };
-		3B1F3F20160D0831004E700D /* CASAlgorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CASAlgorithm.h; sourceTree = "<group>"; };
-		3B1F3F22160D0BE0004E700D /* CASAlgorithm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CASAlgorithm.m; sourceTree = "<group>"; };
 		F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
 		F4125F1115D7A7D300E04052 /* superstar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = superstar.png; sourceTree = "<group>"; };
@@ -460,40 +450,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B1F3F10160D05E6004E700D /* CoreAstro Algorithm Sandbox */ = {
-			isa = PBXGroup;
-			children = (
-				3B1F3F20160D0831004E700D /* CASAlgorithm.h */,
-				3B1F3F22160D0BE0004E700D /* CASAlgorithm.m */,
-				3B1F3F11160D05E6004E700D /* CoreAstroSegmentation */,
-			);
-			path = "CoreAstro Algorithm Sandbox";
-			sourceTree = "<group>";
-		};
-		3B1F3F11160D05E6004E700D /* CoreAstroSegmentation */ = {
-			isa = PBXGroup;
-			children = (
-				3B1F3F12160D05E6004E700D /* CoreAstroCustomSegmentationAlg */,
-			);
-			path = CoreAstroSegmentation;
-			sourceTree = "<group>";
-		};
-		3B1F3F12160D05E6004E700D /* CoreAstroCustomSegmentationAlg */ = {
-			isa = PBXGroup;
-			children = (
-				3B1F3F16160D05E6004E700D /* CoreAstroCustomSegmentationAlg.xcodeproj */,
-			);
-			path = CoreAstroCustomSegmentationAlg;
-			sourceTree = "<group>";
-		};
-		3B1F3F17160D05E6004E700D /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3B1F3F1F160D05E7004E700D /* CoreAstroCustomSegmentationAlg */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		F412974F15FCA977009C215E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -638,7 +594,6 @@
 				F49E52E415A971620018DC75 /* CoreAstroTests */,
 				F44EDEFC15FCC385003B1B4C /* CoreAstro Framework */,
 				F44EDF1115FCC386003B1B4C /* CoreAstro FrameworkTests */,
-				3B1F3F10160D05E6004E700D /* CoreAstro Algorithm Sandbox */,
 				F49E52C015A971610018DC75 /* Frameworks */,
 				F49E52BE15A971610018DC75 /* Products */,
 			);
@@ -1073,10 +1028,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 3B1F3F17160D05E6004E700D /* Products */;
-					ProjectRef = 3B1F3F16160D05E6004E700D /* CoreAstroCustomSegmentationAlg.xcodeproj */;
-				},
-				{
 					ProductGroup = F45963FD15EA420E0041AF7D /* Products */;
 					ProjectRef = F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */;
 				},
@@ -1094,13 +1045,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		3B1F3F1F160D05E7004E700D /* CoreAstroCustomSegmentationAlg */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = CoreAstroCustomSegmentationAlg;
-			remoteRef = 3B1F3F1E160D05E7004E700D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		F459640615EA420F0041AF7D /* CorePlot.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
