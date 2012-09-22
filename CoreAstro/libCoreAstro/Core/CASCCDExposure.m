@@ -53,26 +53,26 @@
 
 - (NSString*) displayDate
 {
-    static NSDateFormatter* formatter = nil;
-    if (!formatter) {
-        formatter = [[NSDateFormatter alloc] init];
-        formatter.dateStyle = NSDateFormatterShortStyle;
-        formatter.timeStyle = NSDateFormatterShortStyle;
+    static NSDateFormatter* dateFormatter = nil;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
     }
-    return [formatter stringFromDate:self.date];
+    return [dateFormatter stringFromDate:self.date];
 }
 
 - (NSString*) displayExposure
 {
-    static NSNumberFormatter* formatter = nil;
-    if (!formatter) {
-        formatter = [[NSNumberFormatter alloc] init];
-        formatter.numberStyle = NSNumberFormatterDecimalStyle;
-        formatter.generatesDecimalNumbers = YES;
-        formatter.minimumFractionDigits = 0;
-        formatter.maximumFractionDigits = 3;
+    static NSNumberFormatter* numberFormatter = nil;
+    if (!numberFormatter) {
+        numberFormatter = [[NSNumberFormatter alloc] init];
+        numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        numberFormatter.generatesDecimalNumbers = YES;
+        numberFormatter.minimumFractionDigits = 0;
+        numberFormatter.maximumFractionDigits = 3;
     }
-    return [NSString stringWithFormat:@"%@s",[formatter stringFromNumber:[NSNumber numberWithDouble:self.params.ms/1000.0]]];
+    return [NSString stringWithFormat:@"%@s",[numberFormatter stringFromNumber:[NSNumber numberWithDouble:self.params.ms/1000.0]]];
 }
 
 - (NSString*)displayDeviceName
