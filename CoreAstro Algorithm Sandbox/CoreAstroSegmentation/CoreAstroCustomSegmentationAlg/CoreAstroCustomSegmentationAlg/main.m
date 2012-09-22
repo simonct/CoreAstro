@@ -63,6 +63,8 @@ int main(int argc, const char * argv[])
         [guider locateStars: exposure]; // ignoring the result because the implementation of
                                         // -locateStars will return nil immediately and run
                                         // itself in a background thread.
+
+        dispatch_main();
     }
 
     return 0;
