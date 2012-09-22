@@ -624,9 +624,9 @@
 				F422B05915FC8D4800D86260 /* Dependencies */,
 				F49E52C715A971610018DC75 /* CoreAstro */,
 				F49E52E415A971620018DC75 /* CoreAstroTests */,
-				3B1F3F10160D05E6004E700D /* CoreAstro Algorithm Sandbox */,
 				F44EDEFC15FCC385003B1B4C /* CoreAstro Framework */,
 				F44EDF1115FCC386003B1B4C /* CoreAstro FrameworkTests */,
+				3B1F3F10160D05E6004E700D /* CoreAstro Algorithm Sandbox */,
 				F49E52C015A971610018DC75 /* Frameworks */,
 				F49E52BE15A971610018DC75 /* Products */,
 			);
