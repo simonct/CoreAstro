@@ -36,8 +36,6 @@ int main(int argc, const char * argv[])
 {
     @autoreleasepool {
 
-        // WLT-QQQ: How do I keep the command line tool running until the alg has finished processing the image?
-
         if (argc != 2)
         {
             NSLog(@"This command line tool requires a single argument, a path to an exposure.");
