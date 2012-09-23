@@ -29,27 +29,59 @@
 @implementation CASAlgorithm
 
 
-// Default implementation simply executes the completion block
-// asynchronously in the main thread, passing an empty dictionary
-// to the block.
-
+// For client use only. Not to be overridden by subclasses.
 - (void) executeWithDictionary: (NSDictionary*) dataD
+               completionAsync: (BOOL) async
+               completionQueue: (dispatch_queue_t) queue
                completionBlock: (void(^)(NSDictionary*)) block;
 {
-    NSLog(@"%s: This is the default implementation of this method, which executes the block "
-          "passing an empty dictionary. It's most likely NOT what you meant to do...", __FUNCTION__);
+    NSLog(@"%s : dataD = %@", __FUNCTION__, dataD);
+    
+    NSDictionary* resultsD = [self resultsFromData: dataD];
 
-    NSLog(@"%s : block == nil? %@ : dataD = %@",
-          __FUNCTION__, (block ? @"NO" : @"YES"), dataD);
+    [self dispatchBlock: block
+                toQueue: queue
+                  async: async
+           withArgument: resultsD];
+}
 
-    if (block)
+
+// The default implementation returns nil.
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+{
+    return nil;
+}
+
+
+// Utility method. Not to be overridden.
+- (void) dispatchBlock: (void(^)(NSDictionary*)) block
+               toQueue: (dispatch_queue_t) queue
+                 async: (BOOL) async
+          withArgument: (NSDictionary*) resultsD;
+{
+    NSLog(@"%s : block == nil? %@ : queue == NULL? %@ : async ? %@ : resultsD: %@", __FUNCTION__,
+          (block ? @"NO" : @"YES"), (queue ? @"NO" : @"YES"), (async ? @"YES" : @"NO"), resultsD);
+
+    if (block && queue)
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            // Call back, passing an empty dictionary.
-            block([NSDictionary dictionary]);
-
-        });
+        if (async)
+        {
+            // dispatch async even if queue is the current queue
+            dispatch_async(queue, ^{ block(resultsD); });
+        }
+        else
+        {
+            // dispatch sync only if queue is NOT the current queue
+            if (queue != dispatch_get_current_queue())
+            {
+                dispatch_sync(queue, ^{ block(resultsD); });
+            }
+            else // don't dispatch but simply execute the block
+                 // when queue is the current queue
+            {
+                block(resultsD);
+            }
+        }
     }
 }
 

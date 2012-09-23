@@ -58,11 +58,10 @@ int main(int argc, const char * argv[])
         }
 
         CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
-        [guider locateStars: exposure]; // ignoring the result because the implementation of
-                                        // -locateStars will return nil immediately and run
-                                        // itself in a background thread.
+        NSArray* stars = [guider locateStars: exposure];
 
-        dispatch_main();
+        NSLog(@"   exposure: %@", exposure);
+        NSLog(@"%@ :: stars: %@", [guider class], stars);
     }
 
     return 0;

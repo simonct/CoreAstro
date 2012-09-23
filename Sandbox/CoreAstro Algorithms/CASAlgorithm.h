@@ -24,17 +24,35 @@
 //
 
 
-//  A completely general interface for algorithms. Pass any kind of data to
-//  the algorithm using the 'dataD' argument. Upon completion (successful
-//  or not) the algorithm executes the passed block, which can then extract
-//  from the block's dictionary argument a variety of results, such as
-//  completion booleans, error conditions, and any results produced by the
-//  algorithm. The default algorithm implementation does nothing but still
-//  executes the completion block (asynchronously in the main thread).
-
 @interface CASAlgorithm: NSObject
 
+// A completely general interface for algorithms.
+//
+// Pass any kind of data to the algorithm using the 'dataD' argument. Upon
+// completion (successful or not) the algorithm executes the given block in
+// the given queue, synchronously or asynchronously depending on the boolean
+// argument. The block can then extract from its dictionary argument a variety
+// of results, such as completion booleans, error conditions, and any results
+// produced by the algorithm.
+//
+// For client use and not to be overridden by subclasses.
 - (void) executeWithDictionary: (NSDictionary*) dataD
+               completionAsync: (BOOL) async
+               completionQueue: (dispatch_queue_t) queue
                completionBlock: (void(^)(NSDictionary*)) block;
+
+
+// For subclass use only.
+// Must be overridden as this is the meat of the algorithm.
+// The default implementation returns nil.
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+
+
+// Utility method.
+// For subclass use only and not to be overridden.
+- (void) dispatchBlock: (void(^)(NSDictionary*)) block
+               toQueue: (dispatch_queue_t) queue
+                 async: (BOOL) async
+          withArgument: (NSDictionary*) resultsD;
 
 @end
