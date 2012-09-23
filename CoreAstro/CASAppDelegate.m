@@ -123,12 +123,13 @@
     [self.windows removeObject:window];
 }
 
+// todo; most of this should probably be in the device manager
 - (void)processDevices:(NSArray*)devices
 {
     for (CASDevice* device in devices){
         
         CASCCDDevice* ccd = (CASCCDDevice*)device;
-        if ([ccd isKindOfClass:[CASCCDDevice class]]){
+        if ([ccd isKindOfClass:[CASCCDDevice class]]){ // todo; need a CASCCDDevice protocol and check for that instead of a class
                         
             [ccd connect:^(NSError* error) {
                                 
@@ -160,6 +161,11 @@
                     }
                 }
             }];
+        }
+        
+        // todo; check for compliance with CASGuider and add to the guiders list
+        if (0){
+            
         }
     }
 }
