@@ -43,3 +43,4 @@
 #import <CoreAstro/CASPluginManager.h>
 #import <CoreAstro/CASScriptableObject.h>
 #import <CoreAstro/CASUSBDeviceBrowser.h>
+#import <CoreAstro/CASCameraController.h>

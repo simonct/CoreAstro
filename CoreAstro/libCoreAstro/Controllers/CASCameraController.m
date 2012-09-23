@@ -24,6 +24,7 @@
 //
 
 #import "CASCameraController.h"
+#import "CASCCDExposureLibrary.h"
 
 @interface CASCameraController ()
 @property (nonatomic,assign) BOOL capturing;

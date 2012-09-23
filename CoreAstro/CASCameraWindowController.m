@@ -31,7 +31,7 @@
 #import "CASExposuresController.h"
 #import "CASExposureTableView.h"
 #import "CASImageView.h"
-
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASCameraWindowController ()
 @property (nonatomic,assign) BOOL invert;

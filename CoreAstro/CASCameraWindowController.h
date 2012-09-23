@@ -24,11 +24,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "CASCameraController.h"
 
 @class CASImageView;
 @class CASExposuresController;
 @class CASCameraWindowController;
+@class CASCameraController;
 
 @protocol CASCameraWindowControllerDelegate <NSObject>
 @optional
