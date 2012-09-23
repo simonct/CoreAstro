@@ -59,8 +59,8 @@
                  async: (BOOL) async
           withArgument: (NSDictionary*) resultsD;
 {
-    NSLog(@"%s : block == nil? %@ : queue == NULL? %@ : async ? %@ : resultsD:\r%@", __FUNCTION__,
-          (block ? @"NO" : @"YES"), (queue ? @"NO" : @"YES"), (async ? @"YES" : @"NO"), resultsD);
+//    NSLog(@"%s : block == nil? %@ : queue == NULL? %@ : async ? %@ : resultsD:\r%@", __FUNCTION__,
+//          (block ? @"NO" : @"YES"), (queue ? @"NO" : @"YES"), (async ? @"YES" : @"NO"), resultsD);
 
     if (block && queue)
     {
