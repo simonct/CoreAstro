@@ -147,7 +147,7 @@
                     CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
                     if (cameraController){
                         cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-                        cameraController.autoGuider = [CASAutoGuider autoGuiderWithIdentifier:nil];
+                        cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
                         [self willChangeValueForKey:@"cameraControllers"];
                         [self.cameraControllers addObject:cameraController];
                         [self didChangeValueForKey:@"cameraControllers"];
