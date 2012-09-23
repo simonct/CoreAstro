@@ -24,20 +24,7 @@
 //
 
 #import "CASDevice.h"
-
-@protocol CASGuider <NSObject>
-
-typedef enum {
-    kCASGuiderDirection_None = 0,
-    kCASGuiderDirection_RAPlus,
-    kCASGuiderDirection_RAMinus,
-    kCASGuiderDirection_DecPlus,
-    kCASGuiderDirection_DecMinus
-} CASGuiderDirection;
-
-- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
-
-@end
+#import "CASAutoGuider.h"
 
 @interface CASSHGPUSBDevice : CASDevice<CASGuider>
 

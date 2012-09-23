@@ -1,5 +1,5 @@
 //
-//  CASAutoguider.h
+//  CASGuideAlgorithm.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,18 +22,53 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
+//  Guiding algorithms by Craig Stark (http://www.stark-labs.com)
+//
+//  WARNING: THIS CODE IS HIGHLY EXPERIMENTAL ! IT HAS NOT BEEN TESTED, IS ALMOST CERTAINLY
+//  EXTREMELY BUGGY AND WILL PROBABLY CHANGE A GREAT DEAL OVER A SHORT PERIOD OF TIME.
+//
 
 #import "CASCCDExposure.h"
+#import "CASImageProcessor.h"
 
-@protocol CASAutoGuider <NSObject>
-@optional
-- (NSArray*)locateStars:(CASCCDExposure*)exposure; // returns an array of NSValue boxed NSPoints in image co-ords
+@protocol CASGuider <NSObject>
+
+typedef enum {
+    kCASGuiderDirection_None = 0,
+    kCASGuiderDirection_RAPlus,
+    kCASGuiderDirection_RAMinus,
+    kCASGuiderDirection_DecPlus,
+    kCASGuiderDirection_DecMinus
+} CASGuiderDirection;
+
+//@property (nonatomic,readonly) CASSize size; // what is this used for ?
+
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
+
 @end
 
-@interface CASAutoGuider : NSObject<CASAutoGuider>
+// interface to an object which can issue guide offsets given a sequence of images
+@protocol CASGuideAlgorithm <NSObject>
+@optional
 
-+ (id<CASAutoGuider>)autoGuiderWithIdentifier:(NSString*)type;
+@property (nonatomic,weak) id<CASGuider> guider;
+@property (nonatomic,weak) id<CASImageProcessor> imageProcessor;
+@property (nonatomic,copy,readonly) NSString* status;
 
-// find star, process frame, emit guide commands to a CASMount ?
+@property (nonatomic,assign,readonly) CGPoint starLocation; // current start point
+@property (nonatomic,assign,readonly) CGPoint lockLocation; // start guide point
+@property (nonatomic,assign,readonly) CGFloat searchRadius;
+
+- (NSArray*)locateStars:(CASCCDExposure*)exposure; // returns an array of NSValue boxed NSPoint/CGPoints in image co-ords
+
+- (void)resetStarLocation:(CGPoint)star;
+
+- (void)updateWithExposure:(CASCCDExposure*)exposure;
+
+@end
+
+@interface CASGuideAlgorithm : NSObject<CASGuideAlgorithm>
+
++ (id<CASGuideAlgorithm>)guideAlgorithmWithIdentifier:(NSString*)type;
 
 @end
