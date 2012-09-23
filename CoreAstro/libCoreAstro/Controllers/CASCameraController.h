@@ -27,23 +27,29 @@
 
 @class CASCCDDevice;
 @class CASImageProcessor;
-@class CASAutoGuider;
+@class CASGuideAlgorithm;
 @class CASCCDExposure;
+@protocol CASGuider;
 
 @interface CASCameraController : CASScriptableObject
 
 @property (nonatomic,readonly,strong) CASCCDDevice* camera;
+
 @property (nonatomic,readonly) BOOL capturing;
 @property (nonatomic,assign) BOOL continuous;
-@property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
+@property (nonatomic,readonly) NSTimeInterval CASGuideAlgorithm;
+
 @property (nonatomic,assign) NSInteger exposure;
 @property (nonatomic,assign) NSInteger exposureUnits;
 @property (nonatomic,assign) NSInteger binningIndex;
 @property (nonatomic,assign) NSInteger interval;
 @property (nonatomic,assign) CGRect subframe;
 @property (nonatomic,strong) NSDate* exposureStart;
+
+@property (nonatomic,assign) BOOL guiding;
+@property (nonatomic,strong) id<CASGuider> guider;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
-@property (nonatomic,strong) CASAutoGuider* autoGuider;
+@property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 
 - (id)initWithCamera:(CASCCDDevice*)camera;
 

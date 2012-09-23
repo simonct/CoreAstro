@@ -25,18 +25,15 @@
 
 #import "CASCameraController.h"
 #import "CASCCDExposureLibrary.h"
+#import "CASAutoGuider.h"
 
-@interface CASCameraController ()
+@interface CASCameraController ()<CASGuider>
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
 @end
 
 @implementation CASCameraController
-
-@synthesize autoGuider, imageProcessor;
-@synthesize camera = _camera, capturing, continuous = _continuous, interval, exposureStart, exposure = _exposure, exposureUnits, binningIndex, subframe = _subframe;
-@synthesize continuousNextExposureTime;
 
 - (id)initWithCamera:(CASCCDDevice*)camera
 {
@@ -81,7 +78,14 @@
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
 
         if (!error && self.continuous){
-            self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + self.interval;
+            
+            if (self.guiding){
+                // update the guider
+                [self.guideAlgorithm updateWithExposure:exp];
+            }
+            
+            // figure out the next exposure time
+            self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + self.interval; // add on guide pulse duration
             [self performSelector:_cmd withObject:block afterDelay:self.interval];
         }
         else {
@@ -141,12 +145,26 @@
     }
 }
 
+- (void)setGuider:(id<CASGuider>)guider
+{
+    _guider = guider;
+    self.guideAlgorithm.guider = self;
+}
+
 - (void)setNilValueForKey:(NSString *)key
 {
     if ([@"exposure" isEqualToString:key]){
         return;
     }
     [super setNilValueForKey:key];
+}
+
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)duration block:(void (^)(NSError*))block {
+    
+    // record the guide command against the current exposure
+    
+    // pulse the guider
+    [self.guider pulse:direction duration:duration block:block];
 }
 
 @end
