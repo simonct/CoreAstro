@@ -35,7 +35,7 @@
                completionQueue: (dispatch_queue_t) queue
                completionBlock: (void(^)(NSDictionary*)) block;
 {
-    NSLog(@"%s : dataD = %@", __FUNCTION__, dataD);
+    // NSLog(@"%s : dataD:\r%@", __FUNCTION__, dataD);
     
     NSDictionary* resultsD = [self resultsFromData: dataD];
 
@@ -59,7 +59,7 @@
                  async: (BOOL) async
           withArgument: (NSDictionary*) resultsD;
 {
-    NSLog(@"%s : block == nil? %@ : queue == NULL? %@ : async ? %@ : resultsD: %@", __FUNCTION__,
+    NSLog(@"%s : block == nil? %@ : queue == NULL? %@ : async ? %@ : resultsD:\r%@", __FUNCTION__,
           (block ? @"NO" : @"YES"), (queue ? @"NO" : @"YES"), (async ? @"YES" : @"NO"), resultsD);
 
     if (block && queue)

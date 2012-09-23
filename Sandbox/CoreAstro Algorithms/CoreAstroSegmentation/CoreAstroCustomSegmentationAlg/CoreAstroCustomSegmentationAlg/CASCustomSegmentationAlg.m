@@ -49,7 +49,7 @@
     }
 
     exposure = (CASCCDExposure*) objInDataD;
-    NSLog(@"exposure:\n%@", exposure);
+    NSLog(@"exposure:\r%@", exposure);
 
     // WLT-XXX: perform the algorith here...
     NSDictionary* resultsD = [NSDictionary dictionary];
