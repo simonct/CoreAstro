@@ -235,7 +235,6 @@
 		F425076A160F0D110054443B = {
 			isa = PBXGroup;
 			children = (
-				F4250859160F166D0054443B /* QuartzCore.framework */,
 				F425077F160F0D110054443B /* guide-test */,
 				F425079C160F0D120054443B /* guide-testTests */,
 				F4250778160F0D110054443B /* Frameworks */,
@@ -255,6 +254,7 @@
 		F4250778160F0D110054443B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4250859160F166D0054443B /* QuartzCore.framework */,
 				F4250857160F0D720054443B /* Accelerate.framework */,
 				F4250855160F0D600054443B /* IOKit.framework */,
 				F4250779160F0D110054443B /* Cocoa.framework */,

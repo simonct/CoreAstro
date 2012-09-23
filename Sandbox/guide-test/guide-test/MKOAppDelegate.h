@@ -15,4 +15,6 @@
 @property (assign) IBOutlet NSWindow *window;
 @property (weak) IBOutlet GuideImageView *imageView;
 
+- (IBAction)reset:(id)sender;
+
 @end
