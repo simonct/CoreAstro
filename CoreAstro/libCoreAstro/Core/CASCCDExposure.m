@@ -192,6 +192,47 @@
     [self.io deleteExposure:self error:nil];
 }
 
+- (NSString*) description;
+{
+    NSMutableString* mutStr = [[NSMutableString alloc] init];
+
+    [mutStr appendFormat: @"hasPixels: %@\r", (self.hasPixels ? @"YES" : @"NO")];
+
+    [mutStr appendFormat: @"hasMeta: %@\r", (self.hasMeta ? @"YES" : @"NO")];
+    if (self.hasMeta)
+    {
+        [mutStr appendFormat: @"meta: %@\r", self.meta];
+    }
+
+    NSDictionary* paramsD = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithDouble: self.params.bin.width], @"bin.width",
+                             [NSNumber numberWithDouble: self.params.bin.height], @"bin.height",
+                             [NSNumber numberWithDouble: self.params.origin.width], @"origin.width",
+                             [NSNumber numberWithDouble: self.params.origin.height], @"origin.height",
+                             [NSNumber numberWithDouble: self.params.size.width], @"size.width",
+                             [NSNumber numberWithDouble: self.params.size.height], @"size.height",
+                             [NSNumber numberWithDouble: self.params.frame.width], @"frame.width",
+                             [NSNumber numberWithDouble: self.params.frame.height], @"frame.height",
+                             [NSNumber numberWithUnsignedInteger: self.params.bps], @"bps",
+                             [NSNumber numberWithUnsignedInteger: self.params.ms], @"ms",
+                             nil];
+    [mutStr appendFormat: @"params: %@\r", paramsD];
+
+    NSDictionary* actualSizeD = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 [NSNumber numberWithDouble: self.actualSize.width], @"actualSize.width",
+                                 [NSNumber numberWithDouble: self.actualSize.height], @"actualSize.height",
+                                 nil];
+    [mutStr appendFormat: @"actualSize: %@\r", actualSizeD];
+
+    [mutStr appendFormat: @"displayDate: %@\r", self.displayDate];
+    [mutStr appendFormat: @"displayExposure: %@\r", self.displayExposure];
+    [mutStr appendFormat: @"persistentStoreURL: %@\r", self.persistentStoreURL];
+    [mutStr appendFormat: @"uuid: %@\r", self.uuid];
+    [mutStr appendFormat: @"deviceID: %@\r", self.deviceID];
+
+    return [NSString stringWithString: mutStr];
+}
+
 + (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
 {
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
