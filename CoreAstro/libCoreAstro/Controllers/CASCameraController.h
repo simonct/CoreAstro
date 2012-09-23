@@ -37,7 +37,7 @@
 
 @property (nonatomic,readonly) BOOL capturing;
 @property (nonatomic,assign) BOOL continuous;
-@property (nonatomic,readonly) NSTimeInterval CASGuideAlgorithm;
+@property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
 
 @property (nonatomic,assign) NSInteger exposure;
 @property (nonatomic,assign) NSInteger exposureUnits;
