@@ -22,6 +22,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
+//  Todo: split this up into view controllers, do less in -windowDidLoad 
 
 #import "CASCameraWindowController.h"
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
