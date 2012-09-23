@@ -105,7 +105,7 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
                         self->interface = intf;
                     }
                     else {
-                        // close interface
+                        (*intf)->USBInterfaceClose(intf);
                     }
                 }
             }
@@ -119,13 +119,14 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
 }
 
 - (void)dealloc {
+    if (self->interface){
+        (*self->interface)->USBInterfaceClose(self->interface);
+        (*self->interface)->Release(self->interface);
+        self->interface = nil;
+    }
     if (plugin){
         (*plugin)->Release(plugin);
         plugin = nil;
-    }
-    if (self->interface){
-        (*self->interface)->Release(self->interface);
-        self->interface = nil;
     }
 }
 
@@ -136,8 +137,7 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
     }
 }
 
-- (void)clearPipeStall
-{
+- (void)clearPipeStall {
     [self clearPipeStall:self.inPipe];    
     [self clearPipeStall:self.outPipe];    
 }
