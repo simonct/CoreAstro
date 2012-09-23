@@ -52,17 +52,16 @@ int main(int argc, const char * argv[])
 
         if (!readSuccess || error)
         {
-            NSLog(@"Unable to load exposure at path:\n'%@'", path);
+            NSLog(@"Unable to load exposure at path:\r'%@'", path);
             NSLog(@"Error: %@", error);
             return -1;
         }
 
         CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
-        [guider locateStars: exposure]; // ignoring the result because the implementation of
-                                        // -locateStars will return nil immediately and run
-                                        // itself in a background thread.
+        NSArray* stars = [guider locateStars: exposure];
 
-        dispatch_main();
+        NSLog(@"exposure:\r%@", exposure);
+        NSLog(@"%@ :: stars:\r%@", [guider class], stars);
     }
 
     return 0;

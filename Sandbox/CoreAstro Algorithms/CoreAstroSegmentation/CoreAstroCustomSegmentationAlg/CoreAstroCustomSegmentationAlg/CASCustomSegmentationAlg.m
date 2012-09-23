@@ -30,8 +30,8 @@
 @implementation CASCustomSegmentationAlg
 
 
-- (void) executeWithDictionary: (NSDictionary*) dataD
-               completionBlock: (void(^)(NSDictionary*)) block;
+// The default implementation returns nil.
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
 {
     CASCCDExposure* exposure = nil;
     id objInDataD = [dataD objectForKey: @"keyExposure"];
@@ -39,40 +39,23 @@
     if (!objInDataD)
     {
         NSLog(@"dataD (%@) does not contain a value for the key 'keyExposure'.", dataD);
-        [super executeWithDictionary: dataD completionBlock: block]; // super simply executes the block
-
-        return;
+        return nil;
     }
 
     if (![objInDataD isKindOfClass: [CASCCDExposure class]])
     {
         NSLog(@"Value (%@) for key 'keyExposure' in dataD dictionary (%@) is not of class 'CASCCDExposure'.", objInDataD, dataD);
-        [super executeWithDictionary: dataD completionBlock: block]; // super simply executes the block
-
-        return;
+        return nil;
     }
 
     exposure = (CASCCDExposure*) objInDataD;
-    NSLog(@"exposure:\n%@", exposure);
+    // NSLog(@"exposure:\r%@", exposure);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul), ^{
+    // WLT-XXX: perform the algorith here...
+    NSDictionary* resultsD = [NSDictionary dictionary];
+    //
 
-        // WLT-XXX: perform the algorith here...
-        NSDictionary* resultsD = [NSDictionary dictionary]; // XXX
-
-        if (block)
-        {
-            // Upon completion, call back to the block passing the results dictionary.
-            // Do it asynchronously in the main thread.
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-
-                block(resultsD);
-                
-            });
-        }
-
-    });
+    return resultsD;
 }
 
 

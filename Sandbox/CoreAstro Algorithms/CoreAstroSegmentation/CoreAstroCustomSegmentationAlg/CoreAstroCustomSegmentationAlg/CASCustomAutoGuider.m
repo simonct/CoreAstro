@@ -34,25 +34,20 @@
 
 - (NSArray*) locateStars: (CASCCDExposure*) exposure;
 {
-    NSAssert([NSThread isMainThread], @"%s not called from the main thread!", __FUNCTION__);
     NSAssert(exposure, @"%s : exposure is nil!", __FUNCTION__);
 
     NSDictionary* dataD = [NSDictionary dictionaryWithObject: exposure forKey: @"keyExposure"];
     NSAssert(dataD, @"%s : dataD is nil!", __FUNCTION__);
 
+    __block NSDictionary* resultD = nil;
+
     CASAlgorithm* alg = [[CASCustomSegmentationAlg alloc] init];
-    [alg executeWithDictionary: dataD completionBlock: ^(NSDictionary* resultD) {
+    [alg executeWithDictionary: dataD
+               completionAsync: NO
+               completionQueue: dispatch_get_current_queue()
+               completionBlock: ^(NSDictionary* resD) { resultD = resD; }];
 
-        NSAssert([NSThread isMainThread], @"completion block not called from the main thread!");
-
-        // WLT-XXX
-        NSLog(@"  dataD: %@",   dataD);
-        NSLog(@"resultD: %@", resultD);
-
-    }];
-
-    return nil; // returning nil because the algorithm will do its thing in a
-                // background thread while this method must return immediately.
+    return [resultD objectForKey: @"keyStars"];
 }
 
 @end
