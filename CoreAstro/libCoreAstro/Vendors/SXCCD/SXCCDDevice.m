@@ -58,10 +58,10 @@
 
 - (void)disconnect
 {
-    // todo; this mainly belongs in a base class
-    self.connected = NO;
-    // todo: this isn't supporting reconnect
-    self.transport = nil;
+    [super disconnect];
+
+    self.connected = NO; // todo: base class
+    
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 

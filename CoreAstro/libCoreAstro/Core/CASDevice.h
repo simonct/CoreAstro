@@ -59,6 +59,7 @@ typedef enum {
 @property (nonatomic,readonly) NSString* uniqueID;
 
 - (void)connect:(void (^)(NSError*))block;
+- (void)disconnect;
 
 - (NSData*)randomDataOfLength:(NSInteger)length;
 

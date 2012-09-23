@@ -38,8 +38,6 @@
 @property (nonatomic,readonly) NSInteger temperatureFrequency;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
 
-- (void)disconnect;
-
 - (void)reset:(void (^)(NSError*))block;
 
 - (void)getParams:(void (^)(NSError*,CASCCDParams* params))block;

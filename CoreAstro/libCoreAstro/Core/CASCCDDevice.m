@@ -36,9 +36,6 @@
     return kCASDeviceTypeCamera;   
 }
 
-- (void)disconnect {
-}
-
 - (void)reset:(void (^)(NSError*))block {
     if (block){
         block(nil);

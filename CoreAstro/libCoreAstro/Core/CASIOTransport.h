@@ -37,6 +37,8 @@ typedef enum {
 @class CASIOCommand;
 
 @protocol CASIOTransport <NSObject> // NSStream ?
+- (NSError*)connect;
+- (void)disconnect;
 - (NSError*)send:(NSData*)data;
 - (NSError*)receive:(NSMutableData*)data;
 @end

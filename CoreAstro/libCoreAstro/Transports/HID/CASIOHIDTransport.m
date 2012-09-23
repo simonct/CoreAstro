@@ -47,7 +47,7 @@ static void CASIOHIDReportCallback (void *                  context,
     
     CASIOHIDTransport* transport = (__bridge CASIOHIDTransport*)context;
     
-    if (type == kIOHIDReportTypeInput){
+    if (type == kIOHIDReportTypeInput && transport && transport->_open){
         
         [transport.delegate receivedInputReport:[NSData dataWithBytesNoCopy:report length:reportLength freeWhenDone:NO]];
     }
@@ -61,7 +61,7 @@ static void CASIOHIDReportCallback (void *                  context,
     return self;
 }
 
-- (IOReturn)_openDevice {
+- (NSError*)connect {
     
     IOReturn result = kIOReturnSuccess;
     
@@ -96,7 +96,14 @@ static void CASIOHIDReportCallback (void *                  context,
         }
     }
     
-    return result;
+    return result ? [NSError errorWithDomain:@"CASIOUSBTransport" code:result userInfo:nil] : nil;
+}
+
+- (void)disconnect {
+    if (_device){
+        _open = NO;
+        IOHIDDeviceRegisterInputReportCallback(_device, nil, 0, nil, nil);
+    }
 }
 
 - (NSError*)send:(NSData*)data {
@@ -105,18 +112,17 @@ static void CASIOHIDReportCallback (void *                  context,
         
     if ([data length]){
         
-        IOReturn result = [self _openDevice];
-        if (result == kIOReturnSuccess){
+        error = [self connect];
+        if (!error){
             
-            result = IOHIDDeviceSetReport(_device,
-                                          kIOHIDReportTypeOutput,
-                                          0,
-                                          [data bytes],
-                                          [data length]);
-        }
-        
-        if (result != kIOReturnSuccess){
-            error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
+            IOReturn result = IOHIDDeviceSetReport(_device,
+                                                   kIOHIDReportTypeOutput,
+                                                   0,
+                                                   [data bytes],
+                                                   [data length]);
+            if (result != kIOReturnSuccess){
+                error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
+            }
         }
     }
     
@@ -124,6 +130,8 @@ static void CASIOHIDReportCallback (void *                  context,
 }
 
 - (NSError*)receive:(NSMutableData*)data {
+    
+    // todo
     return nil;
 }
 

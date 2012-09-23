@@ -85,6 +85,10 @@
     }
 }
 
+- (void)disconnect {
+    self.transport = nil;
+}
+
 - (NSData*)randomDataOfLength:(NSInteger)length {
     
     NSMutableData* data = [NSMutableData dataWithLength:length];

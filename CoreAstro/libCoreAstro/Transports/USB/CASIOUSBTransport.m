@@ -61,9 +61,45 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
         
         self.plugin = plugin_;
 
-        IOUSBInterfaceRef intf = nil;
+        if ([self connect] != nil){
+            self = nil;
+        }
+    }
+    
+    if (self && !self->interface){
+        self = nil;
+    }
+    return self;
+}
 
-        IOReturn result = (*self.plugin)->QueryInterface(self.plugin, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID300), (LPVOID)&intf);
+- (void)dealloc {
+    [self disconnect];
+    if (plugin){
+        (*plugin)->Release(plugin);
+        plugin = nil;
+    }
+}
+
+- (void)clearPipeStall:(UInt8)pipe {
+    const IOReturn result = (*self->interface)->ClearPipeStallBothEnds(self->interface,pipe);
+    if (result != kIOReturnSuccess){
+        NSLog(@"ClearPipeStallBothEnds %d: %08x (%s)",pipe,result,USBErrorToString(result));
+    }
+}
+
+- (void)clearPipeStall {
+    [self clearPipeStall:self.inPipe];    
+    [self clearPipeStall:self.outPipe];    
+}
+
+- (NSError*)connect {
+    
+    IOReturn result = kIOReturnSuccess;
+    
+    if (!self->interface){
+        
+        IOUSBInterfaceRef intf = nil;
+        result = (*self.plugin)->QueryInterface(self.plugin, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID300), (LPVOID)&intf);
         verify_noerr( result );
         if (result == kIOReturnSuccess){
             
@@ -112,34 +148,15 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
         }
     }
     
-    if (self && !self->interface){
-        self = nil;
-    }
-    return self;
+    return result ? [NSError errorWithDomain:@"CASIOUSBTransport" code:result userInfo:nil] : nil;
 }
 
-- (void)dealloc {
+- (void)disconnect {
     if (self->interface){
         (*self->interface)->USBInterfaceClose(self->interface);
         (*self->interface)->Release(self->interface);
         self->interface = nil;
     }
-    if (plugin){
-        (*plugin)->Release(plugin);
-        plugin = nil;
-    }
-}
-
-- (void)clearPipeStall:(UInt8)pipe {
-    const IOReturn result = (*self->interface)->ClearPipeStallBothEnds(self->interface,pipe);
-    if (result != kIOReturnSuccess){
-        NSLog(@"ClearPipeStallBothEnds %d: %08x (%s)",pipe,result,USBErrorToString(result));
-    }
-}
-
-- (void)clearPipeStall {
-    [self clearPipeStall:self.inPipe];    
-    [self clearPipeStall:self.outPipe];    
 }
 
 - (NSError*)send:(NSData*)data {
@@ -158,7 +175,7 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
                     NSLog(@"kIOReturnNotOpen");
                     break;
             }
-            [self clearPipeStall];
+            [self clearPipeStall]; // todo; retry after stall
             error = [NSError errorWithDomain:@"CASIOUSBTransport" code:result userInfo:nil];
         }
     }
@@ -190,7 +207,7 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
                 break;
             }
             else {
-                [self clearPipeStall];
+                [self clearPipeStall]; // todo; retry after stall
                 error = [NSError errorWithDomain:@"CASIOUSBTransport" code:result userInfo:nil];
                 break;
             }

@@ -55,12 +55,7 @@
 }
 
 - (void)dealloc {
-    for (CASIOpendingCommand* pending in self.pending){
-        [pending.timer invalidate];
-    }
-    [self.pending removeAllObjects];
-    [_ioq cancelAllOperations];
-    [_ioq waitUntilAllOperationsAreFinished];
+    [self disconnect];
 }
 
 - (CASIOTransportType)type {
@@ -142,6 +137,22 @@
         
         // submit to the op queue
         [self.ioq addOperation:commandOp];
+    }
+}
+
+- (NSError*)connect {
+    return nil;
+}
+
+- (void)disconnect {
+    if (_ioq){
+        for (CASIOpendingCommand* pending in self.pending){
+            [pending.timer invalidate];
+        }
+        [self.pending removeAllObjects];
+        [_ioq cancelAllOperations];
+        [_ioq waitUntilAllOperationsAreFinished];
+        _ioq = nil;
     }
 }
 
