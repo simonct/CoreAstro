@@ -60,7 +60,7 @@ int main(int argc, const char * argv[])
         CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
         NSArray* stars = [guider locateStars: exposure];
 
-        NSLog(@"   exposure:\r%@", exposure);
+        NSLog(@"exposure:\r%@", exposure);
         NSLog(@"%@ :: stars:\r%@", [guider class], stars);
     }
 
