@@ -62,29 +62,17 @@
     self.windows = [NSMutableArray arrayWithCapacity:10];
     self.cameraControllers = [NSMutableArray arrayWithCapacity:10];
 
-    [[CASDeviceManager sharedManager] scan];
+    CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
+    cameraWindow.delegate = self;
+    cameraWindow.shouldCascadeWindows = NO;
+    [cameraWindow.window makeKeyAndOrderFront:nil];
+    [self.windows addObject:cameraWindow];
 
-    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
-    
-    [self applicationOpenUntitledFile:NSApp];
-}
-
-- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender
-{
-    return YES;
-}
-
-- (BOOL)applicationOpenUntitledFile:(NSApplication *)sender
-{
-    if (![self.windows count]){
-        CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
-        cameraWindow.delegate = self;
-        cameraWindow.shouldCascadeWindows = NO;
-        [cameraWindow.window makeKeyAndOrderFront:nil];
-        [self.windows addObject:cameraWindow];
-    }
-
-    return YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
+        [[CASDeviceManager sharedManager] scan];
+    });
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -106,6 +94,13 @@
     }
     
     return NSTerminateNow;
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+    for (CASCameraController* controller in self.cameraControllers){
+        [controller disconnect];
+    }
 }
 
 - (void)quitConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
