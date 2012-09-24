@@ -229,6 +229,7 @@ static void sxGetCameraParamsReadData(const UCHAR setup_data[17], struct t_sxccd
     params->bits_per_pixel = setup_data[14];
     params->num_serial_ports = setup_data[15];
     params->extra_caps = setup_data[16];
+    params->vclk_delay = 0; // ??
 }
 
 static void sxClearPixelsWriteData(USHORT camIndex, USHORT flags,  UCHAR setup_data[8])
