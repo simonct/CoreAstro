@@ -402,7 +402,7 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[22];
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.width,self.params.origin.height,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 

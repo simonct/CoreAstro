@@ -38,26 +38,92 @@
 @property (nonatomic,assign) NSInteger bitsPerPixel;
 @end
 
-typedef struct {
-    NSInteger width, height; // NSUInteger ?
+
+typedef struct
+{
+    NSInteger x;
+    NSInteger y;
+
+} CASPoint;
+
+
+typedef struct
+{
+    NSUInteger width;
+    NSUInteger height;
+
 } CASSize;
 
-typedef struct {
-    CASSize bin;
-    CASSize origin;
-    CASSize size;
-    CASSize frame;
-    NSUInteger bps;
-    NSUInteger ms;
-} CASExposeParams;
 
-NS_INLINE CASSize CASSizeMake(NSInteger w,NSInteger h) {
+typedef struct
+{
+    CASPoint origin; // bottom-left corner
+    CASSize size;
+
+} CASRect;
+
+
+typedef struct
+{
+    CASSize bin;
+    CASPoint origin; // origin of the subframe
+    CASSize size;    // size of the subframe
+    CASSize frame;   // size of the whole frame
+    NSUInteger bps;  // bits per pixel
+    NSUInteger ms;   // exposure time in milliseconds
+    
+} CASExposeParams; // WLT-QQQ: Did you mean CASExposureParams ?
+
+
+NS_INLINE CASPoint CASPointMake(NSInteger x, NSInteger y) {
+    CASPoint pt = {.x = x, .y = y};
+    return pt;
+}
+
+NS_INLINE CASSize CASSizeMake(NSUInteger w, NSUInteger h) {
     CASSize sz = {.width = w, .height = h};
     return sz;
 }
 
+NS_INLINE CASRect CASRectMake(CASPoint pt, CASSize sz) {
+    CASRect rect = {.origin = pt, .size = sz};
+    return rect;
+}
+
+NS_INLINE CASRect CASRectMake2(NSInteger x, NSInteger y, NSUInteger w, NSUInteger h) {
+    CASRect rect = {.origin = CASPointMake(x, y), .size = CASSizeMake(w, h)};
+    return rect;
+}
+
+NS_INLINE NSString* NSStringFromCASPoint(CASPoint pt) {
+    return [NSString stringWithFormat:@"{%ld,%ld}",pt.x,pt.y];
+}
+
 NS_INLINE NSString* NSStringFromCASSize(CASSize sz) {
     return [NSString stringWithFormat:@"{%ld,%ld}",sz.width,sz.height];
+}
+
+NS_INLINE NSString* NSStringFromCASRect(CASRect rect) {
+    return [NSString stringWithFormat:@"{%@,%@}",NSStringFromCASPoint(rect.origin),NSStringFromCASSize(rect.size)];
+}
+
+NS_INLINE NSString* NSStringFromCASRect2(CASRect rect) {
+    return [NSString stringWithFormat:@"{%ld,%ld,%ld,%ld}",rect.origin.x,rect.origin.y,rect.size.width,rect.size.height];
+}
+
+NS_INLINE CASPoint CASPointFromNSString(NSString* s) {
+    CASPoint point;
+    bzero(&point, sizeof point);
+    s = [s stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([s length] > 0 && [s characterAtIndex:0] == '{' && [s characterAtIndex:[s length] - 1] =='}'){
+        s = [s substringWithRange:NSMakeRange(1, [s length] - 1)];
+        NSArray* comps = [s componentsSeparatedByString:@","];
+        if ([comps count] > 1){
+            point.x = [[comps objectAtIndex:0] integerValue];
+            point.y = [[comps objectAtIndex:1] integerValue];
+        }
+    }
+    return point;
 }
 
 NS_INLINE CASSize CASSizeFromNSString(NSString* s) {
@@ -75,10 +141,27 @@ NS_INLINE CASSize CASSizeFromNSString(NSString* s) {
     return size;
 }
 
-NS_INLINE CASExposeParams CASExposeParamsMake(NSInteger w,NSInteger h,NSInteger x,NSInteger y,NSInteger fw, NSInteger fh,NSInteger bx,NSInteger by,NSUInteger bps,NSUInteger ms) {
+NS_INLINE CASRect CASRectFromNSString(NSString* s) {
+    CASRect rect;
+    bzero(&rect, sizeof rect);
+    s = [s stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([s length] > 0 && [s characterAtIndex:0] == '{' && [s characterAtIndex:[s length] - 1] =='}'){
+        s = [s substringWithRange:NSMakeRange(1, [s length] - 1)];
+        NSArray* comps = [s componentsSeparatedByString:@","];
+        if ([comps count] > 1){
+            rect.origin.x = [[comps objectAtIndex:0] integerValue];
+            rect.origin.y = [[comps objectAtIndex:1] integerValue];
+            rect.size.width = [[comps objectAtIndex:2] integerValue];
+            rect.size.height = [[comps objectAtIndex:3] integerValue];
+        }
+    }
+    return rect;
+}
+
+NS_INLINE CASExposeParams CASExposeParamsMake(NSUInteger w, NSUInteger h, NSInteger x, NSInteger y, NSUInteger fw, NSUInteger fh, NSUInteger bw, NSUInteger bh, NSUInteger bps, NSUInteger ms) {
     CASSize sz = CASSizeMake(w,h);
-    CASSize ori = CASSizeMake(x,y);
-    CASSize bin = CASSizeMake(bx,by);
+    CASPoint ori = CASPointMake(x,y);
+    CASSize bin = CASSizeMake(bw,bh);
     CASSize frm = CASSizeMake(fw,fh);
     CASExposeParams exp = {.bin = bin, .origin = ori, .size = sz, .frame = frm, .bps = bps, .ms = ms};
     return exp;
@@ -86,7 +169,7 @@ NS_INLINE CASExposeParams CASExposeParamsMake(NSInteger w,NSInteger h,NSInteger 
 
 NS_INLINE NSString* NSStringFromCASExposeParams(CASExposeParams exp) {
     // todo: make this a dictionary, this is getting slightly ridiculous...
-    return [NSString stringWithFormat:@"{%@|%@|%@|%@|%ld|%ld}",NSStringFromCASSize(exp.origin),NSStringFromCASSize(exp.size),NSStringFromCASSize(exp.bin),NSStringFromCASSize(exp.frame),exp.bps,exp.ms];
+    return [NSString stringWithFormat:@"{%@|%@|%@|%@|%ld|%ld}",NSStringFromCASPoint(exp.origin),NSStringFromCASSize(exp.size),NSStringFromCASSize(exp.bin),NSStringFromCASSize(exp.frame),exp.bps,exp.ms];
 }
 
 NS_INLINE CASExposeParams CASExposeParamsFromNSString(NSString* s) {
@@ -98,7 +181,7 @@ NS_INLINE CASExposeParams CASExposeParamsFromNSString(NSString* s) {
         NSArray* comps = [s componentsSeparatedByString:@"|"];
         if ([comps count] > 4){
             CASExposeParams exp = {
-                .origin = CASSizeFromNSString([comps objectAtIndex:0]), 
+                .origin = CASPointFromNSString([comps objectAtIndex:0]),
                 .size = CASSizeFromNSString([comps objectAtIndex:1]),
                 .bin = CASSizeFromNSString([comps objectAtIndex:2]),
                 .frame = CASSizeFromNSString([comps objectAtIndex:3]),

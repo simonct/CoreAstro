@@ -207,8 +207,8 @@
     NSDictionary* paramsD = [NSDictionary dictionaryWithObjectsAndKeys:
                              [NSNumber numberWithDouble: self.params.bin.width], @"bin.width",
                              [NSNumber numberWithDouble: self.params.bin.height], @"bin.height",
-                             [NSNumber numberWithDouble: self.params.origin.width], @"origin.width",
-                             [NSNumber numberWithDouble: self.params.origin.height], @"origin.height",
+                             [NSNumber numberWithDouble: self.params.origin.x], @"origin.x",
+                             [NSNumber numberWithDouble: self.params.origin.y], @"origin.y",
                              [NSNumber numberWithDouble: self.params.size.width], @"size.width",
                              [NSNumber numberWithDouble: self.params.size.height], @"size.height",
                              [NSNumber numberWithDouble: self.params.frame.width], @"frame.width",

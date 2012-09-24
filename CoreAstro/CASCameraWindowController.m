@@ -472,7 +472,7 @@
     
     const CASExposeParams params = exposure.params;
 
-    const CGRect subframe = CGRectMake(params.origin.width, params.origin.height, params.size.width, params.size.height);
+    const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
     
     CGImageRef CGImage = image.CGImage;
     if (CGImage){
