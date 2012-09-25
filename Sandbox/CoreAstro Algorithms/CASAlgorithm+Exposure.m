@@ -44,8 +44,8 @@ NSString* const keyBinCount = @"bin count";
 
 
 // An utility function to threshold an array of exposure values.
-// The value of 'threshold' is subtracted from every value in the array.
-// Array values originally below the threshold value will be reset to 0.
+// Any array values smaller than the threshold are reset to 0.
+// No other values are changed.
 //
 // Note: the thresholding is done in place.
 // Note: expects unsigned 16-bit values.
@@ -53,11 +53,7 @@ void cas_alg_thresh(uint16_t* values, NSUInteger len, uint16_t threshold)
 {
     for (NSUInteger i = 0; i < len; ++i)
     {
-        if (values[i] > threshold)
-        {
-            values[i] -= threshold;
-        }
-        else
+        if (values[i] < threshold)
         {
             values[i] = 0;
         }

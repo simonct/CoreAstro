@@ -45,7 +45,7 @@ extern NSString* const keyBinEnd;
 extern NSString* const keyBinCount;
 
 
-// Specifies which value to subtract from each value in the exposure array.
+// Specifies which value to use when thresholding the exposure array.
 typedef enum
 {
     kThresholdingModeNoThresholding = 0,
@@ -79,8 +79,8 @@ NS_INLINE NSInteger cas_alg_P(NSUInteger numRows, NSUInteger numCols, NSInteger 
 
 
 // An utility function to threshold an array of exposure values.
-// The value of 'threshold' is subtracted from every value in the array.
-// Array values originally below the threshold value will be reset to 0.
+// Any array values smaller than the threshold are reset to 0.
+// No other values are changed.
 //
 // Note: the thresholding is done in place.
 // Note: expects unsigned 16-bit values.

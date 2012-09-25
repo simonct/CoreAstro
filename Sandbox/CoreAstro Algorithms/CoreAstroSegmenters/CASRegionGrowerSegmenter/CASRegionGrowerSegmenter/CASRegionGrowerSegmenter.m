@@ -31,18 +31,15 @@
 
 // The basic idea is as follows:
 //
-// 1. subtract from every pixel some given threshold brightness
-// (values below the threshold are reset to zero, of course).
-//
-// 2. find the brightest available pixel and use it as the starting point
+// 1. find the brightest available pixel and use it as the starting point
 // to grow a connected region, ie, a set of adjacent pixels that all have
 // non-zero brightness values. Mark these pixels as unavailable.
 //
-// 3. go back to step 2. until there are no more available bright pixels
+// 2. go back to step 1. until there are no more available bright pixels
 // to consider.
 //
-// 4. once all regions have been identified, compute their frame rectangles
-// and brightest pixels. (this step may be accomplished while in step 2.)
+// 3. once all regions have been identified, compute their frame rectangles
+// and brightest pixels. (this step may be accomplished while in step 1.)
 
 
 #import "CASRegionGrowerSegmenter.h"
@@ -231,18 +228,12 @@
             uint16_t value = values[p];
 
             // Apply thresholding, if needed.
-            if (self.thresholdingMode != kThresholdingModeNoThresholding && thresh > 0)
+            if (self.thresholdingMode != kThresholdingModeNoThresholding &&
+                thresh > 0 && value < thresh)
             {
-                if (value > thresh)
-                {
-                    value -= thresh;
-                }
-                else
-                {
-                    value = 0;
-                }
+                value = 0;
             }
-            
+
             if (value > max)
             {
                 max = value;
@@ -390,25 +381,9 @@
     // Skip pixel if already assigned to a region.
     if (pixels[p].regionID != UNASSIGNED_REGION_ID) return;
 
-    // Apply thresholding, if needed.
-
-    uint16_t value = values[p];
-    uint16_t thresh = self.threshold;
-
-    if (self.thresholdingMode != kThresholdingModeNoThresholding && thresh > 0)
-    {
-        if (value > thresh)
-        {
-            value -= thresh;
-        }
-        else
-        {
-            value = 0;
-        }
-    }
-
-    // Skip pixel if it's a background pixel.
-    if (value == 0) return;
+    // Skip pixel if its brightness is below the threshold.
+    if (self.thresholdingMode != kThresholdingModeNoThresholding &&
+        self.threshold > 0 && values[p] < self.threshold) return;
 
     // Ok, we're not skipping this pixel. Since it's a neighbour
     // of the calling pixel, we must assign it to the same region
