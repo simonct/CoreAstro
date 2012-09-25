@@ -24,9 +24,11 @@
 //
 //  Guiding algorithms by Craig Stark ( http://www.stark-labs.com )
 //
+//  ***************************************************************************
 //  Please don't use this code as the basis of further development; it's still
 //  a work in progress. The original, verified algorithm can be found at
 //  http://code.google.com/p/open-phd-guiding/source/browse/branches/craig/guide_routines.cpp
+//  ***************************************************************************
 //
 
 #import "CASAutoGuider.h"
@@ -218,14 +220,14 @@ enum {
             
             B1 = (float) *(exposurePixels + linesize * (y-1) + x) + (float) *(exposurePixels + linesize * (y+1) + x) + (float) *(exposurePixels + linesize * y + (x + 1)) + (float) *(exposurePixels + linesize * y + (x-1));
 			
-            B2 = (float) *(exposurePixels + linesize * (y-1) + (x-1)) + (float) *(exposurePixels + linesize * (y+1) + (x+1)) + (float) *(exposurePixels + linesize * (y+1) + (x + 1)) + (float) *(exposurePixels + linesize * (y+1) + (x-1));
+			B2 = (float) *(exposurePixels + linesize * (y-1) + (x-1)) + (float) *(exposurePixels + linesize * (y-1) + (x+1)) + (float) *(exposurePixels + linesize * (y+1) + (x + 1)) + (float) *(exposurePixels + linesize * (y+1) + (x-1));
 			
             C1 = (float) *(exposurePixels + linesize * (y-2) + x) + (float) *(exposurePixels + linesize * (y+2) + x) + (float) *(exposurePixels + linesize * y + (x + 2)) + (float) *(exposurePixels + linesize * y + (x-2));
 			
             C2 = (float) *(exposurePixels + linesize * (y-2) + (x-1)) + (float) *(exposurePixels + linesize * (y-2) + (x+1)) + (float) *(exposurePixels + linesize * (y+2) + (x + 1)) + (float) *(exposurePixels + linesize * (y+2) + (x-1)) +
             (float) *(exposurePixels + linesize * (y-1) + (x-2)) + (float) *(exposurePixels + linesize * (y-1) + (x+2)) + (float) *(exposurePixels + linesize * (y+1) + (x + 2)) + (float) *(exposurePixels + linesize * (y+1) + (x-2));
 			
-            C3 = (float) *(exposurePixels + linesize * (y-2) + (x-2)) + (float) *(exposurePixels + linesize * (y+2) + (x+2)) + (float) *(exposurePixels + linesize * (y+2) + (x + 2)) + (float) *(exposurePixels + linesize * (y+2) + (x-2));
+			C3 = (float) *(exposurePixels + linesize * (y-2) + (x-2)) + (float) *(exposurePixels + linesize * (y-2) + (x+2)) + (float) *(exposurePixels + linesize * (y+2) + (x + 2)) + (float) *(exposurePixels + linesize * (y+2) + (x-2));
 			
             D1 = (float) *(exposurePixels + linesize * (y-3) + x) + (float) *(exposurePixels + linesize * (y+3) + x) + (float) *(exposurePixels + linesize * y + (x + 3)) + (float) *(exposurePixels + linesize * y + (x-3));
 			
@@ -358,7 +360,7 @@ enum {
 				maxlval = lval;
 			}
 			sval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) -localmin;
-			if ( sval > max) {
+			if ( sval >= max) {
 				nearmax2 = nearmax1;
 				nearmax1 = max;
 				max = sval;
