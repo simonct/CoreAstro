@@ -16,5 +16,7 @@
 @property (weak) IBOutlet GuideImageView *imageView;
 
 - (IBAction)reset:(id)sender;
+- (IBAction)start:(id)sender;
+- (IBAction)pulse:(id)sender;
 
 @end

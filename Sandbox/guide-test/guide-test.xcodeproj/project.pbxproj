@@ -909,6 +909,7 @@
 				F42507A9160F0D120054443B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F42507AA160F0D120054443B /* Build configuration list for PBXNativeTarget "guide-testTests" */ = {
 			isa = XCConfigurationList;
@@ -917,6 +918,7 @@
 				F42507AC160F0D120054443B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
