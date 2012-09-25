@@ -22,7 +22,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  Guiding algorithms by Craig Stark (http://www.stark-labs.com)
+//  Guiding algorithms by Craig Stark ( http://www.stark-labs.com )
 //
 //  Please don't use this code as the basis of further development; it's still
 //  a work in progress. The original, verified algorithm can be found at
