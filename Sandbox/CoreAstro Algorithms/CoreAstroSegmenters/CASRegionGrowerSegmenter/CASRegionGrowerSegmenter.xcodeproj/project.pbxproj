@@ -9,10 +9,7 @@
 /* Begin PBXBuildFile section */
 		3B1F3F03160D050F004E700D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F02160D050F004E700D /* Foundation.framework */; };
 		3B1F3F06160D050F004E700D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F05160D050F004E700D /* main.m */; };
-		3B1F3F28160D0F77004E700D /* CASCustomSegmentationAlg.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F27160D0F77004E700D /* CASCustomSegmentationAlg.m */; };
 		3B1F3F2B160D13A6004E700D /* CASAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F2A160D13A6004E700D /* CASAlgorithm.m */; };
-		3B1F3F2E160D1B7D004E700D /* CASAutoGuider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F2D160D1B7D004E700D /* CASAutoGuider.m */; };
-		3B1F3F32160D1D0F004E700D /* CASCustomAutoGuider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F31160D1D0F004E700D /* CASCustomAutoGuider.m */; };
 		3B1F3F35160D21B7004E700D /* CASCCDExposure.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F34160D21B7004E700D /* CASCCDExposure.m */; };
 		3B1F3F38160D28AE004E700D /* CASCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F37160D28AE004E700D /* CASCCDParams.m */; };
 		3B1F3F3B160D2983004E700D /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F3A160D2983004E700D /* CASCCDExposureIO.m */; };
@@ -27,6 +24,9 @@
 		3B1F3F53160D2C6B004E700D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F52160D2C6B004E700D /* Accelerate.framework */; };
 		3B1F3F55160D2C85004E700D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F54160D2C84004E700D /* AppKit.framework */; };
 		3B1F3F57160D2C92004E700D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F56160D2C92004E700D /* IOKit.framework */; };
+		3BCFE946160FFA65002BED5E /* CASSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCFE945160FFA64002BED5E /* CASSegmenter.m */; };
+		3BCFE95F16102313002BED5E /* CASAlgorithm+Exposure.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */; };
+		3BF31CAE1610AF760020723A /* CASRegionGrowerSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F27160D0F77004E700D /* CASRegionGrowerSegmenter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,18 +42,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3B1F3EFE160D050F004E700D /* CoreAstroCustomSegmentationAlg */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CoreAstroCustomSegmentationAlg; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B1F3EFE160D050F004E700D /* CASRegionGrowerSegmenter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CASRegionGrowerSegmenter; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B1F3F02160D050F004E700D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3B1F3F05160D050F004E700D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		3B1F3F08160D0510004E700D /* CoreAstroCustomSegmentationAlg-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreAstroCustomSegmentationAlg-Prefix.pch"; sourceTree = "<group>"; };
-		3B1F3F26160D0F77004E700D /* CASCustomSegmentationAlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCustomSegmentationAlg.h; sourceTree = "<group>"; };
-		3B1F3F27160D0F77004E700D /* CASCustomSegmentationAlg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCustomSegmentationAlg.m; sourceTree = "<group>"; };
+		3B1F3F08160D0510004E700D /* CASRegionGrowerSegmenter-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CASRegionGrowerSegmenter-Prefix.pch"; sourceTree = "<group>"; };
+		3B1F3F26160D0F77004E700D /* CASRegionGrowerSegmenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASRegionGrowerSegmenter.h; sourceTree = "<group>"; };
+		3B1F3F27160D0F77004E700D /* CASRegionGrowerSegmenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASRegionGrowerSegmenter.m; sourceTree = "<group>"; };
 		3B1F3F29160D13A6004E700D /* CASAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAlgorithm.h; path = ../../../CASAlgorithm.h; sourceTree = "<group>"; };
 		3B1F3F2A160D13A6004E700D /* CASAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAlgorithm.m; path = ../../../CASAlgorithm.m; sourceTree = "<group>"; };
-		3B1F3F2C160D1B7D004E700D /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
-		3B1F3F2D160D1B7D004E700D /* CASAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAutoGuider.m; sourceTree = "<group>"; };
-		3B1F3F30160D1D0F004E700D /* CASCustomAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCustomAutoGuider.h; sourceTree = "<group>"; };
-		3B1F3F31160D1D0F004E700D /* CASCustomAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCustomAutoGuider.m; sourceTree = "<group>"; };
 		3B1F3F33160D21B7004E700D /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		3B1F3F34160D21B7004E700D /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
 		3B1F3F36160D28AE004E700D /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDParams.h; sourceTree = "<group>"; };
@@ -77,6 +73,10 @@
 		3B1F3F52160D2C6B004E700D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		3B1F3F54160D2C84004E700D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3B1F3F56160D2C92004E700D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		3BCFE944160FFA64002BED5E /* CASSegmenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSegmenter.h; path = ../../CASSegmenter.h; sourceTree = "<group>"; };
+		3BCFE945160FFA64002BED5E /* CASSegmenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSegmenter.m; path = ../../CASSegmenter.m; sourceTree = "<group>"; };
+		3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASAlgorithm+Exposure.m"; path = "../../../CASAlgorithm+Exposure.m"; sourceTree = "<group>"; };
+		3BF31CAD161081B70020723A /* CASAlgorithm+Exposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASAlgorithm+Exposure.h"; path = "../../../CASAlgorithm+Exposure.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +99,7 @@
 		3B1F3EF3160D050F004E700D = {
 			isa = PBXGroup;
 			children = (
-				3B1F3F04160D050F004E700D /* CoreAstroCustomSegmentationAlg */,
+				3B1F3F04160D050F004E700D /* CASRegionGrowerSegmenter */,
 				3B1F3F01160D050F004E700D /* Frameworks */,
 				3B1F3EFF160D050F004E700D /* Products */,
 			);
@@ -108,7 +108,7 @@
 		3B1F3EFF160D050F004E700D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3B1F3EFE160D050F004E700D /* CoreAstroCustomSegmentationAlg */,
+				3B1F3EFE160D050F004E700D /* CASRegionGrowerSegmenter */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,26 +126,28 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3B1F3F04160D050F004E700D /* CoreAstroCustomSegmentationAlg */ = {
+		3B1F3F04160D050F004E700D /* CASRegionGrowerSegmenter */ = {
 			isa = PBXGroup;
 			children = (
 				3B1F3F05160D050F004E700D /* main.m */,
-				3B1F3F30160D1D0F004E700D /* CASCustomAutoGuider.h */,
-				3B1F3F31160D1D0F004E700D /* CASCustomAutoGuider.m */,
-				3B1F3F26160D0F77004E700D /* CASCustomSegmentationAlg.h */,
-				3B1F3F27160D0F77004E700D /* CASCustomSegmentationAlg.m */,
 				3B1F3F29160D13A6004E700D /* CASAlgorithm.h */,
 				3B1F3F2A160D13A6004E700D /* CASAlgorithm.m */,
+				3BF31CAD161081B70020723A /* CASAlgorithm+Exposure.h */,
+				3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */,
+				3BCFE944160FFA64002BED5E /* CASSegmenter.h */,
+				3BCFE945160FFA64002BED5E /* CASSegmenter.m */,
+				3B1F3F26160D0F77004E700D /* CASRegionGrowerSegmenter.h */,
+				3B1F3F27160D0F77004E700D /* CASRegionGrowerSegmenter.m */,
 				3B1F3F2F160D1B8D004E700D /* CoreAstro framework classes */,
 				3B1F3F07160D0510004E700D /* Supporting Files */,
 			);
-			path = CoreAstroCustomSegmentationAlg;
+			path = CASRegionGrowerSegmenter;
 			sourceTree = "<group>";
 		};
 		3B1F3F07160D0510004E700D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				3B1F3F08160D0510004E700D /* CoreAstroCustomSegmentationAlg-Prefix.pch */,
+				3B1F3F08160D0510004E700D /* CASRegionGrowerSegmenter-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -153,8 +155,6 @@
 		3B1F3F2F160D1B8D004E700D /* CoreAstro framework classes */ = {
 			isa = PBXGroup;
 			children = (
-				3B1F3F2C160D1B7D004E700D /* CASAutoGuider.h */,
-				3B1F3F2D160D1B7D004E700D /* CASAutoGuider.m */,
 				3B1F3F36160D28AE004E700D /* CASCCDParams.h */,
 				3B1F3F37160D28AE004E700D /* CASCCDParams.m */,
 				3B1F3F33160D21B7004E700D /* CASCCDExposure.h */,
@@ -181,9 +181,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3B1F3EFD160D050F004E700D /* CoreAstroCustomSegmentationAlg */ = {
+		3B1F3EFD160D050F004E700D /* CASRegionGrowerSegmenter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3B1F3F0D160D0510004E700D /* Build configuration list for PBXNativeTarget "CoreAstroCustomSegmentationAlg" */;
+			buildConfigurationList = 3B1F3F0D160D0510004E700D /* Build configuration list for PBXNativeTarget "CASRegionGrowerSegmenter" */;
 			buildPhases = (
 				3B1F3EFA160D050F004E700D /* Sources */,
 				3B1F3EFB160D050F004E700D /* Frameworks */,
@@ -193,9 +193,9 @@
 			);
 			dependencies = (
 			);
-			name = CoreAstroCustomSegmentationAlg;
-			productName = CoreAstroCustomSegmentationAlg;
-			productReference = 3B1F3EFE160D050F004E700D /* CoreAstroCustomSegmentationAlg */;
+			name = CASRegionGrowerSegmenter;
+			productName = CASRegionGrowerSegmenter;
+			productReference = 3B1F3EFE160D050F004E700D /* CASRegionGrowerSegmenter */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -207,7 +207,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Wagner Truppel";
 			};
-			buildConfigurationList = 3B1F3EF8160D050F004E700D /* Build configuration list for PBXProject "CoreAstroCustomSegmentationAlg" */;
+			buildConfigurationList = 3B1F3EF8160D050F004E700D /* Build configuration list for PBXProject "CASRegionGrowerSegmenter" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -219,7 +219,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3B1F3EFD160D050F004E700D /* CoreAstroCustomSegmentationAlg */,
+				3B1F3EFD160D050F004E700D /* CASRegionGrowerSegmenter */,
 			);
 		};
 /* End PBXProject section */
@@ -230,10 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B1F3F06160D050F004E700D /* main.m in Sources */,
-				3B1F3F28160D0F77004E700D /* CASCustomSegmentationAlg.m in Sources */,
 				3B1F3F2B160D13A6004E700D /* CASAlgorithm.m in Sources */,
-				3B1F3F2E160D1B7D004E700D /* CASAutoGuider.m in Sources */,
-				3B1F3F32160D1D0F004E700D /* CASCustomAutoGuider.m in Sources */,
 				3B1F3F35160D21B7004E700D /* CASCCDExposure.m in Sources */,
 				3B1F3F38160D28AE004E700D /* CASCCDParams.m in Sources */,
 				3B1F3F3B160D2983004E700D /* CASCCDExposureIO.m in Sources */,
@@ -243,6 +240,9 @@
 				3B1F3F47160D2ADB004E700D /* CASDevice.m in Sources */,
 				3B1F3F4A160D2B00004E700D /* CASIOCommand.m in Sources */,
 				3B1F3F4D160D2B29004E700D /* CASIOTransport.m in Sources */,
+				3BCFE946160FFA65002BED5E /* CASSegmenter.m in Sources */,
+				3BCFE95F16102313002BED5E /* CASAlgorithm+Exposure.m in Sources */,
+				3BF31CAE1610AF760020723A /* CASRegionGrowerSegmenter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,7 +306,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoreAstroCustomSegmentationAlg/CoreAstroCustomSegmentationAlg-Prefix.pch";
+				GCC_PREFIX_HEADER = "CASRegionGrowerSegmenter/CASRegionGrowerSegmenter-Prefix.pch";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -316,7 +316,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CoreAstroCustomSegmentationAlg/CoreAstroCustomSegmentationAlg-Prefix.pch";
+				GCC_PREFIX_HEADER = "CASRegionGrowerSegmenter/CASRegionGrowerSegmenter-Prefix.pch";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -325,7 +325,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3B1F3EF8160D050F004E700D /* Build configuration list for PBXProject "CoreAstroCustomSegmentationAlg" */ = {
+		3B1F3EF8160D050F004E700D /* Build configuration list for PBXProject "CASRegionGrowerSegmenter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3B1F3F0B160D0510004E700D /* Debug */,
@@ -334,7 +334,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3B1F3F0D160D0510004E700D /* Build configuration list for PBXNativeTarget "CoreAstroCustomSegmentationAlg" */ = {
+		3B1F3F0D160D0510004E700D /* Build configuration list for PBXNativeTarget "CASRegionGrowerSegmenter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3B1F3F0E160D0510004E700D /* Debug */,

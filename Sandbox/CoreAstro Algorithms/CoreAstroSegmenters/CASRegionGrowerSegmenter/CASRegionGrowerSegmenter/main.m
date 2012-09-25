@@ -1,6 +1,6 @@
 //
 //  main.m
-//  CoreAstroCustomSegmentationAlg
+//  CASRegionGrowerSegmenter
 //
 //  Copyright (c) 2012, Wagner Truppel
 //
@@ -29,7 +29,7 @@
 #import "CASCCDExposure.h"
 #import "CASCCDExposureIO.h"
 
-#import "CASCustomAutoGuider.h"
+#import "CASRegionGrowerSegmenter.h"
 
 
 int main(int argc, const char * argv[])
@@ -57,11 +57,21 @@ int main(int argc, const char * argv[])
             return -1;
         }
 
-        CASAutoGuider* guider = [CASCustomAutoGuider autoGuiderWithIdentifier: nil];
-        NSArray* stars = [guider locateStars: exposure];
+        NSDictionary* dataD = [NSDictionary dictionaryWithObjectsAndKeys: exposure, keyExposure,
+                               [NSNumber numberWithInteger: kThresholdingModeUseCustomValue], keyThresholdingMode,
+                               [NSNumber numberWithInteger: 20000], keyThreshold,
+                               [NSNumber numberWithInteger: 10], keyMinNumPixelsInRegion,
+                               nil];
 
-        NSLog(@"exposure:\r%@", exposure);
-        NSLog(@"%@ :: stars:\r%@", [guider class], stars);
+        CASAlgorithm* alg = [[CASRegionGrowerSegmenter alloc] init];
+        [alg executeWithDictionary: dataD
+                   completionAsync: NO
+                   completionQueue: dispatch_get_current_queue()
+                   completionBlock: ^(NSDictionary* resultsD) {
+
+                       NSLog(@"%@ :: resultsD:\r%@", [alg class], resultsD);
+
+                   }];
     }
 
     return 0;
