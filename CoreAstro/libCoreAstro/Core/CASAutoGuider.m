@@ -24,6 +24,10 @@
 //
 //  Guiding algorithms by Craig Stark (http://www.stark-labs.com)
 //
+//  Please don't use this code as the basis of further development; it's still
+//  a work in progress. The original, verified algorithm can be found at
+//  http://code.google.com/p/open-phd-guiding/source/browse/branches/craig/guide_routines.cpp
+//
 
 #import "CASAutoGuider.h"
 
