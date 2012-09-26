@@ -179,6 +179,7 @@ enum {
     Dec_guide = DEC_AUTO;
     Dec_History = 0;
     guidingMode = kGuidingModeNeedsCalibrating;
+    Dec_dist_list.assign(10, 0);
 }
 
 - (void)logString:(NSString*)string
