@@ -304,7 +304,7 @@ enum {
     StarY = star.y;
 }
 
-- (NSInteger)updateStarLocation:(CASCCDExposure*)exposure fullFrameSize:(CASSize)fullFrameSize {
+- (NSInteger)updateStarLocation:(CASCCDExposure*)exposure {
     
 	unsigned short *dataptr;
 	NSInteger x, y, searchsize;
@@ -507,18 +507,16 @@ enum {
 
 - (CASCCDExposure*)processGuideFrame:(CASCCDExposure*)exposure {
     
-    const CASSize size = CASSizeMake(exposure.params.size.width, exposure.params.size.height);
-
     // median filter (take a copy ?)
     [self.imageProcessor medianFilter:exposure];
     
     // find star
-    [self updateStarLocation:exposure fullFrameSize:size];
+    [self updateStarLocation:exposure];
     
     return exposure;
 }
 
-- (void)startCalibration:(CASCCDExposure*)exposure fullFrameSize:(CASSize)fullFrameSize {
+- (void)startCalibration:(CASCCDExposure*)exposure {
 
     self.status = @"Calibrating...";
     
@@ -532,8 +530,7 @@ enum {
     
     still_going = true;
     iterations = 0;
-    dist_crit = 5; // (double) self.guider.size.width * 0.05;
-    NSLog(@"Currently using hard-coded dist_crit of %f",dist_crit);
+    dist_crit = exposure.params.frame.width * 0.05;
     if (dist_crit > 25.0) dist_crit = 25.0;
     
     [self logString:@"Calibration begun"];
@@ -547,7 +544,7 @@ enum {
     guidingMode = kGuidingModeCalibrating;
 }
 
-- (void)updateCalibration:(CASCCDExposure*)exposure fullFrameSize:(CASSize)fullFrameSize {
+- (void)updateCalibration:(CASCCDExposure*)exposure {
     
     exposure = [self processGuideFrame:exposure];
 
@@ -591,8 +588,6 @@ enum {
         self.status = @"Calibrating Dec+...";
 
         [self logString:[NSString stringWithFormat:@"Dec+ (north),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
-
-        [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
 
         if (in_backlash){
             
@@ -650,7 +645,7 @@ enum {
     
     if (calibrationDirection == kCASGuiderDirection_RAMinus || calibrationDirection == kCASGuiderDirection_DecMinus){
         
-        self.status = (calibrationDirection == kCASGuiderDirection_RAMinus) ? @"Calibrating RA+..." : @"Calibrating Dec+...";
+        self.status = (calibrationDirection == kCASGuiderDirection_RAMinus) ? @"Calibrating RA-..." : @"Calibrating Dec-...";
         
         if (iterations-- > 0){
             
@@ -667,7 +662,8 @@ enum {
             
             LockX = StarX;  // re-sync star position
             LockY = StarY;
-            
+            iterations = 0;
+
             if (calibrationDirection == kCASGuiderDirection_RAMinus){
                 calibrationDirection = kCASGuiderDirection_DecPlus;
                 [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
@@ -681,7 +677,7 @@ enum {
     }
 }
 
-- (void)updateGuiding:(CASCCDExposure*)exposure fullFrameSize:(CASSize)fullFrameSize {
+- (void)updateGuiding:(CASCCDExposure*)exposure {
     
     if (!start_time){
         start_time = [NSDate timeIntervalSinceReferenceDate];
@@ -881,20 +877,18 @@ enum {
 
 - (void)updateWithExposure:(CASCCDExposure*)exposure {
     
-    const CASSize size = CASSizeMake(exposure.params.size.width, exposure.params.size.height);
-    
     switch (guidingMode) {
             
         case kGuidingModeNeedsCalibrating:
-            [self startCalibration:exposure fullFrameSize:size];
+            [self startCalibration:exposure];
             break;
             
         case kGuidingModeCalibrating:
-            [self updateCalibration:exposure fullFrameSize:size];
+            [self updateCalibration:exposure];
             break;
             
         case kGuidingModeGuiding:
-            [self updateGuiding:exposure fullFrameSize:size];
+            [self updateGuiding:exposure];
             break;
             
         default:

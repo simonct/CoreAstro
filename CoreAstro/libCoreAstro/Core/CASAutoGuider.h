@@ -41,8 +41,6 @@ typedef enum {
     kCASGuiderDirection_DecMinus
 } CASGuiderDirection;
 
-//@property (nonatomic,readonly) CASSize size; // what is this used for ?
-
 - (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
 
 @end
