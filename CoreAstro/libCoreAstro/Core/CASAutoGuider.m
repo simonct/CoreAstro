@@ -22,7 +22,13 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  Guiding algorithms by Craig Stark (http://www.stark-labs.com)
+//  Guiding algorithms by Craig Stark ( http://www.stark-labs.com )
+//
+//  ***************************************************************************
+//  Please don't use this code as the basis of further development; it's still
+//  a work in progress. The original, verified algorithm can be found at
+//  http://code.google.com/p/open-phd-guiding/source/browse/branches/craig/guide_routines.cpp
+//  ***************************************************************************
 //
 
 #import "CASAutoGuider.h"
@@ -214,14 +220,14 @@ enum {
             
             B1 = (float) *(exposurePixels + linesize * (y-1) + x) + (float) *(exposurePixels + linesize * (y+1) + x) + (float) *(exposurePixels + linesize * y + (x + 1)) + (float) *(exposurePixels + linesize * y + (x-1));
 			
-            B2 = (float) *(exposurePixels + linesize * (y-1) + (x-1)) + (float) *(exposurePixels + linesize * (y+1) + (x+1)) + (float) *(exposurePixels + linesize * (y+1) + (x + 1)) + (float) *(exposurePixels + linesize * (y+1) + (x-1));
+			B2 = (float) *(exposurePixels + linesize * (y-1) + (x-1)) + (float) *(exposurePixels + linesize * (y-1) + (x+1)) + (float) *(exposurePixels + linesize * (y+1) + (x + 1)) + (float) *(exposurePixels + linesize * (y+1) + (x-1));
 			
             C1 = (float) *(exposurePixels + linesize * (y-2) + x) + (float) *(exposurePixels + linesize * (y+2) + x) + (float) *(exposurePixels + linesize * y + (x + 2)) + (float) *(exposurePixels + linesize * y + (x-2));
 			
             C2 = (float) *(exposurePixels + linesize * (y-2) + (x-1)) + (float) *(exposurePixels + linesize * (y-2) + (x+1)) + (float) *(exposurePixels + linesize * (y+2) + (x + 1)) + (float) *(exposurePixels + linesize * (y+2) + (x-1)) +
             (float) *(exposurePixels + linesize * (y-1) + (x-2)) + (float) *(exposurePixels + linesize * (y-1) + (x+2)) + (float) *(exposurePixels + linesize * (y+1) + (x + 2)) + (float) *(exposurePixels + linesize * (y+1) + (x-2));
 			
-            C3 = (float) *(exposurePixels + linesize * (y-2) + (x-2)) + (float) *(exposurePixels + linesize * (y+2) + (x+2)) + (float) *(exposurePixels + linesize * (y+2) + (x + 2)) + (float) *(exposurePixels + linesize * (y+2) + (x-2));
+			C3 = (float) *(exposurePixels + linesize * (y-2) + (x-2)) + (float) *(exposurePixels + linesize * (y-2) + (x+2)) + (float) *(exposurePixels + linesize * (y+2) + (x + 2)) + (float) *(exposurePixels + linesize * (y+2) + (x-2));
 			
             D1 = (float) *(exposurePixels + linesize * (y-3) + x) + (float) *(exposurePixels + linesize * (y+3) + x) + (float) *(exposurePixels + linesize * y + (x + 3)) + (float) *(exposurePixels + linesize * y + (x-3));
 			
@@ -354,7 +360,7 @@ enum {
 				maxlval = lval;
 			}
 			sval = *(dataptr + (start_x + x) + rowsize * (start_y + y)) -localmin;
-			if ( sval > max) {
+			if ( sval >= max) {
 				nearmax2 = nearmax1;
 				nearmax1 = max;
 				max = sval;
@@ -379,7 +385,7 @@ enum {
 	//double threshold = localmean;
 	double threshold = localmean + ((double) max + localmin - localmean) / 10.0;  // Note: max already has localmin pulled from it
 	//double threshold = localmin + ((double) max - localmin) / 10.0;
-	//frame->SetStatusText(wxString::Format("%.1f",threshold),1);
+	//frame->SetStatusText(wxString::Format("%f",threshold),1);
 	for (y=0; y<ft_range; y++) {
 		for (x=0; x<ft_range; x++) {
 			val = (double) *(dataptr + (base_x + (x-hft_range)) + rowsize*(base_y + (y-hft_range))) - threshold;
@@ -447,13 +453,13 @@ enum {
 		FoundStar=false;
 		StarMass = mass;
 		if (mass < 10.0) {
-            NSLog(@"NO STAR: %.1f",mass);
-//			frame->SetStatusText(wxString::Format(_T("NO STAR: %.1f"),mass),1);
+            NSLog(@"NO STAR: %f",mass);
+//			frame->SetStatusText(wxString::Format(_T("NO STAR: %f"),mass),1);
 			retval = STAR_LOWMASS;
 		}
 		else if (StarSNR < 3.0) {
-            NSLog(@"LOW SNR: %.1f",StarSNR);
-//			frame->SetStatusText(wxString::Format(_T("LOW SNR: %.1f"),StarSNR),1);
+            NSLog(@"LOW SNR: %f",StarSNR);
+//			frame->SetStatusText(wxString::Format(_T("LOW SNR: %f"),StarSNR),1);
 			retval = STAR_LOWSNR;
 		}
 	}
@@ -477,8 +483,8 @@ enum {
         }
 	}
     
-    NSLog(@"%ldx%ld: %.1f, %ld(%.1f), %ld, %hd",base_x,base_y,mass,mean,val,maxlval, nearmax2);
-    //	frame->SetStatusText(wxString::Format("%dx%d: %.1f, %ld(%.1f), %ld, %ld",base_x,base_y,mass,mean,val,maxlval, nearmax2),1);
+    NSLog(@"%ldx%ld: %f, %ld(%f), %ld, %hd",base_x,base_y,mass,mean,val,maxlval, nearmax2);
+    //	frame->SetStatusText(wxString::Format("%dx%d: %f, %ld(%f), %ld, %ld",base_x,base_y,mass,mean,val,maxlval, nearmax2),1);
 //	CropX = StarX - (CROPXSIZE/2);
 //	CropY = StarY - (CROPYSIZE/2);
 //	if (CropX < 0) CropX = 0;
@@ -504,6 +510,8 @@ enum {
 
 - (void)startCalibration:(CASCCDExposure*)exposure fullFrameSize:(CASSize)fullFrameSize {
 
+    self.status = @"Calibrating...";
+    
     Calibrated = false;
     RA_rate = RA_angle = Dec_rate = Dec_angle = 0.0;
     
@@ -519,7 +527,7 @@ enum {
     if (dist_crit > 25.0) dist_crit = 25.0;
     
     [self logString:@"Calibration begun"];
-    [self logString:[NSString stringWithFormat:@"lock %.1f %.1f, star %.1f %.1f",LockX,LockY,StarX,StarY]];
+    [self logString:[NSString stringWithFormat:@"lock %f %f, star %f %f",LockX,LockY,StarX,StarY]];
     [self logString:@"Direction,Step,dx,dy,x,y"];
     
     calibrationDirection = kCASGuiderDirection_RAPlus;
@@ -537,35 +545,42 @@ enum {
     
     if (calibrationDirection == kCASGuiderDirection_RAPlus) {
         
+        self.status = @"Calibrating RA+...";
+
         iterations++;
         
         if (iterations > 60) {
-            NSLog(@"RA Calibration failed - Star did not move enough");
+            NSLog(@"RA Calibration failed - Star did not move enough"); // call delegate
             return;
         }
         
-        [self logString:[NSString stringWithFormat:@"RA+ (west),%d,%.1f,%.1f,%.1f,%.1f",iterations, dX,dY,StarX,StarY]];
+        [self logString:[NSString stringWithFormat:@"RA+ (west),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
         
         if (dist > dist_crit) {
             
 			RA_rate = dist / (double) (iterations * Cal_duration);
             
-            NSLog(@"atany_x = %.2f, atan2= %.2f, dx= %.1f dy= %.1f",atan(dY / dX),atan2(dX,dY), dX, dY);
+            NSLog(@"atany_x = %.2f, atan2= %.2f, dx= %f dy= %f",atan(dY / dX),atan2(dX,dY), dX, dY);
 
 			if (dX == 0.0) dX = 0.00001;
 			if (dX > 0.0) RA_angle = atan(dY/dX);
 			else if (dY >= 0.0) RA_angle = atan(dY/dX) + M_PI;
 			else RA_angle = atan(dY/dX) - M_PI;
             
-            [self logString:[NSString stringWithFormat:@"RA+ (west) calibrated,%.1f,%.1f",RA_rate,RA_angle]];
+            [self logString:[NSString stringWithFormat:@"RA+ (west) calibrated,%f,%f",RA_rate,RA_angle]];
 
             calibrationDirection = kCASGuiderDirection_RAMinus;
 		}
+        else {
+            [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+        }
     }
     
     if (calibrationDirection == kCASGuiderDirection_DecPlus){
         
-        [self logString:[NSString stringWithFormat:@"Dec+ (north),%d,%.1f,%.1f,%.1f,%.1f",iterations, dX,dY,StarX,StarY]];
+        self.status = @"Calibrating Dec+...";
+
+        [self logString:[NSString stringWithFormat:@"Dec+ (north),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
 
         [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
 
@@ -605,7 +620,7 @@ enum {
                 
 				Dec_rate = dist / (double) (iterations * Cal_duration);
                 
-                NSLog(@"atany_x = %.2f, atan2= %.2f, dx= %.1f dy= %.1f",atan(dY / dX),atan2(dX,dY), dX, dY);
+                NSLog(@"atany_x = %.2f, atan2= %.2f, dx= %f dy= %f",atan(dY / dX),atan2(dX,dY), dX, dY);
                 
 				if (dX == 0.0) dX = 0.00001;
 				if (dX > 0.0) Dec_angle = atan(dY/dX);
@@ -613,22 +628,27 @@ enum {
 				else Dec_angle = atan(dY/dX) - M_PI;
 				still_going = false;
                 
-                [self logString:[NSString stringWithFormat:@"Dec+ (north) calibrated,%.1f,%.1f",Dec_rate,Dec_angle]];
+                [self logString:[NSString stringWithFormat:@"Dec+ (north) calibrated,%f,%f",Dec_rate,Dec_angle]];
 
                 calibrationDirection = kCASGuiderDirection_DecMinus;
 			}
+            else {
+                [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+            }
         }
     }
     
     if (calibrationDirection == kCASGuiderDirection_RAMinus || calibrationDirection == kCASGuiderDirection_DecMinus){
         
+        self.status = (calibrationDirection == kCASGuiderDirection_RAMinus) ? @"Calibrating RA+..." : @"Calibrating Dec+...";
+        
         if (iterations-- > 0){
             
             if (calibrationDirection == kCASGuiderDirection_RAMinus){
-                [self logString:[NSString stringWithFormat:@"RA- (east),%d,%.1f,%.1f,%.1f,%.1f",iterations, dX,dY,StarX,StarY]];
+                [self logString:[NSString stringWithFormat:@"RA- (east),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
             }
             else {
-                [self logString:[NSString stringWithFormat:@"Dec- (south),%d,%.1f,%.1f,%.1f,%.1f",iterations, dX,dY,StarX,StarY]];
+                [self logString:[NSString stringWithFormat:@"Dec- (south),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
             }
             
             [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
@@ -640,8 +660,10 @@ enum {
             
             if (calibrationDirection == kCASGuiderDirection_RAMinus){
                 calibrationDirection = kCASGuiderDirection_DecPlus;
+                [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
             }
             else {
+                self.status = @"Guiding";
                 guidingMode = kGuidingModeGuiding;
                 Calibrated = true;
             }
@@ -692,24 +714,26 @@ enum {
         
         if (RA_dist > 0.0) {
             
-            NSLog(@"E dur=%.1f dist=%.2f",RA_dur,RA_dist);
+            NSLog(@"E dur=%f dist=%.2f",RA_dur,RA_dist);
             
             [self.guider pulse:kCASGuiderDirection_RAMinus duration:RA_dur block:nil]; // So, guide in the RA- direction;
 
-            NSLog(@"%ld,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
+            NSLog(@"%ld,%.3f,%.2f,%.2f,%f,%f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
         }
         else {
             
-            NSLog(@"W dur=%.1f dist=%.2f",RA_dur,RA_dist);
+            NSLog(@"W dur=%f dist=%.2f",RA_dur,RA_dist);
             
             [self.guider pulse:kCASGuiderDirection_RAPlus duration:RA_dur block:nil]; // So, guide in the RA+ direction;
 
-            NSLog(@"%ld,%.3f,%.2f,%.2f,%.1f,%.1f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
+            NSLog(@"%ld,%.3f,%.2f,%.2f,%f,%f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
         }
     }
     else {
         
-        NSLog(@"%ld,%.3f,%.2f,%.2f,%.1f,0.0,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dist);
+        NSLog(@"%ld,%.3f,%.2f,%.2f,%f,0.0,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dist);
+        
+        NSLog(@"Dec guiding not implemented");
     }
 
     last_guide  = RA_dist;

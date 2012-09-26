@@ -15,11 +15,13 @@
 static CGFloat kCASStarRadius = 2.5;
 static NSInteger kCASImageSize = 500;
 static NSInteger kCASStarMarkerRadius = 5;
+static CGFloat kCASPixelsPerSecond = 1/0.750;
 
 @interface GuideImageView : NSImageView
 @property (nonatomic,strong) NSArray* stars;
 @property (nonatomic,assign) CGPoint lock;
 @property (nonatomic,assign) CGFloat radius;
+@property (nonatomic,copy) NSString* status;
 @end
 
 @implementation GuideImageView
@@ -68,19 +70,22 @@ static NSInteger kCASStarMarkerRadius = 5;
     [[NSColor redColor] set];
     path.lineWidth = 1.5;
     [path stroke];
+    
+    [self.status drawAtPoint:[self convertImagePoint:NSMakePoint(10, 40)] withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSColor whiteColor],NSForegroundColorAttributeName,[NSFont boldSystemFontOfSize:18],NSFontAttributeName, nil]];
 }
 
 @end
 
 @interface MKOAppDelegate ()<CASGuider>
-@property (nonatomic,assign) BOOL guide;
 @property (nonatomic,assign) CGFloat radius, starX, starY;
+@property (nonatomic,assign) NSInteger direction;
 @property (nonatomic,strong) CASGuideAlgorithm* algorithm;
 @end
 
 @implementation MKOAppDelegate {
     CASSize _size;
     CGContextRef _bitmap;
+    BOOL _guiding;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -115,19 +120,12 @@ static NSInteger kCASStarMarkerRadius = 5;
     [self drawStar];
 }
 
-- (void)setGuide:(BOOL)guide
-{
-    _guide = guide;
-    if (_guide){
-        if ([self.imageView.stars count]){
-            [self.algorithm resetStarLocation:[self.imageView.stars[0] pointValue]];
-        }
-    }
-    [self drawStar];
-}
-
 - (void)drawStar
 {
+    if (!_bitmap){
+        return;
+    }
+    
     // clear the background
     CGContextSetRGBFillColor(_bitmap,0,0,0,1);
     CGContextFillRect(_bitmap,CGRectMake(0, 0, _size.width, _size.height));
@@ -153,12 +151,12 @@ static NSInteger kCASStarMarkerRadius = 5;
     CASExposeParams params = CASExposeParamsMake(_size.width, _size.height, 0, 0, _size.width, _size.height, 1, 1, 16, 1);
     CASCCDExposure* exposure = [CASCCDExposure exposureWithPixels:pixels camera:nil params:params time:nil];
     
-    if (self.guide){
+    if (_guiding){
         // update guide state
         [self.algorithm updateWithExposure:exposure];
         self.imageView.lock = self.algorithm.lockLocation;
         self.imageView.radius = self.algorithm.searchRadius;
-        self.imageView.stars = [NSArray arrayWithObject:[NSValue valueWithPoint:self.algorithm.starLocation]];
+        self.imageView.status = self.algorithm.status;
     }
     else {
         // locate any stars
@@ -172,12 +170,95 @@ static NSInteger kCASStarMarkerRadius = 5;
 - (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block
 {
     NSLog(@"pulse: %d duration: %ld",direction,durationMS);
+    
+    const CGFloat delta = kCASPixelsPerSecond * durationMS/1000.0;
+    
+    [self willChangeValueForKey:@"starX"];
+    [self willChangeValueForKey:@"starY"];
+
+    switch (direction) {
+        case kCASGuiderDirection_RAPlus:
+            _starY -= delta;
+            break;
+        case kCASGuiderDirection_RAMinus:
+            _starY += delta;
+            break;
+        case kCASGuiderDirection_DecPlus:
+            _starX += delta;
+            break;
+        case kCASGuiderDirection_DecMinus:
+            _starX -= delta;
+            break;
+        default:
+            break;
+    }
+    
+    NSLog(@"_starX: %f, _starY: %f",_starX,_starY);
+    
+    // update UI
+    [self didChangeValueForKey:@"starX"];
+    [self didChangeValueForKey:@"starY"];
+
+    // draw the star and feed the image back into the guide algorithm next time round the run loop
+    dispatch_async(dispatch_get_current_queue(), ^{
+        [self drawStar];
+    });
 }
 
 - (IBAction)reset:(id)sender {
     self.starX = _size.width/2, self.starY = _size.height/2;
     [self.algorithm resetStarLocation:CGPointMake(self.starX, self.starY)];
     [self drawStar];
+}
+
+- (IBAction)start:(NSButton*)sender {
+    _guiding = !_guiding;
+    if (_guiding){
+        sender.title = @"Stop";
+    }
+    else {
+        sender.title = @"Start";
+    }
+    if (_guiding){
+        // reset
+        if ([self.imageView.stars count]){
+            [self.algorithm resetStarLocation:[self.imageView.stars[0] pointValue]];
+        }
+    }
+    [self drawStar];
+}
+
+- (IBAction)pulse:(id)sender {
+    
+    if (_guiding){
+        
+        [self willChangeValueForKey:@"starX"];
+        [self willChangeValueForKey:@"starY"];
+
+        switch (self.direction) {
+            case kCASGuiderDirection_RAPlus:
+                _starY -= 1;
+                break;
+            case kCASGuiderDirection_RAMinus:
+                _starY += 1;
+                break;
+            case kCASGuiderDirection_DecPlus:
+                _starX += 1;
+                break;
+            case kCASGuiderDirection_DecMinus:
+                _starX -= 1;
+                break;
+            default:
+                break;
+        }
+        
+        [self didChangeValueForKey:@"starX"];
+        [self didChangeValueForKey:@"starY"];
+        
+        dispatch_async(dispatch_get_current_queue(), ^{
+            [self drawStar];
+        });
+    }
 }
 
 @end
