@@ -237,16 +237,16 @@ static CGFloat kCASPixelsPerSecond = 1/0.750;
 
         switch (self.direction) {
             case kCASGuiderDirection_RAPlus:
-                _starY -= 1;
+                _starX -= 1;
                 break;
             case kCASGuiderDirection_RAMinus:
-                _starY += 1;
-                break;
-            case kCASGuiderDirection_DecPlus:
                 _starX += 1;
                 break;
+            case kCASGuiderDirection_DecPlus:
+                _starY += 1;
+                break;
             case kCASGuiderDirection_DecMinus:
-                _starX -= 1;
+                _starY -= 1;
                 break;
             default:
                 break;

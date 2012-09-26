@@ -63,7 +63,7 @@ typedef enum {
 
 - (void)resetStarLocation:(CGPoint)star;
 
-- (void)updateWithExposure:(CASCCDExposure*)exposure;
+- (void)updateWithExposure:(CASCCDExposure*)exposure; // pass block whih returns the guide command and optional error object
 
 @end
 

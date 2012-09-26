@@ -32,9 +32,16 @@
 //
 
 #import "CASAutoGuider.h"
+#import <vector>
 
 #define CROPXSIZE 100
 #define CROPYSIZE 100
+
+static float SIGN(double x) {
+	if (x > 0.0) return 1.0;
+	else if (x < 0.0) return -1.0;
+	else return 0.0;
+}
 
 enum {
 	DEC_OFF = 0,
@@ -80,7 +87,8 @@ enum {
     double StarSNR;
     double StarMassChangeRejectThreshold;
     bool Calibrated;
-    double RA_rate, RA_angle, Dec_rate, Dec_angle;
+    double RA_rate, RA_angle, Dec_rate, Dec_angle, Dec_dist, Dec_dur, Dec_History, Curr_Dec_Side;
+    std::vector<double> Dec_dist_list;
     int	Cal_duration;
     bool Dec_guide;
     
@@ -168,6 +176,8 @@ enum {
     frame_index = 0;
     elapsed_time = 0;
     start_time = 0;
+    Dec_guide = DEC_AUTO;
+    Dec_History = 0;
     guidingMode = kGuidingModeNeedsCalibrating;
 }
 
@@ -733,7 +743,134 @@ enum {
         
         NSLog(@"%ld,%.3f,%.2f,%.2f,%f,0.0,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dist);
         
-        NSLog(@"Dec guiding not implemented");
+    
+        Dec_dist = cos(Dec_angle - theta)*hyp;	// dist in Dec star needs to move
+        Dec_dur = fabs(Dec_dist)/Dec_rate;
+        //				if (fabs(Dec_dist) < 0.5)   // if drift is small, assume noisy and don't include in history - set to 0
+        //					Dec_dist_list.Add(0.0);
+        //				else
+
+        Dec_dist_list.push_back(Dec_dist);
+        //					Dec_dist_list.Add(SIGN(Dec_dist));
+        Dec_dist_list.erase(Dec_dist_list.begin());
+        
+
+        bool Allow_Dec_Move;
+        if (fabs(Dec_dist) < MinMotion)
+            Allow_Dec_Move = false;
+        else
+            Allow_Dec_Move = true; // so far, assume we'll allow the movement
+        Dec_History = 0.0;
+        for (int i=0; i<10; i++) {
+            if (fabs(Dec_dist_list[i]) > MinMotion) // only count decent-size errors
+                Dec_History += SIGN(Dec_dist_list[i]);
+        }
+        
+
+        //					Dec_History += Dec_dist_list.Item(i);
+//        Debug << Curr_Dec_Side << _T(" ") << Dec_dist << _T(" ") << Dec_dur << _T(" ") << (int) Allow_Dec_Move << _T(" ") << Dec_History << _T("\n");
+        NSLog(@"%f %f %f %d %f",Curr_Dec_Side,Dec_dist,Dec_dur,Allow_Dec_Move,Dec_History);
+        
+        // see if on same side of Dec and if we have enough evidence to switch
+        if ( ((Curr_Dec_Side == 0) || (Curr_Dec_Side == (-1.0 * SIGN(Dec_History)))) &&
+            Allow_Dec_Move && (Dec_guide == DEC_AUTO)) { // think about switching
+            
+//            wxString HistString = _T("Thinking of switching - Hist: ");
+//            for (int i=0; i<10; i++)
+//                HistString += wxString::Format(_T("%.2f "),Dec_dist_list.Item(i));
+//            HistString += wxString::Format(_T("(%.2f)\n"),Dec_History);
+//            Debug << HistString;
+            
+            if (fabs(Dec_History) < 3.0) { // not worth of switch
+                Allow_Dec_Move = false;
+                NSLog(@"..Not compelling enough");
+//                Debug << _T("..Not compelling enough\n");
+            }
+            else { // Think some more
+                if (fabs(Dec_dist_list[0] + Dec_dist_list[1] + Dec_dist_list[2]) <
+                    fabs(Dec_dist_list[9] + Dec_dist_list[8] + Dec_dist_list[7])) {
+                    
+                    NSLog(@".. !!!! Getting worse - Switching %f to %f",Curr_Dec_Side,SIGN(Dec_History));
+//                    Debug << _T(".. !!!! Getting worse - Switching ") << Curr_Dec_Side << _T(" to ") << SIGN(Dec_History) << _T("\n");
+                    
+                    Curr_Dec_Side = SIGN(Dec_History);
+                    Allow_Dec_Move = true;
+                }
+                else {
+                    Allow_Dec_Move = false;
+//                    Debug << _T("..Current error less than prior error -- not switching\n");
+                    NSLog(@"..Current error less than prior error -- not switching");
+                }
+            }
+        }
+        
+
+        if (Allow_Dec_Move && (Dec_guide == DEC_AUTO)) {
+            if (Curr_Dec_Side != SIGN(Dec_dist)) {
+                Allow_Dec_Move = false;
+//                Debug << _T(".. Dec move VETO .. must have overshot\n");
+                NSLog(@".. Dec move VETO .. must have overshot");
+            }
+        }
+        
+        if (Allow_Dec_Move) {
+//            Debug << _T(" Dec move ") << Dec_dur << _T(" ") << Dec_dist;
+            NSLog(@"Dec move %f %f",Dec_dur,Dec_dist);
+            if (Dec_dur > (float) Max_Dec_Dur) {
+                Dec_dur = (float) Max_Dec_Dur;
+//                Debug << _T("... Dec move clipped to ") << Dec_dur << _T("\n");
+                NSLog(@"... Dec move clipped to  %f",Dec_dur);
+            }
+            if ((Dec_dist > 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_SOUTH))) {
+//                SetStatusText(wxString::Format(_T("S dur=%.1f dist=%.2f"),Dec_dur,Dec_dist),1);
+                self.status = [NSString stringWithFormat:@"S dur=%f dist=%f",Dec_dur,Dec_dist];
+                
+                [self.guider pulse:kCASGuiderDirection_DecMinus duration:Dec_dur block:nil];
+
+//                pScope->Guide(SOUTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+                
+                [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
+
+//                if (Log_Data) {
+//                    logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
+//                }
+            }
+            else if ((Dec_dist < 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_NORTH))){
+//                SetStatusText(wxString::Format(_T("N dur=%.1f dist=%.2f"),Dec_dur,Dec_dist),1);
+                self.status = [NSString stringWithFormat:@"N dur=%f dist=%f",Dec_dur,Dec_dist];
+
+                [self.guider pulse:kCASGuiderDirection_DecPlus duration:Dec_dur block:nil];
+
+//                pScope->Guide(NORTH,(int) Dec_dur);	// So, guide in the Dec- direction;
+                
+                
+                [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
+
+//                if (Log_Data) {
+//                    logline = logline + wxString::Format(_T(",%.1f,%.2f"),Dec_dur,Dec_dist);
+//                }
+            }
+            else { // will hit this if in north or south only mode and the direction is the opposite
+                
+                [self logString:[NSString stringWithFormat:@",0.0,%.2f",Dec_dist]];
+
+//                logline = logline + wxString::Format(_T(",0.0,%.2f"),Dec_dist);
+//                Debug << _T("In N or S only mode and dir is opposite\n");
+                NSLog(@"In N or S only mode and dir is opposite");
+
+            }
+        }
+        else { // not enough motion
+            
+            [self logString:[NSString stringWithFormat:@",0.0,%.2f",Dec_dist]];
+
+//            logline = logline + wxString::Format(_T(",0.0,%.2f"),Dec_dist);
+//            Debug << _T("not enough motion\n");
+            NSLog(@"not enough motion");
+
+        }
+//        Debug << _T("Done\n");
+        NSLog(@"Done");
     }
 
     last_guide  = RA_dist;

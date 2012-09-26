@@ -18,7 +18,7 @@
 		F42507A1160F0D120054443B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F425079F160F0D120054443B /* InfoPlist.strings */; };
 		F42507A4160F0D120054443B /* guide_testTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507A3160F0D120054443B /* guide_testTests.m */; };
 		F425081D160F0D3F0054443B /* CASCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B0160F0D3F0054443B /* CASCameraController.m */; };
-		F425081E160F0D3F0054443B /* CASAutoGuider.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B3160F0D3F0054443B /* CASAutoGuider.m */; };
+		F425081E160F0D3F0054443B /* CASAutoGuider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F42507B3160F0D3F0054443B /* CASAutoGuider.mm */; };
 		F425081F160F0D3F0054443B /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B5160F0D3F0054443B /* CASCCDDevice.m */; };
 		F4250820160F0D3F0054443B /* CASCCDExposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B7160F0D3F0054443B /* CASCCDExposure.m */; };
 		F4250821160F0D3F0054443B /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B9160F0D3F0054443B /* CASCCDExposureIO.m */; };
@@ -117,7 +117,7 @@
 		F42507AF160F0D3F0054443B /* CASCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraController.h; sourceTree = "<group>"; };
 		F42507B0160F0D3F0054443B /* CASCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraController.m; sourceTree = "<group>"; };
 		F42507B2160F0D3F0054443B /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
-		F42507B3160F0D3F0054443B /* CASAutoGuider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAutoGuider.m; sourceTree = "<group>"; };
+		F42507B3160F0D3F0054443B /* CASAutoGuider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASAutoGuider.mm; sourceTree = "<group>"; };
 		F42507B4160F0D3F0054443B /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
 		F42507B5160F0D3F0054443B /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
 		F42507B6160F0D3F0054443B /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
@@ -342,7 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				F42507B2160F0D3F0054443B /* CASAutoGuider.h */,
-				F42507B3160F0D3F0054443B /* CASAutoGuider.m */,
+				F42507B3160F0D3F0054443B /* CASAutoGuider.mm */,
 				F42507B4160F0D3F0054443B /* CASCCDDevice.h */,
 				F42507B5160F0D3F0054443B /* CASCCDDevice.m */,
 				F42507B6160F0D3F0054443B /* CASCCDExposure.h */,
@@ -656,7 +656,7 @@
 				F4250786160F0D110054443B /* main.m in Sources */,
 				F425078D160F0D110054443B /* MKOAppDelegate.m in Sources */,
 				F425081D160F0D3F0054443B /* CASCameraController.m in Sources */,
-				F425081E160F0D3F0054443B /* CASAutoGuider.m in Sources */,
+				F425081E160F0D3F0054443B /* CASAutoGuider.mm in Sources */,
 				F425081F160F0D3F0054443B /* CASCCDDevice.m in Sources */,
 				F4250820160F0D3F0054443B /* CASCCDExposure.m in Sources */,
 				F4250821160F0D3F0054443B /* CASCCDExposureIO.m in Sources */,
