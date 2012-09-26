@@ -33,7 +33,8 @@
 //
 // 1. find the brightest available pixel and use it as the starting point
 // to grow a connected region, ie, a set of adjacent pixels that all have
-// non-zero brightness values. Mark these pixels as unavailable.
+// brightness values equal to or larger than some threshold. Mark these
+// pixels as unavailable.
 //
 // 2. go back to step 1. until there are no more available bright pixels
 // to consider.
@@ -47,37 +48,20 @@
 
 
 @interface CASSegmenter ()
+
 @property (readwrite, nonatomic) uint16_t threshold;
+@property (readwrite, nonatomic) NSUInteger numCandidatePixels;
+
 @end
 
 
 @interface CASRegion ()
 
-@property (readwrite, nonatomic) NSInteger regionID;
-@property (readwrite, nonatomic) CASRegionPixel brightestPixel;
+@property (readwrite, nonatomic) NSUInteger regionID;
+@property (readwrite, nonatomic) NSUInteger brightestPixelIndex;
+@property (readwrite, nonatomic) CASPoint brightestPixelCoords;
 @property (readwrite, nonatomic) CASRect frame;
 @property (readwrite, nonatomic, strong) NSSet* pixels;
-
-@end
-
-
-@interface CASRegionGrowerSegmenter (private)
-
-- (void) checkNeighboursOfPixelAtX: (NSInteger) x
-                              andY: (NSInteger) y
-                            values: (uint16_t*) values
-                            pixels: (CASRegionPixel*) pixels
-                       curRegionID: (NSUInteger) curRegionID
-                             frame: (CASRect*) curFrame
-                          pixelSet: (NSMutableSet*) set;
-
-- (void) checkPixelAtX: (NSInteger) x
-                  andY: (NSInteger) y
-                values: (uint16_t*) values
-                pixels: (CASRegionPixel*) pixels
-           curRegionID: (NSUInteger) curRegionID
-                 frame: (CASRect*) curFrame
-              pixelSet: (NSMutableSet*) set;
 
 @end
 
@@ -170,12 +154,6 @@
 // Returns an array of CASRegion objects.
 - (NSArray*) segmentExposureWithThreshold: (uint16_t) threshold;
 {
-    self.threshold = threshold;
-
-    NSUInteger numRows = self.numRows;
-    NSUInteger numCols = self.numCols;
-    NSUInteger numPixels = self.numPixels;
-
     uint16_t* values = (uint16_t*) [self.exposure.pixels bytes];
     if (!values)
     {
@@ -183,56 +161,68 @@
         return nil;
     }
 
-    CASRegionPixel* pixels = (CASRegionPixel*) malloc(numPixels * sizeof(CASRegionPixel));
-    if (!pixels)
-    {
-        NSLog(@"%s :: Failed to allocate memory for array of %lu CASRegionPixel values.", __FUNCTION__, numPixels);
-        return nil;
-    }
+    NSUInteger numRows = self.numRows;
+    NSUInteger numCols = self.numCols;
+    NSUInteger numPixels = self.numPixels;
+    // NSLog(@"numPixels: %lu", numPixels);
 
-    // Fill the pixels array with initial values.
-    // Initially, all pixels are assigned to no region.
-    for (NSUInteger p = 0; p < numPixels; ++p)
-    {
-        NSInteger x = cas_alg_X(numRows, numCols, p);
-        NSInteger y = cas_alg_Y(numRows, numCols, p);
-
-        CASRegionPixel pixel;
-        pixel.indexInExposure = p;
-        pixel.locationInImage = CASPointMake(x, y);
-        pixel.regionID = UNASSIGNED_REGION_ID;
-
-        pixels[p] = pixel;
-    }
-
-    NSUInteger curRegionID = 0;
-    uint16_t thresh = self.threshold;
+    // We do this because we may have gotten a custom threshold,
+    // in which case we didn't get a chance to store it before now.
+    self.threshold = threshold;
+    // NSLog(@"threshold: %hu", threshold);
 
     // Array to hold the regions we'll be creating.
-    NSMutableArray* mutA = [[NSMutableArray alloc] init];
+    NSMutableArray* regionsA = [[NSMutableArray alloc] init];
 
-    while (TRUE)
+    // A set to hold the exposure indices of pixels with
+    // brightness values equal to or larger than the threshold.
+    // We create this set because only these pixels are valid
+    // candidates for being added to a region and there's no
+    // point in iterating through the remaining pixels when we
+    // know already that they're invalid. All of the pixels in
+    // this set will eventually be assigned to a region, thus
+    // becoming invalid candidates for subsequent regions. As
+    // we add candidate pixels to a region, we remove them from
+    // this set to further minimize the search space.
+    NSMutableSet* candidates = [[NSMutableSet alloc] init];
+
+    for (NSUInteger p = 0; p < numPixels; ++p)
     {
-        // Find the brightest pixel, skipping pixels that have
-        // already been assigned to a region and taking into
-        // account thresholding.
+        if (self.thresholdingMode == kThresholdingModeNoThresholding || values[p] >= threshold)
+        {
+            [candidates addObject: [NSNumber numberWithUnsignedInteger: p]];
+        }
+    }
+
+    self.numCandidatePixels = [candidates count];
+
+    // Running region ID.
+    NSUInteger curRegionID = 0;
+
+    while ([candidates count] > 0 && [regionsA count] < self.maxNumRegions)
+    {
+        // NSLog(@" ");
+        // NSLog(@"curRegionID: %lu", curRegionID);
+        // NSLog(@"[candidates count]: %lu (%.2f%% of numPixels)", [candidates count], ((100.0 * [candidates count]) / numPixels));
+
+        // An array to hold the pixels for the current region. This array
+        // holds the pixels' indices in the exposure array, as NSNumbers.
+        NSMutableArray* regionPixels = [[NSMutableArray alloc] init];
+
+        // A stack to maintain a list of pixels to process, ie, pixels
+        // that will become part of the current region. Pixels are
+        // removed from this stack when they're processed.
+        NSMutableArray* pixelsToProcess = [[NSMutableArray alloc] init];
+
+        // Find the brightest pixel among the current candidates.
 
         uint16_t max = 0;
         NSUInteger idxOfMax = 0;
 
-        for (NSUInteger p = 0; p < numPixels; ++p)
+        for (NSNumber* pObj in candidates)
         {
-            // Skip pixels already assigned to a region.
-            if (pixels[p].regionID != UNASSIGNED_REGION_ID) continue;
-            
+            NSUInteger p = [pObj unsignedIntegerValue];
             uint16_t value = values[p];
-
-            // Apply thresholding, if needed.
-            if (self.thresholdingMode != kThresholdingModeNoThresholding &&
-                thresh > 0 && value < thresh)
-            {
-                value = 0;
-            }
 
             if (value > max)
             {
@@ -241,184 +231,214 @@
             }
         }
 
-        if (max == 0)
+        // (x,y) coordinates of the brightest pixel.
+        NSInteger xbp = cas_alg_X(numRows, numCols, idxOfMax);
+        NSInteger ybp = cas_alg_Y(numRows, numCols, idxOfMax);
+
+        // A frame for the current region. It will be updated
+        // as we grow the region.
+        CASRect frame = CASRectMake2(xbp, ybp, 1, 1);
+
+        // Add the brightest pixel to the stack of pixels to process.
+        NSNumber* bpObj = [NSNumber numberWithUnsignedInteger: idxOfMax];
+        [pixelsToProcess addObject: bpObj];
+
+        // While we have pixels to process, process them.
+        while ([pixelsToProcess count] > 0)
         {
-            // No more regions to grow.
-            break;
+            // Get the last pixel from the stack of pixels to process.
+            NSNumber* pObj = [pixelsToProcess lastObject];
+            NSUInteger p = [pObj unsignedIntegerValue];
+
+            // Add it to the set of pixels for the current region.
+            [regionPixels addObject: pObj];
+
+            // (x,y) coordinates of the pixel we're processing.
+            NSInteger x = cas_alg_X(numRows, numCols, p);
+            NSInteger y = cas_alg_Y(numRows, numCols, p);
+
+            // Update the region frame. If the pixel being processed lies
+            // outside of the current frame, extend the frame to contain it.
+
+            NSInteger blx = frame.origin.x;
+            NSInteger bly = frame.origin.y;
+            NSInteger brx = blx + frame.size.width - 1;
+            NSInteger tly = bly + frame.size.height - 1;
+
+            if (x < blx) { blx = x; }
+            if (x > brx) { brx = x; }
+
+            if (y < bly) { bly = y; }
+            if (y > tly) { tly = y; }
+
+            frame.origin.x = blx;
+            frame.origin.y = bly;
+            frame.size.width = brx - blx + 1;
+            frame.size.height = tly - bly + 1;
+
+            // Ok, we're done processing the current pixel, so
+            // remove it from the set of pixels to process and
+            // from the set of candidate pixels.
+            [pixelsToProcess removeLastObject];
+            [candidates removeObject: pObj];
+
+            // Now add its neighbours to the set of pixels to process.
+            // However, only consider pixels which are in the set of candidates.
+
+            // Next pixel's (x,y) coordinates.
+            NSInteger nx, ny;
+
+            // Next pixel's index in the exposure array, and an NSNumber
+            // to represent it as an object.
+            NSUInteger np;
+            NSNumber* npObj;
+
+            if (x > 0)
+            {
+                // the pixel to the left of the current pixel
+                nx = (x-1);
+                ny = y;
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (x > 0 && y > 0)
+            {
+                // the pixel to the left of and below the current pixel
+                nx = (x-1);
+                ny = (y-1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (y > 0)
+            {
+                // the pixel below the current pixel
+                nx = x;
+                ny = (y-1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (x < self.numCols - 1 && y > 0)
+            {
+                // the pixel below and to the right of the current pixel
+                nx = (x+1);
+                ny = (y-1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (x < self.numCols - 1)
+            {
+                // the pixel to the right of the current pixel
+                nx = (x+1);
+                ny = y;
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (x < self.numCols - 1 && y < self.numRows - 1)
+            {
+                // the pixel to the right of and above the current pixel
+                nx = (x+1);
+                ny = (y+1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (y < self.numRows - 1)
+            {
+                // the pixel above the current pixel
+                nx = x;
+                ny = (y+1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
+
+            if (x > 0 && y < self.numRows - 1)
+            {
+                // the pixel above and to the left of the current pixel
+                nx = (x-1);
+                ny = (y+1);
+
+                np = cas_alg_P(numRows, numCols, nx, ny);
+                npObj = [NSNumber numberWithUnsignedInteger: np];
+
+                if ([candidates containsObject: npObj])
+                {
+                    [pixelsToProcess addObject: npObj];
+                }
+            }
         }
-
-        // Set to hold the pixels for the region to be built.
-        NSMutableSet* mutS = [[NSMutableSet alloc] init];
-
-        // Assign a region to the brightest pixel.
-        pixels[idxOfMax].regionID = curRegionID;
-
-        // Add the brightest pixel to the region set.
-        CASRegionPixel pixel = pixels[idxOfMax];
-        [mutS addObject: [CASRegionPixelValue value: &pixel withObjCType: @encode(CASRegionPixel)]];
-
-        // Check neighbours and assign the current region to any
-        // neighbour that hasn't been assigned to a region yet
-        // and which has a non-zero brightness value. Keep track
-        // of the frame of the region as it's grown.
-
-        NSInteger x = cas_alg_X(numRows, numCols, idxOfMax);
-        NSInteger y = cas_alg_Y(numRows, numCols, idxOfMax);
-        CASRect curFrame = CASRectMake2(x, y, 0, 0); // holds the frame of the region
-
-        [self checkNeighboursOfPixelAtX: x andY: y
-                                 values: values pixels: pixels
-                            curRegionID: curRegionID frame: &curFrame
-                               pixelSet: mutS];
 
         // By the time we get here, the region can't grow any further,
         // so create an object to represent it and add it to our array
         // of regions.
 
         // Ignore regions with not enough pixels.
-        if ([mutS count] >= self.minNumPixelsInRegion)
+        if ([regionPixels count] >= self.minNumPixelsInRegion)
         {
             CASRegion* region = [[CASRegion alloc] init];
             region.regionID = curRegionID;
-            region.brightestPixel = pixels[idxOfMax];
-            region.frame = curFrame;
-            region.pixels = [NSSet setWithSet: mutS];
+            region.brightestPixelIndex = idxOfMax;
+            region.brightestPixelCoords = CASPointMake(xbp, ybp);
+            region.frame = frame;
+            region.pixels = [NSSet setWithArray: regionPixels];
 
             // Add the region to the regions array.
-            [mutA addObject: region];
+            [regionsA addObject: region];
+
+            // NSLog(@"region: %@", region);
+
+            // Finally, increment curRegionID and look for the next region.
+            curRegionID += 1;
         }
-
-        // Finally, increment curRegionID and look for the next region.
-        curRegionID += 1;
     }
 
-    free(pixels);
-
-    return [NSArray arrayWithArray: mutA];
-}
-
-@end
-
-
-@implementation CASRegionGrowerSegmenter (private)
-
-- (void) checkNeighboursOfPixelAtX: (NSInteger) x
-                              andY: (NSInteger) y
-                            values: (uint16_t*) values
-                            pixels: (CASRegionPixel*) pixels
-                       curRegionID: (NSUInteger) curRegionID
-                             frame: (CASRect*) curFrame
-                          pixelSet: (NSMutableSet*) set;
-{
-    if (x > 0)
-    {
-        // check pixel to the left of the current pixel
-        [self checkPixelAtX: x-1 andY: y values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (x > 0 && y > 0)
-    {
-        // check pixel to the left of and below the current pixel
-        [self checkPixelAtX: x-1 andY: y-1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (y > 0)
-    {
-        // check pixel below the current pixel
-        [self checkPixelAtX: x andY: y-1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (x < self.numCols - 1 && y > 0)
-    {
-        // check pixel below and to the right of the current pixel
-        [self checkPixelAtX: x+1 andY: y-1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (x < self.numCols - 1)
-    {
-        // check pixel to the right of the current pixel
-        [self checkPixelAtX: x+1 andY: y values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (x < self.numCols - 1 && y < self.numRows - 1)
-    {
-        // check pixel to the right of and above the current pixel
-        [self checkPixelAtX: x+1 andY: y+1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (y < self.numRows - 1)
-    {
-        // check pixel above the current pixel
-        [self checkPixelAtX: x andY: y+1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-
-    if (x > 0 && y < self.numRows - 1)
-    {
-        // check pixel above and to the left of the current pixel
-        [self checkPixelAtX: x-1 andY: y+1 values: values pixels: pixels
-                curRegionID: curRegionID frame: curFrame pixelSet: set];
-    }
-}
-
-
-- (void) checkPixelAtX: (NSInteger) x
-                  andY: (NSInteger) y
-                values: (uint16_t*) values
-                pixels: (CASRegionPixel*) pixels
-           curRegionID: (NSUInteger) curRegionID
-                 frame: (CASRect*) curFrame
-              pixelSet: (NSMutableSet*) set;
-{
-    NSUInteger p = cas_alg_P(self.numRows, self.numCols, x, y);
-
-    // Skip pixel if already assigned to a region.
-    if (pixels[p].regionID != UNASSIGNED_REGION_ID) return;
-
-    // Skip pixel if its brightness is below the threshold.
-    if (self.thresholdingMode != kThresholdingModeNoThresholding &&
-        self.threshold > 0 && values[p] < self.threshold) return;
-
-    // Ok, we're not skipping this pixel. Since it's a neighbour
-    // of the calling pixel, we must assign it to the same region
-    // and add it to the set of pixels for the current region.
-    
-    pixels[p].regionID = curRegionID;
-
-    CASRegionPixel pixel = pixels[p];
-    [set addObject: [CASRegionPixelValue value: &pixel withObjCType: @encode(CASRegionPixel)]];
-
-    // Now update the region frame. If the newly added pixel
-    // lies outside of the current frame, augment the frame
-    // to contain it.
-    
-    NSInteger blx = (*curFrame).origin.x;
-    NSInteger bly = (*curFrame).origin.y;
-    NSInteger brx = blx + (*curFrame).size.width;
-    NSInteger tly = bly + (*curFrame).size.height;
-
-    if (x < blx) { blx = x; }
-    if (x > brx) { brx = x; }
-
-    if (y < bly) { bly = y; }
-    if (y > tly) { tly = y; }
-
-    (*curFrame).origin.x = blx;
-    (*curFrame).origin.y = bly;
-    (*curFrame).size.width = brx - blx;
-    (*curFrame).size.height = tly - bly;
-
-    // Finally, check *its* neighbours.
-    [self checkNeighboursOfPixelAtX: x andY: y
-                             values: values pixels: pixels
-                        curRegionID: curRegionID frame: curFrame
-                           pixelSet: set];
+    return [NSArray arrayWithArray: regionsA];
 }
 
 @end
