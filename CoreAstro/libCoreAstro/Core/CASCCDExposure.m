@@ -276,7 +276,8 @@
     CFStringRef uuids = CFUUIDCreateString(NULL, uuid);
     [meta setObject:(__bridge NSString*)uuids forKey:@"uuid"];
     CFRelease(uuid);
-    
+    CFRelease(uuids);
+
     const CASExposeParams check = CASExposeParamsFromNSString([meta objectForKey:@"exposure"]);;
     NSAssert(memcmp(&expParams, &check, sizeof check) == 0,@"CASExposeParams check failed");
     exp.meta = meta;

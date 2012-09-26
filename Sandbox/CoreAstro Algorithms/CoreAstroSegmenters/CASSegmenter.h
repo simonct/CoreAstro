@@ -28,41 +28,22 @@
 #import "CASAlgorithm+Exposure.h"
 
 
-extern NSString* const keyNumRegions;
-extern NSString* const keyRegions;
+extern NSString* const keyMaxNumRegions;
 extern NSString* const keyMinNumPixelsInRegion;
 
-
-#define UNASSIGNED_REGION_ID        -1
-
-// Only makes sense in the context of a given exposure.
-typedef struct
-{
-    NSInteger regionID;
-    NSUInteger indexInExposure;
-    CASPoint locationInImage;
-
-} CASRegionPixel;
-
-
-NS_INLINE NSString* NSStringFromCASRegionPixel(CASRegionPixel rp)
-{
-    return [NSString stringWithFormat: @"{%ld, %lu, %@}",
-            rp.regionID, rp.indexInExposure, NSStringFromCASPoint(rp.locationInImage)];
-}
-
-
-@interface CASRegionPixelValue: NSValue
-@end
+extern NSString* const keyNumCandidatePixels;
+extern NSString* const keyNumRegions;
+extern NSString* const keyRegions;
 
 
 // Only makes sense in the context of a given exposure.
 @interface CASRegion: NSObject
 
-@property (readonly, nonatomic) NSInteger regionID;
-@property (readonly, nonatomic) CASRegionPixel brightestPixel;
+@property (readonly, nonatomic) NSUInteger regionID;
+@property (readonly, nonatomic) NSUInteger brightestPixelIndex; // index in the exposure array
+@property (readonly, nonatomic) CASPoint brightestPixelCoords; // coordinates in the exposure image
 @property (readonly, nonatomic) CASRect frame; // in image coordinates (origin at bottom-left corner)
-@property (readonly, nonatomic, strong) NSSet* pixels; // set of NSValue-boxed CASRegionPixel structs
+@property (readonly, nonatomic, strong) NSSet* pixels; // set of NSNumber-boxed indices into the exposure array
 
 @end
 
@@ -76,10 +57,14 @@ NS_INLINE NSString* NSStringFromCASRegionPixel(CASRegionPixel rp)
 @property (readonly, nonatomic) NSUInteger numRows;
 @property (readonly, nonatomic) NSUInteger numCols;
 @property (readonly, nonatomic) NSUInteger numPixels;
+
+@property (readonly, nonatomic) NSUInteger maxNumRegions;
 @property (readonly, nonatomic) NSUInteger minNumPixelsInRegion;
 
 @property (readonly, nonatomic) ThresholdingMode thresholdingMode;
 @property (readonly, nonatomic) uint16_t threshold;
+
+@property (readonly, nonatomic) NSUInteger numCandidatePixels;
 
 // For subclass use only.
 // Returns an array of CASRegion objects.

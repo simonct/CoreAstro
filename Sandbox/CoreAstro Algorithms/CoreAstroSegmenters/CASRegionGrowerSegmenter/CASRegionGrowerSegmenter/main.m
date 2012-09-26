@@ -58,9 +58,10 @@ int main(int argc, const char * argv[])
         }
 
         NSDictionary* dataD = [NSDictionary dictionaryWithObjectsAndKeys: exposure, keyExposure,
-                               [NSNumber numberWithInteger: kThresholdingModeUseCustomValue], keyThresholdingMode,
-                               [NSNumber numberWithInteger: 20000], keyThreshold,
-                               [NSNumber numberWithInteger: 10], keyMinNumPixelsInRegion,
+                               [NSNumber numberWithInteger: kThresholdingModeUseAverage], keyThresholdingMode,
+//                             [NSNumber numberWithUnsignedShort: 8000], keyThreshold,
+                               [NSNumber numberWithInteger: 20], keyMaxNumRegions,
+                               [NSNumber numberWithInteger: 5], keyMinNumPixelsInRegion,
                                nil];
 
         CASAlgorithm* alg = [[CASRegionGrowerSegmenter alloc] init];

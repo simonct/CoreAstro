@@ -27,15 +27,19 @@
 #import "CASSegmenter.h"
 
 
+NSString* const keyMaxNumRegions = @"max number of regions";
+NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
+
+NSString* const keyNumCandidatePixels = @"num candidate pixels";
 NSString* const keyNumRegions = @"num regions";
 NSString* const keyRegions = @"regions";
-NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
 
 
 @interface CASRegion ()
 
-@property (readwrite, nonatomic) NSInteger regionID;
-@property (readwrite, nonatomic) CASRegionPixel brightestPixel;
+@property (readwrite, nonatomic) NSUInteger regionID;
+@property (readwrite, nonatomic) NSUInteger brightestPixelIndex;
+@property (readwrite, nonatomic) CASPoint brightestPixelCoords;
 @property (readwrite, nonatomic) CASRect frame;
 @property (readwrite, nonatomic, strong) NSSet* pixels;
 
@@ -48,28 +52,9 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
 {
     NSMutableString* res = [[NSMutableString alloc] init];
 
-    [res appendFormat: @"{id: %ld, frame: %@, bp: %@, numPixels: %ld}",
-     self.regionID, NSStringFromCASRect(self.frame),
-     NSStringFromCASRegionPixel(self.brightestPixel), [self.pixels count]];
-
-    return [NSString stringWithString: res];
-}
-
-@end
-
-
-@implementation CASRegionPixelValue
-
-- (NSString*) description;
-{
-    NSMutableString* res = [[NSMutableString alloc] init];
-
-    CASRegionPixel pixel;
-    [self getValue: &pixel];
-
-    [res appendFormat: @"{id: %ld, index: %lu, loc: %@}",
-     pixel.regionID, pixel.indexInExposure,
-     NSStringFromCASPoint(pixel.locationInImage)];
+    [res appendFormat: @"{id: %lu, frame: %@, bp: {%lu, %@}, numPixels: %ld}",
+     self.regionID, NSStringFromCASRect(self.frame), self.brightestPixelIndex,
+     NSStringFromCASPoint(self.brightestPixelCoords), [self.pixels count]];
 
     return [NSString stringWithString: res];
 }
@@ -85,10 +70,14 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
 @property (readwrite, nonatomic) NSUInteger numRows;
 @property (readwrite, nonatomic) NSUInteger numCols;
 @property (readwrite, nonatomic) NSUInteger numPixels;
+
+@property (readwrite, nonatomic) NSUInteger maxNumRegions;
 @property (readwrite, nonatomic) NSUInteger minNumPixelsInRegion;
 
 @property (readwrite, nonatomic) ThresholdingMode thresholdingMode;
 @property (readwrite, nonatomic) uint16_t threshold;
+
+@property (readwrite, nonatomic) NSUInteger numCandidatePixels;
 
 @end
 
@@ -134,13 +123,33 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
 
+    
+    objInDataD = [dataD objectForKey: keyMaxNumRegions];
+    if (!objInDataD)
+    {
+        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyMaxNumRegions'. "
+              "Will use the default value of 'NSUIntegerMax' (effectively, 'no limit').", __FUNCTION__);
+
+        objInDataD = [NSNumber numberWithUnsignedInteger: NSUIntegerMax];
+    }
+    if (![objInDataD isKindOfClass: [NSNumber class]])
+    {
+        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'NSNumber'.",
+              __FUNCTION__, keyMaxNumRegions);
+
+        return nil;
+    }
+    self.maxNumRegions = [objInDataD unsignedIntegerValue];
+    [resultsMutD setObject: objInDataD forKey: keyMaxNumRegions];
+
+    
     objInDataD = [dataD objectForKey: keyMinNumPixelsInRegion];
     if (!objInDataD)
     {
         NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyMinNumPixelsInRegion'. "
               "Will use the default value of 1.", __FUNCTION__);
 
-        objInDataD = [NSNumber numberWithInteger: 1];
+        objInDataD = [NSNumber numberWithUnsignedInteger: 1];
     }
     if (![objInDataD isKindOfClass: [NSNumber class]])
     {
@@ -149,10 +158,10 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
 
         return nil;
     }
-
     self.minNumPixelsInRegion = [objInDataD unsignedIntegerValue];
     [resultsMutD setObject: objInDataD forKey: keyMinNumPixelsInRegion];
 
+    
     objInDataD = [dataD objectForKey: keyThresholdingMode];
     if (!objInDataD)
     {
@@ -168,7 +177,6 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
 
         return nil;
     }
-
     ThresholdingMode mode = (ThresholdingMode) [(NSNumber*) objInDataD integerValue];
     [resultsMutD setObject: objInDataD forKey: keyThresholdingMode];
     self.thresholdingMode = mode;
@@ -204,7 +212,6 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
             }
 
             self.threshold = [(NSNumber*) objInDataD unsignedShortValue];
-            [resultsMutD setObject: objInDataD forKey: keyThreshold];
             regions = [self segmentExposureWithThreshold: self.threshold];
         }
             break;
@@ -219,10 +226,13 @@ NSString* const keyMinNumPixelsInRegion = @"min number of pixels in region";
             break;
     }
 
+    [resultsMutD setObject: [NSNumber numberWithUnsignedShort: self.threshold] forKey: keyThreshold];
+
     if (regions)
     {
         self.regions = regions;
 
+        [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCandidatePixels] forKey: keyNumCandidatePixels];
         [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: [regions count]] forKey: keyNumRegions];
         [resultsMutD setObject: regions forKey: keyRegions];
     }
