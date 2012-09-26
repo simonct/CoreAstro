@@ -15,7 +15,7 @@
 static CGFloat kCASStarRadius = 2.5;
 static NSInteger kCASImageSize = 500;
 static NSInteger kCASStarMarkerRadius = 5;
-static CGFloat kCASPixelsPerSecond = 1/0.750;
+static CGFloat kCASPixelsPerSecond = 5/0.750;
 
 @interface GuideImageView : NSImageView
 @property (nonatomic,strong) NSArray* stars;
@@ -178,16 +178,16 @@ static CGFloat kCASPixelsPerSecond = 1/0.750;
 
     switch (direction) {
         case kCASGuiderDirection_RAPlus:
-            _starY -= delta;
+            _starX -= delta;
             break;
         case kCASGuiderDirection_RAMinus:
-            _starY += delta;
-            break;
-        case kCASGuiderDirection_DecPlus:
             _starX += delta;
             break;
+        case kCASGuiderDirection_DecPlus:
+            _starY += delta;
+            break;
         case kCASGuiderDirection_DecMinus:
-            _starX -= delta;
+            _starY -= delta;
             break;
         default:
             break;
