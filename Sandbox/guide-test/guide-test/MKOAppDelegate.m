@@ -76,7 +76,7 @@ static CGFloat kCASPixelsPerSecond = 5/0.750;
 
 @end
 
-@interface MKOAppDelegate ()<CASGuider>
+@interface MKOAppDelegate ()
 @property (nonatomic,assign) CGFloat radius, starX, starY;
 @property (nonatomic,assign) NSInteger direction;
 @property (nonatomic,strong) CASGuideAlgorithm* algorithm;
@@ -92,7 +92,6 @@ static CGFloat kCASPixelsPerSecond = 5/0.750;
 {
     self.algorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
     self.algorithm.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-    self.algorithm.guider = self;
     
     _size = CASSizeMake(kCASImageSize, kCASImageSize);
     self.starX = _size.width/2, self.starY = _size.height/2;
@@ -152,8 +151,45 @@ static CGFloat kCASPixelsPerSecond = 5/0.750;
     CASCCDExposure* exposure = [CASCCDExposure exposureWithPixels:pixels camera:nil params:params time:nil];
     
     if (_guiding){
+        
         // update guide state
-        [self.algorithm updateWithExposure:exposure];
+        [self.algorithm updateWithExposure:exposure guideCallback:^(NSError *error, CASGuiderDirection direction, NSInteger duration) {
+            
+            NSLog(@"pulse: %d duration: %ld",direction,duration);
+            
+            const CGFloat delta = kCASPixelsPerSecond * duration/1000.0;
+            
+            [self willChangeValueForKey:@"starX"];
+            [self willChangeValueForKey:@"starY"];
+            
+            switch (direction) {
+                case kCASGuiderDirection_RAPlus:
+                    _starX -= delta;
+                    break;
+                case kCASGuiderDirection_RAMinus:
+                    _starX += delta;
+                    break;
+                case kCASGuiderDirection_DecPlus:
+                    _starY += delta;
+                    break;
+                case kCASGuiderDirection_DecMinus:
+                    _starY -= delta;
+                    break;
+                default:
+                    break;
+            }
+            
+            NSLog(@"_starX: %f, _starY: %f",_starX,_starY);
+            
+            // update UI
+            [self didChangeValueForKey:@"starX"];
+            [self didChangeValueForKey:@"starY"];
+            
+            // draw the star and feed the image back into the guide algorithm next time round the run loop
+            dispatch_async(dispatch_get_current_queue(), ^{
+                [self drawStar];
+            });
+        }];
         self.imageView.lock = self.algorithm.lockLocation;
         self.imageView.radius = self.algorithm.searchRadius;
         self.imageView.status = self.algorithm.status;
@@ -165,44 +201,6 @@ static CGFloat kCASPixelsPerSecond = 5/0.750;
 
     // display it
     self.imageView.image = [[NSImage alloc] initWithCGImage:CGBitmapContextCreateImage(_bitmap) size:NSMakeSize(_size.width, _size.height)];
-}
-
-- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block
-{
-    NSLog(@"pulse: %d duration: %ld",direction,durationMS);
-    
-    const CGFloat delta = kCASPixelsPerSecond * durationMS/1000.0;
-    
-    [self willChangeValueForKey:@"starX"];
-    [self willChangeValueForKey:@"starY"];
-
-    switch (direction) {
-        case kCASGuiderDirection_RAPlus:
-            _starX -= delta;
-            break;
-        case kCASGuiderDirection_RAMinus:
-            _starX += delta;
-            break;
-        case kCASGuiderDirection_DecPlus:
-            _starY += delta;
-            break;
-        case kCASGuiderDirection_DecMinus:
-            _starY -= delta;
-            break;
-        default:
-            break;
-    }
-    
-    NSLog(@"_starX: %f, _starY: %f",_starX,_starY);
-    
-    // update UI
-    [self didChangeValueForKey:@"starX"];
-    [self didChangeValueForKey:@"starY"];
-
-    // draw the star and feed the image back into the guide algorithm next time round the run loop
-    dispatch_async(dispatch_get_current_queue(), ^{
-        [self drawStar];
-    });
 }
 
 - (IBAction)reset:(id)sender {
