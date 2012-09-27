@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 //  Basic image processing routines. With the exception of using GCD, completely
-//  unoptimised and just begging for some SSE/AVX/OpenCL improvements
+//  unoptimised and just begging for some SSE/AVX/OpenCL/vDSP improvements
 
 #import "CASImageProcessor.h"
 #import "CASCCDExposure.h"
