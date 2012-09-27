@@ -25,7 +25,6 @@
 
 #import "CASAppDelegate.h"
 #import "CASCameraWindowController.h"
-#import "CASCameraController.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASTemperatureTransformer : NSValueTransformer
@@ -60,6 +59,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     self.windows = [NSMutableArray arrayWithCapacity:10];
+    self.guiderControllers = [NSMutableArray arrayWithCapacity:10];
     self.cameraControllers = [NSMutableArray arrayWithCapacity:10];
 
     CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
@@ -163,9 +163,10 @@
             }];
         }
         
-        // todo; check for compliance with CASGuider and add to the guiders list
-        if (0){
-            
+        id<CASGuider> guider = (id<CASGuider>)device;
+        if ([guider conformsToProtocol:@protocol(CASGuider)]){
+            CASGuiderController* guiderController = [[CASGuiderController alloc] initWithGuider:guider];
+            [self.guiderControllers addObject:guiderController];
         }
     }
 }

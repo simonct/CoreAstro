@@ -31,7 +31,7 @@
 #import "CASCCDExposure.h"
 #import "CASImageProcessor.h"
 
-@protocol CASGuider <NSObject>
+@protocol CASGuider <NSObject> // +CASDevice protocol ?
 
 typedef enum {
     kCASGuiderDirection_None = 0,
@@ -49,7 +49,6 @@ typedef enum {
 @protocol CASGuideAlgorithm <NSObject>
 @optional
 
-@property (nonatomic,weak) id<CASGuider> guider;
 @property (nonatomic,weak) id<CASImageProcessor> imageProcessor;
 @property (nonatomic,copy,readonly) NSString* status;
 
@@ -61,7 +60,7 @@ typedef enum {
 
 - (void)resetStarLocation:(CGPoint)star;
 
-- (void)updateWithExposure:(CASCCDExposure*)exposure; // pass block whih returns the guide command and optional error object
+- (void)updateWithExposure:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback;
 
 @end
 

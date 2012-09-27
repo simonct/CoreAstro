@@ -29,7 +29,7 @@
 @class CASImageProcessor;
 @class CASGuideAlgorithm;
 @class CASCCDExposure;
-@protocol CASGuider;
+@class CASGuiderController;
 
 @interface CASCameraController : CASScriptableObject
 
@@ -47,7 +47,7 @@
 @property (nonatomic,strong) NSDate* exposureStart;
 
 @property (nonatomic,assign) BOOL guiding;
-@property (nonatomic,strong) id<CASGuider> guider;
+@property (nonatomic,strong) CASGuiderController* guider;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 

@@ -149,12 +149,17 @@
     [self.window.contentView addConstraints:[NSArray arrayWithObject:self.detailLeadingConstraint]];
     
     // set the devices controller content
-    self.devicesArrayController.content = ((CASAppDelegate*)[NSApp delegate]).cameraControllers;
+    self.camerasArrayController.content = ((CASAppDelegate*)[NSApp delegate]).cameraControllers;
     [[NSApp delegate] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.devicesArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.devicesArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+    [self.camerasArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+    [self.camerasArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
     //[self.devicesArrayController bind:@"content" toObject:[NSApp delegate] withKeyPath:@"cameraControllers" options:nil];
     
+    // set up the guiders controller
+    self.guidersArrayController.content = ((CASAppDelegate*)[NSApp delegate]).guiderControllers;
+    [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+    [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+
     //[self.window visualizeConstraints:[self.equaliseCheckbox.superview.superview constraints]];
     
     self.histogramView = [[CASHistogramView alloc] initWithFrame:NSMakeRect(10, 10, 400, 200)];
@@ -265,11 +270,11 @@
                 [self displayExposure:_currentExposure];
             }
         }
-        else if (object == self.devicesArrayController){
+        else if (object == self.camerasArrayController){
             if ([keyPath isEqualToString:@"arrangedObjects"]){
             }
             else if ([keyPath isEqualToString:@"selectedObjects"]){
-                NSArray* devices = self.devicesArrayController.selectedObjects;
+                NSArray* devices = self.camerasArrayController.selectedObjects;
                 if ([devices count] > 0){
                     self.cameraController = [devices objectAtIndex:0];
                 }
@@ -278,9 +283,12 @@
                 }
             }
         }
+        else if (object == self.guidersArrayController){
+            NSLog(@"guidersArrayController: %@",change);
+        }
         else if (object == [NSApp delegate]){
             if ([keyPath isEqualToString:@"cameraControllers"]){
-                [self.devicesArrayController rearrangeObjects]; // can I avoid this step by binding the array controller directly to the app delegate ?
+                [self.camerasArrayController rearrangeObjects]; // can I avoid this step by binding the array controller directly to the app delegate ?
             }
         }
         else if (object == self.cameraController){

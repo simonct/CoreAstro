@@ -1,5 +1,5 @@
 //
-//  CoreAstro.h
+//  CASGuideController.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,26 +22,64 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  CoreAstro framework header file
 
-#import <Foundation/Foundation.h>
+#import "CASGuiderController.h"
+#import "CASAutoGuider.h"
 
-#import <CoreAstro/CASAutoGuider.h>
-#import <CoreAstro/CASCCDExposure.h>
-#import <CoreAstro/CASCCDExposureIO.h>
-#import <CoreAstro/CASCCDExposureLibrary.h>
-#import <CoreAstro/CASCCDImage.h>
-#import <CoreAstro/CASCCDParams.h>
-#import <CoreAstro/CASDevice.h>
-#import <CoreAstro/CASDeviceBrowser.h>
-#import <CoreAstro/CASDeviceFactory.h>
-#import <CoreAstro/CASDeviceManager.h>
-#import <CoreAstro/CASImageProcessor.h>
-#import <CoreAstro/CASIOCommand.h>
-#import <CoreAstro/CASIOTransport.h>
-#import <CoreAstro/CASIOUSBTransport.h>
-#import <CoreAstro/CASPluginManager.h>
-#import <CoreAstro/CASScriptableObject.h>
-#import <CoreAstro/CASUSBDeviceBrowser.h>
-#import <CoreAstro/CASCameraController.h>
-#import <CoreAstro/CASGuiderController.h>
+@interface CASGuiderController ()
+@property (nonatomic,strong) CASDevice<CASGuider>* guider;
+@end
+
+@implementation CASGuiderController
+
+- (id)initWithGuider:(CASDevice<CASGuider>*)guider
+{
+    self = [super init];
+    if (self){
+        self.guider = guider;
+    }
+    return self;
+}
+
+- (void)connect:(void(^)(NSError*))block
+{
+    if (block){
+        block(nil);
+    }
+}
+
+- (void)disconnect
+{
+    self.guider = nil;
+}
+
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block
+{
+    [self.guider pulse:direction duration:durationMS block:block];
+}
+
+@end
+
+@implementation CASGuiderController (CASScripting)
+
+- (NSString*)containerAccessor
+{
+	return @"guiderControllers";
+}
+
+- (id)scriptingDeviceName
+{
+    return self.guider.deviceName;
+}
+
+- (id)scriptingVendorName
+{
+    return self.guider.vendorName;
+}
+
+- (void)scriptingGuide:(NSScriptCommand*)command
+{
+    [command performDefaultImplementation]; // todo; CASScriptingGuideCommand
+}
+
+@end

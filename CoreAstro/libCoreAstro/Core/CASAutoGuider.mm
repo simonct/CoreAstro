@@ -111,7 +111,7 @@ enum {
     NSFileHandle* logFile;
 }
 
-@synthesize imageProcessor, guider;
+@synthesize imageProcessor;
 
 + (id<CASGuideAlgorithm>)guideAlgorithmWithIdentifier:(NSString*)ident
 {
@@ -517,7 +517,14 @@ enum {
     return exposure;
 }
 
-- (void)startCalibration:(CASCCDExposure*)exposure {
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
+    
+    if (guideCallback){
+        guideCallback(nil,direction,durationMS);
+    }
+}
+
+- (void)startCalibration:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
 
     self.status = @"Calibrating...";
     
@@ -540,12 +547,12 @@ enum {
     
     calibrationDirection = kCASGuiderDirection_RAPlus;
     
-    [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+    [self pulse:calibrationDirection duration:Cal_duration guideCallback:guideCallback];
     
     guidingMode = kGuidingModeCalibrating;
 }
 
-- (void)updateCalibration:(CASCCDExposure*)exposure {
+- (void)updateCalibration:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
     
     exposure = [self processGuideFrame:exposure];
 
@@ -580,7 +587,7 @@ enum {
             calibrationDirection = kCASGuiderDirection_RAMinus;
 		}
         else {
-            [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+            [self pulse:calibrationDirection duration:Cal_duration guideCallback:guideCallback];
         }
     }
     
@@ -639,7 +646,7 @@ enum {
                 calibrationDirection = kCASGuiderDirection_DecMinus;
 			}
             else {
-                [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+                [self pulse:calibrationDirection duration:Cal_duration guideCallback:guideCallback];
             }
         }
     }
@@ -657,7 +664,7 @@ enum {
                 [self logString:[NSString stringWithFormat:@"Dec- (south),%d,%f,%f,%f,%f",iterations, dX,dY,StarX,StarY]];
             }
             
-            [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+            [self pulse:calibrationDirection duration:Cal_duration guideCallback:guideCallback];
         }
         else {
             
@@ -667,7 +674,7 @@ enum {
 
             if (calibrationDirection == kCASGuiderDirection_RAMinus){
                 calibrationDirection = kCASGuiderDirection_DecPlus;
-                [self.guider pulse:calibrationDirection duration:Cal_duration block:nil];
+                [self pulse:calibrationDirection duration:Cal_duration guideCallback:guideCallback];
             }
             else {
                 self.status = @"Guiding";
@@ -678,7 +685,7 @@ enum {
     }
 }
 
-- (void)updateGuiding:(CASCCDExposure*)exposure {
+- (void)updateGuiding:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
     
     if (!start_time){
         start_time = [NSDate timeIntervalSinceReferenceDate];
@@ -723,7 +730,7 @@ enum {
             
             NSLog(@"E dur=%f dist=%.2f",RA_dur,RA_dist);
             
-            [self.guider pulse:kCASGuiderDirection_RAMinus duration:RA_dur block:nil]; // So, guide in the RA- direction;
+            [self pulse:kCASGuiderDirection_RAMinus duration:RA_dur guideCallback:guideCallback]; // So, guide in the RA- direction;
 
             NSLog(@"%ld,%.3f,%.2f,%.2f,%f,%f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
         }
@@ -731,7 +738,7 @@ enum {
             
             NSLog(@"W dur=%f dist=%.2f",RA_dur,RA_dist);
             
-            [self.guider pulse:kCASGuiderDirection_RAPlus duration:RA_dur block:nil]; // So, guide in the RA+ direction;
+            [self pulse:kCASGuiderDirection_RAPlus duration:RA_dur guideCallback:guideCallback]; // So, guide in the RA+ direction;
 
             NSLog(@"%ld,%.3f,%.2f,%.2f,%f,%f,%.2f",frame_index,elapsed_time,dX,dY,theta,RA_dur,RA_dist);
         }
@@ -816,14 +823,14 @@ enum {
                 
                 [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
                
-                [self.guider pulse:kCASGuiderDirection_DecMinus duration:Dec_dur block:nil];
+                [self pulse:kCASGuiderDirection_DecMinus duration:Dec_dur guideCallback:guideCallback];
             }
             else if ((Dec_dist < 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_NORTH))){
                 self.status = [NSString stringWithFormat:@"N dur=%f dist=%f",Dec_dur,Dec_dist];
                 
                 [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
                 
-                [self.guider pulse:kCASGuiderDirection_DecPlus duration:Dec_dur block:nil];
+                [self pulse:kCASGuiderDirection_DecPlus duration:Dec_dur guideCallback:guideCallback];
             }
             else { // will hit this if in north or south only mode and the direction is the opposite
                 
@@ -847,20 +854,20 @@ enum {
     frame_index++;
 }
 
-- (void)updateWithExposure:(CASCCDExposure*)exposure {
+- (void)updateWithExposure:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
     
     switch (guidingMode) {
             
         case kGuidingModeNeedsCalibrating:
-            [self startCalibration:exposure];
+            [self startCalibration:exposure guideCallback:guideCallback];
             break;
             
         case kGuidingModeCalibrating:
-            [self updateCalibration:exposure];
+            [self updateCalibration:exposure guideCallback:guideCallback];
             break;
             
         case kGuidingModeGuiding:
-            [self updateGuiding:exposure];
+            [self updateGuiding:exposure guideCallback:guideCallback];
             break;
             
         default:

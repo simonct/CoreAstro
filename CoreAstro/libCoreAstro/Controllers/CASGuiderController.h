@@ -1,5 +1,5 @@
 //
-//  CoreAstro.h
+//  CASGuideController.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,26 +22,17 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  CoreAstro framework header file
 
-#import <Foundation/Foundation.h>
+#import "CASScriptableObject.h"
+#import "CASAutoGuider.h"
 
-#import <CoreAstro/CASAutoGuider.h>
-#import <CoreAstro/CASCCDExposure.h>
-#import <CoreAstro/CASCCDExposureIO.h>
-#import <CoreAstro/CASCCDExposureLibrary.h>
-#import <CoreAstro/CASCCDImage.h>
-#import <CoreAstro/CASCCDParams.h>
-#import <CoreAstro/CASDevice.h>
-#import <CoreAstro/CASDeviceBrowser.h>
-#import <CoreAstro/CASDeviceFactory.h>
-#import <CoreAstro/CASDeviceManager.h>
-#import <CoreAstro/CASImageProcessor.h>
-#import <CoreAstro/CASIOCommand.h>
-#import <CoreAstro/CASIOTransport.h>
-#import <CoreAstro/CASIOUSBTransport.h>
-#import <CoreAstro/CASPluginManager.h>
-#import <CoreAstro/CASScriptableObject.h>
-#import <CoreAstro/CASUSBDeviceBrowser.h>
-#import <CoreAstro/CASCameraController.h>
-#import <CoreAstro/CASGuiderController.h>
+@interface CASGuiderController : CASScriptableObject
+
+- (id)initWithGuider:(CASDevice<CASGuider>*)guider;
+
+- (void)connect:(void(^)(NSError*))block;
+- (void)disconnect;
+
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
+
+@end

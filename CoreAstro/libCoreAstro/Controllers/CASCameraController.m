@@ -25,9 +25,10 @@
 
 #import "CASCameraController.h"
 #import "CASCCDExposureLibrary.h"
+#import "CASGuiderController.h"
 #import "CASAutoGuider.h"
 
-@interface CASCameraController ()<CASGuider>
+@interface CASCameraController ()
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
@@ -80,8 +81,27 @@
         if (!error && self.continuous){
             
             if (self.guiding){
+                
                 // update the guider
-                [self.guideAlgorithm updateWithExposure:exp];
+                [self.guideAlgorithm updateWithExposure:exp guideCallback:^(NSError *error, CASGuiderDirection direction, NSInteger duration) {
+                    
+                    // record the guide command against the current exposure
+                    
+                    if (error){
+                        NSLog(@"Guide error: %@",error);
+                    }
+                    else{
+                    
+                        if (direction != kCASGuiderDirection_None && duration > 0){
+                            
+                            // pulse the guider
+                            [self.guider pulse:direction duration:duration block:^(NSError *pulseError) {
+                                
+                                NSLog(@"Pulse error: %@",pulseError);
+                            }];
+                        }
+                    }
+                }];
             }
             
             // figure out the next exposure time
@@ -145,10 +165,9 @@
     }
 }
 
-- (void)setGuider:(id<CASGuider>)guider
+- (void)setGuider:(CASGuiderController*)guider
 {
     _guider = guider;
-    self.guideAlgorithm.guider = self;
 }
 
 - (void)setNilValueForKey:(NSString *)key
@@ -157,14 +176,6 @@
         return;
     }
     [super setNilValueForKey:key];
-}
-
-- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)duration block:(void (^)(NSError*))block {
-    
-    // record the guide command against the current exposure
-    
-    // pulse the guider
-    [self.guider pulse:direction duration:duration block:block];
 }
 
 @end
