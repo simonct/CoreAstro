@@ -151,10 +151,10 @@
 - (NSArray*)darksMatchingExposure:(CASCCDExposure*)exposure
 {
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"type == %d AND deviceID == %@ AND exposureInMS == %d AND binningAsInteger == %d",1,exposure.deviceID,exposure.params.ms,exposure.binningAsInteger]; // range of exposures ?
-    NSLog(@"predicate: %@",predicate);
+//    NSLog(@"predicate: %@",predicate);
     
     NSArray* darks = [self.exposures filteredArrayUsingPredicate:predicate];
-    NSLog(@"darks: %@",darks);
+//    NSLog(@"darks: %@",darks);
 
     return darks;
 }
@@ -162,10 +162,10 @@
 - (NSArray*)flatsMatchingExposure:(CASCCDExposure*)exposure
 {
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"type == %d AND deviceID == %@ AND binningAsInteger == %d",3,exposure.deviceID,exposure.binningAsInteger];
-    NSLog(@"predicate: %@",predicate);
+//    NSLog(@"predicate: %@",predicate);
     
     NSArray* flats = [self.exposures filteredArrayUsingPredicate:predicate];
-    NSLog(@"flats: %@",flats);
+//    NSLog(@"flats: %@",flats);
     
     return flats;
 }
