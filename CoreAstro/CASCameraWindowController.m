@@ -260,10 +260,12 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == nil) {
+        
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
                 self.currentExposure = [self currentlySelectedExposure];
             }
+            [self updateExposuresMenu];
         }
         else if (object == self.darksController || object == self.flatsController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
@@ -304,7 +306,8 @@
                 }
             }
         }
-    } else {
+    }
+    else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
@@ -564,6 +567,62 @@
     }
 }
 
+- (void)updateExposuresMenu
+{
+    NSCalendar* cal = [NSCalendar currentCalendar];
+
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:100];
+    for (CASCCDExposure* exposure in self.exposuresController.arrangedObjects){
+        NSDateComponents* comps = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:exposure.date];
+        NSMutableArray* array = [dict objectForKey:comps];
+        if (!array){
+            array = [NSMutableArray arrayWithCapacity:100];
+            [dict setObject:array forKey:comps];
+        }
+        [array addObject:exposure];
+    }
+    
+    [self.exposuresMenu removeAllItems];
+    
+    NSDateFormatter* sectionFormatter = [[NSDateFormatter alloc] init];
+    [sectionFormatter setDateStyle:NSDateFormatterMediumStyle];
+    [sectionFormatter setTimeStyle:NSDateFormatterNoStyle];
+
+    NSDateFormatter* exposureFormatter = [[NSDateFormatter alloc] init];
+    [exposureFormatter setDateStyle:NSDateFormatterNoStyle];
+    [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    
+    NSArray* keys = [[dict allKeys] sortedArrayUsingComparator:^NSComparisonResult(NSDateComponents* obj1, NSDateComponents* obj2) {
+        switch ([[cal dateFromComponents:obj1] compare:[cal dateFromComponents:obj2]]) {
+            case NSOrderedAscending:
+                return NSOrderedDescending;
+            case NSOrderedDescending:
+                return NSOrderedAscending;
+            default:
+                break;
+        }
+        return NSOrderedSame;
+    }];
+    for (NSDateComponents* key in keys){
+        
+        NSMenu* submenu = [[NSMenu alloc] initWithTitle:@""];
+        for (CASCCDExposure* exp in [dict objectForKey:key]) {
+            
+            NSString* expTitle = [NSString stringWithFormat:@"%@\t %@\t %@",[exposureFormatter stringFromDate:exp.date],exp.displayDeviceName,exp.displayExposure];
+            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:expTitle action:nil keyEquivalent:@""];
+            [item setTarget:self];
+            [item setAction:@selector(selectExposure:)];
+            [item setRepresentedObject:exp];
+            [submenu addItem:item];
+        }
+        
+        NSDate* keyDate = [cal dateFromComponents:key];
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[sectionFormatter stringFromDate:keyDate] action:nil keyEquivalent:@""];
+        [self.exposuresMenu.menu  addItem:item];
+        [self.exposuresMenu.menu setSubmenu:submenu forItem:item];
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)capture:(id)sender
@@ -692,6 +751,59 @@
     }
     else {
         [self.detailLeadingConstraint.animator setConstant:0];
+    }
+}
+
+- (IBAction)selectExposure:(id)sender
+{
+    CASCCDExposure* exp = [sender representedObject];
+    if ([exp isKindOfClass:[CASCCDExposure class]]){
+        self.exposuresController.selectedObjects = [NSArray arrayWithObject:exp];
+    }
+}
+
+- (IBAction)deleteExposure:(id)sender
+{
+    const NSInteger count = [self.exposuresController.selectedObjects count];
+    NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+    
+    NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
+                                     defaultButton:nil
+                                   alternateButton:@"Cancel"
+                                       otherButton:nil
+                         informativeTextWithFormat:message,nil];
+    
+    [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+}
+
+- (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if (returnCode == NSAlertDefaultReturn){
+        [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self.exposuresController selectionIndexes]];
+    }
+}
+
+#pragma mark NSResponder
+
+- (void)moveUp:(id)sender
+{
+    const NSUInteger index = self.exposuresController.selectionIndex;
+    if (index == NSNotFound){
+        self.exposuresController.selectionIndex = 0;
+    }
+    else if (index > 0){
+        self.exposuresController.selectionIndex = index - 1;
+    }
+}
+
+- (void)moveDown:(id)sender
+{
+    const NSUInteger index = self.exposuresController.selectionIndex;
+    if (index == NSNotFound){
+        self.exposuresController.selectionIndex = 0;
+    }
+    else if (index < [self.exposuresController.arrangedObjects count] - 1){
+        self.exposuresController.selectionIndex = index + 1;
     }
 }
 

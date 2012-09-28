@@ -61,4 +61,5 @@
 @property (nonatomic,strong) IBOutlet NSArrayController *darksController;
 @property (nonatomic,strong) IBOutlet NSArrayController *flatsController;
 @property (nonatomic,weak) IBOutlet NSTableView *devicesTableView;
+@property (nonatomic,weak) IBOutlet NSPopUpButton *exposuresMenu;
 @end

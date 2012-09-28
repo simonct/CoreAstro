@@ -43,8 +43,11 @@
 @property (nonatomic,readonly) CASSize actualSize; // frame.size / bin.size
 
 @property (nonatomic,readonly) NSDate* date;
+
 @property (nonatomic,readonly) NSString* displayDate;
 @property (nonatomic,readonly) NSString* displayExposure;
+@property (nonatomic,readonly) NSString* displayDeviceName;
+
 @property (nonatomic,readonly) NSURL* persistentStoreURL;
 
 @property (nonatomic,readonly) NSString* uuid;
