@@ -443,6 +443,18 @@
         return;
     }
     
+    NSString* title = self.cameraController.camera.deviceName;
+    NSDateFormatter* exposureFormatter = [[NSDateFormatter alloc] init];
+    [exposureFormatter setDateStyle:NSDateFormatterNoStyle];
+    [exposureFormatter setTimeStyle:NSDateFormatterLongStyle];
+    if (title){
+        title = [NSString stringWithFormat:@"%@ (%@)",title,[NSString stringWithFormat:@"%@ %@",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
+    }
+    else {
+        title = [NSString stringWithFormat:@"%@ %@ %@",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
+    }
+    self.window.title = title;
+    
     // todo: CASImageProcessingChain runs all these async
     if (self.subtractDark){
         NSArray* darks = self.darksController.arrangedObjects;
