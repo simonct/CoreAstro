@@ -74,18 +74,18 @@
     self.camera = nil;
 }
 
-- (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block
+- (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
 {
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
 
-        if (!error && self.continuous){
+        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount)){
             
             if (self.guiding){
                 
                 // update the guider
                 [self.guideAlgorithm updateWithExposure:exp guideCallback:^(NSError *error, CASGuiderDirection direction, NSInteger duration) {
                     
-                    // record the guide command against the current exposure
+                    // todo; record the guide command against the current exposure
                     
                     if (error){
                         NSLog(@"Guide error: %@",error);
@@ -154,6 +154,13 @@
             }];
         }
     }];
+}
+
+- (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block
+{
+    self.currentCaptureIndex = 0;
+    
+    [self captureWithBlockImpl:block];
 }
 
 - (void)setContinuous:(BOOL)continuous

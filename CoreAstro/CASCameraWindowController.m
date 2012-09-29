@@ -43,6 +43,9 @@
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
 @property (nonatomic,strong) CASHistogramView* histogramView;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
+@property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
+@property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -300,9 +303,13 @@
             if ([keyPath isEqualToString:@"capturing"]){
                 if (!self.cameraController.capturing){
                     self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
+                    self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
+                    self.captureButton.action = @selector(capture:);
                 }
                 else {
                     self.progressStatusText.stringValue = @"Capturing...";
+                    self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
+                    self.captureButton.action = @selector(cancelCapture:);
                 }
             }
         }
@@ -392,6 +399,20 @@
     if (invert != _invert){
         _invert = invert;
         [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
+- (void)setCaptureMenuSelectedIndex:(NSUInteger)index
+{
+    if (_captureMenuSelectedIndex != index){
+        _captureMenuSelectedIndex = index;
+        self.cameraController.continuous = (_captureMenuSelectedIndex == self.captureMenu.numberOfItems - 1);
+        if (self.cameraController.continuous){
+            self.cameraController.captureCount = 0;
+        }
+        else {
+            self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+        }
     }
 }
 
@@ -644,7 +665,7 @@
 
 #pragma mark - Actions
 
-- (IBAction)capture:(id)sender
+- (IBAction)capture:(NSButton*)sender
 {
     self.progressIndicator.maxValue = 1;
     self.progressIndicator.doubleValue = 0;
@@ -687,6 +708,13 @@
             }
         }
     }];
+}
+
+- (IBAction)cancelCapture:(NSButton*)sender
+{
+    // this only works with continuous capture
+    self.cameraController.continuous = NO;
+    self.cameraController.captureCount = 0;
 }
 
 - (IBAction)saveAs:(id)sender

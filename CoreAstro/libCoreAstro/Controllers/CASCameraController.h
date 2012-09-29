@@ -37,6 +37,8 @@
 
 @property (nonatomic,readonly) BOOL capturing;
 @property (nonatomic,assign) BOOL continuous;
+@property (nonatomic,assign) NSInteger captureCount;
+@property (nonatomic,assign) NSInteger currentCaptureIndex;
 @property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
 
 @property (nonatomic,assign) NSInteger exposure;
