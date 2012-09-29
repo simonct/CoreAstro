@@ -9,10 +9,9 @@
 #import <Quartz/Quartz.h>
 
 @interface CASImageView : IKImageView
-@property (nonatomic,assign) BOOL firstShowEditPanel;
+- (CGRect)selectionRect;
+@property (nonatomic,assign) CGPoint starLocation;
 @end
 
-@interface IKImageView (Private)
-- (CGRect)selectionRect; // great, a private method to get the selection...
-@end
+extern const CGPoint kCASImageViewInvalidStarLocation;
 
