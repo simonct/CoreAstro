@@ -517,7 +517,11 @@
         
         if (CGImage){
             
-            id currentImage = (id)self.imageView.image;
+            CGSize currentSize = CGSizeZero;
+            CGImageRef currentImage = self.imageView.image;
+            if (currentImage){
+                currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
+            }
             
             [self disableAnimations:^{
                 
@@ -531,7 +535,8 @@
                 [self.histogramView removeFromSuperview];
                 [self.imageView addSubview:self.histogramView];
                 
-                if (!currentImage) {
+                const CGSize size = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
+                if (!currentImage || !CGSizeEqualToSize(size, currentSize)) {
                     [self.imageView zoomImageToFit:nil];  
                     self.zoomFactor = self.imageView.zoomFactor;
                 }
@@ -581,6 +586,8 @@
 
 - (void)updateExposuresMenu
 {
+    // todo; put most recent day/today at the top level ?
+    
     NSCalendar* cal = [NSCalendar currentCalendar];
 
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:100];
