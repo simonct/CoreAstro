@@ -125,7 +125,8 @@
     [self.exposuresController setSelectedObjects:nil];
     [self.exposuresController setSelectsInsertedObjects:YES];
     [self.exposuresController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
-        
+    [self.exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:nil];
+
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
     self.imageView.layer.backgroundColor = gray;
     CGColorRelease(gray);
@@ -258,8 +259,9 @@
         [self.darksController removeObserver:self forKeyPath:@"selectedObjects"];
         [self.flatsController removeObserver:self forKeyPath:@"selectedObjects"];
 
-        [self updateFlatsForExposure:_currentExposure];
-        [self updateDarksForExposure:_currentExposure];
+        // not currently showing candidate darks and flats
+        // [self updateFlatsForExposure:_currentExposure];
+        // [self updateDarksForExposure:_currentExposure];
         
         // observe the darks and flats controller again
         [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
@@ -277,7 +279,9 @@
             if ([keyPath isEqualToString:@"selectedObjects"]){
                 self.currentExposure = [self currentlySelectedExposure];
             }
-            [self updateExposuresMenu];
+            else {
+                [self updateExposuresMenu];
+            }
         }
         else if (object == self.darksController || object == self.flatsController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
