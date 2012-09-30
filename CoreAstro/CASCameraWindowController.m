@@ -46,6 +46,7 @@
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
+@property (nonatomic,assign) BOOL showHistogram;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -166,6 +167,7 @@
     
     self.histogramView = [[CASHistogramView alloc] initWithFrame:NSMakeRect(10, 10, 400, 200)];
     [self.imageView addSubview:self.histogramView];
+    self.histogramView.hidden = YES;
 
     [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
@@ -419,6 +421,17 @@
     }
 }
 
+- (void)setShowHistogram:(BOOL)showHistogram
+{
+    if (_showHistogram != showHistogram){
+        _showHistogram = showHistogram;
+        self.histogramView.hidden = !_showHistogram;
+        if (_showHistogram){
+            [self updateHistogram];
+        }
+    }
+}
+
 - (void)updateExposureIndicator
 {
     NSDate* start = self.cameraController.exposureStart;
@@ -580,11 +593,13 @@
 
 - (void)updateHistogram
 {
-    if (!_currentExposure){
-        self.histogramView.histogram = nil;
-    }
-    else {
-        self.histogramView.histogram = [self.imageProcessor histogram:_currentExposure];
+    if (self.showHistogram){
+        if (!_currentExposure){
+            self.histogramView.histogram = nil;
+        }
+        else {
+            self.histogramView.histogram = [self.imageProcessor histogram:_currentExposure];
+        }
     }
 }
 
@@ -831,6 +846,24 @@
     if (returnCode == NSAlertDefaultReturn){
         [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self.exposuresController selectionIndexes]];
     }
+}
+
+- (IBAction)toggleShowHistogram:(id)sender
+{
+    self.showHistogram = !self.showHistogram;
+}
+
+#pragma mark Menu validation
+
+- (BOOL)validateMenuItem:(NSMenuItem*)item
+{
+    if (self.showHistogram){
+        item.title = NSLocalizedString(@"Hide Histogram", @"Menu item title");
+    }
+    else {
+        item.title = NSLocalizedString(@"Show Histogram", @"Menu item title");
+    }
+    return YES;
 }
 
 #pragma mark NSResponder
