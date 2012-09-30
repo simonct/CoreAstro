@@ -893,10 +893,6 @@
         case 10002:
             item.state = self.equalise;
             break;
-            
-        default:
-            NSLog(@"Unrecognised menu item tag: %ld",item.tag);
-            break;
     }
     return YES;
 }
