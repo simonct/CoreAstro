@@ -38,6 +38,7 @@
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL divideFlat;
 @property (nonatomic,assign) BOOL subtractDark;
+@property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
@@ -45,8 +46,9 @@
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
+@property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
+@property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
-@property (nonatomic,assign) BOOL showHistogram;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -112,6 +114,12 @@
     [super windowDidLoad];
     
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+
+    // hide the image controls strip for now
+    {
+        self.imageControlsView.hidden = YES;
+        self.imageViewBottomConstraint.constant = 0;
+    }
 
     [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     [self.exposuresController setSelectedObjects:nil];
@@ -853,15 +861,42 @@
     self.showHistogram = !self.showHistogram;
 }
 
+- (IBAction)toggleInvertImage:(id)sender
+{
+    self.invert = !self.invert;
+}
+
+- (IBAction)toggleEqualiseHistogram:(id)sender
+{
+    self.equalise = !self.equalise;
+}
+
 #pragma mark Menu validation
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
-    if (self.showHistogram){
-        item.title = NSLocalizedString(@"Hide Histogram", @"Menu item title");
-    }
-    else {
-        item.title = NSLocalizedString(@"Show Histogram", @"Menu item title");
+    switch (item.tag) {
+            
+        case 10000:
+            if (self.showHistogram){
+                item.title = NSLocalizedString(@"Hide Histogram", @"Menu item title");
+            }
+            else {
+                item.title = NSLocalizedString(@"Show Histogram", @"Menu item title");
+            }
+            break;
+            
+        case 10001:
+            item.state = self.invert;
+            break;
+            
+        case 10002:
+            item.state = self.equalise;
+            break;
+            
+        default:
+            NSLog(@"Unrecognised menu item tag: %ld",item.tag);
+            break;
     }
     return YES;
 }
