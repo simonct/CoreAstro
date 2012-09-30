@@ -116,7 +116,6 @@
     [self.exposuresController setSelectedObjects:nil];
     [self.exposuresController setSelectsInsertedObjects:YES];
     [self.exposuresController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
-    // filter to just images taken by this camera ?
         
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
     self.imageView.layer.backgroundColor = gray;
@@ -134,7 +133,7 @@
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
 
-    // remove the leading constraints from IB
+    // remove the leading constraints from IB (still needed?)
     NSMutableSet* constraints = [NSMutableSet setWithCapacity:2];
     for (NSLayoutConstraint* constraint in [self.detailContainerView constraintsAffectingLayoutForOrientation:0]){
         if (constraint.firstAttribute == NSLayoutAttributeLeading){
@@ -361,6 +360,10 @@
     }
     else {
         [self.exposuresController setSelectedObjects:nil];
+    }
+    
+    if (!self.cameraController.captureCount && !self.cameraController.continuous){
+        self.cameraController.captureCount = 1;
     }
 }
 
