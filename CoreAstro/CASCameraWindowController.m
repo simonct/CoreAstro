@@ -590,7 +590,7 @@
                     self.zoomFactor = self.imageView.zoomFactor;
                 }
                 else {
-                    const NSPoint centre = NSMakePoint(params.size.width/2,params.size.height/2);
+                    const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
                     if (self.zoomFactor != self.imageView.zoomFactor){
                         [self.imageView setImageZoomFactor:self.zoomFactor centerPoint:centre]; // <-- frequent crash...
                     }
