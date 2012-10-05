@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>moon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.makotechnology.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>com.makotechnology.coreastro</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -22,16 +22,18 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.photography</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSAppleScriptEnabled</key>
+	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2012 Mako Technology Ltd. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSAppleScriptEnabled</key>
-	<true/>
 	<key>OSAScriptingDefinition</key>
 	<string>CoreAstro.sdef</string>
 </dict>

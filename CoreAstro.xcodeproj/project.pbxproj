@@ -348,6 +348,7 @@
 		F4AEDF181614DC16007641A2 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
 		F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
 		F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
+		F4E979E4161F85470037ED1B /* CoreAstro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CoreAstro.entitlements; sourceTree = "<group>"; };
 		F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CoreAstro.sdef; sourceTree = "<group>"; };
 		F4EAFCA815D7E749001B7993 /* NSApplication+CASScripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSApplication+CASScripting.h"; sourceTree = "<group>"; };
 		F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+CASScripting.m"; sourceTree = "<group>"; };
@@ -657,6 +658,7 @@
 		F49E52C715A971610018DC75 /* CoreAstro */ = {
 			isa = PBXGroup;
 			children = (
+				F4E979E4161F85470037ED1B /* CoreAstro.entitlements */,
 				F422B05F15FC8D6000D86260 /* Docs */,
 				F49E52D315A971610018DC75 /* CASAppDelegate.h */,
 				F49E52D415A971610018DC75 /* CASAppDelegate.m */,
@@ -1550,11 +1552,14 @@
 		F49E52F015A971620018DC75 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1563,11 +1568,14 @@
 		F49E52F115A971620018DC75 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
