@@ -423,7 +423,7 @@
 {
     if (_captureMenuSelectedIndex != index){
         _captureMenuSelectedIndex = index;
-        self.cameraController.continuous = (_captureMenuSelectedIndex == self.captureMenu.numberOfItems - 1);
+        self.cameraController.continuous = [self captureMenuContinuousItemSelected];
         if (self.cameraController.continuous){
             self.cameraController.captureCount = 0;
         }
@@ -431,6 +431,11 @@
             self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
         }
     }
+}
+
+- (BOOL)captureMenuContinuousItemSelected
+{
+    return (_captureMenuSelectedIndex == self.captureMenu.numberOfItems - 1);
 }
 
 - (void)setShowHistogram:(BOOL)showHistogram
@@ -701,6 +706,9 @@
     self.progressIndicator.doubleValue = 0;
     self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
     
+    // check to see if we're in continuous mode
+    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
+
     // grab the current controller
     CASCameraController* cameraController = self.cameraController;
     
