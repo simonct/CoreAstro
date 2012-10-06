@@ -60,6 +60,9 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
     if (self){
         
         self.plugin = plugin_;
+        if (self.plugin){
+            (*self.plugin)->AddRef(self.plugin);
+        }
 
         if ([self connect] != nil){
             self = nil;
