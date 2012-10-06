@@ -35,20 +35,25 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return NO;
 }
 
-- (void)mouseUp:(NSEvent *)theEvent
+- (BOOL)acceptsFirstResponder
 {
-    if (theEvent.clickCount == 2){
-        [IKImageEditPanel sharedImageEditPanel].dataSource = (id<IKImageEditPanelDataSource>)self;
-        if (!self.firstShowEditPanel){
-            self.firstShowEditPanel = YES;
-            const NSRect frame = [IKImageEditPanel sharedImageEditPanel].frame;
-            const NSRect windowFrame = self.window.frame;
-            [[IKImageEditPanel sharedImageEditPanel] setFrameOrigin:NSMakePoint(NSMinX(windowFrame) + NSWidth(windowFrame)/2 - NSWidth(frame)/2, NSMinY(windowFrame) + NSHeight(windowFrame)/2 - NSHeight(frame)/2)];
-        }
-        [[IKImageEditPanel sharedImageEditPanel] makeKeyAndOrderFront:nil];
-        [[IKImageEditPanel sharedImageEditPanel] setHidesOnDeactivate:YES];
-    }
+    return NO;
 }
+
+//- (void)mouseUp:(NSEvent *)theEvent
+//{
+//    if (theEvent.clickCount == 2){
+//        [IKImageEditPanel sharedImageEditPanel].dataSource = (id<IKImageEditPanelDataSource>)self;
+//        if (!self.firstShowEditPanel){
+//            self.firstShowEditPanel = YES;
+//            const NSRect frame = [IKImageEditPanel sharedImageEditPanel].frame;
+//            const NSRect windowFrame = self.window.frame;
+//            [[IKImageEditPanel sharedImageEditPanel] setFrameOrigin:NSMakePoint(NSMinX(windowFrame) + NSWidth(windowFrame)/2 - NSWidth(frame)/2, NSMinY(windowFrame) + NSHeight(windowFrame)/2 - NSHeight(frame)/2)];
+//        }
+//        [[IKImageEditPanel sharedImageEditPanel] makeKeyAndOrderFront:nil];
+//        [[IKImageEditPanel sharedImageEditPanel] setHidesOnDeactivate:YES];
+//    }
+//}
 
 - (CGRect)selectionRect
 {
