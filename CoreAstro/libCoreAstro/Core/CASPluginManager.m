@@ -100,7 +100,9 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
     // (will need to deal with plugin versions e.g. scan all and pick the highest one before picking one to load)
     NSArray* paths = [NSArray arrayWithObjects:
                       [[NSBundle bundleForClass:[self class]] builtInPlugInsPath], // search framework PlugIns folder
-                      [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent], // search same folder as executable
+#if DEBUG
+                      [[NSBundle bundleWithPath:[[[NSBundle mainBundle] privateFrameworksPath] stringByAppendingPathComponent:@"CoreAstro.framework"]] builtInPlugInsPath],
+#endif
                       nil];
     for (NSString* path in paths){
         
