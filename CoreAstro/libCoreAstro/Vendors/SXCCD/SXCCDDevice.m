@@ -97,6 +97,9 @@
 - (void)connect:(void (^)(NSError*))block {
     
     if (self.connected){
+        if (block){
+            block(nil);
+        }
         return;
     }
     
