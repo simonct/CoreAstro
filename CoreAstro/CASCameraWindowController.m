@@ -592,7 +592,7 @@
                 else {
                     const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
                     if (self.zoomFactor != self.imageView.zoomFactor){
-                        [self.imageView setImageZoomFactor:self.zoomFactor centerPoint:centre]; // <-- frequent crash...
+                        [self.imageView setZoomFactor:self.zoomFactor]; // <-- frequent crash...
                     }
                     if (self.rotationAngle != self.imageView.rotationAngle){
                         [self.imageView setRotationAngle:self.rotationAngle centerPoint:centre];
