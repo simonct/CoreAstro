@@ -36,6 +36,7 @@
 @interface CASCameraWindowController ()
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
+@property (nonatomic,assign) BOOL control;
 @property (nonatomic,assign) BOOL divideFlat;
 @property (nonatomic,assign) BOOL subtractDark;
 @property (nonatomic,assign) BOOL showHistogram;
@@ -49,6 +50,10 @@
 @property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
+@property (nonatomic,strong) CIFilter* adjustFilter;
+@property (weak) IBOutlet NSButton *adjustButton;
+@property (nonatomic,strong) CIFilter* controlsFilter;
+@property (weak) IBOutlet NSButton *controlsButton;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -116,7 +121,7 @@
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
 
     // hide the image controls strip for now
-    {
+    if (0) {
         self.imageControlsView.hidden = YES;
         self.imageViewBottomConstraint.constant = 0;
     }
@@ -275,7 +280,15 @@
 {
     if (context == nil) {
         
-        if (object == self.exposuresController){
+        if ([object isKindOfClass:[CIFilter class]]){
+            
+            // reset filters
+            CALayer* imageLayer = self.imageLayer;
+            imageLayer.filters = nil;
+            imageLayer.filters = [self currentFilters];
+            
+        }
+        else if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
                 self.currentExposure = [self currentlySelectedExposure];
             }
@@ -390,8 +403,50 @@
 - (void)setEqualise:(BOOL)equalise
 {
     if (_equalise != equalise){
+        
         _equalise = equalise;
+        
         [self _resetAndRedisplayCurrentExposure];
+        
+        if (_equalise){
+            
+            IKFilterUIView* view = [self.adjustFilter viewForUIConfiguration:[NSDictionary dictionaryWithObjectsAndKeys:IKUISizeSmall,IKUISizeFlavor,kCIUISetAdvanced,kCIUIParameterSet,nil] excludedKeys:[NSArray arrayWithObject:@"inputImage"]];
+            NSViewController* vc = [[NSViewController alloc] init];
+            vc.view = view;
+
+            NSPopover* popover = [[NSPopover alloc] init];
+            popover.contentViewController = vc;
+            popover.behavior = NSPopoverBehaviorTransient;
+            
+            [popover showRelativeToRect:self.adjustButton.bounds ofView:self.adjustButton preferredEdge:CGRectMinYEdge];
+            
+            NSLog(@"%@",view.objectController.content);
+        }
+    }
+}
+
+- (void)setControl:(BOOL)control
+{
+    if (_control != control){
+        
+        _control = control;
+        
+        [self _resetAndRedisplayCurrentExposure];
+        
+        if (_control){
+            
+            IKFilterUIView* view = [self.controlsFilter viewForUIConfiguration:[NSDictionary dictionaryWithObjectsAndKeys:IKUISizeSmall,IKUISizeFlavor,kCIUISetAdvanced,kCIUIParameterSet,nil] excludedKeys:[NSArray arrayWithObject:@"inputImage"]];
+            NSViewController* vc = [[NSViewController alloc] init];
+            vc.view = view;
+            
+            NSPopover* popover = [[NSPopover alloc] init];
+            popover.contentViewController = vc;
+            popover.behavior = NSPopoverBehaviorTransient;
+            
+            [popover showRelativeToRect:self.adjustButton.bounds ofView:self.adjustButton preferredEdge:CGRectMinYEdge];
+            
+            NSLog(@"%@",view.objectController.content);
+        }
     }
 }
 
@@ -490,6 +545,54 @@
     [CATransaction commit];
 }
 
+- (CALayer*)imageLayer
+{
+    for (CALayer* layer in self.imageView.layer.sublayers){
+        if ([layer isKindOfClass:NSClassFromString(@"IKImageLayer")]){
+            return layer;
+        }
+    }
+    return nil;
+}
+
+- (NSArray*)currentFilters
+{
+    NSMutableArray* filters = [NSMutableArray arrayWithCapacity:5];
+    
+    if (self.invert) {
+        CIFilter* invertFilter = [CIFilter filterWithName:@"CIColorInvert"];
+        [invertFilter setDefaults];
+        [filters addObject:invertFilter];
+    }
+    
+    if (self.equalise){
+        
+        if (!self.adjustFilter){
+            
+            self.adjustFilter = [CIFilter filterWithName:@"CIExposureAdjust"];
+            [self.adjustFilter setDefaults];
+            [self.adjustFilter setValue:[NSNumber numberWithFloat:0.5] forKey:@"inputEV"];
+            [self.adjustFilter addObserver:self forKeyPath:@"inputEV" options:0 context:nil];
+        }
+        [filters addObject:self.adjustFilter];
+    }
+    
+    if (self.control){
+        
+        if (!self.controlsFilter){
+            
+            self.controlsFilter = [CIFilter filterWithName:@"CIColorControls"];
+            [self.controlsFilter setDefaults];
+            [self.controlsFilter addObserver:self forKeyPath:@"inputSaturation" options:0 context:nil];
+            [self.controlsFilter addObserver:self forKeyPath:@"inputBrightness" options:0 context:nil];
+            [self.controlsFilter addObserver:self forKeyPath:@"inputContrast" options:0 context:nil];
+        }
+        [filters addObject:self.controlsFilter];
+    }
+    
+    return [filters copy];
+}
+
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     if (!exposure){
@@ -530,13 +633,13 @@
         }
     }
     
-    if (self.equalise){
-        [self.imageProcessor equalise:exposure];
-    }
-    
-    if (self.invert){
-        [self.imageProcessor invert:exposure];
-    }
+//    if (self.equalise){
+//        [self.imageProcessor equalise:exposure];
+//    }
+//    
+//    if (self.invert){
+//        [self.imageProcessor invert:exposure];
+//    }
 
     // todo: async
     [self updateHistogram];
@@ -606,6 +709,8 @@
             }];
         }
     }
+
+    self.imageLayer.filters = [self currentFilters];
 }
 
 - (void)updateHistogram
