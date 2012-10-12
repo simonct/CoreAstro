@@ -24,6 +24,7 @@
 //
 
 #import "CASCCDExposureIO.h"
+#import "fitsio.h"
 
 @interface CASCCDExposureIOv1 : CASCCDExposureIO
 @end
@@ -203,6 +204,94 @@
 
 @end
 
+@interface CASCCDExposureFITS : CASCCDExposureIO
+@end
+
+@implementation CASCCDExposureFITS
+
+- (NSString*)metaKey
+{
+    return @"meta.json";
+}
+
+- (NSString*)pixelsKey
+{
+    return @"samples.data";
+}
+
+- (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
+{
+    NSError* error = nil;
+    
+     // '(' & ')' are special characters so replace them with {}
+    NSMutableString* s = [NSMutableString stringWithString:[self.url path]];
+    [s replaceOccurrencesOfString:@"(" withString:@"{" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
+    [s replaceOccurrencesOfString:@")" withString:@"}" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
+    [s replaceOccurrencesOfString:@" " withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
+
+    NSString* directory = [s stringByDeletingLastPathComponent];
+    if (![[NSFileManager defaultManager] createDirectoryAtURL:[NSURL fileURLWithPath:directory] withIntermediateDirectories:YES attributes:nil error:&error]){
+        NSLog(@"Failed to create directory for fits file at %@",directory);
+    }
+    else {
+        
+        int status = 0;
+        fitsfile *fptr;
+        
+        const char * path = [s fileSystemRepresentation];
+        if (fits_create_file(&fptr, path, &status)) {
+            error = [NSError errorWithDomain:@"CASCCDExposureFITS"
+                                        code:status
+                                    userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to create FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+        }
+        else {
+            
+            const CASSize size = exposure.actualSize;
+            long naxes[2] = { size.width, size.height };
+            if ( fits_create_img(fptr, SHORT_IMG, 2, naxes, &status) ){
+                error = [NSError errorWithDomain:@"CASCCDExposureFITS"
+                                            code:status
+                                        userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to create FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+            }
+            else {
+                if ( fits_write_img(fptr, TSHORT, 1, [exposure.pixels length]/sizeof(uint16_t), (void*)[exposure.pixels bytes], &status) ){
+                    error = [NSError errorWithDomain:@"CASCCDExposureFITS"
+                                                code:status
+                                            userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to write FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+                }
+                else {
+                    NSLog(@"todo: FTIS metadata");
+                }
+            }
+            fits_close_file(fptr, &status);
+        }
+    }
+
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
+}
+
+- (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)errorPtr
+{
+    NSError* error = nil;
+    
+    error = [NSError errorWithDomain:@"CASCCDExposureFITS"
+                                code:unimpErr
+                            userInfo:[NSDictionary dictionaryWithObject:@"Reading FITS files is not currently supported" forKey:NSLocalizedFailureReasonErrorKey]];
+    
+    return (error == nil);
+}
+
+- (BOOL)deleteExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
+{
+    return [[NSFileManager defaultManager] removeItemAtURL:self.url error:errorPtr];
+}
+
+@end
+
 @implementation CASCCDExposureIO
 
 @synthesize url;
@@ -211,15 +300,21 @@
 {
     CASCCDExposureIO* exp = nil;
     
-    if ([[path pathExtension] isEqualToString:@"rawPixels"]){
+    NSString* const pathExtension = [path pathExtension];
+    
+    if ([pathExtension isEqualToString:@"rawPixels"]){
         exp = [[CASCCDExposureIOv1 alloc] init];
         exp.url = [NSURL fileURLWithPath:[path stringByDeletingPathExtension]];
     }
-    else if ([[path pathExtension] isEqualToString:@"caExposure"]){
+    else if ([pathExtension isEqualToString:@"caExposure"]){
         exp = [[CASCCDExposureIOv2 alloc] init];
         exp.url = [NSURL fileURLWithPath:path];
     }
-    
+    else if ([pathExtension isEqualToString:@"fit"] || [pathExtension isEqualToString:@"fits"]){
+        exp = [[CASCCDExposureFITS  alloc] init];
+        exp.url = [NSURL fileURLWithPath:path];
+    }
+
     return exp;
 }
 
