@@ -218,14 +218,24 @@ enum {
 
     self.guideDirection = direction;
     
-    if (direction != kCASGuiderDirection_None){
-        
+    if (direction == kCASGuiderDirection_None){
+    
+        if (block){
+            block(nil);
+        }
+    }
+    else{
+    
         const double delayInSeconds = durationMS/1000.0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             
             // check still connected ?
             self.guideDirection = kCASGuiderDirection_None;
+            
+            if (block){
+                block(nil);
+            }
         });
     }
 }
