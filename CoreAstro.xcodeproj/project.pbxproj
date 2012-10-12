@@ -69,6 +69,8 @@
 		F44EDF6015FCC925003B1B4C /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */ = {isa = PBXBuildFile; fileRef = F44EDF6315FCD59C003B1B4C /* CoreAstro.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
+		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
@@ -152,6 +154,20 @@
 			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
 			remoteInfo = "CoreAstro Framework";
 		};
+		F456A2B41621FFCA008DBD3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4D967ED161894A100465163;
+			remoteInfo = cfitsio;
+		};
+		F456A2B61621FFD1008DBD3F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F4D967EC161894A100465163;
+			remoteInfo = cfitsio;
+		};
 		F459640515EA420F0041AF7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */;
@@ -211,6 +227,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F456A2B91621FFE2008DBD3F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F459640E15EA42D50041AF7D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,6 +291,7 @@
 		F44EDF5A15FCC872003B1B4C /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
 		F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
 		F44EDF6315FCD59C003B1B4C /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
+		F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
 		F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CorePlot.xcodeproj; path = External/CorePlot_1.0/Source/framework/CorePlot.xcodeproj; sourceTree = "<group>"; };
@@ -397,6 +424,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */,
 				F44EDF5715FCC831003B1B4C /* Accelerate.framework in Frameworks */,
 				F44EDF5515FCC80B003B1B4C /* IOKit.framework in Frameworks */,
 				F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */,
@@ -487,6 +515,7 @@
 		F422B05915FC8D4800D86260 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */,
 				F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */,
 			);
 			name = Dependencies;
@@ -540,6 +569,14 @@
 				F44EDF1415FCC386003B1B4C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F456A2AE1621FFCA008DBD3F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F457B68F15DD4E480035F015 /* Images */ = {
@@ -918,10 +955,12 @@
 				F44EDEF715FCC385003B1B4C /* Headers */,
 				F44EDEF815FCC385003B1B4C /* Resources */,
 				F498A53D15FE8754006E8376 /* ShellScript */,
+				F456A2B91621FFE2008DBD3F /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F456A2B71621FFD1008DBD3F /* PBXTargetDependency */,
 			);
 			name = "CoreAstro Framework";
 			productName = "CoreAstro Framework";
@@ -1048,6 +1087,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F456A2AE1621FFCA008DBD3F /* Products */;
+					ProjectRef = F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */;
+				},
+				{
 					ProductGroup = F45963FD15EA420E0041AF7D /* Products */;
 					ProjectRef = F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */;
 				},
@@ -1065,6 +1108,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcfitsio.dylib;
+			remoteRef = F456A2B41621FFCA008DBD3F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F459640615EA420F0041AF7D /* CorePlot.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -1298,6 +1348,11 @@
 			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
 			targetProxy = F44EDF5E15FCC920003B1B4C /* PBXContainerItemProxy */;
 		};
+		F456A2B71621FFD1008DBD3F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cfitsio;
+			targetProxy = F456A2B61621FFD1008DBD3F /* PBXContainerItemProxy */;
+		};
 		F459640B15EA42250041AF7D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = CorePlot;
@@ -1410,6 +1465,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks/";
 				PRODUCT_NAME = CoreAstro;
@@ -1429,6 +1485,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks/";
 				PRODUCT_NAME = CoreAstro;
