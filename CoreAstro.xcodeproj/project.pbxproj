@@ -1223,7 +1223,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/ln -sf Versions/Current/PlugIns ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/PlugIns\n";
+			shellScript = "/bin/ln -sf Versions/Current/PlugIns ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/PlugIns\n/bin/ln -sf Versions/Current/Frameworks ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Frameworks\n";
 		};
 		F49E52DC15A971620018DC75 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
