@@ -26,6 +26,7 @@
 
 #import "CASAlgorithm.h"
 #import "CASAlgorithm+Exposure.h"
+#import "CASRegion.h"
 
 
 extern NSString* const keyMaxNumRegions;
@@ -34,19 +35,6 @@ extern NSString* const keyMinNumPixelsInRegion;
 extern NSString* const keyNumCandidatePixels;
 extern NSString* const keyNumRegions;
 extern NSString* const keyRegions;
-
-
-// Only makes sense in the context of a given exposure.
-@interface CASRegion: NSObject
-
-@property (readonly, nonatomic) NSUInteger regionID;
-@property (readonly, nonatomic) NSUInteger brightestPixelIndex; // index in the exposure array
-@property (readonly, nonatomic) CASPoint brightestPixelCoords; // coordinates in the exposure image
-@property (readonly, nonatomic) CASRect frame; // in image coordinates (origin at bottom-left corner)
-@property (readonly, nonatomic, strong) NSSet* pixels; // set of NSNumber-boxed indices into the exposure array
-
-@end
-
 
 
 @interface CASSegmenter: CASAlgorithm

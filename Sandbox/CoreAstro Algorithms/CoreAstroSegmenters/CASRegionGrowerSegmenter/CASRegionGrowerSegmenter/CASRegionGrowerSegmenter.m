@@ -55,17 +55,6 @@
 @end
 
 
-@interface CASRegion ()
-
-@property (readwrite, nonatomic) NSUInteger regionID;
-@property (readwrite, nonatomic) NSUInteger brightestPixelIndex;
-@property (readwrite, nonatomic) CASPoint brightestPixelCoords;
-@property (readwrite, nonatomic) CASRect frame;
-@property (readwrite, nonatomic, strong) NSSet* pixels;
-
-@end
-
-
 @implementation CASRegionGrowerSegmenter
 
 // Returns an array of CASRegion objects.

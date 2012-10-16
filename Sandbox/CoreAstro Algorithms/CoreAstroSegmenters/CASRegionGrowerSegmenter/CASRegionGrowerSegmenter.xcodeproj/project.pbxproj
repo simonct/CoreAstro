@@ -24,10 +24,22 @@
 		3B1F3F53160D2C6B004E700D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F52160D2C6B004E700D /* Accelerate.framework */; };
 		3B1F3F55160D2C85004E700D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F54160D2C84004E700D /* AppKit.framework */; };
 		3B1F3F57160D2C92004E700D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B1F3F56160D2C92004E700D /* IOKit.framework */; };
+		3B8E4C38162E17720015DD7A /* CASRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4C37162E17720015DD7A /* CASRegion.m */; };
+		3B8E4C48162E19DF0015DD7A /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B8E4C22162E116D0015DD7A /* libcfitsio.dylib */; };
 		3BCFE946160FFA65002BED5E /* CASSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCFE945160FFA64002BED5E /* CASSegmenter.m */; };
 		3BCFE95F16102313002BED5E /* CASAlgorithm+Exposure.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */; };
 		3BF31CAE1610AF760020723A /* CASRegionGrowerSegmenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F27160D0F77004E700D /* CASRegionGrowerSegmenter.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B8E4C21162E116D0015DD7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B8E4C1D162E116D0015DD7A /* cfitsio.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4D967ED161894A100465163;
+			remoteInfo = cfitsio;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		3B1F3EFC160D050F004E700D /* CopyFiles */ = {
@@ -73,6 +85,10 @@
 		3B1F3F52160D2C6B004E700D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		3B1F3F54160D2C84004E700D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3B1F3F56160D2C92004E700D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		3B8E4C1D162E116D0015DD7A /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = ../../../../External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
+		3B8E4C36162E17720015DD7A /* CASRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASRegion.h; path = ../../../CASRegion.h; sourceTree = "<group>"; };
+		3B8E4C37162E17720015DD7A /* CASRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASRegion.m; path = ../../../CASRegion.m; sourceTree = "<group>"; };
+		3B8E4C51162E1AF40015DD7A /* fitsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fitsio.h; path = ../../../../../External/cfitsio/fitsio.h; sourceTree = "<group>"; };
 		3BCFE944160FFA64002BED5E /* CASSegmenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSegmenter.h; path = ../../CASSegmenter.h; sourceTree = "<group>"; };
 		3BCFE945160FFA64002BED5E /* CASSegmenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSegmenter.m; path = ../../CASSegmenter.m; sourceTree = "<group>"; };
 		3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASAlgorithm+Exposure.m"; path = "../../../CASAlgorithm+Exposure.m"; sourceTree = "<group>"; };
@@ -84,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B8E4C48162E19DF0015DD7A /* libcfitsio.dylib in Frameworks */,
 				3B1F3F57160D2C92004E700D /* IOKit.framework in Frameworks */,
 				3B1F3F55160D2C85004E700D /* AppKit.framework in Frameworks */,
 				3B1F3F53160D2C6B004E700D /* Accelerate.framework in Frameworks */,
@@ -99,6 +116,7 @@
 		3B1F3EF3160D050F004E700D = {
 			isa = PBXGroup;
 			children = (
+				3B8E4C08162E10D90015DD7A /* Dependences */,
 				3B1F3F04160D050F004E700D /* CASRegionGrowerSegmenter */,
 				3B1F3F01160D050F004E700D /* Frameworks */,
 				3B1F3EFF160D050F004E700D /* Products */,
@@ -130,10 +148,13 @@
 			isa = PBXGroup;
 			children = (
 				3B1F3F05160D050F004E700D /* main.m */,
+				3B8E4C51162E1AF40015DD7A /* fitsio.h */,
 				3B1F3F29160D13A6004E700D /* CASAlgorithm.h */,
 				3B1F3F2A160D13A6004E700D /* CASAlgorithm.m */,
 				3BF31CAD161081B70020723A /* CASAlgorithm+Exposure.h */,
 				3BCFE95E16102313002BED5E /* CASAlgorithm+Exposure.m */,
+				3B8E4C36162E17720015DD7A /* CASRegion.h */,
+				3B8E4C37162E17720015DD7A /* CASRegion.m */,
 				3BCFE944160FFA64002BED5E /* CASSegmenter.h */,
 				3BCFE945160FFA64002BED5E /* CASSegmenter.m */,
 				3B1F3F26160D0F77004E700D /* CASRegionGrowerSegmenter.h */,
@@ -178,6 +199,22 @@
 			path = ../../../../../CoreAstro/libCoreAstro/Core;
 			sourceTree = "<group>";
 		};
+		3B8E4C08162E10D90015DD7A /* Dependences */ = {
+			isa = PBXGroup;
+			children = (
+				3B8E4C1D162E116D0015DD7A /* cfitsio.xcodeproj */,
+			);
+			name = Dependences;
+			sourceTree = "<group>";
+		};
+		3B8E4C1E162E116D0015DD7A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B8E4C22162E116D0015DD7A /* libcfitsio.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -217,12 +254,28 @@
 			mainGroup = 3B1F3EF3160D050F004E700D;
 			productRefGroup = 3B1F3EFF160D050F004E700D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 3B8E4C1E162E116D0015DD7A /* Products */;
+					ProjectRef = 3B8E4C1D162E116D0015DD7A /* cfitsio.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				3B1F3EFD160D050F004E700D /* CASRegionGrowerSegmenter */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		3B8E4C22162E116D0015DD7A /* libcfitsio.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcfitsio.dylib;
+			remoteRef = 3B8E4C21162E116D0015DD7A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3B1F3EFA160D050F004E700D /* Sources */ = {
@@ -243,6 +296,7 @@
 				3BCFE946160FFA65002BED5E /* CASSegmenter.m in Sources */,
 				3BCFE95F16102313002BED5E /* CASAlgorithm+Exposure.m in Sources */,
 				3BF31CAE1610AF760020723A /* CASRegionGrowerSegmenter.m in Sources */,
+				3B8E4C38162E17720015DD7A /* CASRegion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +361,10 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CASRegionGrowerSegmenter/CASRegionGrowerSegmenter-Prefix.pch";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../../wlt/Library/Developer/Xcode/DerivedData/CASFocuser-bxbpekxndgpokgaimnokfiercrfz/Build/Products/Debug\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -317,6 +375,10 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CASRegionGrowerSegmenter/CASRegionGrowerSegmenter-Prefix.pch";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../../../../../wlt/Library/Developer/Xcode/DerivedData/CASFocuser-bxbpekxndgpokgaimnokfiercrfz/Build/Products/Debug\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

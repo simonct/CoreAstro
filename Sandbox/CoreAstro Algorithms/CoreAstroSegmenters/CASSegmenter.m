@@ -35,33 +35,6 @@ NSString* const keyNumRegions = @"num regions";
 NSString* const keyRegions = @"regions";
 
 
-@interface CASRegion ()
-
-@property (readwrite, nonatomic) NSUInteger regionID;
-@property (readwrite, nonatomic) NSUInteger brightestPixelIndex;
-@property (readwrite, nonatomic) CASPoint brightestPixelCoords;
-@property (readwrite, nonatomic) CASRect frame;
-@property (readwrite, nonatomic, strong) NSSet* pixels;
-
-@end
-
-
-@implementation CASRegion
-
-- (NSString*) description;
-{
-    NSMutableString* res = [[NSMutableString alloc] init];
-
-    [res appendFormat: @"{id: %lu, frame: %@, bp: {%lu, %@}, numPixels: %ld}",
-     self.regionID, NSStringFromCASRect(self.frame), self.brightestPixelIndex,
-     NSStringFromCASPoint(self.brightestPixelCoords), [self.pixels count]];
-
-    return [NSString stringWithString: res];
-}
-
-@end
-
-
 @interface CASSegmenter ()
 
 @property (readwrite, nonatomic, strong) CASCCDExposure* exposure;
