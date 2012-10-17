@@ -57,6 +57,8 @@ extern NSString* const keyRegions;
 // For subclass use only.
 // Returns an array of CASRegion objects.
 // Must be overridden as this is the meat of the algorithm.
+// Subclasses may directly access the data dictionary inherited from CASAlgorithm
+// if there are extra arguments not directly passed to this method.
 // Default implementation returns nil.
 - (NSArray*) segmentExposureWithThresholdingMode: (ThresholdingMode) thresholdingMode;
 - (NSArray*) segmentExposureWithThreshold: (uint16_t) threshold;
