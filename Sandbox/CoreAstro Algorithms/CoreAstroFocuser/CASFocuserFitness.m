@@ -103,7 +103,9 @@ NSString* const keyFitness = @"fitness";
 
     CGFloat fitness = [self fitnessForRegion: self.region
                              inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
-                                    ofLength: self.numPixels];
+                                    ofLength: self.numPixels
+                                     numRows: self.numRows
+                                     numCols: self.numCols];
 
     [resultsMutD setObject: [NSNumber numberWithFloat: fitness] forKey: keyFitness];
     return [NSDictionary dictionaryWithDictionary: resultsMutD];
@@ -115,7 +117,9 @@ NSString* const keyFitness = @"fitness";
 // if there are extra arguments not directly passed to this method.
 - (CGFloat) fitnessForRegion: (CASRegion*) region
              inExposureArray: (uint16_t*) values
-                    ofLength: (NSUInteger) len;
+                    ofLength: (NSUInteger) len
+                     numRows: (NSUInteger) numRows
+                     numCols: (NSUInteger) numCols;
 {
     return 0.0;
 }

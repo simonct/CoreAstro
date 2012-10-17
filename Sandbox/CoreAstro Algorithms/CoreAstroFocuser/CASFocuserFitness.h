@@ -49,6 +49,8 @@ extern NSString* const keyFitness;
 // if there are extra arguments not directly passed to this method.
 - (CGFloat) fitnessForRegion: (CASRegion*) region
              inExposureArray: (uint16_t*) values
-                    ofLength: (NSUInteger) len;
+                    ofLength: (NSUInteger) len
+                     numRows: (NSUInteger) numRows
+                     numCols: (NSUInteger) numCols;
 
 @end

@@ -32,9 +32,18 @@
 
 - (CGFloat) fitnessForRegion: (CASRegion*) region
              inExposureArray: (uint16_t*) values
-                    ofLength: (NSUInteger) len;
+                    ofLength: (NSUInteger) len
+                     numRows: (NSUInteger) numRows
+                     numCols: (NSUInteger) numCols;
 {
     return 0.0; // XXX
 }
 
 @end
+
+
+@property (nonatomic) NSUInteger regionID;
+@property (nonatomic) NSUInteger brightestPixelIndex; // index in the exposure array
+@property (nonatomic) CASPoint brightestPixelCoords; // coordinates in the exposure image
+@property (nonatomic) CASRect frame; // in image coordinates (origin at bottom-left corner)
+@property (nonatomic, strong) NSSet* pixels; // set of NSNumber-boxed indices into the exposure array
