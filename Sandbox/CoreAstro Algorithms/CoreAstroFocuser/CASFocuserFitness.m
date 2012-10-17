@@ -24,10 +24,100 @@
 //
 
 
-// XXX
-
-
 #import "CASFocuserFitness.h"
 
+NSString* const keyFitness = @"fitness";
+
+
+@interface CASFocuserFitness ()
+
+@property (readwrite, nonatomic, strong) CASCCDExposure* exposure;
+@property (readwrite, nonatomic, strong) CASRegion* region;
+
+@property (readwrite, nonatomic) NSUInteger numRows;
+@property (readwrite, nonatomic) NSUInteger numCols;
+@property (readwrite, nonatomic) NSUInteger numPixels;
+
+@end
+
+
 @implementation CASFocuserFitness
+
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+{
+    CASCCDExposure* exposure = nil;
+
+    id objInDataD = [dataD objectForKey: keyExposure];
+    if (!objInDataD)
+    {
+        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyExposure'.",
+              __FUNCTION__);
+
+        return nil;
+    }
+    if (![objInDataD isKindOfClass: [CASCCDExposure class]])
+    {
+        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'CASCCDExposure'.",
+              __FUNCTION__, keyExposure);
+
+        return nil;
+    }
+
+    exposure = (CASCCDExposure*) objInDataD;
+
+    if (exposure.params.bps != 16)
+    {
+        NSLog(@"%s :: This algorithm expects 16-bit exposures.", __FUNCTION__);
+        return nil;
+    }
+
+    self.exposure = exposure;
+    self.numCols = self.exposure.actualSize.width;
+    self.numRows = self.exposure.actualSize.height;
+    self.numPixels = self.numRows * self.numCols;
+
+    NSMutableDictionary* resultsMutD = [[NSMutableDictionary alloc] init];
+    [resultsMutD setObject: exposure forKey: keyExposure];
+    [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numRows] forKey: keyNumRows];
+    [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
+    [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
+
+
+    objInDataD = [dataD objectForKey: keyRegion];
+    if (!objInDataD)
+    {
+        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyRegion'. "
+              , __FUNCTION__);
+
+        return nil;
+    }
+    if (![objInDataD isKindOfClass: [CASRegion class]])
+    {
+        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'CASRegion'.",
+              __FUNCTION__, keyRegion);
+
+        return nil;
+    }
+    self.region = (CASRegion*) objInDataD;
+    [resultsMutD setObject: objInDataD forKey: keyRegion];
+
+    CGFloat fitness = [self fitnessForRegion: self.region
+                             inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
+                                    ofLength: self.numPixels];
+
+    [resultsMutD setObject: [NSNumber numberWithFloat: fitness] forKey: keyFitness];
+    return [NSDictionary dictionaryWithDictionary: resultsMutD];
+}
+
+
+// Subclasses must override.
+// Subclasses may directly access the data dictionary inherited from CASAlgorithm
+// if there are extra arguments not directly passed to this method.
+- (CGFloat) fitnessForRegion: (CASRegion*) region
+             inExposureArray: (uint16_t*) values
+                    ofLength: (NSUInteger) len;
+{
+    return 0.0;
+}
+
 @end

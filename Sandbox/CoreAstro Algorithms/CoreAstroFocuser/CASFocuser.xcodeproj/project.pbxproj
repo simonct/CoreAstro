@@ -28,6 +28,7 @@
 		3B8E4C03162E10910015DD7A /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B8E4C02162E10770015DD7A /* libcfitsio.dylib */; };
 		3B8E4C28162E13880015DD7A /* CASFocuserFitness.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4C27162E13880015DD7A /* CASFocuserFitness.m */; };
 		3B8E4C2B162E14C80015DD7A /* CASRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4C2A162E14C80015DD7A /* CASRegion.m */; };
+		3B8E4C97162E249F0015DD7A /* CASHalfFluxDiameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4C96162E249F0015DD7A /* CASHalfFluxDiameter.m */; };
 		3BF31CAE1610AF760020723A /* CASFocuser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F27160D0F77004E700D /* CASFocuser.m */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +94,8 @@
 		3B8E4C29162E14C80015DD7A /* CASRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASRegion.h; path = ../../CASRegion.h; sourceTree = "<group>"; };
 		3B8E4C2A162E14C80015DD7A /* CASRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASRegion.m; path = ../../CASRegion.m; sourceTree = "<group>"; };
 		3B8E4C5C162E1CD30015DD7A /* fitsio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fitsio.h; path = ../../../../External/cfitsio/fitsio.h; sourceTree = "<group>"; };
+		3B8E4C95162E249F0015DD7A /* CASHalfFluxDiameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHalfFluxDiameter.h; sourceTree = "<group>"; };
+		3B8E4C96162E249F0015DD7A /* CASHalfFluxDiameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHalfFluxDiameter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +152,8 @@
 			children = (
 				3B1F3F05160D050F004E700D /* main.m */,
 				3B8E4C5C162E1CD30015DD7A /* fitsio.h */,
+				3B1F3F26160D0F77004E700D /* CASFocuser.h */,
+				3B1F3F27160D0F77004E700D /* CASFocuser.m */,
 				3B8E4B66162E0A4D0015DD7A /* CASAlgorithm.h */,
 				3B8E4B67162E0A4D0015DD7A /* CASAlgorithm.m */,
 				3B8E4B68162E0A4D0015DD7A /* CASAlgorithm+Exposure.h */,
@@ -157,8 +162,7 @@
 				3B8E4C2A162E14C80015DD7A /* CASRegion.m */,
 				3B8E4C26162E13880015DD7A /* CASFocuserFitness.h */,
 				3B8E4C27162E13880015DD7A /* CASFocuserFitness.m */,
-				3B1F3F26160D0F77004E700D /* CASFocuser.h */,
-				3B1F3F27160D0F77004E700D /* CASFocuser.m */,
+				3B8E4C94162E249E0015DD7A /* CoreAstroFitness */,
 				3B8E4BB0162E0F520015DD7A /* CoreAstro framework classes */,
 				3B1F3F07160D0510004E700D /* Supporting Files */,
 			);
@@ -213,6 +217,15 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		3B8E4C94162E249E0015DD7A /* CoreAstroFitness */ = {
+			isa = PBXGroup;
+			children = (
+				3B8E4C95162E249F0015DD7A /* CASHalfFluxDiameter.h */,
+				3B8E4C96162E249F0015DD7A /* CASHalfFluxDiameter.m */,
+			);
+			path = CoreAstroFitness;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -296,6 +309,7 @@
 				3B8E4BCB162E0F670015DD7A /* CASScriptableObject.m in Sources */,
 				3B8E4C28162E13880015DD7A /* CASFocuserFitness.m in Sources */,
 				3B8E4C2B162E14C80015DD7A /* CASRegion.m in Sources */,
+				3B8E4C97162E249F0015DD7A /* CASHalfFluxDiameter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  CASFocuserFitness.h
+//  CASHalfFluxDiameter.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Wagner Truppel
@@ -24,31 +24,17 @@
 //
 
 
-//  A class declaring a general interface for computing fitness values
-//  for rectangular regions of an exposure.
+// Uses the Half-Flux Diameter as a measure of fitness.
 
+#import "CASHalfFluxDiameter.h"
 
-#import "CASAlgorithm.h"
-#import "CASAlgorithm+Exposure.h"
-#import "CASRegion.h"
+@implementation CASHalfFluxDiameter
 
-
-extern NSString* const keyFitness;
-
-@interface CASFocuserFitness: CASAlgorithm
-
-@property (readonly, nonatomic, strong) CASCCDExposure* exposure;
-@property (readonly, nonatomic, strong) CASRegion* region;
-
-@property (readonly, nonatomic) NSUInteger numRows;
-@property (readonly, nonatomic) NSUInteger numCols;
-@property (readonly, nonatomic) NSUInteger numPixels;
-
-// Subclasses must override. Default returns zero.
-// Subclasses may directly access the data dictionary inherited from CASAlgorithm
-// if there are extra arguments not directly passed to this method.
 - (CGFloat) fitnessForRegion: (CASRegion*) region
              inExposureArray: (uint16_t*) values
                     ofLength: (NSUInteger) len;
+{
+    return 0.0; // XXX
+}
 
 @end
