@@ -1,5 +1,5 @@
 //
-//  CASFocuserFitness.m
+//  CASFocusMetric.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Wagner Truppel
@@ -24,12 +24,12 @@
 //
 
 
-#import "CASFocuserFitness.h"
+#import "CASFocusMetric.h"
 
-NSString* const keyFitness = @"fitness";
+NSString* const keyFocusMetric = @"focus metric";
 
 
-@interface CASFocuserFitness ()
+@interface CASFocusMetric ()
 
 @property (readwrite, nonatomic, strong) CASCCDExposure* exposure;
 @property (readwrite, nonatomic, strong) CASRegion* region;
@@ -41,7 +41,7 @@ NSString* const keyFitness = @"fitness";
 @end
 
 
-@implementation CASFocuserFitness
+@implementation CASFocusMetric
 
 - (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
 {
@@ -101,13 +101,13 @@ NSString* const keyFitness = @"fitness";
     self.region = (CASRegion*) objInDataD;
     [resultsMutD setObject: objInDataD forKey: keyRegion];
 
-    CGFloat fitness = [self fitnessForRegion: self.region
-                             inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
-                                    ofLength: self.numPixels
-                                     numRows: self.numRows
-                                     numCols: self.numCols];
+    CGFloat focusMetric = [self focusMetricForRegion: self.region
+                                     inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
+                                            ofLength: self.numPixels
+                                             numRows: self.numRows
+                                             numCols: self.numCols];
 
-    [resultsMutD setObject: [NSNumber numberWithFloat: fitness] forKey: keyFitness];
+    [resultsMutD setObject: [NSNumber numberWithFloat: focusMetric] forKey: keyFocusMetric];
     return [NSDictionary dictionaryWithDictionary: resultsMutD];
 }
 
@@ -115,11 +115,11 @@ NSString* const keyFitness = @"fitness";
 // Subclasses must override.
 // Subclasses may directly access the data dictionary inherited from CASAlgorithm
 // if there are extra arguments not directly passed to this method.
-- (CGFloat) fitnessForRegion: (CASRegion*) region
-             inExposureArray: (uint16_t*) values
-                    ofLength: (NSUInteger) len
-                     numRows: (NSUInteger) numRows
-                     numCols: (NSUInteger) numCols;
+- (CGFloat) focusMetricForRegion: (CASRegion*) region
+                 inExposureArray: (uint16_t*) values
+                        ofLength: (NSUInteger) len
+                         numRows: (NSUInteger) numRows
+                         numCols: (NSUInteger) numCols;
 {
     return 0.0;
 }
