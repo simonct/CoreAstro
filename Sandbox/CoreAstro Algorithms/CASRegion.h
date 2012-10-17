@@ -26,6 +26,8 @@
 
 #import "CASCCDParams.h"
 
+extern NSString* const keyRegion;
+
 // Only makes sense in the context of a given exposure.
 @interface CASRegion: NSObject
 

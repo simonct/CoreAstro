@@ -26,6 +26,8 @@
 
 #import "CASRegion.h"
 
+NSString* const keyRegion = @"region";
+
 @implementation CASRegion
 
 - (NSString*) description;
