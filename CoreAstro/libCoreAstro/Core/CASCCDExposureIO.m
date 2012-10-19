@@ -122,6 +122,11 @@
     return @"samples.data";
 }
 
+- (NSString*)thumbKey
+{
+    return @"thumbnail.png";
+}
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
     NSError* error = nil;
@@ -133,11 +138,13 @@
         
         NSString* metaName = nil;
         NSString* samplesName = nil;
+        NSString* thumbName = nil;
         
         NSDictionary* wrappers = [wrapper fileWrappers];
         if ([wrappers count]){
             metaName = [[wrappers objectForKey:[self metaKey]] filename];
             samplesName = [[wrappers objectForKey:[self pixelsKey]] filename];
+            thumbName = [[wrappers objectForKey:[self thumbKey]] filename];
         }
         if (!metaName){
             metaName = [wrapper addRegularFileWithContents:nil preferredFilename:[self metaKey]];
@@ -145,14 +152,42 @@
         if (!samplesName){
             samplesName = [wrapper addRegularFileWithContents:nil preferredFilename:[self pixelsKey]];
         }
+        if (!thumbName){
+            thumbName = [wrapper addRegularFileWithContents:nil preferredFilename:[self thumbKey]];
+        }
         
-        // thumbnail...
-        
+        // write samples and metadata
         NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:exposure.meta,@"exposure",[NSNumber numberWithInteger:1],@"version",nil];
         NSData* metaData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
         if (metaData){
             if ([metaData writeToURL:[self.url URLByAppendingPathComponent:metaName] options:NSDataWritingAtomic error:&error] && writePixels) {
                 [exposure.pixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
+            }
+        }
+        
+        // create a thumbnail - or do this in the quicklook generator ? (or both ? just expose this code in the framework)
+        CASCCDImage* image = [exposure createImage];
+        if (image){
+            const CASSize size = image.size;
+            const NSInteger thumbWidth = 256;
+            const CASSize thumbSize = CASSizeMake(thumbWidth, thumbWidth * ((float)size.height/(float)size.width));
+            CGImageRef thumb = [image createImageWithSize:thumbSize];
+            if (!thumb){
+                NSLog(@"Failed to create thumbnail image of size %@",NSStringFromCASSize(thumbSize));
+            }
+            else{
+                NSURL* thumbURL = [self.url URLByAppendingPathComponent:thumbName];
+                CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)thumbURL, CFSTR("public.png"), 1, nil);
+                if (!destination){
+                    NSLog(@"Failed to create image destination for thumbnail at %@",thumbURL);
+                }
+                else{
+                    CGImageDestinationAddImage(destination, thumb, nil);
+                    if (!CGImageDestinationFinalize(destination)){
+                        NSLog(@"Failed to write thumbnail to %@",thumbURL);
+                    }
+                    CFRelease(destination);
+                }
             }
         }
     }

@@ -32,6 +32,7 @@
 @property (nonatomic,readonly) CGImageRef CGImage;
 
 - (void)reset;
+- (CGImageRef)createImageWithSize:(CASSize)size;
 
 + (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel;
 + (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel;

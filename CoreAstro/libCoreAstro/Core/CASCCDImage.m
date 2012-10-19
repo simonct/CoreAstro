@@ -95,6 +95,25 @@
     // need a reference to the underlying exposure to get the pixels from again ?
 }
 
+- (CGImageRef)createImageWithSize:(CASSize)imageSize
+{
+    CGImageRef result = nil;
+    CGImageRef image = self.CGImage;
+    if (image){
+        if (imageSize.width == CGImageGetWidth(image) && imageSize.height == CGImageGetHeight(image)){
+            result = image;
+        }
+        else {
+            CGContextRef thumbContext = ([[self class] createBitmapContextWithSize:imageSize bitsPerPixel:self.bitsPerPixel]);
+            if (thumbContext){
+                CGContextDrawImage(thumbContext, CGRectMake(0, 0, imageSize.width, imageSize.height), image);
+                result = CGBitmapContextCreateImage(thumbContext);
+            }
+        }
+    }
+    return result;
+}
+
 + (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel
 {
     if (bitsPerPixel != 16){

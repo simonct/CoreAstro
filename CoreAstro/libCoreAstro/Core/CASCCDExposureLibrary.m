@@ -114,6 +114,7 @@
                 // have to ensure that the pixels haven't been reset before this happens...
                 NSString* path = [[self root] stringByAppendingPathComponent:exposure.deviceID];
                 
+                // create the exposure library path
                 NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
                 formatter.dateFormat = @"LLL-d-Y";
                 path = [path stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
@@ -121,22 +122,25 @@
                 path = [path stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
                 path = [path stringByAppendingPathExtension:@"caExposure"];
                 
+                // create the exposure io object
                 exposure.io = [CASCCDExposureIO exposureIOWithPath:path];
                 
+                // write the exposure
                 NSError* error = nil;
-                [exposure.io writeExposure:exposure writePixels:YES error:&error];
-                
-                // make sure all the files are read-only (what about the wrapper ?)
-                NSString* subPath = nil;
-                NSDirectoryEnumerator* dir = [[NSFileManager defaultManager] enumeratorAtPath:path];
-                while ((subPath = [dir nextObject]) != nil) {
-                    subPath = [path stringByAppendingPathComponent:subPath];
-                    BOOL isDirectory;
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:subPath isDirectory:&isDirectory]){
-                        if (!isDirectory){
-                            NSDictionary* attrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:0444] forKey:NSFilePosixPermissions]; // todo; get the current perms and modify rather than set this absolute value
-                            if (attrs){
-                                [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:subPath error:nil];
+                if ([exposure.io writeExposure:exposure writePixels:YES error:&error]){
+                    
+                    // make sure all the files are read-only (what about the wrapper ?)
+                    NSString* subPath = nil;
+                    NSDirectoryEnumerator* dir = [[NSFileManager defaultManager] enumeratorAtPath:path];
+                    while ((subPath = [dir nextObject]) != nil) {
+                        subPath = [path stringByAppendingPathComponent:subPath];
+                        BOOL isDirectory;
+                        if ([[NSFileManager defaultManager] fileExistsAtPath:subPath isDirectory:&isDirectory]){
+                            if (!isDirectory){
+                                NSDictionary* attrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:0444] forKey:NSFilePosixPermissions]; // todo; get the current perms and modify rather than set this absolute value
+                                if (attrs){
+                                    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:subPath error:nil];
+                                }
                             }
                         }
                     }
