@@ -559,7 +559,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
-				INSTALL_PATH = "@loader_path/Frameworks";
+				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -568,7 +568,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
-				INSTALL_PATH = "@loader_path/Frameworks";
+				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -99,6 +99,18 @@
 		F49E52E915A971620018DC75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F49E52E715A971620018DC75 /* InfoPlist.strings */; };
 		F49E52EC15A971620018DC75 /* CoreAstroTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E52EB15A971620018DC75 /* CoreAstroTests.m */; };
 		F49E531215A9731C0018DC75 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E531115A9731C0018DC75 /* IOKit.framework */; };
+		F4A4F2A91631DDDE00A3B4E9 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2A81631DDDE00A3B4E9 /* QuickLook.framework */; };
+		F4A4F2AB1631DDDE00A3B4E9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2AA1631DDDE00A3B4E9 /* ApplicationServices.framework */; };
+		F4A4F2AD1631DDDE00A3B4E9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2AC1631DDDE00A3B4E9 /* CoreServices.framework */; };
+		F4A4F2AF1631DDDE00A3B4E9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2AE1631DDDE00A3B4E9 /* CoreFoundation.framework */; };
+		F4A4F2B51631DDDE00A3B4E9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A4F2B31631DDDE00A3B4E9 /* InfoPlist.strings */; };
+		F4A4F2B71631DDDE00A3B4E9 /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A4F2B61631DDDE00A3B4E9 /* GenerateThumbnailForURL.m */; };
+		F4A4F2B91631DDDE00A3B4E9 /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A4F2B81631DDDE00A3B4E9 /* GeneratePreviewForURL.m */; };
+		F4A4F2BB1631DDDE00A3B4E9 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F4A4F2BA1631DDDE00A3B4E9 /* main.c */; };
+		F4A4F2C31631DE0F00A3B4E9 /* CoreAstro.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */; };
+		F4A4F2C71631F6AA00A3B4E9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
+		F4A4F2D41632929400A3B4E9 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
+		F4A4F2D51632929400A3B4E9 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F4A561C515EA5DE100130D4A /* CASHistogramView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A561C415EA5DE100130D4A /* CASHistogramView.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
@@ -210,6 +222,27 @@
 			remoteGlobalIDString = F49E52BC15A971610018DC75;
 			remoteInfo = CoreAstro;
 		};
+		F4A4F2C01631DDEE00A3B4E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4A4F2A61631DDDE00A3B4E9;
+			remoteInfo = "QuickLook Plugin";
+		};
+		F4A4F2D01632928E00A3B4E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F4A4F2D21632928E00A3B4E9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F4D967EC161894A100465163;
+			remoteInfo = cfitsio;
+		};
 		F4EEF2ED1606226100547009 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F49E52B415A971610018DC75 /* Project object */;
@@ -256,6 +289,16 @@
 			files = (
 				F4EEF3181606244100547009 /* SHDevicesPlugin.casPlugin in CopyFiles */,
 				F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4A4F2C21631DE0100A3B4E9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/QuickLook;
+			dstSubfolderSpec = 1;
+			files = (
+				F4A4F2C31631DE0F00A3B4E9 /* CoreAstro.qlgenerator in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +410,17 @@
 		F4A0E3B015C70FD4002878C9 /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
 		F4A0E3B215C71049002878C9 /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDParams.h; sourceTree = "<group>"; };
 		F4A0E3B315C71049002878C9 /* CASCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDParams.m; sourceTree = "<group>"; };
+		F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreAstro.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4A4F2A81631DDDE00A3B4E9 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		F4A4F2AA1631DDDE00A3B4E9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		F4A4F2AC1631DDDE00A3B4E9 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		F4A4F2AE1631DDDE00A3B4E9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		F4A4F2B21631DDDE00A3B4E9 /* QuickLook Plugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QuickLook Plugin-Info.plist"; sourceTree = "<group>"; };
+		F4A4F2B41631DDDE00A3B4E9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4A4F2B61631DDDE00A3B4E9 /* GenerateThumbnailForURL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerateThumbnailForURL.m; sourceTree = "<group>"; };
+		F4A4F2B81631DDDE00A3B4E9 /* GeneratePreviewForURL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneratePreviewForURL.m; sourceTree = "<group>"; };
+		F4A4F2BA1631DDDE00A3B4E9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		F4A4F2BC1631DDDE00A3B4E9 /* QuickLook Plugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickLook Plugin-Prefix.pch"; sourceTree = "<group>"; };
 		F4A561C315EA5DE100130D4A /* CASHistogramView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHistogramView.h; sourceTree = "<group>"; };
 		F4A561C415EA5DE100130D4A /* CASHistogramView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHistogramView.m; sourceTree = "<group>"; };
 		F4A84E1915C52B7300B1164F /* SXCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDParams.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDParams.h; sourceTree = "<group>"; };
@@ -469,6 +523,20 @@
 			files = (
 				F49E52E015A971620018DC75 /* SenTestingKit.framework in Frameworks */,
 				F49E52E115A971620018DC75 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4A4F2A21631DDDE00A3B4E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A4F2D41632929400A3B4E9 /* CoreAstro.framework in Frameworks */,
+				F4A4F2D51632929400A3B4E9 /* libcfitsio.dylib in Frameworks */,
+				F4A4F2C71631F6AA00A3B4E9 /* Cocoa.framework in Frameworks */,
+				F4A4F2A91631DDDE00A3B4E9 /* QuickLook.framework in Frameworks */,
+				F4A4F2AB1631DDDE00A3B4E9 /* ApplicationServices.framework in Frameworks */,
+				F4A4F2AD1631DDDE00A3B4E9 /* CoreServices.framework in Frameworks */,
+				F4A4F2AF1631DDDE00A3B4E9 /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,6 +718,7 @@
 				F49E52E415A971620018DC75 /* CoreAstroTests */,
 				F44EDEFC15FCC385003B1B4C /* CoreAstro Framework */,
 				F44EDF1115FCC386003B1B4C /* CoreAstro FrameworkTests */,
+				F4A4F2B01631DDDE00A3B4E9 /* QuickLook Plugin */,
 				F49E52C015A971610018DC75 /* Frameworks */,
 				F49E52BE15A971610018DC75 /* Products */,
 			);
@@ -664,6 +733,7 @@
 				F44EDF0B15FCC386003B1B4C /* CoreAstro FrameworkTests.octest */,
 				F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */,
 				F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */,
+				F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -677,6 +747,10 @@
 				F49E531115A9731C0018DC75 /* IOKit.framework */,
 				F49E52C115A971610018DC75 /* Cocoa.framework */,
 				F49E52DF15A971620018DC75 /* SenTestingKit.framework */,
+				F4A4F2A81631DDDE00A3B4E9 /* QuickLook.framework */,
+				F4A4F2AA1631DDDE00A3B4E9 /* ApplicationServices.framework */,
+				F4A4F2AC1631DDDE00A3B4E9 /* CoreServices.framework */,
+				F4A4F2AE1631DDDE00A3B4E9 /* CoreFoundation.framework */,
 				F49E52C315A971610018DC75 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -838,6 +912,27 @@
 			path = ../CoreAstro/libCoreAstro/Core;
 			sourceTree = "<group>";
 		};
+		F4A4F2B01631DDDE00A3B4E9 /* QuickLook Plugin */ = {
+			isa = PBXGroup;
+			children = (
+				F4A4F2B61631DDDE00A3B4E9 /* GenerateThumbnailForURL.m */,
+				F4A4F2B81631DDDE00A3B4E9 /* GeneratePreviewForURL.m */,
+				F4A4F2BA1631DDDE00A3B4E9 /* main.c */,
+				F4A4F2B11631DDDE00A3B4E9 /* Supporting Files */,
+			);
+			path = "QuickLook Plugin";
+			sourceTree = "<group>";
+		};
+		F4A4F2B11631DDDE00A3B4E9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4A4F2B21631DDDE00A3B4E9 /* QuickLook Plugin-Info.plist */,
+				F4A4F2B31631DDDE00A3B4E9 /* InfoPlist.strings */,
+				F4A4F2BC1631DDDE00A3B4E9 /* QuickLook Plugin-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F4EEF26B1604662100547009 /* HID */ = {
 			isa = PBXGroup;
 			children = (
@@ -943,6 +1038,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4A4F2A31631DDDE00A3B4E9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1013,10 +1115,12 @@
 				F49E52BB15A971610018DC75 /* Resources */,
 				F459640E15EA42D50041AF7D /* CopyFiles */,
 				F498A53A15FE8210006E8376 /* CopyFiles */,
+				F4A4F2C21631DE0100A3B4E9 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F4A4F2C11631DDEE00A3B4E9 /* PBXTargetDependency */,
 				F4EEF31A1606244900547009 /* PBXTargetDependency */,
 				F498A53915FE81E3006E8376 /* PBXTargetDependency */,
 				F44EDF5F15FCC920003B1B4C /* PBXTargetDependency */,
@@ -1044,6 +1148,27 @@
 			name = CoreAstroTests;
 			productName = CoreAstroTests;
 			productReference = F49E52DE15A971620018DC75 /* CoreAstroTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F4A4F2A61631DDDE00A3B4E9 /* QuickLook Plugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4A4F2BD1631DDDE00A3B4E9 /* Build configuration list for PBXNativeTarget "QuickLook Plugin" */;
+			buildPhases = (
+				F4A4F2A11631DDDE00A3B4E9 /* Sources */,
+				F4A4F2A21631DDDE00A3B4E9 /* Frameworks */,
+				F4A4F2A31631DDDE00A3B4E9 /* Headers */,
+				F4A4F2A41631DDDE00A3B4E9 /* Resources */,
+				F4A4F2A51631DDDE00A3B4E9 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4A4F2D11632928E00A3B4E9 /* PBXTargetDependency */,
+				F4A4F2D31632928E00A3B4E9 /* PBXTargetDependency */,
+			);
+			name = "QuickLook Plugin";
+			productName = "QuickLook Plugin";
+			productReference = F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */;
 			productType = "com.apple.product-type.bundle";
 		};
 		F4EEF2EB1606226100547009 /* SHDevicesPlugin */ = {
@@ -1103,6 +1228,7 @@
 				F44EDF0A15FCC386003B1B4C /* CoreAstro FrameworkTests */,
 				F498A51815FE7F96006E8376 /* SXDevicesPlugin */,
 				F4EEF2EB1606226100547009 /* SHDevicesPlugin */,
+				F4A4F2A61631DDDE00A3B4E9 /* QuickLook Plugin */,
 			);
 		};
 /* End PBXProject section */
@@ -1189,6 +1315,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4A4F2A41631DDDE00A3B4E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A4F2B51631DDDE00A3B4E9 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4EEF2F71606226100547009 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1197,6 +1331,16 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		F4A4F2A51631DDDE00A3B4E9 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		F44EDF0915FCC386003B1B4C /* ShellScript */ = {
@@ -1326,6 +1470,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4A4F2A11631DDDE00A3B4E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A4F2B71631DDDE00A3B4E9 /* GenerateThumbnailForURL.m in Sources */,
+				F4A4F2B91631DDDE00A3B4E9 /* GeneratePreviewForURL.m in Sources */,
+				F4A4F2BB1631DDDE00A3B4E9 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4EEF2EE1606226100547009 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1372,6 +1526,21 @@
 			isa = PBXTargetDependency;
 			target = F49E52BC15A971610018DC75 /* CoreAstro */;
 			targetProxy = F49E52E215A971620018DC75 /* PBXContainerItemProxy */;
+		};
+		F4A4F2C11631DDEE00A3B4E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4A4F2A61631DDDE00A3B4E9 /* QuickLook Plugin */;
+			targetProxy = F4A4F2C01631DDEE00A3B4E9 /* PBXContainerItemProxy */;
+		};
+		F4A4F2D11632928E00A3B4E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
+			targetProxy = F4A4F2D01632928E00A3B4E9 /* PBXContainerItemProxy */;
+		};
+		F4A4F2D31632928E00A3B4E9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cfitsio;
+			targetProxy = F4A4F2D21632928E00A3B4E9 /* PBXContainerItemProxy */;
 		};
 		F4EEF2EC1606226100547009 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1442,6 +1611,14 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
+		F4A4F2B31631DDDE00A3B4E9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4A4F2B41631DDDE00A3B4E9 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		F4EEF303160622AE00547009 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1467,7 +1644,7 @@
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks/";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1487,7 +1664,7 @@
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks/";
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1616,6 +1793,7 @@
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -1632,6 +1810,7 @@
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -1665,6 +1844,44 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		F4A4F2BE1631DDDE00A3B4E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "QuickLook Plugin/QuickLook Plugin-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
+				INFOPLIST_FILE = "QuickLook Plugin/QuickLook Plugin-Info.plist";
+				INSTALL_PATH = /Library/QuickLook;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				PRODUCT_NAME = CoreAstro;
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Debug;
+		};
+		F4A4F2BF1631DDDE00A3B4E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "QuickLook Plugin/QuickLook Plugin-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/cfitsio\"";
+				INFOPLIST_FILE = "QuickLook Plugin/QuickLook Plugin-Info.plist";
+				INSTALL_PATH = /Library/QuickLook;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				PRODUCT_NAME = CoreAstro;
+				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Release;
 		};
@@ -1756,6 +1973,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		F4A4F2BD1631DDDE00A3B4E9 /* Build configuration list for PBXNativeTarget "QuickLook Plugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4A4F2BE1631DDDE00A3B4E9 /* Debug */,
+				F4A4F2BF1631DDDE00A3B4E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		F4EEF2FD1606226100547009 /* Build configuration list for PBXNativeTarget "SHDevicesPlugin" */ = {
 			isa = XCConfigurationList;

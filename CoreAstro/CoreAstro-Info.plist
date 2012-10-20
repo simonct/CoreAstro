@@ -4,6 +4,30 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string></string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>caExposure</string>
+				<string>casExposure</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>moon</string>
+			<key>CFBundleTypeName</key>
+			<string>CoreAstro Exposure</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.coreastro.exposure-package</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<true/>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
