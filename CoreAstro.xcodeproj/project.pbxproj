@@ -111,6 +111,7 @@
 		F4A4F2C71631F6AA00A3B4E9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F4A4F2D41632929400A3B4E9 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F4A4F2D51632929400A3B4E9 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
+		F4A4F2F51632F0C700A3B4E9 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4A4F2F31632F06800A3B4E9 /* Sparkle.framework */; };
 		F4A561C515EA5DE100130D4A /* CASHistogramView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A561C415EA5DE100130D4A /* CASHistogramView.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
@@ -278,6 +279,7 @@
 			files = (
 				F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */,
 				F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */,
+				F4A4F2F51632F0C700A3B4E9 /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,6 +423,7 @@
 		F4A4F2B81631DDDE00A3B4E9 /* GeneratePreviewForURL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneratePreviewForURL.m; sourceTree = "<group>"; };
 		F4A4F2BA1631DDDE00A3B4E9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F4A4F2BC1631DDDE00A3B4E9 /* QuickLook Plugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickLook Plugin-Prefix.pch"; sourceTree = "<group>"; };
+		F4A4F2F31632F06800A3B4E9 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = "External/Sparkle 1.5b6/Sparkle.framework"; sourceTree = "<group>"; };
 		F4A561C315EA5DE100130D4A /* CASHistogramView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHistogramView.h; sourceTree = "<group>"; };
 		F4A561C415EA5DE100130D4A /* CASHistogramView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHistogramView.m; sourceTree = "<group>"; };
 		F4A84E1915C52B7300B1164F /* SXCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDParams.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDParams.h; sourceTree = "<group>"; };
@@ -741,6 +744,7 @@
 		F49E52C015A971610018DC75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4A4F2F31632F06800A3B4E9 /* Sparkle.framework */,
 				F47EF80815C1D244002E9AB1 /* Accelerate.framework */,
 				F46BA59C15BDD75C0097532B /* Quartz.framework */,
 				F46BA59A15BDD7250097532B /* QuartzCore.framework */,
@@ -1789,6 +1793,10 @@
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/External/Sparkle 1.5b6\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
@@ -1806,6 +1814,10 @@
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/External/Sparkle 1.5b6\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro/CoreAstro-Prefix.pch";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/External/CorePlot_1.0/Source/framework/Source\"/**";
