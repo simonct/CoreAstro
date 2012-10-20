@@ -781,6 +781,33 @@
     }];
 }
 
+- (IBAction)exportToFITS:(id)sender
+{
+    if (!self.currentExposure){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.allowedFileTypes = @[@"fit"];
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[save.URL path]];
+            if (!io){
+                NSLog(@"*** Failed to create FITS exporter");
+            }
+            else {
+                NSError* error = nil;
+                [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                if (error){
+                    [NSApp presentError:error];
+                }
+            }
+        }
+    }];
+}
+
 #define ZOOM_IN_FACTOR  1.414214
 #define ZOOM_OUT_FACTOR 0.7071068
 
