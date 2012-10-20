@@ -283,13 +283,14 @@
             
             const CASSize size = exposure.actualSize;
             long naxes[2] = { size.width, size.height };
-            if ( fits_create_img(fptr, SHORT_IMG, 2, naxes, &status) ){
+            if ( fits_create_img(fptr, USHORT_IMG, 2, naxes, &status) ){
                 error = [NSError errorWithDomain:@"CASCCDExposureFITS"
                                             code:status
                                         userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to create FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
             }
             else {
-                if ( fits_write_img(fptr, TSHORT, 1, [exposure.pixels length]/sizeof(uint16_t), (void*)[exposure.pixels bytes], &status) ){
+                
+                if ( fits_write_img(fptr, TUSHORT, 1, [exposure.pixels length]/sizeof(uint16_t), (void*)[exposure.pixels bytes], &status) ){
                     error = [NSError errorWithDomain:@"CASCCDExposureFITS"
                                                 code:status
                                             userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to write FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
@@ -299,6 +300,10 @@
                 }
             }
             fits_close_file(fptr, &status);
+        }
+        
+        if (status){
+            fits_report_error(stderr, status);
         }
     }
 
