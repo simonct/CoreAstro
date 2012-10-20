@@ -788,7 +788,7 @@
     }
     
     NSSavePanel* save = [NSSavePanel savePanel];
-    save.allowedFileTypes = @[@"fit"];
+    save.allowedFileTypes = @[@"fits",@"fit"];
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSFileHandlingPanelOKButton){
