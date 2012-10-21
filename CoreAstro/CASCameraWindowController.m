@@ -931,6 +931,19 @@
     self.equalise = !self.equalise;
 }
 
+- (IBAction)sendFeedback:(id)sender
+{
+    NSString* const feedback = @"feedback@coreastro.org";
+    NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"mailto:%@?subject=%@",feedback,@"CoreAstro%20Feedback"]];
+    if (![[NSWorkspace sharedWorkspace] openURL:mailUrl]){
+        [[NSAlert alertWithMessageText:@"Send Feedback"
+                         defaultButton:@"OK"
+                       alternateButton:nil
+                           otherButton:nil
+             informativeTextWithFormat:[NSString stringWithFormat:@"You don't appear to have a configured email account on this Mac. You can send feedback to %@",feedback],nil] runModal];
+    }
+}
+
 #pragma mark Menu validation
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
