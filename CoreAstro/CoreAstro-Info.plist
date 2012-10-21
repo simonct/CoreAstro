@@ -20,7 +20,7 @@
 			<string>CoreAstro Exposure</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-            <key>LSHandlerRank</key>
+			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
@@ -47,7 +47,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.1</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.photography</string>
 	<key>LSMinimumSystemVersion</key>
@@ -62,6 +62,8 @@
 	<string>NSApplication</string>
 	<key>OSAScriptingDefinition</key>
 	<string>CoreAstro.sdef</string>
+	<key>SUFeedURL</key>
+	<string>http://coreastro.org/downloads/coreastro-appcast.xml</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
