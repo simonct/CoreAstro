@@ -165,7 +165,7 @@
             }
         }
         
-        // create a thumbnail - or do this in the quicklook generator ? (or both ? just expose this code in the framework)
+        // create a thumbnail (could use the QuickLook generator but that then introduces an unnecessary dependency)
         CASCCDImage* image = [exposure createImage];
         if (image){
             const CASSize size = image.size;
@@ -258,6 +258,15 @@
 {
     NSError* error = nil;
     
+    NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSString* msg){
+        if (status && !msg){
+            msg = [NSString stringWithFormat:@"FITS error: %ld",status];
+        }
+        return [NSError errorWithDomain:@"CASCCDExposureFITS"
+                                   code:status
+                               userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
+    };
+    
      // '(' & ')' are special characters so replace them with {}
     NSMutableString* s = [NSMutableString stringWithString:[self.url path]];
     [s replaceOccurrencesOfString:@"(" withString:@"{" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
@@ -275,28 +284,75 @@
         
         const char * path = [s fileSystemRepresentation];
         if (fits_create_file(&fptr, path, &status)) {
-            error = [NSError errorWithDomain:@"CASCCDExposureFITS"
-                                        code:status
-                                    userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to create FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+            error = createFITSError(status,[NSString stringWithFormat:@"Failed to create FITS file %d",status]);
         }
         else {
             
             const CASSize size = exposure.actualSize;
             long naxes[2] = { size.width, size.height };
             if ( fits_create_img(fptr, USHORT_IMG, 2, naxes, &status) ){
-                error = [NSError errorWithDomain:@"CASCCDExposureFITS"
-                                            code:status
-                                        userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to create FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+                error = createFITSError(status,[NSString stringWithFormat:@"Failed to create FITS file %d",status]);
             }
             else {
                 
                 if ( fits_write_img(fptr, TUSHORT, 1, [exposure.pixels length]/sizeof(uint16_t), (void*)[exposure.pixels bytes], &status) ){
-                    error = [NSError errorWithDomain:@"CASCCDExposureFITS"
-                                                code:status
-                                            userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Failed to write FITS file %d",status] forKey:NSLocalizedFailureReasonErrorKey]];
+                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS file %d",status]);
                 }
                 else {
-                    NSLog(@"todo: FTIS metadata");
+                    
+                    // add basic keywords (from http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
+                    
+                    if ( fits_write_date(fptr, &status) ) {
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+
+                    NSString* deviceID = exposure.deviceID;
+                    if ([deviceID length]){
+                        const char* s = [deviceID cStringUsingEncoding:NSASCIIStringEncoding];
+                        if (s){
+                            if ( fits_update_key(fptr, TSTRING, "INSTRUME", (void*)s, "acquisition instrument", &status) ) {
+                                error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                            }
+                        }
+                    }
+                    
+                    const float exposureMS = exposure.params.ms;
+                    if ( fits_update_key(fptr, TFLOAT, "EXPTIME", (void*)&exposureMS, "exposure time in milliseconds", &status) ) {
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+
+                    NSDate* date = exposure.date;
+                    if (date){
+                        // yyyy.mm.ddThh:mm:ss[.sss]
+                        static NSDateFormatter* utcFormatter = nil;
+                        static dispatch_once_t onceToken;
+                        dispatch_once(&onceToken, ^{
+                            utcFormatter = [[NSDateFormatter alloc] init];
+                            utcFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                            [utcFormatter setDateFormat:@"yyyy'.'M'.'dd'T'HH':'mm':'ss'.'SSS"];
+                        });
+                        NSString* dateStr = [utcFormatter stringFromDate:date];
+                        if ([dateStr length]){
+                            const char* s = [dateStr cStringUsingEncoding:NSASCIIStringEncoding];
+                            if (s){
+                                if ( fits_update_key(fptr, TSTRING, "DATE-OBS", (void*)s, "acquisition date (UTC)", &status) ) {
+                                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                                }
+                            }
+                        }
+                    }
+                    
+                    /*
+                    NSString* notes = exposure.note;
+                    if ([notes length]){
+                        const char* s = [notes cStringUsingEncoding:NSASCIIStringEncoding]; // escape, length limit ?
+                        if (s){
+                            if ( fits_update_key(fptr, TSTRING, "COMMENT", (void*)s, "", &status) ) {
+                                error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                            }
+                        }
+                    }
+                    */
                 }
             }
             fits_close_file(fptr, &status);
