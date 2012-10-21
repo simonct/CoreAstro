@@ -15,7 +15,7 @@ OSStatus GenerateThumbnailForURL(void *thisInterface, QLThumbnailRequestRef thum
 {
     // To complete your generator please implement the function GenerateThumbnailForURL in GenerateThumbnailForURL.c
     
-    NSLog(@"CoreAstro: GenerateThumbnailForURL: %@ (%@)",url,NSStringFromSize(maxSize));
+    NSLog(@"CoreAstro: GenerateThumbnailForURL: %@, size=%@",url,NSStringFromSize(maxSize));
     
     @autoreleasepool {
         
@@ -36,28 +36,31 @@ OSStatus GenerateThumbnailForURL(void *thisInterface, QLThumbnailRequestRef thum
             }
             else {
                 
-                NSLog(@"CoreAstro: No packaged thumbnail, will have to generate one");
+                NSLog(@"CoreAstro: No suitable packaged thumbnail, will have to generate one");
                 
-                CGContextRef cgContext = QLThumbnailRequestCreateContext(thumbnail, *(CGSize *)&maxSize,true,NULL);
-                if (cgContext){
+                CASCCDExposure* exp = [[CASCCDExposure alloc] init];
+                if ([io readExposure:exp readPixels:YES error:nil]){
                     
-                    CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-                    if ([io readExposure:exp readPixels:YES error:nil]){
+                    CASCCDImage* image = [exp createImage];
+                    if (image){
                         
-                        CASCCDImage* image = [exp createImage];
-                        if (image){
+                        CGImageRef ref = image.CGImage;
+                        if (ref){
                             
-                            CGImageRef ref = image.CGImage;
-                            if (ref){
-                                
-                                const float aspectRatio = (float)CGImageGetWidth(ref)/(float)CGImageGetHeight(ref);
-                                CGContextDrawImage(cgContext, CGRectMake(0, 0, maxSize.width, maxSize.width / aspectRatio), ref);
+                            const CGFloat aspectRatio = (CGFloat)CGImageGetWidth(ref)/(CGFloat)CGImageGetHeight(ref);
+                            const CGSize thumbnailSize = CGSizeMake(maxSize.width, floor(maxSize.width / aspectRatio));
+                            
+                            CGContextRef cgContext = QLThumbnailRequestCreateContext(thumbnail, *(CGSize *)&thumbnailSize,true,NULL);
+                            if (cgContext){
+
+                                NSLog(@"CoreAstro: Created thumbnail context with size %@",NSStringFromSize(thumbnailSize));
+
+                                CGContextDrawImage(cgContext, CGRectMake(0, 0, thumbnailSize.width, thumbnailSize.height), ref);
+                                QLThumbnailRequestFlushContext(thumbnail, cgContext);
+                                CFRelease(cgContext);
                             }
                         }
                     }
-                
-                    QLThumbnailRequestFlushContext(thumbnail, cgContext);
-                    CFRelease(cgContext);
                 }
             }
         }

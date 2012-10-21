@@ -20,6 +20,8 @@
 			<string>CoreAstro Exposure</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+            <key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.coreastro.exposure-package</string>
@@ -60,5 +62,29 @@
 	<string>NSApplication</string>
 	<key>OSAScriptingDefinition</key>
 	<string>CoreAstro.sdef</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.package</string>
+				<string>public.composite-content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>CoreAstro Exposure</string>
+			<key>UTTypeIconFile</key>
+			<string>moon</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.coreastro.exposure-package</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>caExposure</string>
+					<string>casExposure</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
