@@ -54,24 +54,26 @@
 - (NSString*) displayDate
 {
     static NSDateFormatter* dateFormatter = nil;
-    if (!dateFormatter) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateStyle = NSDateFormatterShortStyle;
         dateFormatter.timeStyle = NSDateFormatterShortStyle;
-    }
+    });
     return [dateFormatter stringFromDate:self.date];
 }
 
 - (NSString*) displayExposure
 {
     static NSNumberFormatter* numberFormatter = nil;
-    if (!numberFormatter) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         numberFormatter = [[NSNumberFormatter alloc] init];
         numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
         numberFormatter.generatesDecimalNumbers = YES;
         numberFormatter.minimumFractionDigits = 0;
         numberFormatter.maximumFractionDigits = 3;
-    }
+    });
     return [NSString stringWithFormat:@"%@s",[numberFormatter stringFromNumber:[NSNumber numberWithDouble:self.params.ms/1000.0]]];
 }
 
