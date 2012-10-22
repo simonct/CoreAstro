@@ -64,6 +64,8 @@
 	<string>CoreAstro.sdef</string>
 	<key>SUFeedURL</key>
 	<string>http://coreastro.org/downloads/coreastro-appcast.xml</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
