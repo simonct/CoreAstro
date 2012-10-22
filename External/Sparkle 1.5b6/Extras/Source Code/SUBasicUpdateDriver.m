@@ -14,6 +14,9 @@
 #import "SUStandardVersionComparator.h"
 #import "SUUnarchiver.h"
 
+@interface SUBasicUpdateDriver()<NSURLDownloadDelegate>
+@end
+
 @implementation SUBasicUpdateDriver
 
 - (void)checkForUpdatesAtURL:(NSURL *)URL host:(SUHost *)aHost
@@ -32,7 +35,7 @@
 	[appcast setDelegate:self];
 	NSString *userAgent = [NSString stringWithFormat: @"%@/%@ Sparkle/%@", [aHost name], [aHost displayVersion], ([SPARKLE_BUNDLE objectForInfoDictionaryKey:@"CFBundleVersion"] ?: nil)];
 	NSData * cleanedAgent = [userAgent dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-	userAgent = [NSString stringWithCString:[cleanedAgent bytes] length:[cleanedAgent length]];
+	userAgent = [[[NSString alloc] initWithData:cleanedAgent encoding:NSASCIIStringEncoding] autorelease];
 	[appcast setUserAgentString:userAgent];
 	[appcast fetchAppcastFromURL:URL];
 }
@@ -54,7 +57,7 @@
 
 - (BOOL)isItemNewer:(SUAppcastItem *)ui
 {
-	return [[self _versionComparator] compareVersion:[host version] toVersion:[ui versionString]] == NSOrderedAscending;
+	return [[self _versionComparator] compareVersion:[host versionStr] toVersion:[ui versionString]] == NSOrderedAscending;
 }
 
 - (BOOL)hostSupportsItem:(SUAppcastItem *)ui
@@ -139,12 +142,12 @@
 	
 	// We create a temporary directory in /tmp and stick the file there.
 	// Not using a GUID here because hdiutil for some reason chokes on GUIDs. Too long? I really have no idea.
-	NSString *prefix = [NSString stringWithFormat:@"%@ %@ Update", [host name], [host version]];
+	NSString *prefix = [NSString stringWithFormat:@"%@ %@ Update", [host name], [host versionStr]];
 	NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:prefix];
 	int cnt=1;
 	while ([[NSFileManager defaultManager] fileExistsAtPath:tempDir] && cnt <= 999999)
 		tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %d", prefix, cnt++]];
-	BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:tempDir attributes:nil];
+	BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:tempDir withIntermediateDirectories:YES attributes:nil error:nil];
 	if (!success)
 	{
 		// Okay, something's really broken with /tmp
@@ -223,8 +226,8 @@
 	NSString *relaunchPathToCopy = [[NSBundle bundleForClass:[self class]]  pathForResource:@"relaunch" ofType:@""];
 	NSString *targetPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[relaunchPathToCopy lastPathComponent]];
 	// Only the paranoid survive: if there's already a stray copy of relaunch there, we would have problems
-	[[NSFileManager defaultManager] removeFileAtPath:targetPath handler:nil];
-	if ([[NSFileManager defaultManager] copyPath:relaunchPathToCopy toPath:targetPath handler:nil])
+	[[NSFileManager defaultManager] removeItemAtPath:targetPath error:nil];
+	if ([[NSFileManager defaultManager] copyItemAtPath:relaunchPathToCopy toPath:targetPath error:nil])
 		relaunchPath = [targetPath retain];
 	
 	[SUInstaller installFromUpdateFolder:[downloadPath stringByDeletingLastPathComponent] overHost:host delegate:self synchronously:[self shouldInstallSynchronously] versionComparator:[self _versionComparator]];
@@ -274,13 +277,13 @@
 
 - (void)cleanUp
 {
-	[[NSFileManager defaultManager] removeFileAtPath:[downloadPath stringByDeletingLastPathComponent] handler:nil];	
+	[[NSFileManager defaultManager] removeItemAtPath:[downloadPath stringByDeletingLastPathComponent] error:nil];
 }
 
 - (void)installerForHost:(SUHost *)aHost failedWithError:(NSError *)error
 {
 	if (aHost != host) { return; }
-	[[NSFileManager defaultManager] removeFileAtPath:relaunchPath handler:NULL]; // Clean up the copied relauncher.
+	[[NSFileManager defaultManager] removeItemAtPath:relaunchPath error:nil]; // Clean up the copied relauncher.
 	[self abortUpdateWithError:[NSError errorWithDomain:SUSparkleErrorDomain code:SUInstallationError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:SULocalizedString(@"An error occurred while installing the update. Please try again later.", nil), NSLocalizedDescriptionKey, [error localizedDescription], NSLocalizedFailureReasonErrorKey, nil]]];
 }
 

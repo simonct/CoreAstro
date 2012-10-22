@@ -122,20 +122,31 @@
 {
 	// We do this here instead of in extractUpdate so that we only have a determinate progress bar for archives with progress.
 	if ([statusController maxProgressValue] == 0)
-		[statusController setMaxProgressValue:[[[[NSFileManager defaultManager] fileAttributesAtPath:downloadPath traverseLink:NO] objectForKey:NSFileSize] doubleValue]];
+		[statusController setMaxProgressValue:[[[[NSFileManager defaultManager] attributesOfItemAtPath:downloadPath error:nil] objectForKey:NSFileSize] doubleValue]];
 	[statusController setProgressValue:[statusController progressValue] + length];
 }
 
 - (void)unarchiverDidFinish:(SUUnarchiver *)ua
 {
-	[statusController beginActionWithTitle:SULocalizedString(@"Ready to Install", nil) maxProgressValue:1 statusText:nil];
+	[statusController beginActionWithTitle:SULocalizedString(@"Update Downloaded", nil) maxProgressValue:1 statusText:nil];
 	[statusController setProgressValue:1]; // Fill the bar.
 	[statusController setButtonEnabled:YES];
-	[statusController setButtonTitle:SULocalizedString(@"Install and Relaunch", nil) target:self action:@selector(installAndRestart:) isDefault:YES];
+	[statusController setButtonTitle:SULocalizedString(@"Reveal in Finder", nil) target:self action:@selector(revealInFinder:) isDefault:YES];
 	[NSApp requestUserAttention:NSInformationalRequest];	
 }
 
 - (void)installAndRestart:sender { [self installUpdate]; }
+
+- (void)revealInFinder:sender {
+    NSString* root = [downloadPath stringByDeletingLastPathComponent];
+    for (NSString* path in [[NSFileManager defaultManager] enumeratorAtPath:root]){
+        if ([[path pathExtension] isEqualToString:@"app"]){
+            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:[NSArray arrayWithObject:[NSURL fileURLWithPath:[root stringByAppendingPathComponent:path]]]];
+            break;
+        }
+    }
+    [statusController close];
+}
 
 - (void)installUpdate
 {
@@ -146,7 +157,7 @@
 
 - (void)abortUpdateWithError:(NSError *)error
 {
-	NSAlert *alert = [NSAlert alertWithMessageText:SULocalizedString(@"Update Error!", nil) defaultButton:SULocalizedString(@"Cancel Update", nil) alternateButton:nil otherButton:nil informativeTextWithFormat:[error localizedDescription]];
+	NSAlert *alert = [NSAlert alertWithMessageText:SULocalizedString(@"Update Error!", nil) defaultButton:SULocalizedString(@"Cancel Update", nil) alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",[error localizedDescription]];
 	[self showModalAlert:alert];
 	[super abortUpdateWithError:error];
 }

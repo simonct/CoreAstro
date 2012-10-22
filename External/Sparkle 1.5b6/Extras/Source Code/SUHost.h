@@ -18,7 +18,7 @@
 - (NSBundle *)bundle;
 - (NSString *)bundlePath;
 - (NSString *)name;
-- (NSString *)version;
+- (NSString *)versionStr;
 - (NSString *)displayVersion;
 - (NSImage *)icon;
 - (BOOL)isRunningOnReadOnlyVolume;

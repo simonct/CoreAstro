@@ -8,6 +8,7 @@
 
 #import "SUPlainInstaller.h"
 #import "SUPlainInstallerInternals.h"
+#import "SUHost.h"
 
 NSString *SUInstallerPathKey = @"SUInstallerPath";
 NSString *SUInstallerHostKey = @"SUInstallerHost";
@@ -22,9 +23,9 @@ NSString *SUInstallerVersionComparatorKey = @"SUInstallerVersionComparator";
 	BOOL result = YES;
 
 	// Prevent malicious downgrades:
-	if ([comparator compareVersion:[bundle version] toVersion:[[NSBundle bundleWithPath:path] objectForInfoDictionaryKey:@"CFBundleVersion"]] == NSOrderedDescending)
+	if ([comparator compareVersion:[bundle versionStr] toVersion:[[NSBundle bundleWithPath:path] objectForInfoDictionaryKey:@"CFBundleVersion"]] == NSOrderedDescending)
 	{
-		NSString * errorMessage = [NSString stringWithFormat:@"Sparkle Updater: Possible attack in progress! Attempting to \"upgrade\" from %@ to %@. Aborting update.", [bundle version], [[NSBundle bundleWithPath:path] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+		NSString * errorMessage = [NSString stringWithFormat:@"Sparkle Updater: Possible attack in progress! Attempting to \"upgrade\" from %@ to %@. Aborting update.", [bundle versionStr], [[NSBundle bundleWithPath:path] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 		result = NO;
 		error = [NSError errorWithDomain:SUSparkleErrorDomain code:SUDowngradeError userInfo:[NSDictionary dictionaryWithObject:errorMessage forKey:NSLocalizedDescriptionKey]];
 	}

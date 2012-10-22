@@ -166,7 +166,7 @@
     if ([updateItemVersion isEqualToString:hostVersion])
 	{
         updateItemVersion = [updateItemVersion stringByAppendingFormat:@" (%@)", [updateItem versionString]];
-        hostVersion = [hostVersion stringByAppendingFormat:@" (%@)", [host version]];
+        hostVersion = [hostVersion stringByAppendingFormat:@" (%@)", [host versionStr]];
     }
     return [NSString stringWithFormat:SULocalizedString(@"%@ %@ is now available--you have %@. Would you like to download it now?", nil), [host name], updateItemVersion, hostVersion];
 }

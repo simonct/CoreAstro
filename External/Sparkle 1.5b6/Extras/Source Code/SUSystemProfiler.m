@@ -118,7 +118,7 @@
 	NSString *appName = [host name];
 	if (appName)
 		[profileArray addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"appName",@"Application Name", appName, appName,nil] forKeys:profileDictKeys]];
-	NSString *appVersion = [host version];
+	NSString *appVersion = [host versionStr];
 	if (appVersion)
 		[profileArray addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"appVersion",@"Application Version", appVersion, appVersion,nil] forKeys:profileDictKeys]];
 	
