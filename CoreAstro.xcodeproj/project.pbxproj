@@ -15,9 +15,7 @@
 		F412975F15FCA977009C215E /* zoomtofit.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975715FCA977009C215E /* zoomtofit.pdf */; };
 		F412976115FCAB85009C215E /* opendevices.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412976015FCAB85009C215E /* opendevices.pdf */; };
 		F412976315FCAD16009C215E /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F412976215FCAD16009C215E /* moon.icns */; };
-		F412976515FCAE9B009C215E /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = F412976415FCAE9B009C215E /* TODO.md */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
-		F422B05E15FC8D5B00D86260 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F422B05D15FC8D5B00D86260 /* README.md */; };
 		F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */; };
 		F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52DF15A971620018DC75 /* SenTestingKit.framework */; };
@@ -1382,7 +1380,6 @@
 				F49E52D815A971620018DC75 /* MainMenu.xib in Resources */,
 				F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */,
 				F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */,
-				F422B05E15FC8D5B00D86260 /* README.md in Resources */,
 				F412975915FCA977009C215E /* move.pdf in Resources */,
 				F412975A15FCA977009C215E /* selection.pdf in Resources */,
 				F412975C15FCA977009C215E /* zoom1.pdf in Resources */,
@@ -1391,7 +1388,6 @@
 				F412975F15FCA977009C215E /* zoomtofit.pdf in Resources */,
 				F412976115FCAB85009C215E /* opendevices.pdf in Resources */,
 				F412976315FCAD16009C215E /* moon.icns in Resources */,
-				F412976515FCAE9B009C215E /* TODO.md in Resources */,
 				F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
