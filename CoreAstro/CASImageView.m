@@ -35,10 +35,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return NO;
 }
 
-- (BOOL)acceptsFirstResponder
-{
-    return NO;
-}
+//- (BOOL)acceptsFirstResponder
+//{
+//    return NO;
+//}
 
 //- (void)mouseUp:(NSEvent *)theEvent
 //{
