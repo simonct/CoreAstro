@@ -31,6 +31,7 @@
 #import "CASExposuresController.h"
 #import "CASExposureTableView.h"
 #import "CASImageView.h"
+#import "CASShadowView.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASCameraWindowController ()
@@ -182,6 +183,9 @@
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
+    
+    // add a drop shadow
+    [CASShadowView attachToView:self.detailContainerView];
 
     [self configureForCameraController];
 }
