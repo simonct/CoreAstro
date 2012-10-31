@@ -43,6 +43,10 @@
 	<dict>
 		<key>name</key>
 		<string>SXVR-M25C</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>image</key>
+		<string>H25</string>
 	</dict>
 	<key>806</key>
 	<dict>
