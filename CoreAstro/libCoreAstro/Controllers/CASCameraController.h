@@ -36,6 +36,7 @@
 @property (nonatomic,readonly,strong) CASCCDDevice* camera;
 
 @property (nonatomic,readonly) BOOL capturing;
+@property (nonatomic,readonly) BOOL waitingForNextCapture;
 @property (nonatomic,assign) BOOL continuous;
 @property (nonatomic,assign) NSInteger captureCount;
 @property (nonatomic,assign) NSInteger currentCaptureIndex;

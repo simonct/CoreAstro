@@ -477,7 +477,7 @@
         [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
     }
     else {
-        if (self.cameraController.continuous){
+        if (self.cameraController.waitingForNextCapture){
             self.progressIndicator.indeterminate = NO;
             self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
             [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
@@ -723,12 +723,13 @@
 
 - (IBAction)capture:(NSButton*)sender
 {
+    // check to see if we're in continuous mode
+    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
+
+    // set the progress indicator settings after setting the continuous flag
     self.progressIndicator.maxValue = 1;
     self.progressIndicator.doubleValue = 0;
     self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
-    
-    // check to see if we're in continuous mode
-    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
 
     // grab the current controller
     CASCameraController* cameraController = self.cameraController;
@@ -758,13 +759,13 @@
                 }
             }
             
-            if (!self.cameraController.continuous){
-                self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
-            }
-            else {
+            if (self.cameraController.capturing){
                 self.progressStatusText.stringValue = @"Waiting...";
             }
+            else{
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
+            }
+            self.progressStatusText.hidden = self.progressIndicator.hidden = !self.cameraController.capturing;
         }
     }];
 }

@@ -78,7 +78,9 @@
 {
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
 
-        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount)){
+        ++self.currentCaptureIndex;
+        
+        if (!error && self.waitingForNextCapture){
             
             if (self.guiding){
                 
@@ -170,6 +172,11 @@
         self.capturing = NO;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
+}
+
+- (BOOL)waitingForNextCapture
+{
+    return (self.continuous || self.currentCaptureIndex < self.captureCount);
 }
 
 - (void)setGuider:(CASGuiderController*)guider
