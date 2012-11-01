@@ -254,7 +254,17 @@
 
 - (void)exposeWithParams:(CASExposeParams)exp block:(void (^)(NSError*,CASCCDExposure*image))block {
     
-    SXCCDIOExposeCommand* expose = [[SXCCDIOExposeCommand alloc] init];
+    SXCCDIOExposeCommand* expose = nil;
+    
+    switch (self.productID) {
+        case 805:
+            expose = [[SXCCDIOExposeCommandM25C alloc] init];
+            break;
+                        
+        default:
+            expose = [[SXCCDIOExposeCommand alloc] init];
+            break;
+    }
     
     expose.ms = exp.ms;
     expose.params = exp;

@@ -425,6 +425,60 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 @end
 
+@implementation SXCCDIOExposeCommandM25C
+
+- (NSData*)toDataRepresentation {
+    
+    uint8_t buffer[22];
+    
+    NSUInteger binX = 1; // self.params.bin.width;
+    NSUInteger binY = 1; // self.params.bin.height;
+    NSUInteger width = 2 * self.params.size.width;
+    NSUInteger height = self.params.size.height / 2;
+
+    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
+- (NSError*)fromDataRepresentation:(NSData*)data {
+    
+    [super fromDataRepresentation:data];
+        
+    NSData* pixels = self.pixels;
+    if ([pixels length]){
+        
+        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
+        if ([rearrangedPixels length]){
+            
+            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
+            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
+            
+            if (pixelsPtr && rearrangedPixelsPtr){
+                
+                const unsigned long width = self.params.size.width;
+                const unsigned long height = self.params.size.height;
+                
+                unsigned long i = 0;
+                for (unsigned long y = 0; y < height; y += 2){
+                    
+                    for (unsigned long x = 0; x < width; x += 1){
+                        
+                        rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
+                        rearrangedPixelsPtr[x + ((y+1) * width)] = pixelsPtr[i++];
+                    }
+                }
+                
+                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
+            }
+        }
+    }
+
+    return nil;
+}
+
+@end
+
 @implementation SXCCDIOReadCommand
 
 @synthesize params, pixels = _pixels;
