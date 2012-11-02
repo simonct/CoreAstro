@@ -437,7 +437,33 @@
             self.cameraController.captureCount = 0;
         }
         else {
-            self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+            
+            // tmp - probably replace with a different control style
+            switch (_captureMenuSelectedIndex) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+                    break;
+                case 5:
+                    self.cameraController.captureCount = 10;
+                    break;
+                case 6:
+                    self.cameraController.captureCount = 25;
+                    break;
+                case 7:
+                    self.cameraController.captureCount = 50;
+                    break;
+                case 8:
+                    self.cameraController.captureCount = 75;
+                    break;
+                default:
+                    self.cameraController.captureCount = 1;
+                    NSLog(@"Unknown exposure index: %ld",_captureMenuSelectedIndex);
+                    break;
+            }
         }
     }
 }
@@ -751,11 +777,14 @@
                 }
                 else {
                     
-                    // yuk
-                    [self willChangeValueForKey:@"exposures"];
-                    [self didChangeValueForKey:@"exposures"];
-                    
-                    [self.exposuresController setSelectionIndex:0];
+                    if ([self.exposuresController.arrangedObjects containsObject:self.currentExposure]){
+                        
+                        // yuk
+                        [self willChangeValueForKey:@"exposures"];
+                        [self didChangeValueForKey:@"exposures"];
+                        
+                        [self.exposuresController setSelectionIndex:0];
+                    }
                 }
             }
             
