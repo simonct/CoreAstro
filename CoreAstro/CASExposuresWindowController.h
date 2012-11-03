@@ -6,11 +6,9 @@
 //  Copyright (c) 2012 Mako Technology Ltd. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import "CASAuxWindowController.h"
 
-@interface CASExposuresWindowController : NSWindowController
+@interface CASExposuresWindowController : CASAuxWindowController
 @property (nonatomic,readonly) NSArrayController* exposures;
-@property (nonatomic,copy) void (^modalHandler)(NSInteger result,NSArray* selectedExposures);
-+ (CASExposuresWindowController*)createWindowController;
-- (void)beginSheetModalForWindow:(NSWindow*)window completionHandler:(void (^)(NSInteger,NSArray*))handler;
+- (void)beginSheetModalForWindow:(NSWindow*)window exposuresCompletionHandler:(void (^)(NSInteger,NSArray*))handler;
 @end

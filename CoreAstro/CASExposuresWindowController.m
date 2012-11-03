@@ -33,16 +33,6 @@
     return [[CASCCDExposureLibrary sharedLibrary] exposures];
 }
 
-- (void)endSheetWithCode:(NSInteger)code
-{
-    [NSApp endSheet:self.window returnCode:code];
-    [self.window orderOut:self];
-    
-    if (self.modalHandler){
-        self.modalHandler(code,self.exposuresArrayController.selectedObjects);
-    }
-}
-
 - (IBAction)cancelPressed:(id)sender
 {
     [self endSheetWithCode:NSCancelButton];
@@ -53,16 +43,14 @@
     [self endSheetWithCode:NSOKButton];
 }
 
-- (void)beginSheetModalForWindow:(NSWindow*)window completionHandler:(void (^)(NSInteger,NSArray*))handler
+- (void)beginSheetModalForWindow:(NSWindow*)window exposuresCompletionHandler:(void (^)(NSInteger,NSArray*))handler
 {
-    self.modalHandler = handler;
-
-    [NSApp beginSheet:self.window modalForWindow:window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-}
-
-+ (CASExposuresWindowController*)createWindowController
-{
-    return [[CASExposuresWindowController alloc] initWithWindowNibName:@"CASExposuresWindowController"];
+    [super beginSheetModalForWindow:window completionHandler:^(NSInteger code) {
+        
+        if (handler){
+            handler(code,self.exposuresArrayController.selectedObjects);
+        }
+    }];
 }
 
 @end

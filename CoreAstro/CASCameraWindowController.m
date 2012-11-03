@@ -30,6 +30,7 @@
 #import "CASImageControlsView.h"
 #import "CASExposuresController.h"
 #import "CASExposuresWindowController.h"
+#import "CASProgressWindowController.h"
 #import "CASImageView.h"
 #import <CoreAstro/CoreAstro.h>
 
@@ -869,7 +870,7 @@
 {
     self.exposuresWindowController = [CASExposuresWindowController createWindowController];
     
-    [self.exposuresWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result,NSArray* exposures) {
+    [self.exposuresWindowController beginSheetModalForWindow:self.window exposuresCompletionHandler:^(NSInteger result,NSArray* exposures) {
         
         if (result == NSOKButton && [exposures count]){
             
@@ -877,35 +878,54 @@
             open.canChooseFiles = NO;
             open.canChooseDirectories = YES;
             open.canCreateDirectories = YES;
+            open.prompt = NSLocalizedString(@"Export", @"Button label");
             [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
                 
                 if (result == NSFileHandlingPanelOKButton){
                  
-                    dispatch_async(dispatch_get_main_queue(), ^{ // probably run this async
+                    // wait for the open sheet to dismiss
+                    dispatch_async(dispatch_get_main_queue(), ^{
                        
-                        // start progress sheet/hud
-                        
-                        NSString* root = [open.URL path];
-                        for (CASCCDExposure* exp in exposures){
+                        // start progress hud
+                        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                        [progress beginSheetModalForWindow:self.window];
+                        [progress configureWithRange:NSMakeRange(0, [exposures count]) label:NSLocalizedString(@"Exporting...", @"Progress text")];
+
+                        // export the exposures - beware of races here since we're doing this async
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                             
-                            NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exp];
-                            NSString* path = [[root stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"];
-                            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-                            if (!io){
-                                NSLog(@"*** Failed to create FITS exporter");
-                                break;
-                            }
-                            else {
-                                NSError* error = nil;
-                                [io writeExposure:self.currentExposure writePixels:YES error:&error];
-                                if (error){
-                                    [NSApp presentError:error];
+                            NSString* root = [open.URL path];
+                            for (CASCCDExposure* exp in exposures){
+                                
+                                NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exp];
+                                NSString* path = [[root stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"];
+                                CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+                                if (!io){
+                                    NSLog(@"*** Failed to create FITS exporter");
                                     break;
                                 }
+                                else {
+                                    NSError* error = nil;
+                                    [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                                    if (error){
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                            [NSApp presentError:error];
+                                        });
+                                        break;
+                                    }
+                                }
+                                
+                                // update progress bar
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    progress.progressBar.doubleValue++;
+                                });
                             }
-                        }
-                        
-                        // dismiss progress sheet/hud
+                            
+                            // dismiss progress sheet/hud
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [progress endSheetWithCode:NSOKButton];
+                            });
+                        });
                     });
                 }
             }];
