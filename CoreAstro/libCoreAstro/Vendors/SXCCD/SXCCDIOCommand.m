@@ -419,8 +419,13 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 }
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
-    _pixels = data;
+    _pixels = [self postProcessPixels:data];
     return nil;
+}
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    // default is to do nothing
+    return pixels;
 }
 
 @end
@@ -446,11 +451,8 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
-- (NSError*)fromDataRepresentation:(NSData*)data {
+- (NSData*)postProcessPixels:(NSData*)pixels {
     
-    [super fromDataRepresentation:data];
-        
-    NSData* pixels = self.pixels;
     if ([pixels length]){
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
@@ -478,8 +480,8 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
             }
         }
     }
-
-    return nil;
+    
+    return pixels;
 }
 
 @end

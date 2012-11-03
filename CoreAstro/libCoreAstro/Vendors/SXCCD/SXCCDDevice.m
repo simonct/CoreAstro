@@ -303,7 +303,7 @@
                 SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
                 read.params = expose.params;
                 [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
-                    complete(error,read.pixels);
+                    complete(error,[expose postProcessPixels:read.pixels]);
                 }];
             }
         }
