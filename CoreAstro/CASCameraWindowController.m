@@ -245,7 +245,10 @@
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
 {
     if (_currentExposure != currentExposure){
-        
+
+        // clear selection
+        [self clearSelection];
+
         [_currentExposure reset]; // unload the current exposures pixels
         _currentExposure = currentExposure;
         
@@ -749,13 +752,19 @@
     }
 }
 
+- (void)clearSelection
+{
+    self.selectionControl.selectedSegment = 1;
+    [self selection:self.selectionControl]; // yuk
+}
+
 #pragma mark - Actions
 
 - (IBAction)capture:(NSButton*)sender
 {
     // switch out of selection mode
     if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
-        self.imageView.currentToolMode = IKToolModeMove;
+        [self clearSelection];
     }
     
     // check to see if we're in continuous mode
@@ -955,7 +964,6 @@
     }
     else {
         [self.imageView zoomImageToActualSize:self];
-
     }
 }
 
@@ -966,8 +974,7 @@
     }
     else {
         self.imageView.currentToolMode = IKToolModeMove;
-        [self selectionRectRemoved:self.imageView]; // clear the selection
-        
+        [self selectionRectRemoved:self.imageView];
     }
 }
 
