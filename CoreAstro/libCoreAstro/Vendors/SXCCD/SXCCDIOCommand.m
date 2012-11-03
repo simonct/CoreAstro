@@ -445,8 +445,10 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     NSUInteger binY = self.params.bin.height;
     NSUInteger width = 2 * self.params.size.width;
     NSUInteger height = self.params.size.height / 2;
-    
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    NSUInteger originX = 2 * self.params.origin.x;
+    NSUInteger originY = self.params.origin.y / 2;
+
+    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
