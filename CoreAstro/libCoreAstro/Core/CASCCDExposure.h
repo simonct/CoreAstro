@@ -43,6 +43,7 @@
 @property (nonatomic,readonly) CASSize actualSize; // frame.size / bin.size
 
 @property (nonatomic,readonly) NSDate* date;
+@property (nonatomic,readonly) NSInteger exposureMS;
 
 @property (nonatomic,readonly) NSString* displayDate;
 @property (nonatomic,readonly) NSString* displayExposure;
