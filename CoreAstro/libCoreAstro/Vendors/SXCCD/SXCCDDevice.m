@@ -276,7 +276,7 @@
         
         CASCCDExposure* exposure = nil;
         if (!error){
-            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:exp time:time];
+            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:expose.params time:time];
         }
         
         if (block){
@@ -301,8 +301,8 @@
             else {
                 
                 SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
-                read.params = exp;
-                [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:exp.ms/1000.0] block:^(NSError* error){
+                read.params = expose.params;
+                [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
                     complete(error,read.pixels);
                 }];
             }
