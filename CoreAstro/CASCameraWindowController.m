@@ -29,7 +29,7 @@
 #import "CASHistogramView.h"
 #import "CASImageControlsView.h"
 #import "CASExposuresController.h"
-#import "CASExposureTableView.h"
+#import "CASExposuresWindowController.h"
 #import "CASImageView.h"
 #import <CoreAstro/CoreAstro.h>
 
@@ -49,6 +49,7 @@
 @property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
+@property (nonatomic,strong) CASExposuresWindowController* exposuresWindowController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -861,6 +862,56 @@
                 }
             }
         }
+    }];
+}
+
+- (IBAction)batchExportToFITS:(id)sender
+{
+    self.exposuresWindowController = [CASExposuresWindowController createWindowController];
+    
+    [self.exposuresWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result,NSArray* exposures) {
+        
+        if (result == NSOKButton && [exposures count]){
+            
+            NSOpenPanel* open = [NSOpenPanel openPanel];
+            open.canChooseFiles = NO;
+            open.canChooseDirectories = YES;
+            open.canCreateDirectories = YES;
+            [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+                
+                if (result == NSFileHandlingPanelOKButton){
+                 
+                    dispatch_async(dispatch_get_main_queue(), ^{ // probably run this async
+                       
+                        // start progress sheet/hud
+                        
+                        NSString* root = [open.URL path];
+                        for (CASCCDExposure* exp in exposures){
+                            
+                            NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exp];
+                            NSString* path = [[root stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"];
+                            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+                            if (!io){
+                                NSLog(@"*** Failed to create FITS exporter");
+                                break;
+                            }
+                            else {
+                                NSError* error = nil;
+                                [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                                if (error){
+                                    [NSApp presentError:error];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // dismiss progress sheet/hud
+                    });
+                }
+            }];
+        }
+        
+        self.exposuresWindowController = nil;
     }];
 }
 

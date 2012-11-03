@@ -73,6 +73,8 @@
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
+		F46FC8BB16453AE800578010 /* CASExposuresWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8B916453AE800578010 /* CASExposuresWindowController.m */; };
+		F46FC8BC16453AE800578010 /* CASExposuresWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BA16453AE800578010 /* CASExposuresWindowController.xib */; };
 		F47B3A8F16346EE9008C73A7 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47B3A9016346EF3008C73A7 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
@@ -379,6 +381,9 @@
 		F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CorePlot.xcodeproj; path = External/CorePlot_1.0/Source/framework/CorePlot.xcodeproj; sourceTree = "<group>"; };
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		F46FC8B816453AE800578010 /* CASExposuresWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresWindowController.h; sourceTree = "<group>"; };
+		F46FC8B916453AE800578010 /* CASExposuresWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposuresWindowController.m; sourceTree = "<group>"; };
+		F46FC8BA16453AE800578010 /* CASExposuresWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASExposuresWindowController.xib; sourceTree = "<group>"; };
 		F47B3A7A16346EDC008C73A7 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = "External/Sparkle 1.5b6/Extras/Source Code/Sparkle.xcodeproj"; sourceTree = "<group>"; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F48DF00B160E46A800190D3E /* CASImageControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageControlsView.h; sourceTree = "<group>"; };
@@ -832,6 +837,9 @@
 				F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */,
 				F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */,
 				F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */,
+				F46FC8B816453AE800578010 /* CASExposuresWindowController.h */,
+				F46FC8B916453AE800578010 /* CASExposuresWindowController.m */,
+				F46FC8BA16453AE800578010 /* CASExposuresWindowController.xib */,
 				F48DF014160E47B800190D3E /* CASImageView.h */,
 				F48DF015160E47B800190D3E /* CASImageView.m */,
 				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
@@ -1393,6 +1401,7 @@
 				F412976115FCAB85009C215E /* opendevices.pdf in Resources */,
 				F412976315FCAD16009C215E /* moon.icns in Resources */,
 				F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */,
+				F46FC8BC16453AE800578010 /* CASExposuresWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1548,6 +1557,7 @@
 				F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */,
 				F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */,
 				F48DF016160E47B800190D3E /* CASImageView.m in Sources */,
+				F46FC8BB16453AE800578010 /* CASExposuresWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

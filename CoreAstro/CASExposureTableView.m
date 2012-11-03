@@ -14,7 +14,7 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-    if([[event charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter) {
+    if([[event charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter && self.exposuresController.isEditable) {
         
         const NSInteger count = [[self selectedRowIndexes] count];
         if (count > 0){
