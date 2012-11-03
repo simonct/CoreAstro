@@ -327,11 +327,13 @@
                     self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
                     self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
                     self.captureButton.action = @selector(capture:);
+                    self.captureButton.enabled = YES;
                 }
                 else {
                     self.progressStatusText.stringValue = @"Capturing...";
                     self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
                     self.captureButton.action = @selector(cancelCapture:);
+                    self.captureButton.enabled = self.cameraController.waitingForNextCapture;
                 }
             }
         }
@@ -749,6 +751,11 @@
 
 - (IBAction)capture:(NSButton*)sender
 {
+    // switch out of selection mode
+    if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
+        self.imageView.currentToolMode = IKToolModeMove;
+    }
+    
     // check to see if we're in continuous mode
     self.cameraController.continuous = [self captureMenuContinuousItemSelected];
 
@@ -757,8 +764,9 @@
     self.progressIndicator.doubleValue = 0;
     self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
 
-    // grab the current controller
+    // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
+    const BOOL continuous = self.cameraController.continuous;
     
     // issue the capture command
     [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
@@ -771,20 +779,17 @@
             // check it's the still the currently displayed camera
             if (cameraController == self.cameraController){
                 
-                if (self.cameraController.continuous){
+                if (continuous){
                     [self.exposuresController setSelectedObjects:nil];
                     [self displayExposure:exposure]; // do this *after* clearing the selection
                 }
                 else {
                     
-                    if ([self.exposuresController.arrangedObjects containsObject:self.currentExposure]){
-                        
-                        // yuk
-                        [self willChangeValueForKey:@"exposures"];
-                        [self didChangeValueForKey:@"exposures"];
-                        
-                        [self.exposuresController setSelectionIndex:0];
-                    }
+                    // yuk - self.exposuresController is bound to this key so make sure it's updated before checking for membership 
+                    [self willChangeValueForKey:@"exposures"];
+                    [self didChangeValueForKey:@"exposures"];
+
+                    [self.exposuresController setSelectionIndex:0];
                 }
             }
             
