@@ -112,15 +112,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
                 // have to ensure that the pixels haven't been reset before this happens...
-                NSString* path = [[self root] stringByAppendingPathComponent:exposure.deviceID];
-                
-                // create the exposure library path
-                NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-                formatter.dateFormat = @"LLL-d-Y";
-                path = [path stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
-                formatter.dateFormat = @"H-m-ss.SS";
-                path = [path stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
-                path = [path stringByAppendingPathExtension:@"caExposure"];
+                NSString* path = [[[self root] stringByAppendingPathComponent:[CASCCDExposureIO defaultFilenameForExposure:exposure]] stringByAppendingPathExtension:@"caExposure"];
                 
                 // create the exposure io object
                 exposure.io = [CASCCDExposureIO exposureIOWithPath:path];

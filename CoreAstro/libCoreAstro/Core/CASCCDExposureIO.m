@@ -414,6 +414,17 @@
     return exp;
 }
 
++ (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure
+{
+    NSString* name = exposure.deviceID;
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"LLL-d-Y";
+    name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
+    formatter.dateFormat = @"H-m-ss.SS";
+    name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
+    return name;
+}
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)error { return YES; }
 
 - (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)error { return YES; }
