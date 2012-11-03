@@ -176,7 +176,7 @@
 
 - (BOOL)waitingForNextCapture
 {
-    return (self.continuous || self.currentCaptureIndex < self.captureCount);
+    return (self.continuous || (self.captureCount > 1 && self.currentCaptureIndex < self.captureCount));
 }
 
 - (void)setGuider:(CASGuiderController*)guider
