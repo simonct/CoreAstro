@@ -14,18 +14,21 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-    if([[event charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter) {
+    if([[event charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter && self.exposuresController.isEditable) {
         
         const NSInteger count = [[self selectedRowIndexes] count];
-        NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
-        
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
-                                         defaultButton:nil
-                                       alternateButton:@"Cancel"
-                                           otherButton:nil
-                             informativeTextWithFormat:message,nil];
-        
-        [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+        if (count > 0){
+            
+            NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
+                                             defaultButton:nil
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:message,nil];
+            
+            [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+        }
     }
     
     [super keyDown:event];

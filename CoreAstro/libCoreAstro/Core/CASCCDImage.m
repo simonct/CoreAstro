@@ -55,7 +55,7 @@
         
         uint16_t* pixelData = (uint16_t*)[pixels bytes];
         uint16_t* contextData = CGBitmapContextGetData(context);
-        if (contextData){
+        if (pixelData && contextData){
             
             const NSUInteger count = CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context);
             for (NSUInteger i = 0; i < count; ++i){

@@ -41,6 +41,11 @@
     return [NSDate dateWithTimeIntervalSinceReferenceDate:[[self.meta objectForKey:@"time"] doubleValue]];
 }
 
+- (NSInteger) exposureMS
+{
+    return self.params.ms;
+}
+
 - (NSString*)uuid
 {
     return [self.meta objectForKey:@"uuid"];
@@ -57,8 +62,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateStyle = NSDateFormatterShortStyle;
-        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.dateStyle = kCFDateFormatterMediumStyle;
+        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
     });
     return [dateFormatter stringFromDate:self.date];
 }

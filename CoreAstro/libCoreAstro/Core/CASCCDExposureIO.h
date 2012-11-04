@@ -31,6 +31,8 @@
 
 + (CASCCDExposureIO*)exposureIOWithPath:(NSString*)path;
 
++ (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure;
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)error;
 - (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)error;
 - (BOOL)deleteExposure:(CASCCDExposure*)exposure error:(NSError**)error;

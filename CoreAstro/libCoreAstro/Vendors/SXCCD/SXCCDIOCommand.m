@@ -419,8 +419,71 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 }
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
-    _pixels = data;
+    _pixels = [self postProcessPixels:data];
     return nil;
+}
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    // default is to do nothing
+    return pixels;
+}
+
+@end
+
+@implementation SXCCDIOExposeCommandM25C
+
+- (NSData*)toDataRepresentation {
+    
+    uint8_t buffer[22];
+    
+    // tmp - only support 1x1 binning for now
+    CASExposeParams params = self.params;
+    params.bin = CASSizeMake(1, 1);
+    self.params = params;
+    
+    NSUInteger binX = self.params.bin.width;
+    NSUInteger binY = self.params.bin.height;
+    NSUInteger width = 2 * self.params.size.width;
+    NSUInteger height = self.params.size.height / 2;
+    NSUInteger originX = 2 * self.params.origin.x;
+    NSUInteger originY = self.params.origin.y / 2;
+
+    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    
+    if ([pixels length]){
+        
+        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
+        if ([rearrangedPixels length]){
+            
+            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
+            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
+            
+            if (pixelsPtr && rearrangedPixelsPtr){
+                
+                const unsigned long width = self.params.size.width;
+                const unsigned long height = self.params.size.height;
+                
+                unsigned long i = 0;
+                for (unsigned long y = 0; y < height; y += 2){
+                    
+                    for (unsigned long x = 0; x < width; x += 1){
+                        
+                        rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
+                        rearrangedPixelsPtr[x + ((y+1) * width)] = pixelsPtr[i++];
+                    }
+                }
+                
+                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
+            }
+        }
+    }
+    
+    return pixels;
 }
 
 @end

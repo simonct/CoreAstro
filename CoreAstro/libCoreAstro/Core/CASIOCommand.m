@@ -52,8 +52,10 @@
         if (readSize > 0){
             NSMutableData* responseData = [NSMutableData dataWithLength:readSize];
             // sleep/suspend in the case of expose ?
+            const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
             error = [transport receive:responseData];
             if (!error){
+                NSLog(@"Read %ld bytes in %f seconds",[responseData length],[NSDate timeIntervalSinceReferenceDate] - start);
                 if ([responseData length] < readSize && !self.allowsUnderrun){
                     error = [NSError errorWithDomain:@"CASIOCommand" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"CASIOCommand: requested %ld bytes, %lu",readSize,[responseData length]],NSLocalizedDescriptionKey,nil]];
                 }

@@ -29,7 +29,8 @@
 #import "CASHistogramView.h"
 #import "CASImageControlsView.h"
 #import "CASExposuresController.h"
-#import "CASExposureTableView.h"
+#import "CASExposuresWindowController.h"
+#import "CASProgressWindowController.h"
 #import "CASImageView.h"
 #import "CASShadowView.h"
 #import <CoreAstro/CoreAstro.h>
@@ -50,6 +51,7 @@
 @property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
+@property (nonatomic,strong) CASExposuresWindowController* exposuresWindowController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -247,7 +249,10 @@
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
 {
     if (_currentExposure != currentExposure){
-        
+
+        // clear selection
+        [self clearSelection];
+
         [_currentExposure reset]; // unload the current exposures pixels
         _currentExposure = currentExposure;
         
@@ -331,11 +336,13 @@
                     self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
                     self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
                     self.captureButton.action = @selector(capture:);
+                    self.captureButton.enabled = YES;
                 }
                 else {
                     self.progressStatusText.stringValue = @"Capturing...";
                     self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
                     self.captureButton.action = @selector(cancelCapture:);
+                    self.captureButton.enabled = self.cameraController.waitingForNextCapture;
                 }
             }
         }
@@ -441,7 +448,33 @@
             self.cameraController.captureCount = 0;
         }
         else {
-            self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+            
+            // tmp - probably replace with a different control style
+            switch (_captureMenuSelectedIndex) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+                    break;
+                case 5:
+                    self.cameraController.captureCount = 10;
+                    break;
+                case 6:
+                    self.cameraController.captureCount = 25;
+                    break;
+                case 7:
+                    self.cameraController.captureCount = 50;
+                    break;
+                case 8:
+                    self.cameraController.captureCount = 75;
+                    break;
+                default:
+                    self.cameraController.captureCount = 1;
+                    NSLog(@"Unknown exposure index: %ld",_captureMenuSelectedIndex);
+                    break;
+            }
         }
     }
 }
@@ -481,7 +514,7 @@
         [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
     }
     else {
-        if (self.cameraController.continuous){
+        if (self.cameraController.waitingForNextCapture){
             self.progressIndicator.indeterminate = NO;
             self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
             [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
@@ -723,19 +756,27 @@
     }
 }
 
+- (void)clearSelection
+{
+    self.selectionControl.selectedSegment = 1;
+    [self selection:self.selectionControl]; // yuk
+}
+
 #pragma mark - Actions
 
 - (IBAction)capture:(NSButton*)sender
 {
-    self.progressIndicator.maxValue = 1;
-    self.progressIndicator.doubleValue = 0;
-    self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
-    
     // check to see if we're in continuous mode
     self.cameraController.continuous = [self captureMenuContinuousItemSelected];
 
-    // grab the current controller
+    // set the progress indicator settings after setting the continuous flag
+    self.progressIndicator.maxValue = 1;
+    self.progressIndicator.doubleValue = 0;
+    self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
+
+    // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
+    const BOOL continuous = self.cameraController.continuous;
     
     // issue the capture command
     [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
@@ -748,29 +789,34 @@
             // check it's the still the currently displayed camera
             if (cameraController == self.cameraController){
                 
-                if (self.cameraController.continuous){
+                if (continuous){
                     [self.exposuresController setSelectedObjects:nil];
                     [self displayExposure:exposure]; // do this *after* clearing the selection
                 }
                 else {
                     
-                    // yuk
+                    // yuk - self.exposuresController is bound to this key so make sure it's updated before checking for membership 
                     [self willChangeValueForKey:@"exposures"];
                     [self didChangeValueForKey:@"exposures"];
-                    
+
                     [self.exposuresController setSelectionIndex:0];
                 }
             }
             
-            if (!self.cameraController.continuous){
-                self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
-            }
-            else {
+            if (self.cameraController.capturing){
                 self.progressStatusText.stringValue = @"Waiting...";
             }
+            else{
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
+            }
+            self.progressStatusText.hidden = self.progressIndicator.hidden = !self.cameraController.capturing;
         }
     }];
+    
+    // switch out of selection mode once the capture's started
+    if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
+        [self clearSelection];
+    }
 }
 
 - (IBAction)cancelCapture:(NSButton*)sender
@@ -833,6 +879,75 @@
     }];
 }
 
+- (IBAction)batchExportToFITS:(id)sender
+{
+    self.exposuresWindowController = [CASExposuresWindowController createWindowController];
+    
+    [self.exposuresWindowController beginSheetModalForWindow:self.window exposuresCompletionHandler:^(NSInteger result,NSArray* exposures) {
+        
+        if (result == NSOKButton && [exposures count]){
+            
+            NSOpenPanel* open = [NSOpenPanel openPanel];
+            open.canChooseFiles = NO;
+            open.canChooseDirectories = YES;
+            open.canCreateDirectories = YES;
+            open.prompt = NSLocalizedString(@"Export", @"Button label");
+            [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+                
+                if (result == NSFileHandlingPanelOKButton){
+                 
+                    // wait for the open sheet to dismiss
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                       
+                        // start progress hud
+                        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                        [progress beginSheetModalForWindow:self.window];
+                        [progress configureWithRange:NSMakeRange(0, [exposures count]) label:NSLocalizedString(@"Exporting...", @"Progress text")];
+
+                        // export the exposures - beware of races here since we're doing this async
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            
+                            NSString* root = [open.URL path];
+                            for (CASCCDExposure* exp in exposures){
+                                
+                                NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exp];
+                                NSString* path = [[root stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"];
+                                CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+                                if (!io){
+                                    NSLog(@"*** Failed to create FITS exporter");
+                                    break;
+                                }
+                                else {
+                                    NSError* error = nil;
+                                    [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                                    if (error){
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                            [NSApp presentError:error];
+                                        });
+                                        break;
+                                    }
+                                }
+                                
+                                // update progress bar
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    progress.progressBar.doubleValue++;
+                                });
+                            }
+                            
+                            // dismiss progress sheet/hud
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [progress endSheetWithCode:NSOKButton];
+                            });
+                        });
+                    });
+                }
+            }];
+        }
+        
+        self.exposuresWindowController = nil;
+    }];
+}
+
 #define ZOOM_IN_FACTOR  1.414214
 #define ZOOM_OUT_FACTOR 0.7071068
 
@@ -853,7 +968,6 @@
     }
     else {
         [self.imageView zoomImageToActualSize:self];
-
     }
 }
 
@@ -864,8 +978,7 @@
     }
     else {
         self.imageView.currentToolMode = IKToolModeMove;
-        [self selectionRectRemoved:self.imageView]; // clear the selection
-        
+        [self selectionRectRemoved:self.imageView];
     }
 }
 
@@ -902,15 +1015,18 @@
 - (IBAction)deleteExposure:(id)sender
 {
     const NSInteger count = [self.exposuresController.selectedObjects count];
-    NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
-    
-    NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
-                                     defaultButton:nil
-                                   alternateButton:@"Cancel"
-                                       otherButton:nil
-                         informativeTextWithFormat:message,nil];
-    
-    [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+    if (count > 0){
+        
+        NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+        
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
+                                         defaultButton:nil
+                                       alternateButton:@"Cancel"
+                                           otherButton:nil
+                             informativeTextWithFormat:message,nil];
+        
+        [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+    }
 }
 
 - (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
@@ -1011,18 +1127,22 @@
 
 - (void) selectionRectRemoved: (IKImageView *) imageView
 {
-    self.cameraController.subframe = CGRectZero;
-    [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+    if (!self.cameraController.capturing){
+        self.cameraController.subframe = CGRectZero;
+        [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+    }
 }
 
 - (void) selectionRectChanged: (IKImageView *) imageView
 {
-    const CGRect rect = self.imageView.selectionRect;
-    CASCCDParams* params = self.cameraController.camera.params;
-    CGRect subframe = CGRectMake(rect.origin.x, params.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);;
-    subframe = CGRectIntersection(subframe, CGRectMake(0, 0, params.width, params.height));
-    [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
-    self.cameraController.subframe = subframe;
+    if (!self.cameraController.capturing){
+        const CGRect rect = self.imageView.selectionRect;
+        CASCCDParams* params = self.cameraController.camera.params;
+        CGRect subframe = CGRectMake(rect.origin.x, params.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);;
+        subframe = CGRectIntersection(subframe, CGRectMake(0, 0, params.width, params.height));
+        [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+        self.cameraController.subframe = subframe;
+    }
 }
 
 #pragma mark NSToolbar delegate

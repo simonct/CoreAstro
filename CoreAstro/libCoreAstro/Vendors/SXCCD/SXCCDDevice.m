@@ -254,7 +254,17 @@
 
 - (void)exposeWithParams:(CASExposeParams)exp block:(void (^)(NSError*,CASCCDExposure*image))block {
     
-    SXCCDIOExposeCommand* expose = [[SXCCDIOExposeCommand alloc] init];
+    SXCCDIOExposeCommand* expose = nil;
+    
+    switch (self.productID) {
+        case 805:
+            expose = [[SXCCDIOExposeCommandM25C alloc] init];
+            break;
+                        
+        default:
+            expose = [[SXCCDIOExposeCommand alloc] init];
+            break;
+    }
     
     expose.ms = exp.ms;
     expose.params = exp;
@@ -266,7 +276,7 @@
         
         CASCCDExposure* exposure = nil;
         if (!error){
-            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:exp time:time];
+            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:expose.params time:time];
         }
         
         if (block){
@@ -291,9 +301,9 @@
             else {
                 
                 SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
-                read.params = exp;
-                [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:exp.ms/1000.0] block:^(NSError* error){
-                    complete(error,read.pixels);
+                read.params = expose.params;
+                [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
+                    complete(error,[expose postProcessPixels:read.pixels]);
                 }];
             }
         }
