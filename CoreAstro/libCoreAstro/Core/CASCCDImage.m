@@ -114,6 +114,15 @@
     return result;
 }
 
++ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size
+{
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+    CFRelease(space);
+    
+    return context;
+}
+
 + (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel
 {
     if (bitsPerPixel != 16){

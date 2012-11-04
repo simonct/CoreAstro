@@ -840,8 +840,23 @@
             
             CGImageDestinationRef dest = CGImageDestinationCreateWithURL((__bridge CFURLRef)save.URL,(__bridge CFStringRef)[options imageUTType],1,NULL);
             if (dest) {
-                CGImageDestinationAddImage(dest, self.imageView.image, (__bridge CFDictionaryRef)[options imageProperties]);
-                CGImageDestinationFinalize(dest);
+                
+                // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
+                const size_t width = CGImageGetWidth(self.imageView.image);
+                const size_t height = CGImageGetHeight(self.imageView.image);
+                CGContextRef rgb = [CASCCDImage createRGBBitmapContextWithSize:CASSizeMake(width, height)];
+                if (rgb){
+                    
+                    CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), self.imageView.image);
+                    CGImageRef image = CGBitmapContextCreateImage(rgb);
+                    if (image){
+                        
+                        CGImageDestinationAddImage(dest, image, (__bridge CFDictionaryRef)[options imageProperties]);
+                        CGImageDestinationFinalize(dest);
+                        CGImageRelease(image);
+                    }
+                    CGContextRelease(rgb);
+                }
                 CFRelease(dest);
             }
         }
