@@ -216,7 +216,7 @@
             }
         }
         
-        if (!exposure.hasPixels){
+        if (readPixels && !exposure.hasPixels){
             
             NSFileWrapper* samples = [[wrapper fileWrappers] objectForKey:[self pixelsKey]];
             if (samples){
