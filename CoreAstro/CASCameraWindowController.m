@@ -183,9 +183,9 @@
     [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     
-    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
-
     [self configureForCameraController];
+
+    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
 }
 
 - (void)hideWindow:sender
@@ -545,15 +545,15 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         exposureFormatter = [[NSDateFormatter alloc] init];
-        [exposureFormatter setDateStyle:NSDateFormatterNoStyle];
-        [exposureFormatter setTimeStyle:NSDateFormatterLongStyle];
+        [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
     });
     
     if (title){
-        title = [NSString stringWithFormat:@"%@ (%@)",title,[NSString stringWithFormat:@"%@ %@",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
+        title = [NSString stringWithFormat:@"%@ %@",title,[NSString stringWithFormat:@"%@ (%@)",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
     }
     else {
-        title = [NSString stringWithFormat:@"%@ %@ %@",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
+        title = [NSString stringWithFormat:@"%@ %@ (%@)",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
     }
     self.window.title = title;
     
