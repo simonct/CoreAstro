@@ -57,7 +57,7 @@
         uint16_t* contextData = CGBitmapContextGetData(context);
         if (pixelData && contextData){
             
-            const NSUInteger count = CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context);
+            const NSUInteger count = MIN([pixels length]/sizeof(uint16_t),CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context));
             for (NSUInteger i = 0; i < count; ++i){
                 
                 *contextData++ = CFSwapInt16BigToHost(pixelData[i]);
