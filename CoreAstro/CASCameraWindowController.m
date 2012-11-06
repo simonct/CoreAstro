@@ -930,7 +930,7 @@
                                 }
                                 else {
                                     NSError* error = nil;
-                                    [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                                    [io writeExposure:exp writePixels:YES error:&error];
                                     if (error){
                                         dispatch_async(dispatch_get_main_queue(), ^{
                                             [NSApp presentError:error];
