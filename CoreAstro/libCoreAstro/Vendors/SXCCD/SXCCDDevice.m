@@ -180,6 +180,12 @@
     return 5;
 }
 
+- (NSInteger)flushCount {
+    const NSInteger flushCount = [[[self deviceParams] objectForKey:@"flush-count"] integerValue];
+    // incorporate time since last exposure ?
+    return flushCount;
+}
+
 - (void)fetchTemperature {
         
     SXCCDIOCoolerCommand* cooler = [[SXCCDIOCoolerCommand alloc] init];
@@ -284,30 +290,50 @@
         }
     };
     
-    self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
-    
-    [self.transport submit:expose block:^(NSError* error){
+    void (^exposeCCD)() = ^{
         
-        if (error) {
-            if (block){
-                block(error,nil);
-            }
-        }
-        else {
+        self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
+
+        [self.transport submit:expose block:^(NSError* error){
             
-            if (expose.readPixels){
-                complete(error,expose.pixels);
+            if (error) {
+                if (block){
+                    block(error,nil);
+                }
             }
             else {
                 
-                SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
-                read.params = expose.params;
-                [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
-                    complete(error,[expose postProcessPixels:read.pixels]);
-                }];
+                if (expose.readPixels){
+                    complete(error,expose.pixels);
+                }
+                else {
+                    
+                    SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
+                    read.params = expose.params;
+                    [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
+                        complete(error,[expose postProcessPixels:read.pixels]);
+                    }];
+                }
             }
+        }];    
+    };
+    
+    // optionally flush any accumulated charge before exposing
+    __block NSInteger flushCount = self.flushCount;
+    void (^__block flushComplete)(NSError*) = ^(NSError* error){
+        
+        if (error){
+            complete(error,nil);
         }
-    }];    
+        else if (flushCount-- > 0) {
+            [self flush:flushComplete];
+        }
+        else {
+            exposeCCD();
+        }
+    };
+    
+    flushComplete(nil);
 }
 
 @end
