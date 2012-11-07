@@ -184,12 +184,12 @@
     [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     
-    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
-    
     // add a drop shadow
     [CASShadowView attachToView:self.detailContainerView];
 
     [self configureForCameraController];
+
+    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
 }
 
 - (void)hideWindow:sender
@@ -549,15 +549,15 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         exposureFormatter = [[NSDateFormatter alloc] init];
-        [exposureFormatter setDateStyle:NSDateFormatterNoStyle];
-        [exposureFormatter setTimeStyle:NSDateFormatterLongStyle];
+        [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
     });
     
     if (title){
-        title = [NSString stringWithFormat:@"%@ (%@)",title,[NSString stringWithFormat:@"%@ %@",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
+        title = [NSString stringWithFormat:@"%@ %@",title,[NSString stringWithFormat:@"%@ (%@)",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
     }
     else {
-        title = [NSString stringWithFormat:@"%@ %@ %@",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
+        title = [NSString stringWithFormat:@"%@ %@ (%@)",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
     }
     self.window.title = title;
     
@@ -844,8 +844,23 @@
             
             CGImageDestinationRef dest = CGImageDestinationCreateWithURL((__bridge CFURLRef)save.URL,(__bridge CFStringRef)[options imageUTType],1,NULL);
             if (dest) {
-                CGImageDestinationAddImage(dest, self.imageView.image, (__bridge CFDictionaryRef)[options imageProperties]);
-                CGImageDestinationFinalize(dest);
+                
+                // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
+                const size_t width = CGImageGetWidth(self.imageView.image);
+                const size_t height = CGImageGetHeight(self.imageView.image);
+                CGContextRef rgb = [CASCCDImage createRGBBitmapContextWithSize:CASSizeMake(width, height)];
+                if (rgb){
+                    
+                    CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), self.imageView.image);
+                    CGImageRef image = CGBitmapContextCreateImage(rgb);
+                    if (image){
+                        
+                        CGImageDestinationAddImage(dest, image, (__bridge CFDictionaryRef)[options imageProperties]);
+                        CGImageDestinationFinalize(dest);
+                        CGImageRelease(image);
+                    }
+                    CGContextRelease(rgb);
+                }
                 CFRelease(dest);
             }
         }
@@ -919,7 +934,7 @@
                                 }
                                 else {
                                     NSError* error = nil;
-                                    [io writeExposure:self.currentExposure writePixels:YES error:&error];
+                                    [io writeExposure:exp writePixels:YES error:&error];
                                     if (error){
                                         dispatch_async(dispatch_get_main_queue(), ^{
                                             [NSApp presentError:error];

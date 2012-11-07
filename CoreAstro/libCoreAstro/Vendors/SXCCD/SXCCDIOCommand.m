@@ -391,7 +391,7 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,8,buffer);
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_NOWIPE_FRAME,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -436,17 +436,19 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     
     uint8_t buffer[22];
     
-    // tmp - only support 1x1 binning for now
-    CASExposeParams params = self.params;
-    params.bin = CASSizeMake(1, 1);
-    self.params = params;
+    if (self.params.bin.width == 3 && self.params.bin.height == 3){
+        NSLog(@"SXCCDIOExposeCommandM25C: Replacing 3x3 binning with 4x4");
+        CASExposeParams params = self.params;
+        params.bin = CASSizeMake(4, 4);
+        self.params = params;
+    }
     
-    NSUInteger binX = self.params.bin.width;
-    NSUInteger binY = self.params.bin.height;
-    NSUInteger width = 2 * self.params.size.width;
-    NSUInteger height = self.params.size.height / 2;
-    NSUInteger originX = 2 * self.params.origin.x;
-    NSUInteger originY = self.params.origin.y / 2;
+    const NSUInteger binX = self.params.bin.width;
+    const NSUInteger binY = self.params.bin.height;
+    const NSUInteger width = 2 * self.params.size.width;
+    const NSUInteger height = self.params.size.height / 2;
+    const NSUInteger originX = 2 * self.params.origin.x;
+    const NSUInteger originY = self.params.origin.y / 2;
 
     sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     
@@ -465,8 +467,8 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
             
             if (pixelsPtr && rearrangedPixelsPtr){
                 
-                const unsigned long width = self.params.size.width;
-                const unsigned long height = self.params.size.height;
+                const unsigned long width = self.params.size.width/self.params.bin.width;
+                const unsigned long height = self.params.size.height/self.params.bin.height;
                 
                 unsigned long i = 0;
                 for (unsigned long y = 0; y < height; y += 2){

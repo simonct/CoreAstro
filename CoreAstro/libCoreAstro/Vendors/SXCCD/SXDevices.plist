@@ -57,11 +57,15 @@
 	<dict>
 		<key>name</key>
 		<string>SXVR-H18</string>
+		<key>flush-count</key>
+		<integer>2</integer>
 	</dict>
 	<key>294</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H16</string>
+		<key>flush-count</key>
+		<integer>2</integer>
 	</dict>
 	<key>309</key>
 	<dict>
@@ -69,6 +73,8 @@
 		<string>SXVR-H35</string>
 		<key>image</key>
 		<string>H36</string>
+		<key>flush-count</key>
+		<integer>2</integer>
 	</dict>
 	<key>310</key>
 	<dict>
@@ -78,6 +84,8 @@
 		<string>H36</string>
 		<key>has-cooler</key>
 		<true/>
+		<key>flush-count</key>
+		<integer>2</integer>
 	</dict>
 	<key>281</key>
 	<dict>
