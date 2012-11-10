@@ -1348,6 +1348,15 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="421000549">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show Reticle</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10003</int>
+								</object>
 								<object class="NSMenuItem" id="102771277">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Show Histogram</string>
@@ -2227,6 +2236,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleShowReticle:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="421000549"/>
+					</object>
+					<int key="connectionID">609</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -2740,6 +2757,7 @@
 							<reference ref="493119281"/>
 							<reference ref="690957426"/>
 							<reference ref="1049083101"/>
+							<reference ref="421000549"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -3400,6 +3418,11 @@
 						<reference key="object" ref="966739937"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">608</int>
+						<reference key="object" ref="421000549"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -3563,6 +3586,7 @@
 				<string key="600.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="601.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="606.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="608.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3579,7 +3603,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">607</int>
+			<int key="maxID">609</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3601,6 +3625,7 @@
 						<string key="toggleEqualiseHistogram:">id</string>
 						<string key="toggleInvertImage:">id</string>
 						<string key="toggleShowHistogram:">id</string>
+						<string key="toggleShowReticle:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="batchExportToFITS:">
@@ -3629,6 +3654,10 @@
 						</object>
 						<object class="IBActionInfo" key="toggleShowHistogram:">
 							<string key="name">toggleShowHistogram:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowReticle:">
+							<string key="name">toggleShowReticle:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

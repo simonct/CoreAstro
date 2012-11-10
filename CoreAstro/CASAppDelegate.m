@@ -166,7 +166,9 @@
         id<CASGuider> guider = (id<CASGuider>)device;
         if ([guider conformsToProtocol:@protocol(CASGuider)]){
             CASGuiderController* guiderController = [[CASGuiderController alloc] initWithGuider:guider];
+            [self willChangeValueForKey:@"guiderControllers"];
             [self.guiderControllers addObject:guiderController];
+            [self didChangeValueForKey:@"guiderControllers"];
         }
     }
 }

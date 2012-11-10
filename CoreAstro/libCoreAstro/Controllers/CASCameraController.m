@@ -28,6 +28,8 @@
 #import "CASGuiderController.h"
 #import "CASAutoGuider.h"
 
+NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
+
 @interface CASCameraController ()
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
@@ -77,38 +79,69 @@
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
 {
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
-
-        ++self.currentCaptureIndex;
         
-        if (!error && self.waitingForNextCapture){
+        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount)){
+            
+            void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
+                
+                self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + self.interval; // add on guide pulse duration
+                [self performSelector:_cmd withObject:block afterDelay:self.interval];
+            };
             
             if (self.guiding){
                 
-                // update the guider
+                // update the guide algorithm with this exposure
                 [self.guideAlgorithm updateWithExposure:exp guideCallback:^(NSError *error, CASGuiderDirection direction, NSInteger duration) {
                     
                     // todo; record the guide command against the current exposure
                     
                     if (error){
-                        NSLog(@"Guide error: %@",error);
+                        NSLog(@"Guide error: %@",error); // e.g. lost star, etc
+                        if (block){
+                            block(error,nil);
+                        }
                     }
                     else{
-                    
-                        if (direction != kCASGuiderDirection_None && duration > 0){
+                        
+                        // post a notification
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerGuideCommandNotification
+                                                                            object:self
+                                                                          userInfo:@{@"direction":@(direction),@"@duration":@(duration)}];
+                        
+                        if (direction == kCASGuiderDirection_None || duration < 1){
                             
-                            // pulse the guider
+                            // nothing to do, figure out the next exposure time
+                            scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+                        }
+                        else{
+                            
+                            // need a correction, pulse the guider
                             [self.guider pulse:direction duration:duration block:^(NSError *pulseError) {
                                 
-                                NSLog(@"Pulse error: %@",pulseError);
+                                if (pulseError){
+                                    NSLog(@"Pulse error: %@",pulseError); // pulse failed, device gone away ?
+                                    if (block){
+                                        block(pulseError,nil);
+                                    }
+                                }
+                                else {
+                                    
+                                    // need to wait several seconds before the next exposure...
+                                    // have a minimum interval for guide exposures e.g. 10s ?
+                                    
+                                    // pulse complete, figure out the next exposure time
+                                    scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+                                }
                             }];
                         }
                     }
                 }];
             }
-            
-            // figure out the next exposure time
-            self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + self.interval; // add on guide pulse duration
-            [self performSelector:_cmd withObject:block afterDelay:self.interval];
+            else {
+                
+                // not guiding, figure out the next exposure time
+                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+            }
         }
         else {
             self.capturing = NO;
@@ -143,23 +176,37 @@
     
     [self.camera exposeWithParams:exp block:^(NSError *error, CASCCDExposure *exposure) {
         
-        exposure.type = kCASCCDExposureLightType;
-        
-        if (!saveExposure){
-            endCapture(error,exposure);
+        if (error){
+            endCapture(error,nil);
         }
-        else{
-            [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* error,NSURL* url) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    endCapture(error,exposure);
-                });
-            }];
+        else {
+            
+            exposure.type = kCASCCDExposureLightType;
+            
+            if (!saveExposure){
+                endCapture(error,exposure);
+            }
+            else{
+                
+                [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        endCapture(saveError,exposure);
+                    });
+                }];
+            }
         }
     }];
 }
 
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block
 {
+    if (self.capturing){
+        block([NSError errorWithDomain:@"CASCameraController"
+                                  code:1
+                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,@"Can't have multiple capture sessions",nil]],nil);
+        return;
+    }
+    
     self.currentCaptureIndex = 0;
     
     [self captureWithBlockImpl:block];

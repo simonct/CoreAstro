@@ -62,3 +62,5 @@
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block;
 
 @end
+
+extern NSString* const kCASCameraControllerGuideCommandNotification;

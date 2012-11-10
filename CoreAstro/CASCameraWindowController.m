@@ -35,12 +35,37 @@
 #import "CASShadowView.h"
 #import <CoreAstro/CoreAstro.h>
 
+#pragma IB Convenience Classes
+
+@interface CASGuidersArrayController : NSArrayController
+@end
+@implementation CASGuidersArrayController
+@end
+
+@interface CASFlatsArrayController : NSArrayController
+@end
+@implementation CASFlatsArrayController
+@end
+
+@interface CASDarksArrayController : NSArrayController
+@end
+@implementation CASDarksArrayController
+@end
+
+@interface CASCamerasArrayController : NSArrayController
+@end
+@implementation CASCamerasArrayController
+@end
+
+#pragma Camera Window
+
 @interface CASCameraWindowController ()
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL divideFlat;
 @property (nonatomic,assign) BOOL subtractDark;
 @property (nonatomic,assign) BOOL showHistogram;
+@property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
@@ -172,6 +197,7 @@
     
     // set up the guiders controller
     self.guidersArrayController.content = ((CASAppDelegate*)[NSApp delegate]).guiderControllers;
+    [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionInitial context:nil];
     [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
     [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
 
@@ -190,6 +216,9 @@
     [self configureForCameraController];
 
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
+    
+    // listen for guide notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(guideCommandNotification:) name:kCASCameraControllerGuideCommandNotification object:nil];
 }
 
 - (void)hideWindow:sender
@@ -320,11 +349,14 @@
             }
         }
         else if (object == self.guidersArrayController){
-            NSLog(@"guidersArrayController: %@",change);
+            NSLog(@"[self.guidersArrayController arrangedObjects: %@",[self.guidersArrayController arrangedObjects]);
         }
         else if (object == [NSApp delegate]){
             if ([keyPath isEqualToString:@"cameraControllers"]){
                 [self.camerasArrayController rearrangeObjects]; // can I avoid this step by binding the array controller directly to the app delegate ?
+            }
+            else if ([keyPath isEqualToString:@"guiderControllers"]){
+                [self.guidersArrayController rearrangeObjects]; // can I avoid this step by binding the array controller directly to the app delegate ?
             }
         }
         else if (object == self.cameraController){
@@ -493,6 +525,13 @@
             [self updateHistogram];
         }
     }
+}
+
+- (void)setEnableGuider:(BOOL)enableGuider
+{
+    _enableGuider = enableGuider;
+    
+    // hide/show guider overlay interface
 }
 
 - (void)updateExposureIndicator
@@ -1056,6 +1095,11 @@
     self.showHistogram = !self.showHistogram;
 }
 
+- (IBAction)toggleShowReticle:(id)sender
+{
+    self.imageView.showReticle = !self.imageView.showReticle;
+}
+
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.invert = !self.invert;
@@ -1104,6 +1148,15 @@
             
         case 10002:
             item.state = self.equalise;
+            break;
+            
+        case 10003:
+            if (self.imageView.showReticle){
+                item.title = NSLocalizedString(@"Hide Reticle", @"Menu item title");
+            }
+            else {
+                item.title = NSLocalizedString(@"Show Reticle", @"Menu item title");
+            }
             break;
     }
     return YES;
@@ -1265,6 +1318,14 @@
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
 {
     return [NSArray arrayWithObjects:@"DeviceView",@"ZoomInOut",@"ZoomFit",@"Selection",nil];   
+}
+
+#pragma mark - Notifications
+
+- (void)guideCommandNotification:(NSNotification*)notification
+{
+    // check object is the current camera controller
+    NSLog(@"guideCommandNotification: %@ %@",[notification object],[notification userInfo]);
 }
 
 @end

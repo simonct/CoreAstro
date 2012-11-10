@@ -17,9 +17,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @interface CASImageView ()
 @property (nonatomic,assign) BOOL firstShowEditPanel;
 @property (nonatomic,retain) CALayer* starLayer;
+@property (nonatomic,retain) CALayer* lockLayer;
+@property (nonatomic,retain) CALayer* searchLayer;
+@property (nonatomic,retain) CAShapeLayer* reticleLayer;
 @end
 
 @implementation CASImageView
+
+//@synthesize reticleLayer = _reticleLayer;
 
 - (id)init
 {
@@ -60,6 +65,20 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return [super selectionRect];
 }
 
+- (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
+{
+    self.searchLayer = nil;
+    self.reticleLayer = nil;
+
+    [super setImage:image imageProperties:metaData];
+    
+    self.starLocation = kCASImageViewInvalidStarLocation;
+    
+    if (self.showReticle){
+        self.reticleLayer = [self createReticleLayer];
+    }
+}
+
 - (void)setStarLocation:(CGPoint)starLocation
 {
     _starLocation = starLocation;
@@ -68,15 +87,37 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.starLayer = nil;
     }
     else {
-        self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15];
+        self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15 colour:CGColorCreateGenericRGB(1,1,0,1)];
     }
 }
 
-- (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
+- (void)setLockLocation:(CGPoint)lockLocation
 {
-    [super setImage:image imageProperties:metaData];
+    _lockLocation = lockLocation;
     
-    self.starLocation = kCASImageViewInvalidStarLocation;
+    if (CGPointEqualToPoint(_starLocation, kCASImageViewInvalidStarLocation)){
+        self.lockLayer = nil;
+    }
+    else {
+        self.lockLayer = [self circularRegionLayerWithPosition:self.lockLocation radius:15 colour:CGColorCreateGenericRGB(1,0,0,1)];
+    }
+}
+
+- (void)setSearchRadius:(CGFloat)searchRadius
+{
+    self.searchLayer = [self circularRegionLayerWithPosition:self.starLocation radius:searchRadius colour:CGColorCreateGenericRGB(0,0,1,1)];
+}
+
+- (void)setShowReticle:(BOOL)showReticle
+{
+    _showReticle = showReticle;
+    
+    if (_showReticle){
+        self.reticleLayer = [self createReticleLayer];
+    }
+    else {
+        self.reticleLayer = nil;
+    }
 }
 
 - (void)setStarLayer:(CALayer *)starLayer
@@ -88,6 +129,32 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _starLayer = starLayer;
         if (_starLayer){
             [self.imageOverlayLayer addSublayer:_starLayer];
+        }
+    }
+}
+
+- (void)setLockLayer:(CALayer *)lockLayer
+{
+    if (lockLayer != _lockLayer){
+        if (_lockLayer){
+            [_lockLayer removeFromSuperlayer];
+        }
+        _lockLayer = lockLayer;
+        if (_lockLayer){
+            [self.imageOverlayLayer addSublayer:_lockLayer];
+        }
+    }
+}
+
+- (void)setSearchLayer:(CALayer *)searchLayer
+{
+    if (searchLayer != _searchLayer){
+        if (_searchLayer){
+            [_searchLayer removeFromSuperlayer];
+        }
+        _searchLayer = searchLayer;
+        if (_searchLayer){
+            [self.imageOverlayLayer addSublayer:_searchLayer];
         }
     }
 }
@@ -104,11 +171,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return layer;
 }
 
-- (CALayer*)circularRegionLayerWithPosition:(CGPoint)position radius:(CGFloat)radius
+- (CALayer*)circularRegionLayerWithPosition:(CGPoint)position radius:(CGFloat)radius colour:(CGColorRef)colour
 {
     CALayer* layer = [CALayer layer];
     
-    layer.borderColor = CGColorCreateGenericRGB(1,1,0,1);
+    layer.borderColor = colour;
     layer.borderWidth = 2.5;
     layer.cornerRadius = radius;
     layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
@@ -116,6 +183,36 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     layer.masksToBounds = NO;
     
     return layer;
+}
+
+- (CAShapeLayer*)createReticleLayer
+{
+    CAShapeLayer* reticleLayer = [CAShapeLayer layer];
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    const CGFloat width = 0.5;
+    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0, CGImageGetWidth(self.image), width));
+    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0, 0, width, CGImageGetHeight(self.image)));
+    
+    reticleLayer.path = path;
+    reticleLayer.strokeColor = CGColorCreateGenericRGB(1,0,0,1);
+    reticleLayer.borderWidth = width;
+    
+    return reticleLayer;
+}
+
+- (void)setReticleLayer:(CAShapeLayer *)reticleLayer
+{
+    if (_reticleLayer != reticleLayer){
+        if (_reticleLayer){
+            [_reticleLayer removeFromSuperlayer];
+        }
+        _reticleLayer = reticleLayer;
+        if (_reticleLayer){
+            [self.imageOverlayLayer addSublayer:_reticleLayer];
+        }
+    }
 }
 
 @end

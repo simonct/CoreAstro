@@ -153,9 +153,9 @@ enum {
 
 - (void)reset
 {
-    SearchRegion = 15;
-//    CropX = 0;
-//    CropY = 0;
+    SearchRegion = 30; // neccessary if guiding through the scope rather than the guider
+    //    CropX = 0;
+    //    CropY = 0;
     FoundStar = false;
     LastdX = 0.0;
     LastdY = 0.0;
@@ -483,6 +483,8 @@ enum {
 		StarY = my / mass;
 		dX = StarX - LockX;
 		dY = StarY - LockY;
+        NSLog(@"dX (%f) = StarX (%f) - LockX (%f)",dX,StarX,LockX);
+        NSLog(@"dY (%f) = StarY (%f) - LockY (%f)",dY,StarY,LockY);
 		FoundStar=true;
 		if (max == nearmax2) {
             NSLog(@"Star saturated");
@@ -506,13 +508,20 @@ enum {
 	return retval;
 }
 
-- (CASCCDExposure*)processGuideFrame:(CASCCDExposure*)exposure {
+- (CASCCDExposure*)processGuideFrame:(CASCCDExposure*)exposure error:(NSError**)errorPtr {
     
     // median filter (take a copy ?)
     [self.imageProcessor medianFilter:exposure];
     
-    // find star
-    [self updateStarLocation:exposure];
+    const NSInteger result = [self updateStarLocation:exposure];
+    if (result != STAR_OK){
+        if (errorPtr){
+            *errorPtr = [NSError errorWithDomain:@"CASGuideAlgorithm"
+                                            code:result
+                                        userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,[NSString stringWithFormat:@"Updating guide frame failed with error %ld",result],nil]];
+        }
+        return nil;
+    }
     
     return exposure;
 }
@@ -531,18 +540,27 @@ enum {
     Calibrated = false;
     RA_rate = RA_angle = Dec_rate = Dec_angle = 0.0;
     
-    exposure = [self processGuideFrame:exposure];
+    NSError* error = nil;
+    exposure = [self processGuideFrame:exposure error:&error];
+    if (!exposure){
+        if (guideCallback){
+            guideCallback(error,kCASGuiderDirection_None,0);
+        }
+        return;
+    }
     
     LockX = StarX;
     LockY = StarY;
     
     still_going = true;
     iterations = 0;
-    dist_crit = exposure.params.frame.width * 0.05;
+    dist_crit = exposure.params.frame.height * 0.05;
     if (dist_crit > 25.0) dist_crit = 25.0;
     
+    // isn't there some relationship between dist_crit and searchregion ? e.g. search region should be at least large enough to capture the motion
+    
     [self logString:@"Calibration begun"];
-    [self logString:[NSString stringWithFormat:@"lock %f %f, star %f %f",LockX,LockY,StarX,StarY]];
+    [self logString:[NSString stringWithFormat:@"lock %f %f, star %f %f, dist_crit %f",LockX,LockY,StarX,StarY,dist_crit]];
     [self logString:@"Direction,Step,dx,dy,x,y"];
     
     calibrationDirection = kCASGuiderDirection_RAPlus;
@@ -554,9 +572,17 @@ enum {
 
 - (void)updateCalibration:(CASCCDExposure*)exposure guideCallback:(void(^)(NSError*,CASGuiderDirection,NSInteger))guideCallback {
     
-    exposure = [self processGuideFrame:exposure];
-
+    NSError* error = nil;
+    exposure = [self processGuideFrame:exposure error:&error];
+    if (!exposure){
+        if (guideCallback){
+            guideCallback(error,kCASGuiderDirection_None,0);
+        }
+        return;
+    }
+    
     dist = sqrt(dX*dX+dY*dY);
+    NSLog(@"dist: %f",dist);
     
     if (calibrationDirection == kCASGuiderDirection_RAPlus) {
         
@@ -565,7 +591,13 @@ enum {
         iterations++;
         
         if (iterations > 60) {
-            NSLog(@"RA Calibration failed - Star did not move enough"); // call delegate
+            if (guideCallback){
+                guideCallback([NSError errorWithDomain:@"CASGuideAlgorithm"
+                                                  code:1
+                                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,@"RA Calibration failed - star did not move enough",nil]],
+                              kCASGuiderDirection_None,
+                              0);
+            }
             return;
         }
         
@@ -692,7 +724,14 @@ enum {
     }
     elapsed_time = [NSDate timeIntervalSinceReferenceDate] - start_time;
     
-    exposure = [self processGuideFrame:exposure];
+    NSError* error = nil;
+    exposure = [self processGuideFrame:exposure error:&error];
+    if (!exposure){
+        if (guideCallback){
+            guideCallback(error,kCASGuiderDirection_None,0);
+        }
+        return;
+    }
     
     if ( ((fabs(dX) > SearchRegion) || (fabs(dY)>SearchRegion))) { // likely lost lock -- stay here
         StarX = LockX;
@@ -714,6 +753,7 @@ enum {
     else theta = atan(dY/dX) - M_PI;
     
     hyp = sqrt(dX*dX+dY*dY);	// dist b/n lock and star
+    NSLog(@"hyp: %f",hyp);
     
     // Do RA guide
     double RA_dist = cos(RA_angle - theta)*hyp;	// dist in RA star needs to move
@@ -819,6 +859,7 @@ enum {
                 NSLog(@"... Dec move clipped to  %f",Dec_dur);
             }
             if ((Dec_dist > 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_SOUTH))) {
+                
                 self.status = [NSString stringWithFormat:@"S dur=%f dist=%f",Dec_dur,Dec_dist];
                 
                 [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
@@ -826,6 +867,7 @@ enum {
                 [self pulse:kCASGuiderDirection_DecMinus duration:Dec_dur guideCallback:guideCallback];
             }
             else if ((Dec_dist < 0.0) && ((Dec_guide == DEC_AUTO) || (Dec_guide == DEC_NORTH))){
+                
                 self.status = [NSString stringWithFormat:@"N dur=%f dist=%f",Dec_dur,Dec_dist];
                 
                 [self logString:[NSString stringWithFormat:@"%f,%f",Dec_dur,Dec_dist]];
