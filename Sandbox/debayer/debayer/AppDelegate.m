@@ -8,22 +8,41 @@
 
 #import "AppDelegate.h"
 #import "CASCCDExposureIO.h"
+#import <QuartzCore/QuartzCore.h>
 
-@interface AppDelegate ()
+@interface AppDelegate ()<CIFilterConstructor>
 @property (nonatomic,assign) BOOL debayer;
 @property (nonatomic,assign) BOOL scalesToFit;
+@property (nonatomic,assign) BOOL debayerCoreImage;
 @property (nonatomic,assign) NSInteger mode;
+@property (nonatomic,assign) NSInteger offsetX, offsetY;
 @property (nonatomic,strong) CASCCDImage* image;
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic,strong) NSBundle* filterBundle;
 @end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    [CIFilter registerFilterName:@"Debayer" constructor:self classAttributes:nil];
+
     self.debayer = NO;
     self.scalesToFit = YES;
     self.mode = 0;
+}
+
+- (CIFilter *)filterWithName:(NSString *)name;
+{
+    if (!self.filterBundle){
+        self.filterBundle = [NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"debayer-cifilter" ofType:@"plugin"]];
+        NSError* error = nil;
+        [self.filterBundle loadAndReturnError:&error];
+        if (error) {
+            NSLog(@"error: %@",error);
+        }
+    }
+    return [[NSClassFromString(@"debayer_cifilterFilter") alloc] init];
 }
 
 - (void)openDocument:sender
@@ -62,7 +81,12 @@
         CGImageRef cgimage = nil;
         
         if (self.debayer){
-            cgimage = [self debayer:self.image];
+            if (self.debayerCoreImage){
+                cgimage = [self debayerCI:self.image];
+            }
+            else {
+                cgimage = [self debayer:self.image];
+            }
         }
         else {
             cgimage = self.image.CGImage;
@@ -77,6 +101,31 @@
     _debayer = debayer;
 
     [self updateImage];
+}
+
+- (void)setDebayerCoreImage:(BOOL)debayerCoreImage
+{
+    _debayerCoreImage = debayerCoreImage;
+    
+    [self updateImage];
+}
+
+- (void)setOffsetX:(NSInteger)offsetX
+{
+    _offsetX = offsetX;
+    
+    [self updateImage];
+}
+
+- (void)setOffsetY:(NSInteger)offsetY
+{
+    _offsetY = offsetY;
+    
+    [self updateImage];
+}
+
+- (void)setNilValueForKey:(NSString*)key
+{    
 }
 
 - (void)setScalesToFit:(BOOL)scalesToFit
@@ -296,6 +345,27 @@
         }
     }
     
+    return CGBitmapContextCreateImage(context);
+}
+
+- (CGImageRef)debayerCI:(CASCCDImage*)image
+{
+    CIImage* inputImage = [CIImage imageWithCGImage:image.CGImage];
+    
+    CIFilter* filter = [CIFilter filterWithName:@"Debayer"];
+
+    [filter setDefaults];
+    [filter setValue:inputImage forKey:@"inputImage"];
+    [filter setValue:[CIVector vectorWithX:self.offsetX Y:self.offsetY] forKey:@"inputOffset"];
+    
+    CIImage* outputImage = [filter valueForKey:@"outputImage"];
+
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 8, (image.size.width) * 4, space, kCGImageAlphaPremultipliedLast); // RGBA
+    CIContext* ctx = [CIContext contextWithCGContext:context options:nil];
+    [ctx drawImage:outputImage atPoint:CGPointZero fromRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+    CFRelease(space);
+
     return CGBitmapContextCreateImage(context);
 }
 
