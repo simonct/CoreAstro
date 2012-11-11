@@ -60,6 +60,9 @@
 @interface SXCCDIOExposeCommandM25C : SXCCDIOExposeCommand
 @end
 
+@interface SXCCDIOExposeCommandInterlaced : SXCCDIOExposeCommand
+@end
+
 @interface SXCCDIOReadCommand : CASIOCommand
 @property (nonatomic,assign) CASExposeParams params;
 @property (nonatomic,readonly) NSData* pixels;

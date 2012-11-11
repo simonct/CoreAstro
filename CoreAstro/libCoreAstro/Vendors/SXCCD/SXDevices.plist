@@ -13,6 +13,8 @@
 	<dict>
 		<key>name</key>
 		<string>SXVF-M5</string>
+		<key>interlaced</key>
+		<true/>
 	</dict>
 	<key>773</key>
 	<dict>
@@ -23,11 +25,15 @@
 	<dict>
 		<key>name</key>
 		<string>SXVF-M7</string>
+		<key>interlaced</key>
+		<true/>
 	</dict>
 	<key>775</key>
 	<dict>
 		<key>name</key>
 		<string>SXVF-M7C</string>
+		<key>interlaced</key>
+		<true/>
 	</dict>
 	<key>776</key>
 	<dict>
@@ -38,6 +44,8 @@
 	<dict>
 		<key>name</key>
 		<string>SXVF-M9</string>
+		<key>interlaced</key>
+		<true/>
 	</dict>
 	<key>805</key>
 	<dict>
@@ -101,6 +109,8 @@
 	<dict>
 		<key>name</key>
 		<string>Lodestar</string>
+		<key>interlaced</key>
+		<true/>
 	</dict>
 	<key>884</key>
 	<dict>

@@ -168,6 +168,10 @@
     return (self.params.capabilities & (1 << 3)) != 0;
 }
 
+- (BOOL)isInterlaced {
+    return [[[self deviceParams] objectForKey:@"interlaced"] boolValue];
+}
+
 - (BOOL)isColour {
     return self.params.colourMatrix != 0;   
 }
@@ -262,7 +266,10 @@
     
     SXCCDIOExposeCommand* expose = nil;
     
-    switch (self.productID) {
+    if (self.isInterlaced){
+        expose = [[SXCCDIOExposeCommandInterlaced alloc] init];
+    }
+    else switch (self.productID) {
         case 805:
             expose = [[SXCCDIOExposeCommandM25C alloc] init];
             break;

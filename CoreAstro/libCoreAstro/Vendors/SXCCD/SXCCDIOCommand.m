@@ -490,6 +490,45 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 @end
 
+@implementation SXCCDIOExposeCommandInterlaced
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    
+    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
+        
+        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
+        if ([rearrangedPixels length]){
+            
+            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
+            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
+            
+            if (pixelsPtr && rearrangedPixelsPtr){
+                
+                const unsigned long width = self.params.size.width/self.params.bin.width;
+                const unsigned long height = self.params.size.height/self.params.bin.height;
+                
+                unsigned long i = 0;
+                for (unsigned long y = 0; y < height; y += 2){
+                    for (unsigned long x = 0; x < width; x += 1){
+                        rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
+                    }
+                }
+                for (unsigned long y = 1; y < height; y += 2){
+                    for (unsigned long x = 0; x < width; x += 1){
+                        rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
+                    }
+                }
+
+                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
+            }
+        }
+    }
+    
+    return pixels;
+}
+
+@end
+
 @implementation SXCCDIOReadCommand
 
 @synthesize params, pixels = _pixels;
