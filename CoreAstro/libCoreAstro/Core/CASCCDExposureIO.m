@@ -24,7 +24,9 @@
 //
 
 #import "CASCCDExposureIO.h"
+#if CAS_ENABLE_FITS
 #import "fitsio.h"
+#endif
 
 @interface CASCCDExposureIOv1 : CASCCDExposureIO
 @end
@@ -239,6 +241,8 @@
 
 @end
 
+#if CAS_ENABLE_FITS
+
 @interface CASCCDExposureFITS : CASCCDExposureIO
 @end
 
@@ -388,6 +392,8 @@
 
 @end
 
+#endif // CAS_ENABLE_FITS
+
 @implementation CASCCDExposureIO
 
 @synthesize url;
@@ -406,10 +412,12 @@
         exp = [[CASCCDExposureIOv2 alloc] init];
         exp.url = [NSURL fileURLWithPath:path];
     }
+#if CAS_ENABLE_FITS
     else if ([pathExtension isEqualToString:@"fit"] || [pathExtension isEqualToString:@"fits"]){
         exp = [[CASCCDExposureFITS  alloc] init];
         exp.url = [NSURL fileURLWithPath:path];
     }
+#endif
 
     return exp;
 }
