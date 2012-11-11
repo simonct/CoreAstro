@@ -1,0 +1,112 @@
+- (CGImageRef)debayer:(CASCCDImage*)image
+{
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 8, (image.size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+    CFRelease(space);
+    
+    uint16_t *gp = (uint16_t*)[image.pixels bytes];
+    uint32_t *cp = CGBitmapContextGetData(context);
+    bzero(cp, CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context));
+    
+    // RGBA
+
+    #define source_pixel(x,y) (*(gp + x + y * image.size.width)/257)
+    #define destination_pixel(x,y) *(cp + x + y * image.size.width)
+    
+    for (int y = 1; y < image.size.height - 1; y += 2){
+        
+        for (int x = 1; x < image.size.width - 1; x++){
+        
+            uint8_t r = 0;
+            uint8_t g = 0;
+            uint8_t b = 0;
+            
+            /*
+            if ((x % 2) == 0){
+                r = (source_pixel(x,y-1) + source_pixel(x,y+1))/2;
+                g = (source_pixel(x,y) + source_pixel(x-1,y-1) + source_pixel(x+1,y-1) + source_pixel(x-1,y+1) + source_pixel(x+1,y+1))/5;
+                b = (source_pixel(x-1,y) + source_pixel(x+1,y))/2;
+            }
+            else {
+                r = (source_pixel(x-1,y-1) + source_pixel(x+1,y-1) + source_pixel(x-1,y+1) + source_pixel(x+1,y+1))/4;
+                g = (source_pixel(x,y-1) + source_pixel(x-1,y) + source_pixel(x+1,y) + source_pixel(x,y+1))/4;
+                b = source_pixel(x,y);
+            }
+            */
+            
+            /*
+            r = source_pixel(x,y);
+            g = source_pixel(x,y);
+            b = source_pixel(x,y);
+            */
+            
+            destination_pixel(x,y) = r | (g << 8) | (b << 16) | (0xff << 24);
+        }
+    }
+        
+    return CGBitmapContextCreateImage(context);
+}
+
+- (CGImageRef)debayer:(CASCCDImage*)image
+{
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 8, (image.size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+    CFRelease(space);
+    
+    uint16_t *gp = (uint16_t*)[image.pixels bytes];
+    
+    uint32_t *cp = CGBitmapContextGetData(context);
+    bzero(cp, CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context));
+    
+    // RGBA
+
+    #define source_pixel(x,y) (*(gp + (x) + (y) * image.size.width)/257)
+    #define destination_pixel(x,y) *(cp + (x) + (y) * image.size.width)
+    
+    for (int y = 2; y < image.size.height - 2; y += 2){
+        
+        for (int x = 2; x < image.size.width - 2; x += 2){
+        
+            int i = x, j = y;
+            const uint8_t a = 0xff;
+            
+//            uint8_t r1 = source_pixel(i,j);
+//            uint8_t g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
+//            uint8_t b1 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
+
+            uint8_t r1 = (source_pixel(i-1,j) + source_pixel(i+1,j))/2;
+            uint8_t g1 = source_pixel(i,j);
+            uint8_t b1 = (source_pixel(i,j-1) + source_pixel(i,j+1))/2;
+
+            destination_pixel(x,y) = r1 | (g1 << 8) | (b1 << 16) | (a << 24);
+            
+            i = x + 1, j = y + 1;
+            
+            uint8_t r2 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
+            uint8_t g2 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
+            uint8_t b2 = source_pixel(i,j);
+            
+            destination_pixel(i,j) = r2 | (g2 << 8) | (b2 << 16) | (a << 24);
+
+            i = x + 1, j = y;
+            
+            uint8_t r3 = (source_pixel(i,j - 1) + source_pixel(i,j + 1))/2;
+            uint8_t g3 = source_pixel(i,j);
+            uint8_t b3 = (source_pixel(i - 1,j) + source_pixel(i + 1,j))/2;
+            
+            destination_pixel(i,j) = r3 | (g3 << 8) | (b3 << 16) | (a << 24);
+
+            i = x, j = y + 1;
+            
+            uint8_t r4 = (source_pixel(i - 1,j) + source_pixel(i + 1,j))/2;
+            uint8_t g4 = source_pixel(i,j);
+            uint8_t b4 = (source_pixel(i,j - 1) + source_pixel(i,j + 1))/2;
+            
+            destination_pixel(i,j) = r4 | (g4 << 8) | (b4 << 16) | (a << 24);
+        }
+    }
+    
+    return CGBitmapContextCreateImage(context);
+}
+
+

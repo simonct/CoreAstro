@@ -1,0 +1,489 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F41E31D5164FA92000E8BE7F /* CASScriptableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */; };
+		F4D1D32D15F60D9400D3468B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D1D32C15F60D9400D3468B /* Cocoa.framework */; };
+		F4D1D33715F60D9400D3468B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4D1D33515F60D9400D3468B /* InfoPlist.strings */; };
+		F4D1D33915F60D9400D3468B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D33815F60D9400D3468B /* main.m */; };
+		F4D1D33D15F60D9400D3468B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4D1D33B15F60D9400D3468B /* Credits.rtf */; };
+		F4D1D34015F60D9400D3468B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D33F15F60D9400D3468B /* AppDelegate.m */; };
+		F4D1D34315F60D9400D3468B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D1D34115F60D9400D3468B /* MainMenu.xib */; };
+		F4D1D34B15F60D9400D3468B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D1D34A15F60D9400D3468B /* SenTestingKit.framework */; };
+		F4D1D34C15F60D9400D3468B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D1D32C15F60D9400D3468B /* Cocoa.framework */; };
+		F4D1D35415F60D9400D3468B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4D1D35215F60D9400D3468B /* InfoPlist.strings */; };
+		F4D1D35715F60D9400D3468B /* debayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D35615F60D9400D3468B /* debayerTests.m */; };
+		F4D1D36415F60DB900D3468B /* CASCCDExposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D36115F60DB900D3468B /* CASCCDExposure.m */; };
+		F4D1D36515F60DB900D3468B /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D36315F60DB900D3468B /* CASCCDExposureIO.m */; };
+		F4D1D36815F60E1400D3468B /* CASCCDImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D1D36715F60E1400D3468B /* CASCCDImage.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F4D1D34D15F60D9400D3468B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4D1D31F15F60D9300D3468B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4D1D32715F60D9400D3468B;
+			remoteInfo = debayer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F41E31D3164FA92000E8BE7F /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASScriptableObject.h; path = ../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.h; sourceTree = "<group>"; };
+		F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASScriptableObject.m; path = ../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.m; sourceTree = "<group>"; };
+		F4D1D32815F60D9400D3468B /* debayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = debayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D1D32C15F60D9400D3468B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F4D1D32F15F60D9400D3468B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F4D1D33015F60D9400D3468B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F4D1D33115F60D9400D3468B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4D1D33415F60D9400D3468B /* debayer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "debayer-Info.plist"; sourceTree = "<group>"; };
+		F4D1D33615F60D9400D3468B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4D1D33815F60D9400D3468B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4D1D33A15F60D9400D3468B /* debayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "debayer-Prefix.pch"; sourceTree = "<group>"; };
+		F4D1D33C15F60D9400D3468B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F4D1D33E15F60D9400D3468B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F4D1D33F15F60D9400D3468B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F4D1D34215F60D9400D3468B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F4D1D34915F60D9400D3468B /* debayerTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = debayerTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D1D34A15F60D9400D3468B /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		F4D1D35115F60D9400D3468B /* debayerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "debayerTests-Info.plist"; sourceTree = "<group>"; };
+		F4D1D35315F60D9400D3468B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4D1D35515F60D9400D3468B /* debayerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debayerTests.h; sourceTree = "<group>"; };
+		F4D1D35615F60D9400D3468B /* debayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = debayerTests.m; sourceTree = "<group>"; };
+		F4D1D36015F60DB900D3468B /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDExposure.h; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDExposure.h; sourceTree = "<group>"; };
+		F4D1D36115F60DB900D3468B /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDExposure.m; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDExposure.m; sourceTree = "<group>"; };
+		F4D1D36215F60DB900D3468B /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDExposureIO.h; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDExposureIO.h; sourceTree = "<group>"; };
+		F4D1D36315F60DB900D3468B /* CASCCDExposureIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDExposureIO.m; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDExposureIO.m; sourceTree = "<group>"; };
+		F4D1D36615F60E1400D3468B /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCCDImage.h; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDImage.h; sourceTree = "<group>"; };
+		F4D1D36715F60E1400D3468B /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCCDImage.m; path = ../../../CoreAstro/libCoreAstro/Core/CASCCDImage.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4D1D32515F60D9400D3468B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D32D15F60D9400D3468B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4D1D34515F60D9400D3468B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D34B15F60D9400D3468B /* SenTestingKit.framework in Frameworks */,
+				F4D1D34C15F60D9400D3468B /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4D1D31D15F60D9300D3468B = {
+			isa = PBXGroup;
+			children = (
+				F4D1D33215F60D9400D3468B /* debayer */,
+				F4D1D34F15F60D9400D3468B /* debayerTests */,
+				F4D1D32B15F60D9400D3468B /* Frameworks */,
+				F4D1D32915F60D9400D3468B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4D1D32915F60D9400D3468B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D32815F60D9400D3468B /* debayer.app */,
+				F4D1D34915F60D9400D3468B /* debayerTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4D1D32B15F60D9400D3468B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D32C15F60D9400D3468B /* Cocoa.framework */,
+				F4D1D34A15F60D9400D3468B /* SenTestingKit.framework */,
+				F4D1D32E15F60D9400D3468B /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4D1D32E15F60D9400D3468B /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D32F15F60D9400D3468B /* AppKit.framework */,
+				F4D1D33015F60D9400D3468B /* CoreData.framework */,
+				F4D1D33115F60D9400D3468B /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F4D1D33215F60D9400D3468B /* debayer */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D33E15F60D9400D3468B /* AppDelegate.h */,
+				F4D1D33F15F60D9400D3468B /* AppDelegate.m */,
+				F4D1D34115F60D9400D3468B /* MainMenu.xib */,
+				F4D1D36615F60E1400D3468B /* CASCCDImage.h */,
+				F4D1D36715F60E1400D3468B /* CASCCDImage.m */,
+				F4D1D36015F60DB900D3468B /* CASCCDExposure.h */,
+				F4D1D36115F60DB900D3468B /* CASCCDExposure.m */,
+				F4D1D36215F60DB900D3468B /* CASCCDExposureIO.h */,
+				F4D1D36315F60DB900D3468B /* CASCCDExposureIO.m */,
+				F41E31D3164FA92000E8BE7F /* CASScriptableObject.h */,
+				F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */,
+				F4D1D33315F60D9400D3468B /* Supporting Files */,
+			);
+			path = debayer;
+			sourceTree = "<group>";
+		};
+		F4D1D33315F60D9400D3468B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D33415F60D9400D3468B /* debayer-Info.plist */,
+				F4D1D33515F60D9400D3468B /* InfoPlist.strings */,
+				F4D1D33815F60D9400D3468B /* main.m */,
+				F4D1D33A15F60D9400D3468B /* debayer-Prefix.pch */,
+				F4D1D33B15F60D9400D3468B /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4D1D34F15F60D9400D3468B /* debayerTests */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D35515F60D9400D3468B /* debayerTests.h */,
+				F4D1D35615F60D9400D3468B /* debayerTests.m */,
+				F4D1D35015F60D9400D3468B /* Supporting Files */,
+			);
+			path = debayerTests;
+			sourceTree = "<group>";
+		};
+		F4D1D35015F60D9400D3468B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4D1D35115F60D9400D3468B /* debayerTests-Info.plist */,
+				F4D1D35215F60D9400D3468B /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4D1D32715F60D9400D3468B /* debayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4D1D35A15F60D9400D3468B /* Build configuration list for PBXNativeTarget "debayer" */;
+			buildPhases = (
+				F4D1D32415F60D9400D3468B /* Sources */,
+				F4D1D32515F60D9400D3468B /* Frameworks */,
+				F4D1D32615F60D9400D3468B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = debayer;
+			productName = debayer;
+			productReference = F4D1D32815F60D9400D3468B /* debayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F4D1D34815F60D9400D3468B /* debayerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4D1D35D15F60D9400D3468B /* Build configuration list for PBXNativeTarget "debayerTests" */;
+			buildPhases = (
+				F4D1D34415F60D9400D3468B /* Sources */,
+				F4D1D34515F60D9400D3468B /* Frameworks */,
+				F4D1D34615F60D9400D3468B /* Resources */,
+				F4D1D34715F60D9400D3468B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4D1D34E15F60D9400D3468B /* PBXTargetDependency */,
+			);
+			name = debayerTests;
+			productName = debayerTests;
+			productReference = F4D1D34915F60D9400D3468B /* debayerTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4D1D31F15F60D9300D3468B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Simon Taylor";
+			};
+			buildConfigurationList = F4D1D32215F60D9300D3468B /* Build configuration list for PBXProject "debayer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F4D1D31D15F60D9300D3468B;
+			productRefGroup = F4D1D32915F60D9400D3468B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4D1D32715F60D9400D3468B /* debayer */,
+				F4D1D34815F60D9400D3468B /* debayerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4D1D32615F60D9400D3468B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D33715F60D9400D3468B /* InfoPlist.strings in Resources */,
+				F4D1D33D15F60D9400D3468B /* Credits.rtf in Resources */,
+				F4D1D34315F60D9400D3468B /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4D1D34615F60D9400D3468B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D35415F60D9400D3468B /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F4D1D34715F60D9400D3468B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4D1D32415F60D9400D3468B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D33915F60D9400D3468B /* main.m in Sources */,
+				F4D1D34015F60D9400D3468B /* AppDelegate.m in Sources */,
+				F4D1D36415F60DB900D3468B /* CASCCDExposure.m in Sources */,
+				F4D1D36515F60DB900D3468B /* CASCCDExposureIO.m in Sources */,
+				F4D1D36815F60E1400D3468B /* CASCCDImage.m in Sources */,
+				F41E31D5164FA92000E8BE7F /* CASScriptableObject.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4D1D34415F60D9400D3468B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D1D35715F60D9400D3468B /* debayerTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4D1D34E15F60D9400D3468B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4D1D32715F60D9400D3468B /* debayer */;
+			targetProxy = F4D1D34D15F60D9400D3468B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4D1D33515F60D9400D3468B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D1D33615F60D9400D3468B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4D1D33B15F60D9400D3468B /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D1D33C15F60D9400D3468B /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F4D1D34115F60D9400D3468B /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D1D34215F60D9400D3468B /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F4D1D35215F60D9400D3468B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4D1D35315F60D9400D3468B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4D1D35815F60D9400D3468B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F4D1D35915F60D9400D3468B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4D1D35B15F60D9400D3468B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "debayer/debayer-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../CoreAstro\"/**";
+				INFOPLIST_FILE = "debayer/debayer-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F4D1D35C15F60D9400D3468B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "debayer/debayer-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../CoreAstro\"/**";
+				INFOPLIST_FILE = "debayer/debayer-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F4D1D35E15F60D9400D3468B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/debayer.app/Contents/MacOS/debayer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "debayer/debayer-Prefix.pch";
+				INFOPLIST_FILE = "debayerTests/debayerTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		F4D1D35F15F60D9400D3468B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/debayer.app/Contents/MacOS/debayer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "debayer/debayer-Prefix.pch";
+				INFOPLIST_FILE = "debayerTests/debayerTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4D1D32215F60D9300D3468B /* Build configuration list for PBXProject "debayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D1D35815F60D9400D3468B /* Debug */,
+				F4D1D35915F60D9400D3468B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4D1D35A15F60D9400D3468B /* Build configuration list for PBXNativeTarget "debayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D1D35B15F60D9400D3468B /* Debug */,
+				F4D1D35C15F60D9400D3468B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4D1D35D15F60D9400D3468B /* Build configuration list for PBXNativeTarget "debayerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D1D35E15F60D9400D3468B /* Debug */,
+				F4D1D35F15F60D9400D3468B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4D1D31F15F60D9300D3468B /* Project object */;
+}
