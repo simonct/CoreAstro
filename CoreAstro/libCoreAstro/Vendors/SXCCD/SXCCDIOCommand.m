@@ -413,7 +413,7 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_NOWIPE_FRAME,buffer);
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
