@@ -61,11 +61,21 @@
 @end
 
 @interface SXCCDIOExposeCommandInterlaced : SXCCDIOExposeCommand
+@property (nonatomic,strong) CASCCDExposure* biasExposure;
 @end
 
 @interface SXCCDIOReadCommand : CASIOCommand
 @property (nonatomic,assign) CASExposeParams params;
 @property (nonatomic,readonly) NSData* pixels;
+@end
+
+@interface SXCCDIOReadFieldCommand : SXCCDIOReadCommand
+enum {
+    kSXCCDIOReadFieldCommandOdd,
+    kSXCCDIOReadFieldCommandEven,
+    kSXCCDIOReadFieldCommandBoth
+};
+@property (nonatomic,assign) NSInteger field;
 @end
 
 @interface SXCCDIOCoolerCommand : CASIOCommand

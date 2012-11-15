@@ -262,30 +262,56 @@
     }];    
 }
 
-- (void)exposeWithParams:(CASExposeParams)exp block:(void (^)(NSError*,CASCCDExposure*image))block {
+- (SXCCDIOExposeCommand*)createExposureCommandWithParams:(CASExposeParams)exp {
     
     SXCCDIOExposeCommand* expose = nil;
     
+    // fixup exposure params for interlaced cameras
     if (self.isInterlaced){
-        expose = [[SXCCDIOExposeCommandInterlaced alloc] init];
+        exp.size.height *= 2;
+        exp.frame.height *= 2;
+        // origin ?
+    }
+        
+    if (self.isInterlaced){
+        expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
     }
     else switch (self.productID) {
         case 805:
-            expose = [[SXCCDIOExposeCommandM25C alloc] init];
+            expose = [[SXCCDIOExposeCommandM25C alloc] init]; // special command to handle the dual output registers
             break;
                         
         default:
-            expose = [[SXCCDIOExposeCommand alloc] init];
+            expose = [[SXCCDIOExposeCommand alloc] init]; // regular progressive camera
             break;
     }
     
     expose.ms = exp.ms;
     expose.params = exp;
-    expose.readPixels = (exp.ms < self.temperatureFrequency * 1000);
     
+    if (self.isInterlaced){
+        expose.readPixels = NO; // always use an external timer for interlaced cameras
+    }
+    else {
+        expose.readPixels = (exp.ms < self.temperatureFrequency * 1000);
+    }
+
+    return expose;
+}
+
+- (void)exposeWithParams:(CASExposeParams)exp block:(void (^)(NSError*,CASCCDExposure*image))block {
+    
+    // create an exposure command object
+    SXCCDIOExposeCommand* expose = [self createExposureCommandWithParams:exp];
+    
+    // record the exposure time
     NSDate* time = [NSDate date];
 
-    void (^complete)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
+    // prep the exposure temp array
+    self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
+
+    // block to create the exposure object from the read pixels and call the completion block
+    void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
         
         CASCCDExposure* exposure = nil;
         if (!error){
@@ -297,49 +323,88 @@
         }
     };
     
-    void (^exposeCCD)() = ^{
+    // block to issue the expose and read pixels commands
+    void (^exposePixels)() = ^{
         
-        self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
-
+        // kick things off by submitting the exposure command
         [self.transport submit:expose block:^(NSError* error){
             
             if (error) {
-                if (block){
-                    block(error,nil);
-                }
+                exposureCompleted(error,nil);
             }
             else {
                 
                 if (expose.readPixels){
-                    complete(error,expose.pixels);
+                    // expose command also read the pixels so jump straight to completion
+                    exposureCompleted(error,expose.pixels);
                 }
                 else {
                     
-                    SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
-                    read.params = expose.params;
-                    [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
-                        complete(error,[expose postProcessPixels:read.pixels]);
-                    }];
+                    // build and submit a command to read pixels from the ccd
+                    if (!self.isInterlaced){
+                        
+                        // with progressive cameras just read all the pixels in a single block from the pipe
+                        SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
+                        read.params = expose.params;
+                        [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
+                            exposureCompleted(error,[expose postProcessPixels:read.pixels]);
+                        }];
+                    }
+                    else {
+                        
+                        // schedule the read for the exposure end time
+                        NSDate* when = [time dateByAddingTimeInterval:expose.params.ms/1000.0];
+                        
+                        // for interlaced cameras in binning mode read both fields together with no de-interlacing necessary...
+                        if (exp.bin.width != 1 || exp.bin.height != 1){
+                            
+                            SXCCDIOReadFieldCommand* readField = [[SXCCDIOReadFieldCommand alloc] init];
+                            readField.params = expose.params;
+                            readField.field = kSXCCDIOReadFieldCommandBoth;
+                            [self.transport submit:readField when:when block:^(NSError* error){
+                                exposureCompleted(error,[expose postProcessPixels:readField.pixels]);
+                            }];
+                        }
+                        else {
+                            
+                            // ...and in hi-res mode read both fields and then de-interlace in -postProcessPixels:
+                            SXCCDIOReadFieldCommand* readField = [[SXCCDIOReadFieldCommand alloc] init];
+                            readField.params = expose.params;
+                            readField.field = kSXCCDIOReadFieldCommandOdd;
+                            [self.transport submit:readField when:when block:^(NSError* error){
+                                if (error) {
+                                    exposureCompleted(error,nil);
+                                }
+                                else {
+                                    readField.field = kSXCCDIOReadFieldCommandEven;
+                                    [self.transport submit:readField block:^(NSError* error){
+                                        exposureCompleted(error,[expose postProcessPixels:readField.pixels]);
+                                    }];
+                                }
+                            }];
+                        }
+                    }
                 }
             }
         }];    
     };
     
-    // optionally flush any accumulated charge before exposing
+    // block to flush any accumulated charge before exposing if required then run the exposure
     __block NSInteger flushCount = self.flushCount;
     void (^__block flushComplete)(NSError*) = ^(NSError* error){
         
         if (error){
-            complete(error,nil);
+            exposureCompleted(error,nil);
         }
         else if (flushCount-- > 0) {
             [self flush:flushComplete];
         }
         else {
-            exposeCCD();
+            exposePixels();
         }
     };
     
+    // start the exposure process by optionally flushing the charge from the ccd
     flushComplete(nil);
 }
 

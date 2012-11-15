@@ -270,6 +270,28 @@ static void sxExposePixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffse
     setup_data[USB_REQ_DATA + 13] = msec >> 24;
 }
 
+static void sxReadPixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin,UCHAR setup_data[18])
+{
+    setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
+    setup_data[USB_REQ         ] = SXUSB_READ_PIXELS;
+    setup_data[USB_REQ_VALUE_L ] = flags;
+    setup_data[USB_REQ_VALUE_H ] = flags >> 8;
+    setup_data[USB_REQ_INDEX_L ] = camIndex;
+    setup_data[USB_REQ_INDEX_H ] = 0;
+    setup_data[USB_REQ_LENGTH_L] = 10;
+    setup_data[USB_REQ_LENGTH_H] = 0;
+    setup_data[USB_REQ_DATA + 0] = xoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 1] = xoffset >> 8;
+    setup_data[USB_REQ_DATA + 2] = yoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 3] = yoffset >> 8;
+    setup_data[USB_REQ_DATA + 4] = width & 0xFF;
+    setup_data[USB_REQ_DATA + 5] = width >> 8;
+    setup_data[USB_REQ_DATA + 6] = height & 0xFF;
+    setup_data[USB_REQ_DATA + 7] = height >> 8;
+    setup_data[USB_REQ_DATA + 8] = xbin;
+    setup_data[USB_REQ_DATA + 9] = ybin;
+}
+
 static void sxCoolerWriteData(UCHAR setup_data[8],float tempDegC,bool on)
 {
     const uint16_t tempDegK = floor((273 + tempDegC) * 10);
@@ -492,6 +514,16 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 @implementation SXCCDIOExposeCommandInterlaced
 
+- (NSInteger) readSize {
+    return 0;
+}
+
+- (NSData*)toDataRepresentation {
+    uint8_t buffer[8];
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,buffer);
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
     if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
@@ -529,7 +561,10 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 @end
 
-@implementation SXCCDIOReadCommand
+@implementation SXCCDIOReadCommand {
+@protected
+    NSData* _pixels;
+}
 
 @synthesize params, pixels = _pixels;
 
@@ -543,6 +578,62 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = data;
+    return nil;
+}
+
+@end
+
+@implementation SXCCDIOReadFieldCommand
+
+- (NSData*)toDataRepresentation {
+    
+    uint8_t buffer[18];
+    
+    if (self.params.bin.width == 3 && self.params.bin.height == 3){
+        NSLog(@"SXCCDIOReadFieldCommand: Replacing 3x3 binning with 4x4");
+        CASExposeParams params = self.params;
+        params.bin = CASSizeMake(4, 4);
+        self.params = params;
+    }
+
+    NSInteger fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+    NSInteger binX = self.params.bin.width;
+    NSInteger binY = self.params.bin.height;
+    const NSInteger height = self.params.size.height / 2;
+    
+    switch (self.field) {
+        case kSXCCDIOReadFieldCommandOdd:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+        case kSXCCDIOReadFieldCommandEven:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        case kSXCCDIOReadFieldCommandBoth:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            binY /= 2;
+            break;
+    }
+    
+    NSLog(@"SXCCDIOReadFieldCommand: field=%ld, height=%ld, binX=%ld, binY=%ld",self.field,height,binX,binY);
+    
+    sxReadPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,fieldFlag,self.params.origin.x,self.params.origin.y,self.params.size.width,height,binX,binY,buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
+- (NSError*)fromDataRepresentation:(NSData*)data {
+    if (!_pixels){
+        _pixels = data;
+    }
+    else {
+        const NSInteger length = [_pixels length] + [data length];
+        uint8_t* final = malloc(length);
+        if (final){
+            memcpy(final, [_pixels bytes], [_pixels length]);
+            memcpy(final + [_pixels length], [data bytes], [data length]);
+            _pixels = [NSData dataWithBytesNoCopy:final length:length freeWhenDone:YES];
+        }
+    }
     return nil;
 }
 
