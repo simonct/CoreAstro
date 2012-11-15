@@ -241,7 +241,12 @@
     SXCCDIOGetParamsCommand* getParams = [[SXCCDIOGetParamsCommand alloc] init];
     
     [self.transport submit:getParams block:^(NSError* error){
-                
+        
+        if (self.isInterlaced){
+            getParams.params.height = getParams.params.height * 2;
+            getParams.params.pixelHeight = getParams.params.pixelHeight / 2;
+        }
+
         self.params = getParams.params;
         
         if (block){
@@ -266,13 +271,6 @@
     
     SXCCDIOExposeCommand* expose = nil;
     
-    // fixup exposure params for interlaced cameras
-    if (self.isInterlaced){
-        exp.size.height *= 2;
-        exp.frame.height *= 2;
-        // origin ?
-    }
-        
     if (self.isInterlaced){
         expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
     }
@@ -372,10 +370,12 @@
                             readField.params = expose.params;
                             readField.field = kSXCCDIOReadFieldCommandOdd;
                             [self.transport submit:readField when:when block:^(NSError* error){
+                                
                                 if (error) {
                                     exposureCompleted(error,nil);
                                 }
                                 else {
+                                    
                                     readField.field = kSXCCDIOReadFieldCommandEven;
                                     [self.transport submit:readField block:^(NSError* error){
                                         exposureCompleted(error,[expose postProcessPixels:readField.pixels]);
