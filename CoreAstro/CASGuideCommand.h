@@ -1,5 +1,5 @@
 //
-//  NSApplication+CASScripting.m
+//  CASGuideCommand.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -23,30 +23,8 @@
 //  IN THE SOFTWARE.
 //
 
-#import "NSApplication+CASScripting.h"
-#import "CASAppDelegate.h"
-#import <CoreAstro/CoreAstro.h>
+#import "CASScriptCommand.h"
 
-@implementation NSApplication (CASScripting)
-
-- (CASAppDelegate*)casDelegate
-{
-    return (CASAppDelegate*)self.delegate;
-}
-
-- (NSArray*)cameraControllers
-{
-    return self.casDelegate.cameraControllers;
-}
-
-- (NSArray*)guiderControllers
-{
-    return self.casDelegate.guiderControllers;
-}
-
-- (NSArray*)exposures // todo: move this to the camera controller ?
-{
-    return [[CASCCDExposureLibrary sharedLibrary] exposures];
-}
+@interface CASGuideCommand : CASScriptCommand
 
 @end

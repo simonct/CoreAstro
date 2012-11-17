@@ -312,6 +312,19 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     params->on = response[2] != 0;
 }
 
+static void sxSetSTAR2000WriteData(BYTE star2k,UCHAR setup_data[8])
+{
+    setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
+    setup_data[USB_REQ         ] = SXUSB_SET_STAR2K;
+    setup_data[USB_REQ_VALUE_L ] = star2k;
+    setup_data[USB_REQ_VALUE_H ] = 0;
+    setup_data[USB_REQ_INDEX_L ] = 0;
+    setup_data[USB_REQ_INDEX_H ] = 0;
+    setup_data[USB_REQ_LENGTH_L] = 0;
+    setup_data[USB_REQ_LENGTH_H] = 0;
+    
+}
+
 @implementation SXCCDIOResetCommand
 
 - (NSData*)toDataRepresentation {
@@ -698,5 +711,12 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 
 @end
 
+@implementation SXCCDIOGuideCommand
 
+- (NSData*)toDataRepresentation {
+    uint8_t buffer[8];
+    sxSetSTAR2000WriteData(self.direction,buffer);
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
 
+@end

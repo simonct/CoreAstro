@@ -26,7 +26,9 @@
 #import "CASScriptableObject.h"
 #import "CASAutoGuider.h"
 
-@interface CASGuiderController : CASScriptableObject
+@interface CASGuiderController : CASScriptableObject<CASGuider>
+
+@property (nonatomic,strong,readonly) CASDevice<CASGuider>* guider;
 
 - (id)initWithGuider:(CASDevice<CASGuider>*)guider;
 

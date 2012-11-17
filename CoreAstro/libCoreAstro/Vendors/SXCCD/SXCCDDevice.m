@@ -28,6 +28,7 @@
 #import "SXCCDIOCommand.h"
 #import "SXCCDDeviceFactory.h"
 #import "CASCCDExposure.h"
+#import "CASAutoGuider.h"
 
 @interface SXCCDDevice ()
 @property (nonatomic,assign) BOOL connected;
@@ -54,6 +55,14 @@
 - (void)dealloc
 {
     [self disconnect];
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
+    if (aProtocol == @protocol(CASGuider)){
+        return self.hasStar2KPort;
+    }
+    return [super conformsToProtocol:aProtocol];
 }
 
 - (void)disconnect
@@ -407,6 +416,63 @@
     
     // start the exposure process by optionally flushing the charge from the ccd
     flushComplete(nil);
+}
+
+#pragma mark - Guider protocol
+
+- (void)pulse:(CASGuiderDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block
+{
+    if (!self.hasStar2KPort){
+        NSLog(@"-pulse:duration:block: %@ doesn't have a STAR2K port",self);
+        return;
+    }
+        
+    SXCCDIOGuideCommand* guide = [[SXCCDIOGuideCommand alloc] init];
+    
+    switch (direction) {
+        case kCASGuiderDirection_RAPlus:
+            guide.direction = kSXCCDIOGuideCommandWest;
+            break;
+        case kCASGuiderDirection_RAMinus:
+            guide.direction = kSXCCDIOGuideCommandEast;
+            break;
+        case kCASGuiderDirection_DecPlus:
+            guide.direction = kSXCCDIOGuideCommandNorth;
+            break;
+        case kCASGuiderDirection_DecMinus:
+            guide.direction = kSXCCDIOGuideCommandSouth;
+            break;
+        default:
+            if (block){
+                block(nil);
+            }
+            return;
+    }
+
+    [self.transport submit:guide block:^(NSError* error){
+        
+        if (error){
+            if (block){
+                block(error);
+            }
+        }
+        else {
+            
+            const double delayInSeconds = durationMS/1000.0;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                guide.direction = kSXCCDIOGuideCommandNone;
+                
+                [self.transport submit:guide block:^(NSError* error){
+                
+                    if (block){
+                        block(error);
+                    }
+                }];
+            });
+        }
+    }];
 }
 
 @end
