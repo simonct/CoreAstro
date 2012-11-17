@@ -47,6 +47,7 @@
 
 // flush the chip
 @interface SXCCDIOFlushCommand : CASIOCommand
+// todo; wipe/nowipe flag ?
 @end
 
 @interface SXCCDIOExposeCommand : CASIOCommand

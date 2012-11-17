@@ -169,6 +169,7 @@
 }
 
 - (BOOL)isInterlaced {
+    // todo; get from capabilities
     return [[[self deviceParams] objectForKey:@"interlaced"] boolValue];
 }
 

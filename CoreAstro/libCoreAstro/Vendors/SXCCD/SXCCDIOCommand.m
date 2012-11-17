@@ -519,6 +519,14 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
 }
 
 - (NSData*)toDataRepresentation {
+    
+    if (self.params.bin.width == 3 && self.params.bin.height == 3){
+        NSLog(@"SXCCDIOExposeCommandInterlaced: Replacing 3x3 binning with 4x4");
+        CASExposeParams params = self.params;
+        params.bin = CASSizeMake(4, 4);
+        self.params = params;
+    }
+    
     uint8_t buffer[8];
     sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
@@ -589,13 +597,6 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     
     uint8_t buffer[18];
     
-    if (self.params.bin.width == 3 && self.params.bin.height == 3){
-        NSLog(@"SXCCDIOReadFieldCommand: Replacing 3x3 binning with 4x4");
-        CASExposeParams params = self.params;
-        params.bin = CASSizeMake(4, 4);
-        self.params = params;
-    }
-
     NSInteger fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
     NSInteger binX = self.params.bin.width;
     NSInteger binY = self.params.bin.height;
