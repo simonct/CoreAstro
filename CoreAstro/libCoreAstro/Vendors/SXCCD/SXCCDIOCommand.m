@@ -622,6 +622,19 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
+- (double)average:(NSData*)pixels {
+    double average = 0;
+    uint16_t* p = (uint16_t*)[pixels bytes];
+    if (p){
+        const NSInteger count = [pixels length]/sizeof(uint16_t);
+        for (NSInteger i = 0; i < count; ++i){
+            average += p[i];
+        }
+        average /= count;
+    }
+    return average;
+}
+
 - (NSError*)fromDataRepresentation:(NSData*)data {
     if (!_pixels){
         _pixels = data;
@@ -630,6 +643,20 @@ static void sxCoolerReadData(const UCHAR response[3],struct t_sxccd_cooler* para
         const NSInteger length = [_pixels length] + [data length];
         uint8_t* final = malloc(length);
         if (final){
+            const double firstAvg = [self average:_pixels];
+            if (firstAvg != 0){
+                const double secondAvg = [self average:data];
+                const double ratio = secondAvg/firstAvg;
+                if (ratio != 0){
+                    uint16_t* p = (uint16_t*)[data bytes];
+                    const NSInteger count = [data length]/sizeof(uint16_t);
+                    for (NSInteger i = 0; i < count; ++i){
+                        p[i] /= ratio;
+                    }
+                }
+                const double secondAvg2 = [self average:data];
+                NSLog(@"first %f, second %f, ratio %f -> second %f",firstAvg,secondAvg,ratio,secondAvg2);
+            }
             memcpy(final, [_pixels bytes], [_pixels length]);
             memcpy(final + [_pixels length], [data bytes], [data length]);
             _pixels = [NSData dataWithBytesNoCopy:final length:length freeWhenDone:YES];

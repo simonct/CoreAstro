@@ -369,7 +369,7 @@
                             // ...and in hi-res mode read both fields and then de-interlace in -postProcessPixels:
                             SXCCDIOReadFieldCommand* readField = [[SXCCDIOReadFieldCommand alloc] init];
                             readField.params = expose.params;
-                            readField.field = kSXCCDIOReadFieldCommandOdd;
+                            readField.field = kSXCCDIOReadFieldCommandEven;
                             [self.transport submit:readField when:when block:^(NSError* error){
                                 
                                 if (error) {
@@ -377,7 +377,7 @@
                                 }
                                 else {
                                     
-                                    readField.field = kSXCCDIOReadFieldCommandEven;
+                                    readField.field = kSXCCDIOReadFieldCommandOdd;
                                     [self.transport submit:readField block:^(NSError* error){
                                         exposureCompleted(error,[expose postProcessPixels:readField.pixels]);
                                     }];
