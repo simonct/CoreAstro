@@ -79,7 +79,7 @@
 
 - (void)scriptingGuide:(NSScriptCommand*)command
 {
-    [command performDefaultImplementation]; // todo; CASScriptingGuideCommand
+    [command performDefaultImplementation];
 }
 
 @end

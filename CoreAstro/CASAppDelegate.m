@@ -123,53 +123,76 @@
     [self.windows removeObject:window];
 }
 
-// todo; most of this should probably be in the device manager
-- (void)processDevices:(NSArray*)devices
+- (CASGuiderController*)guiderControllerForDevice:(CASDevice*)device
 {
-    for (CASDevice* device in devices){
-        
-        CASCCDDevice* ccd = (CASCCDDevice*)device;
-        if ([ccd isKindOfClass:[CASCCDDevice class]]){ // todo; need a CASCCDDevice protocol and check for that instead of a class
-                        
-            [ccd connect:^(NSError* error) {
-                                
-                if (error){
-                    [NSApp presentError:error]; // todo: specific error message
-                }
-                else {
-                    
-                    if (![self.windows count]){
-                        CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
-                        cameraWindow.delegate = self;
-                        cameraWindow.shouldCascadeWindows = NO;
-                        [cameraWindow.window makeKeyAndOrderFront:nil];
-                        [self.windows addObject:cameraWindow];
-                    }
-                    CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
-                    if (cameraController){
-                        cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-                        cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
-                        [self willChangeValueForKey:@"cameraControllers"];
-                        [self.cameraControllers addObject:cameraController];
-                        [self didChangeValueForKey:@"cameraControllers"];
-                    }
-                    if ([self.windows count] == 1){
-                        CASCameraWindowController* cameraWindow = [self.windows lastObject];
-                        if (!cameraWindow.cameraController){
-                            cameraWindow.cameraController = cameraController;
-                        }
-                    }
-                }
-            }];
+    for (CASGuiderController* guiderController in self.guiderControllers){
+        if (guiderController.guider == device){
+            return guiderController;
         }
-        
-        id<CASGuider> guider = (id<CASGuider>)device;
-        if ([guider conformsToProtocol:@protocol(CASGuider)]){
+    }
+    return nil;
+}
+
+- (void)recogniseGuider:(CASDevice*)device
+{
+    id<CASGuider> guider = (id<CASGuider>)device;
+    if ([guider conformsToProtocol:@protocol(CASGuider)]){
+        if (![self guiderControllerForDevice:guider]){
             CASGuiderController* guiderController = [[CASGuiderController alloc] initWithGuider:guider];
             [self willChangeValueForKey:@"guiderControllers"];
             [self.guiderControllers addObject:guiderController];
             [self didChangeValueForKey:@"guiderControllers"];
         }
+    }
+}
+
+- (void)recogniseCCD:(CASDevice*)device
+{
+    CASCCDDevice* ccd = (CASCCDDevice*)device;
+    if ([ccd isKindOfClass:[CASCCDDevice class]]){ // todo; need a CASCCDDevice protocol and check for that instead of a class
+        
+        [ccd connect:^(NSError* error) {
+            
+            if (error){
+                [NSApp presentError:error]; // todo: specific error message
+            }
+            else {
+                
+                if (![self.windows count]){
+                    CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
+                    cameraWindow.delegate = self;
+                    cameraWindow.shouldCascadeWindows = NO;
+                    [cameraWindow.window makeKeyAndOrderFront:nil];
+                    [self.windows addObject:cameraWindow];
+                }
+                CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
+                if (cameraController){
+                    cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+                    cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
+                    [self willChangeValueForKey:@"cameraControllers"];
+                    [self.cameraControllers addObject:cameraController];
+                    [self didChangeValueForKey:@"cameraControllers"];
+                }
+                if ([self.windows count] == 1){
+                    CASCameraWindowController* cameraWindow = [self.windows lastObject];
+                    if (!cameraWindow.cameraController){
+                        cameraWindow.cameraController = cameraController;
+                    }
+                }
+            }
+
+            // re-check to see if it's now capable of being a guider
+            [self recogniseGuider:device];
+        }];
+    }
+}
+
+// todo; most of this should probably be in the device manager
+- (void)processDevices:(NSArray*)devices
+{
+    for (CASDevice* device in devices){
+        [self recogniseCCD:device];
+        [self recogniseGuider:device];
     }
 }
 
@@ -213,6 +236,12 @@
                             else {
                                 cameraWindow.cameraController = nil;
                             }
+                        }
+                        CASGuiderController* guiderController = [self guiderControllerForDevice:device];
+                        if (guiderController){
+                            [self willChangeValueForKey:@"guiderControllers"];
+                            [self.guiderControllers removeObject:guiderController];
+                            [self didChangeValueForKey:@"guiderControllers"];
                         }
                     }
                 }

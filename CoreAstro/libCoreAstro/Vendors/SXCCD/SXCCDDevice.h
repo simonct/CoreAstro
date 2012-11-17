@@ -32,7 +32,7 @@
 @interface SXCCDDevice : CASCCDDevice 
 
 @property (nonatomic,strong,readonly) SXCCDParams* params;
-@property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider;
+@property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider, isInterlaced;
 @property (nonatomic,assign) NSInteger productID;
 
 - (void)disconnect;

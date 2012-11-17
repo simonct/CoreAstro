@@ -47,8 +47,10 @@
 
 // flush the chip
 @interface SXCCDIOFlushCommand : CASIOCommand
+// todo; wipe/nowipe flag ?
 @end
 
+// read delayed; flushes, exposes using an internal timer and reads the pixels in one command
 @interface SXCCDIOExposeCommand : CASIOCommand
 @property (nonatomic,assign) NSInteger ms;
 @property (nonatomic,assign) CASExposeParams params;
@@ -57,15 +59,46 @@
 - (NSData*)postProcessPixels:(NSData*)pixels;
 @end
 
+// specific expose command for the M25C that knows how to unpack the dual output register format
 @interface SXCCDIOExposeCommandM25C : SXCCDIOExposeCommand
 @end
 
+// expose command for interlaced cameras that can de-interlace the two fields and apply an intensity correction
+@interface SXCCDIOExposeCommandInterlaced : SXCCDIOExposeCommand
+@property (nonatomic,strong) CASCCDExposure* biasExposure;
+@end
+
+// bulk read command
 @interface SXCCDIOReadCommand : CASIOCommand
 @property (nonatomic,assign) CASExposeParams params;
 @property (nonatomic,readonly) NSData* pixels;
 @end
 
+// reads odd, even or both fields from the ccd
+@interface SXCCDIOReadFieldCommand : SXCCDIOReadCommand
+enum {
+    kSXCCDIOReadFieldCommandOdd,
+    kSXCCDIOReadFieldCommandEven,
+    kSXCCDIOReadFieldCommandBoth
+};
+@property (nonatomic,assign) NSInteger field;
+@end
+
+// get/set the ccd temperature
 @interface SXCCDIOCoolerCommand : CASIOCommand
 @property (nonatomic,assign) BOOL on;
 @property (nonatomic,assign) float centigrade;
 @end
+
+// Star2K guide command
+@interface SXCCDIOGuideCommand : CASIOCommand
+enum {
+    kSXCCDIOGuideCommandNone = 0,
+    kSXCCDIOGuideCommandNorth = 2,
+    kSXCCDIOGuideCommandSouth = 4,
+    kSXCCDIOGuideCommandEast = 8,
+    kSXCCDIOGuideCommandWest = 1
+};
+@property (nonatomic,assign) uint8_t direction;
+@end
+

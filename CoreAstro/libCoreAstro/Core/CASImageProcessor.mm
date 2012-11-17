@@ -70,6 +70,13 @@
 
 - (BOOL)_prepareIntBuffer:(vImage_Buffer*)_int16Buffer floatBuffer:(vImage_Buffer*)_floatBuffer fromExposure:(CASCCDExposure*)exposure
 {
+    NSParameterAssert(_int16Buffer);
+    NSParameterAssert(_floatBuffer);
+    NSParameterAssert(exposure);
+    
+    bzero(_int16Buffer, sizeof(*_int16Buffer));
+    bzero(_floatBuffer, sizeof(*_floatBuffer));
+
     _int16Buffer->data = (void*)[exposure.pixels bytes];
     if (!_int16Buffer->data){
         NSLog(@"%@: no source pixels",NSStringFromSelector(_cmd));

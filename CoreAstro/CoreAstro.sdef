@@ -17,6 +17,10 @@
                 <cocoa key="cameraControllers"/>
             </element>
             
+            <element type="guider" access="r">
+                <cocoa key="guiderControllers"/>
+            </element>
+
             <element type="exposure" access="r">
                 <cocoa key="exposures"/>
             </element>
@@ -49,6 +53,28 @@
 
         </class> 
         
+        <class name="guider" plural="guiders" code="CASG" description="A guider object." inherits="item">
+            
+            <cocoa class="CASGuiderController"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the guider">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="name" code="Name" type="text" access="r" description="The name of the guider">
+                <cocoa key="scriptingDeviceName"/>
+            </property>
+            
+            <property name="vendor" code="Vend" type="text" access="r" description="The vendor of the guider">
+                <cocoa key="scriptingVendorName"/>
+            </property>
+            
+            <responds-to name="pulse">
+                <cocoa method="scriptingGuide:"/>
+            </responds-to>
+            
+        </class>
+
         <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item"> 
             
             <cocoa class="CASCCDExposure"/> 
@@ -113,6 +139,26 @@
             
         </command>
 
+        <command name="pulse" code="CASSGUID" description="Issue a guide command.">
+            
+            <cocoa class="CASGuideCommand"/>
+            
+            <direct-parameter description="The guider to pulse.">
+                <type type="guider" list="no"/>
+            </direct-parameter>
+            
+            <parameter name="direction" code="Gdir" optional="no" description="guide direction.">
+                <cocoa key="direction"/>
+                <type type="guide direction" list="no"/>
+            </parameter>
+            
+            <parameter name="milliseconds" code="Gms " optional="no" description="guide duration in ms">
+                <cocoa key="duration"/>
+                <type type="integer" list="no"/>
+            </parameter>
+
+        </command>
+
         <!-- Enumerations -->
         
         <enumeration name="exposure type" code="Dark">
@@ -120,6 +166,13 @@
             <enumerator name="dark" code="Dark" description="A dark frame."/>
             <enumerator name="bias" code="Bias" description="A bias frame."/>
             <enumerator name="flat" code="Flat" description="A flat frame."/>
+        </enumeration>
+
+        <enumeration name="guide direction" code="Gdir">
+            <enumerator name="RAPlus" code="RAP " description="RA+ direction"/>
+            <enumerator name="RAMinus" code="RAM " description="RA- direction"/>
+            <enumerator name="DecPlus" code="DecP" description="Dec+ direction"/>
+            <enumerator name="DecMinus" code="DecM" description="Dec- direction"/>
         </enumeration>
 
     </suite>

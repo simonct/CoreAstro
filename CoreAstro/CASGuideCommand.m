@@ -1,5 +1,5 @@
 //
-//  CASCaptureCommand.m
+//  CASGuideCommand.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -23,34 +23,45 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASCaptureCommand.h"
-#import "CASCameraController.h"
+#import "CASGuideCommand.h"
+#import "CASGuiderController.h"
 
-@interface CASCaptureCommand ()
+@interface CASGuideCommand ()
 @end
 
-@implementation CASCaptureCommand
+@implementation CASGuideCommand
 
 - (id)performDefaultImplementationImpl
 {
-    CASCameraController* controller = (CASCameraController*)[self evaluatedReceivers];
-    if ([controller isKindOfClass:[CASCameraController class]]){
+    CASGuiderController* controller = (CASGuiderController*)[self evaluatedReceivers];
+    if ([controller isKindOfClass:[CASGuiderController class]]){
+                                        
+        const NSInteger duration = [[[self evaluatedArguments] objectForKey:@"duration"] integerValue];
+        const OSType directionCode = (OSType)[[[self evaluatedArguments] objectForKey:@"direction"] integerValue];
+
+        CASGuiderDirection direction = kCASGuiderDirection_None;
+        switch (directionCode) {
+            case 'RAP ':
+                direction = kCASGuiderDirection_RAPlus;
+                break;
+            case 'RAM ':
+                direction = kCASGuiderDirection_RAMinus;
+                break;
+            case 'DecP':
+                direction = kCASGuiderDirection_DecPlus;
+                break;
+            case 'DecM':
+                direction = kCASGuiderDirection_DecMinus;
+                break;
+            default:
+                NSLog(@"*** Unrecognised guide direction code: %x",directionCode);
+                break;
+        }
         
-        [self suspendExecution];
-                                
-        id bin = [[self evaluatedArguments] objectForKey:@"bin"];
-        const NSInteger binningIndex = ([bin integerValue] > 0) ? [bin integerValue] - 1 : 0;
-        controller.binningIndex = MAX(0,MIN(3,binningIndex));
-        controller.exposure = [[[self evaluatedArguments] objectForKey:@"milliseconds"] integerValue];
-        controller.exposureUnits = 1;
-        
-        [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
+        [controller pulse:direction duration:duration block:^(NSError *error) {
             
             if (error){
                 [self setErrorCode:[error code] string:[error localizedDescription]];
-            }
-            else{
-                [self resumeExecutionWithResult:exposure];
             }
         }];
     }
