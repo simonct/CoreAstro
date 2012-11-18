@@ -43,6 +43,7 @@
 #import <CoreAstro/CASDeviceFactory.h>
 #import <CoreAstro/CASDeviceManager.h>
 #import <CoreAstro/CASImageProcessor.h>
+#import <CoreAstro/CASImageDebayer.h>
 #import <CoreAstro/CASIOCommand.h>
 #import <CoreAstro/CASIOTransport.h>
 #import <CoreAstro/CASIOUSBTransport.h>

@@ -83,6 +83,8 @@
 		F47B3A9016346EF3008C73A7 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
 		F4849C6B165900AF0069647F /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F4849C6A165900AF0069647F /* CoreAstro.m */; };
+		F4849C7216590C820069647F /* CASImageDebayer.h in Headers */ = {isa = PBXBuildFile; fileRef = F4849C7016590C820069647F /* CASImageDebayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4849C7316590C820069647F /* CASImageDebayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F4849C7116590C820069647F /* CASImageDebayer.mm */; };
 		F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00C160E46A800190D3E /* CASImageControlsView.m */; };
 		F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00F160E46F300190D3E /* CASExposuresController.m */; };
 		F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF012160E475B00190D3E /* CASExposureTableView.m */; };
@@ -400,6 +402,8 @@
 		F47B3A7A16346EDC008C73A7 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = "External/Sparkle 1.5b6/Extras/Source Code/Sparkle.xcodeproj"; sourceTree = "<group>"; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F4849C6A165900AF0069647F /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
+		F4849C7016590C820069647F /* CASImageDebayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageDebayer.h; sourceTree = "<group>"; };
+		F4849C7116590C820069647F /* CASImageDebayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageDebayer.mm; sourceTree = "<group>"; };
 		F48DF00B160E46A800190D3E /* CASImageControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageControlsView.h; sourceTree = "<group>"; };
 		F48DF00C160E46A800190D3E /* CASImageControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageControlsView.m; sourceTree = "<group>"; };
 		F48DF00E160E46F300190D3E /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresController.h; sourceTree = "<group>"; };
@@ -995,6 +999,8 @@
 				F49E537B15A9962F0018DC75 /* CASPluginManager.m */,
 				F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */,
 				F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */,
+				F4849C7016590C820069647F /* CASImageDebayer.h */,
+				F4849C7116590C820069647F /* CASImageDebayer.mm */,
 				F44EDF5A15FCC872003B1B4C /* CASScriptableObject.h */,
 				F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */,
 			);
@@ -1125,6 +1131,7 @@
 				F4EEF2B31604692600547009 /* IOHIDLib_.h in Headers */,
 				F48DF046160EF83000190D3E /* CASCameraController.h in Headers */,
 				F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */,
+				F4849C7216590C820069647F /* CASImageDebayer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1547,6 +1554,7 @@
 				F48DF047160EF83000190D3E /* CASCameraController.m in Sources */,
 				F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */,
 				F4849C6B165900AF0069647F /* CoreAstro.m in Sources */,
+				F4849C7316590C820069647F /* CASImageDebayer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

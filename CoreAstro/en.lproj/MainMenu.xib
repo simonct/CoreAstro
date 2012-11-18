@@ -1394,6 +1394,75 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">10002</int>
 								</object>
+								<object class="NSMenuItem" id="342194182">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Debayer</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<string key="NSAction">submenuAction:</string>
+									<object class="NSMenu" key="NSSubmenu" id="348855615">
+										<string key="NSTitle">Debayer</string>
+										<array class="NSMutableArray" key="NSMenuItems">
+											<object class="NSMenuItem" id="942698254">
+												<reference key="NSMenu" ref="348855615"/>
+												<string key="NSTitle">None</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">11000</int>
+											</object>
+											<object class="NSMenuItem" id="1011949151">
+												<reference key="NSMenu" ref="348855615"/>
+												<bool key="NSIsDisabled">YES</bool>
+												<bool key="NSIsSeparator">YES</bool>
+												<string key="NSTitle"/>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+											</object>
+											<object class="NSMenuItem" id="879938155">
+												<reference key="NSMenu" ref="348855615"/>
+												<string key="NSTitle">RGGB</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">11001</int>
+											</object>
+											<object class="NSMenuItem" id="994686235">
+												<reference key="NSMenu" ref="348855615"/>
+												<string key="NSTitle">GRBG</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">11002</int>
+											</object>
+											<object class="NSMenuItem" id="779501378">
+												<reference key="NSMenu" ref="348855615"/>
+												<string key="NSTitle">BGGR</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">11003</int>
+											</object>
+											<object class="NSMenuItem" id="206300802">
+												<reference key="NSMenu" ref="348855615"/>
+												<string key="NSTitle">GBRG</string>
+												<string key="NSKeyEquiv"/>
+												<int key="NSMnemonicLoc">2147483647</int>
+												<reference key="NSOnImage" ref="35465992"/>
+												<reference key="NSMixedImage" ref="502551668"/>
+												<int key="NSTag">11004</int>
+											</object>
+										</array>
+									</object>
+								</object>
 							</array>
 						</object>
 					</object>
@@ -2244,6 +2313,46 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">applyDebayer:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="942698254"/>
+					</object>
+					<int key="connectionID">620</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">applyDebayer:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="879938155"/>
+					</object>
+					<int key="connectionID">621</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">applyDebayer:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="994686235"/>
+					</object>
+					<int key="connectionID">622</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">applyDebayer:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="779501378"/>
+					</object>
+					<int key="connectionID">623</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">applyDebayer:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="206300802"/>
+					</object>
+					<int key="connectionID">624</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -2758,6 +2867,7 @@
 							<reference ref="690957426"/>
 							<reference ref="1049083101"/>
 							<reference ref="421000549"/>
+							<reference ref="342194182"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -3423,6 +3533,57 @@
 						<reference key="object" ref="421000549"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">611</int>
+						<reference key="object" ref="342194182"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="348855615"/>
+						</array>
+						<reference key="parent" ref="466310130"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">612</int>
+						<reference key="object" ref="348855615"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="879938155"/>
+							<reference ref="994686235"/>
+							<reference ref="779501378"/>
+							<reference ref="206300802"/>
+							<reference ref="942698254"/>
+							<reference ref="1011949151"/>
+						</array>
+						<reference key="parent" ref="342194182"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">613</int>
+						<reference key="object" ref="879938155"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">615</int>
+						<reference key="object" ref="994686235"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">616</int>
+						<reference key="object" ref="779501378"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">617</int>
+						<reference key="object" ref="206300802"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">618</int>
+						<reference key="object" ref="942698254"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">619</int>
+						<reference key="object" ref="1011949151"/>
+						<reference key="parent" ref="348855615"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -3587,6 +3748,14 @@
 				<string key="601.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="606.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="608.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="611.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="612.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="613.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="615.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="616.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="617.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="618.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="619.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3603,7 +3772,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">609</int>
+			<int key="maxID">624</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3618,6 +3787,7 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstResponder</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="applyDebayer:">id</string>
 						<string key="batchExportToFITS:">id</string>
 						<string key="checkForUpdates:">id</string>
 						<string key="exportToFITS:">id</string>
@@ -3628,6 +3798,10 @@
 						<string key="toggleShowReticle:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="applyDebayer:">
+							<string key="name">applyDebayer:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="batchExportToFITS:">
 							<string key="name">batchExportToFITS:</string>
 							<string key="candidateClassName">id</string>

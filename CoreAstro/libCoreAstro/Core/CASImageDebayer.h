@@ -1,5 +1,5 @@
 //
-//  CASCCDImage.h
+//  CASImageProcessor.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -23,21 +23,24 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASCCDParams.h"
+#import "CASCCDImage.h"
 
-@interface CASCCDImage : NSObject
+@protocol CASImageDebayer <NSObject>
 
-@property (nonatomic,assign) CASSize size;
-@property (nonatomic,readonly) CGImageRef CGImage;
-@property (nonatomic,strong,readonly) NSData* floatPixels;
+enum {
+    kCASImageDebayerNone = 0,
+    kCASImageDebayerRGGB,
+    kCASImageDebayerGRBG,
+    kCASImageDebayerBGGR,
+    kCASImageDebayerGBRG
+};
 
-- (void)reset;
-- (CGImageRef)createImageWithSize:(CASSize)size;
+@property (nonatomic,assign) NSInteger mode;
+- (CGImageRef)debayer:(CASCCDImage*)image;
+@end
 
-+ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size; // RGBA context
-+ (CGContextRef)createFloatBitmapContextWithSize:(CASSize)size; // floating point Gray
-+ (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel; // 16bps Gray
+@interface CASImageDebayer : NSObject<CASImageDebayer>
 
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size;
++ (id<CASImageDebayer>)imageDebayerWithIdentifier:(NSString*)ident;
 
 @end

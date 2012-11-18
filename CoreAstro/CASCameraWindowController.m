@@ -66,11 +66,13 @@
 @property (nonatomic,assign) BOOL subtractDark;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
+@property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
 @property (nonatomic,strong) CASHistogramView* histogramView;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
@@ -142,6 +144,7 @@
     [super windowDidLoad];
     
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
 
     // hide the image controls strip for now
     {
@@ -447,6 +450,19 @@
     }
 }
 
+- (NSInteger)debayerMode
+{
+    return self.imageDebayer.mode;
+}
+
+- (void)setDebayerMode:(NSInteger)debayerMode
+{
+    if (self.imageDebayer.mode != debayerMode){
+        self.imageDebayer.mode = debayerMode;
+        [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
 - (void)setSubtractDark:(BOOL)subtractDark
 {
     if (_subtractDark != subtractDark){
@@ -638,11 +654,17 @@
         return;
     }
     
+    CGImageRef CGImage = nil;
+    if (self.debayerMode == kCASImageDebayerNone){
+        CGImage = image.CGImage;
+    }
+    else {
+        CGImage = [self.imageDebayer debayer:image]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
+    }
+    
     const CASExposeParams params = exposure.params;
-
     const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
     
-    CGImageRef CGImage = image.CGImage;
     if (CGImage){
         
         const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
@@ -1110,6 +1132,27 @@
     self.equalise = !self.equalise;
 }
 
+- (IBAction)applyDebayer:(NSMenuItem*)sender
+{
+    switch (sender.tag) {
+        case 11000:
+            self.debayerMode = kCASImageDebayerNone;
+            break;
+        case 11001:
+            self.debayerMode = kCASImageDebayerRGGB;
+            break;
+        case 11002:
+            self.debayerMode = kCASImageDebayerGRBG;
+            break;
+        case 11003:
+            self.debayerMode = kCASImageDebayerBGGR;
+            break;
+        case 11004:
+            self.debayerMode = kCASImageDebayerGBRG;
+            break;
+    }
+}
+
 - (IBAction)sendFeedback:(id)sender
 {
     NSString* const feedback = @"feedback@coreastro.org";
@@ -1158,6 +1201,27 @@
                 item.title = NSLocalizedString(@"Show Reticle", @"Menu item title");
             }
             break;
+            
+        case 11000:
+            item.state = self.imageDebayer.mode == kCASImageDebayerNone;
+            break;
+
+        case 11001:
+            item.state = self.imageDebayer.mode == kCASImageDebayerRGGB;
+            break;
+            
+        case 11002:
+            item.state = self.imageDebayer.mode == kCASImageDebayerGRBG;
+            break;
+            
+        case 11003:
+            item.state = self.imageDebayer.mode == kCASImageDebayerBGGR;
+            break;
+            
+        case 11004:
+            item.state = self.imageDebayer.mode == kCASImageDebayerGBRG;
+            break;
+
     }
     return YES;
 }
