@@ -34,7 +34,9 @@
 
 // represents the raw pixels of an exposure, contains metadata describing the source camera and exposure settings. saves the data to a persistent store
 
-@property (nonatomic,strong) NSData* pixels;
+@property (nonatomic,strong) NSData* pixels; // original 16-bit unsigned int samples
+@property (nonatomic,strong) NSData* floatPixels; // float values rescaled to 0.0-1.0 for better compatibility with vImage, CoreImage, etc
+
 @property (nonatomic,readonly) BOOL hasPixels;
 @property (nonatomic,strong) NSDictionary* meta;
 @property (nonatomic,readonly) BOOL hasMeta;

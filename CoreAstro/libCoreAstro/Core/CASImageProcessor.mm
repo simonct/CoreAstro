@@ -25,10 +25,13 @@
 //  Basic image processing routines. With the exception of using GCD, completely
 //  unoptimised and just begging for some SSE/AVX/OpenCL/vDSP improvements
 
+#import "CoreAstro.h"
 #import "CASImageProcessor.h"
 #import "CASCCDExposure.h"
 #import <Accelerate/Accelerate.h>
 #import <algorithm>
+
+typedef float cas_pixel_t;
 
 @implementation CASImageProcessor
 
@@ -51,13 +54,8 @@
     if (expA.params.size.width != expB.params.size.width ||
         expA.params.size.height != expB.params.size.height ||
         expA.params.bin.width != expB.params.bin.width ||
-        expA.params.bin.height != expB.params.bin.height ||
-        expA.params.bps != expB.params.bps){
+        expA.params.bin.height != expB.params.bin.height){
         NSLog(@"%@: exposures don't match",NSStringFromSelector(_cmd));
-        return NO;
-    }
-    if (expA.params.bps != 16 || expB.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
         return NO;
     }
     return YES;
@@ -68,74 +66,31 @@
     return 4;
 }
 
-- (BOOL)_prepareIntBuffer:(vImage_Buffer*)_int16Buffer floatBuffer:(vImage_Buffer*)_floatBuffer fromExposure:(CASCCDExposure*)exposure
+- (vImage_Buffer)vImageBufferForExposure:(CASCCDExposure*)exposure
 {
-    NSParameterAssert(_int16Buffer);
-    NSParameterAssert(_floatBuffer);
-    NSParameterAssert(exposure);
-    
-    bzero(_int16Buffer, sizeof(*_int16Buffer));
-    bzero(_floatBuffer, sizeof(*_floatBuffer));
-
-    _int16Buffer->data = (void*)[exposure.pixels bytes];
-    if (!_int16Buffer->data){
-        NSLog(@"%@: no source pixels",NSStringFromSelector(_cmd));
-        return NO;
-    }
-    
-    const NSInteger width = exposure.params.size.width / exposure.params.bin.width;
-    const NSInteger height = exposure.params.size.height / exposure.params.bin.height;
-    
-    _int16Buffer->width = width;
-    _int16Buffer->height = height;
-    _int16Buffer->rowBytes = width * 2;
-    
-    _floatBuffer->data = malloc(width * height * sizeof(float));
-    if (!_floatBuffer->data){
-        NSLog(@"%@: no working pixels",NSStringFromSelector(_cmd));
-        return NO;
-    }
-    
-    _floatBuffer->width = width;
-    _floatBuffer->height = height;
-    _floatBuffer->rowBytes = width * sizeof(float);
-    if (_floatBuffer->data){
-        const vImage_Error error = vImageConvert_16UToF(_int16Buffer,_floatBuffer,0,1,kvImageNoFlags);
-        if (error != 0){
-            NSLog(@"Failed to convert image buffer: %ld",error);
-            free(_floatBuffer->data);
-            return NO;
-        }
-    }
-    
-    return YES;
+    const CASSize size = [exposure actualSize];
+    vImage_Buffer buffer = {
+        (void*)[exposure.floatPixels bytes],
+        size.height,
+        size.width,
+        size.width * sizeof(cas_pixel_t)
+    };
+    return buffer;
 }
 
 - (void)equalise:(CASCCDExposure*)exposure
 {
-    if (exposure.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
-        return;
-    }
+    const NSTimeInterval time = CASTimeBlock(^{
 
-    const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-
-    vImage_Buffer _int16Buffer;
-    vImage_Buffer _floatBuffer;
-
-    if ([self _prepareIntBuffer:&_int16Buffer floatBuffer:&_floatBuffer fromExposure:exposure]){
+        vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
         
-        vImage_Error error = vImageEqualization_PlanarF(&_floatBuffer,&_floatBuffer,NULL,65536,0,65535,kvImageNoFlags);
-        if (error == kvImageNoError){
-            error = vImageConvert_FTo16U(&_floatBuffer,&_int16Buffer,0,1,kvImageNoFlags);
+        vImage_Error error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,65536,0,1,kvImageNoFlags);
+        if (error != kvImageNoError){
+            NSLog(@"vImageEqualization_PlanarF: %ld",error);
         }
-    }
-        
-    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
-
-    if (_floatBuffer.data){
-        free(_floatBuffer.data);
-    }
+    });
+    
+    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
 }
 
 - (void)unsharpMask:(CASCCDExposure*)exposure
@@ -145,11 +100,6 @@
 
 - (void)medianFilter:(CASCCDExposure*)exposure
 {
-    if (exposure.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
-        return;
-    }
-    
     const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
     
     const CASSize size = [exposure actualSize];
@@ -157,14 +107,14 @@
     const NSInteger groupCount = [self standardGroupSize];
     const NSInteger rowsPerGroup = (size.height - 2) / groupCount;
 
-    NSData* outputData = [NSMutableData dataWithLength:[exposure.pixels length]];
-    uint16_t* outputPixels = (uint16_t*)[outputData bytes];
+    NSData* outputData = [NSMutableData dataWithLength:[exposure.floatPixels length]];
+    cas_pixel_t* outputPixels = (cas_pixel_t*)[outputData bytes];
     if (!outputPixels){
         NSLog(@"%@: no working pixels",NSStringFromSelector(_cmd));
         return;
     }
 
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+    cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
 
     dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
         
@@ -176,7 +126,7 @@
             for (NSInteger x = 1; x < size.width - 1; ++x){
                 
                 int i = 0;
-                uint16_t window[9];
+                cas_pixel_t window[9];
                 for (NSInteger y1 = y-1; y1 <= y+1; ++y1){
                     for (NSInteger x1 = x-1; x1 <= x+1; ++x1){
                         window[i++] = exposurePixels[x1 + y1 * size.width];
@@ -188,40 +138,36 @@
         }
     });
     
-    exposure.pixels = outputData;
+    exposure.floatPixels = outputData;
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
 }
 
 - (void)invert:(CASCCDExposure*)exposure
 {
-    if (exposure.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
-        return;
-    }
-    
-    const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-    
-    const CASSize size = [exposure actualSize];
-    
-    const NSInteger groupCount = [self standardGroupSize];
-    const NSInteger pixelCount = size.width * size.height;
-    const NSInteger pixelsPerGroup = pixelCount / groupCount;
-    
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+    const NSTimeInterval time = CASTimeBlock(^{
         
-    dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+        const CASSize size = [exposure actualSize];
         
-        // todo: AVX
-        const NSInteger offset = pixelsPerGroup * groupIndex;
-        const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
-        for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-            const uint16_t pixel = exposurePixels[i];
-            exposurePixels[i] = 65535 - pixel;
-        }
+        const NSInteger groupCount = [self standardGroupSize];
+        const NSInteger pixelCount = size.width * size.height;
+        const NSInteger pixelsPerGroup = pixelCount / groupCount;
+        
+        cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
+        
+        dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+            
+            // todo: AVX
+            const NSInteger offset = pixelsPerGroup * groupIndex;
+            const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
+            for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
+                const float pixel = exposurePixels[i];
+                exposurePixels[i] = 1.0 - pixel;
+            }
+        });
     });
     
-    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
+    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
 }
 
 // IC = (IR - IB)
@@ -240,8 +186,8 @@
     const NSInteger pixelCount = size.width * size.height;
     const NSInteger pixelsPerGroup = pixelCount / groupCount;
     
-    uint16_t* darkPixels = (uint16_t*)[dark.pixels bytes];
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+    cas_pixel_t* darkPixels = (cas_pixel_t*)[dark.floatPixels bytes];
+    cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
     
     __block NSInteger totalPixels = 0;
     
@@ -251,8 +197,8 @@
         const NSInteger offset = pixelsPerGroup * groupIndex;
         const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
         for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-            const uint16_t pixel = exposurePixels[i];
-            const uint16_t dark = darkPixels[i];
+            const cas_pixel_t pixel = exposurePixels[i];
+            const cas_pixel_t dark = darkPixels[i];
             exposurePixels[i] = pixel > dark ? pixel - dark : 0;
         }
         totalPixels += pixelsInThisGroup;
@@ -277,8 +223,8 @@
     const NSInteger pixelCount = size.width * size.height;
     const NSInteger pixelsPerGroup = pixelCount / groupCount;
     
-    uint16_t* flatPixels = (uint16_t*)[flat.pixels bytes];
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+    cas_pixel_t* flatPixels = (cas_pixel_t*)[flat.floatPixels bytes];
+    cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
 
     __block double* totalPixelValues = (double*)malloc(sizeof(double) * groupCount);
     bzero(totalPixelValues, sizeof(double) * groupCount);
@@ -348,7 +294,7 @@
 
     CASCCDExposure* result = [[CASCCDExposure alloc] init];
     
-    result.pixels = [NSMutableData dataWithLength:size.width * size.height * sizeof(uint16_t)];
+    result.floatPixels = [NSMutableData dataWithLength:size.width * size.height * sizeof(cas_pixel_t)];
     result.params = firstExposure.params;
     
     // check pixels allocated
@@ -357,9 +303,9 @@
     
     // grab the pixel pointers
     NSInteger index = 0;
-    uint16_t** pixels = (uint16_t**)malloc(sizeof(uint16_t*) * [exposures count]);
+    cas_pixel_t** pixels = (cas_pixel_t**)malloc(sizeof(cas_pixel_t*) * [exposures count]);
     for (CASCCDExposure* exposure in exposures){
-        pixels[index++] = (uint16_t*)[exposure.pixels bytes];
+        pixels[index++] = (cas_pixel_t*)[exposure.floatPixels bytes];
     }
     
     const NSInteger count = [exposures count];
@@ -367,7 +313,7 @@
     const NSInteger pixelCount = size.width * size.height;
     const NSInteger pixelsPerGroup = pixelCount / groupCount;
     
-    uint16_t* average = (uint16_t*)[result.pixels bytes];
+    cas_pixel_t* average = (cas_pixel_t*)[result.floatPixels bytes];
     
     dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
         
@@ -380,7 +326,7 @@
             for (NSInteger j = 0; j < index; ++j){
                 total += pixels[j][i];
             }
-            average[i] = (uint16_t)(total/count);
+            average[i] = (cas_pixel_t)(total/count);
         }
     });
     
@@ -393,35 +339,23 @@
 
 - (NSArray*)histogram:(CASCCDExposure*)exposure
 {
-    if (exposure.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
-        return nil;
-    }
-    
-    const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-    
-    vImage_Buffer _int16Buffer;
-    vImage_Buffer _floatBuffer;
+    __block NSMutableArray* result = nil;
 
-    NSMutableArray* result = nil;
-    
-    if ([self _prepareIntBuffer:&_int16Buffer floatBuffer:&_floatBuffer fromExposure:exposure]){
+    const NSTimeInterval time = CASTimeBlock(^{
+        
+        vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
         
         const NSInteger count = 256;
         vImagePixelCount histogram[count];
-        vImageHistogramCalculation_PlanarF(&_floatBuffer,histogram,count,0,65535,0);
+        vImageHistogramCalculation_PlanarF(&buffer,histogram,count,0,1,0);
         
         result = [NSMutableArray arrayWithCapacity:count];
         for (NSInteger i = 0; i < count; ++i){
             [result addObject:[NSNumber numberWithUnsignedLong:histogram[i]]];
         }
-    }
+    });
     
-    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
-    
-    if (_floatBuffer.data){
-        free(_floatBuffer.data);
-    }
+    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
     
     return [result copy];
 }

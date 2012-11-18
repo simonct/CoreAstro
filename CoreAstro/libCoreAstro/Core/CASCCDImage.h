@@ -28,14 +28,15 @@
 @interface CASCCDImage : NSObject
 
 @property (nonatomic,assign) CASSize size;
-@property (nonatomic,assign) NSInteger bitsPerPixel;
 @property (nonatomic,readonly) CGImageRef CGImage;
 
 - (void)reset;
 - (CGImageRef)createImageWithSize:(CASSize)size;
 
-+ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size;
-+ (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel;
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel;
++ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size; // RGBA context
++ (CGContextRef)createFloatBitmapContextWithSize:(CASSize)size; // floating point Gray
++ (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel; // 16bps Gray
+
++ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size;
 
 @end

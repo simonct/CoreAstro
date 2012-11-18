@@ -23,18 +23,19 @@
 //  IN THE SOFTWARE.
 //
 
+#import "CoreAstro.h"
 #import "CASCCDExposure.h"
 #import "CASCCDExposureIO.h"
+#import <Accelerate/Accelerate.h>
 
 @interface CASCCDExposure ()
 @end
 
-@implementation CASCCDExposure
-
-@synthesize io, persistentStoreURL;
-@synthesize pixels = _pixels, params = _params, meta = _meta, type = _type;
-
-// image factory
+@implementation CASCCDExposure {
+    NSData* _pixels;
+    NSData* _floatPixels;
+    NSDictionary* _meta;
+}
 
 - (NSDate*) date
 {
@@ -101,6 +102,30 @@
 {
     [self readFromPersistentStore:YES];
     return _pixels;
+}
+
+- (NSData*)floatPixels
+{
+    NSData* pixels = self.pixels;
+    if (pixels && !_floatPixels){
+        
+        const NSTimeInterval duration = CASTimeBlock(^{
+            
+            const NSInteger count = [pixels length] / sizeof(uint16_t);
+            float* fp = malloc(count * sizeof(float));
+            if (!fp){
+                NSLog(@"*** Out of memory converting to float pixels");
+            }
+            else{
+                vDSP_vfltu16((uint16_t*)[pixels bytes],1,fp,1,count);
+                const float max = 65535;
+                vDSP_vsdiv(fp,1,(float*)&max,fp,1,count);
+                _floatPixels = [NSData dataWithBytesNoCopy:fp length:(count * sizeof(float))];
+            }
+        });
+        NSLog(@"floatPixels: %fs",duration);
+    }
+    return _floatPixels;
 }
 
 - (BOOL)hasPixels
@@ -177,21 +202,18 @@
         return nil;
     }
 
-    return [CASCCDImage createImageWithPixels:self.pixels 
-                                         size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height) 
-                                 bitsPerPixel:self.params.bps];    
+    return [CASCCDImage createImageWithPixels:self.floatPixels
+                                         size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height)];
 }
 
 - (CASCCDImage*)createBlankImageWithSize:(CASSize)size
 {
-    return [CASCCDImage createImageWithPixels:nil
-                                         size:size
-                                 bitsPerPixel:self.params.bps];    
+    return [CASCCDImage createImageWithPixels:nil size:size];
 }
 
 - (void)reset
 {
-    self.pixels = nil;
+    self.floatPixels = nil;
 }
 
 - (void)deleteExposure

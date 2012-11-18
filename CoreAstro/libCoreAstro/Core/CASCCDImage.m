@@ -27,14 +27,12 @@
 #import <Accelerate/Accelerate.h>
 
 @interface CASCCDImage ()
-@property (nonatomic,strong) NSData* pixels;
+@property (nonatomic,strong) NSData* floatPixels;
 @end
 
 @implementation CASCCDImage {
     CGImageRef _CGImage;
 }
-
-@synthesize size, bitsPerPixel, pixels;
 
 - (void)dealloc
 {
@@ -45,23 +43,13 @@
 
 - (CGContextRef)_copyContext
 {
-    if (self.bitsPerPixel != 16){
-        NSLog(@"Unsupported bitsPerPixel of %ld",self.bitsPerPixel);
-        return nil;
-    }
-    
-    CGContextRef context = [[self class] createBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height) bitsPerPixel:self.bitsPerPixel];
+    CGContextRef context = [[self class] createFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
     if (context){
         
-        uint16_t* pixelData = (uint16_t*)[pixels bytes];
-        uint16_t* contextData = CGBitmapContextGetData(context);
+        float* pixelData = (float*)[_floatPixels bytes];
+        float* contextData = CGBitmapContextGetData(context);
         if (pixelData && contextData){
-            
-            const NSUInteger count = MIN([pixels length]/sizeof(uint16_t),CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context));
-            for (NSUInteger i = 0; i < count; ++i){
-                
-                *contextData++ = CFSwapInt16BigToHost(pixelData[i]);
-            }
+            memcpy(contextData, pixelData, [_floatPixels length]);
         }
     }
     
@@ -104,7 +92,7 @@
             result = image;
         }
         else {
-            CGContextRef thumbContext = ([[self class] createBitmapContextWithSize:imageSize bitsPerPixel:self.bitsPerPixel]);
+            CGContextRef thumbContext = ([[self class] createFloatBitmapContextWithSize:imageSize]);
             if (thumbContext){
                 CGContextDrawImage(thumbContext, CGRectMake(0, 0, imageSize.width, imageSize.height), image);
                 result = CGBitmapContextCreateImage(thumbContext);
@@ -118,6 +106,15 @@
 {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+    CFRelease(space);
+    
+    return context;
+}
+
++ (CGContextRef)createFloatBitmapContextWithSize:(CASSize)size
+{
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+    CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 32, size.width * sizeof(float), space, kCGImageAlphaNone|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
     CFRelease(space);
     
     return context;
@@ -137,12 +134,11 @@
     return context;
 }
 
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel;
++ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size
 {
     CASCCDImage* image = [[CASCCDImage alloc] init];
-    image.pixels = pixels ? pixels : [NSMutableData dataWithLength:size.width*size.height*bitsPerPixel/8];
+    image.floatPixels = pixels ? pixels : [NSMutableData dataWithLength:size.width*size.height*sizeof(float)];
     image.size = size;
-    image.bitsPerPixel = bitsPerPixel;
     return image;
 }
 
