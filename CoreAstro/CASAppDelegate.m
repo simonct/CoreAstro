@@ -138,7 +138,7 @@
     if (block){
         [self willChangeValueForKey:key];
         block();
-        [self willChangeValueForKey:key];
+        [self didChangeValueForKey:key];
     }
 }
 
