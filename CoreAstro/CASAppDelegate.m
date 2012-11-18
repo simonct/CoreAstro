@@ -133,13 +133,14 @@
     return nil;
 }
 
-- (void)updateKey:(NSString*)key withBlock:(void(^)(void))block
+- (NSMutableArray*)mutableCameraControllers
 {
-    if (block){
-        [self willChangeValueForKey:key];
-        block();
-        [self willChangeValueForKey:key];
-    }
+    return [self mutableArrayValueForKey:@"cameraControllers"];
+}
+
+- (NSMutableArray*)mutableGuiderControllers
+{
+    return [self mutableArrayValueForKey:@"guiderControllers"];
 }
 
 - (void)recogniseGuider:(CASDevice*)device
@@ -147,9 +148,7 @@
     id<CASGuider> guider = (id<CASGuider>)device;
     if ([guider conformsToProtocol:@protocol(CASGuider)]){
         if (![self guiderControllerForDevice:guider]){
-            [self updateKey:@"guiderControllers" withBlock:^{
-                [self.guiderControllers addObject:[[CASGuiderController alloc] initWithGuider:guider]];
-            }];
+            [self.mutableGuiderControllers addObject:[[CASGuiderController alloc] initWithGuider:guider]];
         }
     }
 }
@@ -177,9 +176,8 @@
                 if (cameraController){
                     cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
                     cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
-                    [self updateKey:@"cameraControllers" withBlock:^{
-                        [self.cameraControllers addObject:cameraController];
-                    }];
+                    [self.mutableCameraControllers addObject:cameraController];
+
                 }
                 if ([self.windows count] == 1){
                     CASCameraWindowController* cameraWindow = [self.windows lastObject];
@@ -234,9 +232,7 @@
                         CASCameraWindowController* cameraWindow = [self windowControllerForCamera:device];
                         if (cameraWindow){
                             [cameraWindow.cameraController disconnect];
-                            [self updateKey:@"cameraControllers" withBlock:^{
-                                [self.cameraControllers removeObject:cameraWindow.cameraController];
-                            }];
+                            [self.mutableCameraControllers removeObject:cameraWindow.cameraController];
                             if ([self.windows count] > 1){
                                 [cameraWindow close];
                                 [self.windows removeObject:cameraWindow];
@@ -247,9 +243,7 @@
                         }
                         CASGuiderController* guiderController = [self guiderControllerForDevice:device];
                         if (guiderController){
-                            [self updateKey:@"guiderControllers" withBlock:^{
-                                [self.guiderControllers removeObject:guiderController];
-                            }];
+                            [self.mutableGuiderControllers removeObject:guiderController];
                         }
                     }
                 }

@@ -33,6 +33,7 @@
 #import "CASProgressWindowController.h"
 #import "CASImageView.h"
 #import "CASShadowView.h"
+#import "CASMasterSelectionView.h"
 #import <CoreAstro/CoreAstro.h>
 
 #pragma IB Convenience Classes
@@ -59,7 +60,7 @@
 
 #pragma Camera Window
 
-@interface CASCameraWindowController ()
+@interface CASCameraWindowController ()<CASMasterSelectionViewDelegate>
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL divideFlat;
@@ -222,6 +223,10 @@
     
     // listen for guide notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(guideCommandNotification:) name:kCASCameraControllerGuideCommandNotification object:nil];
+    
+    // listen for master selection changes
+    self.devicesTableView.masterViewDelegate = (id)self;
+    self.devicesTableView.camerasContainer = [NSApp delegate];
 }
 
 - (void)hideWindow:sender
@@ -1073,6 +1078,7 @@
 - (IBAction)toggleDevices:(id)sender
 {
     if (!self.detailLeadingConstraint.constant){
+        [self.devicesTableView completeSetup];
         [self.detailLeadingConstraint.animator setConstant:self.devicesTableView.frame.size.width];
     }
     else {
@@ -1384,12 +1390,28 @@
     return [NSArray arrayWithObjects:@"DeviceView",@"ZoomInOut",@"ZoomFit",@"Selection",nil];   
 }
 
-#pragma mark - Notifications
+#pragma mark Notifications
 
 - (void)guideCommandNotification:(NSNotification*)notification
 {
     // check object is the current camera controller
     NSLog(@"guideCommandNotification: %@ %@",[notification object],[notification userInfo]);
+}
+
+#pragma mark Master selection changes
+
+- (void)cameraWasSelected:(id)cameraController
+{
+    // hide library
+    
+    self.cameraController = cameraController;
+}
+
+- (void)libraryWasSelected:(id)library
+{
+    self.cameraController = nil;
+    
+    // show library
 }
 
 @end

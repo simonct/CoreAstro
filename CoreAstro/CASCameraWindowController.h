@@ -29,6 +29,7 @@
 @class CASExposuresController;
 @class CASCameraWindowController;
 @class CASCameraController;
+@class CASMasterSelectionView;
 
 @protocol CASCameraWindowControllerDelegate <NSObject>
 @optional
@@ -60,6 +61,6 @@
 @property (nonatomic,strong) IBOutlet NSArrayController *guidersArrayController;
 @property (nonatomic,strong) IBOutlet NSArrayController *darksController;
 @property (nonatomic,strong) IBOutlet NSArrayController *flatsController;
-@property (nonatomic,weak) IBOutlet NSTableView *devicesTableView;
+@property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *exposuresMenu;
 @end
