@@ -109,6 +109,8 @@
 	<dict>
 		<key>name</key>
 		<string>Lodestar</string>
+		<key>image</key>
+		<string>lodestar</string>
 		<key>interlaced</key>
 		<true/>
 	</dict>

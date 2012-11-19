@@ -17,6 +17,7 @@
 		F412976115FCAB85009C215E /* opendevices.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412976015FCAB85009C215E /* opendevices.pdf */; };
 		F412976315FCAD16009C215E /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F412976215FCAD16009C215E /* moon.icns */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
+		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */; };
 		F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52DF15A971620018DC75 /* SenTestingKit.framework */; };
@@ -371,6 +372,7 @@
 		F412976415FCAE9B009C215E /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.md; sourceTree = SOURCE_ROOT; };
 		F4198F9B1635DDC7009164B0 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = "External/Sparkle 1.5b6/Extras/Signing Tools/dsa_pub.pem"; sourceTree = SOURCE_ROOT; };
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
+		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
 		F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
 		F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
 		F448EBB315E6B628002AB171 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
@@ -729,6 +731,7 @@
 				F4C4033B16419FF000218E0F /* H25.png */,
 				F457B68A15DD4E450035F015 /* H36.png */,
 				F457B68B15DD4E450035F015 /* H694.png */,
+				F445E58116597D5600965011 /* lodestar.png */,
 				F4125F1115D7A7D300E04052 /* superstar.png */,
 			);
 			name = Images;
@@ -1423,6 +1426,7 @@
 				F498A52E15FE7FE2006E8376 /* H694.png in Resources */,
 				F498A52F15FE7FE2006E8376 /* superstar.png in Resources */,
 				F4C4033C16419FF000218E0F /* H25.png in Resources */,
+				F445E58216597D5600965011 /* lodestar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
