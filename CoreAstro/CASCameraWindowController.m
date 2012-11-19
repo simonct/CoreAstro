@@ -67,6 +67,7 @@
 @property (nonatomic,assign) BOOL subtractDark;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
+@property (nonatomic,assign) BOOL scaleSubframe;
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
@@ -555,6 +556,17 @@
     // hide/show guider overlay interface
 }
 
+- (void)setScaleSubframe:(BOOL)scaleSubframe
+{
+    if (_scaleSubframe != scaleSubframe){
+        _scaleSubframe = scaleSubframe;
+        [self _resetAndRedisplayCurrentExposure];
+        if (_scaleSubframe){
+            self.imageView.currentToolMode = IKToolModeMove;
+        }
+    }
+}
+
 - (void)updateExposureIndicator
 {
     NSDate* start = self.cameraController.exposureStart;
@@ -588,12 +600,14 @@
 }
 
 - (void)disableAnimations:(void(^)(void))block {
+    const BOOL disableActions = [CATransaction disableActions];
     [CATransaction begin];
-    [CATransaction setValue:[NSNumber numberWithFloat:0] forKey:kCATransactionAnimationDuration];
+    [CATransaction setDisableActions:YES];
     if (block){
         block();
     }
     [CATransaction commit];
+    [CATransaction setDisableActions:disableActions];
 }
 
 - (void)displayExposure:(CASCCDExposure*)exposure
@@ -673,7 +687,7 @@
     if (CGImage){
         
         const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
-        if (!CGRectEqualToRect(subframe, frame)){
+        if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                         
             CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
             if (!bitmap){
@@ -1054,7 +1068,7 @@
 
 - (IBAction)selection:(NSSegmentedControl*)sender
 {
-    if (sender.selectedSegment == 0){
+    if (sender.selectedSegment == 0 && !self.scaleSubframe){
         self.imageView.currentToolMode = IKToolModeSelect;
     }
     else {
@@ -1159,6 +1173,11 @@
     }
 }
 
+- (IBAction)toggleScaleSubframe:(id)sender
+{
+    self.scaleSubframe = !self.scaleSubframe;
+}
+
 - (IBAction)sendFeedback:(id)sender
 {
     NSString* const feedback = @"feedback@coreastro.org";
@@ -1208,6 +1227,10 @@
             }
             break;
             
+        case 10010:
+            item.state = self.scaleSubframe;
+            break;
+
         case 11000:
             item.state = self.imageDebayer.mode == kCASImageDebayerNone;
             break;
