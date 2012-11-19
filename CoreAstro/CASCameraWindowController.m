@@ -1273,10 +1273,10 @@
 
 - (void) selectionRectChanged: (IKImageView *) imageView
 {
-    if (!self.cameraController.capturing){
+    CASCCDParams* params = self.cameraController.camera.params;
+    if (params && !self.cameraController.capturing){
         const CGRect rect = self.imageView.selectionRect;
-        CASCCDParams* params = self.cameraController.camera.params;
-        CGRect subframe = CGRectMake(rect.origin.x, params.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);;
+        CGRect subframe = CGRectMake(rect.origin.x, params.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
         subframe = CGRectIntersection(subframe, CGRectMake(0, 0, params.width, params.height));
         [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
         self.cameraController.subframe = subframe;
