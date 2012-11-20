@@ -27,7 +27,7 @@
 #import "CASIOCommand.h"
 #import "SXCCDDevice.h"
 
-@class SXCCDParams;
+@class SXCCDProperties;
 
 // reset the camera
 @interface SXCCDIOResetCommand : CASIOCommand
@@ -42,7 +42,7 @@
 
 // get ccd params
 @interface SXCCDIOGetParamsCommand : CASIOCommand
-@property (nonatomic,readonly) SXCCDParams* params;
+@property (nonatomic,readonly) SXCCDProperties* params;
 @end
 
 // flush the chip

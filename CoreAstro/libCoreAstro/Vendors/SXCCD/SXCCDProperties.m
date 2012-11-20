@@ -1,5 +1,5 @@
 //
-//  CASDevice.h
+//  SXCCDProperties.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,29 +22,17 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  This is the base class of all CoreAstro CCD devices. Make this a protocol ?
 
-#import "CASDevice.h"
-#import "CASCCDProperties.h"
+#import "SXCCDProperties.h"
 
-@class CASCCDExposure;
-
-@interface CASCCDDevice : CASDevice
-
-@property (nonatomic,strong,readonly) CASCCDProperties* sensor;
-@property (nonatomic,readonly) BOOL isColour, hasCooler;
-@property (nonatomic,assign) CGFloat temperature; // temp in °C
-@property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
-@property (nonatomic,readonly) NSInteger temperatureFrequency;
-@property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
-
-- (void)reset:(void (^)(NSError*))block;
-
-- (void)getParams:(void (^)(NSError*,CASCCDProperties* sensor))block;
-
-- (void)flush:(void (^)(NSError*))block;
-
-- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block; // pass in exposure type as a hint
-
+@implementation SXCCDProperties
+@synthesize horizFrontPorch;
+@synthesize horizBackPorch;
+@synthesize vertFrontPorch;
+@synthesize vertBackPorch;
+@synthesize colourMatrix;
+@synthesize serialPortCount;
+@synthesize capabilities;
+@synthesize vertClockDelay;
 @end
 

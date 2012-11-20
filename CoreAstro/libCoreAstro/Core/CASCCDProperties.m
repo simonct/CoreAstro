@@ -1,5 +1,5 @@
 //
-//  CASDevice.h
+//  CASCCDProperties.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,29 +22,45 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  This is the base class of all CoreAstro CCD devices. Make this a protocol ?
 
-#import "CASDevice.h"
 #import "CASCCDProperties.h"
+#import <objc/runtime.h>
 
-@class CASCCDExposure;
-
-@interface CASCCDDevice : CASDevice
-
-@property (nonatomic,strong,readonly) CASCCDProperties* sensor;
-@property (nonatomic,readonly) BOOL isColour, hasCooler;
-@property (nonatomic,assign) CGFloat temperature; // temp in °C
-@property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
-@property (nonatomic,readonly) NSInteger temperatureFrequency;
-@property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
-
-- (void)reset:(void (^)(NSError*))block;
-
-- (void)getParams:(void (^)(NSError*,CASCCDProperties* sensor))block;
-
-- (void)flush:(void (^)(NSError*))block;
-
-- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block; // pass in exposure type as a hint
-
+@implementation CASCCDProperties
+@synthesize width;
+@synthesize height;
+@synthesize pixelWidth;
+@synthesize pixelHeight;
+@synthesize bitsPerPixel;
 @end
 
+@implementation NSObject (CASCCDProperties)
+
+- (NSSet*)cas_properties {
+
+    NSMutableSet* propertyNames = [NSMutableSet setWithCapacity:10];
+    
+    Class klass = [self class];
+    while (klass && klass != [NSObject class]){
+        unsigned int count = 0;
+        objc_property_t * properties = class_copyPropertyList(klass,&count);
+        for (unsigned int i = 0; i < count; ++i){
+            const char* name = property_getName(properties[i]);
+            if (name){
+                [propertyNames addObject:[NSString stringWithUTF8String:name]];
+            }
+        }
+        if (properties){
+            free(properties);
+        }
+        klass = [klass superclass];
+    }
+    
+    return [propertyNames copy];
+}
+
+- (NSDictionary*)cas_propertyValues {
+    return [self dictionaryWithValuesForKeys:[[self cas_properties] allObjects]];
+}
+
+@end

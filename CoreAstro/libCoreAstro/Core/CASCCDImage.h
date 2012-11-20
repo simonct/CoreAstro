@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASCCDParams.h"
+#import "CASCCDProperties.h"
 
 @interface CASCCDImage : NSObject
 

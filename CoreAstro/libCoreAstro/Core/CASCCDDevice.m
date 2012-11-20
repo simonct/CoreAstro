@@ -30,7 +30,7 @@
 
 @implementation CASCCDDevice
 
-@synthesize temperature, targetTemperature, params, exposureTemperatures;
+@synthesize temperature, targetTemperature, sensor, exposureTemperatures;
 
 - (CASDeviceType)type {
     return kCASDeviceTypeCamera;   
@@ -42,7 +42,7 @@
     }
 }
 
-- (void)getParams:(void (^)(NSError*,CASCCDParams* params))block {
+- (void)getParams:(void (^)(NSError*,CASCCDProperties* params))block {
     if (block){
         block(nil,nil);
     }

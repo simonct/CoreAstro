@@ -417,9 +417,9 @@
             
             CASCCDDevice* camera = self.cameraController.camera;
 
-            [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.params.width,camera.params.height]];
-            [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.params.bitsPerPixel]];
-            [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.params.pixelWidth,camera.params.pixelHeight]];
+            [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
+            [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.sensor.bitsPerPixel]];
+            [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
         }
     }];
     
@@ -1296,11 +1296,11 @@
 
 - (void) selectionRectChanged: (IKImageView *) imageView
 {
-    CASCCDParams* params = self.cameraController.camera.params;
-    if (params && !self.cameraController.capturing){
+    CASCCDProperties* sensor = self.cameraController.camera.sensor;
+    if (sensor && !self.cameraController.capturing){
         const CGRect rect = self.imageView.selectionRect;
-        CGRect subframe = CGRectMake(rect.origin.x, params.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
-        subframe = CGRectIntersection(subframe, CGRectMake(0, 0, params.width, params.height));
+        CGRect subframe = CGRectMake(rect.origin.x, sensor.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
+        subframe = CGRectIntersection(subframe, CGRectMake(0, 0, sensor.width, sensor.height));
         [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
         self.cameraController.subframe = subframe;
     }

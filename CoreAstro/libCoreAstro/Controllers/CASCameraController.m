@@ -166,10 +166,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     const CGRect subframe = self.subframe;
     
     if (CGRectIsEmpty(subframe)){
-        exp = CASExposeParamsMake(self.camera.params.width, self.camera.params.height, 0, 0, self.camera.params.width, self.camera.params.height, xBin, yBin, self.camera.params.bitsPerPixel,exposureMS);
+        exp = CASExposeParamsMake(self.camera.sensor.width, self.camera.sensor.height, 0, 0, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
     }
     else {
-        exp = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.params.width, self.camera.params.height, xBin, yBin, self.camera.params.bitsPerPixel,exposureMS);
+        exp = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
     }
     
     self.exposureStart = [NSDate date];

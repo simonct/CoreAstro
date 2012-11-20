@@ -32,14 +32,14 @@
 
 @interface SXCCDDevice ()
 @property (nonatomic,assign) BOOL connected;
-@property (nonatomic,strong) SXCCDParams* params;
+@property (nonatomic,strong) SXCCDProperties* sensor;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
 - (void)fetchTemperature;
 @end
 
 @implementation SXCCDDevice
 
-@synthesize temperature, targetTemperature, params, productID, exposureTemperatures;
+@synthesize temperature, targetTemperature, sensor, productID, exposureTemperatures;
 
 #pragma mark - Properties
 
@@ -124,7 +124,7 @@
         }
         else {
             
-            [self getParams:^(NSError* error, SXCCDParams* params) {
+            [self getParams:^(NSError* error, SXCCDProperties* params) {
                 
                 if (error){
                     self.connected = NO;
@@ -134,15 +134,15 @@
                     NSDictionary* storedParams = [[self deviceParams] objectForKey:@"params"];
                     if (storedParams){
                         
-                        self.params.width = [[storedParams objectForKey:@"width"] integerValue];
-                        self.params.height = [[storedParams objectForKey:@"height"] integerValue];
-                        self.params.bitsPerPixel = [[storedParams objectForKey:@"bits-per-pixel"] integerValue];
-                        self.params.pixelWidth = [[storedParams objectForKey:@"pix-width"] floatValue];
-                        self.params.pixelHeight = [[storedParams objectForKey:@"pix-height"] floatValue];
-                        self.params.horizFrontPorch = [[storedParams objectForKey:@"h-front-porch"] integerValue];
-                        self.params.horizBackPorch = [[storedParams objectForKey:@"h-back-porch"] integerValue];
-                        self.params.vertFrontPorch = [[storedParams objectForKey:@"v-front-porch"] integerValue];
-                        self.params.vertBackPorch = [[storedParams objectForKey:@"v-back-porch"] integerValue];
+                        self.sensor.width = [[storedParams objectForKey:@"width"] integerValue];
+                        self.sensor.height = [[storedParams objectForKey:@"height"] integerValue];
+                        self.sensor.bitsPerPixel = [[storedParams objectForKey:@"bits-per-pixel"] integerValue];
+                        self.sensor.pixelWidth = [[storedParams objectForKey:@"pix-width"] floatValue];
+                        self.sensor.pixelHeight = [[storedParams objectForKey:@"pix-height"] floatValue];
+                        self.sensor.horizFrontPorch = [[storedParams objectForKey:@"h-front-porch"] integerValue];
+                        self.sensor.horizBackPorch = [[storedParams objectForKey:@"h-back-porch"] integerValue];
+                        self.sensor.vertFrontPorch = [[storedParams objectForKey:@"v-front-porch"] integerValue];
+                        self.sensor.vertBackPorch = [[storedParams objectForKey:@"v-back-porch"] integerValue];
                         // todo; and the rest
                     }
                     
@@ -162,19 +162,19 @@
 }
 
 - (BOOL)hasStar2KPort {
-    return (self.params.capabilities & (1 << 0)) != 0;
+    return (self.sensor.capabilities & (1 << 0)) != 0;
 }
 
 - (BOOL)hasCompressedPixels {
-    return (self.params.capabilities & (1 << 1)) != 0;   
+    return (self.sensor.capabilities & (1 << 1)) != 0;   
 }
 
 - (BOOL)hasEEPROM {
-    return (self.params.capabilities & (1 << 2)) != 0;
+    return (self.sensor.capabilities & (1 << 2)) != 0;
 }
 
 - (BOOL)hasIntegratedGuider {
-    return (self.params.capabilities & (1 << 3)) != 0;
+    return (self.sensor.capabilities & (1 << 3)) != 0;
 }
 
 - (BOOL)isInterlaced {
@@ -183,7 +183,7 @@
 }
 
 - (BOOL)isColour {
-    return self.params.colourMatrix != 0;   
+    return self.sensor.colourMatrix != 0;   
 }
 
 - (BOOL)hasCooler {
@@ -246,7 +246,7 @@
     }];    
 }
 
-- (void)getParams:(void (^)(NSError*,SXCCDParams* params))block {
+- (void)getParams:(void (^)(NSError*,SXCCDProperties* params))block {
     
     SXCCDIOGetParamsCommand* getParams = [[SXCCDIOGetParamsCommand alloc] init];
     
@@ -257,7 +257,7 @@
             getParams.params.pixelHeight = getParams.params.pixelHeight / 2;
         }
 
-        self.params = getParams.params;
+        self.sensor = getParams.params;
         
         if (block){
             block(error,getParams.params);

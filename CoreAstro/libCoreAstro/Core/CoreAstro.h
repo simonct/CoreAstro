@@ -37,7 +37,7 @@
 #import <CoreAstro/CASCCDExposureIO.h>
 #import <CoreAstro/CASCCDExposureLibrary.h>
 #import <CoreAstro/CASCCDImage.h>
-#import <CoreAstro/CASCCDParams.h>
+#import <CoreAstro/CASCCDProperties.h>
 #import <CoreAstro/CASDevice.h>
 #import <CoreAstro/CASDeviceBrowser.h>
 #import <CoreAstro/CASDeviceFactory.h>

@@ -283,7 +283,7 @@
     if (camera.uniqueID){
         [deviceMeta setObject:camera.uniqueID forKey:@"deviceID"];
     }
-    NSDictionary* cameraParams = [camera.params cas_propertyValues];
+    NSDictionary* cameraParams = [camera.sensor cas_propertyValues];
     if (cameraParams){
         [deviceMeta setObject:cameraParams forKey:@"params"];
     }

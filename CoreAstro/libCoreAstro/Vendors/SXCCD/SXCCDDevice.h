@@ -25,13 +25,13 @@
 
 #import "CASCCDDevice.h"
 #import "CASCCDExposure.h"
-#import "SXCCDParams.h"
+#import "SXCCDProperties.h"
 
 @class CASCCDExposure;
 
 @interface SXCCDDevice : CASCCDDevice 
 
-@property (nonatomic,strong,readonly) SXCCDParams* params;
+@property (nonatomic,strong,readonly) SXCCDProperties* sensor;
 @property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider, isInterlaced;
 @property (nonatomic,assign) NSInteger productID;
 
@@ -41,7 +41,7 @@
 
 - (void)echoData:(NSData*)data block:(void (^)(NSError*,NSData*data))block;
 
-- (void)getParams:(void (^)(NSError*,SXCCDParams* params))block;
+- (void)getParams:(void (^)(NSError*,SXCCDProperties* sensor))block;
 
 - (void)flush:(void (^)(NSError*))block;
 

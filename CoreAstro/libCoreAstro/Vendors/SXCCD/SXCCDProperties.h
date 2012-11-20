@@ -1,5 +1,5 @@
 //
-//  CASDevice.h
+//  SXCCDProperties.h
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -22,29 +22,16 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  This is the base class of all CoreAstro CCD devices. Make this a protocol ?
 
-#import "CASDevice.h"
 #import "CASCCDProperties.h"
 
-@class CASCCDExposure;
-
-@interface CASCCDDevice : CASDevice
-
-@property (nonatomic,strong,readonly) CASCCDProperties* sensor;
-@property (nonatomic,readonly) BOOL isColour, hasCooler;
-@property (nonatomic,assign) CGFloat temperature; // temp in °C
-@property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
-@property (nonatomic,readonly) NSInteger temperatureFrequency;
-@property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
-
-- (void)reset:(void (^)(NSError*))block;
-
-- (void)getParams:(void (^)(NSError*,CASCCDProperties* sensor))block;
-
-- (void)flush:(void (^)(NSError*))block;
-
-- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block; // pass in exposure type as a hint
-
+@interface SXCCDProperties : CASCCDProperties
+@property (nonatomic,assign) NSInteger horizFrontPorch;
+@property (nonatomic,assign) NSInteger horizBackPorch;
+@property (nonatomic,assign) NSInteger vertFrontPorch;
+@property (nonatomic,assign) NSInteger vertBackPorch;
+@property (nonatomic,assign) NSInteger colourMatrix;
+@property (nonatomic,assign) NSInteger serialPortCount;
+@property (nonatomic,assign) NSInteger capabilities;
+@property (nonatomic,assign) NSInteger vertClockDelay;
 @end
-

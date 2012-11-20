@@ -395,7 +395,7 @@ static void sxSetSTAR2000WriteData(BYTE star2k,UCHAR setup_data[8])
     struct t_sxccd_params params;
     sxGetCameraParamsReadData([data bytes],&params);
     
-    _params = [[SXCCDParams alloc] init];
+    _params = [[SXCCDProperties alloc] init];
     _params.horizFrontPorch = params.hfront_porch;
     _params.horizBackPorch = params.hback_porch;
     _params.width = params.width;

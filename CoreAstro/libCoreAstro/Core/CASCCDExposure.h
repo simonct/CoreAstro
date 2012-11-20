@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASCCDParams.h"
+#import "CASCCDProperties.h"
 #import "CASCCDImage.h"
 #import "CASCCDDevice.h"
 #import "CASScriptableObject.h"
