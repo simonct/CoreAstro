@@ -26,6 +26,7 @@
 #import "CoreAstro.h"
 #import "CASCCDExposure.h"
 #import "CASCCDExposureIO.h"
+#import "CASCCDDevice.h"
 #import <Accelerate/Accelerate.h>
 
 @interface CASCCDExposure ()

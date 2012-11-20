@@ -27,6 +27,7 @@
 #import "CASCCDExposureLibrary.h"
 #import "CASGuiderController.h"
 #import "CASAutoGuider.h"
+#import "CASCCDDevice.h"
 
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
 
@@ -174,7 +175,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     self.exposureStart = [NSDate date];
     
-    [self.camera exposeWithParams:exp block:^(NSError *error, CASCCDExposure *exposure) {
+    [self.camera exposeWithParams:exp type:kCASCCDExposureLightType block:^(NSError *error, CASCCDExposure *exposure) {
         
         if (error){
             endCapture(error,nil);

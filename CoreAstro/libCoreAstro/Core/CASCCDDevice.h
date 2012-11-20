@@ -26,8 +26,7 @@
 
 #import "CASDevice.h"
 #import "CASCCDProperties.h"
-
-@class CASCCDExposure;
+#import "CASCCDExposure.h"
 
 @interface CASCCDDevice : CASDevice
 
@@ -44,7 +43,7 @@
 
 - (void)flush:(void (^)(NSError*))block;
 
-- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block; // pass in exposure type as a hint
+- (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
 @end
 

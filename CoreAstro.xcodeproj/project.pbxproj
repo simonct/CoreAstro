@@ -127,7 +127,7 @@
 		F4A561C515EA5DE100130D4A /* CASHistogramView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A561C415EA5DE100130D4A /* CASHistogramView.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
-		F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */; };
+		F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */; };
 		F4C4033C16419FF000218E0F /* H25.png in Resources */ = {isa = PBXBuildFile; fileRef = F4C4033B16419FF000218E0F /* H25.png */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };

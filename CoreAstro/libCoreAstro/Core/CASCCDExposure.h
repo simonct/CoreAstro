@@ -25,10 +25,9 @@
 
 #import "CASCCDProperties.h"
 #import "CASCCDImage.h"
-#import "CASCCDDevice.h"
 #import "CASScriptableObject.h"
 
-@class CASCCDExposureIO;
+@class CASCCDDevice, CASCCDExposureIO;
 
 @interface CASCCDExposure : CASScriptableObject
 

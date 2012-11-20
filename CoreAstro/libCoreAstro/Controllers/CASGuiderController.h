@@ -25,6 +25,7 @@
 
 #import "CASScriptableObject.h"
 #import "CASAutoGuider.h"
+#import "CASDevice.h"
 
 @interface CASGuiderController : CASScriptableObject<CASGuider>
 

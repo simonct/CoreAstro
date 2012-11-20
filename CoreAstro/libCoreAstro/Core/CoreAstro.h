@@ -39,6 +39,7 @@
 #import <CoreAstro/CASCCDImage.h>
 #import <CoreAstro/CASCCDProperties.h>
 #import <CoreAstro/CASDevice.h>
+#import <CoreAstro/CASCCDDevice.h>
 #import <CoreAstro/CASDeviceBrowser.h>
 #import <CoreAstro/CASDeviceFactory.h>
 #import <CoreAstro/CASDeviceManager.h>
