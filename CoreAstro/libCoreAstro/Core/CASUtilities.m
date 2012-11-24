@@ -1,5 +1,5 @@
 //
-//  CoreAstro.h
+//  CASUtilities.m
 //  CoreAstro
 //
 //  Copyright (c) 2012, Simon Taylor
@@ -24,26 +24,15 @@
 //
 //  CoreAstro framework header file
 
-#import <CoreAstro/CASAutoGuider.h>
-#import <CoreAstro/CASCCDExposure.h>
-#import <CoreAstro/CASCCDExposureIO.h>
-#import <CoreAstro/CASCCDExposureLibrary.h>
-#import <CoreAstro/CASCCDImage.h>
-#import <CoreAstro/CASCCDProperties.h>
-#import <CoreAstro/CASDevice.h>
-#import <CoreAstro/CASCCDDevice.h>
-#import <CoreAstro/CASDeviceBrowser.h>
-#import <CoreAstro/CASDeviceFactory.h>
-#import <CoreAstro/CASDeviceManager.h>
-#import <CoreAstro/CASImageProcessor.h>
-#import <CoreAstro/CASImageDebayer.h>
-#import <CoreAstro/CASIOCommand.h>
-#import <CoreAstro/CASIOTransport.h>
-#import <CoreAstro/CASIOUSBTransport.h>
-#import <CoreAstro/CASPluginManager.h>
-#import <CoreAstro/CASScriptableObject.h>
-#import <CoreAstro/CASUSBDeviceBrowser.h>
-#import <CoreAstro/CASCameraController.h>
-#import <CoreAstro/CASGuiderController.h>
-#import <CoreAstro/CASUtilities.h>
+#import "CASUtilities.h"
 
+NSTimeInterval CASTimeBlock(void(^block)(void))
+{
+    NSTimeInterval result = 0;
+    if (block){
+        const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+        block();
+        result = [NSDate timeIntervalSinceReferenceDate] - start;
+    }
+    return result;
+}

@@ -28,6 +28,7 @@
 #import "CoreAstro.h"
 #import "CASImageProcessor.h"
 #import "CASCCDExposure.h"
+#import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 #import <algorithm>
 

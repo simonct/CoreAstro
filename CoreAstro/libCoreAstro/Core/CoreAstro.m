@@ -22,17 +22,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
-//  CoreAstro framework header file
+//  CoreAstro framework file
 
 #import "CoreAstro.h"
 
-NSTimeInterval CASTimeBlock(void(^block)(void))
-{
-    NSTimeInterval result = 0;
-    if (block){
-        const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-        block();
-        result = [NSDate timeIntervalSinceReferenceDate] - start;
-    }
-    return result;
-}

@@ -70,6 +70,8 @@
 		F44EDF6015FCC925003B1B4C /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */ = {isa = PBXBuildFile; fileRef = F44EDF6315FCD59C003B1B4C /* CoreAstro.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F44FD0B3166120AA0095D857 /* CASUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD0B4166120AA0095D857 /* CASUtilities.m */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
@@ -389,6 +391,8 @@
 		F44EDF5A15FCC872003B1B4C /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
 		F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
 		F44EDF6315FCD59C003B1B4C /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
+		F44FD0B3166120AA0095D857 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
+		F44FD0B4166120AA0095D857 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
 		F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
@@ -984,6 +988,8 @@
 			children = (
 				F44EDF6315FCD59C003B1B4C /* CoreAstro.h */,
 				F4849C6A165900AF0069647F /* CoreAstro.m */,
+				F44FD0B3166120AA0095D857 /* CASUtilities.h */,
+				F44FD0B4166120AA0095D857 /* CASUtilities.m */,
 				F49E536015A995570018DC75 /* CASDevice.h */,
 				F49E536115A995570018DC75 /* CASDevice.m */,
 				F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */,
@@ -1145,6 +1151,7 @@
 				F48DF046160EF83000190D3E /* CASCameraController.h in Headers */,
 				F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */,
 				F4849C7216590C820069647F /* CASImageDebayer.h in Headers */,
+				F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1569,6 +1576,7 @@
 				F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */,
 				F4849C6B165900AF0069647F /* CoreAstro.m in Sources */,
 				F4849C7316590C820069647F /* CASImageDebayer.mm in Sources */,
+				F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
