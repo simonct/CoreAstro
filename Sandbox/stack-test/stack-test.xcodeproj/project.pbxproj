@@ -33,7 +33,6 @@
 		F437F04D165D730000E1AE96 /* CASNetworkServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFED165D730000E1AE96 /* CASNetworkServer.m */; };
 		F437F04E165D730000E1AE96 /* CASPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFEF165D730000E1AE96 /* CASPluginManager.m */; };
 		F437F04F165D730000E1AE96 /* CASScriptableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF1165D730000E1AE96 /* CASScriptableObject.m */; };
-		F437F050165D730000E1AE96 /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF3165D730000E1AE96 /* CoreAstro.m */; };
 		F437F051165D730000E1AE96 /* CASHIDDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF7165D730000E1AE96 /* CASHIDDeviceBrowser.m */; };
 		F437F052165D730000E1AE96 /* CASIOHIDTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF9165D730000E1AE96 /* CASIOHIDTransport.m */; };
 		F437F053165D730000E1AE96 /* HID_cookie_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437EFFB165D730000E1AE96 /* HID_cookie_strings.plist */; };
@@ -73,6 +72,9 @@
 		F437F084165D779C00E1AE96 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F437F083165D779C00E1AE96 /* Quartz.framework */; };
 		F437F08A165D78C800E1AE96 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F089165D78C700E1AE96 /* CASImageView.m */; };
 		F44FD09B16611C1A0095D857 /* CASExposuresView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD09916611C1A0095D857 /* CASExposuresView.m */; };
+		F44FD0C5166144E50095D857 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD0C4166144E50095D857 /* CASUtilities.m */; };
+		F44FD12216614AD70095D857 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F44FD11F16614ABC0095D857 /* libcfitsio.dylib */; };
+		F44FD12416614AF10095D857 /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44FD11F16614ABC0095D857 /* libcfitsio.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,7 +92,34 @@
 			remoteGlobalIDString = 97F808C710347C9A00D58924;
 			remoteInfo = "dynamic library";
 		};
+		F44FD11E16614ABC0095D857 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F44FD11716614ABC0095D857 /* cfitsio.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4D967ED161894A100465163;
+			remoteInfo = cfitsio;
+		};
+		F44FD12016614ACA0095D857 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F44FD11716614ABC0095D857 /* cfitsio.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F4D967EC161894A100465163;
+			remoteInfo = cfitsio;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F44FD12316614AE60095D857 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				F44FD12416614AF10095D857 /* libcfitsio.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F4369D7D165EC5E9007633AC /* CASImageStacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageStacker.h; sourceTree = "<group>"; };
@@ -149,7 +178,6 @@
 		F437EFF0165D730000E1AE96 /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
 		F437EFF1165D730000E1AE96 /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
 		F437EFF2165D730000E1AE96 /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
-		F437EFF3165D730000E1AE96 /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
 		F437EFF6165D730000E1AE96 /* CASHIDDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHIDDeviceBrowser.h; sourceTree = "<group>"; };
 		F437EFF7165D730000E1AE96 /* CASHIDDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHIDDeviceBrowser.m; sourceTree = "<group>"; };
 		F437EFF8165D730000E1AE96 /* CASIOHIDTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOHIDTransport.h; sourceTree = "<group>"; };
@@ -213,6 +241,9 @@
 		F437F089165D78C700E1AE96 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
 		F44FD09916611C1A0095D857 /* CASExposuresView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposuresView.m; sourceTree = "<group>"; };
 		F44FD09A16611C1A0095D857 /* CASExposuresView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresView.h; sourceTree = "<group>"; };
+		F44FD0C3166144E50095D857 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
+		F44FD0C4166144E50095D857 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
+		F44FD11716614ABC0095D857 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = ../../External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +251,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44FD12216614AD70095D857 /* libcfitsio.dylib in Frameworks */,
 				F437F084165D779C00E1AE96 /* Quartz.framework in Frameworks */,
 				F437F081165D748B00E1AE96 /* Accelerate.framework in Frameworks */,
 				F437F07F165D748700E1AE96 /* IOKit.framework in Frameworks */,
@@ -233,6 +265,7 @@
 		F437EF9F165D72AD00E1AE96 = {
 			isa = PBXGroup;
 			children = (
+				F44FD11716614ABC0095D857 /* cfitsio.xcodeproj */,
 				F437EFB1165D72AD00E1AE96 /* stack-test */,
 				F437EFAA165D72AD00E1AE96 /* Frameworks */,
 				F437EFA9165D72AD00E1AE96 /* Products */,
@@ -362,7 +395,8 @@
 				F437EFF0165D730000E1AE96 /* CASScriptableObject.h */,
 				F437EFF1165D730000E1AE96 /* CASScriptableObject.m */,
 				F437EFF2165D730000E1AE96 /* CoreAstro.h */,
-				F437EFF3165D730000E1AE96 /* CoreAstro.m */,
+				F44FD0C3166144E50095D857 /* CASUtilities.h */,
+				F44FD0C4166144E50095D857 /* CASUtilities.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -502,6 +536,14 @@
 			path = SXCCD;
 			sourceTree = "<group>";
 		};
+		F44FD11816614ABC0095D857 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F44FD11F16614ABC0095D857 /* libcfitsio.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -512,10 +554,12 @@
 				F437EFA4165D72AD00E1AE96 /* Sources */,
 				F437EFA5165D72AD00E1AE96 /* Frameworks */,
 				F437EFA6165D72AD00E1AE96 /* Resources */,
+				F44FD12316614AE60095D857 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F44FD12116614ACA0095D857 /* PBXTargetDependency */,
 			);
 			name = "stack-test";
 			productName = "stack-test";
@@ -544,6 +588,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F44FD11816614ABC0095D857 /* Products */;
+					ProjectRef = F44FD11716614ABC0095D857 /* cfitsio.xcodeproj */;
+				},
+				{
 					ProductGroup = F437F004165D730000E1AE96 /* Products */;
 					ProjectRef = F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */;
 				},
@@ -568,6 +616,13 @@
 			fileType = "compiled.mach-o.dylib";
 			path = libHID_Utilities.dylib;
 			remoteRef = F437F07A165D730100E1AE96 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F44FD11F16614ABC0095D857 /* libcfitsio.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcfitsio.dylib;
+			remoteRef = F44FD11E16614ABC0095D857 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -621,7 +676,6 @@
 				F437F04D165D730000E1AE96 /* CASNetworkServer.m in Sources */,
 				F437F04E165D730000E1AE96 /* CASPluginManager.m in Sources */,
 				F437F04F165D730000E1AE96 /* CASScriptableObject.m in Sources */,
-				F437F050165D730000E1AE96 /* CoreAstro.m in Sources */,
 				F437F051165D730000E1AE96 /* CASHIDDeviceBrowser.m in Sources */,
 				F437F052165D730000E1AE96 /* CASIOHIDTransport.m in Sources */,
 				F437F057165D730000E1AE96 /* HID_Config_Utilities.c in Sources */,
@@ -649,10 +703,19 @@
 				F4369D7F165EC5E9007633AC /* CASImageStacker.m in Sources */,
 				F4369D8616602BEE007633AC /* CASStackingView.m in Sources */,
 				F44FD09B16611C1A0095D857 /* CASExposuresView.m in Sources */,
+				F44FD0C5166144E50095D857 /* CASUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F44FD12116614ACA0095D857 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cfitsio;
+			targetProxy = F44FD12016614ACA0095D857 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		F437EFB4165D72AD00E1AE96 /* InfoPlist.strings */ = {
@@ -782,6 +845,7 @@
 				INFOPLIST_FILE = "stack-test/stack-test-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -795,6 +859,7 @@
 				INFOPLIST_FILE = "stack-test/stack-test-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

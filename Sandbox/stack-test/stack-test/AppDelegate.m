@@ -47,4 +47,31 @@
     }];
 }
 
+- (void)saveDocument:(id)sender
+{
+    if (!self.imageView.currentExposure){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.allowedFileTypes = @[@"fits",@"fit"];
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[save.URL path]];
+            if (!io){
+                NSLog(@"*** Failed to create FITS exporter");
+            }
+            else {
+                NSError* error = nil;
+                [io writeExposure:self.imageView.currentExposure writePixels:YES error:&error];
+                if (error){
+                    [NSApp presentError:error];
+                }
+            }
+        }
+    }];
+}
+
 @end
