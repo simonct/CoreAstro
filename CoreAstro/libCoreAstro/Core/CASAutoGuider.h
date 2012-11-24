@@ -56,6 +56,8 @@ typedef enum {
 @property (nonatomic,assign,readonly) CGPoint lockLocation; // start guide point
 @property (nonatomic,assign,readonly) CGFloat searchRadius;
 
+- (NSPoint)locateStar:(CASCCDExposure*)exposure inArea:(CGRect)area;
+
 - (NSArray*)locateStars:(CASCCDExposure*)exposure; // returns an array of NSValue boxed NSPoint/CGPoints in image co-ords
 
 - (void)resetStarLocation:(CGPoint)star;

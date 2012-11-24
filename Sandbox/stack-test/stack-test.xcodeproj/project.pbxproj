@@ -1,0 +1,826 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F4369D7F165EC5E9007633AC /* CASImageStacker.m in Sources */ = {isa = PBXBuildFile; fileRef = F4369D7E165EC5E9007633AC /* CASImageStacker.m */; };
+		F4369D8616602BEE007633AC /* CASStackingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4369D8516602BEE007633AC /* CASStackingView.m */; };
+		F437EFAC165D72AD00E1AE96 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F437EFAB165D72AD00E1AE96 /* Cocoa.framework */; };
+		F437EFB6165D72AD00E1AE96 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F437EFB4165D72AD00E1AE96 /* InfoPlist.strings */; };
+		F437EFB8165D72AD00E1AE96 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFB7165D72AD00E1AE96 /* main.m */; };
+		F437EFBC165D72AD00E1AE96 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F437EFBA165D72AD00E1AE96 /* Credits.rtf */; };
+		F437EFBF165D72AD00E1AE96 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFBE165D72AD00E1AE96 /* AppDelegate.m */; };
+		F437EFC2165D72AD00E1AE96 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F437EFC0165D72AD00E1AE96 /* MainMenu.xib */; };
+		F437F03E165D730000E1AE96 /* CASCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFCC165D730000E1AE96 /* CASCameraController.m */; };
+		F437F03F165D730000E1AE96 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFCE165D730000E1AE96 /* CASGuiderController.m */; };
+		F437F040165D730000E1AE96 /* CASAutoGuider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F437EFD1165D730000E1AE96 /* CASAutoGuider.mm */; };
+		F437F041165D730000E1AE96 /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFD3165D730000E1AE96 /* CASCCDDevice.m */; };
+		F437F042165D730000E1AE96 /* CASCCDExposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFD5165D730000E1AE96 /* CASCCDExposure.m */; };
+		F437F043165D730000E1AE96 /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFD7165D730000E1AE96 /* CASCCDExposureIO.m */; };
+		F437F044165D730000E1AE96 /* CASCCDExposureLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFD9165D730000E1AE96 /* CASCCDExposureLibrary.m */; };
+		F437F045165D730000E1AE96 /* CASCCDImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFDB165D730000E1AE96 /* CASCCDImage.m */; };
+		F437F046165D730000E1AE96 /* CASCCDProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFDD165D730000E1AE96 /* CASCCDProperties.m */; };
+		F437F047165D730000E1AE96 /* CASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFDF165D730000E1AE96 /* CASDevice.m */; };
+		F437F048165D730000E1AE96 /* CASDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFE3165D730000E1AE96 /* CASDeviceManager.m */; };
+		F437F049165D730000E1AE96 /* CASImageDebayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F437EFE5165D730000E1AE96 /* CASImageDebayer.mm */; };
+		F437F04A165D730000E1AE96 /* CASImageProcessor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F437EFE7165D730000E1AE96 /* CASImageProcessor.mm */; };
+		F437F04B165D730000E1AE96 /* CASIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFE9165D730000E1AE96 /* CASIOCommand.m */; };
+		F437F04C165D730000E1AE96 /* CASIOTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFEB165D730000E1AE96 /* CASIOTransport.m */; };
+		F437F04D165D730000E1AE96 /* CASNetworkServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFED165D730000E1AE96 /* CASNetworkServer.m */; };
+		F437F04E165D730000E1AE96 /* CASPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFEF165D730000E1AE96 /* CASPluginManager.m */; };
+		F437F04F165D730000E1AE96 /* CASScriptableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF1165D730000E1AE96 /* CASScriptableObject.m */; };
+		F437F050165D730000E1AE96 /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF3165D730000E1AE96 /* CoreAstro.m */; };
+		F437F051165D730000E1AE96 /* CASHIDDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF7165D730000E1AE96 /* CASHIDDeviceBrowser.m */; };
+		F437F052165D730000E1AE96 /* CASIOHIDTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F437EFF9165D730000E1AE96 /* CASIOHIDTransport.m */; };
+		F437F053165D730000E1AE96 /* HID_cookie_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437EFFB165D730000E1AE96 /* HID_cookie_strings.plist */; };
+		F437F054165D730000E1AE96 /* HID_device_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437EFFD165D730000E1AE96 /* HID_device_usage_strings.plist */; };
+		F437F055165D730000E1AE96 /* HID_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437EFFF165D730000E1AE96 /* HID_usage_strings.plist */; };
+		F437F056165D730000E1AE96 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F437F001165D730000E1AE96 /* InfoPlist.strings */; };
+		F437F057165D730000E1AE96 /* HID_Config_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F007165D730000E1AE96 /* HID_Config_Utilities.c */; };
+		F437F058165D730000E1AE96 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F008165D730000E1AE96 /* HID_Error_Handler.c */; };
+		F437F059165D730000E1AE96 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F009165D730000E1AE96 /* HID_Name_Lookup.c */; };
+		F437F05A165D730000E1AE96 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F00A165D730000E1AE96 /* HID_Queue_Utilities.c */; };
+		F437F05B165D730000E1AE96 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F00B165D730000E1AE96 /* HID_Utilities.c */; };
+		F437F05C165D730000E1AE96 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437F00D165D730000E1AE96 /* Info.plist */; };
+		F437F05D165D730000E1AE96 /* ImmrHIDUtilAddOn.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F00F165D730000E1AE96 /* ImmrHIDUtilAddOn.c */; };
+		F437F05E165D730000E1AE96 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F011165D730000E1AE96 /* IOHIDDevice_.c */; };
+		F437F05F165D730000E1AE96 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = F437F013165D730000E1AE96 /* IOHIDElement_.c */; };
+		F437F060165D730000E1AE96 /* CASIOUSBTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F018165D730000E1AE96 /* CASIOUSBTransport.m */; };
+		F437F061165D730000E1AE96 /* CASUSBDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F01A165D730000E1AE96 /* CASUSBDeviceBrowser.m */; };
+		F437F062165D730000E1AE96 /* BusProbeClass.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F01D165D730000E1AE96 /* BusProbeClass.m */; };
+		F437F063165D730000E1AE96 /* BusProbeDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F01F165D730000E1AE96 /* BusProbeDevice.m */; };
+		F437F064165D730000E1AE96 /* BusProberSharedFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F021165D730000E1AE96 /* BusProberSharedFunctions.m */; };
+		F437F065165D730000E1AE96 /* DecodeDeviceDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F023165D730000E1AE96 /* DecodeDeviceDescriptor.m */; };
+		F437F066165D730000E1AE96 /* CASSHDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F027165D730000E1AE96 /* CASSHDeviceFactory.m */; };
+		F437F067165D730000E1AE96 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F029165D730000E1AE96 /* CASSHGPUSBDevice.m */; };
+		F437F068165D730000E1AE96 /* H25.png in Resources */ = {isa = PBXBuildFile; fileRef = F437F02B165D730000E1AE96 /* H25.png */; };
+		F437F069165D730000E1AE96 /* H36.png in Resources */ = {isa = PBXBuildFile; fileRef = F437F02C165D730000E1AE96 /* H36.png */; };
+		F437F06A165D730000E1AE96 /* H694.png in Resources */ = {isa = PBXBuildFile; fileRef = F437F02D165D730000E1AE96 /* H694.png */; };
+		F437F06B165D730000E1AE96 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F437F02E165D730000E1AE96 /* lodestar.png */; };
+		F437F06C165D730000E1AE96 /* superstar.png in Resources */ = {isa = PBXBuildFile; fileRef = F437F02F165D730000E1AE96 /* superstar.png */; };
+		F437F06D165D730000E1AE96 /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F031165D730000E1AE96 /* SXCCDDevice.m */; };
+		F437F06E165D730000E1AE96 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F033165D730000E1AE96 /* SXCCDDeviceFactory.m */; };
+		F437F070165D730000E1AE96 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F036165D730000E1AE96 /* SXCCDIOCommand.m */; };
+		F437F071165D730000E1AE96 /* SXCCDProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F038165D730000E1AE96 /* SXCCDProperties.m */; };
+		F437F072165D730000E1AE96 /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F437F039165D730000E1AE96 /* SXDevices.plist */; };
+		F437F073165D730000E1AE96 /* SXFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F03B165D730000E1AE96 /* SXFWDevice.m */; };
+		F437F07F165D748700E1AE96 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F437F07E165D748700E1AE96 /* IOKit.framework */; };
+		F437F081165D748B00E1AE96 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F437F080165D748B00E1AE96 /* Accelerate.framework */; };
+		F437F084165D779C00E1AE96 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F437F083165D779C00E1AE96 /* Quartz.framework */; };
+		F437F08A165D78C800E1AE96 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F089165D78C700E1AE96 /* CASImageView.m */; };
+		F44FD09B16611C1A0095D857 /* CASExposuresView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD09916611C1A0095D857 /* CASExposuresView.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F437F078165D730100E1AE96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D07F2C80486CC7A007CD1D0;
+			remoteInfo = Framework;
+		};
+		F437F07A165D730100E1AE96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 97F808C710347C9A00D58924;
+			remoteInfo = "dynamic library";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F4369D7D165EC5E9007633AC /* CASImageStacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageStacker.h; sourceTree = "<group>"; };
+		F4369D7E165EC5E9007633AC /* CASImageStacker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageStacker.m; sourceTree = "<group>"; };
+		F4369D8416602BEE007633AC /* CASStackingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASStackingView.h; sourceTree = "<group>"; };
+		F4369D8516602BEE007633AC /* CASStackingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASStackingView.m; sourceTree = "<group>"; };
+		F437EFA8165D72AD00E1AE96 /* stack-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "stack-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F437EFAB165D72AD00E1AE96 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F437EFAE165D72AD00E1AE96 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F437EFAF165D72AD00E1AE96 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F437EFB0165D72AD00E1AE96 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F437EFB3165D72AD00E1AE96 /* stack-test-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "stack-test-Info.plist"; sourceTree = "<group>"; };
+		F437EFB5165D72AD00E1AE96 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F437EFB7165D72AD00E1AE96 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F437EFB9165D72AD00E1AE96 /* stack-test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "stack-test-Prefix.pch"; sourceTree = "<group>"; };
+		F437EFBB165D72AD00E1AE96 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F437EFBD165D72AD00E1AE96 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F437EFBE165D72AD00E1AE96 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F437EFC1165D72AD00E1AE96 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F437EFCB165D730000E1AE96 /* CASCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraController.h; sourceTree = "<group>"; };
+		F437EFCC165D730000E1AE96 /* CASCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraController.m; sourceTree = "<group>"; };
+		F437EFCD165D730000E1AE96 /* CASGuiderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderController.h; sourceTree = "<group>"; };
+		F437EFCE165D730000E1AE96 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
+		F437EFD0165D730000E1AE96 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
+		F437EFD1165D730000E1AE96 /* CASAutoGuider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASAutoGuider.mm; sourceTree = "<group>"; };
+		F437EFD2165D730000E1AE96 /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
+		F437EFD3165D730000E1AE96 /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
+		F437EFD4165D730000E1AE96 /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
+		F437EFD5165D730000E1AE96 /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
+		F437EFD6165D730000E1AE96 /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureIO.h; sourceTree = "<group>"; };
+		F437EFD7165D730000E1AE96 /* CASCCDExposureIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureIO.m; sourceTree = "<group>"; };
+		F437EFD8165D730000E1AE96 /* CASCCDExposureLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureLibrary.h; sourceTree = "<group>"; };
+		F437EFD9165D730000E1AE96 /* CASCCDExposureLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureLibrary.m; sourceTree = "<group>"; };
+		F437EFDA165D730000E1AE96 /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDImage.h; sourceTree = "<group>"; };
+		F437EFDB165D730000E1AE96 /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
+		F437EFDC165D730000E1AE96 /* CASCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDProperties.h; sourceTree = "<group>"; };
+		F437EFDD165D730000E1AE96 /* CASCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDProperties.m; sourceTree = "<group>"; };
+		F437EFDE165D730000E1AE96 /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDevice.h; sourceTree = "<group>"; };
+		F437EFDF165D730000E1AE96 /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDevice.m; sourceTree = "<group>"; };
+		F437EFE0165D730000E1AE96 /* CASDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceBrowser.h; sourceTree = "<group>"; };
+		F437EFE1165D730000E1AE96 /* CASDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceFactory.h; sourceTree = "<group>"; };
+		F437EFE2165D730000E1AE96 /* CASDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceManager.h; sourceTree = "<group>"; };
+		F437EFE3165D730000E1AE96 /* CASDeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDeviceManager.m; sourceTree = "<group>"; };
+		F437EFE4165D730000E1AE96 /* CASImageDebayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageDebayer.h; sourceTree = "<group>"; };
+		F437EFE5165D730000E1AE96 /* CASImageDebayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageDebayer.mm; sourceTree = "<group>"; };
+		F437EFE6165D730000E1AE96 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
+		F437EFE7165D730000E1AE96 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
+		F437EFE8165D730000E1AE96 /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOCommand.h; sourceTree = "<group>"; };
+		F437EFE9165D730000E1AE96 /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOCommand.m; sourceTree = "<group>"; };
+		F437EFEA165D730000E1AE96 /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOTransport.h; sourceTree = "<group>"; };
+		F437EFEB165D730000E1AE96 /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOTransport.m; sourceTree = "<group>"; };
+		F437EFEC165D730000E1AE96 /* CASNetworkServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASNetworkServer.h; sourceTree = "<group>"; };
+		F437EFED165D730000E1AE96 /* CASNetworkServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASNetworkServer.m; sourceTree = "<group>"; };
+		F437EFEE165D730000E1AE96 /* CASPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPluginManager.h; sourceTree = "<group>"; };
+		F437EFEF165D730000E1AE96 /* CASPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPluginManager.m; sourceTree = "<group>"; };
+		F437EFF0165D730000E1AE96 /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
+		F437EFF1165D730000E1AE96 /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
+		F437EFF2165D730000E1AE96 /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
+		F437EFF3165D730000E1AE96 /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
+		F437EFF6165D730000E1AE96 /* CASHIDDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHIDDeviceBrowser.h; sourceTree = "<group>"; };
+		F437EFF7165D730000E1AE96 /* CASHIDDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHIDDeviceBrowser.m; sourceTree = "<group>"; };
+		F437EFF8165D730000E1AE96 /* CASIOHIDTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOHIDTransport.h; sourceTree = "<group>"; };
+		F437EFF9165D730000E1AE96 /* CASIOHIDTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOHIDTransport.m; sourceTree = "<group>"; };
+		F437EFFC165D730000E1AE96 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_cookie_strings.plist; sourceTree = "<group>"; };
+		F437EFFE165D730000E1AE96 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_device_usage_strings.plist; sourceTree = "<group>"; };
+		F437F000165D730000E1AE96 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_usage_strings.plist; sourceTree = "<group>"; };
+		F437F002165D730000E1AE96 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "HID Utilities.xcodeproj"; sourceTree = "<group>"; };
+		F437F006165D730000E1AE96 /* HID Utilities_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HID Utilities_Prefix.pch"; sourceTree = "<group>"; };
+		F437F007165D730000E1AE96 /* HID_Config_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Config_Utilities.c; sourceTree = "<group>"; };
+		F437F008165D730000E1AE96 /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Error_Handler.c; sourceTree = "<group>"; };
+		F437F009165D730000E1AE96 /* HID_Name_Lookup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Name_Lookup.c; sourceTree = "<group>"; };
+		F437F00A165D730000E1AE96 /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
+		F437F00B165D730000E1AE96 /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
+		F437F00C165D730000E1AE96 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
+		F437F00D165D730000E1AE96 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F437F00F165D730000E1AE96 /* ImmrHIDUtilAddOn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ImmrHIDUtilAddOn.c; sourceTree = "<group>"; };
+		F437F010165D730000E1AE96 /* ImmrHIDUtilAddOn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmrHIDUtilAddOn.h; sourceTree = "<group>"; };
+		F437F011165D730000E1AE96 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		F437F012165D730000E1AE96 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		F437F013165D730000E1AE96 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		F437F014165D730000E1AE96 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
+		F437F015165D730000E1AE96 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
+		F437F017165D730000E1AE96 /* CASIOUSBTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOUSBTransport.h; sourceTree = "<group>"; };
+		F437F018165D730000E1AE96 /* CASIOUSBTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOUSBTransport.m; sourceTree = "<group>"; };
+		F437F019165D730000E1AE96 /* CASUSBDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUSBDeviceBrowser.h; sourceTree = "<group>"; };
+		F437F01A165D730000E1AE96 /* CASUSBDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUSBDeviceBrowser.m; sourceTree = "<group>"; };
+		F437F01C165D730000E1AE96 /* BusProbeClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BusProbeClass.h; sourceTree = "<group>"; };
+		F437F01D165D730000E1AE96 /* BusProbeClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BusProbeClass.m; sourceTree = "<group>"; };
+		F437F01E165D730000E1AE96 /* BusProbeDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BusProbeDevice.h; sourceTree = "<group>"; };
+		F437F01F165D730000E1AE96 /* BusProbeDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BusProbeDevice.m; sourceTree = "<group>"; };
+		F437F020165D730000E1AE96 /* BusProberSharedFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BusProberSharedFunctions.h; sourceTree = "<group>"; };
+		F437F021165D730000E1AE96 /* BusProberSharedFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BusProberSharedFunctions.m; sourceTree = "<group>"; };
+		F437F022165D730000E1AE96 /* DecodeDeviceDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecodeDeviceDescriptor.h; sourceTree = "<group>"; };
+		F437F023165D730000E1AE96 /* DecodeDeviceDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DecodeDeviceDescriptor.m; sourceTree = "<group>"; };
+		F437F026165D730000E1AE96 /* CASSHDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSHDeviceFactory.h; sourceTree = "<group>"; };
+		F437F027165D730000E1AE96 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSHDeviceFactory.m; sourceTree = "<group>"; };
+		F437F028165D730000E1AE96 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSHGPUSBDevice.h; sourceTree = "<group>"; };
+		F437F029165D730000E1AE96 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSHGPUSBDevice.m; sourceTree = "<group>"; };
+		F437F02B165D730000E1AE96 /* H25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H25.png; sourceTree = "<group>"; };
+		F437F02C165D730000E1AE96 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
+		F437F02D165D730000E1AE96 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
+		F437F02E165D730000E1AE96 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
+		F437F02F165D730000E1AE96 /* superstar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = superstar.png; sourceTree = "<group>"; };
+		F437F030165D730000E1AE96 /* SXCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDDevice.h; sourceTree = "<group>"; };
+		F437F031165D730000E1AE96 /* SXCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDDevice.m; sourceTree = "<group>"; };
+		F437F032165D730000E1AE96 /* SXCCDDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDDeviceFactory.h; sourceTree = "<group>"; };
+		F437F033165D730000E1AE96 /* SXCCDDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDDeviceFactory.m; sourceTree = "<group>"; };
+		F437F035165D730000E1AE96 /* SXCCDIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDIOCommand.h; sourceTree = "<group>"; };
+		F437F036165D730000E1AE96 /* SXCCDIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDIOCommand.m; sourceTree = "<group>"; };
+		F437F037165D730000E1AE96 /* SXCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDProperties.h; sourceTree = "<group>"; };
+		F437F038165D730000E1AE96 /* SXCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDProperties.m; sourceTree = "<group>"; };
+		F437F039165D730000E1AE96 /* SXDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SXDevices.plist; sourceTree = "<group>"; };
+		F437F03A165D730000E1AE96 /* SXFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXFWDevice.h; sourceTree = "<group>"; };
+		F437F03B165D730000E1AE96 /* SXFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXFWDevice.m; sourceTree = "<group>"; };
+		F437F07E165D748700E1AE96 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		F437F080165D748B00E1AE96 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F437F083165D779C00E1AE96 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		F437F088165D78C700E1AE96 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
+		F437F089165D78C700E1AE96 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
+		F44FD09916611C1A0095D857 /* CASExposuresView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposuresView.m; sourceTree = "<group>"; };
+		F44FD09A16611C1A0095D857 /* CASExposuresView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresView.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F437EFA5165D72AD00E1AE96 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F437F084165D779C00E1AE96 /* Quartz.framework in Frameworks */,
+				F437F081165D748B00E1AE96 /* Accelerate.framework in Frameworks */,
+				F437F07F165D748700E1AE96 /* IOKit.framework in Frameworks */,
+				F437EFAC165D72AD00E1AE96 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F437EF9F165D72AD00E1AE96 = {
+			isa = PBXGroup;
+			children = (
+				F437EFB1165D72AD00E1AE96 /* stack-test */,
+				F437EFAA165D72AD00E1AE96 /* Frameworks */,
+				F437EFA9165D72AD00E1AE96 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F437EFA9165D72AD00E1AE96 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFA8165D72AD00E1AE96 /* stack-test.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F437EFAA165D72AD00E1AE96 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F437F083165D779C00E1AE96 /* Quartz.framework */,
+				F437F080165D748B00E1AE96 /* Accelerate.framework */,
+				F437F07E165D748700E1AE96 /* IOKit.framework */,
+				F437EFAB165D72AD00E1AE96 /* Cocoa.framework */,
+				F437EFAD165D72AD00E1AE96 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F437EFAD165D72AD00E1AE96 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFAE165D72AD00E1AE96 /* AppKit.framework */,
+				F437EFAF165D72AD00E1AE96 /* CoreData.framework */,
+				F437EFB0165D72AD00E1AE96 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F437EFB1165D72AD00E1AE96 /* stack-test */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFBD165D72AD00E1AE96 /* AppDelegate.h */,
+				F437EFBE165D72AD00E1AE96 /* AppDelegate.m */,
+				F437F088165D78C700E1AE96 /* CASImageView.h */,
+				F437F089165D78C700E1AE96 /* CASImageView.m */,
+				F44FD09A16611C1A0095D857 /* CASExposuresView.h */,
+				F44FD09916611C1A0095D857 /* CASExposuresView.m */,
+				F4369D8416602BEE007633AC /* CASStackingView.h */,
+				F4369D8516602BEE007633AC /* CASStackingView.m */,
+				F437EFC0165D72AD00E1AE96 /* MainMenu.xib */,
+				F437EFC9165D730000E1AE96 /* libCoreAstro */,
+				F437EFB2165D72AD00E1AE96 /* Supporting Files */,
+			);
+			path = "stack-test";
+			sourceTree = "<group>";
+		};
+		F437EFB2165D72AD00E1AE96 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFB3165D72AD00E1AE96 /* stack-test-Info.plist */,
+				F437EFB4165D72AD00E1AE96 /* InfoPlist.strings */,
+				F437EFB7165D72AD00E1AE96 /* main.m */,
+				F437EFB9165D72AD00E1AE96 /* stack-test-Prefix.pch */,
+				F437EFBA165D72AD00E1AE96 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F437EFC9165D730000E1AE96 /* libCoreAstro */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFCA165D730000E1AE96 /* Controllers */,
+				F437EFCF165D730000E1AE96 /* Core */,
+				F437EFF4165D730000E1AE96 /* Transports */,
+				F437F024165D730000E1AE96 /* Vendors */,
+			);
+			name = libCoreAstro;
+			path = ../../../CoreAstro/libCoreAstro;
+			sourceTree = "<group>";
+		};
+		F437EFCA165D730000E1AE96 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFCB165D730000E1AE96 /* CASCameraController.h */,
+				F437EFCC165D730000E1AE96 /* CASCameraController.m */,
+				F437EFCD165D730000E1AE96 /* CASGuiderController.h */,
+				F437EFCE165D730000E1AE96 /* CASGuiderController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		F437EFCF165D730000E1AE96 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFD0165D730000E1AE96 /* CASAutoGuider.h */,
+				F437EFD1165D730000E1AE96 /* CASAutoGuider.mm */,
+				F437EFD2165D730000E1AE96 /* CASCCDDevice.h */,
+				F437EFD3165D730000E1AE96 /* CASCCDDevice.m */,
+				F437EFD4165D730000E1AE96 /* CASCCDExposure.h */,
+				F437EFD5165D730000E1AE96 /* CASCCDExposure.m */,
+				F437EFD6165D730000E1AE96 /* CASCCDExposureIO.h */,
+				F437EFD7165D730000E1AE96 /* CASCCDExposureIO.m */,
+				F437EFD8165D730000E1AE96 /* CASCCDExposureLibrary.h */,
+				F437EFD9165D730000E1AE96 /* CASCCDExposureLibrary.m */,
+				F437EFDA165D730000E1AE96 /* CASCCDImage.h */,
+				F437EFDB165D730000E1AE96 /* CASCCDImage.m */,
+				F437EFDC165D730000E1AE96 /* CASCCDProperties.h */,
+				F437EFDD165D730000E1AE96 /* CASCCDProperties.m */,
+				F437EFDE165D730000E1AE96 /* CASDevice.h */,
+				F437EFDF165D730000E1AE96 /* CASDevice.m */,
+				F437EFE0165D730000E1AE96 /* CASDeviceBrowser.h */,
+				F437EFE1165D730000E1AE96 /* CASDeviceFactory.h */,
+				F437EFE2165D730000E1AE96 /* CASDeviceManager.h */,
+				F437EFE3165D730000E1AE96 /* CASDeviceManager.m */,
+				F437EFE4165D730000E1AE96 /* CASImageDebayer.h */,
+				F437EFE5165D730000E1AE96 /* CASImageDebayer.mm */,
+				F437EFE6165D730000E1AE96 /* CASImageProcessor.h */,
+				F437EFE7165D730000E1AE96 /* CASImageProcessor.mm */,
+				F4369D7D165EC5E9007633AC /* CASImageStacker.h */,
+				F4369D7E165EC5E9007633AC /* CASImageStacker.m */,
+				F437EFE8165D730000E1AE96 /* CASIOCommand.h */,
+				F437EFE9165D730000E1AE96 /* CASIOCommand.m */,
+				F437EFEA165D730000E1AE96 /* CASIOTransport.h */,
+				F437EFEB165D730000E1AE96 /* CASIOTransport.m */,
+				F437EFEC165D730000E1AE96 /* CASNetworkServer.h */,
+				F437EFED165D730000E1AE96 /* CASNetworkServer.m */,
+				F437EFEE165D730000E1AE96 /* CASPluginManager.h */,
+				F437EFEF165D730000E1AE96 /* CASPluginManager.m */,
+				F437EFF0165D730000E1AE96 /* CASScriptableObject.h */,
+				F437EFF1165D730000E1AE96 /* CASScriptableObject.m */,
+				F437EFF2165D730000E1AE96 /* CoreAstro.h */,
+				F437EFF3165D730000E1AE96 /* CoreAstro.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		F437EFF4165D730000E1AE96 /* Transports */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFF5165D730000E1AE96 /* HID */,
+				F437F016165D730000E1AE96 /* USB */,
+			);
+			path = Transports;
+			sourceTree = "<group>";
+		};
+		F437EFF5165D730000E1AE96 /* HID */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFF6165D730000E1AE96 /* CASHIDDeviceBrowser.h */,
+				F437EFF7165D730000E1AE96 /* CASHIDDeviceBrowser.m */,
+				F437EFF8165D730000E1AE96 /* CASIOHIDTransport.h */,
+				F437EFF9165D730000E1AE96 /* CASIOHIDTransport.m */,
+				F437EFFA165D730000E1AE96 /* HID_Utilities */,
+			);
+			path = HID;
+			sourceTree = "<group>";
+		};
+		F437EFFA165D730000E1AE96 /* HID_Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F437EFFB165D730000E1AE96 /* HID_cookie_strings.plist */,
+				F437EFFD165D730000E1AE96 /* HID_device_usage_strings.plist */,
+				F437EFFF165D730000E1AE96 /* HID_usage_strings.plist */,
+				F437F001165D730000E1AE96 /* InfoPlist.strings */,
+				F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */,
+				F437F006165D730000E1AE96 /* HID Utilities_Prefix.pch */,
+				F437F007165D730000E1AE96 /* HID_Config_Utilities.c */,
+				F437F008165D730000E1AE96 /* HID_Error_Handler.c */,
+				F437F009165D730000E1AE96 /* HID_Name_Lookup.c */,
+				F437F00A165D730000E1AE96 /* HID_Queue_Utilities.c */,
+				F437F00B165D730000E1AE96 /* HID_Utilities.c */,
+				F437F00C165D730000E1AE96 /* HID_Utilities_External.h */,
+				F437F00D165D730000E1AE96 /* Info.plist */,
+				F437F00E165D730000E1AE96 /* IOHIDManager */,
+			);
+			path = HID_Utilities;
+			sourceTree = "<group>";
+		};
+		F437F004165D730000E1AE96 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F437F079165D730100E1AE96 /* HID Utilities.framework */,
+				F437F07B165D730100E1AE96 /* libHID_Utilities.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F437F00E165D730000E1AE96 /* IOHIDManager */ = {
+			isa = PBXGroup;
+			children = (
+				F437F00F165D730000E1AE96 /* ImmrHIDUtilAddOn.c */,
+				F437F010165D730000E1AE96 /* ImmrHIDUtilAddOn.h */,
+				F437F011165D730000E1AE96 /* IOHIDDevice_.c */,
+				F437F012165D730000E1AE96 /* IOHIDDevice_.h */,
+				F437F013165D730000E1AE96 /* IOHIDElement_.c */,
+				F437F014165D730000E1AE96 /* IOHIDElement_.h */,
+				F437F015165D730000E1AE96 /* IOHIDLib_.h */,
+			);
+			path = IOHIDManager;
+			sourceTree = "<group>";
+		};
+		F437F016165D730000E1AE96 /* USB */ = {
+			isa = PBXGroup;
+			children = (
+				F437F017165D730000E1AE96 /* CASIOUSBTransport.h */,
+				F437F018165D730000E1AE96 /* CASIOUSBTransport.m */,
+				F437F019165D730000E1AE96 /* CASUSBDeviceBrowser.h */,
+				F437F01A165D730000E1AE96 /* CASUSBDeviceBrowser.m */,
+				F437F01B165D730000E1AE96 /* USB Bus Probe */,
+			);
+			path = USB;
+			sourceTree = "<group>";
+		};
+		F437F01B165D730000E1AE96 /* USB Bus Probe */ = {
+			isa = PBXGroup;
+			children = (
+				F437F01C165D730000E1AE96 /* BusProbeClass.h */,
+				F437F01D165D730000E1AE96 /* BusProbeClass.m */,
+				F437F01E165D730000E1AE96 /* BusProbeDevice.h */,
+				F437F01F165D730000E1AE96 /* BusProbeDevice.m */,
+				F437F020165D730000E1AE96 /* BusProberSharedFunctions.h */,
+				F437F021165D730000E1AE96 /* BusProberSharedFunctions.m */,
+				F437F022165D730000E1AE96 /* DecodeDeviceDescriptor.h */,
+				F437F023165D730000E1AE96 /* DecodeDeviceDescriptor.m */,
+			);
+			path = "USB Bus Probe";
+			sourceTree = "<group>";
+		};
+		F437F024165D730000E1AE96 /* Vendors */ = {
+			isa = PBXGroup;
+			children = (
+				F437F025165D730000E1AE96 /* Shoestring */,
+				F437F02A165D730000E1AE96 /* SXCCD */,
+			);
+			path = Vendors;
+			sourceTree = "<group>";
+		};
+		F437F025165D730000E1AE96 /* Shoestring */ = {
+			isa = PBXGroup;
+			children = (
+				F437F026165D730000E1AE96 /* CASSHDeviceFactory.h */,
+				F437F027165D730000E1AE96 /* CASSHDeviceFactory.m */,
+				F437F028165D730000E1AE96 /* CASSHGPUSBDevice.h */,
+				F437F029165D730000E1AE96 /* CASSHGPUSBDevice.m */,
+			);
+			path = Shoestring;
+			sourceTree = "<group>";
+		};
+		F437F02A165D730000E1AE96 /* SXCCD */ = {
+			isa = PBXGroup;
+			children = (
+				F437F02B165D730000E1AE96 /* H25.png */,
+				F437F02C165D730000E1AE96 /* H36.png */,
+				F437F02D165D730000E1AE96 /* H694.png */,
+				F437F02E165D730000E1AE96 /* lodestar.png */,
+				F437F02F165D730000E1AE96 /* superstar.png */,
+				F437F030165D730000E1AE96 /* SXCCDDevice.h */,
+				F437F031165D730000E1AE96 /* SXCCDDevice.m */,
+				F437F032165D730000E1AE96 /* SXCCDDeviceFactory.h */,
+				F437F033165D730000E1AE96 /* SXCCDDeviceFactory.m */,
+				F437F035165D730000E1AE96 /* SXCCDIOCommand.h */,
+				F437F036165D730000E1AE96 /* SXCCDIOCommand.m */,
+				F437F037165D730000E1AE96 /* SXCCDProperties.h */,
+				F437F038165D730000E1AE96 /* SXCCDProperties.m */,
+				F437F039165D730000E1AE96 /* SXDevices.plist */,
+				F437F03A165D730000E1AE96 /* SXFWDevice.h */,
+				F437F03B165D730000E1AE96 /* SXFWDevice.m */,
+			);
+			path = SXCCD;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F437EFA7165D72AD00E1AE96 /* stack-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F437EFC5165D72AD00E1AE96 /* Build configuration list for PBXNativeTarget "stack-test" */;
+			buildPhases = (
+				F437EFA4165D72AD00E1AE96 /* Sources */,
+				F437EFA5165D72AD00E1AE96 /* Frameworks */,
+				F437EFA6165D72AD00E1AE96 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "stack-test";
+			productName = "stack-test";
+			productReference = F437EFA8165D72AD00E1AE96 /* stack-test.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F437EFA0165D72AD00E1AE96 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Simon Taylor";
+			};
+			buildConfigurationList = F437EFA3165D72AD00E1AE96 /* Build configuration list for PBXProject "stack-test" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+			);
+			mainGroup = F437EF9F165D72AD00E1AE96;
+			productRefGroup = F437EFA9165D72AD00E1AE96 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F437F004165D730000E1AE96 /* Products */;
+					ProjectRef = F437F003165D730000E1AE96 /* HID Utilities.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F437EFA7165D72AD00E1AE96 /* stack-test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F437F079165D730100E1AE96 /* HID Utilities.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = "HID Utilities.framework";
+			remoteRef = F437F078165D730100E1AE96 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F437F07B165D730100E1AE96 /* libHID_Utilities.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libHID_Utilities.dylib;
+			remoteRef = F437F07A165D730100E1AE96 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F437EFA6165D72AD00E1AE96 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F437EFB6165D72AD00E1AE96 /* InfoPlist.strings in Resources */,
+				F437EFBC165D72AD00E1AE96 /* Credits.rtf in Resources */,
+				F437EFC2165D72AD00E1AE96 /* MainMenu.xib in Resources */,
+				F437F053165D730000E1AE96 /* HID_cookie_strings.plist in Resources */,
+				F437F054165D730000E1AE96 /* HID_device_usage_strings.plist in Resources */,
+				F437F055165D730000E1AE96 /* HID_usage_strings.plist in Resources */,
+				F437F056165D730000E1AE96 /* InfoPlist.strings in Resources */,
+				F437F05C165D730000E1AE96 /* Info.plist in Resources */,
+				F437F068165D730000E1AE96 /* H25.png in Resources */,
+				F437F069165D730000E1AE96 /* H36.png in Resources */,
+				F437F06A165D730000E1AE96 /* H694.png in Resources */,
+				F437F06B165D730000E1AE96 /* lodestar.png in Resources */,
+				F437F06C165D730000E1AE96 /* superstar.png in Resources */,
+				F437F072165D730000E1AE96 /* SXDevices.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F437EFA4165D72AD00E1AE96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F437EFB8165D72AD00E1AE96 /* main.m in Sources */,
+				F437EFBF165D72AD00E1AE96 /* AppDelegate.m in Sources */,
+				F437F03E165D730000E1AE96 /* CASCameraController.m in Sources */,
+				F437F03F165D730000E1AE96 /* CASGuiderController.m in Sources */,
+				F437F040165D730000E1AE96 /* CASAutoGuider.mm in Sources */,
+				F437F041165D730000E1AE96 /* CASCCDDevice.m in Sources */,
+				F437F042165D730000E1AE96 /* CASCCDExposure.m in Sources */,
+				F437F043165D730000E1AE96 /* CASCCDExposureIO.m in Sources */,
+				F437F044165D730000E1AE96 /* CASCCDExposureLibrary.m in Sources */,
+				F437F045165D730000E1AE96 /* CASCCDImage.m in Sources */,
+				F437F046165D730000E1AE96 /* CASCCDProperties.m in Sources */,
+				F437F047165D730000E1AE96 /* CASDevice.m in Sources */,
+				F437F048165D730000E1AE96 /* CASDeviceManager.m in Sources */,
+				F437F049165D730000E1AE96 /* CASImageDebayer.mm in Sources */,
+				F437F04A165D730000E1AE96 /* CASImageProcessor.mm in Sources */,
+				F437F04B165D730000E1AE96 /* CASIOCommand.m in Sources */,
+				F437F04C165D730000E1AE96 /* CASIOTransport.m in Sources */,
+				F437F04D165D730000E1AE96 /* CASNetworkServer.m in Sources */,
+				F437F04E165D730000E1AE96 /* CASPluginManager.m in Sources */,
+				F437F04F165D730000E1AE96 /* CASScriptableObject.m in Sources */,
+				F437F050165D730000E1AE96 /* CoreAstro.m in Sources */,
+				F437F051165D730000E1AE96 /* CASHIDDeviceBrowser.m in Sources */,
+				F437F052165D730000E1AE96 /* CASIOHIDTransport.m in Sources */,
+				F437F057165D730000E1AE96 /* HID_Config_Utilities.c in Sources */,
+				F437F058165D730000E1AE96 /* HID_Error_Handler.c in Sources */,
+				F437F059165D730000E1AE96 /* HID_Name_Lookup.c in Sources */,
+				F437F05A165D730000E1AE96 /* HID_Queue_Utilities.c in Sources */,
+				F437F05B165D730000E1AE96 /* HID_Utilities.c in Sources */,
+				F437F05D165D730000E1AE96 /* ImmrHIDUtilAddOn.c in Sources */,
+				F437F05E165D730000E1AE96 /* IOHIDDevice_.c in Sources */,
+				F437F05F165D730000E1AE96 /* IOHIDElement_.c in Sources */,
+				F437F060165D730000E1AE96 /* CASIOUSBTransport.m in Sources */,
+				F437F061165D730000E1AE96 /* CASUSBDeviceBrowser.m in Sources */,
+				F437F062165D730000E1AE96 /* BusProbeClass.m in Sources */,
+				F437F063165D730000E1AE96 /* BusProbeDevice.m in Sources */,
+				F437F064165D730000E1AE96 /* BusProberSharedFunctions.m in Sources */,
+				F437F065165D730000E1AE96 /* DecodeDeviceDescriptor.m in Sources */,
+				F437F066165D730000E1AE96 /* CASSHDeviceFactory.m in Sources */,
+				F437F067165D730000E1AE96 /* CASSHGPUSBDevice.m in Sources */,
+				F437F06D165D730000E1AE96 /* SXCCDDevice.m in Sources */,
+				F437F06E165D730000E1AE96 /* SXCCDDeviceFactory.m in Sources */,
+				F437F070165D730000E1AE96 /* SXCCDIOCommand.m in Sources */,
+				F437F071165D730000E1AE96 /* SXCCDProperties.m in Sources */,
+				F437F073165D730000E1AE96 /* SXFWDevice.m in Sources */,
+				F437F08A165D78C800E1AE96 /* CASImageView.m in Sources */,
+				F4369D7F165EC5E9007633AC /* CASImageStacker.m in Sources */,
+				F4369D8616602BEE007633AC /* CASStackingView.m in Sources */,
+				F44FD09B16611C1A0095D857 /* CASExposuresView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F437EFB4165D72AD00E1AE96 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437EFB5165D72AD00E1AE96 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F437EFBA165D72AD00E1AE96 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437EFBB165D72AD00E1AE96 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F437EFC0165D72AD00E1AE96 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437EFC1165D72AD00E1AE96 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F437EFFB165D730000E1AE96 /* HID_cookie_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437EFFC165D730000E1AE96 /* English */,
+			);
+			name = HID_cookie_strings.plist;
+			sourceTree = "<group>";
+		};
+		F437EFFD165D730000E1AE96 /* HID_device_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437EFFE165D730000E1AE96 /* English */,
+			);
+			name = HID_device_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F437EFFF165D730000E1AE96 /* HID_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437F000165D730000E1AE96 /* English */,
+			);
+			name = HID_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F437F001165D730000E1AE96 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F437F002165D730000E1AE96 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F437EFC3165D72AD00E1AE96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F437EFC4165D72AD00E1AE96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F437EFC6165D72AD00E1AE96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "stack-test/stack-test-Prefix.pch";
+				INFOPLIST_FILE = "stack-test/stack-test-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F437EFC7165D72AD00E1AE96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "stack-test/stack-test-Prefix.pch";
+				INFOPLIST_FILE = "stack-test/stack-test-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F437EFA3165D72AD00E1AE96 /* Build configuration list for PBXProject "stack-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F437EFC3165D72AD00E1AE96 /* Debug */,
+				F437EFC4165D72AD00E1AE96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F437EFC5165D72AD00E1AE96 /* Build configuration list for PBXNativeTarget "stack-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F437EFC6165D72AD00E1AE96 /* Debug */,
+				F437EFC7165D72AD00E1AE96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F437EFA0165D72AD00E1AE96 /* Project object */;
+}

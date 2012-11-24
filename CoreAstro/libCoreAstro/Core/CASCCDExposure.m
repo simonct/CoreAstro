@@ -199,7 +199,7 @@
 
 - (CASCCDImage*)createImage
 {
-    if (!self.pixels){
+    if (!self.floatPixels){
         return nil;
     }
 
@@ -263,11 +263,16 @@
     return [NSString stringWithString: mutStr];
 }
 
-+ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
++ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time floatPixels:(BOOL)floatPixels
 {
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
     
-    exp.pixels = pixels;
+    if (floatPixels){
+        exp.floatPixels = pixels;
+    }
+    else {
+        exp.pixels = pixels;
+    }
     exp.params = expParams;
 
     NSMutableDictionary* deviceMeta = [NSMutableDictionary dictionaryWithCapacity:3];
@@ -313,6 +318,16 @@
     exp.meta = meta;
     
     return exp;
+}
+
++ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
+{
+    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:NO];
+}
+
++ (id)exposureWithFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
+{
+    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:YES];
 }
 
 @end

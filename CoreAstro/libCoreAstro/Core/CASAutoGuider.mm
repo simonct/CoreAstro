@@ -33,6 +33,7 @@
 
 #import "CASAutoGuider.h"
 #import <vector>
+#import <ApplicationServices/ApplicationServices.h>
 
 #define CROPXSIZE 100
 #define CROPYSIZE 100
@@ -200,12 +201,12 @@ enum {
 
 - (NSArray*)locateStars:(CASCCDExposure*)exposure
 {
-    if (exposure.params.bps != 16){
-        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
-        return nil;
-    }
+//    if (exposure.params.bps != 16){
+//        NSLog(@"%@: only works with 16-bit images",NSStringFromSelector(_cmd));
+//        return nil;
+//    }
     
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+    float* exposurePixels = (float*)[exposure.floatPixels bytes];
     if (!exposurePixels){
         return nil;
     }
@@ -248,7 +249,7 @@ enum {
             D3 = 0.0;
             
             NSInteger i;
-            uint16_t *uptr;
+            float *uptr;
 			uptr = exposurePixels + linesize * (y-4) + (x-4);
 			for (i=0; i<9; i++, uptr++)
 				D3 = D3 + *uptr;
@@ -305,43 +306,36 @@ enum {
     StarY = star.y;
 }
 
-- (NSInteger)updateStarLocation:(CASCCDExposure*)exposure {
-    
-	unsigned short *dataptr;
-	NSInteger x, y, searchsize;
-	NSInteger base_x, base_y;  // expected position in image (potentially cropped) coordinates
-	double mass, mx, my, val;
-	NSInteger start_x, start_y, rowsize;
-	unsigned long lval, maxlval, mean;
-	unsigned short max, nearmax1, nearmax2, sval, localmin;
-	NSInteger retval = STAR_OK;
-	static NSInteger BadMassCount = 0;
-    
-    const CASSize size = exposure.actualSize;
-    uint16_t* exposurePixels = (uint16_t*)[exposure.pixels bytes];
+typedef struct {
+    double mx, my, mass, max, mean, snr, mass_ratio, nearmax1, nearmax2, maxlval, val;
+} CASStarQuality;
 
-	if ((StarX <= SearchRegion) || (StarY <= SearchRegion) ||
-		(StarX >= (size.width - SearchRegion)) || (StarY >= (size.height - SearchRegion))) {
-		FoundStar = false;
-		return STAR_LARGEMOTION;
-	}
+- (CASStarQuality)_locateStar:(CASCCDExposure*)exposure inArea:(CGRect)area {
     
-	LastdX = dX; // Save the previous motion
-	LastdY = dY;
-    
-	base_x = (int) StarX ;
-	base_y = (int) StarY;
+    NSInteger base_x, base_y;  // expected position in image (potentially cropped) coordinates
+	NSInteger start_x, start_y, rowsize;
+	NSInteger x, y, searchsize;
+	float *dataptr;
+	double lval, maxlval, mean;
+	double max, nearmax1, nearmax2, sval, localmin;
+	double mass, mx, my, val;
+
+    const CASSize size = exposure.actualSize;
+    float* exposurePixels = (float*)[exposure.floatPixels bytes];
+
+    base_x = (int) CGRectGetMidX(area) ;
+	base_y = (int) CGRectGetMidY(area);
     
 	dataptr = exposurePixels;
 	rowsize = size.width;
-	searchsize = SearchRegion * 2 + 1;
+	searchsize = CGRectGetWidth(area) * 2 + 1;
 	maxlval = nearmax1 = nearmax2 = max = 0;
-	start_x = base_x - SearchRegion; // u-left corner of local area
-	start_y = base_y - SearchRegion;
+	start_x = base_x - CGRectGetWidth(area); // u-left corner of local area
+	start_y = base_y - CGRectGetWidth(area);
 	mean=0;
     
 	// figure the local offset
-	localmin = 65535;
+	localmin = 1.0;
     //	localmin = 0;
 	if (start_y == 0) start_y = 1;
 	double localmean = 0.0;
@@ -442,29 +436,74 @@ enum {
 		MassRatio = 1.0/MassRatio;
 	MassRatio = 1.0 - MassRatio;
 	StarSNR = (double) max / (double) mean;
+
+    CASStarQuality quality = {
+        .max = max,
+        .snr = StarSNR,
+        .mass_ratio = MassRatio,
+        .mass = mass,
+        .nearmax1 = nearmax1,
+        .nearmax2 = nearmax2,
+        .mean = mean,
+        .maxlval = maxlval,
+        .mx = mx,
+        .my = my,
+        .val = val
+    };
+    return quality;
+}
+
+- (NSInteger)updateStarLocation:(CASCCDExposure*)exposure {
     
+//	float *dataptr;
+//	NSInteger x, y, searchsize;
+	NSInteger base_x, base_y;  // expected position in image (potentially cropped) coordinates
+//	double mass, mx, my, val = 0.0;
+//	NSInteger start_x, start_y, rowsize;
+//	float lval, maxlval, mean;
+//	float max, nearmax1, nearmax2, sval, localmin;
+	NSInteger retval = STAR_OK;
+	static NSInteger BadMassCount = 0;
+    
+    const CASSize size = exposure.actualSize;
+//    float* exposurePixels = (float*)[exposure.floatPixels bytes];
+
+	if ((StarX <= SearchRegion) || (StarY <= SearchRegion) ||
+		(StarX >= (size.width - SearchRegion)) || (StarY >= (size.height - SearchRegion))) {
+		FoundStar = false;
+		return STAR_LARGEMOTION;
+	}
+    
+	LastdX = dX; // Save the previous motion
+	LastdY = dY;
+    
+	base_x = (int) StarX ;
+	base_y = (int) StarY;
+    
+    const CASStarQuality quality = [self _locateStar:exposure inArea:CGRectMake(base_x - SearchRegion, base_y - SearchRegion, 2*SearchRegion, 2*SearchRegion)];
+        
 	if (/*(frame->canvas->State > STATE_CALIBRATING) &&*/
-		(MassRatio > StarMassChangeRejectThreshold) &&
+		(quality.mass_ratio > StarMassChangeRejectThreshold) &&
 		(StarMassChangeRejectThreshold < 0.99) && (BadMassCount < 2) ) {
         
 		// we're guiding and big change in mass
 		dX = 0.0;
 		dY = 0.0;
 		FoundStar=false;
-        NSLog(@"Mass: %.0f vs %.0f",mass,StarMass);
+        NSLog(@"Mass: %.0f vs %.0f",quality.mass,StarMass);
 //		frame->SetStatusText(wxString::Format(_T("Mass: %.0f vs %.0f"),mass,StarMass),1);
-		StarMass = mass;
+		StarMass = quality.mass;
 		retval = STAR_MASSCHANGE;
 		BadMassCount++;
 	}
-	else if ((mass < 10.0) || // so faint -- likely dropped frame
+	else if ((quality.mass < 10.0) || // so faint -- likely dropped frame§
              (StarSNR < 3.0) ) {
 		dX = 0.0;
 		dY = 0.0;
 		FoundStar=false;
-		StarMass = mass;
-		if (mass < 10.0) {
-            NSLog(@"NO STAR: %f",mass);
+		StarMass = quality.mass;
+		if (quality.mass < 10.0) {
+            NSLog(@"NO STAR: %f",quality.mass);
 //			frame->SetStatusText(wxString::Format(_T("NO STAR: %f"),mass),1);
 			retval = STAR_LOWMASS;
 		}
@@ -478,15 +517,15 @@ enum {
 		BadMassCount = 0;
         //		LastMass1 = LastMass2;
         //s		LastMass2 = StarMass;
-		StarMass = mass;
-		StarX = mx / mass;
-		StarY = my / mass;
+		StarMass = quality.mass;
+		StarX = quality.mx / quality.mass;
+		StarY = quality.my / quality.mass;
 		dX = StarX - LockX;
 		dY = StarY - LockY;
         NSLog(@"dX (%f) = StarX (%f) - LockX (%f)",dX,StarX,LockX);
         NSLog(@"dY (%f) = StarY (%f) - LockY (%f)",dY,StarY,LockY);
 		FoundStar=true;
-		if (max == nearmax2) {
+		if (quality.max == quality.nearmax2) {
             NSLog(@"Star saturated");
 //			frame->SetStatusText(_T("Star saturated"));
 			retval = STAR_SATURATED;
@@ -496,7 +535,7 @@ enum {
         }
 	}
     
-    NSLog(@"%ldx%ld: %f, %ld(%f), %ld, %hd",base_x,base_y,mass,mean,val,maxlval, nearmax2);
+    NSLog(@"%ldx%ld: %f, %f(%f), %f, %f",base_x,base_y,quality.mass,quality.mean,quality.val,quality.maxlval, quality.nearmax2);
     //	frame->SetStatusText(wxString::Format("%dx%d: %f, %ld(%f), %ld, %ld",base_x,base_y,mass,mean,val,maxlval, nearmax2),1);
 //	CropX = StarX - (CROPXSIZE/2);
 //	CropY = StarY - (CROPYSIZE/2);
@@ -506,6 +545,11 @@ enum {
 //	else if ((CropY + CROPYSIZE) >= fullFrameSize.height) CropY = fullFrameSize.height - (CROPYSIZE + 1);
     
 	return retval;
+}
+
+- (NSPoint)locateStar:(CASCCDExposure*)exposure inArea:(CGRect)area {
+    const CASStarQuality quality = [self _locateStar:exposure inArea:area];
+    return quality.mass == 0 ? NSZeroPoint : NSMakePoint(quality.mx / quality.mass, quality.my / quality.mass);
 }
 
 - (CASCCDExposure*)processGuideFrame:(CASCCDExposure*)exposure error:(NSError**)errorPtr {

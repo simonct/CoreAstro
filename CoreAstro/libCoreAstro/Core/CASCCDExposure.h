@@ -78,5 +78,6 @@ typedef enum {
 - (void)deleteExposure;
 
 + (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)params time:(NSDate*)time;
++ (id)exposureWithFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
 
 @end
