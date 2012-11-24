@@ -20,11 +20,12 @@
     NSParameterAssert(count > 1);
 
     CASCCDExposure* first = nil;
-    
+    float* outputData = nil;
+
     vImage_Buffer final;
     bzero(&final,sizeof(final));
     
-    float* outputData = nil;
+    NSMutableArray* stackHistory = [NSMutableArray arrayWithCapacity:count];
     
     for (NSInteger i = 0; i < count; ++i){
         
@@ -82,17 +83,27 @@
         CGAffineTransform xform = CGAffineTransformIdentity;
         
         // translate
+        NSDictionary* translateInfo = @{};
         if (info.offset.x != 0 || info.offset.y != 0){
             xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(info.offset.x,info.offset.y));
+            translateInfo = @{@"x":[NSNumber numberWithDouble:info.offset.x],@"y":[NSNumber numberWithDouble:info.offset.y]};
         }
         
         // rotate
+        NSDictionary* rotateInfo = @{};
         if (info.angle != 0){
-            // need to rotate around original x,y ?
-            xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(-(input.width/2.0),-(input.height/2.0)));
+            const CGFloat originX = (input.width/2.0);
+            const CGFloat originY = (input.height/2.0);
+            xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(-originX,-originY));
             xform = CGAffineTransformConcat(xform,CGAffineTransformMakeRotation(info.angle));
-            xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(input.width/2.0,input.height/2.0));
+            xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(originX,originY));
+            rotateInfo = @{@"angle":[NSNumber numberWithDouble:info.angle],@"origin":@{@"x":[NSNumber numberWithDouble:originX],@"y":[NSNumber numberWithDouble:originY]}};
         }
+        
+        // add entries to history
+        [stackHistory addObject:@{
+            @"uuid":exposure.uuid,@"translate":translateInfo,@"angle":rotateInfo,@"mode":@"average"
+         }];
         
         if (CGAffineTransformIsIdentity(xform)){
             memcpy(outputData,fbuf,size.width*size.height*sizeof(float));
@@ -122,6 +133,10 @@
     }
     
     CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:[NSData dataWithBytesNoCopy:final.data length:final.height*final.rowBytes freeWhenDone:YES] camera:nil params:first.params time:nil];
+    
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
+    [mutableMeta setObject:@{@"stack":stackHistory} forKey:@"history"];
+    result.meta = [mutableMeta copy];
     
     block(result);
 }
