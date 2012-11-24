@@ -10,7 +10,7 @@
 #import "CASCCDExposure.h"
 #import "CASAutoGuider.h"
 #import "CASImageStacker.h"
-#import "CoreAstro.h"
+#import "CASUtilities.h"
 
 @interface CASStackingView ()
 @property (nonatomic,assign) NSPoint currentPoint;
@@ -120,17 +120,16 @@
     [self updateStarLocationFromPoint:[self imagePointFromWindowPoint:theEvent.locationInWindow]];
 }
 
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    [self addCurrentExposure];
-    [self nextExposure:nil];
-}
-
 - (void)keyDown:(NSEvent *)theEvent
 {
     if ([theEvent keyCode] == 36){
         [self addCurrentExposure];
-        [self nextExposure:nil];
+        if (self.currentExposure == [self.exposures lastObject]){
+            [self stack:nil];
+        }
+        else {
+            [self nextExposure:nil];
+        }
     }
     else if ([theEvent keyCode] == 53){
         [super nextExposure:nil];
