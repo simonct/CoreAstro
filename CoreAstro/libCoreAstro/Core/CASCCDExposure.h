@@ -55,6 +55,8 @@
 @property (nonatomic,readonly) NSString* uuid;
 @property (nonatomic,readonly) NSString* deviceID;
 
+@property (nonatomic,readonly) NSImage* thumbnail;
+
 @property (nonatomic,strong) CASCCDExposureIO* io;
 
 typedef enum {

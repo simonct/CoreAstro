@@ -36,6 +36,11 @@
     NSData* _pixels;
     NSData* _floatPixels;
     NSDictionary* _meta;
+    enum {
+        kCASCCDExposureReadMeta = 1,
+        kCASCCDExposureReadPixels
+    };
+    NSInteger _readState;
 }
 
 - (NSDate*) date
@@ -58,6 +63,26 @@
     return [self.meta valueForKeyPath:@"device.deviceID"];
 }
 
+- (NSImage*) thumbnail
+{
+    return self.io.thumbnail;
+}
+
+- (NSString*) displayType
+{
+    switch (self.type) {
+        case kCASCCDExposureLightType:
+            return @"Light";
+        case kCASCCDExposureDarkType:
+            return @"Dark";
+        case kCASCCDExposureBiasType:
+            return @"Bias";
+        case kCASCCDExposureFlatType:
+            return @"Flat";
+    }
+    return nil;
+}
+
 - (NSString*) displayDate
 {
     static NSDateFormatter* dateFormatter = nil;
@@ -66,6 +91,18 @@
         dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateStyle = kCFDateFormatterMediumStyle;
         dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+    });
+    return [dateFormatter stringFromDate:self.date];
+}
+
+- (NSString*) displayDateDay
+{
+    static NSDateFormatter* dateFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateStyle = kCFDateFormatterMediumStyle;
+        dateFormatter.timeStyle = kCFDateFormatterNoStyle;
     });
     return [dateFormatter stringFromDate:self.date];
 }
@@ -96,6 +133,13 @@
 
 - (void)readFromPersistentStore:(BOOL)readPixels
 {
+    if (_readState == kCASCCDExposureReadPixels){
+        return;
+    }
+    if (!readPixels && _readState == kCASCCDExposureReadMeta){
+        return;
+    }
+    _readState = readPixels ? kCASCCDExposureReadPixels : kCASCCDExposureReadMeta;
     [self.io readExposure:self readPixels:readPixels error:nil];
 }
 

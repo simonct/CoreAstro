@@ -34,6 +34,7 @@
 #import "CASImageView.h"
 #import "CASShadowView.h"
 #import "CASMasterSelectionView.h"
+#import "CASLibraryBrowserViewController.h"
 #import <CoreAstro/CoreAstro.h>
 
 #pragma IB Convenience Classes
@@ -81,6 +82,7 @@
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASExposuresWindowController* exposuresWindowController;
+@property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -1425,7 +1427,9 @@
 
 - (void)cameraWasSelected:(id)cameraController
 {
-    // hide library
+    if ([self.libraryViewController.view superview]){
+        [self.libraryViewController.view removeFromSuperview];
+    }
     
     self.cameraController = cameraController;
 }
@@ -1434,7 +1438,31 @@
 {
     self.cameraController = nil;
     
-    // show library
+    if (!library){
+        
+        if ([self.libraryViewController.view superview]){
+            for (NSView* view in [self.detailContainerView subviews]){
+                view.hidden = NO;
+            }
+            [self.libraryViewController.view removeFromSuperview];
+        }
+    }
+    else{
+        
+        if (!self.libraryViewController){
+            self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
+        }
+        
+        // show library
+        if (![self.libraryViewController.view superview]){
+            for (NSView* view in [self.detailContainerView subviews]){
+                view.hidden = YES;
+            }
+            self.libraryViewController.view.frame = self.detailContainerView.bounds;
+            [self.detailContainerView addSubview:self.libraryViewController.view];
+            self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        }
+    }
 }
 
 @end

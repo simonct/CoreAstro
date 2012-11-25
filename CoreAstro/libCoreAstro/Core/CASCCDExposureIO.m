@@ -129,6 +129,20 @@
     return @"thumbnail.png";
 }
 
+- (NSImage*)thumbnail
+{
+    NSError* error = nil;
+    NSFileWrapper* wrapper = [[NSFileWrapper alloc] initWithURL:self.url options:0 error:&error];
+    if (wrapper){
+        NSDictionary* wrappers = [wrapper fileWrappers];
+        NSString* thumbName = [[wrappers objectForKey:[self thumbKey]] filename];
+        if (thumbName){
+            return [[NSImage alloc] initWithContentsOfURL:[self.url URLByAppendingPathComponent:thumbName]];
+        }
+    }
+    return nil;
+}
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
     NSError* error = nil;
@@ -432,6 +446,8 @@
     name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
     return name;
 }
+
+- (NSImage*) thumbnail { return nil; }
 
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)error { return YES; }
 

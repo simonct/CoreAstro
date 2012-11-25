@@ -30,6 +30,6 @@
 
 @implementation CASExposureInfoView
 
-// todo
+// todo - static info plus area around current cursor position
 
 @end

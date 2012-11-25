@@ -10,6 +10,28 @@
 
 const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
+@interface CASProgressView : NSView
+@property (nonatomic,assign) CGFloat progress;
+@end
+
+@implementation CASProgressView
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:self.bounds];
+    outline.lineWidth = 5;
+    [[NSColor whiteColor] set];
+    [outline stroke];
+    NSBezierPath* arc = [NSBezierPath bezierPath];
+    [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))
+                                    radius:CGRectGetWidth(self.bounds)/2
+                                startAngle:0
+                                  endAngle:2*M_PI*self.progress];
+    [arc fill];
+}
+
+@end
+
 @interface IKImageView (Private)
 - (CGRect)selectionRect; // great, a private method to get the selection...
 @end
@@ -20,11 +42,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,retain) CALayer* lockLayer;
 @property (nonatomic,retain) CALayer* searchLayer;
 @property (nonatomic,retain) CAShapeLayer* reticleLayer;
+@property (nonatomic,retain) CASProgressView* progressView;
 @end
 
 @implementation CASImageView
-
-//@synthesize reticleLayer = _reticleLayer;
 
 - (id)init
 {
@@ -33,6 +54,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.starLocation = kCASImageViewInvalidStarLocation;
     }
     return self;
+}
+
+- (void)awakeFromNib
+{
+    self.starLocation = kCASImageViewInvalidStarLocation;
 }
 
 - (BOOL)hasEffectsMode
