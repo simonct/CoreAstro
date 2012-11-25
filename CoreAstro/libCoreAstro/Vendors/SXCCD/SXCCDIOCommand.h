@@ -102,3 +102,8 @@ enum {
 @property (nonatomic,assign) uint8_t direction;
 @end
 
+// Open/close mechanical shutter
+@interface SXCCDIOShutterCommand : CASIOCommand
+@property (nonatomic,assign) BOOL open;
+@end
+

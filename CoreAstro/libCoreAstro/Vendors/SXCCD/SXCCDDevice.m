@@ -183,11 +183,15 @@
 }
 
 - (BOOL)isColour {
-    return self.sensor.colourMatrix != 0;   
+    return self.sensor.colourMatrix != 0;   // unreliable e.g. M25C reports 0x0fff
 }
 
 - (BOOL)hasCooler {
-    return [[[self deviceParams] objectForKey:@"has-cooler"] boolValue];
+    return (self.sensor.capabilities & (1 << 4)) != 0;
+}
+
+- (BOOL)hasShutter {
+    return (self.sensor.capabilities & (1 << 5)) != 0;
 }
 
 - (NSInteger)temperatureFrequency {
@@ -277,6 +281,20 @@
     }];    
 }
 
+- (void)openShutter:(BOOL)open block:(void (^)(NSError*))block {
+    
+    SXCCDIOShutterCommand* shutter = [[SXCCDIOShutterCommand alloc] init];
+    
+    shutter.open = open;
+    
+    [self.transport submit:shutter block:^(NSError* error){
+        
+        if (block){
+            block(error);
+        }
+    }];
+}
+
 - (SXCCDIOExposeCommand*)createExposureCommandWithParams:(CASExposeParams)exp {
     
     SXCCDIOExposeCommand* expose = nil;
@@ -307,7 +325,7 @@
     return expose;
 }
 
-- (void)exposeWithParams:(CASExposeParams)exp block:(void (^)(NSError*,CASCCDExposure*image))block {
+- (void)exposeWithParams:(CASExposeParams)exp type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*image))block {
     
     // create an exposure command object
     SXCCDIOExposeCommand* expose = [self createExposureCommandWithParams:exp];
@@ -320,6 +338,11 @@
 
     // block to create the exposure object from the read pixels and call the completion block
     void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
+        
+        // close the shutter
+        if (self.hasShutter){
+            [self openShutter:NO block:nil];
+        }
         
         CASCCDExposure* exposure = nil;
         if (!error){
@@ -414,8 +437,27 @@
         }
     };
     
-    // start the exposure process by optionally flushing the charge from the ccd
-    flushComplete(nil);
+    void (^ openShutter)() = ^(){
+      
+        [self openShutter:YES block:^(NSError *error) {
+            
+            if (error){
+                exposureCompleted(error,nil);
+            }
+            else {
+                flushComplete(nil);
+            }
+        }];
+    };
+    
+    // open the shutter if required...
+    if (self.hasShutter){
+        openShutter();
+    }
+    else {
+        // ...otherwise start the exposure process by optionally flushing the charge from the ccd
+        flushComplete(nil);
+    }
 }
 
 #pragma mark - Guider protocol

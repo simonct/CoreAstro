@@ -93,6 +93,8 @@
 #define SXCCD_CAPS_COMPRESS             0x02
 #define SXCCD_CAPS_EEPROM               0x04
 #define SXCCD_CAPS_GUIDER               0x08
+#define SXCCD_CAPS_COOLER               0x10
+#define SXCCD_CAPS_SHUTTER              0x20
 
 /*
  * CCD command options.
@@ -152,6 +154,7 @@
 #define SXUSB_CAMERA_MODEL          14
 #define SXUSB_LOAD_EEPROM           15
 #define SXUSB_GETSET_COOLER         30
+#define SXUSB_OPEN_SHUTTER          32
 
 #define SXUSB_MAIN_CAMERA_INDEX     0
 #define SXUSB_GUIDE_CAMERA_INDEX    1
@@ -323,6 +326,23 @@ static void sxSetSTAR2000WriteData(BYTE star2k,UCHAR setup_data[8])
     setup_data[USB_REQ_LENGTH_L] = 0;
     setup_data[USB_REQ_LENGTH_H] = 0;
     
+}
+
+static void sxSetShutterWriteData(UCHAR setup_data[8],USHORT open)
+{
+    setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR;
+    setup_data[USB_REQ         ] = SXUSB_OPEN_SHUTTER;
+    setup_data[USB_REQ_VALUE_L ] = 0;
+    setup_data[USB_REQ_VALUE_H ] = open ? 0x80 : 0x40;
+    setup_data[USB_REQ_INDEX_L ] = 0;
+    setup_data[USB_REQ_INDEX_H ] = 0;
+    setup_data[USB_REQ_LENGTH_L] = 0;
+    setup_data[USB_REQ_LENGTH_H] = 0;
+}
+
+static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
+{
+    *state = setup_data[0] | (setup_data[1] << 8);
 }
 
 @implementation SXCCDIOResetCommand
@@ -717,6 +737,32 @@ static void sxSetSTAR2000WriteData(BYTE star2k,UCHAR setup_data[8])
     uint8_t buffer[8];
     sxSetSTAR2000WriteData(self.direction,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
+@end
+
+@implementation SXCCDIOShutterCommand
+
+- (NSData*)toDataRepresentation {
+    uint8_t buffer[8];
+    sxSetShutterWriteData(buffer,self.open);
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
+- (NSInteger) readSize {
+    return 2;
+}
+
+- (NSError*)fromDataRepresentation:(NSData*)data {
+    
+    NSError* error = nil;
+    
+    USHORT open = 0;
+    sxSetShutterReadData([data bytes],&open);
+    
+    self.open = (open == 0x80);
+    
+    return error;
 }
 
 @end
