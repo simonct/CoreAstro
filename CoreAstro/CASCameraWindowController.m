@@ -1425,11 +1425,35 @@
 
 #pragma mark Master selection changes
 
-- (void)cameraWasSelected:(id)cameraController
+- (void)showLibraryView
+{
+    if (!self.libraryViewController){
+        self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
+    }
+    
+    if (![self.libraryViewController.view superview]){
+        for (NSView* view in [self.detailContainerView subviews]){
+            view.hidden = YES;
+        }
+        self.libraryViewController.view.frame = self.detailContainerView.bounds;
+        [self.detailContainerView addSubview:self.libraryViewController.view];
+        self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    }
+}
+
+- (void)hideLibraryView
 {
     if ([self.libraryViewController.view superview]){
+        for (NSView* view in [self.detailContainerView subviews]){
+            view.hidden = NO;
+        }
         [self.libraryViewController.view removeFromSuperview];
     }
+}
+
+- (void)cameraWasSelected:(id)cameraController
+{
+    [self hideLibraryView];
     
     self.cameraController = cameraController;
 }
@@ -1439,29 +1463,10 @@
     self.cameraController = nil;
     
     if (!library){
-        
-        if ([self.libraryViewController.view superview]){
-            for (NSView* view in [self.detailContainerView subviews]){
-                view.hidden = NO;
-            }
-            [self.libraryViewController.view removeFromSuperview];
-        }
+        [self hideLibraryView];
     }
     else{
-        
-        if (!self.libraryViewController){
-            self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
-        }
-        
-        // show library
-        if (![self.libraryViewController.view superview]){
-            for (NSView* view in [self.detailContainerView subviews]){
-                view.hidden = YES;
-            }
-            self.libraryViewController.view.frame = self.detailContainerView.bounds;
-            [self.detailContainerView addSubview:self.libraryViewController.view];
-            self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        }
+        [self showLibraryView];
     }
 }
 

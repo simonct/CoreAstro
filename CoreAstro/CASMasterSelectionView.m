@@ -8,6 +8,12 @@
 
 #import "CASMasterSelectionView.h"
 
+@interface CASMasterSelectionViewNullCamera : NSObject
+@end
+
+@implementation CASMasterSelectionViewNullCamera
+@end
+
 @implementation CASMasterSelectionView {
     NSMutableArray* nodes;
     BOOL delegateRespondsToCameraWasSelected:1;
@@ -37,11 +43,6 @@
     [nodes addObject:library];
 }
 
-- (NSArray*)cameraControllers
-{
-    return [[NSApp delegate] valueForKey:@"cameraControllers"];
-}
-
 - (void)setMasterViewDelegate:(id<CASMasterSelectionViewDelegate>)masterViewDelegate
 {
     if (masterViewDelegate != _masterViewDelegate){
@@ -50,6 +51,7 @@
         delegateRespondsToLibraryWasSelected = [_masterViewDelegate respondsToSelector:@selector(libraryWasSelected:)];
     }
 }
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
     if ([self rowAtPoint:[self convertPoint:[theEvent locationInWindow] fromView:nil]] == -1){
@@ -60,12 +62,35 @@
     }
 }
 
+- (NSString*)cameraControllersKeyPath
+{
+    return @"cameraControllers";
+}
+
+- (NSArray*)cameraControllers
+{
+    return [_camerasContainer valueForKeyPath:self.cameraControllersKeyPath];
+}
+
+- (NSTreeNode*)camerasTreeNode
+{
+    return nodes[0];
+}
+
+- (NSTreeNode*)exposuresTreeNode
+{
+    return nodes[1];
+}
+
 - (void)setCamerasContainer:(id)camerasContainer
 {
     if (camerasContainer != _camerasContainer){
-        [_camerasContainer removeObserver:self forKeyPath:@"cameraControllers"];
+        [_camerasContainer removeObserver:self forKeyPath:self.cameraControllersKeyPath];
         _camerasContainer = camerasContainer;
-        [_camerasContainer addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+        [_camerasContainer addObserver:self forKeyPath:self.cameraControllersKeyPath options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+        if (![self.cameraControllers count]){
+            [[self.camerasTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:[CASMasterSelectionViewNullCamera new]]];
+        }
     }
 }
 
@@ -73,22 +98,22 @@
 {
     if (context == (__bridge void *)(self)) {
         
-        NSTreeNode* devicesNode = [self itemAtRow:0];
+        NSTreeNode* camerasTreeNode = self.camerasTreeNode;
         switch ([[change objectForKey:NSKeyValueChangeKindKey] integerValue]) {
                 
             case NSKeyValueChangeSetting:
             case NSKeyValueChangeInsertion:{
                 [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    [[devicesNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:obj]];
+                    [[camerasTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:obj]];
                 }];
             }
                 break;
                 
             case NSKeyValueChangeRemoval:{
                 [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    for (NSTreeNode* child in [devicesNode mutableChildNodes]){
+                    for (NSTreeNode* child in [camerasTreeNode mutableChildNodes]){
                         if (child.representedObject == obj){
-                            [[devicesNode mutableChildNodes] removeObject:child];
+                            [[camerasTreeNode mutableChildNodes] removeObject:child];
                         }
                     }
                 }];
@@ -98,7 +123,7 @@
                 break;
         }
         
-        [self reloadItem:devicesNode reloadChildren:YES];
+        [self reloadItem:camerasTreeNode reloadChildren:YES];
 
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -133,6 +158,9 @@
 {
     NSTreeNode* node = item;
     id representedObject = [node representedObject];
+    if ([representedObject isKindOfClass:[CASMasterSelectionViewNullCamera class]]){
+        return @"No Cameras";
+    }
     if ([representedObject respondsToSelector:@selector(camera)]){
         return [representedObject valueForKeyPath:@"camera.deviceName"]; // todo; make category method
     }
@@ -163,9 +191,13 @@
     else {
         [selection enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
             NSTreeNode* node = [self itemAtRow:idx];
-            if (node.parentNode == [nodes objectAtIndex:0]){
+            if (node.parentNode == self.camerasTreeNode){
                 if (delegateRespondsToCameraWasSelected){
-                    [self.masterViewDelegate cameraWasSelected:[node representedObject]];
+                    id camera = [node representedObject];
+                    if ([camera isKindOfClass:[CASMasterSelectionViewNullCamera class]]){
+                        camera = nil;
+                    }
+                    [self.masterViewDelegate cameraWasSelected:camera];
                 }
             }
             else if (node.parentNode == [nodes objectAtIndex:1]){

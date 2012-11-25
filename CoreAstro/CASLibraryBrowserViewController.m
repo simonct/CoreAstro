@@ -196,6 +196,20 @@
             nil];
 }
 
+- (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasDoubleClickedAtIndex:(NSUInteger) index
+{
+    NSLog(@"cellWasDoubleClickedAtIndex: %lu",index);
+    
+    // enter editing mode
+}
+
+- (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasRightClickedAtIndex:(NSUInteger) index withEvent:(NSEvent *) event
+{
+    NSLog(@"cellWasRightClickedAtIndex: %lu",index);
+    
+    // contextual menu
+}
+
 - (IBAction)zoomSliderDidChange:(id)sender
 {
     [self.browserView setZoomValue:[sender floatValue]];
