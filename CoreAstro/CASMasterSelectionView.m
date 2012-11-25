@@ -88,9 +88,6 @@
         [_camerasContainer removeObserver:self forKeyPath:self.cameraControllersKeyPath];
         _camerasContainer = camerasContainer;
         [_camerasContainer addObserver:self forKeyPath:self.cameraControllersKeyPath options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-        if (![self.cameraControllers count]){
-            [[self.camerasTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:[CASMasterSelectionViewNullCamera new]]];
-        }
     }
 }
 
@@ -123,6 +120,17 @@
                 break;
         }
         
+        if (![self.cameraControllers count]){
+            [[self.camerasTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:[CASMasterSelectionViewNullCamera new]]];
+        }
+        else {
+            for (NSTreeNode* child in [self.camerasTreeNode mutableChildNodes]){
+                if ([child.representedObject isKindOfClass:[CASMasterSelectionViewNullCamera class]]){
+                    [[self.camerasTreeNode mutableChildNodes] removeObject:child];
+                }
+            }
+        }
+
         [self reloadItem:camerasTreeNode reloadChildren:YES];
 
     } else {
@@ -159,7 +167,7 @@
     NSTreeNode* node = item;
     id representedObject = [node representedObject];
     if ([representedObject isKindOfClass:[CASMasterSelectionViewNullCamera class]]){
-        return @"No Cameras";
+        return @"No Cameras Connected";
     }
     if ([representedObject respondsToSelector:@selector(camera)]){
         return [representedObject valueForKeyPath:@"camera.deviceName"]; // todo; make category method
