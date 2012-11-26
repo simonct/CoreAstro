@@ -27,7 +27,6 @@
 #import "CASCameraWindowController.h"
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
 #import "CASHistogramView.h"
-#import "CASImageControlsView.h"
 #import "CASExposuresController.h"
 #import "CASExposuresWindowController.h"
 #import "CASProgressWindowController.h"
@@ -78,8 +77,6 @@
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
-@property (nonatomic,weak) IBOutlet CASImageControlsView *imageControlsView;
-@property (nonatomic,weak) IBOutlet NSLayoutConstraint *imageViewBottomConstraint;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASExposuresWindowController* exposuresWindowController;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
@@ -149,12 +146,6 @@
     
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
-
-    // hide the image controls strip for now
-    {
-        self.imageControlsView.hidden = YES;
-        self.imageViewBottomConstraint.constant = 0;
-    }
 
     [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     [self.exposuresController setSelectedObjects:nil];
@@ -1431,22 +1422,19 @@
         self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
     }
     
+    // drop the library view into the same container as the image view
     if (![self.libraryViewController.view superview]){
-        for (NSView* view in [self.detailContainerView subviews]){
-            view.hidden = YES;
-        }
-        self.libraryViewController.view.frame = self.detailContainerView.bounds;
-        [self.detailContainerView addSubview:self.libraryViewController.view];
+        self.libraryViewController.view.frame = CGRectInset(self.imageView.frame, -1, -1);
+        [self.imageView.superview addSubview:self.libraryViewController.view];
         self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        self.imageView.hidden = YES;
     }
 }
 
 - (void)hideLibraryView
 {
     if ([self.libraryViewController.view superview]){
-        for (NSView* view in [self.detailContainerView subviews]){
-            view.hidden = NO;
-        }
+        self.imageView.hidden = NO;
         [self.libraryViewController.view removeFromSuperview];
     }
 }
