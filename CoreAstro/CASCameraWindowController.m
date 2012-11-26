@@ -209,7 +209,8 @@
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     
     // add a drop shadow
-    [CASShadowView attachToView:self.detailContainerView];
+    [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
+    [CASShadowView attachToView:self.imageView.superview edge:NSMaxXEdge];
 
     [self configureForCameraController];
 

@@ -9,5 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CASShadowView : NSView
-+ (void)attachToView:(NSView*)view;
++ (void)attachToView:(NSView*)view edge:(NSRectEdge)edge;
 @end

@@ -9,14 +9,22 @@
 #import "CASShadowView.h"
 #import <QuartzCore/QuartzCore.h>
 
-@implementation CASShadowView
+@implementation CASShadowView {
+    NSRectEdge _edge;
+}
 
-- (id)initWithFrame:(NSRect)frameRect
+- (id)initWithFrame:(NSRect)frameRect edge:(NSRectEdge)edge
 {
     self = [super initWithFrame:frameRect];
     if (self) {
+        _edge = edge;
         CAGradientLayer* layer = [CAGradientLayer layer];
-        layer.colors = [NSArray arrayWithObjects:(__bridge id)CGColorCreateGenericGray(0,0),CGColorCreateGenericGray(0,0.5),nil];
+        if (_edge == NSMinXEdge){
+            layer.colors = [NSArray arrayWithObjects:(__bridge id)CGColorCreateGenericGray(0,0),CGColorCreateGenericGray(0,0.5),nil];
+        }
+        else {
+            layer.colors = [NSArray arrayWithObjects:(__bridge id)CGColorCreateGenericGray(0,0.5),CGColorCreateGenericGray(0,0),nil];
+        }
         if (CGRectGetWidth(frameRect) > CGRectGetHeight(frameRect)){
             layer.startPoint = CGPointMake(0.5, 0);
             layer.endPoint = CGPointMake(0.5, 1);
@@ -25,8 +33,6 @@
             layer.startPoint = CGPointMake(0, 0.5);
             layer.endPoint = CGPointMake(1, 0.5);
         }
-        layer.startPoint = CGPointMake(0, 0.5);
-        layer.endPoint = CGPointMake(1, 0.5);
         self.layer = layer;
         self.wantsLayer = YES;
     }
@@ -38,14 +44,26 @@
     return NO;
 }
 
-+ (void)attachToView:(NSView*)view // todo; edge param
++ (void)attachToView:(NSView*)view edge:(NSRectEdge)edge
 {
     NSParameterAssert(view);
-    CASShadowView* shadow = [[CASShadowView alloc] initWithFrame:CGRectMake(0, 0, 7, CGRectGetHeight(view.frame))];
-    shadow.frame = CGRectMake(0, 0, 10, view.frame.size.height);
-    [view.superview addSubview:shadow];
-    [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[shadow(==7)]-0-[view]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
-    [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[shadow(==view)]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
+    
+    CASShadowView* shadow = [[CASShadowView alloc] initWithFrame:CGRectMake(0, 0, 7, CGRectGetHeight(view.frame)) edge:edge];
+    
+    if (edge == NSMinXEdge){
+        
+        shadow.frame = CGRectMake(0, 0, 10, view.frame.size.height);
+        [view.superview addSubview:shadow];
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[shadow(==7)]-0-[view]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[shadow(==view)]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
+    }
+    else if (edge == NSMaxXEdge){
+        
+        shadow.frame = CGRectMake(CGRectGetMaxX(view.frame), 0, 10, view.frame.size.height);
+        [view.superview addSubview:shadow];
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[view]-0-[shadow(==7)]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
+        [view.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[shadow(==view)]" options:NSLayoutFormatAlignAllTop metrics:nil views:NSDictionaryOfVariableBindings(shadow,view)]];
+    }
 }
 
 @end
