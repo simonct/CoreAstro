@@ -8,6 +8,7 @@
 
 #import "CASLibraryBrowserViewController.h"
 #import "CASLibraryBrowserView.h"
+#import "CASExposuresController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
@@ -109,7 +110,17 @@
 
 - (NSArray*)defaultExposuresArray
 {
-    return [[[CASCCDExposureLibrary sharedLibrary] exposures] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+    return [self.exposuresController arrangedObjects];
+}
+
+- (void)setExposuresController:(CASExposuresController *)exposuresController
+{
+    if (exposuresController != _exposuresController){
+        // unobserve
+        _exposuresController = exposuresController;
+        // observe
+        [self.browserView setSelectionIndexes:_exposuresController.selectionIndexes byExtendingSelection:NO];
+    }
 }
 
 - (NSArray*)exposures
@@ -208,6 +219,11 @@
     NSLog(@"cellWasRightClickedAtIndex: %lu",index);
     
     // contextual menu
+}
+
+- (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser
+{
+    [self.exposuresController setSelectionIndexes:[aBrowser selectionIndexes]];
 }
 
 - (IBAction)zoomSliderDidChange:(id)sender

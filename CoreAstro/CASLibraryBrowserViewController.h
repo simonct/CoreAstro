@@ -9,7 +9,9 @@
 #import <Cocoa/Cocoa.h>
 
 @class CASLibraryBrowserView;
+@class CASExposuresController;
 
 @interface CASLibraryBrowserViewController : NSViewController
+@property (nonatomic,weak) CASExposuresController* exposuresController;
 @property (nonatomic,weak) IBOutlet CASLibraryBrowserView* browserView;
 @end

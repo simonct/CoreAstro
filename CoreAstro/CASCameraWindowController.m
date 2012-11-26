@@ -660,75 +660,79 @@
     // todo: async
     [self updateHistogram];
 
-    CASCCDImage* image = [exposure createImage];
-    if (!image){
-        [self.imageView setImage:nil imageProperties:nil];
-        return;
-    }
-    
-    CGImageRef CGImage = nil;
-    if (self.debayerMode == kCASImageDebayerNone){
-        CGImage = image.CGImage;
-    }
-    else {
-        CGImage = [self.imageDebayer debayer:image]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
-    }
-    
-    const CASExposeParams params = exposure.params;
-    const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
-    
-    if (CGImage){
+    // check image view is actually visible
+    if (!self.imageView.isHidden){
         
-        const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
-        if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
-                        
-            CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
-            if (!bitmap){
-                CGImage = nil;
-            }
-            else {
-                CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
-                CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
-                CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
-                CGImage = CGBitmapContextCreateImage(bitmap);
-            }
+        CASCCDImage* image = [exposure createImage];
+        if (!image){
+            [self.imageView setImage:nil imageProperties:nil];
+            return;
         }
+        
+        CGImageRef CGImage = nil;
+        if (self.debayerMode == kCASImageDebayerNone){
+            CGImage = image.CGImage;
+        }
+        else {
+            CGImage = [self.imageDebayer debayer:image]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
+        }
+        
+        const CASExposeParams params = exposure.params;
+        const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
         
         if (CGImage){
             
-            CGSize currentSize = CGSizeZero;
-            CGImageRef currentImage = self.imageView.image;
-            if (currentImage){
-                currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
-            }
-            
-            [self disableAnimations:^{
+            const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
+            if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                 
-                // first clear the old image (vague attempt to stop crashing when setting a new image)
-                [self.imageView setImage:nil imageProperties:nil];
-
-                // flashes when updated, hide and then show again ? draw the new image into the old image ?...
-                [self.imageView setImage:CGImage imageProperties:nil];
-                
-                // ensure the histogram view remains at the front.
-                [self.histogramView removeFromSuperview];
-                [self.imageView addSubview:self.histogramView];
-                
-                const CGSize size = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
-                if (!currentImage || !CGSizeEqualToSize(size, currentSize)) {
-                    [self.imageView zoomImageToFit:nil];  
-                    self.zoomFactor = self.imageView.zoomFactor;
+                CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
+                if (!bitmap){
+                    CGImage = nil;
                 }
                 else {
-                    const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
-                    if (self.zoomFactor != self.imageView.zoomFactor){
-                        [self.imageView setZoomFactor:self.zoomFactor]; // <-- frequent crash...
-                    }
-                    if (self.rotationAngle != self.imageView.rotationAngle){
-                        [self.imageView setRotationAngle:self.rotationAngle centerPoint:centre];
-                    }
+                    CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
+                    CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
+                    CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
+                    CGImage = CGBitmapContextCreateImage(bitmap);
                 }
-            }];
+            }
+            
+            if (CGImage){
+                
+                CGSize currentSize = CGSizeZero;
+                CGImageRef currentImage = self.imageView.image;
+                if (currentImage){
+                    currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
+                }
+                
+                [self disableAnimations:^{
+                    
+                    // first clear the old image (vague attempt to stop crashing when setting a new image)
+                    [self.imageView setImage:nil imageProperties:nil];
+                    
+                    // flashes when updated, hide and then show again ? draw the new image into the old image ?...
+                    [self.imageView setImage:CGImage imageProperties:nil];
+                    
+                    // ensure the histogram view remains at the front.
+                    [self.histogramView removeFromSuperview];
+                    [self.imageView addSubview:self.histogramView];
+                    
+                    const CGSize size = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
+                    if (!currentImage || !CGSizeEqualToSize(size, currentSize)) {
+                        [self.imageView zoomImageToFit:nil];
+                        self.zoomFactor = self.imageView.zoomFactor;
+                    }
+                    else {
+                        const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
+                        if (self.zoomFactor != self.imageView.zoomFactor){
+                            [self.imageView setZoomFactor:self.zoomFactor]; // <-- frequent crash...
+                        }
+                        if (self.rotationAngle != self.imageView.rotationAngle){
+                            [self.imageView setRotationAngle:self.rotationAngle centerPoint:centre];
+                        }
+                    }
+                }];
+            }
         }
     }
 }
@@ -1420,6 +1424,7 @@
 {
     if (!self.libraryViewController){
         self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
+        self.libraryViewController.exposuresController = self.exposuresController;
     }
     
     // drop the library view into the same container as the image view
@@ -1434,8 +1439,9 @@
 - (void)hideLibraryView
 {
     if ([self.libraryViewController.view superview]){
-        self.imageView.hidden = NO;
         [self.libraryViewController.view removeFromSuperview];
+        self.imageView.hidden = NO;
+        [self displayExposure:_currentExposure];
     }
 }
 
