@@ -116,10 +116,9 @@
 - (void)setExposuresController:(CASExposuresController *)exposuresController
 {
     if (exposuresController != _exposuresController){
-        // unobserve
+        [_exposuresController removeObserver:self forKeyPath:@"selectedObjects"];
         _exposuresController = exposuresController;
-        // observe
-        [self.browserView setSelectionIndexes:_exposuresController.selectionIndexes byExtendingSelection:NO];
+        [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew context:(__bridge void *)(self)];
     }
 }
 
@@ -250,6 +249,16 @@
     }
 }
 
-// todo: group support e.g. group by device, group by date, etc
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        if ([@"selectedObjects" isEqualToString:keyPath]){
+            [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
+            // scroll to selection
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
 
 @end
