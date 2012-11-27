@@ -49,6 +49,7 @@
 @property (nonatomic,readonly) NSString* displayDate;
 @property (nonatomic,readonly) NSString* displayExposure;
 @property (nonatomic,readonly) NSString* displayDeviceName;
+@property (nonatomic,readonly) NSString* displayType;
 
 @property (nonatomic,readonly) NSURL* persistentStoreURL;
 

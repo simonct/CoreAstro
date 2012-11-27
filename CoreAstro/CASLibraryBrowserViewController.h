@@ -8,10 +8,17 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CASCCDExposure;
 @class CASLibraryBrowserView;
 @class CASExposuresController;
 
+@protocol CASLibraryBrowserViewControllerDelegate <NSObject>
+@optional
+- (void)focusOnExposure:(CASCCDExposure*)exposure;
+@end
+
 @interface CASLibraryBrowserViewController : NSViewController
+@property (nonatomic,unsafe_unretained) id<CASLibraryBrowserViewControllerDelegate> exposureDelegate; // delegate is a window controller
 @property (nonatomic,weak) CASExposuresController* exposuresController;
 @property (nonatomic,weak) IBOutlet CASLibraryBrowserView* browserView;
 @end

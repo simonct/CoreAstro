@@ -60,7 +60,7 @@
 
 #pragma Camera Window
 
-@interface CASCameraWindowController ()<CASMasterSelectionViewDelegate>
+@interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate>
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL divideFlat;
@@ -1426,6 +1426,7 @@
     if (!self.libraryViewController){
         self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
         self.libraryViewController.exposuresController = self.exposuresController;
+        self.libraryViewController.exposureDelegate = self;
     }
     
     // drop the library view into the same container as the image view
@@ -1463,6 +1464,14 @@
     else{
         [self showLibraryView];
     }
+}
+
+#pragma mark Library delegate
+
+- (void)focusOnExposure:(CASCCDExposure*)exposure
+{
+    [self hideLibraryView];
+    self.currentExposure = exposure;
 }
 
 @end

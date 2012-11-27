@@ -95,18 +95,6 @@
     return [dateFormatter stringFromDate:self.date];
 }
 
-- (NSString*) displayDateDay
-{
-    static NSDateFormatter* dateFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateStyle = kCFDateFormatterMediumStyle;
-        dateFormatter.timeStyle = kCFDateFormatterNoStyle;
-    });
-    return [dateFormatter stringFromDate:self.date];
-}
-
 - (NSString*) displayExposure
 {
     static NSNumberFormatter* numberFormatter = nil;
@@ -128,6 +116,9 @@
 
 - (CASSize)actualSize
 {
+    if (!self.params.bin.width || !self.params.bin.height){
+        return CASSizeMake(0, 0);
+    }
     return CASSizeMake(self.params.size.width / self.params.bin.width, self.params.size.height / self.params.bin.height);
 }
 
