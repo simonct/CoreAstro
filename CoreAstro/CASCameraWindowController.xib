@@ -890,7 +890,6 @@
 													<string key="NSFrame">{{13, 304}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="805495301">
@@ -1388,7 +1387,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 									<int key="NSTitlePosition">0</int>
 									<bool key="NSTransparent">NO</bool>
 									<reference key="NSBorderColor2" ref="891327909"/>
-									<reference key="NSFillColor2" ref="469540936"/>
+									<object class="NSColor" key="NSFillColor2">
+										<int key="NSColorSpace">3</int>
+										<bytes key="NSWhite">MC45AA</bytes>
+									</object>
 								</object>
 							</array>
 							<string key="NSFrameSize">{1171, 693}</string>
