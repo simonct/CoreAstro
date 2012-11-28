@@ -28,7 +28,6 @@
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
 #import "CASHistogramView.h"
 #import "CASExposuresController.h"
-#import "CASExposuresWindowController.h"
 #import "CASProgressWindowController.h"
 #import "CASImageView.h"
 #import "CASShadowView.h"
@@ -78,7 +77,6 @@
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
-@property (nonatomic,strong) CASExposuresWindowController* exposuresWindowController;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @end
 
@@ -904,42 +902,127 @@
     self.cameraController.captureCount = 0;
 }
 
-- (IBAction)saveAs:(id)sender
+- (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel andExportBlock:(void(^)(CASCCDExposure*))exportBlock
 {
-    if (!self.imageView.image){
-        return;
-    }
-    
-    IKSaveOptions* options = [[IKSaveOptions alloc] initWithImageProperties:nil imageUTType:nil];
-
-    NSSavePanel* save = [NSSavePanel savePanel];
-    
-    [options addSaveOptionsAccessoryViewToSavePanel:save];
-        
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSFileHandlingPanelOKButton){
             
-            CGImageDestinationRef dest = CGImageDestinationCreateWithURL((__bridge CFURLRef)save.URL,(__bridge CFStringRef)[options imageUTType],1,NULL);
-            if (dest) {
+            // wait for the open sheet to dismiss
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
-                // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
-                const size_t width = CGImageGetWidth(self.imageView.image);
-                const size_t height = CGImageGetHeight(self.imageView.image);
-                CGContextRef rgb = [CASCCDImage createRGBBitmapContextWithSize:CASSizeMake(width, height)];
-                if (rgb){
+                // start progress hud
+                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                [progress beginSheetModalForWindow:self.window];
+                [progress configureWithRange:NSMakeRange(0, [exposures count]) label:progressLabel];
+                
+                // export the exposures - beware of races here since we're doing this async
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     
-                    CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), self.imageView.image);
-                    CGImageRef image = CGBitmapContextCreateImage(rgb);
-                    if (image){
+                    for (CASCCDExposure* exposure in exposures){
                         
-                        CGImageDestinationAddImage(dest, image, (__bridge CFDictionaryRef)[options imageProperties]);
-                        CGImageDestinationFinalize(dest);
-                        CGImageRelease(image);
+                        @try {
+                            @autoreleasepool {
+                                exportBlock(exposure);
+                            }
+                        }
+                        @catch (NSException *exception) {
+                            NSLog(@"*** Exception exporting exposure: %@",exposure);
+                        }
+                        
+                        // release the pixels - need an autorelease pool-style mechanism to do this generally
+                        [exposure reset];
+                        
+                        // update progress bar
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            progress.progressBar.doubleValue++;
+                        });
                     }
-                    CGContextRelease(rgb);
+                    
+                    // dismiss progress sheet/hud
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [progress endSheetWithCode:NSOKButton];
+                    });
+                });
+            });
+        }
+    }];
+}
+
+- (IBAction)saveAs:(id)sender
+{
+    NSArray* exposures = self.exposuresController.selectedObjects;
+    if (![exposures count]){
+        return;
+    }
+        
+    NSSavePanel* save = nil;
+    if ([exposures count] == 1){
+        save = [NSSavePanel savePanel];
+    }
+    else {
+        save = [NSOpenPanel openPanel];
+        ((NSOpenPanel*)save).canChooseFiles = NO;
+        ((NSOpenPanel*)save).canChooseDirectories = YES;
+        ((NSOpenPanel*)save).prompt = @"Choose";
+    }
+    save.canCreateDirectories = YES;
+    
+    IKSaveOptions* options = [[IKSaveOptions alloc] initWithImageProperties:nil imageUTType:nil];
+    [options addSaveOptionsAccessoryViewToSavePanel:save];
+    
+    // run the save panel and save the exposures to the selected location
+    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
+        
+        // get the image
+        CGImageRef image = [exposure createImage].CGImage;
+        if (!image){
+            NSLog(@"*** Failed to create image from exposure");
+        }
+        else{
+            
+            // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
+            const size_t width = CGImageGetWidth(image);
+            const size_t height = CGImageGetHeight(image);
+            CGContextRef rgb = [CASCCDImage createRGBBitmapContextWithSize:CASSizeMake(width, height)];
+            if (!rgb){
+                NSLog(@"*** Failed to create rgb image context");
+            }
+            else{
+                
+                CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), image);
+                CGImageRef image = CGBitmapContextCreateImage(rgb);
+                if (!image){
+                    NSLog(@"*** Failed to create rgb image");
                 }
-                CFRelease(dest);
+                else{
+                    
+                    NSURL* url = save.URL;
+                    if ([exposures count] > 1){
+                        NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exposure];
+                        NSString *extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(options.imageUTType), kUTTagClassFilenameExtension);
+                        url = [[url URLByAppendingPathComponent:name] URLByAppendingPathExtension:extension];
+                    }
+                    if (![[NSFileManager defaultManager] createDirectoryAtPath:[[url path] stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil]){
+                        NSLog(@"*** Failed to create image directory");
+                    }
+                    else {
+                        CGImageDestinationRef dest = CGImageDestinationCreateWithURL((__bridge CFURLRef)url,(__bridge CFStringRef)[options imageUTType],1,NULL);
+                        if (!dest){
+                            NSLog(@"*** Failed to create image exporter to %@",url);
+                        }
+                        else{
+                            
+                            CGImageDestinationAddImage(dest, image, (__bridge CFDictionaryRef)[options imageProperties]);
+                            if (!CGImageDestinationFinalize(dest)){
+                                NSLog(@"*** Failed to save image to %@",url);
+                            }
+                            CGImageRelease(image);
+                            CFRelease(dest);
+                        }
+                    }
+                }
+                CGContextRelease(rgb);
             }
         }
     }];
@@ -947,97 +1030,46 @@
 
 - (IBAction)exportToFITS:(id)sender
 {
-    if (!self.currentExposure){
+    NSArray* exposures = self.exposuresController.selectedObjects;
+    if (![exposures count]){
         return;
     }
     
-    NSSavePanel* save = [NSSavePanel savePanel];
+    NSSavePanel* save = nil;
+    if ([exposures count] == 1){
+        save = [NSSavePanel savePanel];
+    }
+    else {
+        save = [NSOpenPanel openPanel];
+        ((NSOpenPanel*)save).canChooseFiles = NO;
+        ((NSOpenPanel*)save).canChooseDirectories = YES;
+        ((NSOpenPanel*)save).prompt = @"Choose";
+    }
+    save.canCreateDirectories = YES;
+
     save.allowedFileTypes = @[@"fits",@"fit"];
-    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        
-        if (result == NSFileHandlingPanelOKButton){
-            
-            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[save.URL path]];
-            if (!io){
-                NSLog(@"*** Failed to create FITS exporter");
-            }
-            else {
-                NSError* error = nil;
-                [io writeExposure:self.currentExposure writePixels:YES error:&error];
-                if (error){
-                    [NSApp presentError:error];
-                }
-            }
-        }
-    }];
-}
-
-- (IBAction)batchExportToFITS:(id)sender
-{
-    self.exposuresWindowController = [CASExposuresWindowController createWindowController];
     
-    [self.exposuresWindowController beginSheetModalForWindow:self.window exposuresCompletionHandler:^(NSInteger result,NSArray* exposures) {
+    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
         
-        if (result == NSOKButton && [exposures count]){
-            
-            NSOpenPanel* open = [NSOpenPanel openPanel];
-            open.canChooseFiles = NO;
-            open.canChooseDirectories = YES;
-            open.canCreateDirectories = YES;
-            open.prompt = NSLocalizedString(@"Export", @"Button label");
-            [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-                
-                if (result == NSFileHandlingPanelOKButton){
-                 
-                    // wait for the open sheet to dismiss
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                       
-                        // start progress hud
-                        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-                        [progress beginSheetModalForWindow:self.window];
-                        [progress configureWithRange:NSMakeRange(0, [exposures count]) label:NSLocalizedString(@"Exporting...", @"Progress text")];
-
-                        // export the exposures - beware of races here since we're doing this async
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            
-                            NSString* root = [open.URL path];
-                            for (CASCCDExposure* exp in exposures){
-                                
-                                NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exp];
-                                NSString* path = [[root stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"];
-                                CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-                                if (!io){
-                                    NSLog(@"*** Failed to create FITS exporter");
-                                    break;
-                                }
-                                else {
-                                    NSError* error = nil;
-                                    [io writeExposure:exp writePixels:YES error:&error];
-                                    if (error){
-                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                            [NSApp presentError:error];
-                                        });
-                                        break;
-                                    }
-                                }
-                                
-                                // update progress bar
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    progress.progressBar.doubleValue++;
-                                });
-                            }
-                            
-                            // dismiss progress sheet/hud
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [progress endSheetWithCode:NSOKButton];
-                            });
-                        });
-                    });
-                }
-            }];
+        NSURL* url = save.URL;
+        if ([exposures count] > 1){
+            NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exposure];
+            url = [[url URLByAppendingPathComponent:name] URLByAppendingPathExtension:@"fits"];
         }
         
-        self.exposuresWindowController = nil;
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+        if (!io){
+            NSLog(@"*** Failed to create FITS exporter");
+        }
+        else {
+            NSError* error = nil;
+            [io writeExposure:exposure writePixels:YES error:&error];
+            if (error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSApp presentError:error];
+                });
+            }
+        }
     }];
 }
 

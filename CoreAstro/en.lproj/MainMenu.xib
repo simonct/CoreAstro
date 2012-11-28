@@ -278,16 +278,6 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="966739937">
-									<reference key="NSMenu" ref="720053764"/>
-									<bool key="NSIsAlternate">YES</bool>
-									<string key="NSTitle">Batch Export to FITS...</string>
-									<string key="NSKeyEquiv">f</string>
-									<int key="NSKeyEquivModMask">1572864</int>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
 								<object class="NSMenuItem" id="579971712">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Revert to Saved</string>
@@ -2316,14 +2306,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">batchExportToFITS:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="966739937"/>
-					</object>
-					<int key="connectionID">607</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleShowReticle:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="421000549"/>
@@ -2530,7 +2512,6 @@
 							<reference ref="579971712"/>
 							<reference ref="1010469920"/>
 							<reference ref="565472242"/>
-							<reference ref="966739937"/>
 						</array>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -3553,11 +3534,6 @@
 						<reference key="parent" ref="110575045"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">606</int>
-						<reference key="object" ref="966739937"/>
-						<reference key="parent" ref="720053764"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">608</int>
 						<reference key="object" ref="421000549"/>
 						<reference key="parent" ref="466310130"/>
@@ -3785,7 +3761,6 @@
 				<string key="598.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="600.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="601.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="606.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="608.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="611.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="612.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
