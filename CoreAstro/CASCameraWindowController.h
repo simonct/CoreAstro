@@ -62,5 +62,4 @@
 @property (nonatomic,strong) IBOutlet NSArrayController *darksController;
 @property (nonatomic,strong) IBOutlet NSArrayController *flatsController;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
-@property (nonatomic,weak) IBOutlet NSPopUpButton *exposuresMenu;
 @end

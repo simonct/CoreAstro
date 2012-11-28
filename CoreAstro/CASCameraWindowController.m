@@ -306,14 +306,6 @@
         [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
         [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
 
-        // update the exposures menu selection (potentially slow...)
-        for (NSMenuItem* item in [self.exposuresMenu.menu itemArray]){
-            const NSInteger index = [item.submenu indexOfItemWithRepresentedObject:_currentExposure];
-            if (index != -1){
-                [self.exposuresMenu selectItem:[item.submenu itemAtIndex:index].parentItem];
-            }
-        }
-
         // display the exposure
         [self displayExposure:_currentExposure];
     }
@@ -326,9 +318,6 @@
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
                 self.currentExposure = [self currentlySelectedExposure];
-            }
-            else {
-                [self updateExposuresMenu];
             }
         }
         else if (object == self.darksController || object == self.flatsController){
@@ -768,70 +757,6 @@
     }
 }
 
-- (void)updateExposuresMenu
-{
-    // todo; put most recent day/today at the top level ?
-    
-    NSCalendar* cal = [NSCalendar currentCalendar];
-
-    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:100];
-    for (CASCCDExposure* exposure in self.exposuresController.arrangedObjects){
-        NSDateComponents* comps = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:exposure.date];
-        NSMutableArray* array = [dict objectForKey:comps];
-        if (!array){
-            array = [NSMutableArray arrayWithCapacity:100];
-            [dict setObject:array forKey:comps];
-        }
-        [array addObject:exposure];
-    }
-    
-    [self.exposuresMenu removeAllItems];
-    
-    static NSDateFormatter* sectionFormatter = nil;
-    static NSDateFormatter* exposureFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        
-        sectionFormatter = [[NSDateFormatter alloc] init];
-        [sectionFormatter setDateStyle:NSDateFormatterMediumStyle];
-        [sectionFormatter setTimeStyle:NSDateFormatterNoStyle];
-        
-        exposureFormatter = [[NSDateFormatter alloc] init];
-        [exposureFormatter setDateStyle:NSDateFormatterNoStyle];
-        [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
-    });
-    
-    NSArray* keys = [[dict allKeys] sortedArrayUsingComparator:^NSComparisonResult(NSDateComponents* obj1, NSDateComponents* obj2) {
-        switch ([[cal dateFromComponents:obj1] compare:[cal dateFromComponents:obj2]]) {
-            case NSOrderedAscending:
-                return NSOrderedDescending;
-            case NSOrderedDescending:
-                return NSOrderedAscending;
-            default:
-                break;
-        }
-        return NSOrderedSame;
-    }];
-    for (NSDateComponents* key in keys){
-        
-        NSMenu* submenu = [[NSMenu alloc] initWithTitle:@""];
-        for (CASCCDExposure* exp in [dict objectForKey:key]) {
-            
-            NSString* expTitle = [NSString stringWithFormat:@"%@\t %@\t %@",[exposureFormatter stringFromDate:exp.date],exp.displayDeviceName,exp.displayExposure];
-            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:expTitle action:nil keyEquivalent:@""];
-            [item setTarget:self];
-            [item setAction:@selector(selectExposure:)];
-            [item setRepresentedObject:exp];
-            [submenu addItem:item];
-        }
-        
-        NSDate* keyDate = [cal dateFromComponents:key];
-        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[sectionFormatter stringFromDate:keyDate] action:nil keyEquivalent:@""];
-        [self.exposuresMenu.menu addItem:item];
-        [self.exposuresMenu.menu setSubmenu:submenu forItem:item];
-    }
-}
-
 - (void)clearSelection
 {
     self.selectionControl.selectedSegment = 1;
@@ -1225,11 +1150,7 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
-    if ([[self.exposuresMenu.menu itemArray] containsObject:item.parentItem]){
-        
-        item.state = (item.representedObject == self.currentExposure);
-    }
-    else switch (item.tag) {
+    switch (item.tag) {
             
         case 10000:
             if (self.showHistogram){
