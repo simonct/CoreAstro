@@ -1287,6 +1287,11 @@
 
 #pragma mark NSResponder
 
+- (void)keyDown:(NSEvent *)theEvent
+{
+    [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+}
+
 - (void)moveUp:(id)sender
 {
     const NSUInteger index = self.exposuresController.selectionIndex;
@@ -1307,6 +1312,18 @@
     else if (index < [self.exposuresController.arrangedObjects count] - 1){
         self.exposuresController.selectionIndex = index + 1;
     }
+}
+
+- (void)delete:sender
+{
+    if ([[self.exposuresController selectedObjects] count]){
+        [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.window];
+    }
+}
+
+- (void)deleteBackward:sender
+{
+    [self delete:sender];
 }
 
 #pragma mark IKImageView delegate

@@ -134,7 +134,7 @@
 @implementation CASLibraryBrowserGroupInfo
 @end
 
-@interface CASLibraryBrowserViewController ()<CASLibraryBrowserViewDelegate>
+@interface CASLibraryBrowserViewController ()
 @property (nonatomic,strong) NSArray* exposures;
 @property (nonatomic,strong) NSArray* groups;
 @property (nonatomic,strong) NSMutableDictionary* wrappers;
@@ -149,7 +149,6 @@
 - (void)loadView
 {
     [super loadView];
-    self.browserView.libraryDelegate = self;
     [self.browserView setDataSource:self];
     [self.browserView setDelegate:self];
     [self.browserView setCellsStyleMask:IKCellsStyleTitled|IKCellsStyleSubtitled|IKCellsStyleShadowed];
@@ -325,15 +324,6 @@
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
-
-#pragma mark - Library view delegate
-
-- (void)deleteSelectedExposures
-{
-    if ([[self.exposuresController selectedObjects] count]){
-        [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.browserView.window];
     }
 }
 
