@@ -97,7 +97,7 @@
     if (!_image){
         _image = self.exposure.thumbnail;
         if (!_image){
-            NSLog(@"No thumbnail for %@",self.exposure.date); // make one from the full res image
+            // NSLog(@"No thumbnail for %@",self.exposure.date); // make one from the full res image
         }
     }
 	return _image;
@@ -144,6 +144,8 @@
 @implementation CASLibraryBrowserViewController {
     NSArray* _groups;
     NSArray* _exposures;
+    NSArray* _defaultExposuresArray;
+    BOOL _inImageBrowserSelectionDidChange;
 }
 
 - (void)loadView
@@ -158,13 +160,14 @@
 
 - (NSArray*)defaultExposuresArray
 {
+    // todo; cache this, clearing when appropriate - or possibly move into the exposures controller
     NSMutableArray* defaultExposuresArray = [NSMutableArray arrayWithCapacity:[[self.exposuresController arrangedObjects] count]];
     for (CASCCDExposure* exp in [self.exposuresController arrangedObjects]){
         if (exp.uuid){
             [defaultExposuresArray addObject:exp];
         }
         else {
-            NSLog(@"No uuid: %@",exp);
+            NSLog(@"No uuid: %@",exp); // I'm using the uuid as the image browser key - could use the url instead ?
         }
     }
     return [defaultExposuresArray copy];
@@ -199,19 +202,21 @@
 
 - (void)updateForCurrentGroupKey
 {
+    NSArray* defaultExposuresArray = self.defaultExposuresArray;
     if (![_groupKeyPath length]){
         self.groups = nil;
-        self.exposures = [self defaultExposuresArray];
+        self.exposures = defaultExposuresArray;
     }
     else {
-        NSSet* groupInfos = [NSSet setWithArray:[self.exposures valueForKeyPath:_groupKeyPath]];
+        NSSet* groupInfos = [NSSet setWithArray:[defaultExposuresArray valueForKeyPath:_groupKeyPath]];
         if (![groupInfos count]){
             self.groups = nil;
-            self.exposures = [self defaultExposuresArray];
+            self.exposures = defaultExposuresArray;
         }
         else {
+            // todo; set sort descriptors on exposuresController rather than doing it on a copy
             self.groups = [[groupInfos allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"value" ascending:NO]]];
-            self.exposures = [self.defaultExposuresArray sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+            self.exposures = [defaultExposuresArray sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
         }
     }
 }
@@ -249,17 +254,18 @@
     return [self.groups count];
 }
 
-/*!
- @method imageBrowser:groupAtIndex:
- @abstract Returns the group at index 'index'
- @discussion A group is defined by a dictionay. Keys for this dictionary are defined below.
- */
 - (NSDictionary *) imageBrowser:(IKImageBrowserView *) aBrowser groupAtIndex:(NSUInteger) index
 {
     NSDictionary* groupInfo = self.groups[index];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@",groupInfo[@"sortKey"],groupInfo[@"value"]];
     NSArray* groupItems = [self.exposures filteredArrayUsingPredicate:predicate];
-    NSRange groupRange = NSMakeRange([self.exposures indexOfObject:groupItems[0]],[groupItems count]);
+    NSRange groupRange;
+    if (![groupItems count]){
+        groupRange = NSMakeRange(0, 0);
+    }
+    else {
+        groupRange = NSMakeRange([self.exposures indexOfObject:groupItems[0]],[groupItems count]);
+    }
     return [NSDictionary dictionaryWithObjectsAndKeys:
             groupInfo[@"name"],IKImageBrowserGroupTitleKey,
             [NSValue valueWithRange:groupRange],IKImageBrowserGroupRangeKey,
@@ -284,7 +290,13 @@
 
 - (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser
 {
-    [self.exposuresController setSelectionIndexes:[aBrowser selectionIndexes]];
+    _inImageBrowserSelectionDidChange = YES; // yuk
+    @try {
+        [self.exposuresController setSelectedObjects:[self.exposures objectsAtIndexes:[aBrowser selectionIndexes]]];
+    }
+    @finally {
+        _inImageBrowserSelectionDidChange = NO;
+    }
 }
 
 - (IBAction)zoomSliderDidChange:(id)sender
@@ -315,8 +327,10 @@
 {
     if (context == (__bridge void *)(self)) {
         if ([@"selectedObjects" isEqualToString:keyPath]){
-            [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
-            // scroll to selection
+            if (!_inImageBrowserSelectionDidChange){
+                [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
+                // scroll to selection
+            }
         }
         else if ([@"arrangedObjects" isEqualToString:keyPath]){
             [self updateForCurrentGroupKey];
