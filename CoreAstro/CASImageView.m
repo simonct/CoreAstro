@@ -38,26 +38,23 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 @interface CASImageView ()
 @property (nonatomic,assign) BOOL firstShowEditPanel;
-@property (nonatomic,retain) CALayer* starLayer;
-@property (nonatomic,retain) CALayer* lockLayer;
-@property (nonatomic,retain) CALayer* searchLayer;
-@property (nonatomic,retain) CAShapeLayer* reticleLayer;
-@property (nonatomic,retain) CASProgressView* progressView;
+@property (nonatomic,strong) CALayer* starLayer;
+@property (nonatomic,strong) CALayer* lockLayer;
+@property (nonatomic,strong) CALayer* searchLayer;
+@property (nonatomic,strong) CAShapeLayer* reticleLayer;
+@property (nonatomic,strong) CASProgressView* progressView;
+@property (nonatomic,strong) NSTrackingArea* trackingArea;
+@property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @end
 
-@implementation CASImageView
-
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        self.starLocation = kCASImageViewInvalidStarLocation;
-    }
-    return self;
+@implementation CASImageView {
+    BOOL _zoomToFit:1;
+    BOOL _zoomToActual:1;
 }
 
 - (void)awakeFromNib
 {
+    self.zoomFactor = 1;
     self.starLocation = kCASImageViewInvalidStarLocation;
 }
 
@@ -66,25 +63,44 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return NO;
 }
 
-//- (BOOL)acceptsFirstResponder
-//{
-//    return NO;
-//}
+- (void)disableAnimations:(void(^)(void))block {
+    const BOOL disableActions = [CATransaction disableActions];
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    if (block){
+        block();
+    }
+    [CATransaction commit];
+    [CATransaction setDisableActions:disableActions];
+}
 
-//- (void)mouseUp:(NSEvent *)theEvent
-//{
-//    if (theEvent.clickCount == 2){
-//        [IKImageEditPanel sharedImageEditPanel].dataSource = (id<IKImageEditPanelDataSource>)self;
-//        if (!self.firstShowEditPanel){
-//            self.firstShowEditPanel = YES;
-//            const NSRect frame = [IKImageEditPanel sharedImageEditPanel].frame;
-//            const NSRect windowFrame = self.window.frame;
-//            [[IKImageEditPanel sharedImageEditPanel] setFrameOrigin:NSMakePoint(NSMinX(windowFrame) + NSWidth(windowFrame)/2 - NSWidth(frame)/2, NSMinY(windowFrame) + NSHeight(windowFrame)/2 - NSHeight(frame)/2)];
-//        }
-//        [[IKImageEditPanel sharedImageEditPanel] makeKeyAndOrderFront:nil];
-//        [[IKImageEditPanel sharedImageEditPanel] setHidesOnDeactivate:YES];
-//    }
-//}
+- (void)setFrame:(NSRect)frameRect
+{
+    if (self.trackingArea){
+        [self removeTrackingArea:self.trackingArea];
+        self.trackingArea = nil;
+    }
+    
+    [super setFrame:frameRect];
+    
+    self.trackingArea = [[NSTrackingArea alloc] initWithRect:frameRect options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
+    [self addTrackingArea:self.trackingArea];
+}
+
+- (void)mouseMoved:(NSEvent *)theEvent
+{
+    NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    p = [self convertViewPointToImagePoint:p];
+   // NSLog(@"mouseMoved: %@",NSStringFromPoint(p));
+
+    if (self.image){
+        // check point in rect
+        if (NSPointInRect(p, CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)))){
+            // convert to image co-ords
+            // get pixel values
+        }
+    }
+}
 
 - (CGRect)selectionRect
 {
@@ -96,7 +112,30 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.searchLayer = nil;
     self.reticleLayer = nil;
 
-    [super setImage:image imageProperties:metaData];
+    [self disableAnimations:^{
+        
+        // flashes when updated, hide and then show again ? draw the new image into the old image ?...
+        [super setImage:image imageProperties:metaData];
+        
+        if (image){
+            
+            if (_zoomToFit){
+                [self zoomImageToFit:nil];
+            }
+            else if (_zoomToActual){
+                [self zoomImageToActualSize:nil];
+            }
+            else {
+                [self setZoomFactor:self.zoomFactor];
+            }
+            
+            if (self.rotationAngle){
+                const CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
+                const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
+                [self setRotationAngle:self.rotationAngle centerPoint:centre];
+            }
+        }
+    }];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
     
@@ -239,6 +278,59 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             [self.imageOverlayLayer addSublayer:_reticleLayer];
         }
     }
+}
+
+#define ZOOM_IN_FACTOR  1.414214
+#define ZOOM_OUT_FACTOR 0.7071068
+
+- (IBAction)zoomIn:(id)sender
+{
+    _zoomToFit = _zoomToActual = NO;
+    self.zoomFactor = self.zoomFactor * ZOOM_IN_FACTOR;
+    self.zoomFactor = self.zoomFactor;
+}
+
+- (IBAction)zoomOut:(id)sender
+{
+    _zoomToFit = _zoomToActual = NO;
+    self.zoomFactor = self.zoomFactor * ZOOM_OUT_FACTOR;
+    self.zoomFactor = self.zoomFactor;
+}
+
+- (IBAction)zoomImageToFit: (id)sender
+{
+    _zoomToFit = YES;
+    _zoomToActual = NO;
+    [super zoomImageToFit:sender];
+}
+
+- (IBAction)zoomImageToActualSize: (id)sender
+{
+    _zoomToFit = NO;
+    _zoomToActual = YES;
+    [super zoomImageToActualSize:sender];
+}
+
+- (void)flipImageHorizontal:sender
+{
+    [self flipImageHorizontal:sender];
+}
+
+- (void)flipImageVertical:sender
+{
+    [self flipImageVertical:sender];
+}
+
+- (void)rotateImageLeft:sender
+{
+    [self rotateImageLeft:sender];
+    self.rotationAngle += M_PI/2;
+}
+
+- (void)rotateImageRight:sender
+{
+    [self rotateImageRight:sender];
+    self.rotationAngle -= M_PI/2;
 }
 
 @end

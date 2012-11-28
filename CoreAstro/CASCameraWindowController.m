@@ -68,7 +68,6 @@
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
 @property (nonatomic,assign) NSInteger debayerMode;
-@property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
 @property (nonatomic,strong) CASHistogramView* histogramView;
@@ -100,12 +99,10 @@
 
 - (void)rotateImageLeft:sender {
     [self.cameraController.imageView rotateImageLeft:sender];
-    self.cameraController.rotationAngle += M_PI/2;
 }
 
 - (void)rotateImageRight:sender {
     [self.cameraController.imageView rotateImageRight:sender];
-    self.cameraController.rotationAngle -= M_PI/2;
 }
 
 - (void)zoomIn:sender {
@@ -127,16 +124,6 @@
 @end
 
 @implementation CASCameraWindowController
-
-- (id)initWithWindow:(NSWindow *)window
-{
-    self = [super initWithWindow:window];
-    if (self) {
-        self.zoomFactor = 1;
-    }
-    
-    return self;
-}
 
 - (void)windowDidLoad
 {
@@ -580,17 +567,6 @@
     }
 }
 
-- (void)disableAnimations:(void(^)(void))block {
-    const BOOL disableActions = [CATransaction disableActions];
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    if (block){
-        block();
-    }
-    [CATransaction commit];
-    [CATransaction setDisableActions:disableActions];
-}
-
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     if (!exposure){
@@ -693,33 +669,12 @@
                     currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
                 }
                 
-                [self disableAnimations:^{
-                    
-                    // first clear the old image (vague attempt to stop crashing when setting a new image)
-                    [self.imageView setImage:nil imageProperties:nil];
-                    
-                    // flashes when updated, hide and then show again ? draw the new image into the old image ?...
-                    [self.imageView setImage:CGImage imageProperties:nil];
-                    
-                    // ensure the histogram view remains at the front.
-                    [self.histogramView removeFromSuperview];
-                    [self.imageView addSubview:self.histogramView];
-                    
-                    const CGSize size = CGSizeMake(CGImageGetWidth(CGImage), CGImageGetHeight(CGImage));
-                    if (!currentImage || !CGSizeEqualToSize(size, currentSize)) {
-                        [self.imageView zoomImageToFit:nil];
-                        self.zoomFactor = self.imageView.zoomFactor;
-                    }
-                    else {
-                        const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
-                        if (self.zoomFactor != self.imageView.zoomFactor){
-                            [self.imageView setZoomFactor:self.zoomFactor]; // <-- frequent crash...
-                        }
-                        if (self.rotationAngle != self.imageView.rotationAngle){
-                            [self.imageView setRotationAngle:self.rotationAngle centerPoint:centre];
-                        }
-                    }
-                }];
+                // flashes when updated, hide and then show again ? draw the new image into the old image ?...
+                [self.imageView setImage:CGImage imageProperties:nil];
+                
+                // ensure the histogram view remains at the front.
+                [self.histogramView removeFromSuperview];
+                [self.imageView addSubview:self.histogramView];
             }
         }
     }
@@ -998,9 +953,6 @@
     }];
 }
 
-#define ZOOM_IN_FACTOR  1.414214
-#define ZOOM_OUT_FACTOR 0.7071068
-
 - (IBAction)zoom:(NSSegmentedControl*)sender
 {
     if (sender.selectedSegment == 0){
@@ -1034,14 +986,12 @@
 
 - (IBAction)zoomIn:(id)sender
 {
-    self.zoomFactor = self.zoomFactor * ZOOM_IN_FACTOR;
-    self.imageView.zoomFactor = self.zoomFactor;
+    [self.imageView zoomIn:sender];
 }
 
 - (IBAction)zoomOut:(id)sender
 {
-    self.zoomFactor = self.zoomFactor * ZOOM_OUT_FACTOR;
-    self.imageView.zoomFactor = self.zoomFactor;
+    [self.imageView zoomOut:sender];
 }
 
 - (IBAction)toggleDevices:(id)sender
