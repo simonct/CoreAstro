@@ -8,6 +8,11 @@
 
 #import <Quartz/Quartz.h>
 
-@interface CASLibraryBrowserView : IKImageBrowserView // NSCollectionView may be a more flexible choice in the future
+@protocol CASLibraryBrowserViewDelegate <NSObject>
+@optional
+- (void)deleteSelectedExposures;
+@end
 
+@interface CASLibraryBrowserView : IKImageBrowserView // NSCollectionView may be a more flexible choice in the future
+@property (nonatomic,unsafe_unretained) id<CASLibraryBrowserViewDelegate> libraryDelegate;
 @end

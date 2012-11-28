@@ -32,5 +32,32 @@
     }
 }
 
+- (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window
+{
+    if(self.isEditable) {
+        
+        const NSInteger count = [[self selectedObjects] count];
+        if (count > 0){
+            
+            NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
+                                             defaultButton:nil
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:message,nil];
+            
+            [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
+        }
+    }
+}
+
+- (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if (returnCode == NSAlertDefaultReturn){
+        [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes]];
+    }
+}
+
 @end
 

@@ -134,7 +134,7 @@
 @implementation CASLibraryBrowserGroupInfo
 @end
 
-@interface CASLibraryBrowserViewController ()
+@interface CASLibraryBrowserViewController ()<CASLibraryBrowserViewDelegate>
 @property (nonatomic,strong) NSArray* exposures;
 @property (nonatomic,strong) NSArray* groups;
 @property (nonatomic,strong) NSMutableDictionary* wrappers;
@@ -149,6 +149,7 @@
 - (void)loadView
 {
     [super loadView];
+    self.browserView.libraryDelegate = self;
     [self.browserView setDataSource:self];
     [self.browserView setDelegate:self];
     [self.browserView setCellsStyleMask:IKCellsStyleTitled|IKCellsStyleSubtitled|IKCellsStyleShadowed];
@@ -158,32 +159,33 @@
 
 - (NSArray*)defaultExposuresArray
 {
-    return [self.exposuresController arrangedObjects];
+    NSMutableArray* defaultExposuresArray = [NSMutableArray arrayWithCapacity:[[self.exposuresController arrangedObjects] count]];
+    for (CASCCDExposure* exp in [self.exposuresController arrangedObjects]){
+        if (exp.uuid){
+            [defaultExposuresArray addObject:exp];
+        }
+        else {
+            NSLog(@"No uuid: %@",exp);
+        }
+    }
+    return [defaultExposuresArray copy];
 }
 
 - (void)setExposuresController:(CASExposuresController *)exposuresController
 {
     if (exposuresController != _exposuresController){
         [_exposuresController removeObserver:self forKeyPath:@"selectedObjects"];
+        [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects"];
         _exposuresController = exposuresController;
-        [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew context:(__bridge void *)(self)];
+        [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
+        [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
     }
 }
 
 - (NSArray*)exposures
 {
     if (!_exposures){
-        NSArray* exposures = [self defaultExposuresArray];
-        NSMutableArray* exps = [NSMutableArray arrayWithCapacity:[exposures count]];
-        for (CASCCDExposure* exp in exposures){
-            if (exp.uuid){
-                [exps addObject:exp];
-            }
-            else {
-                NSLog(@"No uuid: %@",exp);
-            }
-        }
-        _exposures = [exps copy];
+        _exposures = [self defaultExposuresArray];
     }
     return _exposures;
 }
@@ -196,25 +198,30 @@
     return _groups;
 }
 
-- (void)setGroupKeyPath:(NSString *)groupKeyPath
+- (void)updateForCurrentGroupKey
 {
-    if (_groupKeyPath != groupKeyPath){
-        _groupKeyPath = [groupKeyPath copy];
-        if (![_groupKeyPath length]){
+    if (![_groupKeyPath length]){
+        self.groups = nil;
+        self.exposures = [self defaultExposuresArray];
+    }
+    else {
+        NSSet* groupInfos = [NSSet setWithArray:[self.exposures valueForKeyPath:_groupKeyPath]];
+        if (![groupInfos count]){
             self.groups = nil;
             self.exposures = [self defaultExposuresArray];
         }
         else {
-            NSSet* groupInfos = [NSSet setWithArray:[self.exposures valueForKeyPath:_groupKeyPath]];
-            if (![groupInfos count]){
-                self.groups = nil;
-                self.exposures = [self defaultExposuresArray];
-            }
-            else {
-                self.groups = [[groupInfos allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"value" ascending:NO]]];
-                self.exposures = [self.exposures sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
-            }
+            self.groups = [[groupInfos allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"value" ascending:NO]]];
+            self.exposures = [self.defaultExposuresArray sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
         }
+    }
+}
+
+- (void)setGroupKeyPath:(NSString *)groupKeyPath
+{
+    if (_groupKeyPath != groupKeyPath){
+        _groupKeyPath = [groupKeyPath copy];
+        [self updateForCurrentGroupKey];
         [self.browserView reloadData];
     }
 }
@@ -312,8 +319,21 @@
             [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
             // scroll to selection
         }
+        else if ([@"arrangedObjects" isEqualToString:keyPath]){
+            [self updateForCurrentGroupKey];
+            [self.browserView reloadData];
+        }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+#pragma mark - Library view delegate
+
+- (void)deleteSelectedExposures
+{
+    if ([[self.exposuresController selectedObjects] count]){
+        [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.browserView.window];
     }
 }
 

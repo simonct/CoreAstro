@@ -11,5 +11,6 @@
 @interface CASExposuresController : NSArrayController // make part of CASCCDExposures ?
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes;
+- (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window;
 @end
 

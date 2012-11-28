@@ -10,9 +10,14 @@
 
 @implementation CASLibraryBrowserView
 
-//- (BOOL)translatesAutoresizingMaskIntoConstraints
-//{
-//    return NO;
-//}
+- (void)keyDown:(NSEvent *)theEvent
+{
+    if ([[theEvent charactersIgnoringModifiers] characterAtIndex:0] == NSDeleteCharacter){
+        if ([self.libraryDelegate respondsToSelector:@selector(deleteSelectedExposures)]){
+            [self.libraryDelegate deleteSelectedExposures];
+        }
+    }
+    [super keyDown:theEvent];
+}
 
 @end
