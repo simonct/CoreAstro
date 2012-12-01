@@ -522,6 +522,10 @@
     _enableGuider = enableGuider;
     
     // hide/show guider overlay interface
+    
+    // switch to continuous mode and lock it, allow exposure duration to be changed (a todo in any case)
+    
+    // when capture is pressed, frames are fed into the guider and off it goes
 }
 
 - (void)setScaleSubframe:(BOOL)scaleSubframe
@@ -669,8 +673,15 @@
                     currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
                 }
                 
+                const BOOL hasCurrentImage = (self.imageView.image != nil);
+                
                 // flashes when updated, hide and then show again ? draw the new image into the old image ?...
                 [self.imageView setImage:CGImage imageProperties:nil];
+                
+                // zoom to fit on the first image
+                if (!hasCurrentImage){
+                    [self.imageView zoomImageToFit:nil];
+                }
                 
                 // ensure the histogram view remains at the front.
                 [self.histogramView removeFromSuperview];
@@ -855,7 +866,7 @@
     [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
         
         // get the image
-        CGImageRef image = [exposure createImage].CGImage;
+        CGImageRef image = [exposure createImage].CGImage; // need to apply the current processing settings
         if (!image){
             NSLog(@"*** Failed to create image from exposure");
         }
