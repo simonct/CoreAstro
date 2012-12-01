@@ -41,6 +41,9 @@ enum {
 
 @interface CASImageDebayer : NSObject<CASImageDebayer>
 
+- (CGImageRef)debayer:(CASCCDImage*)image;
+- (CGImageRef)debayer:(CASCCDImage*)image adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all;
+
 + (id<CASImageDebayer>)imageDebayerWithIdentifier:(NSString*)ident;
 
 @end

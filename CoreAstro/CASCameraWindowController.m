@@ -57,6 +57,25 @@
 @implementation CASCamerasArrayController
 @end
 
+#pragma Colour adjustments
+
+@interface CASColourAdjustments : NSObject
+@property (nonatomic,assign) float redAdjust, greenAdjust, blueAdjust, allAdjust;
+@end
+
+@implementation CASColourAdjustments
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.allAdjust = self.redAdjust = self.greenAdjust = self.blueAdjust = 1;
+    }
+    return self;
+}
+
+@end
+
 #pragma Camera Window
 
 @interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate>
@@ -77,6 +96,7 @@
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
+@property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -128,6 +148,8 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    
+    self.colourAdjustments = [[CASColourAdjustments alloc] init];
     
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
@@ -642,7 +664,7 @@
             CGImage = image.CGImage;
         }
         else {
-            CGImage = [self.imageDebayer debayer:image]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
+            CGImage = [self.imageDebayer debayer:image adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
         }
         
         const CASExposeParams params = exposure.params;
@@ -1105,6 +1127,30 @@
                            otherButton:nil
              informativeTextWithFormat:[NSString stringWithFormat:@"You don't appear to have a configured email account on this Mac. You can send feedback to %@",feedback],nil] runModal];
     }
+}
+
+- (IBAction)adjustRed:(NSSlider*)sender
+{
+    self.colourAdjustments.redAdjust = sender.floatValue;
+    [self displayExposure:_currentExposure];
+}
+
+- (IBAction)adjustGreen:(NSSlider*)sender
+{
+    self.colourAdjustments.greenAdjust = sender.floatValue;
+    [self displayExposure:_currentExposure];
+}
+
+- (IBAction)adjustBlue:(NSSlider*)sender
+{
+    self.colourAdjustments.blueAdjust = sender.floatValue;
+    [self displayExposure:_currentExposure];
+}
+
+- (IBAction)adjustAll:(NSSlider*)sender
+{
+    self.colourAdjustments.allAdjust = sender.floatValue;
+    [self displayExposure:_currentExposure];
 }
 
 #pragma mark Menu validation
