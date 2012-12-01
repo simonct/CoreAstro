@@ -26,6 +26,7 @@
 
 #import "CASImageDebayer.h"
 #import "CASUtilities.h"
+#import <Accelerate/Accelerate.h>
 
 @interface CASImageDebayer ()
 - (CGImageRef)debayer:(CASCCDImage*)image;
@@ -83,9 +84,9 @@
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b1 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
                     
-                    r1 = MIN(1.0,all * red * r1);
-                    g1 = MIN(1.0,all * green * g1);
-                    b1 = MIN(1.0,all * blue * b1);
+                    r1 = all * red * r1;
+                    g1 = all * green * g1;
+                    b1 = all * blue * b1;
 
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
@@ -95,9 +96,9 @@
                     float g2 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b2 = source_pixel(i,j);
                     
-                    r2 = MIN(1.0,all * red * r2);
-                    g2 = MIN(1.0,all * green * g2);
-                    b2 = MIN(1.0,all * blue * b2);
+                    r2 = all * red * r2;
+                    g2 = all * green * g2;
+                    b2 = all * blue * b2;
 
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
@@ -107,9 +108,9 @@
                     float g3 = source_pixel(i,j);
                     float b3 = (source_pixel(i - 1,j) + source_pixel(i + 1,j))/2;
                     
-                    r3 = MIN(1.0,all * red * r3);
-                    g3 = MIN(1.0,all * green * g3);
-                    b3 = MIN(1.0,all * blue * b3);
+                    r3 = all * red * r3;
+                    g3 = all * green * g3;
+                    b3 = all * blue * b3;
 
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
@@ -119,9 +120,9 @@
                     float g4 = source_pixel(i,j);
                     float b4 = (source_pixel(i,j - 1) + source_pixel(i,j + 1))/2;
                     
-                    r4 = MIN(1.0,all * red * r4);
-                    g4 = MIN(1.0,all * green * g4);
-                    b4 = MIN(1.0,all * blue * b4);
+                    r4 = all * red * r4;
+                    g4 = all * green * g4;
+                    b4 = all * blue * b4;
 
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
@@ -139,9 +140,9 @@
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b1 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
                     
-                    r1 = MIN(1.0,all * red * r1);
-                    g1 = MIN(1.0,all * green * g1);
-                    b1 = MIN(1.0,all * blue * b1);
+                    r1 = all * red * r1;
+                    g1 = all * green * g1;
+                    b1 = all * blue * b1;
 
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
@@ -151,9 +152,9 @@
                     float g2 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b2 = source_pixel(i,j);
                     
-                    r2 = MIN(1.0,all * red * r2);
-                    g2 = MIN(1.0,all * green * g2);
-                    b2 = MIN(1.0,all * blue * b2);
+                    r2 = all * red * r2;
+                    g2 = all * green * g2;
+                    b2 = all * blue * b2;
 
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
@@ -163,9 +164,9 @@
                     float g3 = source_pixel(i,j);
                     float b3 = (source_pixel(i,j-1) + source_pixel(i,j+1))/2;
                     
-                    r3 = MIN(1.0,all * red * r3);
-                    g3 = MIN(1.0,all * green * g3);
-                    b3 = MIN(1.0,all * blue * b3);
+                    r3 = all * red * r3;
+                    g3 = all * green * g3;
+                    b3 = all * blue * b3;
 
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
@@ -175,9 +176,9 @@
                     float g4 = source_pixel(i,j);
                     float b4 = (source_pixel(i-1,j) + source_pixel(i+1,j))/2;
                     
-                    r4 = MIN(1.0,all * red * r4);
-                    g4 = MIN(1.0,all * green * g4);
-                    b4 = MIN(1.0,all * blue * b4);
+                    r4 = all * red * r4;
+                    g4 = all * green * g4;
+                    b4 = all * blue * b4;
 
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
@@ -195,9 +196,9 @@
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b1 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
                     
-                    r1 = MIN(1.0,all * red * r1);
-                    g1 = MIN(1.0,all * green * g1);
-                    b1 = MIN(1.0,all * blue * b1);
+                    r1 = all * red * r1;
+                    g1 = all * green * g1;
+                    b1 = all * blue * b1;
 
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
@@ -207,9 +208,9 @@
                     float g2 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b2 = source_pixel(i,j);
                     
-                    r2 = MIN(1.0,all * red * r2);
-                    g2 = MIN(1.0,all * green * g2);
-                    b2 = MIN(1.0,all * blue * b2);
+                    r2 = all * red * r2;
+                    g2 = all * green * g2;
+                    b2 = all * blue * b2;
 
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
@@ -219,9 +220,9 @@
                     float g3 = source_pixel(i,j);
                     float b3 = (source_pixel(i - 1,j) + source_pixel(i + 1,j))/2;
                     
-                    r3 = MIN(1.0,all * red * r3);
-                    g3 = MIN(1.0,all * green * g3);
-                    b3 = MIN(1.0,all * blue * b3);
+                    r3 = all * red * r3;
+                    g3 = all * green * g3;
+                    b3 = all * blue * b3;
 
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
@@ -231,9 +232,9 @@
                     float g4 = source_pixel(i,j);
                     float b4 = (source_pixel(i,j - 1) + source_pixel(i,j + 1))/2;
                     
-                    r4 = MIN(1.0,all * red * r4);
-                    g4 = MIN(1.0,all * green * g4);
-                    b4 = MIN(1.0,all * blue * b4);
+                    r4 = all * red * r4;
+                    g4 = all * green * g4;
+                    b4 = all * blue * b4;
 
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
@@ -251,9 +252,9 @@
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b1 = (source_pixel(i-1,j-1) + source_pixel(i+1,j-1) + source_pixel(i+1,j+1) + source_pixel(i-1,j+1))/4;
                     
-                    r1 = MIN(1.0,all * red * r1);
-                    g1 = MIN(1.0,all * green * g1);
-                    b1 = MIN(1.0,all * blue * b1);
+                    r1 = all * red * r1;
+                    g1 = all * green * g1;
+                    b1 = all * blue * b1;
 
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
@@ -263,9 +264,9 @@
                     float g2 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
                     float b2 = source_pixel(i,j);
                     
-                    r2 = MIN(1.0,all * red * r2);
-                    g2 = MIN(1.0,all * green * g2);
-                    b2 = MIN(1.0,all * blue * b2);
+                    r2 = all * red * r2;
+                    g2 = all * green * g2;
+                    b2 = all * blue * b2;
 
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
@@ -275,9 +276,9 @@
                     float g3 = source_pixel(i,j);
                     float b3 = (source_pixel(i-1,j) + source_pixel(i+1,j))/2;
                     
-                    r3 = MIN(1.0,all * red * r3);
-                    g3 = MIN(1.0,all * green * g3);
-                    b3 = MIN(1.0,all * blue * b3);
+                    r3 = all * red * r3;
+                    g3 = all * green * g3;
+                    b3 = all * blue * b3;
 
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
@@ -287,14 +288,17 @@
                     float g4 = source_pixel(i,j);
                     float b4 = (source_pixel(i,j-1) + source_pixel(i,j+1))/2;
                     
-                    r4 = MIN(1.0,all * red * r4);
-                    g4 = MIN(1.0,all * green * g4);
-                    b4 = MIN(1.0,all * blue * b4);
+                    r4 = all * red * r4;
+                    g4 = all * green * g4;
+                    b4 = all * blue * b4;
 
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
             }
         }
+        
+        float low = 0, high = 1;
+        vDSP_vclip((float*)cp,1,&low,&high,(float*)cp,1,4 * CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context));
     });
     
     NSLog(@"debayer: %fs (r:%f, g:%f, b:%f, a:%f)",time,red,green,blue,all);
