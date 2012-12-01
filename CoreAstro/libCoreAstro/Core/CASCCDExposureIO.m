@@ -440,9 +440,9 @@
 {
     NSString* name = exposure.deviceID;
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"LLL-d-Y";
+    formatter.dateFormat = @"LLL-dd-Y";
     name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
-    formatter.dateFormat = @"H-m-ss.SS";
+    formatter.dateFormat = @"HH-mm-ss.SS";
     name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
     return name;
 }
