@@ -173,8 +173,8 @@
         }
         
         // write samples and metadata
-        NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:exposure.meta,@"exposure",[NSNumber numberWithInteger:1],@"version",nil];
-        NSData* metaData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+        NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[exposure.meta copy],@"exposure",[NSNumber numberWithInteger:1],@"version",nil];
+        NSData* metaData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error]; // occassional exception ?
         if (metaData){
             if ([metaData writeToURL:[self.url URLByAppendingPathComponent:metaName] options:NSDataWritingAtomic error:&error] && writePixels) {
                 [exposure.pixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
