@@ -771,6 +771,7 @@
     [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
     
         if (error){
+            // todo; run completion actions e.g. email, run processing scripts, etc
             [NSApp presentError:error];
         }
         else{
@@ -796,6 +797,7 @@
                 self.progressStatusText.stringValue = @"Waiting...";
             }
             else{
+                // todo; run completion actions e.g. email, run processing scripts, etc
                 [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
             }
             self.progressStatusText.hidden = self.progressIndicator.hidden = !self.cameraController.capturing;
