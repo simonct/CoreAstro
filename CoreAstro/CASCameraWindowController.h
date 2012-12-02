@@ -25,7 +25,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class CASImageView;
+@class CASExposureView;
 @class CASExposuresController;
 @class CASCameraWindowController;
 @class CASCameraController;
@@ -41,7 +41,7 @@
 @property (nonatomic,weak) IBOutlet NSView *detailContainerView;
 @property (nonatomic,weak) id<CASCameraWindowControllerDelegate> delegate;
 @property (nonatomic,weak) IBOutlet NSToolbar *toolbar;
-@property (nonatomic,weak) IBOutlet CASImageView *imageView;
+@property (nonatomic,weak) IBOutlet CASExposureView *imageView;
 @property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
 @property (nonatomic,weak) IBOutlet NSButton *captureButton;

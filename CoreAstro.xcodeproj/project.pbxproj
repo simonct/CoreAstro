@@ -76,6 +76,7 @@
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
 		F459640F15EA42DC0041AF7D /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
+		F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45A2DF8166B835100A1D79C /* CASExposureView.m */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F46FC8BB16453AE800578010 /* CASExposuresWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8B916453AE800578010 /* CASExposuresWindowController.m */; };
 		F46FC8BC16453AE800578010 /* CASExposuresWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BA16453AE800578010 /* CASExposuresWindowController.xib */; };
@@ -400,6 +401,8 @@
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
 		F45963FC15EA420E0041AF7D /* CorePlot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CorePlot.xcodeproj; path = External/CorePlot_1.0/Source/framework/CorePlot.xcodeproj; sourceTree = "<group>"; };
+		F45A2DF7166B835100A1D79C /* CASExposureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureView.h; sourceTree = "<group>"; };
+		F45A2DF8166B835100A1D79C /* CASExposureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureView.m; sourceTree = "<group>"; };
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F46FC8B816453AE800578010 /* CASExposuresWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresWindowController.h; sourceTree = "<group>"; };
@@ -892,6 +895,8 @@
 				F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */,
 				F48DF014160E47B800190D3E /* CASImageView.h */,
 				F48DF015160E47B800190D3E /* CASImageView.m */,
+				F45A2DF7166B835100A1D79C /* CASExposureView.h */,
+				F45A2DF8166B835100A1D79C /* CASExposureView.m */,
 				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
 				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
 				F48DF011160E475B00190D3E /* CASExposureTableView.h */,
@@ -1638,6 +1643,7 @@
 				F4849CBC165921510069647F /* CASMasterSelectionView.m in Sources */,
 				F4849CC21659570B0069647F /* CASLibraryBrowserView.m in Sources */,
 				F4849CC31659570B0069647F /* CASLibraryBrowserViewController.m in Sources */,
+				F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

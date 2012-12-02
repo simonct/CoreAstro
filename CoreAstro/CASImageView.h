@@ -10,11 +10,6 @@
 
 @interface CASImageView : IKImageView
 - (CGRect)selectionRect;
-@property (nonatomic,assign) BOOL showReticle;
-@property (nonatomic,assign) CGPoint starLocation;
-@property (nonatomic,assign) CGPoint lockLocation;
-@property (nonatomic,assign) CGFloat searchRadius;
+- (void)disableAnimations:(void(^)(void))block;
 @end
-
-extern const CGPoint kCASImageViewInvalidStarLocation;
 

@@ -867,6 +867,7 @@
 													<string key="NSFrame">{{14, 38}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="33898123">
@@ -890,6 +891,7 @@
 													<string key="NSFrame">{{13, 304}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView" ref="487807901"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="805495301">
@@ -1567,9 +1569,12 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
 			<object class="NSSegmentedControl" id="238518948">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<string key="NSFrameSize">{34, 28}</string>
+				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<bool key="NSEnabled">YES</bool>
 				<object class="NSSegmentedCell" key="NSCell" id="264717979">
@@ -5731,7 +5736,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="3091.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="3092.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="3094.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="314.CustomClassName">CASImageView</string>
+				<string key="314.CustomClassName">CASExposureView</string>
 				<boolean value="NO" key="314.IBNSViewMetadataTranslatesAutoresizingMaskIntoConstraints"/>
 				<string key="314.IBPluginDependency">com.apple.imagekit.ibplugin</string>
 				<string key="3152.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -5926,11 +5931,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="devicesToggleControl">NSSegmentedControl</string>
 						<string key="exposureField">NSTextField</string>
 						<string key="exposuresController">CASExposuresController</string>
-						<string key="exposuresMenu">NSPopUpButton</string>
 						<string key="exposuresStatusText">NSTextField</string>
 						<string key="flatsController">NSArrayController</string>
 						<string key="guidersArrayController">NSArrayController</string>
-						<string key="imageView">CASImageView</string>
+						<string key="imageView">CASExposureView</string>
 						<string key="progressIndicator">NSProgressIndicator</string>
 						<string key="progressStatusText">NSTextField</string>
 						<string key="selectionControl">NSSegmentedControl</string>
@@ -5987,10 +5991,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">exposuresController</string>
 							<string key="candidateClassName">CASExposuresController</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="exposuresMenu">
-							<string key="name">exposuresMenu</string>
-							<string key="candidateClassName">NSPopUpButton</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="exposuresStatusText">
 							<string key="name">exposuresStatusText</string>
 							<string key="candidateClassName">NSTextField</string>
@@ -6005,7 +6005,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 						<object class="IBToOneOutletInfo" key="imageView">
 							<string key="name">imageView</string>
-							<string key="candidateClassName">CASImageView</string>
+							<string key="candidateClassName">CASExposureView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="progressIndicator">
 							<string key="name">progressIndicator</string>
@@ -6067,6 +6067,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CASDarksArrayController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">CASExposureView</string>
+					<string key="superclassName">CASImageView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/CASExposureView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

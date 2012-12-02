@@ -26,10 +26,9 @@
 
 #import "CASCameraWindowController.h"
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
-#import "CASHistogramView.h"
 #import "CASExposuresController.h"
 #import "CASProgressWindowController.h"
-#import "CASImageView.h"
+#import "CASExposureView.h"
 #import "CASShadowView.h"
 #import "CASMasterSelectionView.h"
 #import "CASLibraryBrowserViewController.h"
@@ -89,7 +88,6 @@
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
-@property (nonatomic,strong) CASHistogramView* histogramView;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
@@ -151,9 +149,9 @@
     
     self.colourAdjustments = [[CASColourAdjustments alloc] init];
     
-    self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
-
+    self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    
     [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     [self.exposuresController setSelectedObjects:nil];
     [self.exposuresController setSelectsInsertedObjects:YES];
@@ -173,6 +171,7 @@
     self.imageView.autohidesScrollers = YES;
     self.imageView.currentToolMode = IKToolModeMove;
     self.imageView.delegate = self;
+    self.imageView.imageProcessor = self.imageProcessor;
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
 
@@ -206,11 +205,6 @@
     [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
     [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
 
-    //[self.window visualizeConstraints:[self.equaliseCheckbox.superview.superview constraints]];
-    
-    self.histogramView = [[CASHistogramView alloc] initWithFrame:NSMakeRect(10, 10, 400, 200)];
-    [self.imageView addSubview:self.histogramView];
-    self.histogramView.hidden = YES;
 
     [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
@@ -294,14 +288,6 @@
 
         [_currentExposure reset]; // unload the current exposures pixels
         _currentExposure = currentExposure;
-        
-        // hide/show the histogram view
-        if (_currentExposure){
-            self.histogramView.alphaValue = 1;
-        }
-        else {
-            self.histogramView.alphaValue = 0;
-        }
         
         // unobserve the darks and flats controllers so that they're not triggered by resetting the content in the methods below
         [self.darksController removeObserver:self forKeyPath:@"selectedObjects"];
@@ -528,15 +514,14 @@
     return (_captureMenuSelectedIndex == self.captureMenu.numberOfItems - 1);
 }
 
+- (BOOL)showHistogram
+{
+    return self.imageView.showHistogram;
+}
+
 - (void)setShowHistogram:(BOOL)showHistogram
 {
-    if (_showHistogram != showHistogram){
-        _showHistogram = showHistogram;
-        self.histogramView.hidden = !_showHistogram;
-        if (_showHistogram){
-            [self updateHistogram];
-        }
-    }
+    self.imageView.showHistogram = showHistogram;
 }
 
 - (void)setEnableGuider:(BOOL)enableGuider
@@ -596,7 +581,7 @@
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     if (!exposure){
-        [self.imageView setImage:nil imageProperties:nil];
+        self.imageView.exposure = nil;
         return;
     }
     
@@ -647,83 +632,13 @@
         [self.imageProcessor invert:exposure];
     }
 
-    // todo: async
-    [self updateHistogram];
-
     // check image view is actually visible
     if (!self.imageView.isHidden){
         
-        CASCCDImage* image = [exposure createImage];
-        if (!image){
-            [self.imageView setImage:nil imageProperties:nil];
-            return;
-        }
-        
-        CGImageRef CGImage = nil;
-        if (self.debayerMode == kCASImageDebayerNone){
-            CGImage = image.CGImage;
-        }
-        else {
-            CGImage = [self.imageDebayer debayer:image adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
-        }
-        
-        const CASExposeParams params = exposure.params;
-        const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
-        
-        if (CGImage){
-            
-            const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
-            if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
-                
-                CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
-                if (!bitmap){
-                    CGImage = nil;
-                }
-                else {
-                    CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
-                    CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
-                    CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
-                    CGImage = CGBitmapContextCreateImage(bitmap);
-                }
-            }
-            
-            if (CGImage){
-                
-                CGSize currentSize = CGSizeZero;
-                CGImageRef currentImage = self.imageView.image;
-                if (currentImage){
-                    currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
-                }
-                
-                const BOOL hasCurrentImage = (self.imageView.image != nil);
-                
-                // flashes when updated, hide and then show again ? draw the new image into the old image ?...
-                [self.imageView setImage:CGImage imageProperties:nil];
-                
-                // zoom to fit on the first image
-                if (!hasCurrentImage){
-                    [self.imageView zoomImageToFit:nil];
-                }
-                
-                // ensure the histogram view remains at the front.
-                [self.histogramView removeFromSuperview];
-                [self.imageView addSubview:self.histogramView];
-            }
-        }
+        self.imageView.exposure = exposure;
     }
 }
 
-- (void)updateHistogram
-{
-    if (self.showHistogram){
-        if (!_currentExposure){
-            self.histogramView.histogram = nil;
-        }
-        else {
-            self.histogramView.histogram = [self.imageProcessor histogram:_currentExposure];
-        }
-    }
-}
 
 - (void)updateFlatsForExposure:(CASCCDExposure*)exposure
 {
