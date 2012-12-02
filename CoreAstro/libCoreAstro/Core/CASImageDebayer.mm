@@ -307,7 +307,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
     });
     
     // update params to indicate the original exposure
-    CASCCDExposure* finalExposure = [CASCCDExposure exposureWithRGBAFloatPixels:finalPixels camera:/*exposure.camera*/nil params:exposure.params time:nil];
+    CASCCDExposure* finalExposure = [CASCCDExposure exposureWithRGBAFloatPixels:finalPixels camera:/*exposure.camera*/nil params:exposure.params time:[NSDate date]];
     
     NSLog(@"debayer: %fs (r:%f, g:%f, b:%f, a:%f)",time,red,green,blue,all);
     
