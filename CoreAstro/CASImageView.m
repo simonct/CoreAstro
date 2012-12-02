@@ -18,16 +18,32 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:self.bounds];
+    NSRect bounds = CGRectInset(self.bounds, 5, 5);
+    
+    NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
     outline.lineWidth = 5;
     [[NSColor whiteColor] set];
     [outline stroke];
+    
     NSBezierPath* arc = [NSBezierPath bezierPath];
-    [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))
-                                    radius:CGRectGetWidth(self.bounds)/2
-                                startAngle:0
-                                  endAngle:2*M_PI*self.progress];
+    arc.lineWidth = 5;
+    [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
+    [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))
+                                    radius:CGRectGetWidth(bounds)/2
+                                startAngle:90
+                                  endAngle:90 - (360*self.progress)
+                                 clockwise:YES];
+    [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
+    [[NSColor whiteColor] set];
     [arc fill];
+}
+
+- (void)setProgress:(CGFloat)progress
+{
+    if (_progress != progress){
+        _progress = progress;
+        [self setNeedsDisplay:YES];
+    }
 }
 
 @end
