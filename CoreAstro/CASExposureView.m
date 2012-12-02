@@ -63,7 +63,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CASHistogramView* histogramView;
 @end
 
-@implementation CASExposureView
+@implementation CASExposureView {
+    BOOL _displayedFirstImage:1;
+}
 
 - (void)awakeFromNib
 {
@@ -101,35 +103,21 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
-- (void)setShowHistogram:(BOOL)showHistogram
-{
-    if (_showHistogram != showHistogram){
-        _showHistogram = showHistogram;
-        self.histogramView.hidden = !_showHistogram;
-        if (_showHistogram){
-            [self updateHistogram];
-        }
-    }
-}
-
-- (void)setExposure:(CASCCDExposure *)exposure
+- (void)displayExposure
 {
     void (^clearImage)() = ^() {
         [self setImage:nil imageProperties:nil];
         [self.histogramView removeFromSuperview];
     };
     
-    // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
-    _exposure = exposure;
-    
     [self updateHistogram];
     
-    if (!exposure){
+    if (!_exposure){
         clearImage();
     }
     else {
         
-        CASCCDImage* image = [exposure createImage];
+        CASCCDImage* image = [_exposure createImage];
         if (!image){
             clearImage();
         }
@@ -143,7 +131,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 //                    CGImage = [self.imageDebayer debayer:image adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
             }
             
-            const CASExposeParams params = exposure.params;
+            const CASExposeParams params = _exposure.params;
             const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
             
             if (CGImage){
@@ -164,20 +152,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 }
                 
                 if (CGImage){
-                    
-                    CGSize currentSize = CGSizeZero;
-                    CGImageRef currentImage = self.image;
-                    if (currentImage){
-                        currentSize = CGSizeMake(CGImageGetWidth(currentImage), CGImageGetHeight(currentImage));
-                    }
-                    
-                    const BOOL hasCurrentImage = (self.image != nil);
-                    
-                    // flashes when updated, hide and then show again ? draw the new image into the old image ?...
+                                        
+                    // set the image
                     [self setImage:CGImage imageProperties:nil];
                     
                     // zoom to fit on the first image
-                    if (!hasCurrentImage){
+                    if (!_displayedFirstImage){
+                        _displayedFirstImage = YES;
                         [self zoomImageToFit:nil];
                     }
                     
@@ -188,6 +169,33 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             }
         }
     }
+}
+
+- (void)setShowHistogram:(BOOL)showHistogram
+{
+    if (_showHistogram != showHistogram){
+        _showHistogram = showHistogram;
+        self.histogramView.hidden = !_showHistogram;
+        if (_showHistogram){
+            [self updateHistogram];
+        }
+    }
+}
+
+- (void)setScaleSubframe:(BOOL)scaleSubframe
+{
+    if (_scaleSubframe != scaleSubframe){
+        _scaleSubframe = scaleSubframe;
+        [self displayExposure];
+    }
+}
+
+- (void)setExposure:(CASCCDExposure *)exposure
+{
+    // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
+    _exposure = exposure;
+    
+    [self displayExposure];
 }
 
 - (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
