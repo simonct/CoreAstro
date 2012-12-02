@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASCCDImage.h"
+#import "CASCCDExposure.h"
 
 @protocol CASImageDebayer <NSObject>
 
@@ -36,13 +36,13 @@ enum {
 };
 
 @property (nonatomic,assign) NSInteger mode;
-- (CGImageRef)debayer:(CASCCDImage*)image;
+- (CASCCDExposure*)debayer:(CASCCDExposure*)image;
 @end
 
 @interface CASImageDebayer : NSObject<CASImageDebayer>
 
-- (CGImageRef)debayer:(CASCCDImage*)image;
-- (CGImageRef)debayer:(CASCCDImage*)image adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all;
+- (CASCCDExposure*)debayer:(CASCCDExposure*)image;
+- (CASCCDExposure*)debayer:(CASCCDExposure*)image adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all;
 
 + (id<CASImageDebayer>)imageDebayerWithIdentifier:(NSString*)ident;
 

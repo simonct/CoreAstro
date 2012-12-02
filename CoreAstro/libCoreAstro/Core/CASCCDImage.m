@@ -27,6 +27,8 @@
 #import <Accelerate/Accelerate.h>
 
 @interface CASCCDImage ()
+@property (nonatomic) BOOL rgba;
+@property (nonatomic) CASSize size;
 @property (nonatomic,strong) NSData* floatPixels;
 @end
 
@@ -43,7 +45,13 @@
 
 - (CGContextRef)_copyContext
 {
-    CGContextRef context = [[self class] createFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+    CGContextRef context = nil;
+    if (self.rgba){
+        context = [[self class] createRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+    }
+    else {
+        context = [[self class] createFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+    }
     if (context){
         
         float* pixelData = (float*)[_floatPixels bytes];
@@ -120,6 +128,15 @@
     return context;
 }
 
++ (CGContextRef)createRGBAFloatBitmapContextWithSize:(CASSize)size
+{
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 32, (size.width) * 4 * 4, space, kCGImageAlphaPremultipliedLast|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
+    CFRelease(space);
+    
+    return context;
+}
+
 + (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel
 {
     if (bitsPerPixel != 16){
@@ -134,11 +151,12 @@
     return context;
 }
 
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size
++ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size rgba:(BOOL)rgba
 {
     CASCCDImage* image = [[CASCCDImage alloc] init];
     image.floatPixels = pixels ? pixels : [NSMutableData dataWithLength:size.width*size.height*sizeof(float)];
     image.size = size;
+    image.rgba = rgba;
     return image;
 }
 

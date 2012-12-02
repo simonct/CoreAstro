@@ -535,15 +535,14 @@
     // when capture is pressed, frames are fed into the guider and off it goes
 }
 
+- (BOOL)scaleSubframe
+{
+    return self.imageView.scaleSubframe;
+}
+
 - (void)setScaleSubframe:(BOOL)scaleSubframe
 {
-    if (_scaleSubframe != scaleSubframe){
-        _scaleSubframe = scaleSubframe;
-        [self _resetAndRedisplayCurrentExposure];
-        if (_scaleSubframe){
-            self.imageView.currentToolMode = IKToolModeMove;
-        }
-    }
+    self.imageView.scaleSubframe = scaleSubframe;
 }
 
 - (void)updateExposureIndicator
@@ -603,6 +602,14 @@
     }
     self.window.title = title;
     
+    // debayer if required
+    if (self.imageDebayer.mode != kCASImageDebayerNone){
+        CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
+        if (debayeredExposure){
+            exposure = debayeredExposure;
+        }
+    }
+    
     // todo: CASImageProcessingChain runs all these async
     if (self.subtractDark){
         NSArray* darks = self.darksController.arrangedObjects;
@@ -634,7 +641,6 @@
 
     // check image view is actually visible
     if (!self.imageView.isHidden){
-        
         self.imageView.exposure = exposure;
     }
 }

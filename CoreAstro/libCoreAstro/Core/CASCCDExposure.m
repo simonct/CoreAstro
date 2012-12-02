@@ -29,7 +29,14 @@
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 
+typedef enum CASCCDExposureFormat {
+    kCASCCDExposureFormatUInt16 = 0,
+    kCASCCDExposureFormatFloat = 1,
+    kCASCCDExposureFormatFloatRGBA = 2
+} CASCCDExposureFormat;
+    
 @interface CASCCDExposure ()
+@property (nonatomic) BOOL rgba;
 @end
 
 @implementation CASCCDExposure {
@@ -238,13 +245,12 @@
         return nil;
     }
 
-    return [CASCCDImage createImageWithPixels:self.floatPixels
-                                         size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height)];
+    return [CASCCDImage createImageWithPixels:self.floatPixels size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height) rgba:self.rgba];
 }
 
 - (CASCCDImage*)createBlankImageWithSize:(CASSize)size
 {
-    return [CASCCDImage createImageWithPixels:nil size:size];
+    return [CASCCDImage createImageWithPixels:nil size:size rgba:NO];
 }
 
 - (void)reset
@@ -300,9 +306,11 @@
     return [NSString stringWithString: mutStr];
 }
 
-+ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time floatPixels:(BOOL)floatPixels
++ (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time floatPixels:(BOOL)floatPixels rgba:(BOOL)rgba
 {
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
+    
+    exp.rgba = rgba;
     
     if (floatPixels){
         exp.floatPixels = pixels;
@@ -337,6 +345,17 @@
     [meta setObject:[NSNumber numberWithDouble:[time timeIntervalSinceReferenceDate]] forKey:@"time"];
     [meta setObject:NSStringFromCASExposeParams(expParams) forKey:@"exposure"];
     
+    NSInteger format = kCASCCDExposureFormatUInt16;
+    if (floatPixels){
+        if (rgba){
+            format = kCASCCDExposureFormatFloatRGBA;
+        }
+        else {
+            format = kCASCCDExposureFormatFloat;
+        }
+    }
+    [meta setObject:[NSNumber numberWithInteger:format] forKey:@"format"];
+    
     if (camera.hasCooler){
         NSMutableDictionary* temp = [NSMutableDictionary dictionaryWithCapacity:2];
         [temp setObject:[NSNumber numberWithInteger:camera.temperatureFrequency] forKey:@"frequency"];
@@ -359,12 +378,17 @@
 
 + (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
 {
-    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:NO];
+    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:NO rgba:NO];
 }
 
 + (id)exposureWithFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
 {
-    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:YES];
+    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:YES rgba:NO];
+}
+
++ (id)exposureWithRGBAFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
+{
+    return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:YES rgba:YES];
 }
 
 @end

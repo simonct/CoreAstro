@@ -28,8 +28,10 @@
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 
+typedef struct { float r,g,b,a; } fpixel_t;
+
 @interface CASImageDebayer ()
-- (CGImageRef)debayer:(CASCCDImage*)image;
+- (CASCCDExposure*)debayer:(CASCCDExposure*)image;
 @end
 
 @implementation CASImageDebayer 
@@ -41,21 +43,24 @@
     return [[[self class] alloc] init];
 }
 
-- (CGImageRef)debayer:(CASCCDImage*)image adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all
+- (CASCCDExposure*)debayer:(CASCCDExposure*)exposure adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all
 {
-    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-    CGContextRef context = CGBitmapContextCreate(nil, image.size.width, image.size.height, 32, (image.size.width) * 4 * 4, space, kCGImageAlphaPremultipliedLast|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
-    NSAssert(context, [NSString stringWithUTF8String:__PRETTY_FUNCTION__]);
-    CFRelease(space);
+    const CASSize size = exposure.actualSize;
+    if (size.width < 4 || size.height < 4){
+        NSLog(@"Debayer asked to process an exposure of %ldx%ld",size.width,size.height);
+        return nil;
+    }
     
-    typedef struct { float r,g,b,a; } fpixel_t;
-
-    float *gp = (float*)[image.floatPixels bytes];
-    fpixel_t *cp = (fpixel_t*)CGBitmapContextGetData(context);
-    bzero(cp, CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context));
+    const NSInteger finalPixelsLength = (size.width * size.height * sizeof(fpixel_t));
+    NSMutableData* finalPixels = [NSMutableData dataWithLength:finalPixelsLength];
+    if (!finalPixels){
+        NSLog(@"*** Out of memory");
+        return nil;
+    }
     
-    const CASSize size = CASSizeMake(image.size.width, image.size.height);
-    
+    float *gp = (float*)[exposure.floatPixels bytes];
+    fpixel_t *cp = (fpixel_t*)[finalPixels mutableBytes];
+        
     #define clip(x,lim) ((x) < 0 ? 0 : (x) >= (lim) ? (lim-1) : (x))
     #define clipx(x) clip(x,size.width)
     #define clipy(y) clip(y,size.height)
@@ -298,17 +303,20 @@
         }
         
         float low = 0, high = 1;
-        vDSP_vclip((float*)cp,1,&low,&high,(float*)cp,1,4 * CGBitmapContextGetWidth(context) * CGBitmapContextGetHeight(context));
+        vDSP_vclip((float*)cp,1,&low,&high,(float*)cp,1,finalPixelsLength/4);
     });
+    
+    // update params to indicate the original exposure
+    CASCCDExposure* finalExposure = [CASCCDExposure exposureWithRGBAFloatPixels:finalPixels camera:/*exposure.camera*/nil params:exposure.params time:nil];
     
     NSLog(@"debayer: %fs (r:%f, g:%f, b:%f, a:%f)",time,red,green,blue,all);
     
-    return CGBitmapContextCreateImage(context);
+    return finalExposure;
 }
 
-- (CGImageRef)debayer:(CASCCDImage*)image
+- (CASCCDExposure*)debayer:(CASCCDExposure*)exposure
 {
-    return [self debayer:image adjustRed:1 green:1 blue:1 all:1];
+    return [self debayer:exposure adjustRed:1 green:1 blue:1 all:1];
 }
 
 @end

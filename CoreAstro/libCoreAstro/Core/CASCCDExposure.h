@@ -41,6 +41,7 @@
 @property (nonatomic,readonly) BOOL hasMeta;
 @property (nonatomic,assign) CASExposeParams params;
 
+@property (nonatomic,readonly) BOOL rgba;
 @property (nonatomic,readonly) CASSize actualSize; // frame.size / bin.size
 
 @property (nonatomic,readonly) NSDate* date;
@@ -82,5 +83,6 @@ typedef enum {
 
 + (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)params time:(NSDate*)time;
 + (id)exposureWithFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
++ (id)exposureWithRGBAFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
 
 @end
