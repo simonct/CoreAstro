@@ -32,6 +32,7 @@
 #import <algorithm>
 
 typedef float cas_pixel_t;
+typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 @implementation CASImageProcessor
 
@@ -73,20 +74,31 @@ typedef float cas_pixel_t;
         (void*)[exposure.floatPixels bytes],
         size.height,
         size.width,
-        size.width * sizeof(cas_pixel_t)
+        exposure.rgba ? size.width * sizeof(float) * 4 : size.width * sizeof(cas_pixel_t)
     };
     return buffer;
 }
 
 - (void)equalise:(CASCCDExposure*)exposure
 {
+    const NSInteger numberOfBins = 4096;
+    
     const NSTimeInterval time = CASTimeBlock(^{
 
         vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
         
-        vImage_Error error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,65536,0,1,kvImageNoFlags);
-        if (error != kvImageNoError){
-            NSLog(@"vImageEqualization_PlanarF: %ld",error);
+        vImage_Error error = kvImageNoError;
+        if (exposure.rgba){
+            error = vImageEqualization_ARGBFFFF(&buffer,&buffer,nil,numberOfBins,0,1,kvImageNoFlags); // docs state that this still works even though the source data is RGBA not ARGB
+            if (error != kvImageNoError){
+                NSLog(@"vImageEqualization_ARGBFFFF: %ld",error);
+            }
+        }
+        else {
+            error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,numberOfBins,0,1,kvImageNoFlags);
+            if (error != kvImageNoError){
+                NSLog(@"vImageEqualization_PlanarF: %ld",error);
+            }
         }
     });
     
@@ -153,18 +165,39 @@ typedef float cas_pixel_t;
         const NSInteger pixelCount = size.width * size.height;
         const NSInteger pixelsPerGroup = pixelCount / groupCount;
         
-        cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
-        
-        dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+        if (exposure.rgba){
             
-            // todo: AVX
-            const NSInteger offset = pixelsPerGroup * groupIndex;
-            const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
-            for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-                const float pixel = exposurePixels[i];
-                exposurePixels[i] = 1.0 - pixel;
-            }
-        });
+            cas_fpixel_t* exposurePixels = (cas_fpixel_t*)[exposure.floatPixels bytes];
+            
+            dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+                
+                // todo: AVX
+                const NSInteger offset = pixelsPerGroup * groupIndex;
+                const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
+                for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
+                    cas_fpixel_t pixel = exposurePixels[i];
+                    pixel.r = 1.0 - pixel.r;
+                    pixel.g = 1.0 - pixel.g;
+                    pixel.b = 1.0 - pixel.b;
+                    pixel.a = 1.0 - pixel.a;
+                    exposurePixels[i] = pixel;
+                }
+            });
+        }
+        else {
+            cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
+            
+            dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+                
+                // todo: AVX
+                const NSInteger offset = pixelsPerGroup * groupIndex;
+                const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
+                for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
+                    const float pixel = exposurePixels[i];
+                    exposurePixels[i] = 1.0 - pixel;
+                }
+            });
+        }
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
