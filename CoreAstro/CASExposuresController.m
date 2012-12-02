@@ -22,12 +22,25 @@
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes
 {
     if ([indexes count]){
+        id nextObject = nil;
+        const NSInteger firstIndex = [indexes firstIndex];
+        const NSInteger lastIndex = [indexes lastIndex];
+        NSArray* arrangedObjects = [self arrangedObjects];
+        if (lastIndex+1 < [arrangedObjects count]){
+            nextObject = [arrangedObjects objectAtIndex:lastIndex+1];
+        }
+        else if (firstIndex - 1 >= 0){
+            nextObject = [arrangedObjects objectAtIndex:firstIndex-1];
+        }
         if ([indexes count] == 1){
             [self removeObjectAtArrangedObjectIndex:[indexes firstIndex]];
         }
         else {
-            [[[self arrangedObjects] objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
+            [[arrangedObjects objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
             [super removeObjectsAtArrangedObjectIndexes:indexes];
+        }
+        if (nextObject){
+            [self setSelectedObjects:[NSArray arrayWithObject:nextObject]];
         }
     }
 }
