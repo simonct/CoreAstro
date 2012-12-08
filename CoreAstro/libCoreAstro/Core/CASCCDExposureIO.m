@@ -177,32 +177,45 @@
         NSData* metaData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error]; // occassional exception ?
         if (metaData){
             if ([metaData writeToURL:[self.url URLByAppendingPathComponent:metaName] options:NSDataWritingAtomic error:&error] && writePixels) {
-                [exposure.pixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
+                switch ([[dict valueForKeyPath:@"exposure.format"] integerValue]) {
+                    case kCASCCDExposureFormatFloat:
+                    case kCASCCDExposureFormatFloatRGBA:
+                        [exposure.floatPixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
+                        break;
+                    default:
+                        [exposure.pixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
+                        break;
+                }
             }
         }
         
         // create a thumbnail (could use the QuickLook generator but that then introduces an unnecessary dependency)
-        CASCCDImage* image = [exposure createImage];
-        if (image){
-            const CASSize size = image.size;
-            const NSInteger thumbWidth = 256;
-            const CASSize thumbSize = CASSizeMake(thumbWidth, thumbWidth * ((float)size.height/(float)size.width));
-            CGImageRef thumb = [image createImageWithSize:thumbSize];
-            if (!thumb){
-                NSLog(@"Failed to create thumbnail image of size %@",NSStringFromCASSize(thumbSize));
-            }
-            else{
-                NSURL* thumbURL = [self.url URLByAppendingPathComponent:thumbName];
-                CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)thumbURL, CFSTR("public.png"), 1, nil);
-                if (!destination){
-                    NSLog(@"Failed to create image destination for thumbnail at %@",thumbURL);
+        if (writePixels){
+            
+            CASCCDImage* image = [exposure createImage];
+            if (image){
+                
+                const CASSize size = image.size;
+                const NSInteger thumbWidth = 256;
+                const CASSize thumbSize = CASSizeMake(thumbWidth, thumbWidth * ((float)size.height/(float)size.width));
+                CGImageRef thumb = [image createImageWithSize:thumbSize];
+                if (!thumb){
+                    NSLog(@"Failed to create thumbnail image of size %@",NSStringFromCASSize(thumbSize));
                 }
                 else{
-                    CGImageDestinationAddImage(destination, thumb, nil);
-                    if (!CGImageDestinationFinalize(destination)){
-                        NSLog(@"Failed to write thumbnail to %@",thumbURL);
+                    
+                    NSURL* thumbURL = [self.url URLByAppendingPathComponent:thumbName];
+                    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)thumbURL, CFSTR("public.png"), 1, nil);
+                    if (!destination){
+                        NSLog(@"Failed to create image destination for thumbnail at %@",thumbURL);
                     }
-                    CFRelease(destination);
+                    else{
+                        CGImageDestinationAddImage(destination, thumb, nil);
+                        if (!CGImageDestinationFinalize(destination)){
+                            NSLog(@"Failed to write thumbnail to %@",thumbURL);
+                        }
+                        CFRelease(destination);
+                    }
                 }
             }
         }
@@ -306,14 +319,51 @@
         }
         else {
             
+            int format = 0;
+            int datatype = 0;
+            float scale = 1;
+            NSInteger pixelCount = 0;
+            NSData* pixelData = nil;
+            switch ([[exposure.meta objectForKey:@"format"] integerValue]) {
+                case kCASCCDExposureFormatFloat:
+                    format = FLOAT_IMG;
+                    datatype = TFLOAT;
+                    pixelData = exposure.floatPixels;
+                    pixelCount = [pixelData length]/sizeof(float);
+                    scale = 65535;
+                    break;
+                case kCASCCDExposureFormatFloatRGBA:
+                    NSLog(@"*** Unsupported format"); // write as planar rgb ?
+                    break;
+                default:
+                    format = USHORT_IMG;
+                    datatype = TUSHORT;
+                    pixelData = exposure.pixels;
+                    pixelCount = [pixelData length]/sizeof(uint16_t);
+                    break;
+            }
+
             const CASSize size = exposure.actualSize;
             long naxes[2] = { size.width, size.height };
-            if ( fits_create_img(fptr, USHORT_IMG, 2, naxes, &status) ){
+            if ( fits_create_img(fptr, format, 2, naxes, &status) ){
                 error = createFITSError(status,[NSString stringWithFormat:@"Failed to create FITS file %d",status]);
             }
             else {
                 
-                if ( fits_write_img(fptr, TUSHORT, 1, [exposure.pixels length]/sizeof(uint16_t), (void*)[exposure.pixels bytes], &status) ){
+                if (scale != 1){
+                    if ( fits_update_key(fptr, TFLOAT, "BSCALE", (void*)&scale, "pixel scaling factor", &status) ) {
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+                    float zero = 0;
+                    if ( fits_update_key(fptr, TFLOAT, "BZERO", (void*)&zero, "pixel zero value", &status) ) {
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+//                    if (fits_set_bscale(fptr,scale,0,&status)){
+//                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS scaling value %d",status]);
+//                    }
+                }
+
+                if ( fits_write_img(fptr, datatype, 1, pixelCount, (void*)[pixelData bytes], &status) ){
                     error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS file %d",status]);
                 }
                 else {
