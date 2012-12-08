@@ -29,12 +29,6 @@
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 
-typedef enum CASCCDExposureFormat {
-    kCASCCDExposureFormatUInt16 = 0,
-    kCASCCDExposureFormatFloat = 1,
-    kCASCCDExposureFormatFloatRGBA = 2
-} CASCCDExposureFormat;
-    
 @interface CASCCDExposure ()
 @property (nonatomic) BOOL rgba;
 @end
@@ -227,6 +221,11 @@ typedef enum CASCCDExposureFormat {
 - (void)setType:(CASCCDExposureType)type
 {
     [self setMetaObject:[NSNumber numberWithInteger:type] forKey:@"type"];
+}
+
+- (CASCCDExposureFormat) format
+{
+    return (CASCCDExposureFormat)[[self.meta objectForKey:@"format"] integerValue];
 }
 
 - (NSString*)note

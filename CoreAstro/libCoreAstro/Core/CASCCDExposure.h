@@ -70,6 +70,14 @@ typedef enum {
 
 @property (nonatomic,assign) CASCCDExposureType type;
 
+typedef enum CASCCDExposureFormat {
+    kCASCCDExposureFormatUInt16 = 0,
+    kCASCCDExposureFormatFloat = 1,
+    kCASCCDExposureFormatFloatRGBA = 2
+} CASCCDExposureFormat;
+
+@property (nonatomic,readonly) CASCCDExposureFormat format;
+
 @property (nonatomic,strong) NSString* note;
 
 - (CASCCDImage*)createImage;
