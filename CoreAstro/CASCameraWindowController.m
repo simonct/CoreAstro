@@ -351,6 +351,7 @@
             if ([keyPath isEqualToString:@"capturing"]){
                 if (!self.cameraController.capturing){
                     self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
+                    self.imageView.showProgress = NO;
                     self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
                     self.captureButton.action = @selector(capture:);
                     self.captureButton.enabled = YES;
@@ -391,6 +392,8 @@
         }
         else {
             
+            // check it's the same camera...
+            
             CASCCDDevice* camera = self.cameraController.camera;
 
             [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
@@ -399,6 +402,7 @@
         }
     }];
     
+    // show only exposures from this camera - still needed with the library view ?
     if (self.cameraController){
         [self.exposuresController setFilterPredicate:[NSPredicate predicateWithFormat:@"%K == %@",@"deviceID",self.cameraController.camera.uniqueID]];
     }
@@ -406,6 +410,7 @@
         [self.exposuresController setFilterPredicate:nil];
     }
     
+    // set the first exposure for this camera
     if ([self.exposuresController.arrangedObjects count] > 0){
         [self.exposuresController setSelectionIndex:0];
     }
@@ -413,9 +418,13 @@
         [self.exposuresController setSelectedObjects:nil];
     }
     
+    // reset the capture count - why am I doing this here ?
     if (!self.cameraController.captureCount && !self.cameraController.continuous){
-        self.cameraController.captureCount = 1;
+        self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
     }
+    
+    // set progress display if this camera is capturing
+    [self updateExposureIndicator];
 }
 
 - (void)_resetAndRedisplayCurrentExposure
@@ -552,7 +561,8 @@
         const double interval = [[NSDate date] timeIntervalSinceDate:start];
         const NSInteger scaling = (self.cameraController.exposureUnits == 0) ? 1 : 1000;
         self.progressIndicator.hidden = NO;
-        self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
+        self.imageView.showProgress = YES;
+        self.imageView.progress = self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
         if (self.progressIndicator.doubleValue >= self.progressIndicator.maxValue){
             self.progressIndicator.indeterminate = YES;
             self.progressStatusText.stringValue = @"Downloading image...";
@@ -566,12 +576,17 @@
     else {
         if (self.cameraController.waitingForNextCapture){
             self.progressIndicator.indeterminate = NO;
-            self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
+            self.progressIndicator.hidden = NO;
+            self.imageView.showProgress = YES;
+            self.progressStatusText.stringValue = @"Waiting...";
+            self.imageView.progressInterval = self.cameraController.interval;
+            self.imageView.progress = self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
             [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
         }
         else {
             self.progressIndicator.hidden = YES;
-            self.progressIndicator.doubleValue = 0;
+            self.imageView.showProgress = NO;
+            self.imageView.progress = self.progressIndicator.doubleValue = 0;
             [self.progressIndicator stopAnimation:self];
         }
     }
@@ -580,7 +595,7 @@
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     if (!exposure){
-        self.imageView.exposure = nil;
+        self.imageView.currentExposure = nil;
         return;
     }
     
@@ -641,7 +656,7 @@
 
     // check image view is actually visible
     if (!self.imageView.isHidden){
-        self.imageView.exposure = exposure;
+        self.imageView.currentExposure = exposure;
     }
 }
 
@@ -681,9 +696,17 @@
 
     // set the progress indicator settings after setting the continuous flag
     self.progressIndicator.maxValue = 1;
-    self.progressIndicator.doubleValue = 0;
+    self.imageView.progress = self.progressIndicator.doubleValue = 0;
     self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
-
+    
+    if (self.cameraController.exposureUnits == 0 && self.cameraController.exposure > 1){
+        self.imageView.showProgress = YES;
+        self.imageView.progressInterval = self.cameraController.exposure;
+    }
+    else {
+        self.imageView.showProgress = NO;
+    }
+    
     // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
     const BOOL continuous = self.cameraController.continuous;
@@ -722,6 +745,7 @@
                 [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
             }
             self.progressStatusText.hidden = self.progressIndicator.hidden = !self.cameraController.capturing;
+            self.imageView.showProgress = self.cameraController.capturing;
         }
     }];
     
