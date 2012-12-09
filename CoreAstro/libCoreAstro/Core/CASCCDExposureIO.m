@@ -249,7 +249,20 @@
             
             NSFileWrapper* samples = [[wrapper fileWrappers] objectForKey:[self pixelsKey]];
             if (samples){
-                exposure.pixels = [NSData dataWithContentsOfURL:[self.url URLByAppendingPathComponent:samples.filename] options:/*NSDataReadingMappedIfSafe|*/NSDataReadingUncached error:&error]; // ** careful with mapping, esp. if editing in place **
+                
+                NSData* pixels = [NSData dataWithContentsOfURL:[self.url URLByAppendingPathComponent:samples.filename] options:NSDataReadingUncached error:&error];
+                if (pixels){
+                    
+                    switch ([[exposure.meta valueForKey:@"format"] integerValue]) {
+                        case kCASCCDExposureFormatFloat:
+                        case kCASCCDExposureFormatFloatRGBA:
+                            exposure.floatPixels = pixels;
+                            break;
+                        default:
+                            exposure.pixels = pixels;
+                            break;
+                    }
+                }
             }
         }
     }
@@ -489,6 +502,12 @@
 + (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure
 {
     NSString* name = exposure.deviceID;
+    if (![name length]){
+        name = exposure.displayDeviceName;
+    }
+    if (![name length]){
+        name = @"Unknown";
+    }
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"LLL-dd-Y";
     name = [name stringByAppendingPathComponent:[formatter stringFromDate:exposure.date]];
