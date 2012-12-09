@@ -104,7 +104,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                     }
                     else{
                         
-                        // post a notification
+                        // post a notification so that the UI can update using both the contents of the notification and the state of the guide algorithm
                         [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerGuideCommandNotification
                                                                             object:self
                                                                           userInfo:@{@"direction":@(direction),@"@duration":@(duration)}];
@@ -141,7 +141,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             else {
                 
                 // not guiding, figure out the next exposure time
-                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval);
             }
         }
         else {
@@ -189,11 +189,15 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             }
             else{
                 
-                [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        endCapture(saveError,exposure);
-                    });
-                }];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    
+                    [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            endCapture(saveError,exposure);
+                        });
+                    }];
+                });
             }
         }
     }];

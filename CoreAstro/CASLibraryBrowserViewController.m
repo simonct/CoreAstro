@@ -9,11 +9,13 @@
 #import "CASLibraryBrowserViewController.h"
 #import "CASLibraryBrowserView.h"
 #import "CASExposuresController.h"
+#import "CASBatchProcessor.h"
+#import "CASProgressWindowController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
 
-@interface CASCCDExposure (CASLibraryBrowserViewController)
+@interface CASCCDExposure (CASLibraryBrowserViewController)<NSPasteboardWriting>
 @end
 
 @implementation CASCCDExposure (CASLibraryBrowserViewController)
@@ -57,6 +59,24 @@
         @"value":self.displayType,
         @"sortKey":@"displayType"
     };
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
+    if (aProtocol == @protocol(NSPasteboardWriting)){
+        return YES;
+    }
+    return [super conformsToProtocol:aProtocol];
+}
+
+- (NSArray *)writableTypesForPasteboard:(NSPasteboard *)pasteboard
+{
+    return @[(id)kUTTypeUTF8PlainText];
+}
+
+- (id)pasteboardPropertyListForType:(NSString *)type
+{
+    return self.uuid;
 }
 
 @end
@@ -148,6 +168,8 @@
     BOOL _inImageBrowserSelectionDidChange;
 }
 
+#pragma mark - View Controller
+
 - (void)loadView
 {
     [super loadView];
@@ -155,8 +177,13 @@
     [self.browserView setDelegate:self];
     [self.browserView setCellsStyleMask:IKCellsStyleTitled|IKCellsStyleSubtitled|IKCellsStyleShadowed];
     [self.browserView setZoomValue:0.5];
+    [self.browserView setDraggingDestinationDelegate:self];
+    [self.browserView setAllowsDroppingOnItems:YES];
+    [self.browserView registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
     [self.browserView reloadData];
 }
+
+#pragma mark - Exposures
 
 - (NSArray*)defaultExposuresArray
 {
@@ -191,6 +218,8 @@
     }
     return _exposures;
 }
+
+#pragma mark - Groups
 
 - (NSArray*)groups
 {
@@ -229,6 +258,8 @@
         [self.browserView reloadData];
     }
 }
+
+#pragma mark - IKImageBrowserView Support
 
 - (NSUInteger) numberOfItemsInImageBrowser:(IKImageBrowserView *) aBrowser
 {
@@ -283,9 +314,45 @@
 
 - (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasRightClickedAtIndex:(NSUInteger) index withEvent:(NSEvent *) event
 {
-    NSLog(@"cellWasRightClickedAtIndex: %lu",index);
+    NSArray* exposures = [self.exposuresController selectedObjects];
+    if ([exposures count] < 2){
+        return;
+    }
     
-    // contextual menu
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
+    NSArray* processors = [CASBatchProcessor batchProcessorsForExposures:exposures];
+    for (NSDictionary* processor in processors){
+        NSMenuItem *item = [[NSMenuItem alloc] init];
+        [item setTitle:processor[@"name"]];
+        [item setRepresentedObject:processor[@"id"]];
+        [item setTarget:self];
+        [item setAction:@selector(batchItemSelected:)];
+        [menu addItem:item];
+    }
+    
+    // separator, then commands that involve more UI e.g. divide flat where we have to select a flat
+    
+    if ([[menu itemArray] count]){
+        [NSMenu popUpContextMenu:menu withEvent:event forView:self.browserView];
+    }
+}
+
+- (BOOL) imageBrowser:(IKImageBrowserView *) aBrowser moveItemsAtIndexes: (NSIndexSet *)indexes toIndex:(NSUInteger)destinationIndex
+{
+    // called when items are dropped
+    return NO;
+}
+
+- (NSUInteger) imageBrowser:(IKImageBrowserView *) aBrowser writeItemsAtIndexes:(NSIndexSet *) itemIndexes toPasteboard:(NSPasteboard *)pasteboard;
+{
+    [pasteboard clearContents];
+    
+    NSArray* exposures = [self.exposures objectsAtIndexes:itemIndexes];
+    if (![pasteboard writeObjects:exposures]){
+        return 0;
+    }
+    
+    return [exposures count];
 }
 
 - (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser
@@ -298,6 +365,8 @@
         _inImageBrowserSelectionDidChange = NO;
     }
 }
+
+#pragma mark - Actions
 
 - (IBAction)zoomSliderDidChange:(id)sender
 {
@@ -323,6 +392,88 @@
     }
 }
 
+- (void)_refresh
+{
+    if (![NSThread isMainThread]){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self _refresh];
+        });
+    }
+    else {
+        [self updateForCurrentGroupKey];
+        [self.browserView reloadData];
+    }
+}
+
+- (void)_runBatchProcessor:(CASBatchProcessor*)processor withExposures:(NSArray*)exposures
+{
+    // ask processor to check compatibility ... e.g. all the same size, sensor, etc
+    
+    // start progress hud
+    CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+    [progress beginSheetModalForWindow:self.browserView.window];
+    [progress configureWithRange:NSMakeRange(0, [exposures count]) label:NSLocalizedString(@"Processing...", @"Batch processing label")];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSEnumerator* enumerator = [exposures objectEnumerator];
+        
+        [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
+            
+            *exposure = [enumerator nextObject];
+            
+            // update progress bar
+            dispatch_async(dispatch_get_main_queue(), ^{
+                progress.progressBar.doubleValue++;
+            });
+            
+        } completion:^(NSError *error, CASCCDExposure *result) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (error){
+                    [NSApp presentError:error];
+                }
+                else {
+                    NSLog(@"result: %@",result);
+                }
+                
+                // dismiss progress sheet/hud
+                [progress endSheetWithCode:NSOKButton];
+                
+                // lazy...
+                [self _refresh];
+            });
+        }];
+    });
+}
+
+- (IBAction)batchItemSelected:(NSMenuItem*)sender
+{
+    NSArray* exposures = [self.exposuresController selectedObjects];
+    if ([exposures count] < 1){
+        return;
+    }
+    
+    CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:[sender representedObject]];
+    if (!processor){
+        return;
+    }
+    
+    [self _runBatchProcessor:processor withExposures:exposures];
+}
+
+- (void)divideExposures:(NSArray*)exposures byFlat:(CASCCDExposure*)flat
+{
+    NSLog(@"Dividing %ld exposures by the flat %@",[exposures count],flat.uuid);
+    
+    CASFlatDividerProcessor* processor = [[CASFlatDividerProcessor alloc] init];
+    processor.flat = flat;
+    [self _runBatchProcessor:processor withExposures:exposures];
+}
+
+#pragma mark - KVO
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
@@ -333,12 +484,59 @@
             }
         }
         else if ([@"arrangedObjects" isEqualToString:keyPath]){
-            [self updateForCurrentGroupKey];
-            [self.browserView reloadData];
+            [self _refresh];
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+#pragma mark - Drag & Drop
+
+- (NSInteger)_indexOfItemAtPoint:(NSPoint)point
+{
+    return [self.browserView indexOfItemAtPoint:[self.browserView convertPoint:point fromView:nil]];
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+{
+    return [self _indexOfItemAtPoint:[sender draggingLocation]] == NSNotFound ? NSDragOperationNone : NSDragOperationCopy; // NSDragOperationLink ?
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+{
+    const NSInteger index = [self _indexOfItemAtPoint:[sender draggingLocation]];
+    if (index == NSNotFound){
+        return NO;
+    }
+    
+    CASCCDExposureWrapper* targetWrapper = (CASCCDExposureWrapper*)[self imageBrowser:self.browserView itemAtIndex:index];
+    
+    NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[sender draggingPasteboard] pasteboardItems] count]];
+    for (NSPasteboardItem* item in [[sender draggingPasteboard] pasteboardItems]){
+        NSString* uuid = [item propertyListForType:(id)kUTTypeUTF8PlainText];
+        if ([uuid isKindOfClass:[NSString class]]){
+            NSArray* exposures = [self.exposures filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@",uuid]];
+            if ([exposures count]){
+                [sourceExposures addObject:[exposures lastObject]];
+            }
+        }
+    }
+    
+    if ([sourceExposures count]){
+        
+        // popover with buttons for available operations + cancel
+        
+        // dragging exposures onto a flat implements flat division
+        if (targetWrapper.exposure.type == kCASCCDExposureFlatType){
+            dispatch_async(dispatch_get_current_queue(), ^{
+                [self divideExposures:sourceExposures byFlat:targetWrapper.exposure];
+            });
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 @end

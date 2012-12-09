@@ -133,6 +133,8 @@
 		F4A561C515EA5DE100130D4A /* CASHistogramView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A561C415EA5DE100130D4A /* CASHistogramView.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
+		F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B08B631673AF1A00771948 /* CASBatchProcessor.h */; };
+		F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B08B641673AF1A00771948 /* CASBatchProcessor.m */; };
 		F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */; };
 		F4C4033C16419FF000218E0F /* H25.png in Resources */ = {isa = PBXBuildFile; fileRef = F4C4033B16419FF000218E0F /* H25.png */; };
@@ -513,6 +515,8 @@
 		F4A84E1A15C52B7300B1164F /* SXCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDProperties.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDProperties.m; sourceTree = "<group>"; };
 		F4AEDF171614DC16007641A2 /* CASGuiderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderController.h; sourceTree = "<group>"; };
 		F4AEDF181614DC16007641A2 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
+		F4B08B631673AF1A00771948 /* CASBatchProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASBatchProcessor.h; sourceTree = "<group>"; };
+		F4B08B641673AF1A00771948 /* CASBatchProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASBatchProcessor.m; sourceTree = "<group>"; };
 		F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
 		F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
 		F4C4033B16419FF000218E0F /* H25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H25.png; sourceTree = "<group>"; };
@@ -1040,6 +1044,8 @@
 				F4849C7116590C820069647F /* CASImageDebayer.mm */,
 				F44EDF5A15FCC872003B1B4C /* CASScriptableObject.h */,
 				F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */,
+				F4B08B631673AF1A00771948 /* CASBatchProcessor.h */,
+				F4B08B641673AF1A00771948 /* CASBatchProcessor.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -1170,6 +1176,7 @@
 				F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */,
 				F4849C7216590C820069647F /* CASImageDebayer.h in Headers */,
 				F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */,
+				F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1596,6 +1603,7 @@
 				F4849C6B165900AF0069647F /* CoreAstro.m in Sources */,
 				F4849C7316590C820069647F /* CASImageDebayer.mm in Sources */,
 				F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */,
+				F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

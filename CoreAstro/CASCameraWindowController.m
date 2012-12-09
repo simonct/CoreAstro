@@ -95,6 +95,7 @@
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
+@property (nonatomic,readonly) CASCCDExposureLibrary* library;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -157,6 +158,7 @@
     [self.exposuresController setSelectsInsertedObjects:YES];
     [self.exposuresController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
     [self.exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:nil];
+    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
 
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
     self.imageView.layer.backgroundColor = gray;
@@ -213,9 +215,8 @@
     [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
     [CASShadowView attachToView:self.imageView.superview edge:NSMaxXEdge];
 
+    // set up the UI for the current camera controller
     [self configureForCameraController];
-
-    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"exposures" options:nil];
     
     // listen for guide notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(guideCommandNotification:) name:kCASCameraControllerGuideCommandNotification object:nil];
@@ -255,14 +256,9 @@
     }
 }
 
-- (NSArray*)exposures
+- (CASCCDExposureLibrary*)library
 {
-    return [[CASCCDExposureLibrary sharedLibrary] exposures];
-}
-
-- (void)setExposures:(NSMutableArray*)exposures
-{
-    [[CASCCDExposureLibrary sharedLibrary] setExposures:exposures];
+    return [CASCCDExposureLibrary sharedLibrary];
 }
 
 - (CASCCDExposure*)currentlySelectedExposure
@@ -429,7 +425,7 @@
 
 - (void)_resetAndRedisplayCurrentExposure
 {
-    [self.exposures makeObjectsPerformSelector:@selector(reset)]; // reset all
+    [[self.exposuresController arrangedObjects] makeObjectsPerformSelector:@selector(reset)]; // reset all
     [self displayExposure:[self currentlySelectedExposure]];
 }
 
@@ -729,9 +725,6 @@
                 }
                 else {
                     
-                    // yuk - self.exposuresController is bound to this key so make sure it's updated before checking for membership 
-                    [self willChangeValueForKey:@"exposures"];
-                    [self didChangeValueForKey:@"exposures"];
 
                     [self.exposuresController setSelectionIndex:0];
                 }

@@ -95,7 +95,14 @@
 {
     void (^complete)() = ^(NSError* error,NSURL* url){
         if (!error){
-            [_exposures addObject:exposure];
+            if ([NSThread isMainThread]){
+                [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
+                });
+            }
         }
         if (block){
             block(error,url);
@@ -109,37 +116,34 @@
         }
         else {
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            // have to ensure that the pixels haven't been reset before this happens...
+            NSString* path = [[[self root] stringByAppendingPathComponent:[CASCCDExposureIO defaultFilenameForExposure:exposure]] stringByAppendingPathExtension:@"caExposure"];
+            
+            // create the exposure io object
+            exposure.io = [CASCCDExposureIO exposureIOWithPath:path];
+            
+            // write the exposure
+            NSError* error = nil;
+            if ([exposure.io writeExposure:exposure writePixels:YES error:&error]){
                 
-                // have to ensure that the pixels haven't been reset before this happens...
-                NSString* path = [[[self root] stringByAppendingPathComponent:[CASCCDExposureIO defaultFilenameForExposure:exposure]] stringByAppendingPathExtension:@"caExposure"];
-                
-                // create the exposure io object
-                exposure.io = [CASCCDExposureIO exposureIOWithPath:path];
-                
-                // write the exposure
-                NSError* error = nil;
-                if ([exposure.io writeExposure:exposure writePixels:YES error:&error]){
-                    
-                    // make sure all the files are read-only (what about the wrapper ?)
-                    NSString* subPath = nil;
-                    NSDirectoryEnumerator* dir = [[NSFileManager defaultManager] enumeratorAtPath:path];
-                    while ((subPath = [dir nextObject]) != nil) {
-                        subPath = [path stringByAppendingPathComponent:subPath];
-                        BOOL isDirectory;
-                        if ([[NSFileManager defaultManager] fileExistsAtPath:subPath isDirectory:&isDirectory]){
-                            if (!isDirectory){
-                                NSDictionary* attrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:0444] forKey:NSFilePosixPermissions]; // todo; get the current perms and modify rather than set this absolute value
-                                if (attrs){
-                                    [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:subPath error:nil];
-                                }
+                // make sure all the files are read-only (what about the wrapper ?)
+                NSString* subPath = nil;
+                NSDirectoryEnumerator* dir = [[NSFileManager defaultManager] enumeratorAtPath:path];
+                while ((subPath = [dir nextObject]) != nil) {
+                    subPath = [path stringByAppendingPathComponent:subPath];
+                    BOOL isDirectory;
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:subPath isDirectory:&isDirectory]){
+                        if (!isDirectory){
+                            NSDictionary* attrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:0444] forKey:NSFilePosixPermissions]; // todo; get the current perms and modify rather than set this absolute value
+                            if (attrs){
+                                [[NSFileManager defaultManager] setAttributes:attrs ofItemAtPath:subPath error:nil];
                             }
                         }
                     }
                 }
-                
-                complete(error,[NSURL fileURLWithPath:path]);
-            });
+            }
+            
+            complete(error,[NSURL fileURLWithPath:path]);
         }
     }
 }
