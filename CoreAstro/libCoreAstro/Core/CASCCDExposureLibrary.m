@@ -117,7 +117,11 @@
         else {
             
             // have to ensure that the pixels haven't been reset before this happens...
-            NSString* path = [[[self root] stringByAppendingPathComponent:[CASCCDExposureIO defaultFilenameForExposure:exposure]] stringByAppendingPathExtension:@"caExposure"];
+            NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exposure];
+            if ([exposure.meta objectForKey:@"history"]){
+                name = [@"Processed" stringByAppendingPathComponent:name];
+            }
+            NSString* path = [[[self root] stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"caExposure"];
             
             // create the exposure io object
             exposure.io = [CASCCDExposureIO exposureIOWithPath:path];
