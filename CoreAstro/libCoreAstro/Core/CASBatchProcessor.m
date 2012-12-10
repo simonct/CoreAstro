@@ -28,6 +28,14 @@
 #import "CASCCDExposureLibrary.h"
 #import <Accelerate/Accelerate.h>
 
+@interface CASBatchProcessor ()
+@property (nonatomic,strong) NSMutableArray* history;
+- (void)start;
+- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info;
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block;
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure;
+@end
+
 @interface CASCombineProcessor ()
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,strong) CASCCDExposure* first;
@@ -39,6 +47,8 @@
 
 - (void)start
 {
+    [super start];
+    
     bzero(&_final,sizeof(_final));
 }
 
@@ -92,7 +102,7 @@
                                                                 time:[NSDate date]];
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
-    //        [mutableMeta setObject:@{@"stack":stackHistory} forKey:@"history"];
+    [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
     [mutableMeta setObject:@{@"name":@"Average"} forKey:@"device"];
     result.meta = [mutableMeta copy];
     
@@ -104,6 +114,12 @@
         
         block(error,result);
     }];
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
+    return @{@"uuid":exposure.uuid,@"mode":modeStr};
 }
 
 @end
@@ -118,10 +134,13 @@
 
 - (void)start
 {
+    [super start];
+
     // get average flat value
     float average = 0;
     float* fbuf = (float*)[self.flat.floatPixels bytes];
     vDSP_meamgv(fbuf,1,&average,[self.flat.floatPixels length]/sizeof(float));
+    //NSLog(@"average: %f",average);
     
     if (average == 0){
         return;
@@ -132,10 +151,11 @@
     if (_normalisedFlat){
         float* fnorm = (float*)[_normalisedFlat mutableBytes];
         vDSP_vsdiv(fbuf,1,(float*)&average,fnorm,1,[_normalisedFlat length]/sizeof(float));
-        {
-            float average = 0;
-            vDSP_meamgv(fnorm,1,&average,[self.flat.floatPixels length]/sizeof(float));
-        }
+//        {
+//            float average = 0;
+//            vDSP_meamgv(fnorm,1,&average,[_normalisedFlat length]/sizeof(float));
+//            NSLog(@"average: %f",average);
+//        }
     }
 }
 
@@ -168,20 +188,18 @@
     vDSP_vdiv(fnorm,1,fbuf,1,(float*)[corrected mutableBytes],1,[corrected length]/sizeof(float));
     
     CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:corrected
-                                                              camera:nil
-                                                              params:CASExposeParamsMake(size1.width,size1.height,0,0,size1.width,size1.height,1,1,0,0)
+                                                              camera:nil // exposure.camera
+                                                              params:exposure.params
                                                                 time:[NSDate date]];
 
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
-    //        [mutableMeta setObject:@{@"stack":stackHistory} forKey:@"history"];
+    [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
     [mutableMeta setObject:@{@"name":@"Corrected"} forKey:@"device"];
     result.meta = [mutableMeta copy];
 
-    // this really should be associated with the parent device folder and live in there - perhaps with a special name indicating that it's a combined frame ?
-
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
 
-        NSLog(@"Added exposure at %@",url);
+        NSLog(@"Added flat corrected exposure at %@",url);
     }];
 }
 
@@ -190,12 +208,18 @@
     block(nil,nil);
 }
 
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return nil;
+}
+
 @end
 
 @implementation CASBatchProcessor
 
 - (void)start
 {
+    self.history = [NSMutableArray arrayWithCapacity:100];
 }
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
@@ -204,6 +228,11 @@
 
 - (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
 {
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return @{@"uuid":exposure.uuid};
 }
 
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion
@@ -221,9 +250,23 @@
         if (!exposure){
             break;
         }
-                
-        [self processExposure:exposure withInfo:info];
         
+        id entry = [self historyWithExposure:exposure];
+        if (entry){
+            [self.history addObject:entry];
+        }
+
+        [exposure reset];
+
+        @try {
+            @autoreleasepool {
+                [self processExposure:exposure withInfo:info];
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"*** Exception processing exposure: %@",exposure);
+        }
+
         [exposure reset];
     }
     
