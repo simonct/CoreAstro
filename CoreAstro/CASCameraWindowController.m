@@ -750,9 +750,8 @@
 
 - (IBAction)cancelCapture:(NSButton*)sender
 {
-    // this only works with continuous capture
-    self.cameraController.continuous = NO;
-    self.cameraController.captureCount = 0;
+    self.captureButton.enabled = NO;
+    [self.cameraController cancelCapture];
 }
 
 - (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel andExportBlock:(void(^)(CASCCDExposure*))exportBlock

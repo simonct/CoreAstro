@@ -37,7 +37,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
 @end
 
-@implementation CASCameraController
+@implementation CASCameraController {
+    BOOL _cancel:1;
+    BOOL _waitingForDevice:1;
+}
 
 - (id)initWithCamera:(CASCCDDevice*)camera
 {
@@ -81,7 +84,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
         
-        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount)){
+        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount) && !_cancel){
             
             void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
                 
@@ -175,7 +178,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     self.exposureStart = [NSDate date];
     
+    _waitingForDevice = YES;
+    
     [self.camera exposeWithParams:exp type:kCASCCDExposureLightType block:^(NSError *error, CASCCDExposure *exposure) {
+    
+        _waitingForDevice = NO;
         
         if (error){
             endCapture(error,nil);
@@ -184,7 +191,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             exposure.type = kCASCCDExposureLightType;
             
-            if (!saveExposure){
+            if (!saveExposure && !_cancel){
                 endCapture(error,exposure);
             }
             else{
@@ -212,15 +219,23 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         return;
     }
     
+    _cancel = NO;
+
     self.currentCaptureIndex = 0;
     
     [self captureWithBlockImpl:block];
 }
 
-- (void)setContinuous:(BOOL)continuous
+- (void)cancelCapture
 {
-    _continuous = continuous;
-    if (!_continuous){
+    _cancel = YES;
+    self.continuous = NO;
+    
+    if (_waitingForDevice){
+        // ask the device to cancel the exposure and wait for it to complete to clear the capturing flag, don't save any resulting exposure
+    }
+    else {
+        // if we're waiting for the next exposure, stop the timer and clear the capturing flag
         self.capturing = NO;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
