@@ -215,6 +215,84 @@
 
 @end
 
+@interface CASSubtractProcessor ()
+@property (nonatomic,strong) CASCCDExposure* first;
+@end
+
+@implementation CASSubtractProcessor
+
+- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
+{
+    if (!self.first){
+        self.first = exposure;
+    }
+    
+    const CASSize size1 = self.base.actualSize;
+    const CASSize size2 = exposure.actualSize;
+    if (size1.width != size2.width || size1.height != size2.height){
+        NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    float* fbuf = (float*)[exposure.floatPixels bytes];
+    float* fbase = (float*)[self.base.floatPixels bytes];
+    if (!fbuf || !fbase){
+        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    NSMutableData* corrected = [NSMutableData dataWithLength:[self.base.floatPixels length]];
+    if (!corrected){
+        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    float mean0 = 0;
+    vDSP_meamgv(fbase,1,&mean0,[corrected length]/sizeof(float));
+    
+    float mean1 = 0;
+    vDSP_meamgv(fbuf,1,&mean1,[corrected length]/sizeof(float));
+    
+    vDSP_vsub(fbase,1,fbuf,1,(float*)[corrected mutableBytes],1,[corrected length]/sizeof(float));
+    
+    float mean2 = 0;
+    vDSP_meamgv((float*)[corrected mutableBytes],1,&mean2,[corrected length]/sizeof(float));
+
+    NSLog(@"mean0: %f, mean1: %f, mean2: %f",mean0,mean1,mean2);
+    
+    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:corrected
+                                                              camera:nil // exposure.camera
+                                                              params:exposure.params
+                                                                time:[NSDate date]];
+    
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
+    if (self.mode == kCASSubtractProcessorDark){
+        [mutableMeta setObject:@{@"dark-correction":@{@"dark":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
+    }
+    else {
+        [mutableMeta setObject:@{@"bias-correction":@{@"bias":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
+    }
+    [mutableMeta setObject:@{@"name":@"Corrected"} forKey:@"device"];
+    result.meta = [mutableMeta copy];
+    
+    [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
+        
+        NSLog(@"Added dark/bias corrected exposure at %@",url);
+    }];
+}
+
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
+{
+    block(nil,nil);
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return nil;
+}
+
+@end
+
 @implementation CASBatchProcessor
 
 - (void)start

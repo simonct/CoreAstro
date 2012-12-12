@@ -332,6 +332,8 @@
     
     // separator, then commands that involve more UI e.g. divide flat where we have to select a flat
     
+    // reveal in finder command
+    
     if ([[menu itemArray] count]){
         [NSMenu popUpContextMenu:menu withEvent:event forView:self.browserView];
     }
@@ -367,6 +369,10 @@
 }
 
 #pragma mark - Actions
+
+// space key looks at current selection
+// if 1, selects that exposure
+// if > 1 sets all those exposures in a multi-exposure view and allows flipping between them
 
 - (IBAction)zoomSliderDidChange:(id)sender
 {
@@ -465,10 +471,15 @@
 
 - (void)divideExposures:(NSArray*)exposures byFlat:(CASCCDExposure*)flat
 {
-    NSLog(@"Dividing %ld exposures by the flat %@",[exposures count],flat.uuid);
-    
     CASFlatDividerProcessor* processor = [[CASFlatDividerProcessor alloc] init];
     processor.flat = flat;
+    [self _runBatchProcessor:processor withExposures:exposures];
+}
+
+- (void)subtractExposure:(CASCCDExposure*)base from:(NSArray*)exposures
+{
+    CASSubtractProcessor* processor = [[CASSubtractProcessor alloc] init];
+    processor.base = base;
     [self _runBatchProcessor:processor withExposures:exposures];
 }
 
@@ -534,6 +545,13 @@
             });
             return YES;
         }
+        if (targetWrapper.exposure.type == kCASCCDExposureBiasType || targetWrapper.exposure.type == kCASCCDExposureDarkType){
+            dispatch_async(dispatch_get_current_queue(), ^{
+                [self subtractExposure:targetWrapper.exposure from:sourceExposures];
+            });
+            return YES;
+        }
+
     }
     
     return NO;

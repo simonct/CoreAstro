@@ -46,3 +46,12 @@ enum {
 @property (nonatomic,strong) CASCCDExposure* flat;
 @end
 
+@interface CASSubtractProcessor : CASBatchProcessor
+enum {
+    kCASSubtractProcessorDark,
+    kCASSubtractProcessorBias
+};
+@property (nonatomic,assign) NSInteger mode;
+@property (nonatomic,strong) CASCCDExposure* base;
+@end
+
