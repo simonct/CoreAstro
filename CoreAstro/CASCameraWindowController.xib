@@ -353,7 +353,7 @@
 																<object class="NSLocale" key="locale" id="699157183">
 																	<string key="NS.identifier"/>
 																</object>
-																<real value="1" key="minimum"/>
+																<real value="0.0" key="minimum"/>
 																<string key="negativeInfinitySymbol">-∞</string>
 																<string key="nilSymbol"/>
 																<string key="positiveInfinitySymbol">+∞</string>
@@ -370,7 +370,7 @@
 																<string key="NSString">NaN</string>
 																<dictionary key="NSAttributes" id="1056095784"/>
 															</object>
-															<real value="1" key="NS.min"/>
+															<real value="0.0" key="NS.min"/>
 															<object class="NSDecimalNumberPlaceholder" key="NS.max" id="668093727">
 																<int key="NS.exponent">0</int>
 																<int key="NS.length">0</int>
