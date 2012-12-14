@@ -336,6 +336,11 @@
     // prep the exposure temp array
     self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
 
+    // if we've got a cooler, record the start temp rather than waiting for the cooler command to return
+    if (self.hasCooler){
+        [self.exposureTemperatures addObject:[NSNumber numberWithFloat:self.temperature]];
+    }
+    
     // block to create the exposure object from the read pixels and call the completion block
     void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
         
