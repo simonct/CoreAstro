@@ -8,7 +8,6 @@
 
 #import "CASLibraryBrowserViewController.h"
 #import "CASLibraryBrowserView.h"
-#import "CASExposuresController.h"
 #import "CASBatchProcessor.h"
 #import "CASProgressWindowController.h"
 
@@ -180,7 +179,7 @@
     [self.browserView setDraggingDestinationDelegate:self];
     [self.browserView setAllowsDroppingOnItems:YES];
     [self.browserView registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
-    [self.browserView reloadData];
+    [self.browserView setValue:[NSColor lightGrayColor] forKey:IKImageBrowserBackgroundColorKey];
 }
 
 #pragma mark - Exposures
@@ -200,14 +199,20 @@
     return [defaultExposuresArray copy];
 }
 
-- (void)setExposuresController:(CASExposuresController *)exposuresController
+- (void)setExposuresController:(NSArrayController *)exposuresController
 {
     if (exposuresController != _exposuresController){
-        [_exposuresController removeObserver:self forKeyPath:@"selectedObjects"];
-        [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects"];
+        
+        [_exposuresController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
+        [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects" context:(__bridge void *)(self)];
+        
         _exposuresController = exposuresController;
+        
         [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
+        
+        _exposures = nil;
+        [self.browserView reloadData];
     }
 }
 
@@ -316,6 +321,10 @@
 {
     NSArray* exposures = [self.exposuresController selectedObjects];
     if ([exposures count] < 2){
+        
+        if ([exposures count] == 1){
+            // Set As -> Master Dark, Master Bias, Master Flat
+        }
         return;
     }
     
@@ -420,8 +429,17 @@
     [progress beginSheetModalForWindow:self.browserView.window];
     [progress configureWithRange:NSMakeRange(0, [exposures count]) label:NSLocalizedString(@"Processing...", @"Batch processing label")];
     
+    // run the processor in the background
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
+        // listen for exposure added notifications and add them to the controller
+        id proxy = [[NSNotificationCenter defaultCenter] addObserverForName:kCASCCDExposureLibraryExposureAddedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            id exposure = [note userInfo][@"exposure"];
+            if (exposure && ![[self.exposuresController arrangedObjects] containsObject:exposure]){
+                [self.exposuresController addObject:exposure];
+            }
+        }];
+
         NSEnumerator* enumerator = [exposures objectEnumerator];
         
         [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
@@ -435,13 +453,11 @@
             
         } completion:^(NSError *error, CASCCDExposure *result) {
             
+            // run completion on the main thread
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if (error){
                     [NSApp presentError:error];
-                }
-                else {
-                    NSLog(@"result: %@",result);
                 }
                 
                 // dismiss progress sheet/hud
@@ -449,6 +465,9 @@
                 
                 // lazy...
                 [self _refresh];
+                
+                // remove observer
+                [[NSNotificationCenter defaultCenter] removeObserver:proxy];;
             });
         }];
     });

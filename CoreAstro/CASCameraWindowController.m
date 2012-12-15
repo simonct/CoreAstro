@@ -96,6 +96,8 @@
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
 @property (nonatomic,readonly) CASCCDExposureLibrary* library;
+@property (nonatomic,strong) CASExposuresController *libraryExposuresController;
+@property (nonatomic,strong) CASExposuresController *exposuresController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -153,12 +155,12 @@
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     
-    [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
-    [self.exposuresController setSelectedObjects:nil];
-    [self.exposuresController setSelectsInsertedObjects:YES];
-    [self.exposuresController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
-    [self.exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:nil];
+    self.exposuresController = [[CASExposuresController alloc] init];
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
+    [self.exposuresController setSelectsInsertedObjects:YES];
+    [self.exposuresController setSelectedObjects:nil];
+    [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+    self.libraryExposuresController = self.exposuresController;
 
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
     self.imageView.layer.backgroundColor = gray;
@@ -196,20 +198,20 @@
     
     // set the devices controller content
     self.camerasArrayController.content = ((CASAppDelegate*)[NSApp delegate]).cameraControllers;
-    [[NSApp delegate] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.camerasArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.camerasArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+    [[NSApp delegate] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [self.camerasArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [self.camerasArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     //[self.devicesArrayController bind:@"content" toObject:[NSApp delegate] withKeyPath:@"cameraControllers" options:nil];
     
     // set up the guiders controller
     self.guidersArrayController.content = ((CASAppDelegate*)[NSApp delegate]).guiderControllers;
-    [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:nil];
-    [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:nil];
+    [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 
 
-    [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
-    [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
+    [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
+    [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
     
     // add a drop shadow
     [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
@@ -240,25 +242,39 @@
     }
 }
 
+- (CASCCDExposureLibrary*)library
+{
+    return [CASCCDExposureLibrary sharedLibrary];
+}
+
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     if (_cameraController != cameraController){
         if (_cameraController){
-            [_cameraController removeObserver:self forKeyPath:@"exposureStart"];
-            [_cameraController removeObserver:self forKeyPath:@"capturing"];
+            [_cameraController removeObserver:self forKeyPath:@"exposureStart" context:(__bridge void *)(self)];
+            [_cameraController removeObserver:self forKeyPath:@"capturing" context:(__bridge void *)(self)];
         }
         _cameraController = cameraController;
         if (_cameraController){
-            [_cameraController addObserver:self forKeyPath:@"exposureStart" options:0 context:nil];
-            [_cameraController addObserver:self forKeyPath:@"capturing" options:0 context:nil];
+            [_cameraController addObserver:self forKeyPath:@"exposureStart" options:0 context:(__bridge void *)(self)];
+            [_cameraController addObserver:self forKeyPath:@"capturing" options:0 context:(__bridge void *)(self)];
         }
         [self configureForCameraController];
     }
 }
 
-- (CASCCDExposureLibrary*)library
+- (void)setExposuresController:(CASExposuresController *)exposuresController
 {
-    return [CASCCDExposureLibrary sharedLibrary];
+    if (exposuresController != _exposuresController){
+        
+        [_exposuresController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
+        [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects" context:(__bridge void *)(self)];
+        
+        _exposuresController = exposuresController;
+        
+        [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
+        [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:(__bridge void *)(self)];
+    }
 }
 
 - (CASCCDExposure*)currentlySelectedExposure
@@ -286,16 +302,16 @@
         _currentExposure = currentExposure;
         
         // unobserve the darks and flats controllers so that they're not triggered by resetting the content in the methods below
-        [self.darksController removeObserver:self forKeyPath:@"selectedObjects"];
-        [self.flatsController removeObserver:self forKeyPath:@"selectedObjects"];
+        [self.darksController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
+        [self.flatsController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
 
         // not currently showing candidate darks and flats
         // [self updateFlatsForExposure:_currentExposure];
         // [self updateDarksForExposure:_currentExposure];
         
         // observe the darks and flats controller again
-        [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
-        [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:nil];
+        [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
+        [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
 
         // display the exposure
         [self displayExposure:_currentExposure];
@@ -304,7 +320,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == nil) {
+    if (context == (__bridge void *)(self)) {
         
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
@@ -381,38 +397,50 @@
     [self.sensorDepthField setStringValue:@""];
     [self.sensorPixelsField setStringValue:@""];
 
-    [self.cameraController connect:^(NSError *error) {
-        
-        if (error){
-            [NSApp presentError:error];
-        }
-        else {
-            
-            // check it's the same camera...
-            
-            CASCCDDevice* camera = self.cameraController.camera;
-
-            [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
-            [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.sensor.bitsPerPixel]];
-            [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
-        }
-    }];
+    // capture the current controller in the completion block
+    CASCameraController* cameraController = self.cameraController;
     
-    // show only exposures from this camera - still needed with the library view ?
-    if (self.cameraController){
-        [self.exposuresController setFilterPredicate:[NSPredicate predicateWithFormat:@"%K == %@",@"deviceID",self.cameraController.camera.uniqueID]];
+    if (!cameraController){
+        
+        self.currentExposure = nil;
     }
     else {
-        [self.exposuresController setFilterPredicate:nil];
+        
+        [self.cameraController connect:^(NSError *error) {
+            
+            if (error){
+                [NSApp presentError:error];
+            }
+            else {
+                
+                // check it's the same camera...
+                if (self.cameraController == cameraController){
+                    
+                    CASCCDDevice* camera = self.cameraController.camera;
+                    
+                    [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
+                    [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.sensor.bitsPerPixel]];
+                    [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
+                }
+            }
+        }];
     }
+
+    // show only exposures from this camera - still needed with the library view ?
+//    if (self.cameraController){
+//        [self.exposuresController setFilterPredicate:[NSPredicate predicateWithFormat:@"%K == %@",@"deviceID",self.cameraController.camera.uniqueID]];
+//    }
+//    else {
+//        [self.exposuresController setFilterPredicate:nil];
+//    }
     
     // set the first exposure for this camera
-    if ([self.exposuresController.arrangedObjects count] > 0){
-        [self.exposuresController setSelectionIndex:0];
-    }
-    else {
-        [self.exposuresController setSelectedObjects:nil];
-    }
+//    if ([self.exposuresController.arrangedObjects count] > 0){
+//        [self.exposuresController setSelectionIndex:0];
+//    }
+//    else {
+//        [self.exposuresController setSelectedObjects:nil];
+//    }
     
     // reset the capture count - why am I doing this here ?
     if (!self.cameraController.captureCount && !self.cameraController.continuous){
@@ -421,6 +449,8 @@
     
     // set progress display if this camera is capturing
     [self updateExposureIndicator];
+    
+    // set the exposures controller to either nil or one that shows only exposures from this camera
 }
 
 - (void)_resetAndRedisplayCurrentExposure
@@ -558,7 +588,7 @@
         const NSInteger scaling = (self.cameraController.exposureUnits == 0) ? 1 : 1000;
         self.progressIndicator.hidden = NO;
         self.imageView.showProgress = YES;
-        self.imageView.progress = self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
+        self.imageView.progress = self.cameraController.exposure > 0 ? self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure : 0;
         if (self.progressIndicator.doubleValue >= self.progressIndicator.maxValue){
             self.progressIndicator.indeterminate = YES;
             self.progressStatusText.stringValue = @"Downloading image...";
@@ -1184,7 +1214,17 @@
 - (void)delete:sender
 {
     if ([[self.exposuresController selectedObjects] count]){
-        [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.window];
+        if ([self.exposuresController isKindOfClass:[CASExposuresController class]]){
+            if (!self.exposuresController.project){
+                [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.window];
+            }
+            else {
+                [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self.exposuresController selectionIndexes]];
+            }
+        }
+        else {
+            [self.exposuresController remove:sender]; // change no being saved
+        }
     }
 }
 
@@ -1337,11 +1377,10 @@
 
 #pragma mark Master selection changes
 
-- (void)showLibraryView
+- (void)showLibraryViewWithProject:(CASCCDExposureLibraryProject*)project
 {
     if (!self.libraryViewController){
         self.libraryViewController = [[CASLibraryBrowserViewController alloc] initWithNibName:@"CASLibraryBrowserViewController" bundle:nil];
-        self.libraryViewController.exposuresController = self.exposuresController;
         self.libraryViewController.exposureDelegate = self;
     }
     
@@ -1352,6 +1391,18 @@
         self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         self.imageView.hidden = YES;
     }
+
+    // set the exposure set to display
+    if (!project){
+        self.libraryViewController.exposuresController = self.libraryExposuresController;
+    }
+    else {
+        CASExposuresController* exposuresController = [[CASExposuresController alloc] initWithContent:project.exposures];
+        exposuresController.project = project;
+        self.libraryViewController.exposuresController = exposuresController;
+    }
+    
+    self.exposuresController = (CASExposuresController*)self.libraryViewController.exposuresController;
 }
 
 - (void)hideLibraryView
@@ -1368,6 +1419,10 @@
     [self hideLibraryView];
     
     self.cameraController = cameraController;
+    
+    if (!cameraController){
+        [self configureForCameraController];
+    }
 }
 
 - (void)libraryWasSelected:(id)library
@@ -1378,7 +1433,7 @@
         [self hideLibraryView];
     }
     else{
-        [self showLibraryView];
+        [self showLibraryViewWithProject:[library isKindOfClass:[CASCCDExposureLibraryProject class]] ? library : nil];
     }
 }
 

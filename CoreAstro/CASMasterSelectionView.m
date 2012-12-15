@@ -7,6 +7,7 @@
 //
 
 #import "CASMasterSelectionView.h"
+#import "CASCCDExposureLibrary.h"
 
 @interface CASMasterSelectionViewNullCamera : NSObject
 @end
@@ -25,6 +26,25 @@
     [self reloadData];
     [self expandItem:[nodes objectAtIndex:0] expandChildren:YES];
     [self expandItem:[nodes objectAtIndex:1] expandChildren:YES];
+    
+    [self registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
+
+    NSButton* addButton = [[NSButton alloc] init];
+    [addButton setTitle:@"+"];
+    [addButton setBezelStyle:NSSmallSquareBezelStyle];
+    [addButton setFrame:CGRectMake(1, self.bounds.size.height - 38, self.bounds.size.width/2, 20)];
+    [addButton setAutoresizingMask:NSViewMinYMargin];
+    [addButton setTarget:self];
+    [addButton setAction:@selector(addProject:)];
+    [self addSubview:addButton];
+
+    NSButton* minusButton = [[NSButton alloc] init];
+    [minusButton setTitle:@"-"];
+    [minusButton setBezelStyle:NSSmallSquareBezelStyle];
+    [minusButton setFrame:CGRectMake(self.bounds.size.width/2, self.bounds.size.height - 40, self.bounds.size.width/2, 20)];
+    [minusButton setAutoresizingMask:NSViewMinYMargin];
+    [minusButton setAction:@selector(removeProject:)];
+    [self addSubview:minusButton];
 }
 
 - (void)awakeFromNib
@@ -40,6 +60,9 @@
     
     NSTreeNode* library = [NSTreeNode treeNodeWithRepresentedObject:@"LIBRARY"];
     [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:@"All Exposures"]];
+    for (CASCCDExposureLibraryProject* project in [CASCCDExposureLibrary sharedLibrary].projects){
+        [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+    }
     [nodes addObject:library];
 }
 
@@ -166,6 +189,9 @@
 {
     NSTreeNode* node = item;
     id representedObject = [node representedObject];
+    if ([representedObject isKindOfClass:[CASCCDExposureLibraryProject class]]){
+        return ((CASCCDExposureLibraryProject*)representedObject).name;
+    }
     if ([representedObject isKindOfClass:[CASMasterSelectionViewNullCamera class]]){
         return @"No Cameras Connected";
     }
@@ -208,13 +234,82 @@
                     [self.masterViewDelegate cameraWasSelected:camera];
                 }
             }
-            else if (node.parentNode == [nodes objectAtIndex:1]){
+            else if (node.parentNode == self.exposuresTreeNode){
                 if (delegateRespondsToLibraryWasSelected){
                     [self.masterViewDelegate libraryWasSelected:[node representedObject]];
                 }
             }
         }];
     }
+}
+
+#pragma mark - Actions
+
+- (IBAction)addProject:(id)sender
+{
+    CASCCDExposureLibraryProject* project = [[CASCCDExposureLibraryProject alloc] init];
+    project.name = @"New Project"; // current date
+    [[CASCCDExposureLibrary sharedLibrary] addProjects:[NSArray arrayWithObject:project]];
+    [[self.exposuresTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+    [self reloadData];
+}
+
+- (IBAction)removeProject:(id)sender
+{
+    NSIndexSet* selection = [self selectedRowIndexes];
+    [selection enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+        NSTreeNode* node = [self itemAtRow:idx];
+        if (node.parentNode == self.exposuresTreeNode && node != self.exposuresTreeNode.childNodes[0]){
+            [[CASCCDExposureLibrary sharedLibrary] removeProjects:[NSArray arrayWithObject:node.representedObject]];
+            [[self.exposuresTreeNode mutableChildNodes] removeObject:node];
+        }
+    }];
+    [self reloadData];
+}
+
+#pragma mark - Drag & Drop
+
+- (NSArray*)exposuresFromDraggingInfo:(id<NSDraggingInfo>)info
+{
+    NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[info draggingPasteboard] pasteboardItems] count]];
+    for (NSPasteboardItem* item in [[info draggingPasteboard] pasteboardItems]){
+        NSString* uuid = [item propertyListForType:(id)kUTTypeUTF8PlainText];
+        if ([uuid isKindOfClass:[NSString class]]){
+            [sourceExposures addObject:uuid];
+        }
+    }
+    return sourceExposures;
+}
+
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id <NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
+{
+    NSTreeNode* node = item;
+    if (node.parentNode != self.exposuresTreeNode || node == self.exposuresTreeNode.childNodes[0] || ![self exposuresFromDraggingInfo:info]){
+        return NSDragOperationNone;
+    }
+
+    return NSDragOperationCopy;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id <NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
+{
+    NSArray* uuids = [self exposuresFromDraggingInfo:info];
+    
+    __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:[uuids count]];
+    [uuids enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        id exposure = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:obj];
+        if (exposure){
+            [exposures addObject:exposure];
+        }
+    }];
+    
+    if ([exposures count]){
+        NSTreeNode* node = item;
+        CASCCDExposureLibraryProject* project = node.representedObject;
+        [project addExposures:[NSSet setWithArray:exposures]];
+    }
+
+    return YES;
 }
 
 @end

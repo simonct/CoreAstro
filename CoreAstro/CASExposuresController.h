@@ -8,7 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CASCCDExposureLibraryProject;
+
 @interface CASExposuresController : NSArrayController // make part of CASCCDExposures ?
+@property (nonatomic,weak) CASCCDExposureLibraryProject* project;
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes;
 - (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window;

@@ -25,15 +25,44 @@
 
 #import "CASCCDExposure.h"
 
+@interface CASCCDExposureLibraryProject : NSObject
+
+@property (nonatomic,weak) CASCCDExposureLibraryProject* parent;
+@property (nonatomic,strong) NSMutableArray* children;
+
+@property (nonatomic,strong) NSMutableArray* exposures; // or uuids - subset of library exposures in this project
+
+@property (nonatomic,strong) CASCCDExposure* masterDark;
+@property (nonatomic,strong) CASCCDExposure* masterBias;
+@property (nonatomic,strong) CASCCDExposure* masterFlat;
+
+@property (nonatomic,copy) NSString* name;
+
+- (void)addExposures:(NSSet *)objects;
+- (void)removeExposures:(NSSet *)objects;
+
+@end
+
 @interface CASCCDExposureLibrary : NSObject
 
 + (CASCCDExposureLibrary*)sharedLibrary;
 
-@property (nonatomic,strong) NSMutableArray* exposures;
+@property (nonatomic,strong) NSArray* projects; // array of CASCCDExposureLibraryProject
+@property (nonatomic,strong) NSArray* exposures;
 
 - (void)addExposure:(CASCCDExposure*)exposure save:(BOOL)save block:(void (^)(NSError*,NSURL*))block;
 
 - (NSArray*)darksMatchingExposure:(CASCCDExposure*)exposure;
 - (NSArray*)flatsMatchingExposure:(CASCCDExposure*)exposure;
 
+- (CASCCDExposure*)exposureWithUUID:(NSString*)uuid;
+
+- (void)addProjects:(NSSet *)objects;
+- (void)removeProjects:(NSSet *)objects;
+
+- (void)projectWasUpdated:(CASCCDExposureLibraryProject*)project;
+
+extern NSString* kCASCCDExposureLibraryExposureAddedNotification;
+
 @end
+

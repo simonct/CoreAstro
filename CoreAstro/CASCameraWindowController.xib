@@ -1538,16 +1538,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="NSSegmentStyle">4</int>
 				</object>
 			</object>
-			<object class="NSArrayController" id="838212225">
-				<string key="NSObjectClassName">CASCCDExposure</string>
-				<bool key="NSEditable">YES</bool>
-				<object class="_NSManagedProxy" key="_NSManagedProxy"/>
-				<bool key="NSAvoidsEmptySelection">YES</bool>
-				<bool key="NSPreservesSelection">YES</bool>
-				<bool key="NSSelectsInsertedObjects">YES</bool>
-				<bool key="NSFilterRestrictsInsertion">YES</bool>
-				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
-			</object>
 			<object class="NSArrayController" id="808490879">
 				<string key="NSObjectClassName">CASCameraController</string>
 				<bool key="NSEditable">YES</bool>
@@ -1685,14 +1675,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="destination" ref="558509276"/>
 					</object>
 					<int key="connectionID">862</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">exposuresController</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="838212225"/>
-					</object>
-					<int key="connectionID">1135</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -1953,22 +1935,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="destination" ref="1001"/>
 					</object>
 					<int key="connectionID">696</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">contentArray: cameraController.exposures</string>
-						<reference key="source" ref="838212225"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="838212225"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">contentArray: cameraController.exposures</string>
-							<string key="NSBinding">contentArray</string>
-							<string key="NSKeyPath">cameraController.exposures</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">1982</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -2327,39 +2293,35 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedIndex: selection.type</string>
+						<string key="label">selectedIndex: exposuresController.selection.type</string>
 						<reference key="source" ref="487807901"/>
-						<reference key="destination" ref="838212225"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="487807901"/>
-							<reference key="NSDestination" ref="838212225"/>
-							<string key="NSLabel">selectedIndex: selection.type</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">selectedIndex: exposuresController.selection.type</string>
 							<string key="NSBinding">selectedIndex</string>
-							<string key="NSKeyPath">selection.type</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSValueTransformerName</string>
-								<string key="NS.object.0">CASTemperatureTransformer</string>
-							</object>
+							<string key="NSKeyPath">exposuresController.selection.type</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">2714</int>
+					<int key="connectionID">3327</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.note</string>
+						<string key="label">value: exposuresController.selection.note</string>
 						<reference key="source" ref="918770254"/>
-						<reference key="destination" ref="838212225"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="918770254"/>
-							<reference key="NSDestination" ref="838212225"/>
-							<string key="NSLabel">value: selection.note</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: exposuresController.selection.note</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.note</string>
+							<string key="NSKeyPath">exposuresController.selection.note</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">2711</int>
+					<int key="connectionID">3326</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -2766,11 +2728,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">859</int>
 						<reference key="object" ref="946127233"/>
 						<reference key="parent" ref="558509276"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">1124</int>
-						<reference key="object" ref="838212225"/>
-						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1489</int>
@@ -5495,8 +5452,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1.IBWindowTemplateEditedContentRect">{{357, 418}, {480, 270}}</string>
 				<integer value="1" key="1.NSWindowTemplate.visibleAtLaunch"/>
-				<string key="1124.CustomClassName">CASExposuresController</string>
-				<string key="1124.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<array class="NSMutableArray" key="1399.IBNSViewMetadataConstraints">
 					<reference ref="191924912"/>
 				</array>
@@ -5904,7 +5859,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">3314</int>
+			<int key="maxID">3327</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5930,7 +5885,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="devicesTableView">CASMasterSelectionView</string>
 						<string key="devicesToggleControl">NSSegmentedControl</string>
 						<string key="exposureField">NSTextField</string>
-						<string key="exposuresController">CASExposuresController</string>
 						<string key="exposuresStatusText">NSTextField</string>
 						<string key="flatsController">NSArrayController</string>
 						<string key="guidersArrayController">NSArrayController</string>
@@ -5986,10 +5940,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="IBToOneOutletInfo" key="exposureField">
 							<string key="name">exposureField</string>
 							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="exposuresController">
-							<string key="name">exposuresController</string>
-							<string key="candidateClassName">CASExposuresController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="exposuresStatusText">
 							<string key="name">exposuresStatusText</string>
@@ -6075,14 +6025,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CASExposureView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CASExposuresController</string>
-					<string key="superclassName">NSArrayController</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CASExposuresController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

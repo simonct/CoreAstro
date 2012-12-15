@@ -26,6 +26,73 @@
 #import "CASCCDExposureLibrary.h"
 #import "CASCCDExposureIO.h"
 
+@interface CASCCDExposureLibrary ()
+@end
+
+@interface CASCCDExposureLibraryProject ()<NSCoding>
+@end
+
+@implementation CASCCDExposureLibraryProject
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [self init];
+    if (self) {
+        self.name = [coder decodeObjectForKey:@"name"];
+        self.masterBias = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:[coder decodeObjectForKey:@"masterBias"]];
+        self.masterDark = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:[coder decodeObjectForKey:@"masterDark"]];
+        self.masterFlat = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:[coder decodeObjectForKey:@"masterFlat"]];
+        self.parent = [coder decodeObjectForKey:@"parent"];
+        self.children = [coder decodeObjectForKey:@"children"];
+        NSArray* uuids = [coder decodeObjectForKey:@"exposures"];
+        if ([uuids count]){
+            __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:[uuids count]];
+            [uuids enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                id exposure = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:obj];
+                if (exposure){
+                    [exposures addObject:exposure];
+                }
+                else {
+                    NSLog(@"Exposure with uuid %@ not found",obj);
+                }
+            }];
+            self.exposures = exposures;
+        }
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.name forKey:@"name"];
+    [aCoder encodeObject:self.masterBias.uuid forKey:@"masterBias"];
+    [aCoder encodeObject:self.masterDark.uuid forKey:@"masterDark"];
+    [aCoder encodeObject:self.masterFlat.uuid forKey:@"masterFlat"];
+    [aCoder encodeObject:[self.exposures valueForKeyPath:@"uuid"] forKey:@"exposures"];
+    [aCoder encodeConditionalObject:self.parent forKey:@"parent"];
+    [aCoder encodeConditionalObject:self.children forKey:@"children"];
+}
+
+- (void)addExposures:(NSSet *)objects
+{
+    if (![objects count]){
+        return;
+    }
+    if (!_exposures){
+        _exposures = [NSMutableArray arrayWithCapacity:[objects count]];
+    }
+    [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[objects allObjects]];
+    [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+}
+
+- (void)removeExposures:(NSSet *)objects
+{
+    [[self mutableArrayValueForKey:@"exposures"] removeObjectsInArray:[objects allObjects]];
+    [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+}
+
+@end
+
 @interface CASCCDExposure (CASCCDExposureLibrary)
 @end
 
@@ -41,12 +108,16 @@
 @end
 
 @interface CASCCDExposureLibrary ()
-//@property (nonatomic,strong) NSMutableArray* exposures;
 @end
 
-@implementation CASCCDExposureLibrary
+@implementation CASCCDExposureLibrary {
+    NSMutableArray* _projects;
+    NSMutableArray* _exposures;
+}
 
 @synthesize exposures = _exposures;
+
+NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLibraryExposureAddedNotification";
 
 + (CASCCDExposureLibrary*)sharedLibrary
 {
@@ -60,7 +131,48 @@
 
 - (NSString*)root
 {
+    return @"/Volumes/Media1TB/CoreAstro"; // doesn't work if sandboxing is enabled...
     return [[NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoreAstro"];
+}
+
+- (NSString*)projectsIndexPath
+{
+    return [[[self root] stringByAppendingPathComponent:@"Projects"] stringByAppendingPathComponent:@"index.plist"];
+}
+
+- (NSMutableArray*)readProjects
+{
+//    NSError* error = nil;
+    NSString* path = [self projectsIndexPath];
+    id propList = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+    if ([propList isKindOfClass:[NSArray class]]){
+        return propList;
+    };
+    return nil;
+}
+
+- (void)writeProjects:(NSArray*)projects
+{
+    NSError* error = nil;
+    if (projects){
+        NSString* path = [self projectsIndexPath];
+        [[NSFileManager defaultManager] createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error];
+        [NSKeyedArchiver archiveRootObject:projects toFile:path];
+    }
+    else {
+        [[NSFileManager defaultManager] removeItemAtPath:[self projectsIndexPath] error:nil];
+    }
+}
+
+- (NSArray*)projects
+{
+    @synchronized(self){
+        if (!_projects){
+            _projects = [self readProjects];
+        }
+    }
+    
+    return [_projects copy];
 }
 
 - (NSArray*)exposures
@@ -91,18 +203,22 @@
     _exposures = [exposures mutableCopy];
 }
 
+- (void)_addExposureAndPostNotification:(CASCCDExposure*)exposure
+{
+    if (![NSThread isMainThread]){
+        [self performSelectorOnMainThread:_cmd withObject:exposure waitUntilDone:NO];
+    }
+    else {
+        [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCCDExposureLibraryExposureAddedNotification object:self userInfo:@{@"exposure":exposure}];
+    }
+}
+
 - (void)addExposure:(CASCCDExposure*)exposure save:(BOOL)save block:(void (^)(NSError*,NSURL*))block
 {
     void (^complete)() = ^(NSError* error,NSURL* url){
         if (!error){
-            if ([NSThread isMainThread]){
-                [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
-            }
-            else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
-                });
-            }
+            [self _addExposureAndPostNotification:exposure];
         }
         if (block){
             block(error,url);
@@ -172,6 +288,45 @@
 //    NSLog(@"flats: %@",flats);
     
     return flats;
+}
+
+- (CASCCDExposure*)exposureWithUUID:(NSString*)uuid
+{
+    if (!uuid){
+        return nil;
+    }
+    
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"uuid == %@",uuid];
+    
+    NSArray* exposures = [self.exposures filteredArrayUsingPredicate:predicate];
+    if ([exposures count] > 1){
+        NSLog(@"*** Multiple exposure with uuid = %@",uuid);
+    }
+    
+    return [exposures lastObject];
+}
+
+- (void)addProjects:(NSSet *)objects
+{
+    if (![objects count]){
+        return;
+    }
+    if (!_projects){
+        _projects = [NSMutableArray arrayWithCapacity:10];
+    }
+    [[self mutableArrayValueForKey:@"projects"] addObjectsFromArray:[objects allObjects]];
+    [self writeProjects:_projects];
+}
+
+- (void)removeProjects:(NSSet *)objects
+{
+    [[self mutableArrayValueForKey:@"projects"] removeObjectsInArray:[objects allObjects]];
+    [self writeProjects:_projects];
+}
+
+- (void)projectWasUpdated:(CASCCDExposureLibraryProject*)project
+{
+    [self writeProjects:_projects];
 }
 
 @end

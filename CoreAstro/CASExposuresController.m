@@ -36,11 +36,16 @@
             [self removeObjectAtArrangedObjectIndex:[indexes firstIndex]];
         }
         else {
-            [[arrangedObjects objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
+            if (!self.project){
+                [[arrangedObjects objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
+            }
             [super removeObjectsAtArrangedObjectIndexes:indexes];
         }
         if (nextObject){
             [self setSelectedObjects:[NSArray arrayWithObject:nextObject]];
+        }
+        if (self.project){
+            [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self.project]; // yuk
         }
     }
 }
