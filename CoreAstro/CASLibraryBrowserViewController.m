@@ -129,6 +129,10 @@
 
 - (NSString *) imageTitle
 {
+    NSString* note = self.exposure.note;
+    if ([note length]){
+        return note;
+    }
     return self.exposure.displayDeviceName;
 }
 
