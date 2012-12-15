@@ -91,6 +91,30 @@
     [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
 }
 
+- (void)setMasterDark:(CASCCDExposure *)masterDark
+{
+    if (masterDark != _masterDark){
+        _masterDark = masterDark;
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
+}
+
+- (void)setMasterBias:(CASCCDExposure *)masterBias
+{
+    if (masterBias != _masterBias){
+        _masterBias = masterBias;
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
+}
+
+- (void)setMasterFlat:(CASCCDExposure *)masterFlat
+{
+    if (masterFlat != _masterFlat){
+        _masterFlat = masterFlat;
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
+}
+
 @end
 
 @interface CASCCDExposure (CASCCDExposureLibrary)
@@ -160,7 +184,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
         [NSKeyedArchiver archiveRootObject:projects toFile:path];
     }
     else {
-        [[NSFileManager defaultManager] removeItemAtPath:[self projectsIndexPath] error:nil];
+//        [[NSFileManager defaultManager] removeItemAtPath:[self projectsIndexPath] error:nil];
     }
 }
 

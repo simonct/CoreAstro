@@ -10,6 +10,7 @@
 #import "CASLibraryBrowserView.h"
 #import "CASBatchProcessor.h"
 #import "CASProgressWindowController.h"
+#import "CASExposuresController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
@@ -203,7 +204,7 @@
     return [defaultExposuresArray copy];
 }
 
-- (void)setExposuresController:(NSArrayController *)exposuresController
+- (void)setExposuresController:(CASExposuresController *)exposuresController
 {
     if (exposuresController != _exposuresController){
         
@@ -316,31 +317,83 @@
 - (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasDoubleClickedAtIndex:(NSUInteger) index
 {
     if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposure:)]){
-        [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
+        
+        if (self.exposuresController.project.masterBias || self.exposuresController.project.masterFlat){
+            
+            const NSTimeInterval t = CASTimeBlock(^{
+                
+                CASCCDReductionProcessor* reduction = [[CASCCDReductionProcessor alloc] init];
+                reduction.bias = self.exposuresController.project.masterBias;
+                reduction.flat = self.exposuresController.project.masterFlat;
+                [reduction processWithExposures:[NSArray arrayWithObject:[self.exposures objectAtIndex:index]] completion:^(NSError *error, CASCCDExposure *final) {
+                    
+                    if (!error){
+                        [self.exposureDelegate focusOnExposure:final];
+                    }
+                }];
+            });
+            
+            NSLog(@"t=%fs",t);
+        }
+        else {
+            [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
+        }
+        
         // so, how do I get back to the full browser view ?
     }
 }
 
 - (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasRightClickedAtIndex:(NSUInteger) index withEvent:(NSEvent *) event
 {
-    NSArray* exposures = [self.exposuresController selectedObjects];
-    if ([exposures count] < 2){
-        
-        if ([exposures count] == 1){
-            // Set As -> Master Dark, Master Bias, Master Flat
-        }
-        return;
-    }
-    
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
-    NSArray* processors = [CASBatchProcessor batchProcessorsForExposures:exposures];
-    for (NSDictionary* processor in processors){
+    NSMenuItem* (^createMenuItem)(NSString*,id,SEL) = ^(NSString* title,id repo,SEL action){
         NSMenuItem *item = [[NSMenuItem alloc] init];
-        [item setTitle:processor[@"name"]];
-        [item setRepresentedObject:processor[@"id"]];
+        [item setTitle:title];
+        [item setRepresentedObject:repo];
         [item setTarget:self];
-        [item setAction:@selector(batchItemSelected:)];
-        [menu addItem:item];
+        [item setAction:action];
+        return item;
+    };
+    
+    NSMenu* menu = nil;
+    
+    NSArray* exposures = [self.exposuresController selectedObjects];
+    if ([exposures count] == 1 && self.exposuresController.project != nil){
+        
+        menu = [[NSMenu alloc] initWithTitle:@""];
+        CASCCDExposure* exposure = exposures[0];
+        
+        if (exposure.type == kCASCCDExposureDarkType){
+            if (exposure == self.exposuresController.project.masterDark){
+                [menu addItem:createMenuItem(@"Clear Master Dark",nil,@selector(setAsMasterDark:))];
+            }
+            else {
+                [menu addItem:createMenuItem(@"Set as Master Dark",exposure,@selector(setAsMasterDark:))];
+            }
+        }
+        else if (exposure.type == kCASCCDExposureBiasType){
+            if (exposure == self.exposuresController.project.masterBias){
+                [menu addItem:createMenuItem(@"Clear Master Bias",nil,@selector(setAsMasterBias:))];
+            }
+            else {
+                [menu addItem:createMenuItem(@"Set as Master Bias",exposure,@selector(setAsMasterBias:))];
+            }
+        }
+        else if (exposure.type == kCASCCDExposureFlatType){
+            if (exposure == self.exposuresController.project.masterFlat){
+                [menu addItem:createMenuItem(@"Clear Master Flat",nil,@selector(setAsMasterFlat:))];
+            }
+            else {
+                [menu addItem:createMenuItem(@"Set as Master Flat",exposure,@selector(setAsMasterFlat:))];
+            }
+        }
+    }
+    else if ([exposures count] > 1) {
+        
+        menu = [[NSMenu alloc] initWithTitle:@""];
+        NSArray* processors = [CASBatchProcessor batchProcessorsForExposures:exposures];
+        for (NSDictionary* processor in processors){
+            [menu addItem:createMenuItem(processor[@"name"],processor[@"id"],@selector(batchItemSelected:))];
+        }
     }
     
     // separator, then commands that involve more UI e.g. divide flat where we have to select a flat
@@ -490,6 +543,24 @@
     }
     
     [self _runBatchProcessor:processor withExposures:exposures];
+}
+
+- (void)setAsMasterDark:(NSMenuItem*)sender
+{
+    self.exposuresController.project.masterDark = sender.representedObject;
+    // update
+}
+
+- (void)setAsMasterBias:(NSMenuItem*)sender
+{
+    self.exposuresController.project.masterBias = sender.representedObject;
+    // update
+}
+
+- (void)setAsMasterFlat:(NSMenuItem*)sender
+{
+    self.exposuresController.project.masterFlat = sender.representedObject;
+    // update
 }
 
 - (void)divideExposures:(NSArray*)exposures byFlat:(CASCCDExposure*)flat

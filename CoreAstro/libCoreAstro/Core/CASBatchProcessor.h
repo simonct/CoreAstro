@@ -28,6 +28,7 @@
 @interface CASBatchProcessor : NSObject
 
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion;
+- (void)processWithExposures:(NSArray*)exposures completion:(void(^)(NSError* error,CASCCDExposure*))completion;
 
 + (NSArray*)batchProcessorsForExposures:(NSArray*)exposures;
 + (CASBatchProcessor*)batchProcessorsWithIdentifier:(id)identifier;
@@ -55,3 +56,8 @@ enum {
 @property (nonatomic,strong) CASCCDExposure* base;
 @end
 
+@interface CASCCDReductionProcessor : CASFlatDividerProcessor
+@property (nonatomic,strong) CASCCDExposure* bias;
+@property (nonatomic,strong) CASCCDExposure* dark;
+@property (nonatomic,strong) CASCCDExposure* flat;
+@end
