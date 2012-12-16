@@ -34,6 +34,20 @@
 #import "CASLibraryBrowserViewController.h"
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASImageBannerView : NSView
+
+@end
+
+@implementation CASImageBannerView
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor darkGrayColor] set];
+    NSRectFill(dirtyRect);
+}
+
+@end
+
 #pragma IB Convenience Classes
 
 @interface CASGuidersArrayController : NSArrayController

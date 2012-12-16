@@ -40,6 +40,7 @@
 @property (nonatomic,weak) IBOutlet NSView *detailContainerView;
 @property (nonatomic,weak) id<CASCameraWindowControllerDelegate> delegate;
 @property (nonatomic,weak) IBOutlet NSToolbar *toolbar;
+@property (nonatomic,weak) IBOutlet NSView *imageBannerView;
 @property (nonatomic,weak) IBOutlet CASExposureView *imageView;
 @property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
