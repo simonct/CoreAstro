@@ -346,7 +346,7 @@
             }
         }
         else if (object == self.guidersArrayController){
-            NSLog(@"[self.guidersArrayController arrangedObjects: %@",[self.guidersArrayController arrangedObjects]);
+//            NSLog(@"[self.guidersArrayController arrangedObjects: %@",[self.guidersArrayController arrangedObjects]);
         }
         else if (object == [NSApp delegate]){
             if ([keyPath isEqualToString:@"cameraControllers"]){
