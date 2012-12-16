@@ -217,6 +217,7 @@
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         
         _exposures = nil;
+        [self updateForCurrentGroupKey];
         [self.browserView reloadData];
     }
 }
