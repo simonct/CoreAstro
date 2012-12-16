@@ -23,30 +23,35 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    NSRect bounds = CGRectInset(self.bounds, 5, 5);
-    
-    NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
-    outline.lineWidth = 2.5;
-    [[NSColor whiteColor] set];
-    [outline stroke];
-    
-    NSBezierPath* arc = [NSBezierPath bezierPath];
-    arc.lineWidth = 2.5;
-    [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
-    [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))
-                                    radius:CGRectGetWidth(bounds)/2
-                                startAngle:90
-                                  endAngle:90 - (360*self.progress)
-                                 clockwise:YES];
-    [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
-    [[NSColor whiteColor] set];
-    [arc fill];
+    @try {
+        NSRect bounds = CGRectInset(self.bounds, 5, 5);
+        
+        NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
+        outline.lineWidth = 2.5;
+        [[NSColor whiteColor] set];
+        [outline stroke];
+        
+        NSBezierPath* arc = [NSBezierPath bezierPath];
+        arc.lineWidth = 2.5;
+        [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
+        [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))
+                                        radius:CGRectGetWidth(bounds)/2
+                                    startAngle:90
+                                      endAngle:90 - (360*self.progress)
+                                     clockwise:YES];
+        [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
+        [[NSColor whiteColor] set];
+        [arc fill];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@: %@",NSStringFromSelector(_cmd),exception);
+    }
 }
 
 - (void)setProgress:(CGFloat)progress
 {
     if (_progress != progress){
-        _progress = progress;
+        _progress = MAX(0,MIN(progress,1));
         [self setNeedsDisplay:YES];
     }
 }
