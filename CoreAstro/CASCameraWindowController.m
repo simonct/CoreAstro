@@ -426,22 +426,6 @@
         }];
     }
 
-    // show only exposures from this camera - still needed with the library view ?
-//    if (self.cameraController){
-//        [self.exposuresController setFilterPredicate:[NSPredicate predicateWithFormat:@"%K == %@",@"deviceID",self.cameraController.camera.uniqueID]];
-//    }
-//    else {
-//        [self.exposuresController setFilterPredicate:nil];
-//    }
-    
-    // set the first exposure for this camera
-//    if ([self.exposuresController.arrangedObjects count] > 0){
-//        [self.exposuresController setSelectionIndex:0];
-//    }
-//    else {
-//        [self.exposuresController setSelectedObjects:nil];
-//    }
-    
     // reset the capture count - why am I doing this here ?
     if (!self.cameraController.captureCount && !self.cameraController.continuous){
         self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
@@ -451,6 +435,7 @@
     [self updateExposureIndicator];
     
     // set the exposures controller to either nil or one that shows only exposures from this camera
+    self.exposuresController = nil;
 }
 
 - (void)_resetAndRedisplayCurrentExposure
