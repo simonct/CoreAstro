@@ -743,6 +743,7 @@
         if (error){
             // todo; run completion actions e.g. email, run processing scripts, etc
             [NSApp presentError:error];
+            self.imageView.showProgress = NO;
         }
         else{
             
@@ -782,6 +783,7 @@
 {
     self.captureButton.enabled = NO;
     [self.cameraController cancelCapture];
+    self.imageView.showProgress = NO;
 }
 
 - (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel andExportBlock:(void(^)(CASCCDExposure*))exportBlock
