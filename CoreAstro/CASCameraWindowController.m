@@ -35,7 +35,7 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASImageBannerView : NSView
-
+@property (nonatomic,weak) IBOutlet NSTextField *cameraNameField;
 @end
 
 @implementation CASImageBannerView
@@ -411,6 +411,9 @@
     [self.sensorDepthField setStringValue:@""];
     [self.sensorPixelsField setStringValue:@""];
 
+    // show camera name
+    self.imageBannerView.cameraNameField.stringValue = self.cameraController.camera.deviceName ? self.cameraController.camera.deviceName : @"";
+
     // capture the current controller in the completion block
     CASCameraController* cameraController = self.cameraController;
     
@@ -621,10 +624,13 @@
 {
     if (!exposure){
         self.imageView.currentExposure = nil;
+        self.imageBannerView.cameraNameField.stringValue = @"";
         return;
     }
     
-    NSString* title = self.cameraController.camera.deviceName;
+    NSString* title = exposure.displayDeviceName;
+
+    self.imageBannerView.cameraNameField.stringValue = title ? title : @"";
 
     static NSDateFormatter* exposureFormatter = nil;
     static dispatch_once_t onceToken;
@@ -634,13 +640,13 @@
         [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
     });
     
-    if (title){
-        title = [NSString stringWithFormat:@"%@ %@",title,[NSString stringWithFormat:@"%@ (%@)",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
-    }
-    else {
-        title = [NSString stringWithFormat:@"%@ %@ (%@)",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
-    }
-    self.window.title = title;
+//    if (title){
+//        title = [NSString stringWithFormat:@"%@ %@",title,[NSString stringWithFormat:@"%@ (%@)",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
+//    }
+//    else {
+//        title = [NSString stringWithFormat:@"%@ %@ (%@)",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
+//    }
+//    self.window.title = title;
     
     // debayer if required
     if (self.imageDebayer.mode != kCASImageDebayerNone){
@@ -1404,6 +1410,12 @@
     }
     
     self.exposuresController = (CASExposuresController*)self.libraryViewController.exposuresController;
+    
+    NSString* name = nil;
+    if ([self.exposuresController.selectionIndexes count] == 1){
+        name = ((CASCCDExposure*)[self.exposuresController.selectedObjects objectAtIndex:0]).displayDeviceName;
+    }
+    self.imageBannerView.cameraNameField.stringValue = name ? name : @"";
 }
 
 - (void)hideLibraryView
