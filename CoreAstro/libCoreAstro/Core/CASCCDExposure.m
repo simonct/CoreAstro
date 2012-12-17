@@ -257,7 +257,10 @@
     if (!self.floatPixels){
         return nil;
     }
-    
+    if (rect.size.width < 1 || rect.size.height < 1){
+        return nil;
+    }
+
     NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*sizeof(float)];
     if (!subframePixels){
         return nil;
@@ -276,8 +279,6 @@
     if (rect.origin.y + rect.size.height > size.height){
         rect.origin.y = size.height - rect.size.height;
     }
-    
-    NSLog(@"subframe: %@",NSStringFromCASRect(rect));
     
     CASExposeParams params = self.params;
     params.origin = rect.origin;
