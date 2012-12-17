@@ -221,13 +221,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         else {
             
-            CGImageRef CGImage = nil;
-            if (/*self.debayerMode == kCASImageDebayerNone*/1){
-                CGImage = image.CGImage;
-            }
-            else {
-                //                    CGImage = [self.imageDebayer debayer:image adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust]; // note; tmp, debayering after processing which is wrong - will all be replaced with a coherent processing chain in the future
-            }
+            CGImageRef CGImage = image.CGImage;
             
             const CASExposeParams params = _currentExposure.params;
             const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
