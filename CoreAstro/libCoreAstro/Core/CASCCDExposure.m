@@ -301,7 +301,9 @@
 
 - (void)reset
 {
-    self.pixels = nil;
+    if (self.io){
+        self.pixels = nil;
+    }
     self.floatPixels = nil;
     _readState = _meta ? kCASCCDExposureReadMeta : 0;
 }
