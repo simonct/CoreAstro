@@ -84,6 +84,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
         
+        // remember the last exposure
+        self.lastExposure = exp;
+        
+        // figure out if we need to go round again
         if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount) && !_cancel){
             
             void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
@@ -189,7 +193,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }
         else {
             
-            exposure.type = kCASCCDExposureLightType;
+            exposure.type = kCASCCDExposureLightType; // no, need to feed in from window controller
             
             if (!saveExposure && !_cancel){
                 endCapture(error,exposure);

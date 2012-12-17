@@ -30,6 +30,7 @@
 @class CASGuideAlgorithm;
 @class CASCCDExposure;
 @class CASGuiderController;
+@class CASCCDExposure;
 
 @interface CASCameraController : CASScriptableObject
 
@@ -42,12 +43,14 @@
 @property (nonatomic,assign) NSInteger currentCaptureIndex;
 @property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
 
-@property (nonatomic,assign) NSInteger exposure;
+@property (nonatomic,assign) NSInteger exposure; // -> exposureTime/exposureDuration
 @property (nonatomic,assign) NSInteger exposureUnits;
 @property (nonatomic,assign) NSInteger binningIndex;
 @property (nonatomic,assign) NSInteger interval;
 @property (nonatomic,assign) CGRect subframe;
 @property (nonatomic,strong) NSDate* exposureStart;
+
+@property (nonatomic,strong) CASCCDExposure* lastExposure;
 
 @property (nonatomic,assign) BOOL guiding;
 @property (nonatomic,strong) CASGuiderController* guider;

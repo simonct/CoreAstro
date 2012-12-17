@@ -409,7 +409,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             if (CGImage){
                 
-                const CGRect frame = CGRectMake(0, 0, params.size.width, params.size.height);
+                const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
                 if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                     
                     CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
@@ -428,17 +428,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                                         
                     // set the image
                     [self setImage:CGImage imageProperties:nil];
-                    
-                    // zoom to fit on the first image
-                    if (!_displayedFirstImage){
-                        _displayedFirstImage = YES;
-                        [self zoomImageToFit:nil];
-                    }
-                    
-                    // ensure the histogram view remains at the front.
-                    [self addSubview:self.histogramView positioned:NSWindowAbove relativeTo:nil];
-                    [self addSubview:self.progressView positioned:NSWindowAbove relativeTo:nil];
-                    [self addSubview:self.exposureInfoView positioned:NSWindowAbove relativeTo:nil];
                 }
             }
         }
@@ -508,6 +497,17 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     if (self.showReticle){
         self.reticleLayer = [self createReticleLayer];
     }
+
+    // zoom to fit on the first image
+    if (!_displayedFirstImage){
+        _displayedFirstImage = YES;
+        [self zoomImageToFit:nil];
+    }
+    
+    // ensure the histogram view remains at the front.
+    [self addSubview:self.histogramView positioned:NSWindowAbove relativeTo:nil];
+    [self addSubview:self.progressView positioned:NSWindowAbove relativeTo:nil];
+    [self addSubview:self.exposureInfoView positioned:NSWindowAbove relativeTo:nil];
 }
 
 - (void)setStarLocation:(CGPoint)starLocation

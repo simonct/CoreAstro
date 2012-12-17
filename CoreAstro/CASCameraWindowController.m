@@ -423,6 +423,22 @@
     }
     else {
         
+        // set the current displayed exposure to the last one recorded by this camera controller
+        self.currentExposure = self.cameraController.lastExposure;
+
+        // if there's no exposure, create a placeholder image
+        if (!self.currentExposure){
+            
+            const CGSize size = CGSizeMake(self.cameraController.camera.sensor.width, self.cameraController.camera.sensor.height);
+            CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(size.width, size.height) bitsPerPixel:16];
+            if (bitmap){
+                CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
+                CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
+                CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
+                [self.imageView setImage:CGImage imageProperties:nil];
+            }
+        }
+        
         [self.cameraController connect:^(NSError *error) {
             
             if (error){
@@ -740,7 +756,6 @@
     
     // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
-    const BOOL continuous = self.cameraController.continuous;
     
     // issue the capture command
     [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
@@ -752,18 +767,9 @@
         }
         else{
             
-            // check it's the still the currently displayed camera
+            // check it's the still the currently displayed camera before displaying the exposure
             if (cameraController == self.cameraController){
-                
-                if (continuous){
-                    [self.exposuresController setSelectedObjects:nil];
-                    [self displayExposure:exposure]; // do this *after* clearing the selection
-                }
-                else {
-                    
-
-                    [self.exposuresController setSelectionIndex:0];
-                }
+                [self displayExposure:exposure];
             }
             
             if (self.cameraController.capturing){
@@ -779,9 +785,9 @@
     }];
     
     // switch out of selection mode once the capture's started
-    if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
-        [self clearSelection];
-    }
+//    if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
+//        [self clearSelection];
+//    }
 }
 
 - (IBAction)cancelCapture:(NSButton*)sender
