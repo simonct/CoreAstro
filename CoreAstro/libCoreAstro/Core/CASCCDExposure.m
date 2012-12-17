@@ -241,6 +241,7 @@
 - (CASCCDImage*)createImage
 {
     if (!self.floatPixels){
+        NSLog(@"-createImage: no pixels");
         return nil;
     }
 
