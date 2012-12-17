@@ -393,4 +393,37 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return [result copy];
 }
 
+- (CGFloat)averagePixelValue:(CASCCDExposure*)exposure
+{
+    float average = 0;
+
+    if (exposure.floatPixels){
+        vDSP_meamgv((float*)[exposure.floatPixels bytes],1,&average,[exposure.floatPixels length]/sizeof(float));
+    }
+
+    return average;
+}
+
+- (CGFloat)minimumPixelValue:(CASCCDExposure*)exposure
+{
+    float min = 0;
+    
+    if (exposure.floatPixels){
+        vDSP_minmgv((float*)[exposure.floatPixels bytes],1,&min,[exposure.floatPixels length]/sizeof(float));
+    }
+    
+    return min;
+}
+
+- (CGFloat)maximumPixelValue:(CASCCDExposure*)exposure
+{
+    float max = 0;
+    
+    if (exposure.floatPixels){
+        vDSP_maxmgv((float*)[exposure.floatPixels bytes],1,&max,[exposure.floatPixels length]/sizeof(float));
+    }
+    
+    return max;
+}
+
 @end

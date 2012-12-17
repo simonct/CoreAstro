@@ -83,9 +83,9 @@ typedef enum CASCCDExposureFormat {
 - (CASCCDImage*)createImage;
 - (CASCCDImage*)createBlankImageWithSize:(CASSize)size;
 
-- (void)reset;
+- (CASCCDExposure*)subframeWithRect:(CASRect)rect;
 
-// enumerateExposuresWithBlock
+- (void)reset;
 
 - (void)deleteExposure;
 

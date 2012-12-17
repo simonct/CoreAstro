@@ -252,6 +252,52 @@
     return [CASCCDImage createImageWithPixels:nil size:size rgba:NO];
 }
 
+- (CASCCDExposure*)subframeWithRect:(CASRect)rect
+{
+    if (!self.floatPixels){
+        return nil;
+    }
+    
+    NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*sizeof(float)];
+    if (!subframePixels){
+        return nil;
+    }
+    
+    const CASSize size = self.actualSize;
+
+    rect.origin.x = MAX(rect.origin.x,0);
+    rect.origin.y = MAX(rect.origin.y,0);
+    rect.size.width = MIN(rect.size.width,size.width);
+    rect.size.height = MIN(rect.size.height,size.height);
+
+    if (rect.origin.x + rect.size.width > size.width){
+        rect.origin.x = size.width - rect.size.width;
+    }
+    if (rect.origin.y + rect.size.height > size.height){
+        rect.origin.y = size.height - rect.size.height;
+    }
+    
+    NSLog(@"subframe: %@",NSStringFromCASRect(rect));
+    
+    CASExposeParams params = self.params;
+    params.origin = rect.origin;
+    params.size = rect.size;
+    CASCCDExposure* subframe = [CASCCDExposure exposureWithPixels:nil camera:nil params:params time:[NSDate date] floatPixels:YES rgba:self.rgba];
+    
+    float* floatPixels = rect.origin.x + (rect.origin.y * size.width) + (float*)[self.floatPixels bytes];
+    float* subframeFloatPixels = (float*)[subframePixels bytes];
+    
+    for (NSInteger y = 0; y < rect.size.height; ++y, subframeFloatPixels += rect.size.width, floatPixels += size.width){
+        memcpy(subframeFloatPixels, floatPixels, rect.size.width*sizeof(float));
+    }
+    
+    subframe.floatPixels = subframePixels;
+    
+    // todo; meta updates if appropriate
+    
+    return subframe;
+}
+
 - (void)reset
 {
     self.pixels = nil;

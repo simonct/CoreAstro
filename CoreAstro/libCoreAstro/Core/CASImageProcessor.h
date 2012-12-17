@@ -25,6 +25,8 @@
 
 #import "CASCCDExposure.h"
 
+// todo; make this a factory for image processor modules that can describe their actions for an exposure's history
+
 @protocol CASImageProcessor <NSObject>
 @optional
 
@@ -40,6 +42,10 @@
 - (CASCCDExposure*)averageSum:(NSArray*)exposures;
 
 - (NSArray*)histogram:(CASCCDExposure*)exposure;
+
+- (CGFloat)averagePixelValue:(CASCCDExposure*)exposure;
+- (CGFloat)minimumPixelValue:(CASCCDExposure*)exposure;
+- (CGFloat)maximumPixelValue:(CASCCDExposure*)exposure;
 
 @end
 
