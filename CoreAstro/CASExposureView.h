@@ -10,6 +10,11 @@
 
 @class CASCCDExposure;
 @class CASImageProcessor;
+@class CASExposureView;
+
+@protocol CASExposureViewDelegate <NSObject>
+- (void)selectionRectChanged:(CASExposureView*)view;
+@end
 
 @interface CASExposureView : CASImageView
 @property (nonatomic,assign) BOOL showReticle;
@@ -24,6 +29,7 @@
 @property (nonatomic,assign) NSInteger progressInterval;
 @property (nonatomic,assign) CGFloat progress;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
 @end
 
 extern const CGPoint kCASImageViewInvalidStarLocation;

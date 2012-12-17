@@ -91,7 +91,7 @@
 
 #pragma Camera Window
 
-@interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate>
+@interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate,CASExposureViewDelegate>
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL divideFlat;
@@ -188,7 +188,7 @@
     self.imageView.hasHorizontalScroller = YES;
     self.imageView.autohidesScrollers = YES;
     self.imageView.currentToolMode = IKToolModeMove;
-    self.imageView.delegate = self;
+    self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
@@ -989,7 +989,7 @@
     }
     else {
         self.imageView.currentToolMode = IKToolModeMove;
-        [self selectionRectRemoved:self.imageView];
+        [self selectionRectChanged:self.imageView];
     }
 }
 
@@ -1240,30 +1240,36 @@
     [self delete:sender];
 }
 
-#pragma mark IKImageView delegate
+#pragma mark CASExposureView delegate
 
-- (void) selectionRectAdded: (IKImageView *) imageView
+- (void) selectionRectChanged: (CASExposureView*) imageView
 {
-    NSLog(@"selectionRectAdded");
-}
-
-- (void) selectionRectRemoved: (IKImageView *) imageView
-{
-    if (!self.cameraController.capturing){
-        self.cameraController.subframe = CGRectZero;
-        [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
-    }
-}
-
-- (void) selectionRectChanged: (IKImageView *) imageView
-{
-    CASCCDProperties* sensor = self.cameraController.camera.sensor;
-    if (sensor && !self.cameraController.capturing){
+//    NSLog(@"selectionRectChanged: %@",NSStringFromRect(imageView.selectionRect));
+    
+    if (self.imageView.image){
+        
         const CGRect rect = self.imageView.selectionRect;
-        CGRect subframe = CGRectMake(rect.origin.x, sensor.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
-        subframe = CGRectIntersection(subframe, CGRectMake(0, 0, sensor.width, sensor.height));
-        [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
-        self.cameraController.subframe = subframe;
+        if (CGRectIsEmpty(rect)){
+            
+            self.cameraController.subframe = CGRectZero;
+            [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+        }
+        else {
+            
+            CGSize size = CGSizeZero;
+            CASCCDProperties* sensor = self.cameraController.camera.sensor;
+            if (sensor){
+                size = CGSizeMake(sensor.width, sensor.height);
+            }
+            else {
+                size = CGSizeMake(CGImageGetWidth(self.imageView.image), CGImageGetHeight(self.imageView.image));
+            }
+            
+            CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
+            subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
+            [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+            self.cameraController.subframe = subframe;
+        }
     }
 }
 

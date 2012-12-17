@@ -112,12 +112,103 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 @end
 
+@interface CASTaggedLayer : CALayer
+@property (nonatomic,assign) NSInteger tag;
+@end
+
+@implementation CASTaggedLayer
+@end
+
+@interface CASSelectionLayer : CASTaggedLayer
+- (void)dragHandle:(CASTaggedLayer*)dragHandle movedToPosition:(CGPoint)p;
+@end
+
+@implementation CASSelectionLayer
+
+- (void)updateDragHandlePositions
+{
+    const CGSize size = self.bounds.size;
+    
+    [[[self sublayers] objectAtIndex:0] setPosition:CGPointMake(0,0)];
+    [[[self sublayers] objectAtIndex:1] setPosition:CGPointMake(size.width,0)];
+    [[[self sublayers] objectAtIndex:2] setPosition:CGPointMake(size.width,size.height)];
+    [[[self sublayers] objectAtIndex:3] setPosition:CGPointMake(0,size.height)];
+}
+
+- (void)dragHandle:(CASTaggedLayer*)dragHandle movedToPosition:(CGPoint)p
+{
+    // get the current selection frame in image co-ords
+    CGRect frame = self.frame;
+    
+    // get the original drag handle position in image co-ords
+    const CGPoint originalPosition = [self convertPoint:dragHandle.position toLayer:self.superlayer];
+    
+    // calculate the new position
+    CGPoint newPosition = p;
+    
+    switch (dragHandle.tag) {
+            
+        case 0:{
+            // bottom left
+            newPosition.x = MIN(newPosition.x,CGRectGetMaxX(frame));
+            newPosition.y = MIN(newPosition.y,CGRectGetMaxY(frame));
+            frame.origin = newPosition;
+            frame.size = CGSizeMake(frame.size.width + originalPosition.x - newPosition.x,
+                                    frame.size.height + originalPosition.y - newPosition.y);
+        }
+            break;
+            
+        case 1:{
+            // bottom right
+            newPosition.x = MAX(newPosition.x,CGRectGetMinX(frame));
+            newPosition.y = MIN(newPosition.y,CGRectGetMaxY(frame));
+            frame.origin.y = newPosition.y;
+            frame.size = CGSizeMake(frame.size.width + newPosition.x - originalPosition.x,
+                                    frame.size.height + originalPosition.y - newPosition.y);
+        }
+            break;
+            
+        case 2:{
+            // top right
+            newPosition.x = MAX(newPosition.x,CGRectGetMinX(frame));
+            newPosition.y = MAX(newPosition.y,CGRectGetMinY(frame));
+            frame.size = CGSizeMake(frame.size.width + newPosition.x - originalPosition.x,
+                                    frame.size.height + newPosition.y - originalPosition.y);
+        }
+            break;
+            
+        case 3:{
+            // top left
+            newPosition.x = MIN(newPosition.x,CGRectGetMaxX(frame));
+            newPosition.y = MAX(newPosition.y,CGRectGetMinY(frame));
+            frame.origin.x = newPosition.x;
+            frame.size = CGSizeMake(frame.size.width + originalPosition.x - newPosition.x,
+                                    frame.size.height + newPosition.y - originalPosition.y);
+        }
+            break;
+    }
+    
+    // apply the new frame and position
+    dragHandle.position = [self.superlayer convertPoint:newPosition toLayer:self];
+    
+    self.frame = frame;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    
+    [self updateDragHandlePositions];
+}
+
+@end
+
 @interface CASExposureView ()
 @property (nonatomic,assign) BOOL firstShowEditPanel;
 @property (nonatomic,strong) CALayer* starLayer;
 @property (nonatomic,strong) CALayer* lockLayer;
 @property (nonatomic,strong) CALayer* searchLayer;
-@property (nonatomic,strong) CALayer* selectionLayer;
+@property (nonatomic,strong) CASSelectionLayer* selectionLayer;
 @property (nonatomic,strong) CAShapeLayer* reticleLayer;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASHistogramView* histogramView;
@@ -128,6 +219,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @implementation CASExposureView {
     BOOL _draggingSelection:1;
     BOOL _displayedFirstImage:1;
+    CASTaggedLayer* _dragHandleLayer;
 }
 
 - (void)awakeFromNib
@@ -191,23 +283,58 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     CALayer* layer = [self.layer hitTest:p];
+    if (layer.superlayer == self.selectionLayer){
+        _dragHandleLayer = (CASTaggedLayer*)layer;
+    }
     _draggingSelection = (layer == self.selectionLayer);
     [super mouseDown:theEvent];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    _dragHandleLayer = nil;
     _draggingSelection = NO;
     [super mouseUp:theEvent];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-    if (_draggingSelection){
-        NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-        p = [self convertViewPointToImagePoint:p]; // use layer transforms instead ?
+    if (_draggingSelection || _dragHandleLayer){
+        
+        NSPoint p = [self convertViewPointToImagePoint:[self convertPoint:[theEvent locationInWindow] fromView:nil]]; // use layer transforms instead ?
+        
         [self disableAnimations:^{
-            self.selectionLayer.position = p;
+            
+            if (_dragHandleLayer){
+                [self.selectionLayer dragHandle:_dragHandleLayer movedToPosition:p];
+            }
+            else {
+                self.selectionLayer.position = p;
+            }
+                        
+            // CGRectConstrainWithinRect()
+            const CGRect image = CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image));
+            CGRect frame = self.selectionLayer.frame;
+            frame.origin.x = MAX(0,frame.origin.x);
+            frame.origin.y = MAX(0,frame.origin.y);
+            frame.size.width = MIN(frame.size.width,image.size.width);
+            frame.size.height = MIN(frame.size.height,image.size.height);
+            if (CGRectGetMaxX(frame) > CGRectGetMaxX(image)){
+                frame.origin.x = CGRectGetMaxX(image) - frame.size.width;
+            }
+            if (CGRectGetMaxY(frame) > CGRectGetMaxY(image)){
+                frame.origin.y = CGRectGetMaxY(image) - frame.size.height;
+            }
+
+            if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
+                self.selectionRect = frame;
+            }
+            else {
+                if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
+                    [self.exposureViewDelegate selectionRectChanged:self];
+                }
+            }
+
             [self updateStatistics];
         }];
     }
@@ -229,6 +356,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)selectAll:(id)sender
+{
+    if (self.image){
+        self.currentToolMode = IKToolModeSelect;
+        self.selectionRect = CGRectMake(0, 0, CGImageGetWidth(self.image),CGImageGetHeight(self.image));
+    }
+}
+
 - (void)updateHistogram
 {
     if (self.showHistogram){
@@ -243,7 +378,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)updateStatistics
 {
-    const CGRect frame = self.showSelection ? self.selectionLayer.frame : CGRectZero;
+    const CGRect frame = self.selectionRect;
     self.exposureInfoView.subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
 }
 
@@ -308,6 +443,20 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             }
         }
     }
+}
+
+- (CGRect)selectionRect
+{
+    return self.showSelection ? self.selectionLayer.frame : CGRectZero;
+}
+
+- (void)setSelectionRect:(CGRect)rect
+{
+    self.selectionLayer.frame = rect;
+    if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
+        [self.exposureViewDelegate selectionRectChanged:self];
+    }
+    [self updateStatistics];
 }
 
 - (void)setImageProcessor:(CASImageProcessor *)imageProcessor
@@ -407,10 +556,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     _showSelection = showSelection;
     
     if (_showSelection){
-        self.selectionLayer = [self rectangularLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:CGColorCreateGenericRGB(1,1,0,1)];
+        if (!self.selectionLayer){
+            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:CGColorCreateGenericRGB(1,1,0,1)];
+        }
+        [self.imageOverlayLayer addSublayer:self.selectionLayer];
+        self.selectionRect = self.selectionLayer.frame;
     }
     else {
-        self.selectionLayer = nil;
+        [self.selectionLayer removeFromSuperlayer];
     }
     
     [self updateStatistics];
@@ -468,7 +621,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
-- (void)setSelectionLayer:(CALayer *)selectionLayer
+- (void)setSelectionLayer:(CASSelectionLayer *)selectionLayer
 {
     if (_selectionLayer != selectionLayer){
         if (_selectionLayer){
@@ -478,6 +631,17 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         if (_selectionLayer){
             [self.imageOverlayLayer addSublayer:_selectionLayer];
         }
+    }
+}
+
+- (void)setCurrentToolMode:(NSString *)currentToolMode
+{
+    if ([currentToolMode isEqualToString:IKToolModeSelect]){
+        self.showSelection = YES;
+    }
+    else {
+        self.showSelection = NO;
+        [super setCurrentToolMode:currentToolMode];
     }
 }
 
@@ -495,7 +659,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CALayer*)circularRegionLayerWithPosition:(CGPoint)position radius:(CGFloat)radius colour:(CGColorRef)colour
 {
-    CALayer* layer = [CALayer layer];
+    CALayer* layer = [CASTaggedLayer layer];
     
     layer.borderColor = colour;
     layer.borderWidth = 2.5;
@@ -509,13 +673,38 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CALayer*)rectangularLayerWithPosition:(CGPoint)position width:(CGFloat)width height:(CGFloat)height colour:(CGColorRef)colour
 {
-    CALayer* layer = [CALayer layer];
+    CALayer* layer = [CASTaggedLayer layer];
     
     layer.borderColor = colour;
     layer.borderWidth = 2.5;
     layer.bounds = CGRectMake(0, 0, width, height);
     layer.position = position;
     layer.masksToBounds = NO;
+    
+    return layer;
+}
+
+- (CASSelectionLayer*)selectionLayerWithPosition:(CGPoint)position width:(CGFloat)width height:(CGFloat)height colour:(CGColorRef)colour
+{
+    CASSelectionLayer* layer = [CASSelectionLayer layer];
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.bounds = CGRectMake(0, 0, width, height);
+    layer.position = position;
+    layer.masksToBounds = NO;
+    
+    const CGFloat radius = width/20;
+    [layer addSublayer:[self circularRegionLayerWithPosition:CGPointMake(0,0) radius:radius colour:colour]];
+    [layer addSublayer:[self circularRegionLayerWithPosition:CGPointMake(width,0) radius:radius colour:colour]];
+    [layer addSublayer:[self circularRegionLayerWithPosition:CGPointMake(width,height) radius:radius colour:colour]];
+    [layer addSublayer:[self circularRegionLayerWithPosition:CGPointMake(0,height) radius:radius colour:colour]];
+    
+    NSInteger tag = 0;
+    for (CASTaggedLayer* l in [layer sublayers]){
+        l.tag = tag++;
+        l.backgroundColor = colour;
+    }
     
     return layer;
 }

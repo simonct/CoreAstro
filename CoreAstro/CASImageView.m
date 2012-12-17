@@ -8,9 +8,9 @@
 
 #import "CASImageView.h"
 
-@interface IKImageView (Private)
-- (CGRect)selectionRect; // great, a private method to get the selection...
-@end
+//@interface IKImageView (Private)
+//- (CGRect)selectionRect; // great, a private method to get the selection...
+//@end
 
 @interface CASImageView ()
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
@@ -20,6 +20,7 @@
 @implementation CASImageView {
     BOOL _zoomToFit:1;
     BOOL _zoomToActual:1;
+    CGFloat _zoomFactor;
 }
 
 - (void)awakeFromNib
@@ -40,7 +41,8 @@
 
 - (CGRect)selectionRect
 {
-    return [super selectionRect];
+    return CGRectZero;
+//    return [super selectionRect];
 }
 
 - (void)disableAnimations:(void(^)(void))block {
@@ -69,7 +71,7 @@
                 [self zoomImageToActualSize:nil];
             }
             else {
-                [self setZoomFactor:self.zoomFactor];
+                [self setZoomFactor:_zoomFactor];
             }
             
             if (self.rotationAngle){
@@ -84,18 +86,22 @@
 #define ZOOM_IN_FACTOR  1.414214
 #define ZOOM_OUT_FACTOR 0.7071068
 
+- (void)setZoomFactor:(CGFloat)zoomFactor
+{
+    _zoomFactor = zoomFactor;
+    [super setZoomFactor:zoomFactor];
+}
+
 - (IBAction)zoomIn:(id)sender
 {
     _zoomToFit = _zoomToActual = NO;
     self.zoomFactor = self.zoomFactor * ZOOM_IN_FACTOR;
-    self.zoomFactor = self.zoomFactor;
 }
 
 - (IBAction)zoomOut:(id)sender
 {
     _zoomToFit = _zoomToActual = NO;
     self.zoomFactor = self.zoomFactor * ZOOM_OUT_FACTOR;
-    self.zoomFactor = self.zoomFactor;
 }
 
 - (IBAction)zoomImageToFit: (id)sender
