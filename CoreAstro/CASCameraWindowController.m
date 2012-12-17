@@ -291,20 +291,6 @@
     }
 }
 
-- (CASCCDExposure*)currentlySelectedExposure
-{
-    NSArray* exposures = [self.exposuresController selectedObjects];
-    if ([exposures isKindOfClass:[NSArray class]]){
-        if ([exposures count] == 1){
-            id exposure = [exposures objectAtIndex:0];
-            if ([exposure isKindOfClass:[CASCCDExposure class]]){
-                return exposure;
-            }
-        }
-    }
-    return nil;
-}
-
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
 {
     if (_currentExposure != currentExposure){
@@ -332,13 +318,27 @@
     }
 }
 
+- (CASCCDExposure*)_currentlySelectedExposure
+{
+    NSArray* exposures = [self.exposuresController selectedObjects];
+    if ([exposures isKindOfClass:[NSArray class]]){
+        if ([exposures count] == 1){
+            id exposure = [exposures objectAtIndex:0];
+            if ([exposure isKindOfClass:[CASCCDExposure class]]){
+                return exposure;
+            }
+        }
+    }
+    return nil;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
         
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
-                self.currentExposure = [self currentlySelectedExposure];
+                self.currentExposure = [self _currentlySelectedExposure];
             }
         }
         else if (object == self.darksController || object == self.flatsController){
@@ -424,7 +424,13 @@
     else {
         
         // set the current displayed exposure to the last one recorded by this camera controller
-        self.currentExposure = self.cameraController.lastExposure;
+        // (specifically check for pixels as this will detect if the backing store has been deleted)
+        if (self.cameraController.lastExposure.pixels){
+            self.currentExposure = self.cameraController.lastExposure;
+        }
+        else{
+            self.currentExposure = nil;
+        }
 
         // if there's no exposure, create a placeholder image
         if (!self.currentExposure){
@@ -473,8 +479,9 @@
 
 - (void)_resetAndRedisplayCurrentExposure
 {
+    [self.currentExposure reset];
     [[self.exposuresController arrangedObjects] makeObjectsPerformSelector:@selector(reset)]; // reset all
-    [self displayExposure:[self currentlySelectedExposure]];
+    [self displayExposure:self.currentExposure];
 }
 
 - (void)setEqualise:(BOOL)equalise
@@ -769,7 +776,7 @@
             
             // check it's the still the currently displayed camera before displaying the exposure
             if (cameraController == self.cameraController){
-                [self displayExposure:exposure];
+                self.currentExposure = exposure;
             }
             
             if (self.cameraController.capturing){
