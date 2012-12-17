@@ -26,5 +26,11 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASExposureInfoView : NSView
+
+@property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic,assign) CASRect subframe;
+
++ (id)loadExposureInfoView;
+
 @end

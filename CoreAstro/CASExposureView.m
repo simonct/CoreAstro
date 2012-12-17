@@ -11,6 +11,7 @@
 #import "CASCCDExposure.h"
 #import "CASHistogramView.h"
 #import "CASImageProcessor.h"
+#import "CASExposureInfoView.h"
 #import <CoreAstro/CoreAstro.h>
 
 const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
@@ -116,13 +117,16 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CALayer* starLayer;
 @property (nonatomic,strong) CALayer* lockLayer;
 @property (nonatomic,strong) CALayer* searchLayer;
+@property (nonatomic,strong) CALayer* selectionLayer;
 @property (nonatomic,strong) CAShapeLayer* reticleLayer;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASHistogramView* histogramView;
 @property (nonatomic,strong) CASProgressContainerView* progressView;
+@property (nonatomic,strong) CASExposureInfoView* exposureInfoView;
 @end
 
 @implementation CASExposureView {
+    BOOL _draggingSelection:1;
     BOOL _displayedFirstImage:1;
 }
 
@@ -139,6 +143,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.progressView = [[CASProgressContainerView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
     [self addSubview:self.progressView];
     self.progressView.hidden = YES;
+    
+    self.exposureInfoView = [CASExposureInfoView loadExposureInfoView];
+    self.exposureInfoView.alphaValue = 0;
+    self.exposureInfoView.imageProcessor = self.imageProcessor;
+    [self addSubview:self.exposureInfoView];
 }
 
 - (void)setFrame:(NSRect)aRect
@@ -146,6 +155,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [super setFrame:aRect];
     
     self.progressView.frame = NSMakeRect(10, self.bounds.size.height - 60, 200, 50);
+    self.exposureInfoView.frame = NSMakeRect(self.bounds.size.width - self.exposureInfoView.frame.size.width - 10,
+                                             self.bounds.size.height - self.exposureInfoView.frame.size.height - 10,
+                                             self.exposureInfoView.frame.size.width,
+                                             self.exposureInfoView.frame.size.height);
 }
 
 - (void)setShowProgress:(BOOL)showProgress
@@ -174,6 +187,33 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.progressView.label.stringValue = [NSString stringWithFormat:@"%lds remaining",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
 }
 
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    CALayer* layer = [self.layer hitTest:p];
+    _draggingSelection = (layer == self.selectionLayer);
+    [super mouseDown:theEvent];
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    _draggingSelection = NO;
+    [super mouseUp:theEvent];
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+    if (_draggingSelection){
+        NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+        p = [self convertViewPointToImagePoint:p]; // use layer transforms instead ?
+        [self disableAnimations:^{
+            self.selectionLayer.position = p;
+            [self updateStatistics];
+        }];
+    }
+    [super mouseDragged:theEvent];
+}
+
 - (void)mouseMoved:(NSEvent *)theEvent
 {
     NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -199,6 +239,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             self.histogramView.histogram = [self.imageProcessor histogram:_currentExposure];
         }
     }
+}
+
+- (void)updateStatistics
+{
+    const CGRect frame = self.showSelection ? self.selectionLayer.frame : CGRectZero;
+    self.exposureInfoView.subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
 }
 
 - (void)displayExposure
@@ -257,9 +303,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                     // ensure the histogram view remains at the front.
                     [self addSubview:self.histogramView positioned:NSWindowAbove relativeTo:nil];
                     [self addSubview:self.progressView positioned:NSWindowAbove relativeTo:nil];
+                    [self addSubview:self.exposureInfoView positioned:NSWindowAbove relativeTo:nil];
                 }
             }
         }
+    }
+}
+
+- (void)setImageProcessor:(CASImageProcessor *)imageProcessor
+{
+    if (_imageProcessor != imageProcessor){
+        _imageProcessor = imageProcessor;
+        self.exposureInfoView.imageProcessor = self.imageProcessor;
     }
 }
 
@@ -288,6 +343,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     _currentExposure = exposure;
     
     [self displayExposure];
+
+    self.exposureInfoView.exposure = _currentExposure;
 }
 
 - (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
@@ -345,6 +402,20 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)setShowSelection:(BOOL)showSelection
+{
+    _showSelection = showSelection;
+    
+    if (_showSelection){
+        self.selectionLayer = [self rectangularLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:CGColorCreateGenericRGB(1,1,0,1)];
+    }
+    else {
+        self.selectionLayer = nil;
+    }
+    
+    [self updateStatistics];
+}
+
 - (void)setStarLayer:(CALayer *)starLayer
 {
     if (starLayer != _starLayer){
@@ -384,6 +455,32 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)setReticleLayer:(CAShapeLayer *)reticleLayer
+{
+    if (_reticleLayer != reticleLayer){
+        if (_reticleLayer){
+            [_reticleLayer removeFromSuperlayer];
+        }
+        _reticleLayer = reticleLayer;
+        if (_reticleLayer){
+            [self.imageOverlayLayer addSublayer:_reticleLayer];
+        }
+    }
+}
+
+- (void)setSelectionLayer:(CALayer *)selectionLayer
+{
+    if (_selectionLayer != selectionLayer){
+        if (_selectionLayer){
+            [_selectionLayer removeFromSuperlayer];
+        }
+        _selectionLayer = selectionLayer;
+        if (_selectionLayer){
+            [self.imageOverlayLayer addSublayer:_selectionLayer];
+        }
+    }
+}
+
 - (CALayer*)imageOverlayLayer
 {
     CALayer* layer = [self overlayForType:IKOverlayTypeImage];
@@ -410,6 +507,19 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return layer;
 }
 
+- (CALayer*)rectangularLayerWithPosition:(CGPoint)position width:(CGFloat)width height:(CGFloat)height colour:(CGColorRef)colour
+{
+    CALayer* layer = [CALayer layer];
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.bounds = CGRectMake(0, 0, width, height);
+    layer.position = position;
+    layer.masksToBounds = NO;
+    
+    return layer;
+}
+
 - (CAShapeLayer*)createReticleLayer
 {
     CAShapeLayer* reticleLayer = [CAShapeLayer layer];
@@ -425,19 +535,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     reticleLayer.borderWidth = width;
     
     return reticleLayer;
-}
-
-- (void)setReticleLayer:(CAShapeLayer *)reticleLayer
-{
-    if (_reticleLayer != reticleLayer){
-        if (_reticleLayer){
-            [_reticleLayer removeFromSuperlayer];
-        }
-        _reticleLayer = reticleLayer;
-        if (_reticleLayer){
-            [self.imageOverlayLayer addSublayer:_reticleLayer];
-        }
-    }
 }
 
 @end
