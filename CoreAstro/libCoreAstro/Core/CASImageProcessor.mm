@@ -426,4 +426,35 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return max;
 }
 
+- (CGFloat)standardDeviationPixelValue:(CASCCDExposure*)exposure
+{
+    float stdev = 0;
+    
+    if (exposure.floatPixels){
+        
+        NSMutableData* working = [NSMutableData dataWithLength:[exposure.floatPixels length]];
+        if (working){
+            
+            // calculate the average
+            float average = 0;
+            vDSP_meamgv((float*)[exposure.floatPixels bytes],1,&average,[exposure.floatPixels length]/sizeof(float));
+                        
+            // create a vector of signal - mean
+            float minusAverage = -average;
+            vDSP_vsadd((float*)[exposure.floatPixels bytes],1,&minusAverage,(float*)[working mutableBytes],1,[working length]/sizeof(float));
+            
+            // square all the values in the difference vector
+            vDSP_vsq((float*)[working mutableBytes],1,(float*)[working mutableBytes],1,[working length]/sizeof(float));
+            
+            // calculate average
+            vDSP_meamgv((float*)[working mutableBytes],1,&average,[working length]/sizeof(float));
+            
+            // take square root
+            stdev = sqrtf(average);
+        }
+    }
+    
+    return stdev;
+}
+
 @end

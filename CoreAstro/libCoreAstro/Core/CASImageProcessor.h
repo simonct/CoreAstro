@@ -46,6 +46,7 @@
 - (CGFloat)averagePixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)minimumPixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)maximumPixelValue:(CASCCDExposure*)exposure;
+- (CGFloat)standardDeviationPixelValue:(CASCCDExposure*)exposure;
 
 @end
 
