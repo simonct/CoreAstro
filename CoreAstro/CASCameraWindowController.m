@@ -479,9 +479,11 @@
 
 - (void)_resetAndRedisplayCurrentExposure
 {
-    [self.currentExposure reset];
-    [[self.exposuresController arrangedObjects] makeObjectsPerformSelector:@selector(reset)]; // reset all
-    [self displayExposure:self.currentExposure];
+    if (self.currentExposure){
+        [self.currentExposure reset];
+        [[self.exposuresController arrangedObjects] makeObjectsPerformSelector:@selector(reset)]; // reset all
+        [self displayExposure:self.currentExposure];
+    }
 }
 
 - (void)setEqualise:(BOOL)equalise
