@@ -283,9 +283,6 @@
 {
     if (_currentExposure != currentExposure){
 
-        // clear selection - necessary ?
-        [self clearSelection];
-
         // unload the current exposure's pixels
         [_currentExposure reset];
         
@@ -293,6 +290,11 @@
         
         // display the exposure
         [self displayExposure:_currentExposure];
+        
+        // clear selection - necessary ?
+        if (!_currentExposure){
+            [self clearSelection];
+        }
     }
 }
 

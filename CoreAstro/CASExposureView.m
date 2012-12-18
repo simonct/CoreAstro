@@ -245,20 +245,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 self.selectionLayer.position = p;
             }
                         
-            // CGRectConstrainWithinRect()
-            const CGRect image = CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image));
-            CGRect frame = self.selectionLayer.frame;
-            frame.origin.x = MAX(0,frame.origin.x);
-            frame.origin.y = MAX(0,frame.origin.y);
-            frame.size.width = MIN(frame.size.width,image.size.width);
-            frame.size.height = MIN(frame.size.height,image.size.height);
-            if (CGRectGetMaxX(frame) > CGRectGetMaxX(image)){
-                frame.origin.x = CGRectGetMaxX(image) - frame.size.width;
-            }
-            if (CGRectGetMaxY(frame) > CGRectGetMaxY(image)){
-                frame.origin.y = CGRectGetMaxY(image) - frame.size.height;
-            }
-
+            const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)));
             if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
                 self.selectionRect = frame;
             }
@@ -487,6 +474,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
     _currentExposure = exposure;
+    
+    if (_currentExposure && self.showSelection){
+        self.selectionRect = CASCGRectConstrainWithinRect(self.selectionRect,CGRectMake(0, 0, _currentExposure.params.frame.width, _currentExposure.params.frame.height));
+    }
     
     [self displayExposure];
 

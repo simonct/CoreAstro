@@ -198,3 +198,19 @@ NS_INLINE CASExposeParams CASExposeParamsFromNSString(NSString* s) {
     }
     return params;
 }
+
+NS_INLINE CGRect CASCGRectConstrainWithinRect(CGRect frame,CGRect container) {
+    
+    frame.origin.x = MAX(0,frame.origin.x);
+    frame.origin.y = MAX(0,frame.origin.y);
+    frame.size.width = MIN(frame.size.width,container.size.width);
+    frame.size.height = MIN(frame.size.height,container.size.height);
+    if (CGRectGetMaxX(frame) > CGRectGetMaxX(container)){
+        frame.origin.x = CGRectGetMaxX(container) - frame.size.width;
+    }
+    if (CGRectGetMaxY(frame) > CGRectGetMaxY(container)){
+        frame.origin.y = CGRectGetMaxY(container) - frame.size.height;
+    }
+    return frame;
+}
+
