@@ -59,7 +59,5 @@
 @property (nonatomic,weak) IBOutlet NSTextField *subframeDisplay;
 @property (nonatomic,strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic,strong) IBOutlet NSArrayController *guidersArrayController;
-@property (nonatomic,strong) IBOutlet NSArrayController *darksController;
-@property (nonatomic,strong) IBOutlet NSArrayController *flatsController;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 @end

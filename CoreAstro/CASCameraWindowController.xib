@@ -906,7 +906,6 @@
 													<string key="NSFrame">{{14, 38}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="33898123">
@@ -1587,23 +1586,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<bool key="NSFilterRestrictsInsertion">YES</bool>
 				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
-			<object class="NSArrayController" id="695534239">
-				<string key="NSObjectClassName">CASCCDExposure</string>
-				<bool key="NSEditable">YES</bool>
-				<object class="_NSManagedProxy" key="_NSManagedProxy"/>
-				<bool key="NSAvoidsEmptySelection">YES</bool>
-				<bool key="NSPreservesSelection">YES</bool>
-				<bool key="NSSelectsInsertedObjects">YES</bool>
-				<bool key="NSFilterRestrictsInsertion">YES</bool>
-				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
-			</object>
 			<object class="NSSegmentedControl" id="238518948">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<string key="NSFrameSize">{34, 28}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<bool key="NSEnabled">YES</bool>
 				<object class="NSSegmentedCell" key="NSCell" id="264717979">
@@ -1627,16 +1613,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="NSTrackingMode">2</int>
 					<int key="NSSegmentStyle">4</int>
 				</object>
-			</object>
-			<object class="NSArrayController" id="453734870">
-				<string key="NSObjectClassName">CASCCDExposure</string>
-				<bool key="NSEditable">YES</bool>
-				<object class="_NSManagedProxy" key="_NSManagedProxy"/>
-				<bool key="NSAvoidsEmptySelection">YES</bool>
-				<bool key="NSPreservesSelection">YES</bool>
-				<bool key="NSSelectsInsertedObjects">YES</bool>
-				<bool key="NSFilterRestrictsInsertion">YES</bool>
-				<bool key="NSClearsFilterPredicateOnInsertion">YES</bool>
 			</object>
 			<object class="NSArrayController" id="876160430">
 				<string key="NSObjectClassName">CASGuiderController</string>
@@ -1818,22 +1794,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="destination" ref="821382491"/>
 					</object>
 					<int key="connectionID">2099</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">darksController</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="695534239"/>
-					</object>
-					<int key="connectionID">2883</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">flatsController</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="453734870"/>
-					</object>
-					<int key="connectionID">2909</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -4962,16 +4922,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<reference key="parent" ref="722857493"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">2882</int>
-						<reference key="object" ref="695534239"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">2908</int>
-						<reference key="object" ref="453734870"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">2925</int>
 						<reference key="object" ref="285478047"/>
 						<reference key="parent" ref="722857493"/>
@@ -5891,10 +5841,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="2837.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="2839.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="2840.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="2882.CustomClassName">CASDarksArrayController</string>
-				<string key="2882.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="2908.CustomClassName">CASFlatsArrayController</string>
-				<string key="2908.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="2925.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="2926.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="2927.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -6159,7 +6105,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="exposuresStatusText">NSTextField</string>
 						<string key="flatsController">NSArrayController</string>
 						<string key="guidersArrayController">NSArrayController</string>
-						<string key="imageBannerView">NSView</string>
+						<string key="imageBannerView">CASImageBannerView</string>
 						<string key="imageView">CASExposureView</string>
 						<string key="progressIndicator">NSProgressIndicator</string>
 						<string key="progressStatusText">NSTextField</string>
@@ -6227,7 +6173,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 						<object class="IBToOneOutletInfo" key="imageBannerView">
 							<string key="name">imageBannerView</string>
-							<string key="candidateClassName">NSView</string>
+							<string key="candidateClassName">CASImageBannerView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="imageView">
 							<string key="name">imageView</string>
@@ -6288,27 +6234,11 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">CASDarksArrayController</string>
-					<string key="superclassName">NSArrayController</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CASDarksArrayController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">CASExposureView</string>
 					<string key="superclassName">CASImageView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CASExposureView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CASFlatsArrayController</string>
-					<string key="superclassName">NSArrayController</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CASFlatsArrayController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

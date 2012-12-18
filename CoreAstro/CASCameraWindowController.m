@@ -223,10 +223,6 @@
     [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 
-    // lose these
-    [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
-    [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
-    
     // add a drop shadow
     [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
     [CASShadowView attachToView:self.imageView.superview edge:NSMaxXEdge];
@@ -301,18 +297,6 @@
         [_currentExposure reset]; // unload the current exposures pixels
         _currentExposure = currentExposure;
         
-        // unobserve the darks and flats controllers so that they're not triggered by resetting the content in the methods below
-        [self.darksController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
-        [self.flatsController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
-
-        // not currently showing candidate darks and flats
-        // [self updateFlatsForExposure:_currentExposure];
-        // [self updateDarksForExposure:_currentExposure];
-        
-        // observe the darks and flats controller again
-        [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
-        [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
-
         // display the exposure
         [self displayExposure:_currentExposure];
     }
@@ -339,11 +323,6 @@
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
                 self.currentExposure = [self _currentlySelectedExposure];
-            }
-        }
-        else if (object == self.darksController || object == self.flatsController){
-            if ([keyPath isEqualToString:@"selectedObjects"]){
-                [self displayExposure:_currentExposure];
             }
         }
         else if (object == self.camerasArrayController){
@@ -692,27 +671,6 @@
         }
     }
     
-    // todo: CASImageProcessingChain runs all these async
-    if (self.subtractDark){
-        NSArray* darks = self.darksController.arrangedObjects;
-        if ([darks count]){
-            CASCCDExposure* dark = [self.darksController.arrangedObjects objectAtIndex:0];
-            if (dark){
-                [self.imageProcessor subtractDark:dark from:exposure];
-            }
-        }
-    }
-
-    if (self.divideFlat){
-        NSArray* flats = self.flatsController.arrangedObjects;
-        if ([flats count]){
-            CASCCDExposure* flat = [self.flatsController.arrangedObjects objectAtIndex:0];
-            if (flat){
-                [self.imageProcessor divideFlat:flat into:exposure];
-            }
-        }
-    }
-    
     if (self.equalise){
         [self.imageProcessor equalise:exposure];
     }
@@ -724,27 +682,6 @@
     // check image view is actually visible
     if (!self.imageView.isHidden){
         self.imageView.currentExposure = exposure;
-    }
-}
-
-
-- (void)updateFlatsForExposure:(CASCCDExposure*)exposure
-{
-    if (exposure.type != kCASCCDExposureLightType){
-        self.flatsController.content = nil;
-    }
-    else {
-        self.flatsController.content = [[CASCCDExposureLibrary sharedLibrary] flatsMatchingExposure:exposure];
-    }
-}
-
-- (void)updateDarksForExposure:(CASCCDExposure*)exposure
-{
-    if (exposure.type != kCASCCDExposureLightType){
-        self.darksController.content = nil;
-    }
-    else {
-        self.darksController.content = [[CASCCDExposureLibrary sharedLibrary] darksMatchingExposure:exposure];
     }
 }
 
