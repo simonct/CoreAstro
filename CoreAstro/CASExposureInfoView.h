@@ -32,6 +32,4 @@
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic,assign) CASRect subframe;
 
-+ (id)loadExposureInfoView;
-
 @end

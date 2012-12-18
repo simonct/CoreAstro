@@ -78,18 +78,4 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
         self.hidden = YES;
     }
 }
-
-+ (id)loadExposureInfoView
-{
-    NSArray* objects = nil;
-    NSNib* nib = [[NSNib alloc] initWithNibNamed:NSStringFromClass([self class]) bundle:[NSBundle bundleForClass:[self class]]];
-    [nib instantiateNibWithOwner:nil topLevelObjects:&objects];
-    for (id obj in objects){
-        if ([obj isKindOfClass:[self class]]){
-            return obj;
-        }
-    }
-    return nil;
-}
-
 @end

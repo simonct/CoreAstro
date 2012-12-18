@@ -384,7 +384,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         
         result = [NSMutableArray arrayWithCapacity:count];
         for (NSInteger i = 0; i < count; ++i){
-            [result addObject:[NSNumber numberWithUnsignedLong:histogram[i]]];
+            [result addObject:[NSNumber numberWithFloat:(float)histogram[i]]];
         }
     });
     

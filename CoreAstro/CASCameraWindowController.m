@@ -87,7 +87,6 @@
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
-@property (nonatomic,assign) BOOL detectStars;
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
@@ -181,6 +180,8 @@
     self.imageView.currentToolMode = IKToolModeMove;
     self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
+    self.imageView.guideAlgorithm = self.guideAlgorithm;
+    self.imageView.detectStars = YES;
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
 
@@ -292,9 +293,6 @@
         
         // display the exposure
         [self displayExposure:_currentExposure];
-        
-        // spin off star detector ?
-        [self updateStarDetector];
     }
 }
 
@@ -490,14 +488,6 @@
     }
 }
 
-- (void)setDetectStars:(BOOL)detectStars
-{
-    if (detectStars != _detectStars){
-        _detectStars = detectStars;
-        [self updateStarDetector];
-    }
-}
-
 - (void)setCaptureMenuSelectedIndex:(NSUInteger)index
 {
     if (_captureMenuSelectedIndex != index){
@@ -677,52 +667,6 @@
 {
     self.selectionControl.selectedSegment = 1;
     [self selection:self.selectionControl]; // yuk
-}
-
-- (void)updateStarDetector
-{
-    if (!self.detectStars){
-        return;
-    }
-    
-    __weak CASCCDExposure* currentExposure = self.currentExposure;
-    if (!currentExposure){
-        return;
-    }
-    
-    CGRect selectionRect;
-    CASCCDExposure* workingExposure;
-    if (!self.imageView.showSelection){
-        workingExposure = currentExposure;
-    }
-    else {
-        selectionRect = self.imageView.selectionRect;
-        selectionRect.origin.y = currentExposure.actualSize.height - selectionRect.origin.y - selectionRect.size.height;
-        workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
-    }
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        NSArray* stars = [self.guideAlgorithm locateStars:workingExposure];
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if (currentExposure && self.currentExposure == currentExposure){
-                
-                if ([stars count]){
-                    NSPoint p = [[stars lastObject] pointValue];
-                    if (workingExposure != currentExposure){
-                        p.x += selectionRect.origin.x;
-                        p.y += selectionRect.origin.y;
-                    }
-                    self.imageView.starLocation = NSMakePoint(p.x, currentExposure.actualSize.height - p.y);
-                }
-                else {
-                    self.imageView.starLocation = kCASImageViewInvalidStarLocation;
-                }
-            }
-        });
-    });
 }
 
 #pragma mark - Actions
@@ -1266,9 +1210,6 @@
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
             [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             self.cameraController.subframe = subframe;
-            
-            // spin off a star detector and markup any stars within the selection
-            [self updateStarDetector];
         }
     }
 }

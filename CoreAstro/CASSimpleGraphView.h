@@ -1,5 +1,5 @@
 //
-//  CASHUDView.h
+//  CASSimpleGraphView.h
 //  CoreAstro
 //
 //  Created by Simon Taylor on 12/18/12.
@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface CASHUDView : NSView
-+ (id)loadFromNib;
+@interface CASSimpleGraphView : NSView
+@property (nonatomic,assign) CGFloat max;
+@property (nonatomic,strong) NSData* samples;
 @end
+

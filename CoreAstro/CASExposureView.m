@@ -9,10 +9,12 @@
 #import "CASExposureView.h"
 #import "CASCCDImage.h"
 #import "CASCCDExposure.h"
-#import "CASHistogramView.h"
 #import "CASImageProcessor.h"
 #import "CASExposureInfoView.h"
 #import "CASProgressHUDView.h"
+#import "CASStarInfoHUDView.h"
+#import "CASHistogramHUDView.h"
+
 #import <CoreAstro/CoreAstro.h>
 
 const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
@@ -120,9 +122,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CASSelectionLayer* selectionLayer;
 @property (nonatomic,strong) CAShapeLayer* reticleLayer;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
-@property (nonatomic,strong) CASHistogramView* histogramView;
+@property (nonatomic,strong) CASHistogramHUDView* histogramView;
 @property (nonatomic,strong) CASProgressHUDView* progressView;
+@property (nonatomic,strong) CASStarInfoHUDView* starInfoView;
 @property (nonatomic,strong) CASExposureInfoView* exposureInfoView;
+@property (nonatomic,strong) NSArray* huds;
 @end
 
 @implementation CASExposureView {
@@ -137,18 +141,25 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     self.starLocation = kCASImageViewInvalidStarLocation;
     
-    self.histogramView = [[CASHistogramView alloc] initWithFrame:NSMakeRect(10, 10, 400, 200)];
-    [self addSubview:self.histogramView];
-    self.histogramView.hidden = YES;
-    
-    self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
-    [self addSubview:self.progressView];
-    self.progressView.hidden = YES;
-    
-    self.exposureInfoView = [CASExposureInfoView loadExposureInfoView];
+    self.exposureInfoView = [CASExposureInfoView loadFromNib];
     self.exposureInfoView.hidden = YES;
     self.exposureInfoView.imageProcessor = self.imageProcessor;
     [self addSubview:self.exposureInfoView];
+    
+    self.histogramView = [CASHistogramHUDView loadFromNib];
+    self.histogramView.hidden = YES;
+    self.histogramView.imageProcessor = self.imageProcessor;
+    [self addSubview:self.histogramView];
+
+    self.starInfoView = [CASStarInfoHUDView loadFromNib];
+    self.starInfoView.hidden = YES;
+    [self addSubview:self.starInfoView];
+
+    self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
+    self.progressView.hidden = YES;
+    [self addSubview:self.progressView];
+    
+    self.huds = @[self.exposureInfoView,self.histogramView,self.starInfoView,self.progressView];
 }
 
 - (void)layoutHuds
@@ -156,18 +167,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     const CGFloat kTopMargin = 10;
     const CGFloat kLeftMargin = 10;
     const CGFloat kVerticalSpace = 10;
+    const CGFloat kHUDWidth = 160;
     
-    self.exposureInfoView.frame = NSMakeRect(self.bounds.size.width - self.exposureInfoView.frame.size.width - kLeftMargin,
-                                             self.bounds.size.height - self.exposureInfoView.frame.size.height - kTopMargin,
-                                             self.exposureInfoView.frame.size.width,
-                                             self.exposureInfoView.frame.size.height);
-    
-    const CGFloat kProgressHeight = 50;
-    
-    self.progressView.frame = NSMakeRect(CGRectGetMinX(self.exposureInfoView.frame),
-                                         self.exposureInfoView.isHidden ? (self.bounds.size.height - kProgressHeight - kTopMargin) : (CGRectGetMinY(self.exposureInfoView.frame) - kProgressHeight - kVerticalSpace),
-                                         CGRectGetWidth(self.exposureInfoView.frame),
-                                         kProgressHeight);
+    CGFloat top = kTopMargin;
+    for (NSView* hud in self.huds){
+        if (!hud.isHidden){
+            hud.frame = NSMakeRect(self.bounds.size.width - kHUDWidth - kLeftMargin,
+                                   self.bounds.size.height - hud.frame.size.height - top,
+                                   kHUDWidth,
+                                   hud.frame.size.height);
+            top += kVerticalSpace + hud.frame.size.height;
+        }
+    }
 }
 
 - (void)setFrame:(NSRect)aRect
@@ -258,6 +269,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             }
 
             [self updateStatistics];
+            [self updateStarDetector];
         }];
     }
     [super mouseDragged:theEvent];
@@ -290,10 +302,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (self.showHistogram){
         if (!_currentExposure){
-            self.histogramView.histogram = nil;
+            self.histogramView.exposure = nil;
         }
         else {
-            self.histogramView.histogram = [self.imageProcessor histogram:_currentExposure];
+            self.histogramView.exposure = _currentExposure;
         }
     }
 }
@@ -305,11 +317,69 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self layoutHuds];
 }
 
+- (void)updateStarDetector
+{
+    void (^setStarInfoHidden)(CASCCDExposure*,NSPoint*) = ^(CASCCDExposure* exposure,NSPoint* p){
+        self.starInfoView.hidden = (exposure == nil);
+        if (!self.starInfoView.isHidden){
+            [self.starInfoView setExposure:exposure starPosition:*p];
+        }
+        [self layoutHuds];
+    };
+    
+    if (!self.detectStars){
+        setStarInfoHidden(nil,nil);
+        return;
+    }
+    
+    __weak CASCCDExposure* currentExposure = self.currentExposure;
+    if (!currentExposure){
+        setStarInfoHidden(nil,nil);
+        return;
+    }
+    
+    CGRect selectionRect;
+    CASCCDExposure* workingExposure;
+    if (!self.showSelection){
+        workingExposure = currentExposure;
+    }
+    else {
+        selectionRect = self.selectionRect;
+        selectionRect.origin.y = currentExposure.actualSize.height - selectionRect.origin.y - selectionRect.size.height;
+        workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSArray* stars = [self.guideAlgorithm locateStars:workingExposure];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if (currentExposure && self.currentExposure == currentExposure){
+                
+                if ([stars count]){
+                    NSPoint p = [[stars lastObject] pointValue];
+                    if (workingExposure != currentExposure){
+                        p.x += selectionRect.origin.x;
+                        p.y += selectionRect.origin.y;
+                    }
+                    self.starLocation = NSMakePoint(p.x, currentExposure.actualSize.height - p.y);
+                    setStarInfoHidden(currentExposure,&p);
+                }
+                else {
+                    self.starLocation = kCASImageViewInvalidStarLocation;
+                    setStarInfoHidden(nil,nil);
+                }
+            }
+        });
+    });
+}
+
 - (void)displayExposure
 {
     void (^clearImage)() = ^() {
         [self setImage:nil imageProperties:nil];
-        [self.histogramView removeFromSuperview];
+        self.histogramView.hidden = YES;
     };
     
     [self updateHistogram];
@@ -357,6 +427,16 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+#pragma mark - Properties
+
+- (void)setDetectStars:(BOOL)detectStars
+{
+    if (detectStars != _detectStars){
+        _detectStars = detectStars;
+        [self updateStarDetector];
+    }
+}
+
 - (CGRect)selectionRect
 {
     return self.showSelection ? self.selectionLayer.frame : CGRectZero;
@@ -365,17 +445,21 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)setSelectionRect:(CGRect)rect
 {
     self.selectionLayer.frame = rect;
+    
     if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
         [self.exposureViewDelegate selectionRectChanged:self];
     }
+    
     [self updateStatistics];
+    [self updateStarDetector];
 }
 
 - (void)setImageProcessor:(CASImageProcessor *)imageProcessor
 {
     if (_imageProcessor != imageProcessor){
         _imageProcessor = imageProcessor;
-        self.exposureInfoView.imageProcessor = self.imageProcessor;
+        self.exposureInfoView.imageProcessor = _imageProcessor;
+        self.histogramView.imageProcessor = _imageProcessor;
     }
 }
 
@@ -387,6 +471,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         if (_showHistogram){
             [self updateHistogram];
         }
+        [self layoutHuds];
     }
 }
 
@@ -407,6 +492,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
     self.exposureInfoView.exposure = _currentExposure;
 
+    [self updateStarDetector];
+    
     [self layoutHuds];
 }
 
@@ -429,10 +516,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         [self zoomImageToFit:nil];
     }
     
-    // ensure the histogram view remains at the front.
-    [self addSubview:self.histogramView positioned:NSWindowAbove relativeTo:nil];
-    [self addSubview:self.progressView positioned:NSWindowAbove relativeTo:nil];
-    [self addSubview:self.exposureInfoView positioned:NSWindowAbove relativeTo:nil];
+    // ensure the huds remains at the front.
+    for (NSView* hud in self.huds){
+        [self addSubview:hud positioned:NSWindowAbove relativeTo:nil];
+    }
 }
 
 - (void)setStarLocation:(CGPoint)starLocation
@@ -445,6 +532,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     else {
         self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15 colour:CGColorCreateGenericRGB(1,1,0,1)];
     }
+    
+    [self layoutHuds];
 }
 
 - (void)setLockLocation:(CGPoint)lockLocation
@@ -569,6 +658,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         [super setCurrentToolMode:currentToolMode];
     }
 }
+
+#pragma mark - Layer factories
 
 - (CALayer*)imageOverlayLayer
 {
