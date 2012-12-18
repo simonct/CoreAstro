@@ -31,10 +31,10 @@
 - (void)_commonSetup
 {
     self.wantsLayer = YES;
-    self.layer.backgroundColor = CGColorCreateGenericRGB(0,0,0,0.5);
+    self.layer.backgroundColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(0,0,0,0.5)));
     self.layer.cornerRadius = 10;
     self.layer.borderWidth = 2.5;
-    self.layer.borderColor = CGColorCreateGenericRGB(1,1,1,0.8);
+    self.layer.borderColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,1,0.8)));
 }
 
 + (id)loadFromNib

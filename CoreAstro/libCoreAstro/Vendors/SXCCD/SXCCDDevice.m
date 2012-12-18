@@ -440,6 +440,7 @@
         else {
             exposePixels();
         }
+        flushComplete = nil;
     };
     
     void (^ openShutter)() = ^(){

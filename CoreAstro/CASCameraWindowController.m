@@ -417,6 +417,7 @@
                 CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
                 CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
                 [self.imageView setImage:CGImage imageProperties:nil];
+                CGContextRelease(bitmap);
             }
         }
         
