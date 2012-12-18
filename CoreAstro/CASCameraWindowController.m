@@ -55,16 +55,6 @@
 @implementation CASGuidersArrayController
 @end
 
-@interface CASFlatsArrayController : NSArrayController
-@end
-@implementation CASFlatsArrayController
-@end
-
-@interface CASDarksArrayController : NSArrayController
-@end
-@implementation CASDarksArrayController
-@end
-
 @interface CASCamerasArrayController : NSArrayController
 @end
 @implementation CASCamerasArrayController
@@ -94,15 +84,15 @@
 @interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate,CASExposureViewDelegate>
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
-@property (nonatomic,assign) BOOL divideFlat;
-@property (nonatomic,assign) BOOL subtractDark;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
+@property (nonatomic,assign) BOOL detectStars;
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
@@ -168,6 +158,7 @@
     
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
     
     self.exposuresController = [[CASExposuresController alloc] init];
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
@@ -291,14 +282,19 @@
 {
     if (_currentExposure != currentExposure){
 
-        // clear selection
+        // clear selection - necessary ?
         [self clearSelection];
 
-        [_currentExposure reset]; // unload the current exposures pixels
+        // unload the current exposure's pixels
+        [_currentExposure reset];
+        
         _currentExposure = currentExposure;
         
         // display the exposure
         [self displayExposure:_currentExposure];
+        
+        // spin off star detector ?
+        [self updateStarDetector];
     }
 }
 
@@ -486,27 +482,19 @@
     }
 }
 
-- (void)setSubtractDark:(BOOL)subtractDark
-{
-    if (_subtractDark != subtractDark){
-        _subtractDark = subtractDark;
-        [self _resetAndRedisplayCurrentExposure];
-    }
-}
-
-- (void)setDivideFlat:(BOOL)divideFlat
-{
-    if (_divideFlat != divideFlat){
-        _divideFlat = divideFlat;
-        [self _resetAndRedisplayCurrentExposure];
-    }
-}
-
 - (void)setInvert:(BOOL)invert
 {
     if (invert != _invert){
         _invert = invert;
         [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
+- (void)setDetectStars:(BOOL)detectStars
+{
+    if (detectStars != _detectStars){
+        _detectStars = detectStars;
+        [self updateStarDetector];
     }
 }
 
@@ -689,6 +677,52 @@
 {
     self.selectionControl.selectedSegment = 1;
     [self selection:self.selectionControl]; // yuk
+}
+
+- (void)updateStarDetector
+{
+    if (!self.detectStars){
+        return;
+    }
+    
+    __weak CASCCDExposure* currentExposure = self.currentExposure;
+    if (!currentExposure){
+        return;
+    }
+    
+    CGRect selectionRect;
+    CASCCDExposure* workingExposure;
+    if (!self.imageView.showSelection){
+        workingExposure = currentExposure;
+    }
+    else {
+        selectionRect = self.imageView.selectionRect;
+        selectionRect.origin.y = currentExposure.actualSize.height - selectionRect.origin.y - selectionRect.size.height;
+        workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSArray* stars = [self.guideAlgorithm locateStars:workingExposure];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if (currentExposure && self.currentExposure == currentExposure){
+                
+                if ([stars count]){
+                    NSPoint p = [[stars lastObject] pointValue];
+                    if (workingExposure != currentExposure){
+                        p.x += selectionRect.origin.x;
+                        p.y += selectionRect.origin.y;
+                    }
+                    self.imageView.starLocation = NSMakePoint(p.x, currentExposure.actualSize.height - p.y);
+                }
+                else {
+                    self.imageView.starLocation = kCASImageViewInvalidStarLocation;
+                }
+            }
+        });
+    });
 }
 
 #pragma mark - Actions
@@ -1234,7 +1268,7 @@
             self.cameraController.subframe = subframe;
             
             // spin off a star detector and markup any stars within the selection
-            // drop a hud below the pixel stats with a profile graph and focus stats
+            [self updateStarDetector];
         }
     }
 }
