@@ -24,8 +24,9 @@
 //
 
 #import <CoreAstro/CoreAstro.h>
+#import "CASHUDView.h"
 
-@interface CASExposureInfoView : NSView
+@interface CASExposureInfoView : CASHUDView
 
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASCCDExposure* exposure;

@@ -39,15 +39,6 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
 
 @implementation CASExposureInfoView
 
-- (void)awakeFromNib
-{
-    self.wantsLayer = YES;
-    self.layer.backgroundColor = CGColorCreateGenericRGB(0,0,0,0.5);
-    self.layer.cornerRadius = 10;
-    self.layer.borderWidth = 2.5;
-    self.layer.borderColor = CGColorCreateGenericRGB(1,1,1,0.8);
-}
-
 - (void)setExposure:(CASCCDExposure *)exposure
 {
     if (exposure != _exposure){
@@ -80,11 +71,11 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
         self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
         self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];
         self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp])];
-        self.alphaValue = 1;
+        self.hidden = NO;
     }
     else {
         self.averageValueField.stringValue = self.minimumValueField.stringValue = self.maximumValueField.stringValue = self.standardDeviationValueField.stringValue = @"";
-        self.alphaValue = 0;
+        self.hidden = YES;
     }
 }
 

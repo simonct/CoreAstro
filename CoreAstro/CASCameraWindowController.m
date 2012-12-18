@@ -223,7 +223,7 @@
     [self.guidersArrayController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [self.guidersArrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 
-
+    // lose these
     [self.darksController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
     [self.flatsController addObserver:self forKeyPath:@"selectedObjects" options:0 context:(__bridge void *)(self)];
     
@@ -465,10 +465,10 @@
         }];
     }
 
-    // reset the capture count - why am I doing this here ?
-    if (!self.cameraController.captureCount && !self.cameraController.continuous){
-        self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
-    }
+//    // reset the capture count - why am I doing this here ?
+//    if (!self.cameraController.captureCount && !self.cameraController.continuous){
+//        self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
+//    }
     
     // set progress display if this camera is capturing
     [self updateExposureIndicator];
@@ -611,22 +611,33 @@
 {
     NSDate* start = self.cameraController.exposureStart;
     if (self.cameraController.exposureStart){
+        
         const double interval = [[NSDate date] timeIntervalSinceDate:start];
         const NSInteger scaling = (self.cameraController.exposureUnits == 0) ? 1 : 1000;
-        self.progressIndicator.hidden = NO;
+        
         self.imageView.showProgress = YES;
-        self.imageView.progress = self.cameraController.exposure > 0 ? self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure : 0;
+        self.imageView.progressInterval = self.cameraController.exposure;
+        if (self.cameraController.exposure){
+            self.imageView.progress = self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
+        }
+        else {
+            self.imageView.progress = self.progressIndicator.doubleValue = 0;;
+        }
+        
+        self.progressIndicator.hidden = NO;
         if (self.progressIndicator.doubleValue >= self.progressIndicator.maxValue){
             self.progressIndicator.indeterminate = YES;
             self.progressStatusText.stringValue = @"Downloading image...";
+            self.imageView.progress = 0;
         }
         else {
             self.progressIndicator.indeterminate = NO;
         }
         [self.progressIndicator startAnimation:self];
-        [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
+        [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1];
     }
     else {
+        
         if (self.cameraController.waitingForNextCapture){
             self.progressIndicator.indeterminate = NO;
             self.progressIndicator.hidden = NO;
@@ -634,7 +645,7 @@
             self.progressStatusText.stringValue = @"Waiting...";
             self.imageView.progressInterval = self.cameraController.interval;
             self.imageView.progress = self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
-            [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.05];
+            [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1];
         }
         else {
             self.progressIndicator.hidden = YES;
@@ -1284,6 +1295,9 @@
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
             [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             self.cameraController.subframe = subframe;
+            
+            // spin off a star detector and markup any stars within the selection
+            // drop a hud below the pixel stats with a profile graph and focus stats
         }
     }
 }

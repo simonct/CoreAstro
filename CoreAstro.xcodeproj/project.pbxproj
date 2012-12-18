@@ -19,6 +19,8 @@
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */; };
+		F44791E816806BB2007A6815 /* CASProgressHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791E716806BB1007A6815 /* CASProgressHUDView.m */; };
+		F44791EB16806D42007A6815 /* CASHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791EA16806D42007A6815 /* CASHUDView.m */; };
 		F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */; };
 		F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52DF15A971620018DC75 /* SenTestingKit.framework */; };
@@ -383,6 +385,10 @@
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
 		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
 		F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASExposureInfoView.xib; sourceTree = "<group>"; };
+		F44791E616806BB1007A6815 /* CASProgressHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASProgressHUDView.h; sourceTree = "<group>"; };
+		F44791E716806BB1007A6815 /* CASProgressHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASProgressHUDView.m; sourceTree = "<group>"; };
+		F44791E916806D42007A6815 /* CASHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHUDView.h; sourceTree = "<group>"; };
+		F44791EA16806D42007A6815 /* CASHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHUDView.m; sourceTree = "<group>"; };
 		F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
 		F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
 		F448EBB315E6B628002AB171 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
@@ -909,9 +915,13 @@
 				F48DF012160E475B00190D3E /* CASExposureTableView.m */,
 				F4A561C315EA5DE100130D4A /* CASHistogramView.h */,
 				F4A561C415EA5DE100130D4A /* CASHistogramView.m */,
+				F44791E916806D42007A6815 /* CASHUDView.h */,
+				F44791EA16806D42007A6815 /* CASHUDView.m */,
 				F4849CB316591EC60069647F /* CASExposureInfoView.h */,
 				F4849CB416591EC60069647F /* CASExposureInfoView.m */,
 				F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */,
+				F44791E616806BB1007A6815 /* CASProgressHUDView.h */,
+				F44791E716806BB1007A6815 /* CASProgressHUDView.m */,
 				F48DF00B160E46A800190D3E /* CASImageControlsView.h */,
 				F48DF00C160E46A800190D3E /* CASImageControlsView.m */,
 				F41157DE1639CC7A00ABCA69 /* CASShadowView.h */,
@@ -1656,6 +1666,8 @@
 				F4849CC21659570B0069647F /* CASLibraryBrowserView.m in Sources */,
 				F4849CC31659570B0069647F /* CASLibraryBrowserViewController.m in Sources */,
 				F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */,
+				F44791E816806BB2007A6815 /* CASProgressHUDView.m in Sources */,
+				F44791EB16806D42007A6815 /* CASHUDView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,105 +12,12 @@
 #import "CASHistogramView.h"
 #import "CASImageProcessor.h"
 #import "CASExposureInfoView.h"
+#import "CASProgressHUDView.h"
 #import <CoreAstro/CoreAstro.h>
 
 const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
-@interface CASProgressView : NSView
-@property (nonatomic,assign) CGFloat progress;
-@end
-
-@implementation CASProgressView
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    @try {
-        NSRect bounds = CGRectInset(self.bounds, 5, 5);
-        
-        NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
-        outline.lineWidth = 2.5;
-        [[NSColor whiteColor] set];
-        [outline stroke];
-        
-        NSBezierPath* arc = [NSBezierPath bezierPath];
-        arc.lineWidth = 2.5;
-        [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
-        [arc appendBezierPathWithArcWithCenter:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))
-                                        radius:CGRectGetWidth(bounds)/2
-                                    startAngle:90
-                                      endAngle:90 - (360*self.progress)
-                                     clockwise:YES];
-        [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
-        [[NSColor whiteColor] set];
-        [arc fill];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"%@: %@",NSStringFromSelector(_cmd),exception);
-    }
-}
-
-- (void)setProgress:(CGFloat)progress
-{
-    if (_progress != progress){
-        _progress = MAX(0,MIN(progress,1));
-        [self setNeedsDisplay:YES];
-    }
-}
-
-@end
-
-@interface CASProgressContainerView : NSView
-@property (nonatomic,weak) NSTextField* label;
-@property (nonatomic,weak) CASProgressView* progress;
-@end
-
-@implementation CASProgressContainerView
-
-- (id)initWithFrame:(NSRect)frameRect
-{
-    self = [super initWithFrame:frameRect];
-    if (self){
-        
-        self.wantsLayer = YES;
-        self.layer.cornerRadius = 10;
-        self.layer.borderWidth = 1.5;
-        self.layer.borderColor = CGColorCreateGenericGray(1, 0.8);
-        self.layer.backgroundColor = CGColorCreateGenericGray(0, 0.25);
-        
-        NSTextField* label = [[NSTextField alloc] initWithFrame:CGRectZero]; // strong local as property is weak
-        label.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
-        label.backgroundColor = [NSColor clearColor];
-        label.bordered = NO;
-        label.textColor = [NSColor whiteColor];
-        label.font = [NSFont boldSystemFontOfSize:18];
-        label.alignment = NSLeftTextAlignment;
-        label.editable = NO;
-        [self addSubview:label];
-        self.label = label;
-        
-        CASProgressView* progress = [[CASProgressView alloc] initWithFrame:CGRectZero];
-        progress.autoresizingMask = NSViewMaxXMargin;
-        [self addSubview:progress];
-        self.progress = progress;
-        
-        self.progress.progress = 0.25;
-    }
-    return self;
-}
-
-- (void)setFrame:(NSRect)frameRect
-{
-    [super setFrame:frameRect];
-    
-    CGRect bounds = CGRectInset(self.bounds, 3, 3);
-    
-    const CGFloat height = 40;
-    
-    self.label.frame = CGRectMake(10 + height, CGRectGetMidY(self.bounds)-height/2-8, bounds.size.width - height, height);
-    self.progress.frame = CGRectMake(10, CGRectGetMidY(self.bounds)-height/2, height, height);
-}
-
-@end
+#pragma mark - Layer classes
 
 @interface CASTaggedLayer : CALayer
 @property (nonatomic,assign) NSInteger tag;
@@ -203,6 +110,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 @end
 
+#pragma mark - Exposure view
+
 @interface CASExposureView ()
 @property (nonatomic,assign) BOOL firstShowEditPanel;
 @property (nonatomic,strong) CALayer* starLayer;
@@ -212,7 +121,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CAShapeLayer* reticleLayer;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASHistogramView* histogramView;
-@property (nonatomic,strong) CASProgressContainerView* progressView;
+@property (nonatomic,strong) CASProgressHUDView* progressView;
 @property (nonatomic,strong) CASExposureInfoView* exposureInfoView;
 @end
 
@@ -232,51 +141,64 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self addSubview:self.histogramView];
     self.histogramView.hidden = YES;
     
-    self.progressView = [[CASProgressContainerView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
+    self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
     [self addSubview:self.progressView];
     self.progressView.hidden = YES;
     
     self.exposureInfoView = [CASExposureInfoView loadExposureInfoView];
-    self.exposureInfoView.alphaValue = 0;
+    self.exposureInfoView.hidden = YES;
     self.exposureInfoView.imageProcessor = self.imageProcessor;
     [self addSubview:self.exposureInfoView];
+}
+
+- (void)layoutHuds
+{
+    const CGFloat kTopMargin = 10;
+    const CGFloat kLeftMargin = 10;
+    const CGFloat kVerticalSpace = 10;
+    
+    self.exposureInfoView.frame = NSMakeRect(self.bounds.size.width - self.exposureInfoView.frame.size.width - kLeftMargin,
+                                             self.bounds.size.height - self.exposureInfoView.frame.size.height - kTopMargin,
+                                             self.exposureInfoView.frame.size.width,
+                                             self.exposureInfoView.frame.size.height);
+    
+    const CGFloat kProgressHeight = 50;
+    
+    self.progressView.frame = NSMakeRect(CGRectGetMinX(self.exposureInfoView.frame),
+                                         self.exposureInfoView.isHidden ? (self.bounds.size.height - kProgressHeight - kTopMargin) : (CGRectGetMinY(self.exposureInfoView.frame) - kProgressHeight - kVerticalSpace),
+                                         CGRectGetWidth(self.exposureInfoView.frame),
+                                         kProgressHeight);
 }
 
 - (void)setFrame:(NSRect)aRect
 {
     [super setFrame:aRect];
     
-    self.progressView.frame = NSMakeRect(10, self.bounds.size.height - 60, 200, 50);
-    self.exposureInfoView.frame = NSMakeRect(self.bounds.size.width - self.exposureInfoView.frame.size.width - 10,
-                                             self.bounds.size.height - self.exposureInfoView.frame.size.height - 10,
-                                             self.exposureInfoView.frame.size.width,
-                                             self.exposureInfoView.frame.size.height);
+    [self layoutHuds];
 }
 
 - (void)setShowProgress:(BOOL)showProgress
 {
     if (showProgress != _showProgress){
         _showProgress = showProgress;
-        if (!_showProgress){
-            [self.progressView removeFromSuperview];
-        }
-        else {
-            [self addSubview:self.progressView positioned:NSWindowAbove relativeTo:nil];
-        }
         self.progressView.hidden = !_showProgress;
+        [self layoutHuds];
     }
 }
 
 - (CGFloat)progress
 {
-    return self.progressView.progress.progress;
+    return self.progressView.progress;
 }
 
 - (void)setProgress:(CGFloat)progress
 {
-    self.progressView.progress.progress = progress;
+    self.progressView.progress = progress;
     const NSInteger remainder = self.progressInterval - (progress*self.progressInterval);
-    self.progressView.label.stringValue = [NSString stringWithFormat:@"%lds remaining",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
+    NSString* value = [NSString stringWithFormat:@"%ld secs",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
+    if (![self.progressView.label.stringValue isEqualToString:value]){
+        self.progressView.label.stringValue = value;
+    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -380,6 +302,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     const CGRect frame = self.selectionRect;
     self.exposureInfoView.subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
+    [self layoutHuds];
 }
 
 - (void)displayExposure
@@ -483,6 +406,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self displayExposure];
 
     self.exposureInfoView.exposure = _currentExposure;
+
+    [self layoutHuds];
 }
 
 - (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
