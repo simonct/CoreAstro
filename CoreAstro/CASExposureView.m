@@ -401,6 +401,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                         CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
                         CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
                         CGImage = CGBitmapContextCreateImage(bitmap);
+                        CGContextRelease(bitmap);
                     }
                 }
                 
@@ -521,7 +522,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.starLayer = nil;
     }
     else {
-        self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15 colour:CGColorCreateGenericRGB(1,1,0,1)];
+        self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
     }
     
     [self layoutHuds];
@@ -535,13 +536,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.lockLayer = nil;
     }
     else {
-        self.lockLayer = [self circularRegionLayerWithPosition:self.lockLocation radius:15 colour:CGColorCreateGenericRGB(1,0,0,1)];
+        self.lockLayer = [self circularRegionLayerWithPosition:self.lockLocation radius:15 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)))];
     }
 }
 
 - (void)setSearchRadius:(CGFloat)searchRadius
 {
-    self.searchLayer = [self circularRegionLayerWithPosition:self.starLocation radius:searchRadius colour:CGColorCreateGenericRGB(0,0,1,1)];
+    self.searchLayer = [self circularRegionLayerWithPosition:self.starLocation radius:searchRadius colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(0,0,1,1)))];
 }
 
 - (void)setShowReticle:(BOOL)showReticle
@@ -562,7 +563,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     if (_showSelection){
         if (!self.selectionLayer){
-            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:CGColorCreateGenericRGB(1,1,0,1)];
+            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
         }
         [self.imageOverlayLayer addSublayer:self.selectionLayer];
         self.selectionRect = self.selectionLayer.frame;
@@ -657,7 +658,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CALayer* layer = [self overlayForType:IKOverlayTypeImage];
     if (!layer){
         layer = [CALayer layer];
-        layer.backgroundColor = CGColorCreateGenericRGB(1,1,1,0);
+        layer.backgroundColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,1,0)));
         layer.opacity = 0.75;
         [self setOverlay:layer forType:IKOverlayTypeImage];
     }
@@ -727,7 +728,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0, 0, width, CGImageGetHeight(self.image)));
     
     reticleLayer.path = path;
-    reticleLayer.strokeColor = CGColorCreateGenericRGB(1,0,0,1);
+    reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
     reticleLayer.borderWidth = width;
     
     return reticleLayer;
