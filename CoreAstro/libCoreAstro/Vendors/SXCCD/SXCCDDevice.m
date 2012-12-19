@@ -220,7 +220,7 @@
             [self.exposureTemperatures addObject:[NSNumber numberWithFloat:self.temperature]];
         }
         
-        [self performSelector:_cmd withObject:nil afterDelay:self.temperatureFrequency];
+        [self performSelector:_cmd withObject:nil afterDelay:self.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
     }];
 }
 

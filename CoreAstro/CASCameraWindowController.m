@@ -597,7 +597,7 @@
             self.progressIndicator.indeterminate = NO;
         }
         [self.progressIndicator startAnimation:self];
-        [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1];
+        [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
     }
     else {
         
@@ -608,7 +608,7 @@
             self.progressStatusText.stringValue = @"Waiting...";
             self.imageView.progressInterval = self.cameraController.interval;
             self.imageView.progress = self.progressIndicator.doubleValue = 1 - (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
-            [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
         }
         else {
             self.progressIndicator.hidden = YES;
