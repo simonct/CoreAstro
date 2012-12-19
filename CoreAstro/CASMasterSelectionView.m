@@ -41,7 +41,7 @@
     NSButton* minusButton = [[NSButton alloc] init];
     [minusButton setTitle:@"-"];
     [minusButton setBezelStyle:NSSmallSquareBezelStyle];
-    [minusButton setFrame:CGRectMake(self.bounds.size.width/2, self.bounds.size.height - 40, self.bounds.size.width/2, 20)];
+    [minusButton setFrame:CGRectMake(self.bounds.size.width/2, self.bounds.size.height - 38, self.bounds.size.width/2, 20)];
     [minusButton setAutoresizingMask:NSViewMinYMargin];
     [minusButton setAction:@selector(removeProject:)];
     [self addSubview:minusButton];
