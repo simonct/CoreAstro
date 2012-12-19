@@ -411,12 +411,15 @@
         if (!self.currentExposure){
             
             const CGSize size = CGSizeMake(self.cameraController.camera.sensor.width, self.cameraController.camera.sensor.height);
-            CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(size.width, size.height) bitsPerPixel:16];
+            CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(size.width, size.height) bitsPerPixel:16];
             if (bitmap){
                 CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
                 CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
                 CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
-                [self.imageView setImage:CGImage imageProperties:nil];
+                if (CGImage){
+                    [self.imageView setImage:CGImage imageProperties:nil];
+                    CGImageRelease(CGImage);
+                }
                 CGContextRelease(bitmap);
             }
         }
@@ -801,14 +804,14 @@
     }
     save.canCreateDirectories = YES;
     
-    IKSaveOptions* options = [[IKSaveOptions alloc] initWithImageProperties:nil imageUTType:nil];
+    IKSaveOptions* options = [[IKSaveOptions alloc] initWithImageProperties:nil imageUTType:nil]; // leaks ?
     [options addSaveOptionsAccessoryViewToSavePanel:save];
     
     // run the save panel and save the exposures to the selected location
     [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
         
         // get the image
-        CGImageRef image = [exposure createImage].CGImage; // need to apply the current processing settings
+        CGImageRef image = [exposure newImage].CGImage; // need to apply the current processing settings
         if (!image){
             NSLog(@"*** Failed to create image from exposure");
         }
@@ -817,7 +820,7 @@
             // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
             const size_t width = CGImageGetWidth(image);
             const size_t height = CGImageGetHeight(image);
-            CGContextRef rgb = [CASCCDImage createRGBBitmapContextWithSize:CASSizeMake(width, height)];
+            CGContextRef rgb = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(width, height)];
             if (!rgb){
                 NSLog(@"*** Failed to create rgb image context");
             }

@@ -376,7 +376,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
     else {
         
-        CASCCDImage* image = [_currentExposure createImage];
+        CASCCDImage* image = [_currentExposure newImage];
         if (!image){
             clearImage();
         }
@@ -392,7 +392,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
                 if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                     
-                    CGContextRef bitmap = [CASCCDImage createBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
+                    CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
                     if (!bitmap){
                         CGImage = nil;
                     }
@@ -730,6 +730,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     reticleLayer.path = path;
     reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
     reticleLayer.borderWidth = width;
+    
+    CGPathRelease(path);
     
     return reticleLayer;
 }

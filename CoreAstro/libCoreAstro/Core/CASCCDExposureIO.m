@@ -192,13 +192,13 @@
         // create a thumbnail (could use the QuickLook generator but that then introduces an unnecessary dependency)
         if (writePixels){
             
-            CASCCDImage* image = [exposure createImage];
+            CASCCDImage* image = [exposure newImage];
             if (image){
                 
                 const CASSize size = image.size;
                 const NSInteger thumbWidth = 256;
                 const CASSize thumbSize = CASSizeMake(thumbWidth, thumbWidth * ((float)size.height/(float)size.width));
-                CGImageRef thumb = [image createImageWithSize:thumbSize];
+                CGImageRef thumb = [image newImageWithSize:thumbSize];
                 if (!thumb){
                     NSLog(@"Failed to create thumbnail image of size %@",NSStringFromCASSize(thumbSize));
                 }
@@ -216,6 +216,7 @@
                         }
                         CFRelease(destination);
                     }
+                    CGImageRelease(thumb);
                 }
             }
         }

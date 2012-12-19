@@ -29,17 +29,18 @@
 
 @property (nonatomic,readonly) BOOL rgba;
 @property (nonatomic,readonly) CASSize size;
-@property (nonatomic,readonly) CGImageRef CGImage;
 @property (nonatomic,strong,readonly) NSData* floatPixels;
 
 - (void)reset;
-- (CGImageRef)createImageWithSize:(CASSize)size;
+- (CGImageRef)newImageWithSize:(CASSize)size;
 
-+ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size; // RGBA context
-+ (CGContextRef)createFloatBitmapContextWithSize:(CASSize)size; // floating point Gray
-+ (CGContextRef)createRGBAFloatBitmapContextWithSize:(CASSize)size; // RGBA floating point context
-+ (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel; // 16bps Gray
+- (CGImageRef)CGImage NS_RETURNS_INNER_POINTER;
 
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size rgba:(BOOL)rgba;
++ (CGContextRef)newRGBBitmapContextWithSize:(CASSize)size; // RGBA context
++ (CGContextRef)newFloatBitmapContextWithSize:(CASSize)size; // floating point Gray
++ (CGContextRef)newRGBAFloatBitmapContextWithSize:(CASSize)size; // RGBA floating point context
++ (CGContextRef)newBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel; // 16bps Gray
+
++ (CASCCDImage*)newImageWithPixels:(NSData*)pixels size:(CASSize)size rgba:(BOOL)rgba;
 
 @end

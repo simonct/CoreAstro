@@ -80,8 +80,8 @@ typedef enum CASCCDExposureFormat {
 
 @property (nonatomic,strong) NSString* note;
 
-- (CASCCDImage*)createImage;
-- (CASCCDImage*)createBlankImageWithSize:(CASSize)size;
+- (CASCCDImage*)newImage;
+- (CASCCDImage*)newBlankImageWithSize:(CASSize)size;
 
 - (CASCCDExposure*)subframeWithRect:(CASRect)rect;
 

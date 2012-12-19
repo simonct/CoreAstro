@@ -47,10 +47,10 @@
 {
     CGContextRef context = nil;
     if (self.rgba){
-        context = [[self class] createRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+        context = [[self class] newRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
     }
     else {
-        context = [[self class] createFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+        context = [[self class] newFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
     }
     if (context){
         
@@ -91,7 +91,7 @@
     // need a reference to the underlying exposure to get the pixels from again ?
 }
 
-- (CGImageRef)createImageWithSize:(CASSize)imageSize
+- (CGImageRef)newImageWithSize:(CASSize)imageSize
 {
     CGImageRef result = nil;
     CGImageRef image = self.CGImage;
@@ -100,17 +100,18 @@
             result = image;
         }
         else {
-            CGContextRef thumbContext = ([[self class] createFloatBitmapContextWithSize:imageSize]);
+            CGContextRef thumbContext = ([[self class] newFloatBitmapContextWithSize:imageSize]);
             if (thumbContext){
                 CGContextDrawImage(thumbContext, CGRectMake(0, 0, imageSize.width, imageSize.height), image);
                 result = CGBitmapContextCreateImage(thumbContext);
+                CGContextRelease(thumbContext);
             }
         }
     }
     return result;
 }
 
-+ (CGContextRef)createRGBBitmapContextWithSize:(CASSize)size
++ (CGContextRef)newRGBBitmapContextWithSize:(CASSize)size
 {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
@@ -119,7 +120,7 @@
     return context;
 }
 
-+ (CGContextRef)createFloatBitmapContextWithSize:(CASSize)size
++ (CGContextRef)newFloatBitmapContextWithSize:(CASSize)size
 {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 32, size.width * sizeof(float), space, kCGImageAlphaNone|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
@@ -128,7 +129,7 @@
     return context;
 }
 
-+ (CGContextRef)createRGBAFloatBitmapContextWithSize:(CASSize)size
++ (CGContextRef)newRGBAFloatBitmapContextWithSize:(CASSize)size
 {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 32, (size.width) * 4 * 4, space, kCGImageAlphaNoneSkipLast|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
@@ -137,7 +138,7 @@
     return context;
 }
 
-+ (CGContextRef)createBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel
++ (CGContextRef)newBitmapContextWithSize:(CASSize)size bitsPerPixel:(NSInteger)bitsPerPixel
 {
     if (bitsPerPixel != 16){
         NSLog(@"Unsupported bitsPerPixel of %ld",bitsPerPixel);
@@ -151,7 +152,7 @@
     return context;
 }
 
-+ (CASCCDImage*)createImageWithPixels:(NSData*)pixels size:(CASSize)size rgba:(BOOL)rgba
++ (CASCCDImage*)newImageWithPixels:(NSData*)pixels size:(CASSize)size rgba:(BOOL)rgba
 {
     CASCCDImage* image = [[CASCCDImage alloc] init];
     image.floatPixels = pixels ? pixels : [NSMutableData dataWithLength:size.width*size.height*sizeof(float)];

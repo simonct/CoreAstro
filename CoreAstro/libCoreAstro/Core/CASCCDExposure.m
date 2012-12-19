@@ -238,19 +238,19 @@
     [self setMetaObject:note forKey:@"note"];
 }
 
-- (CASCCDImage*)createImage
+- (CASCCDImage*)newImage
 {
     if (!self.floatPixels){
         NSLog(@"-createImage: no pixels");
         return nil;
     }
 
-    return [CASCCDImage createImageWithPixels:self.floatPixels size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height) rgba:self.rgba];
+    return [CASCCDImage newImageWithPixels:self.floatPixels size:CASSizeMake(self.params.size.width/self.params.bin.width, self.params.size.height/self.params.bin.height) rgba:self.rgba];
 }
 
-- (CASCCDImage*)createBlankImageWithSize:(CASSize)size
+- (CASCCDImage*)newBlankImageWithSize:(CASSize)size
 {
-    return [CASCCDImage createImageWithPixels:nil size:size rgba:NO];
+    return [CASCCDImage newImageWithPixels:nil size:size rgba:NO];
 }
 
 - (CASCCDExposure*)subframeWithRect:(CASRect)rect

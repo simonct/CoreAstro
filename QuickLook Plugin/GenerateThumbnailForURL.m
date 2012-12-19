@@ -41,7 +41,7 @@ OSStatus GenerateThumbnailForURL(void *thisInterface, QLThumbnailRequestRef thum
                 CASCCDExposure* exp = [[CASCCDExposure alloc] init];
                 if ([io readExposure:exp readPixels:YES error:nil]){
                     
-                    CASCCDImage* image = [exp createImage];
+                    CASCCDImage* image = [exp newImage];
                     if (image){
                         
                         CGImageRef ref = image.CGImage;
