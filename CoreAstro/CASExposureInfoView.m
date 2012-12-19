@@ -71,11 +71,9 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
         self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
         self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];
         self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp])];
-        self.hidden = NO;
     }
     else {
         self.averageValueField.stringValue = self.minimumValueField.stringValue = self.maximumValueField.stringValue = self.standardDeviationValueField.stringValue = @"";
-        self.hidden = YES;
     }
 }
 @end

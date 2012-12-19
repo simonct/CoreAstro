@@ -181,7 +181,6 @@
     self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
     self.imageView.guideAlgorithm = self.guideAlgorithm;
-    self.imageView.detectStars = YES;
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
 
@@ -1003,6 +1002,16 @@
     self.imageView.showReticle = !self.imageView.showReticle;
 }
 
+- (IBAction)toggleShowStarProfile:(id)sender
+{
+    self.imageView.showStarProfile = !self.imageView.showStarProfile;
+}
+
+- (IBAction)toggleShowImageStats:(id)sender
+{
+    self.imageView.showImageStats = !self.imageView.showImageStats;
+}
+
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.invert = !self.invert;
@@ -1108,6 +1117,24 @@
             }
             break;
             
+        case 10004:
+            if (self.imageView.showStarProfile){
+                item.title = NSLocalizedString(@"Hide Star Profile", @"Menu item title");
+            }
+            else {
+                item.title = NSLocalizedString(@"Show Star Profile", @"Menu item title");
+            }
+            break;
+
+        case 10005:
+            if (self.imageView.showImageStats){
+                item.title = NSLocalizedString(@"Hide Image Stats", @"Menu item title");
+            }
+            else {
+                item.title = NSLocalizedString(@"Show Image Stats", @"Menu item title");
+            }
+            break;
+
         case 10010:
             item.state = self.scaleSubframe;
             break;

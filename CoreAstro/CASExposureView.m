@@ -314,7 +314,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         [self layoutHuds];
     };
     
-    if (!self.detectStars){
+    if (!self.showStarProfile){
         setStarInfoHidden(nil,nil);
         return;
     }
@@ -423,11 +423,24 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 #pragma mark - Properties
 
-- (void)setDetectStars:(BOOL)detectStars
+- (void)setShowStarProfile:(BOOL)showStarProfile
 {
-    if (detectStars != _detectStars){
-        _detectStars = detectStars;
-        [self updateStarDetector];
+    if (showStarProfile != _showStarProfile){
+        _showStarProfile = showStarProfile;
+        if (_showStarProfile){
+            [self updateStarDetector];
+        }
+        self.starInfoView.hidden = !showStarProfile;
+        [self layoutHuds];
+    }
+}
+
+- (void)setShowImageStats:(BOOL)showImageStats
+{
+    if (showImageStats != _showImageStats){
+        _showImageStats = showImageStats;
+        self.exposureInfoView.hidden = !showImageStats;
+        [self layoutHuds];
     }
 }
 

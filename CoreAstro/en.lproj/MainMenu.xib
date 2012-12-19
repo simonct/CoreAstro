@@ -1382,6 +1382,24 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">10000</int>
 								</object>
+								<object class="NSMenuItem" id="56908968">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show Star Profile</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10004</int>
+								</object>
+								<object class="NSMenuItem" id="469922604">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show Image Stats</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10005</int>
+								</object>
 								<object class="NSMenuItem" id="1049083101">
 									<reference key="NSMenu" ref="466310130"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -1724,6 +1742,7 @@
 						<string key="NSFrame">{{9, 24}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="604363284"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="493245613">
@@ -1833,7 +1852,7 @@
 						<string key="NSFrame">{{251, 54}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="604363284"/>
+						<reference key="NSNextKeyView" ref="776023472"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="416619174">
@@ -2878,6 +2897,22 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleShowStarProfile:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="56908968"/>
+					</object>
+					<int key="connectionID">795</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleShowImageStats:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="469922604"/>
+					</object>
+					<int key="connectionID">796</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -3404,6 +3439,8 @@
 							<reference ref="1013398742"/>
 							<reference ref="409343842"/>
 							<reference ref="1025705258"/>
+							<reference ref="56908968"/>
+							<reference ref="469922604"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -5114,6 +5151,16 @@
 						<reference key="object" ref="763733890"/>
 						<reference key="parent" ref="1038860813"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">793</int>
+						<reference key="object" ref="56908968"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">794</int>
+						<reference key="object" ref="469922604"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5430,6 +5477,8 @@
 				<string key="790.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="791.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="792.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="793.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="794.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="82.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -5439,7 +5488,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">792</int>
+			<int key="maxID">796</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5467,7 +5516,9 @@
 						<string key="toggleInvertImage:">id</string>
 						<string key="toggleScaleSubframe:">id</string>
 						<string key="toggleShowHistogram:">id</string>
+						<string key="toggleShowImageStats:">id</string>
 						<string key="toggleShowReticle:">id</string>
+						<string key="toggleShowStarProfile:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="adjustAll:">
@@ -5522,8 +5573,16 @@
 							<string key="name">toggleShowHistogram:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="toggleShowImageStats:">
+							<string key="name">toggleShowImageStats:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="toggleShowReticle:">
 							<string key="name">toggleShowReticle:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowStarProfile:">
+							<string key="name">toggleShowStarProfile:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
