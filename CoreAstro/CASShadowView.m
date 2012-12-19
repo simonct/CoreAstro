@@ -20,10 +20,10 @@
         _edge = edge;
         CAGradientLayer* layer = [CAGradientLayer layer];
         if (_edge == NSMinXEdge){
-            layer.colors = [NSArray arrayWithObjects:(__bridge id)CGColorCreateGenericGray(0,0),CGColorCreateGenericGray(0,0.5),nil];
+            layer.colors = [NSArray arrayWithObjects:CFBridgingRelease(CGColorCreateGenericGray(0,0)),CFBridgingRelease(CGColorCreateGenericGray(0,0.5)),nil];
         }
         else {
-            layer.colors = [NSArray arrayWithObjects:(__bridge id)CGColorCreateGenericGray(0,0.5),CGColorCreateGenericGray(0,0),nil];
+            layer.colors = [NSArray arrayWithObjects:CFBridgingRelease(CGColorCreateGenericGray(0,0.5)),CFBridgingRelease(CGColorCreateGenericGray(0,0)),nil];
         }
         if (CGRectGetWidth(frameRect) > CGRectGetHeight(frameRect)){
             layer.startPoint = CGPointMake(0.5, 0);
