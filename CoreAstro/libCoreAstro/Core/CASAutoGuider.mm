@@ -223,10 +223,11 @@ enum {
 	double mean;
 	double PSF_fit;
 	double BestPSF_fit = 0.0;
+    const int border = 40;
     
-	for (NSInteger y=40; y<size.height-40; y++) {
+	for (NSInteger y=border; size.height > border && y<size.height-border; y++) {
         
-		for (NSInteger x=40; x<linesize-40; x++) {
+		for (NSInteger x=border; linesize > border && x<linesize-border; x++) {
             
 			A =  (float) *(exposurePixels + linesize * y + x);
             
