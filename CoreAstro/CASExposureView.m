@@ -310,7 +310,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)_updateStarProfileImpl
 {
-    void (^setStarInfoHidden)(CASCCDExposure*,NSPoint*) = ^(CASCCDExposure* exposure,NSPoint* p){
+    void (^setStarInfoHidden)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
         self.starInfoView.hidden = (exposure == nil);
         if (!self.starInfoView.isHidden){
             [self.starInfoView setExposure:exposure starPosition:*p];
@@ -339,7 +339,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
     else {
         selectionRect = self.selectionRect;
-        selectionRect.origin.y = currentExposure.actualSize.height - selectionRect.origin.y - selectionRect.size.height;
+        selectionRect.origin.y = currentExposure.params.frame.height - selectionRect.origin.y - selectionRect.size.height;
         workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
     }
     
@@ -359,14 +359,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                     NSPoint p = [[stars lastObject] pointValue];
                     if (workingExposure != currentExposure){
                         p.x += selectionRect.origin.x;
-                        p.y += selectionRect.origin.y;
                     }
-                    self.starLocation = NSMakePoint(p.x, currentExposure.actualSize.height - p.y);
+                    self.starLocation = NSMakePoint(p.x, currentExposure.params.frame.height - selectionRect.origin.y - p.y);
                     setStarInfoHidden(currentExposure,&p);
                 }
                 else {
                     self.starLocation = kCASImageViewInvalidStarLocation;
-                    setStarInfoHidden(nil,nil);
+                    setStarInfoHidden(currentExposure,&kCASImageViewInvalidStarLocation);
                 }
             }
         });
