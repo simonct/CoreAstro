@@ -45,7 +45,7 @@
 
 - (void)flush:(void (^)(NSError*))block;
 
-- (void)exposeWithParams:(CASExposeParams)params block:(void (^)(NSError*,CASCCDExposure*exposure))block;
+- (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
 @end
 
