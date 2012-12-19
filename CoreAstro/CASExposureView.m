@@ -299,9 +299,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)updateStatistics
 {
-    const CGRect frame = self.selectionRect;
-    self.exposureInfoView.subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
-    [self layoutHuds];
+    if (self.currentExposure){
+        const CGRect frame = self.selectionRect;
+        CASRect subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
+        subframe.origin.y = self.currentExposure.actualSize.height - subframe.origin.y - subframe.size.height;
+        self.exposureInfoView.subframe = subframe;
+        [self layoutHuds];
+    }
 }
 
 - (void)_updateStarProfileImpl
