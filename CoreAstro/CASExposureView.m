@@ -304,7 +304,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self layoutHuds];
 }
 
-- (void)updateStarDetector
+- (void)_updateStarDetectorImpl
 {
     void (^setStarInfoHidden)(CASCCDExposure*,NSPoint*) = ^(CASCCDExposure* exposure,NSPoint* p){
         self.starInfoView.hidden = (exposure == nil);
@@ -360,6 +360,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             }
         });
     });
+}
+
+- (void)updateStarDetector
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_updateStarDetectorImpl) object:nil];
+    [self performSelector:@selector(_updateStarDetectorImpl) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)displayExposure
