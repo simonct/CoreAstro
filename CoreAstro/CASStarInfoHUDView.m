@@ -19,10 +19,14 @@
 
 - (void)setExposure:(CASCCDExposure*)exposure starPosition:(NSPoint)position
 {
-    self.coordsLabel.stringValue = [NSString stringWithFormat:@"%.1fx%.1f",position.x,position.y];
-    
-    if (exposure){
+    if (!exposure){
+        self.graphView.samples = nil;
+        self.coordsLabel.stringValue = @"";
+    }
+    else{
         
+        self.coordsLabel.stringValue = [NSString stringWithFormat:@"%.1fx%.1f",position.x,position.y];
+
         const NSInteger width = 100;
         const NSInteger height = 10;
         const NSInteger xpos = roundf(position.x);
@@ -32,7 +36,7 @@
         CASCCDExposure* subframe = [exposure subframeWithRect:CASRectMake(CASPointMake(xpos - width/2, ypos - height/2), CASSizeMake(width, height))];
         if (subframe){
             
-            // grab the line of pixels closest to the y posn of the star (round)
+            // grab the line of pixels closest to the y posn of the star
             float* pixels = (float*)[[subframe floatPixels] bytes];
             NSMutableData* pixelData = [NSMutableData dataWithLength:width * sizeof(float)];
             if (pixelData){
