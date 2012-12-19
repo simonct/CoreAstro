@@ -215,7 +215,7 @@ enum {
     
     double xpos = -1, ypos = -1;
     
-    const CASSize size = exposure.actualSize;
+    const CASSize size = exposure.params.size; // note, not actual size
     const NSInteger linesize = size.width;
     
     float A, B1, B2, C1, C2, C3, D1, D2, D3;

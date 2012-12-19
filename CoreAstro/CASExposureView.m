@@ -332,6 +332,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         return;
     }
     
+    const CGFloat binnedHeight = currentExposure.params.frame.height/currentExposure.params.bin.height;
+
     CGRect selectionRect;
     CASCCDExposure* workingExposure;
     if (!self.showSelection){
@@ -339,7 +341,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
     else {
         selectionRect = self.selectionRect;
-        selectionRect.origin.y = currentExposure.params.frame.height - selectionRect.origin.y - selectionRect.size.height;
+        selectionRect.origin.y = binnedHeight - selectionRect.origin.y - selectionRect.size.height;
         workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
     }
     
@@ -360,7 +362,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                     if (workingExposure != currentExposure){
                         p.x += selectionRect.origin.x;
                     }
-                    self.starLocation = NSMakePoint(p.x, currentExposure.params.frame.height - selectionRect.origin.y - p.y);
+                    self.starLocation = NSMakePoint(p.x,binnedHeight - selectionRect.origin.y - p.y);
                     setStarInfoHidden(currentExposure,&p);
                 }
                 else {
@@ -401,7 +403,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         else {
             
-            CGImageRef CGImage = image.CGImage;
+            CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor
             
             const CASExposeParams params = _currentExposure.params;
             const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
