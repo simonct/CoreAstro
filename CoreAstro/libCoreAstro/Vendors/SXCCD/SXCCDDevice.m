@@ -433,14 +433,15 @@
         
         if (error){
             exposureCompleted(error,nil);
+            flushComplete = nil;
         }
         else if (flushCount-- > 0) {
             [self flush:flushComplete];
         }
         else {
             exposePixels();
+            flushComplete = nil;
         }
-        flushComplete = nil;
     };
     
     void (^ openShutter)() = ^(){
