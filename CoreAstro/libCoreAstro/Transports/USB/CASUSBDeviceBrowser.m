@@ -83,6 +83,9 @@ static void DeviceAdded(void *refCon, io_iterator_t iterator) {
             if (!device){
                 IOObjectRelease((io_registry_entry_t)deviceIntf);
             }
+            if (ioPlugin){
+                (*ioPlugin)->Release(ioPlugin);
+            }
         }
 		IOObjectRelease(usbDeviceRef);
     }
