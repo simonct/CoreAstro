@@ -278,10 +278,27 @@
 - (IBAction)addProject:(id)sender
 {
     CASCCDExposureLibraryProject* project = [[CASCCDExposureLibraryProject alloc] init];
-    project.name = @"New Project"; // current date
+    
+    static NSDateFormatter* formatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateStyle:NSDateFormatterMediumStyle];
+        [formatter setTimeStyle:NSDateFormatterShortStyle];
+    });
+    project.name = [NSString stringWithFormat:@"Project %@",[formatter stringFromDate:[NSDate date]]];
+    
     [[CASCCDExposureLibrary sharedLibrary] addProjects:[NSArray arrayWithObject:project]];
-    [[self.exposuresTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+    
+    NSTreeNode* node = [NSTreeNode treeNodeWithRepresentedObject:project];
+    [[self.exposuresTreeNode mutableChildNodes] addObject:node];
     [self reloadData];
+    
+    const NSInteger row = [self rowForItem:[[self.exposuresTreeNode childNodes] lastObject]];
+    if (row != -1){
+        [self editColumn:0 row:row withEvent:nil select:YES];
+        [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+    }
 }
 
 - (IBAction)removeProject:(id)sender
