@@ -578,7 +578,7 @@
         const NSInteger scaling = (self.cameraController.exposureUnits == 0) ? 1 : 1000;
         
         self.imageView.showProgress = YES;
-        self.imageView.progressInterval = self.cameraController.exposure;
+        self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
         if (self.cameraController.exposure){
             self.imageView.progress = self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
         }
@@ -688,7 +688,7 @@
     
     if (self.cameraController.exposureUnits == 0 && self.cameraController.exposure > 1){
         self.imageView.showProgress = YES;
-        self.imageView.progressInterval = self.cameraController.exposure;
+        self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
     }
     else {
         self.imageView.showProgress = NO;

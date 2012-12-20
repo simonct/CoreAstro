@@ -47,6 +47,22 @@
                 <cocoa key="scriptingTemperature"/>
             </property>
             
+            <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
+                <cocoa key="scriptingSequenceCount"/>
+            </property>
+
+            <property name="sequence index" code="SeqI" type="number" access="r" description="The index of the exposure in the current sequence">
+                <cocoa key="scriptingSequenceIndex"/>
+            </property>
+
+            <property name="sequence interval" code="Seqi" type="number" description="The interval between exposures in the current sequence">
+                <cocoa key="scriptingSequenceInterval"/>
+            </property>
+
+            <property name="capturing" code="Busy" type="boolean" access="r" description="True if the camera is currently capturing">
+                <cocoa key="scriptingIsCapturing"/>
+            </property>
+
             <responds-to name="capture">
                 <cocoa method="scriptingCapture:"/>
             </responds-to>
@@ -123,10 +139,15 @@
                 <type type="camera" list="no"/>
             </direct-parameter> 
 
-            <parameter name="milliseconds" code="Ms  " optional="no" description="exposure time in ms.">
+            <parameter name="milliseconds" code="Ms  " optional="yes" description="exposure time in ms.">
                 <cocoa key="milliseconds"/>
                 <type type="integer" list="no"/>
             </parameter>  
+
+            <parameter name="seconds" code="Secs" optional="yes" description="exposure time in seconds">
+                <cocoa key="seconds"/>
+                <type type="integer" list="no"/>
+            </parameter>
 
             <parameter name="bin" code="Bin " optional="yes" description="exposure binning.">
                 <cocoa key="bin"/>

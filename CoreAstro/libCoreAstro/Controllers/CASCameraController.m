@@ -297,4 +297,47 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     self.camera.targetTemperature = [temperature floatValue];
 }
 
+- (NSNumber*)scriptingSequenceCount
+{
+    return [NSNumber numberWithInteger:self.captureCount];
+}
+
+- (void)setScriptingSequenceCount:(NSNumber*)count
+{
+    if (self.capturing){
+        [[NSScriptCommand currentCommand] setScriptErrorNumber:-50];
+        [[NSScriptCommand currentCommand] setScriptErrorString:NSLocalizedString(@"You can't set the sequence count while the camera is busy", @"Scripting error message")];
+        return;
+    }
+    self.captureCount = MIN(1000,MAX(0,[count integerValue]));
+}
+
+- (NSNumber*)scriptingSequenceIndex
+{
+    if (!self.capturing){
+        return [NSNumber numberWithInteger:0];
+    }
+    return [NSNumber numberWithInteger:self.currentCaptureIndex + 1];
+}
+
+- (NSNumber*)scriptingIsCapturing
+{
+    return [NSNumber numberWithBool:self.capturing];
+}
+
+- (NSNumber*)scriptingSequenceInterval
+{
+    return [NSNumber numberWithInteger:self.interval];
+}
+
+- (void)setScriptingSequenceInterval:(NSNumber*)interval
+{
+    if (self.capturing){
+        [[NSScriptCommand currentCommand] setScriptErrorNumber:-50];
+        [[NSScriptCommand currentCommand] setScriptErrorString:NSLocalizedString(@"You can't set the sequence interval while the camera is busy", @"Scripting error message")];
+        return;
+    }
+    self.interval = MIN(1000,MAX(0,[interval integerValue]));
+}
+
 @end
