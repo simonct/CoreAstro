@@ -73,6 +73,14 @@
     [aCoder encodeConditionalObject:self.children forKey:@"children"];
 }
 
+- (void)setName:(NSString *)name
+{
+    if (name != _name){
+        _name = [name copy];
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
+}
+
 - (void)addExposures:(NSSet *)objects
 {
     if (![objects count]){

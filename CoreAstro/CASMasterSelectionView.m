@@ -19,6 +19,7 @@
     NSMutableArray* nodes;
     BOOL delegateRespondsToCameraWasSelected:1;
     BOOL delegateRespondsToLibraryWasSelected:1;
+    NSTreeNode* _editingNode;
 }
 
 - (void)completeSetup
@@ -241,6 +242,35 @@
             }
         }];
     }
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+    NSTreeNode* node = item;
+    if (node.parentNode == self.exposuresTreeNode && node != self.exposuresTreeNode.childNodes[0]){
+        _editingNode = node;
+        return YES;
+    }
+    return NO;
+}
+
+- (void) textDidEndEditing: (NSNotification *) notification
+{
+    const NSInteger reason = [[[notification userInfo] objectForKey:@"NSTextMovement"] integerValue];
+    switch (reason) {
+        case NSReturnTextMovement:
+        case NSOtherTextMovement:{
+            NSTextView* field = [notification object];
+            CASCCDExposureLibraryProject* project = [_editingNode representedObject];
+            NSString* name = [field string];
+            if ([name length]){
+                project.name = name;
+            }
+            [self abortEditing];
+        }
+            break;
+    }
+    _editingNode = nil;
 }
 
 #pragma mark - Actions

@@ -169,6 +169,7 @@
 													</object>
 													<int key="NSResizingMask">3</int>
 													<bool key="NSIsResizeable">YES</bool>
+													<bool key="NSIsEditable">YES</bool>
 													<reference key="NSTableView" ref="155577903"/>
 												</object>
 											</array>
@@ -906,6 +907,7 @@
 													<string key="NSFrame">{{14, 38}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
+													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="33898123">
@@ -6097,13 +6099,11 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="captureButton">NSButton</string>
 						<string key="captureMenu">NSPopUpButton</string>
 						<string key="continuousCheckbox">NSButton</string>
-						<string key="darksController">NSArrayController</string>
 						<string key="detailContainerView">NSView</string>
 						<string key="devicesTableView">CASMasterSelectionView</string>
 						<string key="devicesToggleControl">NSSegmentedControl</string>
 						<string key="exposureField">NSTextField</string>
 						<string key="exposuresStatusText">NSTextField</string>
-						<string key="flatsController">NSArrayController</string>
 						<string key="guidersArrayController">NSArrayController</string>
 						<string key="imageBannerView">CASImageBannerView</string>
 						<string key="imageView">CASExposureView</string>
@@ -6139,10 +6139,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="name">continuousCheckbox</string>
 							<string key="candidateClassName">NSButton</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="darksController">
-							<string key="name">darksController</string>
-							<string key="candidateClassName">NSArrayController</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="detailContainerView">
 							<string key="name">detailContainerView</string>
 							<string key="candidateClassName">NSView</string>
@@ -6162,10 +6158,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="IBToOneOutletInfo" key="exposuresStatusText">
 							<string key="name">exposuresStatusText</string>
 							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="flatsController">
-							<string key="name">flatsController</string>
-							<string key="candidateClassName">NSArrayController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="guidersArrayController">
 							<string key="name">guidersArrayController</string>
