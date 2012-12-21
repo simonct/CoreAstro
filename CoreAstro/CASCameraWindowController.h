@@ -57,7 +57,5 @@
 @property (nonatomic,weak) IBOutlet NSTextField *sensorDepthField;
 @property (nonatomic,weak) IBOutlet NSTextField *sensorPixelsField;
 @property (nonatomic,weak) IBOutlet NSTextField *subframeDisplay;
-@property (nonatomic,strong) IBOutlet NSArrayController *camerasArrayController;
-@property (nonatomic,strong) IBOutlet NSArrayController *guidersArrayController;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 @end
