@@ -30,10 +30,11 @@
 @protocol CASImageProcessor <NSObject>
 @optional
 
-- (void)equalise:(CASCCDExposure*)exposure;
-- (void)unsharpMask:(CASCCDExposure*)exposure;
-- (void)medianFilter:(CASCCDExposure*)exposure;
-- (void)invert:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)equalise:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)unsharpMask:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)medianFilter:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)invert:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)normalise:(CASCCDExposure*)exposure;
 
 - (void)subtractDark:(CASCCDExposure*)dark from:(CASCCDExposure*)exposure;
 - (void)divideFlat:(CASCCDExposure*)flat into:(CASCCDExposure*)exposure;

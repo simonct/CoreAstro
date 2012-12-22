@@ -95,6 +95,7 @@
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
+@property (nonatomic,weak) IBOutlet NSPopUpButton *guiderMenu;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
@@ -158,6 +159,8 @@
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
+    
+    [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     
     self.exposuresController = [[CASExposuresController alloc] init];
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
@@ -327,12 +330,21 @@
                 }
             }
         }
+        else if (object == [NSApp delegate]){
+            if ([keyPath isEqualToString:@"guiderControllers"]){
+                [self updateGuiderMenu];
+                // guider came or went
+//                NSLog(@"%@: %@ -> %@",object,keyPath,[object valueForKeyPath:keyPath]);
+//                NSLog(@"%@: %@",object,change);
+                // add, kind == 2 (NSKeyValueChangeInsertion)
+                // remove, kind == 3 (NSKeyValueChangeRemoval)
+            }
+        }
     }
     else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
-
 
 - (void)configureForCameraController
 {
@@ -618,11 +630,11 @@
     }
     
     if (self.equalise){
-        [self.imageProcessor equalise:exposure];
+        exposure = [self.imageProcessor equalise:exposure];
     }
     
     if (self.invert){
-        [self.imageProcessor invert:exposure];
+        exposure = [self.imageProcessor invert:exposure];
     }
 
     // check image view is actually visible
@@ -635,6 +647,53 @@
 {
     self.selectionControl.selectedSegment = 1;
     [self selection:self.selectionControl]; // yuk
+}
+
+- (void)updateGuiderMenu
+{
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
+    
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"None" action:@selector(guiderMenuAction:) keyEquivalent:@""];
+    [menu addItem:item];
+    
+    NSMenuItem* selectedItem = nil;
+    CASAppDelegate* delegate = [NSApp delegate];
+    if ([delegate.guiderControllers count]){
+        [menu addItem:[NSMenuItem separatorItem]];
+        for (CASGuiderController* guider in delegate.guiderControllers){
+            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:guider.guider.deviceName action:@selector(guiderMenuAction:) keyEquivalent:@""];
+            item.representedObject = guider;
+            [menu addItem:item];
+            if (self.cameraController.guider == guider){
+                selectedItem = item;
+            }
+        }
+    }
+    
+    self.guiderMenu.menu = menu;
+    if (!selectedItem){
+        selectedItem = [[menu itemArray] objectAtIndex:0]; // None item
+    }
+    [self.guiderMenu selectItem:selectedItem];
+    
+    if (self.cameraController.guider && !selectedItem){
+        self.cameraController.guider = nil;
+        // hide guider UI
+    }
+}
+
+- (IBAction)guiderMenuAction:(NSMenuItem*)sender
+{
+    if (!sender.representedObject){
+        self.cameraController.guider = nil;
+        // hide guider UI
+    }
+    else {
+        self.cameraController.guider = sender.representedObject;
+        // show guider UI
+        // show star info
+    }
+    // do we need the separate guiding flag ?
 }
 
 #pragma mark - Actions

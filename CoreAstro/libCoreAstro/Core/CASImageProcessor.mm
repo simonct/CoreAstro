@@ -79,128 +79,166 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return buffer;
 }
 
-- (void)equalise:(CASCCDExposure*)exposure
+- (CASCCDExposure*)_copyExposure:(CASCCDExposure*)exposure // todo; add NSCopying, etc to CASCCDExposure
 {
+    NSMutableData* floatPixels = [[exposure floatPixels] mutableCopy];
+    memcpy([floatPixels mutableBytes], [[exposure floatPixels] bytes], [[exposure floatPixels] length]);
+    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:exposure.params time:[NSDate date]];
+    result.meta = [[NSDictionary alloc] initWithDictionary:exposure.meta copyItems:YES]; // or serialize/deserialize
+    memcpy([floatPixels mutableBytes], [[exposure floatPixels] bytes], [[exposure floatPixels] length]); // necessary, does -mutableCopy do this ?
+    return result;
+}
+
+- (CASCCDExposure*)equalise:(CASCCDExposure*)exposure_
+{
+    __block CASCCDExposure* result = nil;
+
     const NSInteger numberOfBins = 4096;
     
     const NSTimeInterval time = CASTimeBlock(^{
 
-        vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
-        
-        vImage_Error error = kvImageNoError;
-        if (exposure.rgba){
-            error = vImageEqualization_ARGBFFFF(&buffer,&buffer,nil,numberOfBins,0,1,kvImageNoFlags); // docs state that this still works even though the source data is RGBA not ARGB
-            if (error != kvImageNoError){
-                NSLog(@"vImageEqualization_ARGBFFFF: %ld",error);
-            }
+        result = [self _copyExposure:exposure_];
+        if (!result){
+            NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
         }
         else {
-            error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,numberOfBins,0,1,kvImageNoFlags);
-            if (error != kvImageNoError){
-                NSLog(@"vImageEqualization_PlanarF: %ld",error);
+            
+            vImage_Buffer buffer = [self vImageBufferForExposure:result];
+            
+            vImage_Error error = kvImageNoError;
+            if (result.rgba){
+                error = vImageEqualization_ARGBFFFF(&buffer,&buffer,nil,numberOfBins,0,1,kvImageNoFlags); // docs state that this still works even though the source data is RGBA not ARGB
+                if (error != kvImageNoError){
+                    NSLog(@"vImageEqualization_ARGBFFFF: %ld",error);
+                }
+            }
+            else {
+                error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,numberOfBins,0,1,kvImageNoFlags);
+                if (error != kvImageNoError){
+                    NSLog(@"vImageEqualization_PlanarF: %ld",error);
+                }
             }
         }
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    
+    return result;
 }
 
-- (void)unsharpMask:(CASCCDExposure*)exposure
+- (CASCCDExposure*)unsharpMask:(CASCCDExposure*)exposure
 {
     NSLog(@"%@: not implemented",NSStringFromSelector(_cmd));
+    return nil;
 }
 
-- (void)medianFilter:(CASCCDExposure*)exposure
+- (CASCCDExposure*)medianFilter:(CASCCDExposure*)exposure_
 {
     const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
     
-    const CASSize size = [exposure actualSize];
+    const CASSize size = [exposure_ actualSize];
     
     const NSInteger groupCount = [self standardGroupSize];
     const NSInteger rowsPerGroup = (size.height - 2) / groupCount;
 
-    NSData* outputData = [NSMutableData dataWithLength:[exposure.floatPixels length]];
-    cas_pixel_t* outputPixels = (cas_pixel_t*)[outputData bytes];
-    if (!outputPixels){
-        NSLog(@"%@: no working pixels",NSStringFromSelector(_cmd));
-        return;
+    __block CASCCDExposure* result = [self _copyExposure:exposure_];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
-
-    cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
-
-    dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+    else{
         
-        // todo: AVX
-        const NSInteger startRow = 1 + rowsPerGroup * groupIndex;
-        const NSInteger rowsInThisGroup = (groupIndex == groupCount - 1) ? rowsPerGroup + (size.height - 2) % rowsPerGroup : rowsPerGroup;
-        for (NSInteger y = startRow; y < startRow + rowsInThisGroup; ++y){
+        cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure_.floatPixels bytes];
+        cas_pixel_t* outputPixels = (cas_pixel_t*)[result.floatPixels bytes];
+
+        dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
             
-            for (NSInteger x = 1; x < size.width - 1; ++x){
+            // todo: AVX
+            const NSInteger startRow = 1 + rowsPerGroup * groupIndex;
+            const NSInteger rowsInThisGroup = (groupIndex == groupCount - 1) ? rowsPerGroup + (size.height - 2) % rowsPerGroup : rowsPerGroup;
+            for (NSInteger y = startRow; y < startRow + rowsInThisGroup; ++y){
                 
-                int i = 0;
-                cas_pixel_t window[9];
-                for (NSInteger y1 = y-1; y1 <= y+1; ++y1){
-                    for (NSInteger x1 = x-1; x1 <= x+1; ++x1){
-                        window[i++] = exposurePixels[x1 + y1 * size.width];
+                for (NSInteger x = 1; x < size.width - 1; ++x){
+                    
+                    int i = 0;
+                    cas_pixel_t window[9];
+                    for (NSInteger y1 = y-1; y1 <= y+1; ++y1){
+                        for (NSInteger x1 = x-1; x1 <= x+1; ++x1){
+                            window[i++] = exposurePixels[x1 + y1 * size.width];
+                        }
                     }
+                    std::nth_element(window, window + 4, window + 9);
+                    outputPixels[x + y * size.width] = window[4];
                 }
-                std::nth_element(window, window + 4, window + 9);
-                outputPixels[x + y * size.width] = window[4];
             }
-        }
-    });
-    
-    exposure.floatPixels = outputData;
+        });
+    }
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
+    
+    return result;
 }
 
-- (void)invert:(CASCCDExposure*)exposure
+- (CASCCDExposure*)invert:(CASCCDExposure*)exposure_
 {
-    const NSTimeInterval time = CASTimeBlock(^{
+    __block CASCCDExposure* result = [self _copyExposure:exposure_];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
         
-        const CASSize size = [exposure actualSize];
-        
-        const NSInteger groupCount = [self standardGroupSize];
-        const NSInteger pixelCount = size.width * size.height;
-        const NSInteger pixelsPerGroup = pixelCount / groupCount;
-        
-        if (exposure.rgba){
+        const NSTimeInterval time = CASTimeBlock(^{
             
-            cas_fpixel_t* exposurePixels = (cas_fpixel_t*)[exposure.floatPixels bytes];
+            const CASSize size = [result actualSize];
             
-            dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+            const NSInteger groupCount = [self standardGroupSize];
+            const NSInteger pixelCount = size.width * size.height;
+            const NSInteger pixelsPerGroup = pixelCount / groupCount;
+            
+            if (result.rgba){
                 
-                // todo: AVX
-                const NSInteger offset = pixelsPerGroup * groupIndex;
-                const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
-                for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-                    cas_fpixel_t pixel = exposurePixels[i];
-                    pixel.r = 1.0 - pixel.r;
-                    pixel.g = 1.0 - pixel.g;
-                    pixel.b = 1.0 - pixel.b;
-                    pixel.a = 1.0 - pixel.a;
-                    exposurePixels[i] = pixel;
-                }
-            });
-        }
-        else {
-            cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
-            
-            dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+                cas_fpixel_t* exposurePixels = (cas_fpixel_t*)[result.floatPixels bytes];
                 
-                // todo: AVX
-                const NSInteger offset = pixelsPerGroup * groupIndex;
-                const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
-                for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-                    const float pixel = exposurePixels[i];
-                    exposurePixels[i] = 1.0 - pixel;
-                }
-            });
-        }
-    });
+                dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+                    
+                    // todo: AVX
+                    const NSInteger offset = pixelsPerGroup * groupIndex;
+                    const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
+                    for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
+                        cas_fpixel_t pixel = exposurePixels[i];
+                        pixel.r = 1.0 - pixel.r;
+                        pixel.g = 1.0 - pixel.g;
+                        pixel.b = 1.0 - pixel.b;
+                        pixel.a = 1.0 - pixel.a;
+                        exposurePixels[i] = pixel;
+                    }
+                });
+            }
+            else {
+                cas_pixel_t* exposurePixels = (cas_pixel_t*)[result.floatPixels bytes];
+                
+                dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
+                    
+                    // todo: AVX
+                    const NSInteger offset = pixelsPerGroup * groupIndex;
+                    const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
+                    for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
+                        const float pixel = exposurePixels[i];
+                        exposurePixels[i] = 1.0 - pixel;
+                    }
+                });
+            }
+        });
+
+        NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    }
     
-    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    return result;
+}
+
+- (CASCCDExposure*)normalise:(CASCCDExposure*)exposure
+{
+    NSLog(@"%@: not implemented",NSStringFromSelector(_cmd));
+    return nil;
 }
 
 // IC = (IR - IB)

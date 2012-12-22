@@ -555,8 +555,7 @@ typedef struct {
 
 - (CASCCDExposure*)processGuideFrame:(CASCCDExposure*)exposure error:(NSError**)errorPtr {
     
-    // median filter (take a copy ?)
-    [self.imageProcessor medianFilter:exposure];
+    exposure = [self.imageProcessor medianFilter:exposure];
     
     const NSInteger result = [self updateStarLocation:exposure];
     if (result != STAR_OK){
