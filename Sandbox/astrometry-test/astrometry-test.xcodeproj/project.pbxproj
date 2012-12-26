@@ -1102,6 +1102,7 @@
 		F4A386DB168887FF00E77631 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -1112,7 +1113,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 					"\"$(SRCROOT)/astrometry-test/cairo\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1121,6 +1122,7 @@
 		F4A386DC168887FF00E77631 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -1131,7 +1133,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 					"\"$(SRCROOT)/astrometry-test/cairo\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
