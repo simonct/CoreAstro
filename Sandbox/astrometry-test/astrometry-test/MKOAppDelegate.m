@@ -99,8 +99,11 @@
     
     if (note.object == _taskOutputHandle){
         
-        [self handleTaskOutputData:[[note userInfo] objectForKey:NSFileHandleNotificationDataItem]];
-        [_taskOutputHandle readInBackgroundAndNotifyForModes:@[NSRunLoopCommonModes]];
+        NSData* data = [[note userInfo] objectForKey:NSFileHandleNotificationDataItem];
+        if ([data length]){
+            [self handleTaskOutputData:data];
+            [_taskOutputHandle readInBackgroundAndNotifyForModes:@[NSRunLoopCommonModes]];
+        }
     }
 }
 
@@ -290,6 +293,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         return;
     }
 
+    self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
+
     self.solveButton.enabled = NO;
     self.imageView.alphaValue = 0.5;
     self.spinner.hidden = NO;
@@ -329,55 +334,58 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
                 // allow to switch between the detected object images, etc ?
                 
-                // show the solved image
-                NSString* name = [[self.imageView.imageURL.path lastPathComponent] stringByDeletingPathExtension];
-                NSString* path = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
-                self.imageView.imageURL = [NSURL fileURLWithPath:path];
-                
-                // get solution data
-                self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
-                if (!self.solverTask){
-                    [self presentAlertWithMessage:@"Can't find the embedded wcsinfo tool"];
-                }
-                else {
+                // nasty hack to avoid as yet undiagnosed race between solve-field and wcsinfo resulting in empty solution results
+                double delayInSeconds = 0.5;
+                dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     
-                    path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
-                    [self.solverTask setArguments:@[path]];
+                    // show the solved image
+                    NSString* name = [[self.imageView.imageURL.path lastPathComponent] stringByDeletingPathExtension];
+                    NSString* path = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
+                    self.imageView.imageURL = [NSURL fileURLWithPath:path];
                     
-                    [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                    // get solution data
+                    self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
+                    if (!self.solverTask){
+                        [self presentAlertWithMessage:@"Can't find the embedded wcsinfo tool"];
+                    }
+                    else {
                         
-                        if (terminationStatus){
-                            [self presentAlertWithMessage:@"Failed to get solution info"];
-                        }
-                        else {
-
-//                            NSLog(@"self.solverTask.taskOutput: %@",self.solverTask.taskOutput);
+                        path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
+                        [self.solverTask setArguments:@[path]];
+                        
+                        [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
                             
-                            NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-                            if (![output count]){
-                                NSLog(@"No output from wcsinfo");
-                                self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
+                            if (terminationStatus){
+                                [self presentAlertWithMessage:@"Failed to get solution info"];
                             }
-                            else{
-
-                                self.solutionRALabel.stringValue = [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
-                                                                    [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
-                                                                    [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
-                                                                    [[self numberFromInfo:output withKey:@"ra_center_s"] doubleValue]];
-                                
-                                self.solutionDecLabel.stringValue = [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
-                                                                     [[self numberFromInfo:output withKey:@"dec_center_d"] doubleValue],
-                                                                     [[self numberFromInfo:output withKey:@"dec_center_m"] doubleValue],
-                                                                     [[self numberFromInfo:output withKey:@"dec_center_s"] doubleValue]];
-                                
-                                self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
-                                                                       [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
+                            else {
+                                                                
+                                NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                                if (![output count]){
+                                    NSLog(@"No output from wcsinfo");
+                                }
+                                else{
+                                    
+                                    self.solutionRALabel.stringValue = [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
+                                                                        [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
+                                                                        [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
+                                                                        [[self numberFromInfo:output withKey:@"ra_center_s"] doubleValue]];
+                                    
+                                    self.solutionDecLabel.stringValue = [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
+                                                                         [[self numberFromInfo:output withKey:@"dec_center_d"] doubleValue],
+                                                                         [[self numberFromInfo:output withKey:@"dec_center_m"] doubleValue],
+                                                                         [[self numberFromInfo:output withKey:@"dec_center_s"] doubleValue]];
+                                    
+                                    self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
+                                                                           [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
+                                }
                             }
-                        }
-                        
-                        self.solverTask = nil;
-                    }];
-                }
+                            
+                            self.solverTask = nil;
+                        }];
+                    }
+                });
             }
         }];
     }
