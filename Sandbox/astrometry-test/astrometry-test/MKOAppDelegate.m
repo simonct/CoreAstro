@@ -213,15 +213,23 @@
 
 @implementation MKOAppDelegate
 
+static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
+
 - (void)awakeFromNib
 {
     self.spinner.hidden = YES;
     self.spinner.usesThreadedAnimation = YES;
+    
+    if (self.indexDirectoryURL){
+        if (![[NSFileManager defaultManager] fileExistsAtPath:[self.indexDirectoryURL path] ]){
+            self.indexDirectoryURL = nil;
+        }
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-//    [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -229,7 +237,18 @@
     if (self.solverTask){
         [self.solverTask terminate];
     }
-//    [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+}
+
+- (NSURL*)indexDirectoryURL
+{
+    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:kCASAstrometryIndexDirectoryURLKey];
+    return s ? [NSURL fileURLWithPath:s] : nil;
+}
+
+- (void)setIndexDirectoryURL:(NSURL*)url
+{
+    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
 }
 
 - (NSString*)cacheDirectory
@@ -246,61 +265,28 @@
 
 - (NSNumber*)numberFromInfo:(NSArray*)values withKey:(NSString*)key
 {
-    __block NSNumber* result = nil;
-    [values enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj hasPrefix:key]){
-            NSScanner* scanner = [NSScanner scannerWithString:obj];
+    for (NSString* string in values){
+        if ([string hasPrefix:key]){
+            NSScanner* scanner = [NSScanner scannerWithString:string];
             NSString* ignored;
             [scanner scanString:key intoString:&ignored];
             double d;
             if ([scanner scanDouble:&d]){
-                result = [NSNumber numberWithDouble:d];
-                *stop = YES;
+                return [NSNumber numberWithDouble:d];
             }
         }
-    }];
-    return result;
+    }
+    return nil;
 }
 
 - (IBAction)solve:(id)sender
 {
-    {
-        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
-        if (!self.solverTask){
-            [self presentAlertWithMessage:@"Can't find the embedded wcsinfo tool"];
-        }
-        else {
-            
-            [self.solverTask setArguments:@[@"/var/folders/5y/ffhlwmqd08s7vxt39t5mrh2h0000gn/T/com.makotechnology.astrometry-test/m42.wcs"]];
-            
-            [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
-                
-                if (terminationStatus){
-                    [self presentAlertWithMessage:@"Failed to get solution info"];
-                }
-                else {
-                    
-                    NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-                    NSLog(@"RA %02.0f:%02.0f:%02.2f",
-                          [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
-                          [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
-                          [[self numberFromInfo:output withKey:@"ra_center_s"] doubleValue]);
-                    NSLog(@"Dec %@:%@:%@",
-                          [self numberFromInfo:output withKey:@"dec_center_d"],
-                          [self numberFromInfo:output withKey:@"dec_center_m"],
-                          [self numberFromInfo:output withKey:@"dec_center_s"]);
-                    NSLog(@"Angle %@",
-                          [self numberFromInfo:output withKey:@"orientation"]);
-                    
-                }
-                
-                self.solverTask = nil;
-            }];
-        }
-    }
-    return;
-    
     if (!self.imageView.image || self.solverTask){
+        return;
+    }
+    
+    if (!self.indexDirectoryURL){
+        [self presentAlertWithMessage:@"You need to select the location of the astrometry.net indexes before solving"];
         return;
     }
 
@@ -315,10 +301,15 @@
     }
     else {
         
-        [self.solverTask setArguments:@[self.imageView.imageURL.path,@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory]];
-        
-        // update config file with indexes
-        
+        // update the config with the index location
+        NSMutableString* config = [NSMutableString string];
+        [config appendFormat:@"add_path %@\n",[self.indexDirectoryURL path]];
+        [config appendString:@"autoindex\n"];
+        NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
+        [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
+        [self.solverTask setArguments:@[self.imageView.imageURL.path,@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
+                
         [self.solverTask launchWithOutputBlock:^(NSString* string) {
             
             [self.outputLogTextView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:string]];
@@ -359,10 +350,29 @@
                             [self presentAlertWithMessage:@"Failed to get solution info"];
                         }
                         else {
+
+//                            NSLog(@"self.solverTask.taskOutput: %@",self.solverTask.taskOutput);
                             
-//                            NSLog(@"taskOutput %@",[self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]);
-                            
-                            NSLog(@"%@",[self numberFromInfo:[self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] withKey:@"ra_center_h"]);
+                            NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                            if (![output count]){
+                                NSLog(@"No output from wcsinfo");
+                                self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
+                            }
+                            else{
+
+                                self.solutionRALabel.stringValue = [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
+                                                                    [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
+                                                                    [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
+                                                                    [[self numberFromInfo:output withKey:@"ra_center_s"] doubleValue]];
+                                
+                                self.solutionDecLabel.stringValue = [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
+                                                                     [[self numberFromInfo:output withKey:@"dec_center_d"] doubleValue],
+                                                                     [[self numberFromInfo:output withKey:@"dec_center_m"] doubleValue],
+                                                                     [[self numberFromInfo:output withKey:@"dec_center_s"] doubleValue]];
+                                
+                                self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
+                                                                       [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
+                            }
                         }
                         
                         self.solverTask = nil;

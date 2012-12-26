@@ -18,6 +18,9 @@
 @property (unsafe_unretained) IBOutlet NSButton *solveButton;
 @property (unsafe_unretained) IBOutlet NSPanel *outputLogPanel;
 @property (unsafe_unretained) IBOutlet NSTextView *outputLogTextView;
+@property (unsafe_unretained) IBOutlet NSTextField *solutionRALabel;
+@property (unsafe_unretained) IBOutlet NSTextField *solutionDecLabel;
+@property (unsafe_unretained) IBOutlet NSTextField *solutionAngleLabel;
 
 - (IBAction)solve:(id)sender;
 
