@@ -102,6 +102,8 @@
 @property (nonatomic,readonly) CASCCDExposureLibrary* library;
 @property (nonatomic,strong) CASExposuresController *libraryExposuresController;
 @property (nonatomic,strong) CASExposuresController *exposuresController;
+@property (nonatomic,weak) IBOutlet NSView *guideControlsContainer;
+@property (nonatomic,assign) NSInteger guidePulseDuration;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -198,7 +200,7 @@
         [self.detailContainerView.superview removeConstraints:[constraints allObjects]];
     }
     
-    // add a customisable one
+    // add a customisable constraint so that we can show/hide the master selection view
     id detailContainerView1 = self.detailContainerView;
     NSDictionary* viewNames = NSDictionaryOfVariableBindings(detailContainerView1);
     self.detailLeadingConstraint = [[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[detailContainerView1]-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:viewNames] objectAtIndex:0];
@@ -217,6 +219,10 @@
     // listen for master selection changes
     self.devicesTableView.masterViewDelegate = (id)self;
     self.devicesTableView.camerasContainer = [NSApp delegate];
+    
+    // set up the guider controls
+    self.guidePulseDuration = 250;
+    self.guideControlsContainer.hidden = YES;
 }
 
 - (void)hideWindow:sender
@@ -686,14 +692,13 @@
 {
     if (!sender.representedObject){
         self.cameraController.guider = nil;
-        // hide guider UI
+        self.guideControlsContainer.hidden = YES;
     }
     else {
         self.cameraController.guider = sender.representedObject;
-        // show guider UI
-        // show star info
+        self.guideControlsContainer.hidden = NO;
+        self.imageView.showStarProfile = YES;
     }
-    // do we need the separate guiding flag ?
 }
 
 #pragma mark - Actions
@@ -1105,6 +1110,28 @@
 {
     self.colourAdjustments.allAdjust = sender.floatValue;
     [self displayExposure:_currentExposure];
+}
+
+// todo; implement click and hold behaviour for pulse buttons
+- (IBAction)pulseNorth:(id)sender
+{
+    [self.cameraController.guider pulse:kCASGuiderDirection_DecPlus duration:self.guidePulseDuration block:nil];
+}
+
+- (IBAction)pulseSouth:(id)sender
+{
+    [self.cameraController.guider pulse:kCASGuiderDirection_DecMinus duration:self.guidePulseDuration block:nil];
+}
+
+- (IBAction)pulseEast:(id)sender
+{
+    [self.cameraController.guider pulse:kCASGuiderDirection_RAMinus duration:self.guidePulseDuration block:nil];
+}
+
+- (IBAction)pulseWest:(id)sender
+{
+    [self.cameraController.guider pulse:kCASGuiderDirection_RAPlus duration:self.guidePulseDuration block:nil];
+
 }
 
 #pragma mark Menu validation
