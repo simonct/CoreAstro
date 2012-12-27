@@ -61,6 +61,9 @@
 
 - (void)addProjects:(NSSet *)objects;
 - (void)removeProjects:(NSSet *)objects;
+- (void)moveProject:(CASCCDExposureLibraryProject*)project toIndex:(NSInteger)index;
+
+- (CASCCDExposureLibraryProject*)projecteWithUUID:(NSString*)uuid;
 
 - (void)projectWasUpdated:(CASCCDExposureLibraryProject*)project;
 

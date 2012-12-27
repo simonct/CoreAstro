@@ -8,6 +8,34 @@
 
 #import "CASMasterSelectionView.h"
 #import "CASCCDExposureLibrary.h"
+#import "CASUtilities.h"
+
+@interface CASCCDExposureLibraryProject (CASMasterSelectionView)<NSPasteboardWriting>
+@end
+
+NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid";
+
+@implementation CASCCDExposureLibraryProject (CASMasterSelectionView)
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
+    if (aProtocol == @protocol(NSPasteboardWriting)){
+        return YES;
+    }
+    return [super conformsToProtocol:aProtocol];
+}
+
+- (NSArray *)writableTypesForPasteboard:(NSPasteboard *)pasteboard
+{
+    return @[kCASCCDExposureLibraryProjectUTI];
+}
+
+- (id)pasteboardPropertyListForType:(NSString *)type
+{
+    return self.uuid;
+}
+
+@end
 
 @interface CASMasterSelectionViewNullCamera : NSObject
 @end
@@ -28,7 +56,7 @@
     [self expandItem:[nodes objectAtIndex:0] expandChildren:YES];
     [self expandItem:[nodes objectAtIndex:1] expandChildren:YES];
     
-    [self registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
+    [self registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText,kCASCCDExposureLibraryProjectUTI]];
 
     NSButton* addButton = [[NSButton alloc] init];
     [addButton setTitle:@"+"];
@@ -317,6 +345,18 @@
 
 #pragma mark - Drag & Drop
 
+- (NSArray*)projectsFromDraggingInfo:(id<NSDraggingInfo>)info
+{
+    NSMutableArray* sourceProjects = [NSMutableArray arrayWithCapacity:[[[info draggingPasteboard] pasteboardItems] count]];
+    for (NSPasteboardItem* item in [[info draggingPasteboard] pasteboardItems]){
+        NSString* uuid = [item propertyListForType:kCASCCDExposureLibraryProjectUTI];
+        if ([uuid isKindOfClass:[NSString class]]){
+            [sourceProjects addObject:uuid];
+        }
+    }
+    return sourceProjects;
+}
+
 - (NSArray*)exposuresFromDraggingInfo:(id<NSDraggingInfo>)info
 {
     NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[info draggingPasteboard] pasteboardItems] count]];
@@ -329,18 +369,92 @@
     return sourceExposures;
 }
 
+- (NSTreeNode*)nodeWithProjectUUID:(NSString*)uuid
+{
+    for (NSTreeNode* node in [self.exposuresTreeNode childNodes]){
+        if (node == [self.exposuresTreeNode childNodes][0]){
+            continue;
+        }
+        CASCCDExposureLibraryProject* project = node.representedObject;
+        if ([project.uuid isEqualToString:uuid]){
+            return node;
+        }
+    }
+    return nil;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pasteboard
+{
+    [pasteboard clearContents];
+    
+    __block NSMutableArray* projects = [NSMutableArray arrayWithCapacity:1];
+    [items enumerateObjectsUsingBlock:^(NSTreeNode* node, NSUInteger idx, BOOL *stop) {
+        if (node.parentNode == self.exposuresTreeNode && node != self.exposuresTreeNode.childNodes[0]){
+            [projects addObject:node.representedObject];
+        }
+    }];
+    
+    if ([projects count] && [pasteboard writeObjects:projects]){
+        return YES;
+    }
+    
+    return NO;
+}
+
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id <NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(NSInteger)index;
 {
     NSTreeNode* node = item;
-    if (node.parentNode != self.exposuresTreeNode || node == self.exposuresTreeNode.childNodes[0] || ![self exposuresFromDraggingInfo:info]){
-        return NSDragOperationNone;
+    
+    NSArray* projects = [self projectsFromDraggingInfo:info];
+    if ([projects count]){
+        
+        const NSInteger currentIndex = [[self.exposuresTreeNode childNodes] indexOfObject:[self nodeWithProjectUUID:[projects lastObject]]];
+        if (node != self.exposuresTreeNode || index < 1 || index == currentIndex || index == currentIndex + 1){
+            return NSDragOperationNone;
+        }
+        return NSDragOperationMove;
     }
 
-    return NSDragOperationCopy;
+    NSArray* exposures = [self exposuresFromDraggingInfo:info];
+    if ([exposures count]){
+        if (node.parentNode != self.exposuresTreeNode || node == self.exposuresTreeNode.childNodes[0]){
+            return NSDragOperationNone;
+        }
+        return NSDragOperationLink;
+    }
+    
+    return NSDragOperationNone;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id <NSDraggingInfo>)info item:(id)item childIndex:(NSInteger)index
 {
+    NSArray* projects = [self projectsFromDraggingInfo:info];
+    if ([projects count]){
+        
+        id projectUUID = [projects lastObject];
+        id project = [[CASCCDExposureLibrary sharedLibrary] projecteWithUUID:projectUUID];
+        if (project){
+            
+            if (index > [[self.exposuresTreeNode childNodes] indexOfObject:[self nodeWithProjectUUID:projectUUID]]){
+                index -= 2;
+            }
+            else {
+                index -= 1;
+            }
+            
+            [[CASCCDExposureLibrary sharedLibrary] moveProject:project toIndex:index];
+            
+            [[self.exposuresTreeNode mutableChildNodes] removeObjectsInRange:NSMakeRange(1, [[self.exposuresTreeNode mutableChildNodes] count] - 1)];
+            for (id project in [CASCCDExposureLibrary sharedLibrary].projects){
+                [[self.exposuresTreeNode mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+            }
+            [self reloadData];
+            
+            return YES;
+        }
+        return NO;
+    }
+    
     NSArray* uuids = [self exposuresFromDraggingInfo:info];
     
     __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:[uuids count]];

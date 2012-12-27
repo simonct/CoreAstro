@@ -372,6 +372,44 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     [self writeProjects:_projects];
 }
 
+- (void)moveProject:(CASCCDExposureLibraryProject*)project toIndex:(NSInteger)index
+{
+    if (!project || index < 0 || index > [_projects count]){
+        return;
+    }
+            
+    [_projects removeObject:project];
+    
+    const NSInteger kvIndex = MIN(index,[_projects count]);
+    
+    [self willChange:NSKeyValueChangeInsertion valuesAtIndexes:[NSIndexSet indexSetWithIndex:kvIndex] forKey:@"projects"];
+    if (index > [_projects count]){
+        [_projects addObject:project];
+    }
+    else {
+        [_projects insertObjects:[NSArray arrayWithObject:project] atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    }
+    [self didChange:NSKeyValueChangeInsertion valuesAtIndexes:[NSIndexSet indexSetWithIndex:kvIndex] forKey:@"projects"];
+    
+    [self writeProjects:_projects];
+}
+
+- (CASCCDExposureLibraryProject*)projecteWithUUID:(NSString*)uuid
+{
+    if (!uuid){
+        return nil;
+    }
+    
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"uuid == %@",uuid];
+    
+    NSArray* projects = [self.projects filteredArrayUsingPredicate:predicate];
+    if ([projects count] > 1){
+        NSLog(@"*** Multiple projects with uuid = %@",uuid);
+    }
+    
+    return [projects lastObject];
+}
+
 - (void)projectWasUpdated:(CASCCDExposureLibraryProject*)project
 {
     [self writeProjects:_projects];
