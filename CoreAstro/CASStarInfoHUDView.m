@@ -52,6 +52,7 @@
                     pixels = pixels + width * height/2;
                     memcpy([pixelData mutableBytes], pixels, width * sizeof(float));
                     self.graphView.samples = pixelData;
+                    self.graphView.showLimits = YES;
                 }
             }
         }

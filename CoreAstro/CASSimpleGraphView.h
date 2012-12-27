@@ -11,5 +11,6 @@
 @interface CASSimpleGraphView : NSView
 @property (nonatomic,assign) CGFloat max;
 @property (nonatomic,strong) NSData* samples;
+@property (nonatomic,assign) BOOL showLimits;
 @end
 

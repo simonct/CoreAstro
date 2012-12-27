@@ -50,6 +50,19 @@
         [[NSColor orangeColor] set];
         [path setLineWidth:1.5];
         [path stroke];
+
+        if (self.showLimits){
+            
+            NSBezierPath* limits = [NSBezierPath bezierPath];
+            [limits moveToPoint:NSMakePoint(0, _max)];
+            [limits lineToPoint:NSMakePoint(self.bounds.size.width, _max)];
+            [limits moveToPoint:NSMakePoint(0, self.bounds.size.height)];
+            [limits lineToPoint:NSMakePoint(self.bounds.size.width, self.bounds.size.height)];
+            [limits setLineWidth:1];
+            CGFloat pattern[] = {2,2};
+            [limits setLineDash:pattern count:2 phase:0];
+            [limits stroke];
+        }
     }
 }
 
