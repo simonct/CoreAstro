@@ -29,6 +29,7 @@
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
 
+NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
 
 @interface CASCameraController ()
@@ -92,11 +93,16 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
                 
-                self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + self.interval; // add on guide pulse duration
+                self.continuousNextExposureTime = t;
                 [self performSelector:_cmd withObject:block afterDelay:self.interval inModes:@[NSRunLoopCommonModes]];
             };
             
-            if (self.guiding){
+            if (!self.guider || !self.guideAlgorithm){
+                
+                // not guiding, figure out the next exposure time
+                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval);
+            }
+            else {
                 
                 // update the guide algorithm with this exposure
                 [self.guideAlgorithm updateWithExposure:exp guideCallback:^(NSError *error, CASGuiderDirection direction, NSInteger duration) {
@@ -104,10 +110,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                     // todo; record the guide command against the current exposure
                     
                     if (error){
+                        
                         NSLog(@"Guide error: %@",error); // e.g. lost star, etc
-                        if (block){
-                            block(error,nil);
-                        }
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerGuideErrorNotification
+                                                                            object:self
+                                                                          userInfo:@{@"error":error}];
                     }
                     else{
                         
@@ -116,21 +124,25 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                                                             object:self
                                                                           userInfo:@{@"direction":@(direction),@"@duration":@(duration)}];
                         
+                        const NSTimeInterval nextExposureTime = [NSDate timeIntervalSinceReferenceDate] + MAX(self.interval,ceil((float)duration/1000.0));
+                        
                         if (direction == kCASGuiderDirection_None || duration < 1){
                             
                             // nothing to do, figure out the next exposure time
-                            scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+                            scheduleNextCapture(nextExposureTime);
                         }
                         else{
                             
-                            // need a correction, pulse the guider
+                            // need a correction, pulse the guider (assuming this returns immediately)
                             [self.guider pulse:direction duration:duration block:^(NSError *pulseError) {
                                 
                                 if (pulseError){
+                                    
                                     NSLog(@"Pulse error: %@",pulseError); // pulse failed, device gone away ?
-                                    if (block){
-                                        block(pulseError,nil);
-                                    }
+
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerGuideErrorNotification
+                                                                                        object:self
+                                                                                      userInfo:@{@"pulseError":error}];
                                 }
                                 else {
                                     
@@ -138,17 +150,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                     // have a minimum interval for guide exposures e.g. 10s ?
                                     
                                     // pulse complete, figure out the next exposure time
-                                    scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval); // add on guide pulse duration
+                                    scheduleNextCapture(nextExposureTime);
                                 }
                             }];
                         }
                     }
-                }];
-            }
-            else {
-                
-                // not guiding, figure out the next exposure time
-                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval);
+                }];                
             }
         }
         else {

@@ -52,7 +52,6 @@
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
 
-@property (nonatomic,assign) BOOL guiding;
 @property (nonatomic,strong) CASGuiderController* guider;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
@@ -68,4 +67,5 @@
 
 @end
 
+extern NSString* const kCASCameraControllerGuideErrorNotification;
 extern NSString* const kCASCameraControllerGuideCommandNotification;
