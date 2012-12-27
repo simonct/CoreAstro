@@ -38,7 +38,7 @@
 
 @interface CASIOTransport ()
 @property (nonatomic,readonly) NSOperationQueue* ioq;
-@property (nonatomic,strong) NSMutableOrderedSet* pending;
+@property (nonatomic,strong) NSMutableArray* pending;
 @end
 
 @implementation CASIOTransport
