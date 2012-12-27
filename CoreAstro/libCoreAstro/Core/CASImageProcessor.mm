@@ -81,11 +81,13 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)_copyExposure:(CASCCDExposure*)exposure // todo; add NSCopying, etc to CASCCDExposure
 {
-    NSMutableData* floatPixels = [[exposure floatPixels] mutableCopy];
-    memcpy([floatPixels mutableBytes], [[exposure floatPixels] bytes], [[exposure floatPixels] length]);
-    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:exposure.params time:[NSDate date]];
-    result.meta = [[NSDictionary alloc] initWithDictionary:exposure.meta copyItems:YES]; // or serialize/deserialize
-    memcpy([floatPixels mutableBytes], [[exposure floatPixels] bytes], [[exposure floatPixels] length]); // necessary, does -mutableCopy do this ?
+    CASCCDExposure* result = nil;
+    NSMutableData* floatPixels = [NSMutableData dataWithLength:[exposure.floatPixels length]];
+    if ([floatPixels mutableBytes]){
+        memcpy([floatPixels mutableBytes], [exposure.floatPixels bytes], [exposure.floatPixels length]);
+        result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:exposure.params time:[NSDate date]];
+        result.meta = [[NSDictionary alloc] initWithDictionary:exposure.meta copyItems:YES]; // or serialize/deserialize
+    }
     return result;
 }
 
