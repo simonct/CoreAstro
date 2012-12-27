@@ -298,6 +298,7 @@
     if (row != -1){
         [self editColumn:0 row:row withEvent:nil select:YES];
         [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+        _editingNode = node;
     }
 }
 
