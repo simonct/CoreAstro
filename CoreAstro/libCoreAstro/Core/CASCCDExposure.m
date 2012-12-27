@@ -69,6 +69,20 @@
     return self.io.thumbnail;
 }
 
+- (NSString*) displayName
+{
+    NSString* displayName = [self.meta objectForKey:@"displayName"];
+    if (!displayName){
+        displayName = self.displayDeviceName;
+    }
+    return displayName;
+}
+
+- (void)setDisplayName:(NSString *)displayName
+{
+    [self setMetaObject:displayName forKey:@"displayName"];
+}
+
 - (NSString*) displayType
 {
     switch (self.type) {
@@ -262,7 +276,7 @@
         return nil;
     }
 
-    NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*sizeof(float)];
+    NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*sizeof(float)]; // bin size
     if (!subframePixels){
         return nil;
     }

@@ -134,7 +134,7 @@
     if ([note length]){
         return note;
     }
-    return self.exposure.displayDeviceName;
+    return self.exposure.displayName;
 }
 
 - (NSString *) imageSubtitle
@@ -160,10 +160,14 @@
 @end
 
 @interface CASLibraryBrowserViewController ()
+@property (nonatomic,strong) IBOutlet NSWindow *titleEditingSheet;
+@property (nonatomic,copy) NSString* currentEditingTitle;
 @property (nonatomic,strong) NSArray* exposures;
 @property (nonatomic,strong) NSArray* groups;
 @property (nonatomic,strong) NSMutableDictionary* wrappers;
 @property (nonatomic,copy) NSString* groupKeyPath;
+- (IBAction)editTitleOK:(NSButton*)sender;
+- (IBAction)editTitleCancel:(NSButton*)sender;
 @end
 
 @implementation CASLibraryBrowserViewController {
@@ -316,32 +320,73 @@
             nil];
 }
 
+- (void)_editTitleSheetCompleted:(NSWindow*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    [sender orderOut:nil];
+    
+    if (returnCode == NSOKButton){
+        CASCCDExposure* exposure = (__bridge CASCCDExposure *)(contextInfo);
+        exposure.displayName = self.currentEditingTitle;
+    }
+}
+
+- (IBAction)editTitleOK:(NSButton*)sender
+{
+    [NSApp endSheet:sender.window returnCode:NSOKButton];
+}
+
+- (IBAction)editTitleCancel:(NSButton*)sender
+{
+    [NSApp endSheet:sender.window returnCode:NSCancelButton];
+}
+
 - (void) imageBrowser:(IKImageBrowserView *) aBrowser cellWasDoubleClickedAtIndex:(NSUInteger) index
 {
-    if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposure:)]){
+    IKImageBrowserCell* cell = [aBrowser cellForItemAtIndex:index];
+    if (!cell){
+        return;
+    }
+    
+    // ignore multiple selections for now
+    if ([self.exposuresController.selectedObjects count] > 1){
+        return;
+    }
+    
+    NSPoint point = [aBrowser convertPoint:[[aBrowser.window currentEvent] locationInWindow] fromView:nil];
+    if (NSPointInRect(point, [cell titleFrame])){
         
-        if (self.exposuresController.project.masterBias || self.exposuresController.project.masterFlat){
+        // you can't add subviews to an IKImageBrowserView so use a sheet for now
+        CASCCDExposureWrapper* wrapper = cell.representedItem;
+        self.currentEditingTitle = wrapper.exposure.displayName;
+        [NSApp beginSheet:self.titleEditingSheet modalForWindow:aBrowser.window modalDelegate:self didEndSelector:@selector(_editTitleSheetCompleted:returnCode:contextInfo:) contextInfo:(__bridge void *)(wrapper.exposure)];
+    }
+    else {
+        
+        if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposure:)]){
             
-            const NSTimeInterval t = CASTimeBlock(^{
+            if (self.exposuresController.project.masterBias || self.exposuresController.project.masterFlat){
                 
-                CASCCDReductionProcessor* reduction = [[CASCCDReductionProcessor alloc] init];
-                reduction.bias = self.exposuresController.project.masterBias;
-                reduction.flat = self.exposuresController.project.masterFlat;
-                [reduction processWithExposures:[NSArray arrayWithObject:[self.exposures objectAtIndex:index]] completion:^(NSError *error, CASCCDExposure *final) {
+                const NSTimeInterval t = CASTimeBlock(^{
                     
-                    if (!error){
-                        [self.exposureDelegate focusOnExposure:final];
-                    }
-                }];
-            });
+                    CASCCDReductionProcessor* reduction = [[CASCCDReductionProcessor alloc] init];
+                    reduction.bias = self.exposuresController.project.masterBias;
+                    reduction.flat = self.exposuresController.project.masterFlat;
+                    [reduction processWithExposures:[NSArray arrayWithObject:[self.exposures objectAtIndex:index]] completion:^(NSError *error, CASCCDExposure *final) {
+                        
+                        if (!error){
+                            [self.exposureDelegate focusOnExposure:final];
+                        }
+                    }];
+                });
+                
+                NSLog(@"t=%fs",t);
+            }
+            else {
+                [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
+            }
             
-            NSLog(@"t=%fs",t);
+            // so, how do I get back to the full browser view ?
         }
-        else {
-            [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
-        }
-        
-        // so, how do I get back to the full browser view ?
     }
 }
 

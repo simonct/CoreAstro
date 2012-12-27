@@ -47,6 +47,7 @@
 @property (nonatomic,readonly) NSDate* date;
 @property (nonatomic,readonly) NSInteger exposureMS;
 
+@property (nonatomic,copy) NSString* displayName;
 @property (nonatomic,readonly) NSString* displayDate;
 @property (nonatomic,readonly) NSString* displayExposure;
 @property (nonatomic,readonly) NSString* displayDeviceName;

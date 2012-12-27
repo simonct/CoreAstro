@@ -607,7 +607,7 @@
         return;
     }
     
-    NSString* title = exposure.displayDeviceName;
+    NSString* title = exposure.displayName;
 
     self.imageBannerView.cameraNameField.stringValue = title ? title : @"";
 
@@ -618,14 +618,6 @@
         [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
         [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
     });
-    
-//    if (title){
-//        title = [NSString stringWithFormat:@"%@ %@",title,[NSString stringWithFormat:@"%@ (%@)",[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure]];
-//    }
-//    else {
-//        title = [NSString stringWithFormat:@"%@ %@ (%@)",exposure.displayDeviceName,[exposureFormatter stringFromDate:exposure.date],exposure.displayExposure];
-//    }
-//    self.window.title = title;
     
     // debayer if required
     if (self.imageDebayer.mode != kCASImageDebayerNone){
@@ -1442,7 +1434,7 @@
     
     NSString* name = nil;
     if ([self.exposuresController.selectionIndexes count] == 1){
-        name = ((CASCCDExposure*)[self.exposuresController.selectedObjects objectAtIndex:0]).displayDeviceName;
+        name = ((CASCCDExposure*)[self.exposuresController.selectedObjects objectAtIndex:0]).displayName;
     }
     self.imageBannerView.cameraNameField.stringValue = name ? name : @"";
 }
