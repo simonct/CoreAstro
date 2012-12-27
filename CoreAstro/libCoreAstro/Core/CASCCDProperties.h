@@ -100,6 +100,11 @@ NS_INLINE CASRect CASRectFromCGRect(CGRect r) {
     return rect;
 }
 
+NS_INLINE CGRect CASCGRectFromCASRect(CASRect r) {
+    CGRect rect = {.origin = CGPointMake(r.origin.x, r.origin.y), .size = CGSizeMake(r.size.width, r.size.height)};
+    return rect;
+}
+
 NS_INLINE NSString* NSStringFromCASPoint(CASPoint pt) {
     return [NSString stringWithFormat:@"{%ld,%ld}",pt.x,pt.y];
 }
