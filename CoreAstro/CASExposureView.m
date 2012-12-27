@@ -345,6 +345,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
     }
     
+    // todo; deal with the situation where we have a historical image subframe with and without a selection
+    
     self.starInfoView.showSpinner = YES;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -358,11 +360,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             if (currentExposure && self.currentExposure == currentExposure){
                 
                 if ([stars count]){
+                    
+                    // convert from selection-relative co-ord to whole image co-ord
+                    // (p and selectionRect have 0,0 at the top left of the image)
                     NSPoint p = [[stars lastObject] pointValue];
                     if (workingExposure != currentExposure){
                         p.x += selectionRect.origin.x;
+                        p.y += selectionRect.origin.y;
                     }
-                    self.starLocation = NSMakePoint(p.x,binnedHeight - selectionRect.origin.y - p.y);
+                    
+                    // set the display star location (0,0 in image co-ords is in the bottom left)
+                    self.starLocation = NSMakePoint(p.x,binnedHeight - p.y);
+                    
                     setStarInfoHidden(currentExposure,&p);
                 }
                 else {
