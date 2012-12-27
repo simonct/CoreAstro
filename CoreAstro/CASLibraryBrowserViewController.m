@@ -151,10 +151,11 @@
 
 @end
 
-@interface CASLibraryBrowserGroupInfo
+@interface CASLibraryBrowserGroupInfo : NSObject
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,assign) NSRange range;
 @end
+
 @implementation CASLibraryBrowserGroupInfo
 @end
 
@@ -198,7 +199,7 @@
             [defaultExposuresArray addObject:exp];
         }
         else {
-            NSLog(@"No uuid: %@",exp); // I'm using the uuid as the image browser key - could use the url instead ?
+//            NSLog(@"No uuid for exposure: %@",exp); // I'm using the uuid as the image browser key - could use the url instead ?
         }
     }
     return [defaultExposuresArray copy];
