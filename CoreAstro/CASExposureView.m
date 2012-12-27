@@ -565,7 +565,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.starLayer = nil;
     }
     else {
-        self.starLayer = [self circularRegionLayerWithPosition:self.starLocation radius:15 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
+        // animate the star position ? - makes it easier to spot in large images
+        self.starLayer = [self createStarPositionLayerWithPosition:self.starLocation];
     }
     
     [self layoutHuds];
@@ -777,6 +778,24 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGPathRelease(path);
     
     return reticleLayer;
+}
+
+- (CALayer*)createStarPositionLayerWithPosition:(CGPoint)position
+{
+    const CGFloat radius = 15;
+    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
+    
+    CALayer* circle = [self circularRegionLayerWithPosition:position radius:radius colour:colour];
+    
+    [circle addSublayer:[self rectangularLayerWithPosition:CGPointMake(radius,2*radius) width:2.5 height:radius colour:colour]];
+    [circle addSublayer:[self rectangularLayerWithPosition:CGPointMake(radius,0) width:2.5 height:radius colour:colour]];
+
+    [circle addSublayer:[self rectangularLayerWithPosition:CGPointMake(0,radius) width:radius height:2.5 colour:colour]];
+    [circle addSublayer:[self rectangularLayerWithPosition:CGPointMake(2*radius,radius) width:radius height:2.5 colour:colour]];
+
+    CFBridgingRelease(colour);
+    
+    return circle;
 }
 
 @end
