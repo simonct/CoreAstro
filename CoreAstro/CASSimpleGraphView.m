@@ -24,11 +24,8 @@
     self.max = 1.0;
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)drawSamples:(NSData*)samples
 {
-    [[NSColor clearColor] set];
-    NSRectFill(self.bounds);
- 
     float* pixels = (float*)[self.samples bytes];
     const NSInteger count = [self.samples length]/sizeof(float);
     if (count > 0 && _max != 0){
@@ -50,19 +47,27 @@
         [[NSColor orangeColor] set];
         [path setLineWidth:1.5];
         [path stroke];
+    }
+}
 
-        if (self.showLimits){
-            
-            NSBezierPath* limits = [NSBezierPath bezierPath];
-            [limits moveToPoint:NSMakePoint(0, _max)];
-            [limits lineToPoint:NSMakePoint(self.bounds.size.width, _max)];
-            [limits moveToPoint:NSMakePoint(0, self.bounds.size.height)];
-            [limits lineToPoint:NSMakePoint(self.bounds.size.width, self.bounds.size.height)];
-            [limits setLineWidth:1];
-            CGFloat pattern[] = {2,2};
-            [limits setLineDash:pattern count:2 phase:0];
-            [limits stroke];
-        }
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor clearColor] set];
+    NSRectFill(self.bounds);
+ 
+    [self drawSamples:self.samples];
+
+    if (self.showLimits && _max != 0){
+        
+        NSBezierPath* limits = [NSBezierPath bezierPath];
+        [limits moveToPoint:NSMakePoint(0, _max)];
+        [limits lineToPoint:NSMakePoint(self.bounds.size.width, _max)];
+        [limits moveToPoint:NSMakePoint(0, self.bounds.size.height)];
+        [limits lineToPoint:NSMakePoint(self.bounds.size.width, self.bounds.size.height)];
+        [limits setLineWidth:1];
+        CGFloat pattern[] = {2,2};
+        [limits setLineDash:pattern count:2 phase:0];
+        [limits stroke];
     }
 }
 

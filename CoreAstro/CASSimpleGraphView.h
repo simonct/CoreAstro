@@ -10,7 +10,7 @@
 
 @interface CASSimpleGraphView : NSView
 @property (nonatomic,assign) CGFloat max;
-@property (nonatomic,strong) NSData* samples;
+@property (nonatomic,strong) NSData* samples; // keep history, show older ones with diminishing alpha
 @property (nonatomic,assign) BOOL showLimits;
 @end
 
