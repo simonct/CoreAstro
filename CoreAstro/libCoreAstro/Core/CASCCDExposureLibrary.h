@@ -27,7 +27,7 @@
 
 @interface CASCCDExposureLibraryProject : NSObject
 
-// uuid
+@property (nonatomic,copy,readonly) NSString* uuid;
 
 @property (nonatomic,weak) CASCCDExposureLibraryProject* parent;
 @property (nonatomic,strong) NSMutableArray* children;

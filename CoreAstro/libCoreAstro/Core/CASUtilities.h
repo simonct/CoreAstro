@@ -32,4 +32,5 @@
 #define CAS_EXTERN extern
 #endif
 
+CAS_EXTERN NSString* CASCreateUUID();
 CAS_EXTERN NSTimeInterval CASTimeBlock(void(^)(void));

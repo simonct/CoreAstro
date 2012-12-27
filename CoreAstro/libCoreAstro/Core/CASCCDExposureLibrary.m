@@ -25,19 +25,34 @@
 
 #import "CASCCDExposureLibrary.h"
 #import "CASCCDExposureIO.h"
+#import "CASUtilities.h"
 
 @interface CASCCDExposureLibrary ()
 @end
 
 @interface CASCCDExposureLibraryProject ()<NSCoding>
+@property (nonatomic,copy) NSString* uuid;
 @end
 
 @implementation CASCCDExposureLibraryProject
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.uuid = CASCreateUUID();
+    }
+    return self;
+}
 
 - (id)initWithCoder:(NSCoder *)coder
 {
     self = [self init];
     if (self) {
+        id uuid = [coder decodeObjectForKey:@"uuid"];
+        if (uuid){
+            self.uuid = uuid;
+        }
         self.name = [coder decodeObjectForKey:@"name"];
         self.masterBias = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:[coder decodeObjectForKey:@"masterBias"]];
         self.masterDark = [[CASCCDExposureLibrary sharedLibrary] exposureWithUUID:[coder decodeObjectForKey:@"masterDark"]];
@@ -64,6 +79,7 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    [aCoder encodeObject:self.uuid forKey:@"uuid"];
     [aCoder encodeObject:self.name forKey:@"name"];
     [aCoder encodeObject:self.masterBias.uuid forKey:@"masterBias"];
     [aCoder encodeObject:self.masterDark.uuid forKey:@"masterDark"];

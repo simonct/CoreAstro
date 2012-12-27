@@ -26,6 +26,15 @@
 
 #import "CASUtilities.h"
 
+NSString* CASCreateUUID()
+{
+    NSString* result = nil;
+    CFUUIDRef uuid = CFUUIDCreate(NULL);
+    result = (__bridge NSString *)CFUUIDCreateString(NULL, uuid);
+    CFRelease(uuid);
+    return result;
+}
+
 NSTimeInterval CASTimeBlock(void(^block)(void))
 {
     NSTimeInterval result = 0;
