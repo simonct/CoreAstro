@@ -132,6 +132,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @implementation CASExposureView {
     BOOL _draggingSelection:1;
     BOOL _displayedFirstImage:1;
+    NSSize _draggingSelectionOffset;
     CASTaggedLayer* _dragHandleLayer;
 }
 
@@ -220,6 +221,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _dragHandleLayer = (CASTaggedLayer*)layer;
     }
     _draggingSelection = (layer == self.selectionLayer);
+    if (_draggingSelection){
+        p = [self convertViewPointToImagePoint:p];
+        _draggingSelectionOffset = NSMakeSize(self.selectionLayer.position.x - p.x, self.selectionLayer.position.y - p.y);
+    }
     [super mouseDown:theEvent];
 }
 
@@ -236,6 +241,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         
         NSPoint p = [self convertViewPointToImagePoint:[self convertPoint:[theEvent locationInWindow] fromView:nil]]; // use layer transforms instead ?
         
+        p.x += _draggingSelectionOffset.width;
+        p.y += _draggingSelectionOffset.height;
+
         [self disableAnimations:^{
             
             if (_dragHandleLayer){
