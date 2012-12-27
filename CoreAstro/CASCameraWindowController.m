@@ -35,7 +35,10 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASImageBannerView : NSView
+@property (nonatomic,weak) IBOutlet NSTextField *dateField;
 @property (nonatomic,weak) IBOutlet NSTextField *cameraNameField;
+@property (nonatomic,weak) CASCCDExposure* exposure;
+@property (nonatomic,weak) CASCCDDevice* camera;
 @end
 
 @implementation CASImageBannerView
@@ -44,6 +47,22 @@
 {
     [[NSColor darkGrayColor] set];
     NSRectFill(dirtyRect);
+}
+
+- (void)setExposure:(CASCCDExposure *)exposure
+{
+    _camera = nil;
+    _exposure = exposure;
+    self.cameraNameField.stringValue = exposure.displayName ? exposure.displayName : @"";
+    self.dateField.stringValue = exposure.displayDate ? exposure.displayDate : @"";
+}
+
+- (void)setCamera:(CASCCDDevice *)camera
+{
+    _camera = camera;
+    _exposure = nil;
+    self.cameraNameField.stringValue = camera.deviceName ? camera.deviceName : @"";
+    self.dateField.stringValue = @"";
 }
 
 @end
@@ -367,7 +386,7 @@
     [self.sensorPixelsField setStringValue:@""];
 
     // show camera name
-    self.imageBannerView.cameraNameField.stringValue = self.cameraController.camera.deviceName ? self.cameraController.camera.deviceName : @"";
+    self.imageBannerView.camera = self.cameraController.camera;
 
     // capture the current controller in the completion block
     CASCameraController* cameraController = self.cameraController;
@@ -603,13 +622,11 @@
 {
     if (!exposure){
         self.imageView.currentExposure = nil;
-        self.imageBannerView.cameraNameField.stringValue = @"";
+        self.imageBannerView.camera = nil;
         return;
     }
     
-    NSString* title = exposure.displayName;
-
-    self.imageBannerView.cameraNameField.stringValue = title ? title : @"";
+    self.imageBannerView.exposure = exposure;
 
     static NSDateFormatter* exposureFormatter = nil;
     static dispatch_once_t onceToken;
@@ -1432,11 +1449,12 @@
     
     self.exposuresController = (CASExposuresController*)self.libraryViewController.exposuresController;
     
-    NSString* name = nil;
     if ([self.exposuresController.selectionIndexes count] == 1){
-        name = ((CASCCDExposure*)[self.exposuresController.selectedObjects objectAtIndex:0]).displayName;
+        self.imageBannerView.exposure = [self.exposuresController.selectedObjects objectAtIndex:0];
     }
-    self.imageBannerView.cameraNameField.stringValue = name ? name : @"";
+    else {
+        self.imageBannerView.exposure = nil;
+    }
 }
 
 - (void)hideLibraryView
