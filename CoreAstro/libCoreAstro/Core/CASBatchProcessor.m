@@ -359,19 +359,21 @@
 
 @implementation CASCCDStackingProcessor {
     NSInteger _count;
-    CASRect _searchFrame;
+    CGRect _searchFrame;
+    CASRect _initialSearchFrame;
     CASSize _actualSize;
     NSPoint _referenceStar;
     CGFloat _searchInsetFraction;
-    CGFloat _searchOffsetThreshold;
+    CGFloat _xThresh, _yThresh;
 }
 
 - (id)init
 {
     self = [super init];
     if (self) {
+        _xThresh = 20;
+        _yThresh = 20;
         _searchInsetFraction = 0.2;
-        _searchOffsetThreshold = 0.05;
     }
     return self;
 }
@@ -405,20 +407,35 @@
             
             // get some basic stats
             _actualSize = self.first.actualSize;
-            _searchFrame = CASRectMake(CASPointMake(_actualSize.width * _searchInsetFraction,_actualSize.height * _searchInsetFraction),
+            
+            // figure out the subframe we'll do the initial star search in
+            _initialSearchFrame = CASRectMake(CASPointMake(_actualSize.width * _searchInsetFraction,_actualSize.height * _searchInsetFraction),
                                        CASSizeMake(_actualSize.width - (2 * _actualSize.width * _searchInsetFraction),_actualSize.height - (2 * _actualSize.height * _searchInsetFraction)));
-            NSLog(@"Using search frame of %@",NSStringFromCASRect(_searchFrame));
+            NSLog(@"Using search frame of %@",NSStringFromCASRect(_initialSearchFrame));
 
-            // locate the reference star - or let the user define one ?
             if (!self.guideAlgorithm){
                 self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
             }
-            NSArray* stars = [self.guideAlgorithm locateStars:[self.first subframeWithRect:_searchFrame]];
+            if (!self.imageProcessor){
+                self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+            }
+            
+            // locate the reference star
+            CASCCDExposure* subframe = [self.first subframeWithRect:_initialSearchFrame];
+            NSArray* stars = [self.guideAlgorithm locateStars:subframe];
             if (![stars count]){
                 NSLog(@"%@: Found no stars in reference frame",NSStringFromSelector(_cmd));
             }
             else {
+                
+                // got an initial hit, now use a more precise algorithm to get a better fix
                 _referenceStar = [[stars lastObject] pointValue];
+                _searchFrame = CGRectMake(_referenceStar.x - _xThresh/2, _referenceStar.y - _xThresh/2, _xThresh, _yThresh);
+                _referenceStar = [self.guideAlgorithm locateStar:subframe inArea:_searchFrame];
+                if (_referenceStar.x == -1){
+                    NSLog(@"%@: Found no stars in reference frame",NSStringFromSelector(_cmd));
+                    return;
+                }
                 NSLog(@"Located reference star at %f,%f",_referenceStar.x,_referenceStar.y);
             }
         }
@@ -437,13 +454,12 @@
         return;
     }
         
-    // find, hopefully, the same star in the exposure ** no, use locateStar:inArea: **
-    NSArray* stars = [self.guideAlgorithm locateStars:[exposure subframeWithRect:_searchFrame]];
-    if (![stars count]){
+    // search within the same area that we found the reference star for the corresponding one
+    const NSPoint star = [self.guideAlgorithm locateStar:[exposure subframeWithRect:_initialSearchFrame] inArea:_searchFrame];
+    if (star.x == -1){
         NSLog(@"%@: Found no stars in exposure frame",NSStringFromSelector(_cmd));
         return;
     }
-    const NSPoint star = [[stars lastObject] pointValue];
     NSLog(@"Located star at %f,%f",star.x,star.y);
 
     // work out offsets
@@ -452,14 +468,12 @@
     NSLog(@"x-offset=%f, y-offset=%f",xOffset,yOffset);
 
     // check against threshold
-    const CGFloat xThresh = _actualSize.width * _searchOffsetThreshold;
-    if (fabs(xOffset) > xThresh){
-        NSLog(@"xdiff %f exceeds threshold of %f, ignoring this exposure",xOffset,xThresh);
+    if (fabs(xOffset) > _xThresh){
+        NSLog(@"xdiff %f exceeds threshold of %f, ignoring this exposure",xOffset,_xThresh);
         return;
     }
-    const CGFloat yThresh = _actualSize.height * _searchOffsetThreshold;
-    if (fabs(yOffset) > yThresh){
-        NSLog(@"ydiff %f exceeds threshold of %f, ignoring this exposure",yOffset,yThresh);
+    if (fabs(yOffset) > _yThresh){
+        NSLog(@"ydiff %f exceeds threshold of %f, ignoring this exposure",yOffset,_yThresh);
         return;
     }
 
@@ -513,8 +527,8 @@
 
 - (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
 {
+    // divide by number of images in the stack
     if ([self.accumulate mutableBytes]){
-        // divide by number of images
         if (_count > 1){
             float fcount = _count + 1;
             vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
