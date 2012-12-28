@@ -103,7 +103,11 @@
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
     [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
-    [mutableMeta setObject:@"Average" forKey:@"displayName"];
+    if (self.mode == kCASCombineProcessorAverage){
+        [mutableMeta setObject:[NSString stringWithFormat:@"Average of %@",self.first.displayName] forKey:@"displayName"];
+    }else{
+        [mutableMeta setObject:[NSString stringWithFormat:@"Sum of %@",self.first.displayName] forKey:@"displayName"];
+    }
     result.meta = [mutableMeta copy];
     
     // this really should be associated with the parent device folder and live in there - perhaps with a special name indicating that it's a combined frame ?
@@ -346,6 +350,197 @@
 
 @end
 
+@interface CASCCDStackingProcessor ()
+@property (nonatomic,strong) CASCCDExposure* first;
+@property (nonatomic,strong) NSMutableData* working;
+@property (nonatomic,strong) NSMutableData* accumulate;
+@property (nonatomic,strong) NSMutableArray* history;
+@end
+
+@implementation CASCCDStackingProcessor {
+    NSInteger _count;
+    CASRect _searchFrame;
+    CASSize _actualSize;
+    NSPoint _referenceStar;
+    CGFloat _searchInsetFraction;
+    CGFloat _searchOffsetThreshold;
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _searchInsetFraction = 0.2;
+        _searchOffsetThreshold = 0.1;
+    }
+    return self;
+}
+
+- (BOOL)save
+{
+    return NO;
+}
+
+- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
+{
+    if (!exposure){
+        return;
+    }
+    
+    if (!self.first){
+        
+        self.first = exposure;
+        self.history = [NSMutableArray arrayWithCapacity:10];
+        
+        self.working = [NSMutableData dataWithLength:[self.first.floatPixels length]];
+        self.accumulate = [NSMutableData dataWithLength:[self.first.floatPixels length]];
+        
+        if (![self.working mutableBytes] || ![self.accumulate mutableBytes]){
+            NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+        }
+        else {
+            
+            // start the accumulation buffer off with the first set of pixels
+            memcpy([self.accumulate mutableBytes], [self.first.floatPixels bytes], [self.first.floatPixels length]);
+            
+            // get some basic stats
+            _actualSize = self.first.actualSize;
+            _searchFrame = CASRectMake(CASPointMake(_actualSize.width * _searchInsetFraction,_actualSize.height * _searchInsetFraction),
+                                       CASSizeMake(_actualSize.width - (2 * _actualSize.width * _searchInsetFraction),_actualSize.height - (2 * _actualSize.height * _searchInsetFraction)));
+            NSLog(@"Using search frame of %@",NSStringFromCASRect(_searchFrame));
+
+            // locate the reference star
+            if (!self.guideAlgorithm){
+                self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
+            }
+            NSArray* stars = [self.guideAlgorithm locateStars:[self.first subframeWithRect:_searchFrame]];
+            if (![stars count]){
+                NSLog(@"%@: Found no stars in reference frame",NSStringFromSelector(_cmd));
+            }
+            else {
+                _referenceStar = [[stars lastObject] pointValue];
+                NSLog(@"Located reference star at %f,%f",_referenceStar.x,_referenceStar.y);
+            }
+        }
+        
+        return;
+    }
+    
+    if (_referenceStar.x == -1){
+        return;
+    }
+    
+    // check the exposures match the reference
+    const CASSize size2 = exposure.actualSize;
+    if (_actualSize.width != size2.width || _actualSize.height != size2.height){
+        NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
+        return;
+    }
+        
+    // find, hopefully, the same star in the exposure ** no, use locateStar:inArea: **
+    NSArray* stars = [self.guideAlgorithm locateStars:[exposure subframeWithRect:_searchFrame]];
+    if (![stars count]){
+        NSLog(@"%@: Found no stars in exposure frame",NSStringFromSelector(_cmd));
+        return;
+    }
+    const NSPoint star = [[stars lastObject] pointValue];
+    NSLog(@"Located star at %f,%f",star.x,star.y);
+
+    // work out offsets
+    const CGFloat xOffset = _referenceStar.x - star.x;
+    const CGFloat yOffset = star.y - _referenceStar.y;
+    NSLog(@"x-offset=%f, y-offset=%f",xOffset,yOffset);
+
+    // check against threshold
+    const CGFloat xThresh = _actualSize.width * _searchOffsetThreshold;
+    if (fabs(xOffset) > xThresh){
+        NSLog(@"xdiff %f exceeds threshold of %f, ignoring this exposure",xOffset,xThresh);
+        return;
+    }
+    const CGFloat yThresh = _actualSize.height * _searchOffsetThreshold;
+    if (fabs(yOffset) > yThresh){
+        NSLog(@"ydiff %f exceeds threshold of %f, ignoring this exposure",yOffset,yThresh);
+        return;
+    }
+
+    // apply correction to working pixels
+    vImage_Buffer input = {
+        .data = (void*)[[exposure floatPixels] bytes],
+        .width = _actualSize.width,
+        .height = _actualSize.height,
+        .rowBytes = _actualSize.width * sizeof(float)
+    };
+    
+    vImage_Buffer output = {
+        .data = [self.working mutableBytes],
+        .width = _actualSize.width,
+        .height = _actualSize.height,
+        .rowBytes = _actualSize.width * sizeof(float)
+    };
+
+    CGAffineTransform xform = CGAffineTransformIdentity;
+    
+    // create the appropriate affine transform
+    NSDictionary* translateInfo = @{};
+    if (xOffset != 0 || yOffset != 0){
+        xform = CGAffineTransformConcat(xform,CGAffineTransformMakeTranslation(xOffset,yOffset));
+        translateInfo = @{@"x":[NSNumber numberWithDouble:xOffset],@"y":[NSNumber numberWithDouble:yOffset]};
+    }
+        
+    // add and entry to the history
+    [self.history addObject:@{
+        @"uuid":exposure.uuid,@"translate":translateInfo,@"mode":@"average"
+     }];
+    
+    // translate the exposure relative to the reference star
+    if (CGAffineTransformIsIdentity(xform)){
+        memcpy([self.working mutableBytes],[[exposure floatPixels] bytes],_actualSize.width*_actualSize.height*sizeof(float));
+    }
+    else {
+        const vImage_AffineTransform vxform = {
+            .a = xform.a, .b = xform.b, .c = xform.c, .d = xform.d,
+            .tx = xform.tx, .ty = xform.ty
+        };
+        vImageAffineWarp_PlanarF(&input, &output, nil, &vxform, 0, kvImageHighQualityResampling);
+    }
+    
+    // add the translated pixels to accumulation buffer
+    vDSP_vadd([self.accumulate mutableBytes],1,output.data,1,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
+    
+    // bump the count
+    ++_count;
+}
+
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
+{
+    if ([self.accumulate mutableBytes]){
+        // divide by number of images
+        if (_count > 1){
+            float fcount = _count + 1;
+            vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
+        }
+    }
+    
+    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:self.accumulate
+                                                              camera:nil
+                                                              params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,0,0)
+                                                                time:[NSDate date]];
+    
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
+    [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
+    [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %@",self.first.displayName] forKey:@"displayName"];
+    result.meta = [mutableMeta copy];
+
+    [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
+        
+        NSLog(@"Added stacked exposure at %@",url);
+        
+        block(error,result);
+    }];
+}
+
+@end
+
 @implementation CASBatchProcessor
 
 - (void)start
@@ -419,7 +614,8 @@
 {
     return [exposures count] ? @[
         @{@"id":@"combine.sum",@"name":@"Combine Sum"},
-        @{@"id":@"combine.average",@"name":@"Combine Average"}
+        @{@"id":@"combine.average",@"name":@"Combine Average"},
+        @{@"id":@"stack.average",@"name":@"Stack Average"}
     ] : nil;
 }
 
@@ -437,6 +633,11 @@
         return combine;
     }
     
+    if ([@"stack.average" isEqualToString:identifier]){
+        CASCCDStackingProcessor* stack = [[CASCCDStackingProcessor alloc] init];
+        return stack;
+    }
+
     NSLog(@"*** No batch processor with identifier: %@",identifier);
     
     return nil;

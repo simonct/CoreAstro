@@ -24,8 +24,12 @@
 //
 
 #import "CASCCDExposure.h"
+#import "CASImageProcessor.h"
+#import "CASAutoGuider.h"
 
 @interface CASBatchProcessor : NSObject
+
+@property (nonatomic,strong) CASImageProcessor* imageProcessor;
 
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion;
 - (void)processWithExposures:(NSArray*)exposures completion:(void(^)(NSError* error,CASCCDExposure*))completion;
@@ -60,4 +64,8 @@ enum {
 @property (nonatomic,strong) CASCCDExposure* bias;
 @property (nonatomic,strong) CASCCDExposure* dark;
 @property (nonatomic,strong) CASCCDExposure* flat;
+@end
+
+@interface CASCCDStackingProcessor : CASBatchProcessor
+@property (nonatomic,strong) id<CASGuideAlgorithm> guideAlgorithm;
 @end
