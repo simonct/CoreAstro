@@ -103,6 +103,7 @@
 @interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate,CASExposureViewDelegate>
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
+@property (nonatomic,assign) BOOL medianFilter;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
@@ -469,6 +470,14 @@
     }
 }
 
+- (void)setMedianFilter:(BOOL)medianFilter
+{
+    if (_medianFilter != medianFilter){
+        _medianFilter = medianFilter;
+        [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
 - (NSInteger)debayerMode
 {
     return self.imageDebayer.mode;
@@ -641,6 +650,10 @@
         if (debayeredExposure){
             exposure = debayeredExposure;
         }
+    }
+    
+    if (self.medianFilter){
+        exposure = [self.imageProcessor medianFilter:exposure];
     }
     
     if (self.equalise){
@@ -1057,6 +1070,11 @@
     self.equalise = !self.equalise;
 }
 
+- (IBAction)toggleMedianFilter:(id)sender
+{
+    self.medianFilter = !self.medianFilter;
+}
+
 - (IBAction)applyDebayer:(NSMenuItem*)sender
 {
     switch (sender.tag) {
@@ -1165,6 +1183,10 @@
             item.state = self.equalise;
             break;
             
+        case 10006:
+            item.state = self.medianFilter;
+            break;
+
         case 10003:
             if (self.imageView.showReticle){
                 item.title = NSLocalizedString(@"Hide Reticle", @"Menu item title");

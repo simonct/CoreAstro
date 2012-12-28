@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
 		<string key="IBDocument.SystemVersion">11G63</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
+		<string key="IBDocument.InterfaceBuilderVersion">3083</string>
 		<string key="IBDocument.AppKitVersion">1138.51</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2840</string>
+			<string key="NS.object.0">3083</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -1418,6 +1418,15 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">10001</int>
+								</object>
+								<object class="NSMenuItem" id="114689535">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Median Filter</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10006</int>
 								</object>
 								<object class="NSMenuItem" id="493119281">
 									<reference key="NSMenu" ref="466310130"/>
@@ -2913,6 +2922,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleMedianFilter:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="114689535"/>
+					</object>
+					<int key="connectionID">799</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -3441,6 +3458,7 @@
 							<reference ref="1025705258"/>
 							<reference ref="56908968"/>
 							<reference ref="469922604"/>
+							<reference ref="114689535"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -5161,6 +5179,11 @@
 						<reference key="object" ref="469922604"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">797</int>
+						<reference key="object" ref="114689535"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5479,6 +5502,7 @@
 				<string key="792.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="793.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="794.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="797.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="82.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -5488,7 +5512,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">796</int>
+			<int key="maxID">799</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5514,6 +5538,7 @@
 						<string key="sendFeedback:">id</string>
 						<string key="toggleEqualiseHistogram:">id</string>
 						<string key="toggleInvertImage:">id</string>
+						<string key="toggleMedianFilter:">id</string>
 						<string key="toggleScaleSubframe:">id</string>
 						<string key="toggleShowHistogram:">id</string>
 						<string key="toggleShowImageStats:">id</string>
@@ -5563,6 +5588,10 @@
 						</object>
 						<object class="IBActionInfo" key="toggleInvertImage:">
 							<string key="name">toggleInvertImage:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleMedianFilter:">
+							<string key="name">toggleMedianFilter:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleScaleSubframe:">
