@@ -105,8 +105,12 @@
     if (!_exposures){
         _exposures = [NSMutableArray arrayWithCapacity:[objects count]];
     }
-    [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[objects allObjects]];
-    [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    NSMutableSet* ms = [NSMutableSet setWithSet:objects];
+    [ms minusSet:[NSSet setWithArray:self.exposures]];
+    if ([ms count]){
+        [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[objects allObjects]];
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
 }
 
 - (void)removeExposures:(NSSet *)objects
