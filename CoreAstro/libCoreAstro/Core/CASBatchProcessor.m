@@ -371,7 +371,7 @@
     self = [super init];
     if (self) {
         _searchInsetFraction = 0.2;
-        _searchOffsetThreshold = 0.1;
+        _searchOffsetThreshold = 0.05;
     }
     return self;
 }
