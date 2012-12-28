@@ -103,7 +103,7 @@
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
     [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
-    [mutableMeta setObject:@{@"name":@"Average"} forKey:@"device"];
+    [mutableMeta setObject:@"Average" forKey:@"displayName"];
     result.meta = [mutableMeta copy];
     
     // this really should be associated with the parent device folder and live in there - perhaps with a special name indicating that it's a combined frame ?
@@ -203,7 +203,7 @@
         
         NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
         [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
-        [mutableMeta setObject:@{@"name":@"Corrected"} forKey:@"device"];
+        [mutableMeta setObject:@"Corrected" forKey:@"displayName"];
         self.result.meta = [mutableMeta copy];
         
         [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result save:YES block:^(NSError *error, NSURL *url) {
@@ -271,7 +271,7 @@
     else {
         [mutableMeta setObject:@{@"bias-correction":@{@"bias":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
     }
-    [mutableMeta setObject:@{@"name":@"Corrected"} forKey:@"device"];
+    [mutableMeta setObject:@"Corrected" forKey:@"displayName"];
     result.meta = [mutableMeta copy];
     
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
