@@ -103,7 +103,7 @@
         return;
     }
     if (!_exposures){
-        _exposures = [NSMutableArray arrayWithCapacity:[objects count]];
+        _exposures = [NSMutableArray arrayWithCapacity:[objects count]]; // just make this a set ? display order is a presentation responsibility
     }
     NSMutableSet* ms = [NSMutableSet setWithSet:objects];
     [ms minusSet:[NSSet setWithArray:self.exposures]];
