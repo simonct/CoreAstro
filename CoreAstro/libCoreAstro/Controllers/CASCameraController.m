@@ -86,7 +86,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
         
-        self.continuousNextExposureTime = t;
+        self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + t;
         [self performSelector:_cmd withObject:block afterDelay:t inModes:@[NSRunLoopCommonModes]];
     };
     
