@@ -50,6 +50,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.exposure = 1;
         self.exposureUnits = 0; // seconds
         self.camera = camera;
+        self.temperatureLock = YES;
     }
     return self;
 }
@@ -83,24 +84,24 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
 {
+    void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
+        
+        self.continuousNextExposureTime = t;
+        [self performSelector:_cmd withObject:block afterDelay:t inModes:@[NSRunLoopCommonModes]];
+    };
+    
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
         
         // remember the last exposure
         self.lastExposure = exp;
         
         // figure out if we need to go round again
-        if (!error && (self.continuous || ++self.currentCaptureIndex < self.captureCount) && !_cancel){
-            
-            void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
-                
-                self.continuousNextExposureTime = t;
-                [self performSelector:_cmd withObject:block afterDelay:self.interval inModes:@[NSRunLoopCommonModes]];
-            };
+        if (!error && !_cancel && (self.continuous || ++self.currentCaptureIndex < self.captureCount) ){
             
             if (!self.guider || !self.guideAlgorithm){
                 
                 // not guiding, figure out the next exposure time
-                scheduleNextCapture([NSDate timeIntervalSinceReferenceDate] + self.interval);
+                scheduleNextCapture(self.interval);
             }
             else {
                 
@@ -124,12 +125,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                                                             object:self
                                                                           userInfo:@{@"direction":@(direction),@"@duration":@(duration)}];
                         
-                        const NSTimeInterval nextExposureTime = [NSDate timeIntervalSinceReferenceDate] + MAX(self.interval,ceil((float)duration/1000.0));
+                        const NSTimeInterval nextExposureTimeInterval = MAX(self.interval,ceil((float)duration/1000.0));
                         
                         if (direction == kCASGuiderDirection_None || duration < 1){
                             
                             // nothing to do, figure out the next exposure time
-                            scheduleNextCapture(nextExposureTime);
+                            scheduleNextCapture(nextExposureTimeInterval);
                         }
                         else{
                             
@@ -150,7 +151,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                     // have a minimum interval for guide exposures e.g. 10s ?
                                     
                                     // pulse complete, figure out the next exposure time
-                                    scheduleNextCapture(nextExposureTime);
+                                    scheduleNextCapture(nextExposureTimeInterval);
                                 }
                             }];
                         }
@@ -167,8 +168,36 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             block(error,exp);
         }
     };
-        
+    
+    // check cancel flag
+    if (_cancel){
+        return;
+    }
+    
     self.capturing = YES;
+
+    // if the temperature lock is on, check the camera's cooled down enough
+    if (self.temperatureLock && self.camera.hasCooler){
+        
+        const CGFloat temperatureLatitude = 0.2;
+        const NSInteger temperatureWaitInterval = 10;
+
+        const CGFloat temperature = self.camera.temperature;
+        const CGFloat targetTemperature = self.camera.targetTemperature;
+        if (MIN(temperature,targetTemperature) == targetTemperature && fabs(targetTemperature - temperature) > temperatureLatitude){
+            
+            // todo; give up and alert user if we've waited in excess of some limit ?
+            // todo; min capture interval in temp lock mode to allow temp commands to run
+
+            NSLog(@"Camera temperature of %.1f is above target temperature of %.1f, waiting %ld seconds...",temperature,targetTemperature,temperatureWaitInterval);
+            scheduleNextCapture(temperatureWaitInterval);
+            return;
+        }
+        else {
+            
+            NSLog(@"Camera temperature of %.1f relative to target temperature of %.1f, capturing...",temperature,targetTemperature);
+        }
+    }
     
     const BOOL saveExposure = !self.continuous;
         
