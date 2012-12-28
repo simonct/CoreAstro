@@ -409,7 +409,7 @@
                                        CASSizeMake(_actualSize.width - (2 * _actualSize.width * _searchInsetFraction),_actualSize.height - (2 * _actualSize.height * _searchInsetFraction)));
             NSLog(@"Using search frame of %@",NSStringFromCASRect(_searchFrame));
 
-            // locate the reference star
+            // locate the reference star - or let the user define one ?
             if (!self.guideAlgorithm){
                 self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
             }
