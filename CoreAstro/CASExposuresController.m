@@ -11,6 +11,15 @@
 
 @implementation CASExposuresController
 
+- (id)initWithContent:(id)content
+{
+    self = [super initWithContent:content];
+    if (self) {
+        [self setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+    }
+    return self;
+}
+
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index
 {
     if (index != NSNotFound){

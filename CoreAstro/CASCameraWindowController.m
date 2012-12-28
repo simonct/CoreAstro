@@ -185,9 +185,6 @@
     
     self.exposuresController = [[CASExposuresController alloc] init];
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
-    [self.exposuresController setSelectsInsertedObjects:YES];
-    [self.exposuresController setSelectedObjects:nil];
-    [self.exposuresController setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     self.libraryExposuresController = self.exposuresController;
 
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
@@ -1228,26 +1225,14 @@
     [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
 }
 
-- (void)moveUp:(id)sender
+- (void)moveLeft:(id)sender
 {
-    const NSUInteger index = self.exposuresController.selectionIndex;
-    if (index == NSNotFound){
-        self.exposuresController.selectionIndex = 0;
-    }
-    else if (index > 0){
-        self.exposuresController.selectionIndex = index - 1;
-    }
+    [self.exposuresController selectPrevious:nil];
 }
 
-- (void)moveDown:(id)sender
+- (void)moveRight:(id)sender
 {
-    const NSUInteger index = self.exposuresController.selectionIndex;
-    if (index == NSNotFound){
-        self.exposuresController.selectionIndex = 0;
-    }
-    else if (index < [self.exposuresController.arrangedObjects count] - 1){
-        self.exposuresController.selectionIndex = index + 1;
-    }
+    [self.exposuresController selectNext:nil];
 }
 
 - (void)delete:sender
