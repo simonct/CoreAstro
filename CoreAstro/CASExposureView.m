@@ -550,7 +550,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.starLocation = kCASImageViewInvalidStarLocation;
     
     if (self.showReticle){
-        self.reticleLayer = [self createReticleLayer];
+        self.reticleLayer = [self createReticleLayer2];
     }
 
     // zoom to fit on the first image
@@ -602,7 +602,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     _showReticle = showReticle;
     
     if (_showReticle){
-        self.reticleLayer = [self createReticleLayer];
+        self.reticleLayer = [self createReticleLayer2];
     }
     else {
         self.reticleLayer = nil;
@@ -779,6 +779,30 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0, CGImageGetWidth(self.image), width));
     CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0, 0, width, CGImageGetHeight(self.image)));
     
+    reticleLayer.path = path;
+    reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
+    reticleLayer.borderWidth = width;
+    
+    CGPathRelease(path);
+    
+    return reticleLayer;
+}
+
+- (CAShapeLayer*)createReticleLayer2
+{
+    CAShapeLayer* reticleLayer = [CAShapeLayer layer];
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    const CGFloat width = 0.5;
+    const CGFloat offset = 5.5;
+
+    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0 - offset, CGImageGetWidth(self.image), width));
+    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0 + offset, CGImageGetWidth(self.image), width));
+
+    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0 - offset, 0, width, CGImageGetHeight(self.image)));
+    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0 + offset, 0, width, CGImageGetHeight(self.image)));
+
     reticleLayer.path = path;
     reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
     reticleLayer.borderWidth = width;
