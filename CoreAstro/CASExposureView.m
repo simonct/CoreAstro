@@ -121,6 +121,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CALayer* searchLayer;
 @property (nonatomic,strong) CASSelectionLayer* selectionLayer;
 @property (nonatomic,strong) CAShapeLayer* reticleLayer;
+@property (nonatomic,assign) CGFloat reticleLayerAngle;
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASHistogramHUDView* histogramView;
 @property (nonatomic,strong) CASProgressHUDView* progressView;
@@ -679,6 +680,23 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)setReticleLayerAngle:(CGFloat)reticleLayerAngle
+{
+    _reticleLayerAngle = reticleLayerAngle;
+    
+    if (self.reticleLayer && self.image){
+        
+        const CGFloat imageWidth = CGImageGetWidth(self.image);
+        const CGFloat imageHeight = CGImageGetHeight(self.image);
+        
+        CATransform3D transform = CATransform3DIdentity;
+        transform = CATransform3DConcat(transform, CATransform3DMakeTranslation(-imageWidth/2, -imageHeight/2, 0));
+        transform = CATransform3DConcat(transform, CATransform3DMakeRotation(_reticleLayerAngle*M_PI/180.0,0,0,1));
+        transform = CATransform3DConcat(transform, CATransform3DMakeTranslation(imageWidth/2, imageHeight/2, 0));
+        self.reticleLayer.transform = transform;
+    }
+}
+
 - (void)setSelectionLayer:(CASSelectionLayer *)selectionLayer
 {
     if (_selectionLayer != selectionLayer){
@@ -794,18 +812,28 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     CGMutablePathRef path = CGPathCreateMutable();
     
-    const CGFloat width = 0.5;
+    const CGFloat imageWidth = CGImageGetWidth(self.image);
+    const CGFloat imageHeight = CGImageGetHeight(self.image);
+    
+    const CGFloat reticleWidth = 0.5;
+    const CGFloat reticleLength = MAX(imageWidth,imageHeight);
     const CGFloat offset = 5.5;
 
-    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0 - offset, CGImageGetWidth(self.image), width));
-    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0 + offset, CGImageGetWidth(self.image), width));
+    // horizontal lines
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 - offset, reticleLength, reticleWidth));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 + offset, reticleLength, reticleWidth));
 
-    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0 - offset, 0, width, CGImageGetHeight(self.image)));
-    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0 + offset, 0, width, CGImageGetHeight(self.image)));
+    // vertical lines
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - offset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + offset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
+    
+    CGPathAddEllipseInRect(path, nil, CGRectMake(imageWidth/2-imageHeight/2, 0, imageHeight, imageHeight));
+    CGPathAddEllipseInRect(path, nil, CGRectMake(0, imageHeight/2-imageWidth/2, imageWidth, imageWidth));
 
     reticleLayer.path = path;
+    reticleLayer.fillColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(0,0,0,0)));
     reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
-    reticleLayer.borderWidth = width;
+    reticleLayer.borderWidth = reticleWidth;
     
     CGPathRelease(path);
     
