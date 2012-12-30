@@ -216,16 +216,48 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    CALayer* layer = [self.layer hitTest:p];
-    if (layer.superlayer == self.selectionLayer){
-        _dragHandleLayer = (CASTaggedLayer*)layer;
+    const BOOL doubleClick = (theEvent.clickCount == 2);
+    
+    // double-click in scale subframe mode returns to normal display mode
+    if (self.scaleSubframe && doubleClick){
+        self.scaleSubframe = NO;
     }
-    _draggingSelection = (layer == self.selectionLayer);
-    if (_draggingSelection){
-        p = [self convertViewPointToImagePoint:p];
-        _draggingSelectionOffset = NSMakeSize(self.selectionLayer.position.x - p.x, self.selectionLayer.position.y - p.y);
+    else {
+        
+        // convert point to view co-ords
+        NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+        
+        // find the layer at this point
+        CALayer* layer = [self.layer hitTest:p];
+        
+        // detect clicks in selection drag handles
+        if (layer.superlayer == self.selectionLayer){
+            _dragHandleLayer = (CASTaggedLayer*)layer;
+        }
+        
+        // detect clicks in selection
+        const BOOL clickInSelection = (layer == self.selectionLayer);
+        if (!clickInSelection){
+            _draggingSelection = NO;
+        }
+        else{
+            
+            // double-click toggles subframe mode
+            if (doubleClick){
+                self.scaleSubframe = YES;
+            }
+            else {
+                
+                // set selection dragging on and correct for the mouse offset
+                _draggingSelection = YES;
+                if (_draggingSelection){
+                    p = [self convertViewPointToImagePoint:p];
+                    _draggingSelectionOffset = NSMakeSize(self.selectionLayer.position.x - p.x, self.selectionLayer.position.y - p.y);
+                }
+            }
+        }
     }
+    
     [super mouseDown:theEvent];
 }
 
@@ -233,7 +265,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     _dragHandleLayer = nil;
     _draggingSelection = NO;
-    [super mouseUp:theEvent];
+//    [super mouseUp:theEvent]; // get another IKImageView crash in here - see if we can do without it...
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
@@ -370,17 +402,26 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 
                 if ([stars count]){
                     
-                    // convert from selection-relative co-ord to whole image co-ord
-                    // (p and selectionRect have 0,0 at the top left of the image)
                     NSPoint p = [[stars lastObject] pointValue];
-                    if (workingExposure != currentExposure){
-                        p.x += selectionRect.origin.x;
-                        p.y += selectionRect.origin.y;
+                    if (self.scaleSubframe){
+                        
+                        // selection is being displayed full screen so don't have to correct x,y
+                        const CGFloat selectionBinnedHeight = selectionRect.size.height/currentExposure.params.bin.height;
+                        self.starLocation = NSMakePoint(p.x,selectionBinnedHeight - p.y);
                     }
-                    
-                    // set the display star location (0,0 in image co-ords is in the bottom left)
-                    self.starLocation = NSMakePoint(p.x,binnedHeight - p.y);
-                    
+                    else {
+                        
+                        // convert from selection-relative co-ord to whole image co-ord
+                        // (p and selectionRect have 0,0 at the top left of the image)
+                        if (workingExposure != currentExposure){
+                            p.x += selectionRect.origin.x;
+                            p.y += selectionRect.origin.y;
+                        }
+                        
+                        // set the display star location (0,0 in image co-ords is in the bottom left)
+                        self.starLocation = NSMakePoint(p.x,binnedHeight - p.y);
+                    }
+
                     setStarInfoHidden(currentExposure,&p);
                 }
                 else {
@@ -422,12 +463,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         else {
             
             CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor
-            
-            const CASExposeParams params = _currentExposure.params;
-            const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
-            
             if (CGImage){
                 
+                const CASExposeParams params = _currentExposure.params;
+                const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
+                
+                // draw subframes as an inset within a full frame sized gray background unless the scaleSubframe flag is set
                 const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
                 if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                     
@@ -443,12 +484,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                         CGContextRelease(bitmap);
                     }
                 }
-                
-                if (CGImage){
-                                        
-                    // set the image
-                    [self setImage:CGImage imageProperties:nil];
-                }
+            }
+            
+            // set the image
+            if (CGImage){
+                [self setImage:CGImage imageProperties:nil];
+            }
+            else {
+                clearImage();
             }
         }
     }
@@ -519,6 +562,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (_scaleSubframe != scaleSubframe){
         _scaleSubframe = scaleSubframe;
+        self.selectionLayer.hidden = _scaleSubframe; // hide the selection in scale mode
         [self displayExposure];
     }
 }
@@ -528,11 +572,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
     _currentExposure = exposure;
     
-    if (_currentExposure && self.showSelection){
-        self.selectionRect = CASCGRectConstrainWithinRect(self.selectionRect,CGRectMake(0, 0, _currentExposure.params.frame.width, _currentExposure.params.frame.height));
-    }
-    
+    // set the current image taking into account scaleSubframe mode, etc
     [self displayExposure];
+    
+    // clip any selection rect
+    if (_currentExposure && self.showSelection){
+        if (!self.image){
+            self.showSelection = NO;
+        }
+        else if (!self.scaleSubframe) {
+            self.selectionRect = CASCGRectConstrainWithinRect(self.selectionRect,CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)));
+        }
+    }
 
     self.exposureInfoView.exposure = _currentExposure;
 
@@ -836,6 +887,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     reticleLayer.borderWidth = reticleWidth;
     
     CGPathRelease(path);
+    
+    // grab handles ?
     
     return reticleLayer;
 }
