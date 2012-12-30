@@ -612,7 +612,7 @@
             self.imageView.showProgress = YES;
             self.progressStatusText.stringValue = @"Waiting...";
             self.imageView.progressInterval = self.cameraController.interval;
-            const double fraction = (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval;
+            const double fraction = self.cameraController.interval ? (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval : 0;
             self.imageView.progress = fraction;
             self.progressIndicator.doubleValue = 1 - fraction;
             [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
