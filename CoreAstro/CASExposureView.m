@@ -318,6 +318,16 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)flagsChanged:(NSEvent *)theEvent
+{
+    if (theEvent.modifierFlags & NSAlternateKeyMask) {
+        self.showStarProfileMode = kCASStarProfileModeCentre;
+    }
+    else {
+        self.showStarProfileMode = kCASStarProfileModeAuto;
+    }
+}
+
 - (void)selectAll:(id)sender
 {
     if (self.image){
@@ -392,7 +402,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
-        NSArray* stars = [self.guideAlgorithm locateStars:workingExposure];
+        NSArray* stars = nil;
+        if (self.showStarProfileMode == kCASStarProfileModeAuto){
+            stars = [self.guideAlgorithm locateStars:workingExposure];
+        }
+        else {
+            stars = [NSArray arrayWithObject:[NSValue valueWithPoint:NSMakePoint(workingExposure.actualSize.width/2, workingExposure.actualSize.height/2)]];
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             

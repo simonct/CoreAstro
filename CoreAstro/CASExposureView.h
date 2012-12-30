@@ -21,6 +21,11 @@
 @property (nonatomic,assign) BOOL showReticle;
 @property (nonatomic,assign) BOOL showSelection;
 @property (nonatomic,assign) BOOL showStarProfile;
+typedef enum {
+    kCASStarProfileModeAuto,
+    kCASStarProfileModeCentre
+} CASShowStarProfileMode;
+@property (nonatomic,assign) CASShowStarProfileMode showStarProfileMode;
 @property (nonatomic,assign) BOOL showImageStats;
 @property (nonatomic,assign) CGPoint starLocation;
 @property (nonatomic,assign) CGPoint lockLocation;
