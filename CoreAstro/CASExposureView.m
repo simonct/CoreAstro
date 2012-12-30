@@ -131,6 +131,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @end
 
 @implementation CASExposureView {
+    BOOL _showSelection:1;
     BOOL _draggingSelection:1;
     BOOL _displayedFirstImage:1;
     NSSize _draggingSelectionOffset;
@@ -488,6 +489,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
                 if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
                     
+                    // todo; this is using the unbinned co-ords but should probably be using binned
                     CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
                     if (!bitmap){
                         CGImage = nil;
@@ -675,6 +677,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     else {
         self.reticleLayer = nil;
     }
+}
+
+- (BOOL)showSelection
+{
+   return _showSelection && !self.scaleSubframe;
 }
 
 - (void)setShowSelection:(BOOL)showSelection
