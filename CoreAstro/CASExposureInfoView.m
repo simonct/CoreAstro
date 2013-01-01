@@ -58,7 +58,8 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
 - (void)update
 {
     CASCCDExposure* exp = nil;
-    if (_subframe.size.width > 0 && _subframe.size.height > 0){
+    const BOOL isSubframe = _exposure.isSubframe;
+    if (_subframe.size.width > 0 && _subframe.size.height > 0 && !isSubframe){ // todo; subframes of subframes
         exp = [self.exposure subframeWithRect:self.subframe];
     }
     else {

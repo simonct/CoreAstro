@@ -351,8 +351,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)updateStatistics
 {
-    return; // tmp
-    
     if (self.currentExposure){
         const CGRect frame = self.selectionRect;
         CASRect subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
@@ -394,9 +392,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         workingExposure = currentExposure;
     }
     else {
-        selectionRect = self.selectionRect;
-        selectionRect.origin.y = imageHeight - (selectionRect.origin.y + selectionRect.size.height);
-        workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
+        if (currentExposure.isSubframe){ // todo; subframes of subframes
+            workingExposure = currentExposure;
+        }
+        else {
+            selectionRect = self.selectionRect;
+            selectionRect.origin.y = imageHeight - (selectionRect.origin.y + selectionRect.size.height);
+            workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
+        }
     }
     
     // todo; deal with the situation where we have a historical image subframe with and without a selection
@@ -444,9 +447,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                             displayPoint.y = imageHeight - (self.selectionRect.origin.y + self.selectionRect.size.height) + displayPoint.y*currentExposure.params.bin.height; // binning...
                         }
                         else {
+                            
                             // could just use a full frame selection rect instead and then have a single calculation...
-                            displayPoint.x *= currentExposure.params.bin.width;
-                            displayPoint.y *= currentExposure.params.bin.height;
+                            displayPoint.x = workingExposure.params.origin.x + displayPoint.x*currentExposure.params.bin.width;
+                            displayPoint.y = workingExposure.params.origin.y + displayPoint.y*currentExposure.params.bin.height;
                         }
                         
                         // set the display star location (0,0 in image co-ords is in the bottom left)

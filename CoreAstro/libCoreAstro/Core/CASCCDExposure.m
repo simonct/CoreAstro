@@ -212,6 +212,12 @@
     return _params;
 }
 
+- (BOOL)isSubframe
+{
+    const CASExposeParams p = self.params;
+    return (p.origin.x != 0 || p.origin.y != 0 || p.size.width != p.frame.width || p.size.height != p.frame.height);
+}
+
 - (void)setMetaObject:(id)obj forKey:(id)key
 {
     // update meta
@@ -271,8 +277,8 @@
 - (CASCCDExposure*)subframeWithRect:(CASRect)rect // rect is assumed to be in full frame co-ords
 {
     // not currently supporting subframes of subframes
-    NSParameterAssert(self.params.origin.x == 0 && self.params.origin.y == 0);
-    NSParameterAssert(self.params.size.width == self.params.frame.width && self.params.size.height == self.params.frame.height);
+//    NSParameterAssert(self.params.origin.x == 0 && self.params.origin.y == 0);
+//    NSParameterAssert(self.params.size.width == self.params.frame.width && self.params.size.height == self.params.frame.height);
 
     if (!self.floatPixels){
         return nil;
@@ -286,11 +292,11 @@
         return nil;
     }
     
-    const CASSize size = self.params.frame;
-    const CASSize actualSize = self.actualSize;
+    const CASSize size = self.params.size;
+    const CASPoint origin = self.params.origin;
 
-    rect.origin.x = MAX(rect.origin.x,0);
-    rect.origin.y = MAX(rect.origin.y,0);
+    rect.origin.x = MAX(rect.origin.x - origin.x,0);
+    rect.origin.y = MAX(rect.origin.y - origin.y,0);
     rect.size.width = MIN(rect.size.width,size.width);
     rect.size.height = MIN(rect.size.height,size.height);
 
@@ -306,6 +312,8 @@
     params.size = rect.size;
     CASCCDExposure* subframe = [CASCCDExposure exposureWithPixels:nil camera:nil params:params time:[NSDate date] floatPixels:YES rgba:self.rgba];
     
+    const CASSize actualSize = self.actualSize;
+
     CASRect scaledRect = rect;
     scaledRect.size.width /= self.params.bin.width;
     scaledRect.size.height /= self.params.bin.height;
