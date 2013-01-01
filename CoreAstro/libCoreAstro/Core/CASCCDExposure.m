@@ -28,6 +28,7 @@
 #import "CASCCDDevice.h"
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface CASCCDExposure ()
 @property (nonatomic) BOOL rgba;
@@ -267,8 +268,12 @@
     return [CASCCDImage newImageWithPixels:nil size:size rgba:NO];
 }
 
-- (CASCCDExposure*)subframeWithRect:(CASRect)rect
+- (CASCCDExposure*)subframeWithRect:(CASRect)rect // rect is assumed to be in full frame co-ords
 {
+    // not currently supporting subframes of subframes
+    NSParameterAssert(self.params.origin.x == 0 && self.params.origin.y == 0);
+    NSParameterAssert(self.params.size.width == self.params.frame.width && self.params.size.height == self.params.frame.height);
+
     if (!self.floatPixels){
         return nil;
     }
@@ -281,7 +286,8 @@
         return nil;
     }
     
-    const CASSize size = self.actualSize;
+    const CASSize size = self.params.frame;
+    const CASSize actualSize = self.actualSize;
 
     rect.origin.x = MAX(rect.origin.x,0);
     rect.origin.y = MAX(rect.origin.y,0);
@@ -300,11 +306,17 @@
     params.size = rect.size;
     CASCCDExposure* subframe = [CASCCDExposure exposureWithPixels:nil camera:nil params:params time:[NSDate date] floatPixels:YES rgba:self.rgba];
     
-    float* floatPixels = rect.origin.x + (rect.origin.y * size.width) + (float*)[self.floatPixels bytes];
+    CASRect scaledRect = rect;
+    scaledRect.size.width /= self.params.bin.width;
+    scaledRect.size.height /= self.params.bin.height;
+    scaledRect.origin.x /= self.params.bin.width;
+    scaledRect.origin.y /= self.params.bin.height;
+
+    float* floatPixels = scaledRect.origin.x + (scaledRect.origin.y * actualSize.width) + (float*)[self.floatPixels bytes];
     float* subframeFloatPixels = (float*)[subframePixels bytes];
     
-    for (NSInteger y = 0; y < rect.size.height; ++y, subframeFloatPixels += rect.size.width, floatPixels += size.width){
-        memcpy(subframeFloatPixels, floatPixels, rect.size.width*sizeof(float));
+    for (NSInteger y = 0; y < scaledRect.size.height; ++y, subframeFloatPixels += scaledRect.size.width, floatPixels += actualSize.width){
+        memcpy(subframeFloatPixels, floatPixels, scaledRect.size.width*sizeof(float));
     }
     
     subframe.floatPixels = subframePixels;
@@ -452,6 +464,42 @@
 + (id)exposureWithRGBAFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time
 {
     return [[self class] exposureWithPixels:pixels camera:camera params:expParams time:time floatPixels:YES rgba:YES];
+}
+
++ (id)exposureWithTestStars:(NSArray*)stars params:(CASExposeParams)expParams
+{
+    const CGFloat kCASStarRadius = 2.5;
+    const CGSize size = CGSizeMake(expParams.size.width/expParams.bin.width, expParams.size.height/expParams.bin.height);
+    const CGFloat radius = 1;
+    
+    CGContextRef context = [CASCCDImage newFloatBitmapContextWithSize:CASSizeMake(size.width, size.height)];
+    
+    // clear the background
+    CGContextSetRGBFillColor(context,0,0,0,1);
+    CGContextFillRect(context,CGRectMake(0, 0, size.width, size.height));
+    
+    // draw a star
+    CGContextSetRGBFillColor(context,1,1,1,1);
+    for (NSValue* value in stars){
+        const NSPoint p = [value pointValue];
+        CGContextFillEllipseInRect(context, CGRectMake(p.x, p.x, kCASStarRadius, kCASStarRadius));
+    }
+    
+    // blur it
+    CIFilter* filter = [CIFilter filterWithName:@"CIGaussianBlur"];
+    [filter setDefaults];
+    
+    CIImage* inputImage = [CIImage imageWithCGImage:CGBitmapContextCreateImage(context)];
+    [filter setValue:inputImage forKey:@"inputImage"];
+    [filter setValue:[NSNumber numberWithFloat:radius] forKey:@"inputRadius"];
+    
+    CIImage* outputImage = [filter valueForKey:@"outputImage"];
+    CIContext* cicontext = [CIContext contextWithCGContext:context options:nil];
+    [cicontext drawImage:outputImage inRect:CGRectMake(0, 0, size.width, size.height) fromRect:CGRectMake(0, 0, size.width, size.height)];
+    
+    // build an exposure
+    NSData* pixels = [NSData dataWithBytesNoCopy:CGBitmapContextGetData(context) length:size.width * size.height * 4 freeWhenDone:NO];
+    return [CASCCDExposure exposureWithFloatPixels:pixels camera:nil params:expParams time:[NSDate date]];
 }
 
 @end

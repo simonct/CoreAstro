@@ -351,10 +351,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)updateStatistics
 {
+    return; // tmp
+    
     if (self.currentExposure){
         const CGRect frame = self.selectionRect;
         CASRect subframe = CASRectMake(CASPointMake(frame.origin.x, frame.origin.y), CASSizeMake(frame.size.width, frame.size.height));
-        subframe.origin.y = self.currentExposure.actualSize.height - subframe.origin.y - subframe.size.height;
+        subframe.origin.y = self.currentExposure.params.frame.height - subframe.origin.y - subframe.size.height;
         self.exposureInfoView.subframe = subframe;
         [self layoutHuds];
     }
@@ -362,7 +364,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)_updateStarProfileImpl
 {
-    void (^setStarInfoHidden)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
+    void (^setStarInfoExposure)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
         self.starInfoView.hidden = (exposure == nil);
         if (!self.starInfoView.isHidden){
             [self.starInfoView setExposure:exposure starPosition:*p];
@@ -374,17 +376,17 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     };
     
     if (!self.showStarProfile){
-        setStarInfoHidden(nil,nil);
+        setStarInfoExposure(nil,nil);
         return;
     }
     
     __weak CASCCDExposure* currentExposure = self.currentExposure;
     if (!currentExposure){
-        setStarInfoHidden(nil,nil);
+        setStarInfoExposure(nil,nil);
         return;
     }
     
-    const CGFloat binnedHeight = currentExposure.params.frame.height/currentExposure.params.bin.height;
+    const size_t imageHeight = CGImageGetHeight(self.image);
 
     CGRect selectionRect;
     CASCCDExposure* workingExposure;
@@ -393,7 +395,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
     else {
         selectionRect = self.selectionRect;
-        selectionRect.origin.y = binnedHeight - selectionRect.origin.y - selectionRect.size.height;
+        selectionRect.origin.y = imageHeight - (selectionRect.origin.y + selectionRect.size.height);
         workingExposure = [currentExposure subframeWithRect:CASRectFromCGRect(selectionRect)];
     }
     
@@ -408,9 +410,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             stars = [self.guideAlgorithm locateStars:workingExposure];
         }
         else {
-            stars = [NSArray arrayWithObject:[NSValue valueWithPoint:NSMakePoint(workingExposure.actualSize.width/2, workingExposure.actualSize.height/2)]];
+            stars = [NSArray arrayWithObject:[NSValue valueWithPoint:NSMakePoint(workingExposure.params.size.width/2, workingExposure.params.size.height/2)]];
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             
             self.starInfoView.showSpinner = NO;
@@ -419,31 +421,52 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 
                 if ([stars count]){
                     
-                    NSPoint p = [[stars lastObject] pointValue];
+                    // get the result from the guide algorithm in the sub-exposure's co-ordinate system
+                    NSPoint starPoint = [[stars lastObject] pointValue];
+                    
+                    // calculate the display position of the star location indicator accounting for selections, binning, etc
+                    NSPoint displayPoint = starPoint;
+
                     if (self.scaleSubframe){
                         
                         // selection is being displayed full screen so don't have to correct x,y
                         const CGFloat selectionBinnedHeight = selectionRect.size.height/currentExposure.params.bin.height;
-                        self.starLocation = NSMakePoint(p.x,selectionBinnedHeight - p.y);
+                        self.starLocation = NSMakePoint(displayPoint.x,selectionBinnedHeight - displayPoint.y);
                     }
                     else {
                         
                         // convert from selection-relative co-ord to whole image co-ord
                         // (p and selectionRect have 0,0 at the top left of the image)
                         if (workingExposure != currentExposure){
-                            p.x += selectionRect.origin.x;
-                            p.y += selectionRect.origin.y;
+                            
+                            displayPoint.x = self.selectionRect.origin.x + displayPoint.x*currentExposure.params.bin.width;
+                            
+                            displayPoint.y = imageHeight - (self.selectionRect.origin.y + self.selectionRect.size.height) + displayPoint.y*currentExposure.params.bin.height; // binning...
+                        }
+                        else {
+                            // could just use a full frame selection rect instead and then have a single calculation...
+                            displayPoint.x *= currentExposure.params.bin.width;
+                            displayPoint.y *= currentExposure.params.bin.height;
                         }
                         
                         // set the display star location (0,0 in image co-ords is in the bottom left)
-                        self.starLocation = NSMakePoint(p.x,binnedHeight - p.y);
+                        
+
+                        self.starLocation = NSMakePoint(displayPoint.x/**currentExposure.params.bin.width*/,
+                                                        imageHeight - displayPoint.y/**currentExposure.params.bin.height*/);
+                        
+
                     }
 
-                    setStarInfoHidden(currentExposure,&p);
+                    // map star point from working exposure to current exposure - binning ?
+                    starPoint.x += workingExposure.params.origin.x/currentExposure.params.bin.width;
+                    starPoint.y += workingExposure.params.origin.y/currentExposure.params.bin.height;
+
+                    setStarInfoExposure(currentExposure,&starPoint);
                 }
                 else {
                     self.starLocation = kCASImageViewInvalidStarLocation;
-                    setStarInfoHidden(currentExposure,&kCASImageViewInvalidStarLocation);
+                    setStarInfoExposure(currentExposure,&kCASImageViewInvalidStarLocation);
                 }
             }
         });
@@ -487,7 +510,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 
                 // draw subframes as an inset within a full frame sized gray background unless the scaleSubframe flag is set
                 const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
-                if (!self.scaleSubframe && !CGRectEqualToRect(subframe, frame)){
+                if (!self.scaleSubframe){
                     
                     // todo; this is using the unbinned co-ords but should probably be using binned
                     CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
@@ -495,9 +518,16 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                         CGImage = nil;
                     }
                     else {
-                        CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
-                        CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
-                        CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
+                        
+                        // always make the image the full frame size
+                        if (CGRectEqualToRect(subframe, frame)){
+                            CGContextDrawImage(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height),CGImage);
+                        }
+                        else{
+                            CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
+                            CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
+                            CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
+                        }
                         CGImage = CGBitmapContextCreateImage(bitmap);
                         CGContextRelease(bitmap);
                     }

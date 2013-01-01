@@ -94,4 +94,6 @@ typedef enum CASCCDExposureFormat {
 + (id)exposureWithFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
 + (id)exposureWithRGBAFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
 
++ (id)exposureWithTestStars:(NSArray*)stars params:(CASExposeParams)expParams;
+
 @end

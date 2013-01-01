@@ -80,6 +80,7 @@
 		F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */ = {isa = PBXBuildFile; fileRef = F44EDF6315FCD59C003B1B4C /* CoreAstro.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F44FD0B3166120AA0095D857 /* CASUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD0B4166120AA0095D857 /* CASUtilities.m */; };
+		F455350916933C3A006A4A2F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59A15BDD7250097532B /* QuartzCore.framework */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F459640D15EA42B60041AF7D /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F459640615EA420F0041AF7D /* CorePlot.framework */; };
@@ -593,6 +594,7 @@
 				F44EDF5715FCC831003B1B4C /* Accelerate.framework in Frameworks */,
 				F44EDF5515FCC80B003B1B4C /* IOKit.framework in Frameworks */,
 				F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */,
+				F455350916933C3A006A4A2F /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
