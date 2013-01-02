@@ -179,7 +179,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     // if the temperature lock is on, check the camera's cooled down enough
     if (self.temperatureLock && self.camera.hasCooler){
         
-        const CGFloat temperatureLatitude = 0.2;
+        const CGFloat temperatureLatitude = 0.5;
         const NSInteger temperatureWaitInterval = 10;
 
         const CGFloat temperature = self.camera.temperature;
