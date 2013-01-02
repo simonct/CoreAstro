@@ -120,23 +120,23 @@
 
 - (void)flipImageHorizontal:sender
 {
-    [self flipImageHorizontal:sender];
+    [super flipImageHorizontal:sender];
 }
 
 - (void)flipImageVertical:sender
 {
-    [self flipImageVertical:sender];
+    [super flipImageVertical:sender];
 }
 
 - (void)rotateImageLeft:sender
 {
-    [self rotateImageLeft:sender];
+    [super rotateImageLeft:sender];
     self.rotationAngle += M_PI/2;
 }
 
 - (void)rotateImageRight:sender
 {
-    [self rotateImageRight:sender];
+    [super rotateImageRight:sender];
     self.rotationAngle -= M_PI/2;
 }
 
