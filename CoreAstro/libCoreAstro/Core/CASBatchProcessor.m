@@ -98,7 +98,7 @@
 
     CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:[NSData dataWithBytesNoCopy:_final.data length:_final.height*_final.rowBytes freeWhenDone:YES]
                                                               camera:nil
-                                                              params:CASExposeParamsMake(_final.width,_final.height,0,0,_final.width,_final.height,1,1,0,0)
+                                                              params:CASExposeParamsMake(_final.width,_final.height,0,0,_final.width,_final.height,1,1,self.first.params.bps,0)
                                                                 time:[NSDate date]];
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
@@ -537,7 +537,7 @@
     
     CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:self.accumulate
                                                               camera:nil
-                                                              params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,0,0)
+                                                              params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
                                                                 time:[NSDate date]];
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
