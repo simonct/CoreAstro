@@ -644,14 +644,6 @@
         [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
     });
     
-    // debayer if required
-    if (self.imageDebayer.mode != kCASImageDebayerNone){
-        CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
-        if (debayeredExposure){
-            exposure = debayeredExposure;
-        }
-    }
-    
     if (self.medianFilter){
         exposure = [self.imageProcessor medianFilter:exposure];
     }
@@ -664,6 +656,14 @@
         exposure = [self.imageProcessor invert:exposure];
     }
 
+    // debayer if required
+    if (self.imageDebayer.mode != kCASImageDebayerNone){
+        CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
+        if (debayeredExposure){
+            exposure = debayeredExposure;
+        }
+    }
+    
     // check image view is actually visible
     if (!self.imageView.isHidden){
         self.imageView.currentExposure = exposure;

@@ -183,7 +183,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
 
 - (NSString*)root
 {
-    return @"/Volumes/Media1TB/CoreAstro"; // doesn't work if sandboxing is enabled...
+//    return @"/Volumes/Media1TB/CoreAstro"; // doesn't work if sandboxing is enabled...
     return [[NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoreAstro"];
 }
 

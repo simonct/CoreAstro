@@ -29,7 +29,7 @@
 
 @class CASCCDDevice, CASCCDExposureIO;
 
-@interface CASCCDExposure : CASScriptableObject
+@interface CASCCDExposure : CASScriptableObject<NSCopying>
 
 // represents the raw pixels of an exposure, contains metadata describing the source camera and exposure settings. saves the data to a persistent store
 

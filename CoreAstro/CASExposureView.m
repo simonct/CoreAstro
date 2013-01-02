@@ -517,7 +517,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 if (!self.scaleSubframe){
                     
                     // todo; this is using the unbinned co-ords but should probably be using binned
-                    CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(params.frame.width, params.frame.height) bitsPerPixel:params.bps];
+                    CGContextRef bitmap = [image newContext];
                     if (!bitmap){
                         CGImage = nil;
                     }

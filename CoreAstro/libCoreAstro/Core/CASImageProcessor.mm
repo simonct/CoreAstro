@@ -79,17 +79,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return buffer;
 }
 
-- (CASCCDExposure*)_copyExposure:(CASCCDExposure*)exposure // todo; add NSCopying, etc to CASCCDExposure
-{
-    CASCCDExposure* result = nil;
-    NSMutableData* floatPixels = [NSMutableData dataWithLength:[exposure.floatPixels length]];
-    if ([floatPixels mutableBytes]){
-        memcpy([floatPixels mutableBytes], [exposure.floatPixels bytes], [exposure.floatPixels length]);
-        result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:exposure.params time:[NSDate date]];
-        result.meta = [[NSDictionary alloc] initWithDictionary:exposure.meta copyItems:YES]; // or serialize/deserialize
-    }
-    return result;
-}
 
 - (CASCCDExposure*)equalise:(CASCCDExposure*)exposure_
 {
@@ -99,7 +88,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     
     const NSTimeInterval time = CASTimeBlock(^{
 
-        result = [self _copyExposure:exposure_];
+        result = [exposure_ copy];
         if (!result){
             NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
         }
@@ -143,7 +132,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     const NSInteger groupCount = [self standardGroupSize];
     const NSInteger rowsPerGroup = (size.height - 2) / groupCount;
 
-    __block CASCCDExposure* result = [self _copyExposure:exposure_];
+    __block CASCCDExposure* result = [exposure_ copy];
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -182,7 +171,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)invert:(CASCCDExposure*)exposure_
 {
-    __block CASCCDExposure* result = [self _copyExposure:exposure_];
+    __block CASCCDExposure* result = [exposure_ copy];
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }

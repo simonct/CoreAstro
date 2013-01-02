@@ -45,13 +45,7 @@
 
 - (CGContextRef)_copyContext
 {
-    CGContextRef context = nil;
-    if (self.rgba){
-        context = [[self class] newRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
-    }
-    else {
-        context = [[self class] newFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
-    }
+    CGContextRef context = [self newContext];
     if (context){
         
         float* pixelData = (float*)[_floatPixels bytes];
@@ -74,6 +68,18 @@
         }
     }
     return _CGImage;
+}
+
+- (CGContextRef)newContext
+{
+    CGContextRef context = nil;
+    if (self.rgba){
+        context = [[self class] newRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+    }
+    else {
+        context = [[self class] newFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+    }
+    return context;
 }
 
 - (void)clearImage

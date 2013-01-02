@@ -45,6 +45,19 @@
     NSInteger _readState;
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    CASCCDExposure* result = nil;
+    NSMutableData* floatPixels = [NSMutableData dataWithLength:[self.floatPixels length]];
+    if ([floatPixels mutableBytes]){
+        memcpy([floatPixels mutableBytes], [self.floatPixels bytes], [self.floatPixels length]);
+        result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:self.params time:[NSDate date]];
+        result.meta = [[NSDictionary alloc] initWithDictionary:self.meta copyItems:YES]; // or serialize/deserialize
+        result.rgba = self.rgba;
+    }
+    return result;
+}
+
 - (NSDate*) date
 {
     return [NSDate dateWithTimeIntervalSinceReferenceDate:[[self.meta objectForKey:@"time"] doubleValue]];
