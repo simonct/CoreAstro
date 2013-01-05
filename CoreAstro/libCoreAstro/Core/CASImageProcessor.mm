@@ -422,6 +422,24 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return [result copy];
 }
 
+- (CGFloat)medianPixelValue:(CASCCDExposure*)exposure
+{
+    float median = 0;
+    
+    if ([exposure.floatPixels length]){
+        float* copy = (float*)malloc([exposure.floatPixels length]);
+        if (copy){
+            memcpy(copy, [exposure.floatPixels bytes], [exposure.floatPixels length]);
+            vDSP_vsort(copy,[exposure.floatPixels length],1);
+            const size_t count = [exposure.floatPixels length]/sizeof(float);
+            median = copy[count/2]; // todo; average of two middle values if count is even
+            free(copy);
+        }
+    }
+    
+    return median;
+}
+
 - (CGFloat)averagePixelValue:(CASCCDExposure*)exposure
 {
     float average = 0;

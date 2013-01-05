@@ -44,6 +44,7 @@
 
 - (NSArray*)histogram:(CASCCDExposure*)exposure;
 
+- (CGFloat)medianPixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)averagePixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)minimumPixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)maximumPixelValue:(CASCCDExposure*)exposure;
