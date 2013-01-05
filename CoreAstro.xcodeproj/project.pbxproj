@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F40093231698884500E96DBE /* CASPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40093211698884400E96DBE /* CASPreferencesWindowController.m */; };
+		F40093241698884500E96DBE /* CASPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40093221698884500E96DBE /* CASPreferencesWindowController.xib */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
 		F412975915FCA977009C215E /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975115FCA977009C215E /* move.pdf */; };
 		F412975A15FCA977009C215E /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975215FCA977009C215E /* selection.pdf */; };
@@ -372,6 +374,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F40093201698884400E96DBE /* CASPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPreferencesWindowController.h; sourceTree = "<group>"; };
+		F40093211698884400E96DBE /* CASPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPreferencesWindowController.m; sourceTree = "<group>"; };
+		F40093221698884500E96DBE /* CASPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASPreferencesWindowController.xib; sourceTree = "<group>"; };
 		F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
@@ -917,6 +922,9 @@
 				F46FC8BD16455D6400578010 /* CASProgressWindowController.h */,
 				F46FC8BE16455D6400578010 /* CASProgressWindowController.m */,
 				F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */,
+				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
+				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
+				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
 				F48DF014160E47B800190D3E /* CASImageView.h */,
 				F48DF015160E47B800190D3E /* CASImageView.m */,
 				F45A2DF7166B835100A1D79C /* CASExposureView.h */,
@@ -1517,6 +1525,7 @@
 				F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */,
 				F44791F01680C260007A6815 /* CASStarInfoHUDView.xib in Resources */,
 				F44791F81680F5B6007A6815 /* CASHistogramHUDView.xib in Resources */,
+				F40093241698884500E96DBE /* CASPreferencesWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1690,6 +1699,7 @@
 				F44791EE1680C1D8007A6815 /* CASStarInfoHUDView.m in Sources */,
 				F44791F31680DB78007A6815 /* CASHistogramHUDView.m in Sources */,
 				F44791F61680DBA2007A6815 /* CASSimpleGraphView.m in Sources */,
+				F40093231698884500E96DBE /* CASPreferencesWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

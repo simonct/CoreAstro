@@ -25,6 +25,7 @@
 
 #import "CASAppDelegate.h"
 #import "CASCameraWindowController.h"
+#import "CASPreferencesWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASTemperatureTransformer : NSValueTransformer
@@ -46,6 +47,8 @@
 
 @interface CASAppDelegate () <CASCameraWindowControllerDelegate>
 @property (nonatomic,strong) NSMutableArray* windows;
+@property (nonatomic,strong) CASPreferencesWindowController* prefsController;
+- (IBAction)showPreferences:(id)sender;
 @end
 
 @implementation CASAppDelegate
@@ -254,6 +257,15 @@
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+- (IBAction)showPreferences:(id)sender
+{
+    if (!self.prefsController){
+        self.prefsController = [[CASPreferencesWindowController alloc] initWithWindowNibName:NSStringFromClass([CASPreferencesWindowController class])];
+        [self.prefsController.window center];
+    }
+    [self.prefsController showWindow:nil];
 }
 
 @end
