@@ -28,12 +28,14 @@
     NSString* _tool;
     NSMutableString* _output;
     NSFileHandle* _taskOutputHandle;
+    NSInteger _iomask;
 }
 
 - (id)initWithTool:(NSString*)tool
 {
     self = [super init];
     if (self) {
+        _iomask = 3;
         _tool = [[[NSBundle mainBundle] sharedSupportPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"astrometry/bin/%@",tool]];
         if (![[NSFileManager defaultManager] isExecutableFileAtPath:_tool]){
             NSLog(@"No tool at %@",_tool);
@@ -43,6 +45,15 @@
             self.task = [[NSTask alloc] init];
             [_task setLaunchPath:_tool];
         }
+    }
+    return self;
+}
+
+- (id)initWithTool:(NSString*)tool iomask:(NSInteger)iomask
+{
+    self = [self initWithTool:tool];
+    if (self){
+        _iomask = iomask;
     }
     return self;
 }
@@ -67,8 +78,18 @@
      }];
 
     NSPipe* output = [NSPipe pipe];
-    [_task setStandardOutput:output];
-    [_task setStandardError:output];
+    if (_iomask & 1){
+        [_task setStandardOutput:output];
+    }
+    else {
+        [_task setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
+    }
+    if (_iomask & 2){
+        [_task setStandardError:output];
+    }
+    else {
+        [_task setStandardError:[NSFileHandle fileHandleWithNullDevice]];
+    }
     self.taskOutputHandle = [output fileHandleForReading];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(taskDidTerminate:) name:NSTaskDidTerminateNotification object:nil];
@@ -379,6 +400,36 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                     
                                     self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
                                                                            [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
+                                    
+                                    // get annotations
+                                    self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
+                                    if (!self.solverTask){
+                                        [self presentAlertWithMessage:@"Can't find the embedded plot-constellations tool"];
+                                    }
+                                    else {
+                                        
+                                        NSString* path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
+                                        [self.solverTask setArguments:@[@"-w",path,@"-NCBJL"]];
+                                        
+                                        [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                                            
+                                            if (terminationStatus){
+                                                [self presentAlertWithMessage:@"Failed to get annotations"];
+                                            }
+                                            else {
+                                                
+                                                NSDictionary* report = [NSJSONSerialization JSONObjectWithData:[self.solverTask.taskOutput dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
+                                                if (![report isKindOfClass:[NSDictionary class]]){
+                                                    [self presentAlertWithMessage:@"Couldn't read annotation data"];
+                                                }
+                                                else {
+                                                    // check status=solved
+                                                    NSArray* annotations = [[report objectForKey:@"annotations"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type == 'ngc'"]];
+                                                    NSLog(@"%@",annotations);
+                                                }
+                                            }
+                                        }];
+                                    }
                                 }
                             }
                             
