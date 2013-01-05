@@ -199,10 +199,11 @@
     self.imageView.hasVerticalScroller = YES;
     self.imageView.hasHorizontalScroller = YES;
     self.imageView.autohidesScrollers = YES;
-    self.imageView.currentToolMode = IKToolModeMove;
     self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
     self.imageView.guideAlgorithm = self.guideAlgorithm;
+    
+    [self.imageView addObserver:self forKeyPath:@"showSelection" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
     
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
 
@@ -361,6 +362,16 @@
 //                NSLog(@"%@: %@",object,change);
                 // add, kind == 2 (NSKeyValueChangeInsertion)
                 // remove, kind == 3 (NSKeyValueChangeRemoval)
+            }
+        }
+        else if (object == self.imageView){
+            if ([keyPath isEqualToString:@"showSelection"]){
+                if (self.imageView.showSelection){
+                    self.selectionControl.selectedSegment = 0;
+                }
+                else {
+                    self.selectionControl.selectedSegment = 1;
+                }
             }
         }
     }
@@ -771,11 +782,6 @@
             self.imageView.showProgress = self.cameraController.capturing;
         }
     }];
-    
-    // switch out of selection mode once the capture's started
-//    if ([self.imageView.currentToolMode isEqualToString:IKToolModeSelect]){
-//        [self clearSelection];
-//    }
 }
 
 - (IBAction)cancelCapture:(NSButton*)sender
@@ -979,10 +985,10 @@
 - (IBAction)selection:(NSSegmentedControl*)sender
 {
     if (sender.selectedSegment == 0 && !self.scaleSubframe){
-        self.imageView.currentToolMode = IKToolModeSelect;
+        self.imageView.showSelection = YES;
     }
     else {
-        self.imageView.currentToolMode = IKToolModeMove;
+        self.imageView.showSelection = NO;
         [self selectionRectChanged:self.imageView];
     }
 }

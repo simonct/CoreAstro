@@ -332,7 +332,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)selectAll:(id)sender
 {
     if (self.image){
-        self.currentToolMode = IKToolModeSelect;
+        self.showSelection = YES;
         self.selectionRect = CGRectMake(0, 0, CGImageGetWidth(self.image),CGImageGetHeight(self.image));
     }
 }
@@ -815,17 +815,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         if (_selectionLayer){
             [self.imageOverlayLayer addSublayer:_selectionLayer];
         }
-    }
-}
-
-- (void)setCurrentToolMode:(NSString *)currentToolMode
-{
-    if ([currentToolMode isEqualToString:IKToolModeSelect]){
-        self.showSelection = YES;
-    }
-    else {
-        self.showSelection = NO;
-        [super setCurrentToolMode:currentToolMode];
     }
 }
 
