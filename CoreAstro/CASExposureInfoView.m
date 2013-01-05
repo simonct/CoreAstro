@@ -32,6 +32,7 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
 
 @interface CASExposureInfoView ()
 @property (weak) IBOutlet NSTextField *averageValueField;
+@property (weak) IBOutlet NSTextField *medianValueField;
 @property (weak) IBOutlet NSTextField *minimumValueField;
 @property (weak) IBOutlet NSTextField *maximumValueField;
 @property (weak) IBOutlet NSTextField *standardDeviationValueField;
@@ -68,6 +69,7 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
     if (exp){
         // async ?
         const float maxPixelValue = 65535;
+        self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor medianPixelValue:exp])];
         self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor averagePixelValue:exp])];
         self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
         self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];

@@ -430,8 +430,8 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         float* copy = (float*)malloc([exposure.floatPixels length]);
         if (copy){
             memcpy(copy, [exposure.floatPixels bytes], [exposure.floatPixels length]);
-            vDSP_vsort(copy,[exposure.floatPixels length],1);
             const size_t count = [exposure.floatPixels length]/sizeof(float);
+            vDSP_vsort(copy,count,1);
             median = copy[count/2]; // todo; average of two middle values if count is even
             free(copy);
         }
