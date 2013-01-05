@@ -56,7 +56,12 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
     }
 }
 
-- (void)update
+- (void)clearFields
+{
+    self.medianValueField.stringValue = self.averageValueField.stringValue = self.minimumValueField.stringValue = self.maximumValueField.stringValue = self.standardDeviationValueField.stringValue = @"";
+}
+
+- (void)_updateImpl
 {
     CASCCDExposure* exp = nil;
     const BOOL isSubframe = _exposure.isSubframe;
@@ -67,16 +72,49 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
         exp = self.exposure;
     }
     if (exp){
-        // async ?
-        const float maxPixelValue = 65535;
-        self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor medianPixelValue:exp])];
-        self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor averagePixelValue:exp])];
-        self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
-        self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];
-        self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp])];
+        
+        [self clearFields];
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            const float maxPixelValue = 65535;
+            self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor medianPixelValue:exp])];
+            self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor averagePixelValue:exp])];
+            self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
+            self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (exp == _exposure){
+                    self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp])];
+                }
+            });
+        });
     }
     else {
-        self.averageValueField.stringValue = self.minimumValueField.stringValue = self.maximumValueField.stringValue = self.standardDeviationValueField.stringValue = @"";
+        [self clearFields];
     }
 }
+
+- (void)update
+{
+    if (self.isHidden){
+        return;
+    }
+    
+    [self clearFields];
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_updateImpl) object:nil];
+    [self performSelector:@selector(_updateImpl) withObject:nil afterDelay:0.1];
+}
+
+- (void)setHidden:(BOOL)flag
+{
+    [super setHidden:flag];
+    
+    if (!self.isHidden){
+        [self update];
+    }
+}
+
 @end
