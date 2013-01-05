@@ -153,14 +153,17 @@
 
 - (void)readFromPersistentStore:(BOOL)readPixels
 {
-    if (_readState == kCASCCDExposureReadPixels){
-        return;
+    @synchronized(self){
+        
+        if (_readState == kCASCCDExposureReadPixels){
+            return;
+        }
+        if (!readPixels && _readState == kCASCCDExposureReadMeta){
+            return;
+        }
+        _readState = readPixels ? kCASCCDExposureReadPixels : kCASCCDExposureReadMeta;
+        [self.io readExposure:self readPixels:readPixels error:nil];
     }
-    if (!readPixels && _readState == kCASCCDExposureReadMeta){
-        return;
-    }
-    _readState = readPixels ? kCASCCDExposureReadPixels : kCASCCDExposureReadMeta;
-    [self.io readExposure:self readPixels:readPixels error:nil];
 }
 
 - (NSData*)pixels
@@ -171,24 +174,27 @@
 
 - (NSData*)floatPixels
 {
-    NSData* pixels = self.pixels;
-    if (pixels && !_floatPixels){
+    @synchronized(self){
         
-        const NSTimeInterval duration = CASTimeBlock(^{
+        NSData* pixels = self.pixels;
+        if (pixels && !_floatPixels){
             
-            const NSInteger count = [pixels length] / sizeof(uint16_t);
-            float* fp = malloc(count * sizeof(float));
-            if (!fp){
-                NSLog(@"*** Out of memory converting to float pixels");
-            }
-            else{
-                vDSP_vfltu16((uint16_t*)[pixels bytes],1,fp,1,count);
-                const float max = 65535;
-                vDSP_vsdiv(fp,1,(float*)&max,fp,1,count);
-                _floatPixels = [NSData dataWithBytesNoCopy:fp length:(count * sizeof(float))];
-            }
-        });
-        NSLog(@"floatPixels: %fs",duration);
+            const NSTimeInterval duration = CASTimeBlock(^{
+                
+                const NSInteger count = [pixels length] / sizeof(uint16_t);
+                float* fp = malloc(count * sizeof(float));
+                if (!fp){
+                    NSLog(@"*** Out of memory converting to float pixels");
+                }
+                else{
+                    vDSP_vfltu16((uint16_t*)[pixels bytes],1,fp,1,count);
+                    const float max = 65535;
+                    vDSP_vsdiv(fp,1,(float*)&max,fp,1,count);
+                    _floatPixels = [NSData dataWithBytesNoCopy:fp length:(count * sizeof(float))];
+                }
+            });
+            NSLog(@"floatPixels: %fs",duration);
+        }
     }
     return _floatPixels;
 }
@@ -349,11 +355,13 @@
 
 - (void)reset
 {
-    if (self.io){
-        self.pixels = nil;
+    @synchronized(self){
+        if (self.io){
+            self.pixels = nil;
+        }
+        self.floatPixels = nil;
+        _readState = _meta ? kCASCCDExposureReadMeta : 0;
     }
-    self.floatPixels = nil;
-    _readState = _meta ? kCASCCDExposureReadMeta : 0;
 }
 
 - (void)deleteExposure
