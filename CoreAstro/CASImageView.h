@@ -11,5 +11,6 @@
 @interface CASImageView : IKImageView
 - (CGRect)selectionRect;
 - (void)disableAnimations:(void(^)(void))block;
+- (NSPoint)convertViewPointToImagePoint: (NSPoint)viewPoint;
 @end
 

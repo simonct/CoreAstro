@@ -45,6 +45,11 @@
 //    return [super selectionRect];
 }
 
+- (NSPoint)convertViewPointToImagePoint: (NSPoint)viewPoint
+{
+    return [super convertViewPointToImagePoint:viewPoint];
+}
+
 - (void)disableAnimations:(void(^)(void))block {
     const BOOL disableActions = [CATransaction disableActions];
     [CATransaction begin];
