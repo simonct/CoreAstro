@@ -925,15 +925,37 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     const CGFloat reticleWidth = 0.5;
     const CGFloat reticleLength = MAX(imageWidth,imageHeight);
-    const CGFloat offset = 5.5;
+    
+    CGFloat hoffset = 5.5;
+    CGFloat voffset = 5.5;
+    const float offsetArcsecs = 10;
+    
+    if (self.currentExposure){
+        id aperture = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASDefaultScopeAperture"];
+        id fnumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASDefaultScopeFNumber"];
+        if ([aperture respondsToSelector:@selector(floatValue)] && [fnumber respondsToSelector:@selector(floatValue)]){
+            const float fl = [fnumber floatValue] * [aperture floatValue];
+            if (fl > 0){
+                NSDictionary* meta = [self.currentExposure meta];
+                const float pixelWidth = [[meta valueForKeyPath:@"device.params.pixelWidth"] floatValue];
+                const float pixelHeight = [[meta valueForKeyPath:@"device.params.pixelHeight"] floatValue];
+                if (pixelWidth > 0 && pixelHeight > 0){
+                    const float arcsecsPerPixelH = (pixelWidth/fl) * 206.3 * self.currentExposure.params.bin.width;
+                    hoffset = offsetArcsecs / arcsecsPerPixelH;
+                    const float arcsecsPerPixelV = (pixelHeight/fl) * 206.3 * self.currentExposure.params.bin.height;
+                    voffset = offsetArcsecs / arcsecsPerPixelV;
+                }
+            }
+        }
+    }
 
     // horizontal lines
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 - offset, reticleLength, reticleWidth));
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 + offset, reticleLength, reticleWidth));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 - voffset, reticleLength, reticleWidth));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 + voffset, reticleLength, reticleWidth));
 
     // vertical lines
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - offset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + offset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - hoffset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + hoffset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
     
     CGPathAddEllipseInRect(path, nil, CGRectMake(imageWidth/2-imageHeight/2, 0, imageHeight, imageHeight));
     CGPathAddEllipseInRect(path, nil, CGRectMake(0, imageHeight/2-imageWidth/2, imageWidth, imageWidth));

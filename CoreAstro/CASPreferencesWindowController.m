@@ -14,13 +14,6 @@
 
 @implementation CASPreferencesWindowController
 
-+ (void)initialize
-{
-    if (self == [CASPreferencesWindowController class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASDefaultScopeAperture":@(101),@"CASDefaultScopeFNumber":@(5.4)}];
-    }
-}
-
 - (id)initWithWindow:(NSWindow *)window
 {
     self = [super initWithWindow:window];

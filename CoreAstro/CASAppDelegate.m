@@ -55,8 +55,12 @@
 
 @synthesize windows, cameraControllers;
 
-+ (void)initialize {
-    [NSValueTransformer setValueTransformer:[[CASTemperatureTransformer alloc] init] forName:@"CASTemperatureTransformer"];
++ (void)initialize
+{
+    if (self == [CASAppDelegate class]){
+        [NSValueTransformer setValueTransformer:[[CASTemperatureTransformer alloc] init] forName:@"CASTemperatureTransformer"];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASDefaultScopeAperture":@(101),@"CASDefaultScopeFNumber":@(5.4)}];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
