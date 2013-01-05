@@ -343,7 +343,6 @@
 											<reference key="NSSuperview" ref="201670404"/>
 											<reference key="NSWindow"/>
 											<reference key="NSNextKeyView" ref="722857493"/>
-											<bool key="NSViewIsLayerTreeHost">YES</bool>
 											<string key="NSReuseIdentifierKey">_NS:28</string>
 											<float key="zoomFactor">1</float>
 											<float key="rotationAngle">0.0</float>
@@ -1032,7 +1031,6 @@
 													<string key="NSFrame">{{14, 38}, {192, 17}}</string>
 													<reference key="NSSuperview" ref="638800882"/>
 													<reference key="NSWindow"/>
-													<reference key="NSNextKeyView"/>
 													<string key="NSReuseIdentifierKey">_NS:1505</string>
 													<bool key="NSEnabled">YES</bool>
 													<object class="NSTextFieldCell" key="NSCell" id="33898123">
