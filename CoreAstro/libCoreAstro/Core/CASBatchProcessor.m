@@ -102,7 +102,8 @@
                                                                 time:[NSDate date]];
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
-    [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
+    NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
+    [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":modeStr}} forKey:@"history"];
     if (self.mode == kCASCombineProcessorAverage){
         [mutableMeta setObject:[NSString stringWithFormat:@"Average of %@",self.first.displayName] forKey:@"displayName"];
     }else{
@@ -122,8 +123,7 @@
 
 - (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
 {
-    NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
-    return @{@"uuid":exposure.uuid,@"mode":modeStr};
+    return @{@"uuid":exposure.uuid};
 }
 
 @end
@@ -503,7 +503,7 @@
         
     // add and entry to the history
     [self.history addObject:@{
-        @"uuid":exposure.uuid,@"translate":translateInfo,@"mode":@"average"
+        @"uuid":exposure.uuid,@"translate":translateInfo
      }];
     
     // translate the exposure relative to the reference star
@@ -541,7 +541,7 @@
                                                                 time:[NSDate date]];
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
-    [mutableMeta setObject:@{@"stack":self.history} forKey:@"history"];
+    [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":@"average"}} forKey:@"history"];
     [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %@",self.first.displayName] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
 
@@ -551,6 +551,11 @@
         
         block(error,result);
     }];
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return nil;
 }
 
 @end
