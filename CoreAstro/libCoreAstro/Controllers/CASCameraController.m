@@ -232,8 +232,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             if (self.movieExporter){
                 NSError* movieError = nil;
-                if (![self.movieExporter addExposureNow:exposure error:&movieError]){ // todo; option to set actual export time ?
-                    NSLog(@"*** Failed to save exposure to movie: %@",movieError);
+                // todo; option to match histograms across exposures
+                if (![self.movieExporter addExposureNow:exposure error:&movieError]){
+                    self.movieExporter = nil;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSApp presentError:movieError];
+                    });
                 }
             }
             
@@ -286,6 +290,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         // if we're waiting for the next exposure, stop the timer and clear the capturing flag
         self.capturing = NO;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    }
+    
+    if (self.movieExporter){
+        [self.movieExporter complete];
+        self.movieExporter = nil;
     }
 }
 

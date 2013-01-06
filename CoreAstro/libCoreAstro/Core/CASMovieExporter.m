@@ -149,6 +149,8 @@
     
     if ([self _prepareWithExposure:exposure error:&error]){
         
+        // errors after a few rapid sequential exposures, probably need to do the export queue after all
+        
         CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
         const CMTime time = CMTimeMakeWithSeconds([NSDate timeIntervalSinceReferenceDate] - _startTime,1);
         if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:time]){

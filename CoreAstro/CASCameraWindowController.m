@@ -1231,6 +1231,8 @@
     }
     else {
         
+        // todo; have this as an option, by default save to exposure library ?
+        
         NSSavePanel* save = [NSSavePanel savePanel];
         save.canCreateDirectories = YES;
         save.allowedFileTypes = @[@"mov"];
@@ -1251,6 +1253,8 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
+    BOOL enabled = YES;
+    
     switch (item.tag) {
             
         case 10000:
@@ -1312,6 +1316,7 @@
             else {
                 item.title = NSLocalizedString(@"Start Recording", @"Menu item title");
             }
+            enabled = self.cameraController.continuous;
             break;
 
         case 11000:
@@ -1335,7 +1340,7 @@
             break;
 
     }
-    return YES;
+    return enabled;
 }
 
 #pragma mark NSResponder
