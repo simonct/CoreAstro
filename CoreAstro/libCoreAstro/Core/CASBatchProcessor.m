@@ -207,7 +207,7 @@
         
         NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
         [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
-        [mutableMeta setObject:@"Corrected" forKey:@"displayName"];
+        [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
         self.result.meta = [mutableMeta copy];
         
         [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result save:YES block:^(NSError *error, NSURL *url) {
@@ -271,11 +271,12 @@
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
     if (self.mode == kCASSubtractProcessorDark){
         [mutableMeta setObject:@{@"dark-correction":@{@"dark":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
+        [mutableMeta setObject:@"Dark Corrected" forKey:@"displayName"];
     }
     else {
         [mutableMeta setObject:@{@"bias-correction":@{@"bias":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
+        [mutableMeta setObject:@"Bias Corrected" forKey:@"displayName"];
     }
-    [mutableMeta setObject:@"Corrected" forKey:@"displayName"];
     result.meta = [mutableMeta copy];
     
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
