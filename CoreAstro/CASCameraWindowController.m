@@ -1221,7 +1221,30 @@
 
 - (IBAction)startRecording:(id)sender
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
+    if (!self.cameraController){
+        return;
+    }
+    
+    if (self.cameraController.movieExporter){
+        [self.cameraController.movieExporter complete];
+        self.cameraController.movieExporter = nil;
+    }
+    else {
+        
+        NSSavePanel* save = [NSSavePanel savePanel];
+        save.canCreateDirectories = YES;
+        save.allowedFileTypes = @[@"mov"];
+        
+        [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+            
+            if (result == NSFileHandlingPanelOKButton){
+             
+                self.cameraController.movieExporter = [CASMovieExporter exporterWithURL:save.URL];
+                
+                // todo; some kind of record indicator on the exposure view
+            }
+        }];
+    }
 }
 
 #pragma mark Menu validation
@@ -1280,6 +1303,15 @@
 
         case 10010:
             item.state = self.scaleSubframe;
+            break;
+
+        case 10011:
+            if (self.cameraController.movieExporter){
+                item.title = NSLocalizedString(@"Stop Recording", @"Menu item title");
+            }
+            else {
+                item.title = NSLocalizedString(@"Start Recording", @"Menu item title");
+            }
             break;
 
         case 11000:

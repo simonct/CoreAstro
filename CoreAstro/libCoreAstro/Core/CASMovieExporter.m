@@ -32,6 +32,7 @@
     AVAssetWriterInput* _writerInput;
     AVAssetWriterInputPixelBufferAdaptor* _writerInputAdaptor;
     NSInteger _frame;
+    NSTimeInterval _startTime;
 }
 
 - (id)initWithURL:(NSURL*)url
@@ -84,7 +85,7 @@
     return pixelBuffer;
 }
 
-- (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
+- (BOOL)_prepareWithExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
 {
     NSError* error = nil;
     
@@ -111,10 +112,23 @@
                                                                                                    sourcePixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32ARGB]}];
             [_writer startWriting];
             [_writer startSessionAtSourceTime:kCMTimeZero];
+            
+            _startTime = [NSDate timeIntervalSinceReferenceDate];
         }
     }
+    
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
+}
 
-    if (!error){
+- (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
+{
+    NSError* error = nil;
+    
+    if ([self _prepareWithExposure:exposure error:&error]){
         
         CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
         if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:CMTimeMake(++_frame,20)]){
@@ -122,6 +136,26 @@
         }
     }
 
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
+}
+
+- (BOOL)addExposureNow:(CASCCDExposure*)exposure error:(NSError**)errorPtr
+{
+    NSError* error = nil;
+    
+    if ([self _prepareWithExposure:exposure error:&error]){
+        
+        CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
+        const CMTime time = CMTimeMakeWithSeconds([NSDate timeIntervalSinceReferenceDate] - _startTime,1);
+        if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:time]){
+            error = [_writer error];
+        }
+    }
+    
     if (errorPtr){
         *errorPtr = error;
     }

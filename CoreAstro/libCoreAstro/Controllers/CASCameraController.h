@@ -31,6 +31,7 @@
 @class CASCCDExposure;
 @class CASGuiderController;
 @class CASCCDExposure;
+@class CASMovieExporter;
 
 @interface CASCameraController : CASScriptableObject
 
@@ -56,6 +57,8 @@
 @property (nonatomic,strong) CASGuiderController* guider;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
+
+@property (nonatomic,strong) CASMovieExporter* movieExporter;
 
 - (id)initWithCamera:(CASCCDDevice*)camera;
 

@@ -28,6 +28,7 @@
 #import "CASGuiderController.h"
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
+#import "CASMovieExporter.h"
 
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
@@ -228,6 +229,13 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             endCapture(error,nil);
         }
         else {
+            
+            if (self.movieExporter){
+                NSError* movieError = nil;
+                if (![self.movieExporter addExposureNow:exposure error:&movieError]){ // todo; option to set actual export time ?
+                    NSLog(@"*** Failed to save exposure to movie: %@",movieError);
+                }
+            }
             
             exposure.type = kCASCCDExposureLightType; // no, need to feed in from window controller
             

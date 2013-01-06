@@ -28,6 +28,7 @@
 @interface CASMovieExporter : NSObject
 
 - (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)error;
+- (BOOL)addExposureNow:(CASCCDExposure*)exposure error:(NSError**)error;
 - (void)complete;
 
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url;

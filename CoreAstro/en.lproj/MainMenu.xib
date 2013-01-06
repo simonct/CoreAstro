@@ -285,7 +285,7 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="509677858">
+								<object class="NSMenuItem" id="107812181">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Export to Movie...</string>
 									<string key="NSKeyEquiv"/>
@@ -1645,6 +1645,7 @@
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10011</int>
 								</object>
 							</array>
 						</object>
@@ -1774,6 +1775,7 @@
 						<string key="NSFrame">{{255, 21}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="55679703">
@@ -3095,7 +3097,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">exportToMovie:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="509677858"/>
+						<reference key="destination" ref="107812181"/>
 					</object>
 					<int key="connectionID">855</int>
 				</object>
@@ -3268,7 +3270,7 @@
 							<reference ref="579971712"/>
 							<reference ref="1010469920"/>
 							<reference ref="565472242"/>
-							<reference ref="509677858"/>
+							<reference ref="107812181"/>
 						</array>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -5442,7 +5444,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">854</int>
-						<reference key="object" ref="509677858"/>
+						<reference key="object" ref="107812181"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 				</array>
