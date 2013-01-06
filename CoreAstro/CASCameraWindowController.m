@@ -32,6 +32,7 @@
 #import "CASShadowView.h"
 #import "CASMasterSelectionView.h"
 #import "CASLibraryBrowserViewController.h"
+
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASImageBannerView : NSView
@@ -791,7 +792,7 @@
     self.imageView.showProgress = NO;
 }
 
-- (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel andExportBlock:(void(^)(CASCCDExposure*))exportBlock
+- (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
 {
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
@@ -830,6 +831,10 @@
                     
                     // dismiss progress sheet/hud
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        if (completionBlock){
+                            completionBlock();
+                        }
                         [progress endSheetWithCode:NSOKButton];
                     });
                 });
@@ -861,7 +866,7 @@
     [options addSaveOptionsAccessoryViewToSavePanel:save];
     
     // run the save panel and save the exposures to the selected location
-    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
+    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
         
         // get the image
         CGImageRef image = [exposure newImage].CGImage; // need to apply the current processing settings
@@ -914,7 +919,7 @@
                 CGContextRelease(rgb);
             }
         }
-    }];
+    } completionBlock:nil];
 }
 
 - (IBAction)exportToFITS:(id)sender
@@ -938,7 +943,7 @@
 
     save.allowedFileTypes = @[@"fits",@"fit"];
     
-    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") andExportBlock:^(CASCCDExposure* exposure) {
+    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
         
         NSURL* url = save.URL;
         if ([exposures count] > 1){
@@ -959,6 +964,39 @@
                 });
             }
         }
+    } completionBlock:nil];
+}
+
+- (IBAction)exportToMovie:(id)sender
+{
+    NSArray* exposures = self.exposuresController.selectedObjects;
+    if (![exposures count]){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.canCreateDirectories = YES;
+    save.allowedFileTypes = @[@"mov"];
+    
+    __block CASMovieExporter* exporter = nil;
+    [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
+        
+        if (!exporter){
+            exporter = [CASMovieExporter exporterWithURL:save.URL];
+        }
+        
+        NSError* error;
+        if (!([exporter addExposure:exposure error:&error])){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSApp presentError:error];
+            });
+        }
+        
+    } completionBlock:^{
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [exporter complete];
+        });
     }];
 }
 

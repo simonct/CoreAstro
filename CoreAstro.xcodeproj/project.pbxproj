@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		F40093231698884500E96DBE /* CASPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40093211698884400E96DBE /* CASPreferencesWindowController.m */; };
 		F40093241698884500E96DBE /* CASPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40093221698884500E96DBE /* CASPreferencesWindowController.xib */; };
+		F40093601699AF4600E96DBE /* CASMovieExporter.h in Headers */ = {isa = PBXBuildFile; fileRef = F400935E1699AF4600E96DBE /* CASMovieExporter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F40093611699AF4600E96DBE /* CASMovieExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = F400935F1699AF4600E96DBE /* CASMovieExporter.m */; };
+		F40093681699B2DB00E96DBE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093671699B2DA00E96DBE /* AVFoundation.framework */; };
+		F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093691699B2ED00E96DBE /* CoreMedia.framework */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
 		F412975915FCA977009C215E /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975115FCA977009C215E /* move.pdf */; };
 		F412975A15FCA977009C215E /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975215FCA977009C215E /* selection.pdf */; };
@@ -377,6 +381,10 @@
 		F40093201698884400E96DBE /* CASPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPreferencesWindowController.h; sourceTree = "<group>"; };
 		F40093211698884400E96DBE /* CASPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPreferencesWindowController.m; sourceTree = "<group>"; };
 		F40093221698884500E96DBE /* CASPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASPreferencesWindowController.xib; sourceTree = "<group>"; };
+		F400935E1699AF4600E96DBE /* CASMovieExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMovieExporter.h; sourceTree = "<group>"; };
+		F400935F1699AF4600E96DBE /* CASMovieExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMovieExporter.m; sourceTree = "<group>"; };
+		F40093671699B2DA00E96DBE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F40093691699B2ED00E96DBE /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
@@ -596,6 +604,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */,
+				F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */,
+				F40093681699B2DB00E96DBE /* AVFoundation.framework in Frameworks */,
 				F44EDF5715FCC831003B1B4C /* Accelerate.framework in Frameworks */,
 				F44EDF5515FCC80B003B1B4C /* IOKit.framework in Frameworks */,
 				F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */,
@@ -876,6 +886,8 @@
 		F49E52C015A971610018DC75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F40093691699B2ED00E96DBE /* CoreMedia.framework */,
+				F40093671699B2DA00E96DBE /* AVFoundation.framework */,
 				F47EF80815C1D244002E9AB1 /* Accelerate.framework */,
 				F46BA59C15BDD75C0097532B /* Quartz.framework */,
 				F46BA59A15BDD7250097532B /* QuartzCore.framework */,
@@ -1085,6 +1097,8 @@
 				F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */,
 				F4B08B631673AF1A00771948 /* CASBatchProcessor.h */,
 				F4B08B641673AF1A00771948 /* CASBatchProcessor.m */,
+				F400935E1699AF4600E96DBE /* CASMovieExporter.h */,
+				F400935F1699AF4600E96DBE /* CASMovieExporter.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -1216,6 +1230,7 @@
 				F4849C7216590C820069647F /* CASImageDebayer.h in Headers */,
 				F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */,
 				F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */,
+				F40093601699AF4600E96DBE /* CASMovieExporter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1647,6 +1662,7 @@
 				F4849C7316590C820069647F /* CASImageDebayer.mm in Sources */,
 				F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */,
 				F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */,
+				F40093611699AF4600E96DBE /* CASMovieExporter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

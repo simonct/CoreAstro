@@ -46,4 +46,5 @@
 #import <CoreAstro/CASCameraController.h>
 #import <CoreAstro/CASGuiderController.h>
 #import <CoreAstro/CASUtilities.h>
+#import <CoreAstro/CASMovieExporter.h>
 

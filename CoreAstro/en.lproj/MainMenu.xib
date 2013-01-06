@@ -285,6 +285,14 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="509677858">
+									<reference key="NSMenu" ref="720053764"/>
+									<string key="NSTitle">Export to Movie...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="579971712">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Revert to Saved</string>
@@ -1625,14 +1633,6 @@
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
 									<string key="NSTitle"/>
-									<string key="NSKeyEquiv"/>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="991797993">
-									<reference key="NSMenu" ref="37679894"/>
-									<string key="NSTitle">Make Video</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -3093,11 +3093,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">makeVideo:</string>
+						<string key="label">exportToMovie:</string>
 						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="991797993"/>
+						<reference key="destination" ref="509677858"/>
 					</object>
-					<int key="connectionID">853</int>
+					<int key="connectionID">855</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3268,6 +3268,7 @@
 							<reference ref="579971712"/>
 							<reference ref="1010469920"/>
 							<reference ref="565472242"/>
+							<reference ref="509677858"/>
 						</array>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -5313,7 +5314,6 @@
 							<reference ref="863677953"/>
 							<reference ref="854771988"/>
 							<reference ref="1062772022"/>
-							<reference ref="991797993"/>
 							<reference ref="682948776"/>
 							<reference ref="975813938"/>
 						</array>
@@ -5385,11 +5385,6 @@
 						<reference key="parent" ref="37679894"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">829</int>
-						<reference key="object" ref="991797993"/>
-						<reference key="parent" ref="37679894"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">830</int>
 						<reference key="object" ref="682948776"/>
 						<reference key="parent" ref="37679894"/>
@@ -5444,6 +5439,11 @@
 						<int key="objectID">840</int>
 						<reference key="object" ref="972965960"/>
 						<reference key="parent" ref="163035705"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">854</int>
+						<reference key="object" ref="509677858"/>
+						<reference key="parent" ref="720053764"/>
 					</object>
 				</array>
 			</object>
@@ -5769,7 +5769,6 @@
 				<string key="826.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="827.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="828.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="829.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="830.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="832.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -5780,13 +5779,14 @@
 				<string key="838.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="839.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="840.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="854.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">853</int>
+			<int key="maxID">855</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5825,7 +5825,7 @@
 						<string key="combineAverage:">id</string>
 						<string key="combineSum:">id</string>
 						<string key="exportToFITS:">id</string>
-						<string key="makeVideo:">id</string>
+						<string key="exportToMovie:">id</string>
 						<string key="quickStack:">id</string>
 						<string key="sendFeedback:">id</string>
 						<string key="startRecording:">id</string>
@@ -5891,8 +5891,8 @@
 							<string key="name">exportToFITS:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="makeVideo:">
-							<string key="name">makeVideo:</string>
+						<object class="IBActionInfo" key="exportToMovie:">
+							<string key="name">exportToMovie:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="quickStack:">

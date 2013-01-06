@@ -644,11 +644,6 @@
     NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
-- (IBAction)makeVideo:(id)sender
-{
-    NSLog(@"%@",NSStringFromSelector(_cmd));
-}
-
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
