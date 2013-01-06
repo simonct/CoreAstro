@@ -72,12 +72,17 @@
 
 - (CGContextRef)newContext
 {
+    return [self newContextOfSize:CASSizeMake(self.size.width, self.size.height)];
+}
+
+- (CGContextRef)newContextOfSize:(CASSize)size
+{
     CGContextRef context = nil;
     if (self.rgba){
-        context = [[self class] newRGBAFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+        context = [[self class] newRGBAFloatBitmapContextWithSize:size];
     }
     else {
-        context = [[self class] newFloatBitmapContextWithSize:CASSizeMake(self.size.width, self.size.height)];
+        context = [[self class] newFloatBitmapContextWithSize:size];
     }
     return context;
 }

@@ -37,6 +37,7 @@
 - (CGImageRef)CGImage NS_RETURNS_INNER_POINTER;
 
 - (CGContextRef)newContext;
+- (CGContextRef)newContextOfSize:(CASSize)size;
 
 + (CGContextRef)newRGBBitmapContextWithSize:(CASSize)size; // RGBA context
 + (CGContextRef)newFloatBitmapContextWithSize:(CASSize)size; // floating point Gray
