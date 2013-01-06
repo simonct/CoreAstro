@@ -633,9 +633,9 @@
 + (NSArray*)batchProcessorsForExposures:(NSArray*)exposures
 {
     return [exposures count] ? @[
+        @{@"id":@"stack.average",@"name":@"Quick Stack"},
         @{@"id":@"combine.sum",@"name":@"Combine Sum"},
-        @{@"id":@"combine.average",@"name":@"Combine Average"},
-        @{@"id":@"stack.average",@"name":@"Stack Average"}
+        @{@"id":@"combine.average",@"name":@"Combine Average"}
     ] : nil;
 }
 

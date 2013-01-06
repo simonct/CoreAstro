@@ -182,6 +182,7 @@
 - (void)loadView
 {
     [super loadView];
+    
     [self.browserView setDataSource:self];
     [self.browserView setDelegate:self];
     [self.browserView setCellsStyleMask:IKCellsStyleTitled|IKCellsStyleSubtitled|IKCellsStyleShadowed];
@@ -190,6 +191,10 @@
     [self.browserView setAllowsDroppingOnItems:YES];
     [self.browserView registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
     [self.browserView setValue:[NSColor lightGrayColor] forKey:IKImageBrowserBackgroundColorKey];
+    
+    if ([self.browserView respondsToSelector:@selector(setViewController:)]){
+        [self.browserView performSelector:@selector(setViewController:) withObject:self];
+    }
 }
 
 #pragma mark - Exposures
@@ -622,6 +627,26 @@
     CASSubtractProcessor* processor = [[CASSubtractProcessor alloc] init];
     processor.base = base;
     [self _runBatchProcessor:processor withExposures:exposures];
+}
+
+- (IBAction)quickStack:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)combineSum:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)combineAverage:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)makeVideo:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
 #pragma mark - KVO

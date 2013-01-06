@@ -1166,6 +1166,26 @@
 
 }
 
+- (IBAction)captureDarks:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)captureBias:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)captureFlats:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)startRecording:(id)sender
+{
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
 #pragma mark Menu validation
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
