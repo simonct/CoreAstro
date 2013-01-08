@@ -27,8 +27,10 @@
 
 @interface CASMovieExporter : NSObject
 
+// todo; set movie time interval
+
 - (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)error;
-- (BOOL)addExposureNow:(CASCCDExposure*)exposure error:(NSError**)error;
+
 - (void)complete;
 
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url;
