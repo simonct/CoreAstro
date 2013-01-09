@@ -216,12 +216,15 @@
 
 - (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
 {
-    NSString* urlString = [sender.draggingPasteboard propertyListForType:(id)kUTTypeFileURL];
+    NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
     if ([urlString isKindOfClass:[NSString class]]){
         NSURL* url = [NSURL URLWithString:urlString];
         self.imageURL = url;
         if (self.image){
             return YES;
+        }
+        else {
+            [NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"];
         }
     }
     return NO;
