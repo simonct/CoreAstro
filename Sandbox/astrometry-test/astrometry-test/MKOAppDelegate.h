@@ -21,6 +21,9 @@
 @property (unsafe_unretained) IBOutlet NSTextField *solutionRALabel;
 @property (unsafe_unretained) IBOutlet NSTextField *solutionDecLabel;
 @property (unsafe_unretained) IBOutlet NSTextField *solutionAngleLabel;
+@property (weak) IBOutlet NSTextField *pixelScaleLabel;
+@property (weak) IBOutlet NSTextField *fieldWidthLabel;
+@property (weak) IBOutlet NSTextField *fieldHeightLabel;
 
 - (IBAction)solve:(id)sender;
 

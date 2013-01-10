@@ -320,7 +320,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
     self.solved = NO;
     
+    // bindings...
     self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
+    self.pixelScaleLabel.stringValue = self.fieldWidthLabel.stringValue = self.fieldHeightLabel.stringValue = @"";
 
     self.solveButton.enabled = NO;
     self.imageView.alphaValue = 0.5;
@@ -409,6 +411,15 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                     self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
                                                                            [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
                                     
+                                    self.pixelScaleLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2033",
+                                                                           [[self numberFromInfo:output withKey:@"pixscale"] doubleValue]];
+
+                                    self.fieldWidthLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2032", // todo; check fieldunits == arcminutes
+                                                                        [[self numberFromInfo:output withKey:@"fieldw"] doubleValue]];
+                                    
+                                    self.fieldHeightLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2032",
+                                                                        [[self numberFromInfo:output withKey:@"fieldh"] doubleValue]];
+
                                     // get annotations
                                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
                                     if (!self.solverTask){
@@ -462,6 +473,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         if (result == NSFileHandlingPanelOKButton){
             
             self.imageView.imageURL = open.URL;
+            if (self.imageView.imageURL){
+                // self.solution = nil;
+            }
         }
     }];
 }
