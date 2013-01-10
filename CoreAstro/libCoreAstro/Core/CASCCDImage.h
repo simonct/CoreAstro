@@ -36,6 +36,8 @@
 
 - (CGImageRef)CGImage NS_RETURNS_INNER_POINTER;
 
+- (NSData*)dataForUTType:(NSString*)UTType options:(NSDictionary*)options;
+
 - (CGContextRef)newContext;
 - (CGContextRef)newContextOfSize:(CASSize)size;
 

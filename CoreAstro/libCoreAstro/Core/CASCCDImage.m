@@ -122,6 +122,57 @@
     return result;
 }
 
+- (NSData*)dataForUTType:(NSString*)UTType options:(NSDictionary*)options // todo; error
+{
+    NSData* result = nil;
+    
+    CGImageRef image = self.CGImage; // need to apply the current processing settings
+    if (!image){
+        NSLog(@"*** Failed to create image from exposure");
+    }
+    else{
+        
+        // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
+        const size_t width = CGImageGetWidth(image);
+        const size_t height = CGImageGetHeight(image);
+        CGContextRef rgb = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(width, height)];
+        if (!rgb){
+            NSLog(@"*** Failed to create rgb image context");
+        }
+        else{
+            
+            CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), image);
+            CGImageRef image = CGBitmapContextCreateImage(rgb);
+            if (!image){
+                NSLog(@"*** Failed to create rgb image");
+            }
+            else{
+                
+                CFMutableDataRef output = CFDataCreateMutable(NULL,0);
+                CGImageDestinationRef dest = CGImageDestinationCreateWithData(output,(__bridge CFStringRef)UTType,1,(__bridge CFDictionaryRef)(options));
+                if (!dest){
+                    NSLog(@"*** Failed to create image exporter");
+                }
+                else{
+                    
+                    CGImageDestinationAddImage(dest, image, NULL);
+                    if (!CGImageDestinationFinalize(dest)){
+                        NSLog(@"*** Failed to save image");
+                    }
+                    else {
+                        result = (__bridge NSData *)(output);
+                    }
+                    CGImageRelease(image);
+                    CFRelease(dest);
+                }
+            }
+            CGContextRelease(rgb);
+        }
+    }
+    
+    return result;
+}
+
 + (CGContextRef)newRGBBitmapContextWithSize:(CASSize)size
 {
     CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
