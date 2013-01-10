@@ -68,7 +68,7 @@
                     CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
                     if (rgb){
                         
-                        CGContextRef context = CGBitmapContextCreate(pixelData,size.width,size.height,8,4*size.width,rgb,kCGImageAlphaPremultipliedFirst);
+                        CGContextRef context = CGBitmapContextCreate(pixelData,CVPixelBufferGetWidth(pixelBuffer),CVPixelBufferGetHeight(pixelBuffer),8,CVPixelBufferGetBytesPerRow(pixelBuffer),rgb,kCGImageAlphaPremultipliedFirst);
                         if (context){
                             
                             CGContextDrawImage(context,CGRectMake(0,0,size.width,size.height),image);
@@ -98,7 +98,8 @@
         if (!_writerInput){
             
             _writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
-                                                              outputSettings:@{AVVideoCodecKey:AVVideoCodecH264,
+                                                              outputSettings:@{AVVideoCodecKey:AVVideoCodecH264, // H264 is the most compatible but ProRes might be a better choice for quality
+                                                            // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
                                                              AVVideoWidthKey:[NSNumber numberWithInteger:exposure.actualSize.width],
                                                             AVVideoHeightKey:[NSNumber numberWithInteger:exposure.actualSize.height]}];
             [_writer addInput:_writerInput];
