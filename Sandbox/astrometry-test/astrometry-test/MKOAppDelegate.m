@@ -236,6 +236,7 @@
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) CASSolverModel* solverModel;
 @property (nonatomic,readonly) NSString* cacheDirectory;
+@property (nonatomic,assign) BOOL solved;
 @end
 
 @implementation MKOAppDelegate
@@ -317,6 +318,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         return;
     }
 
+    self.solved = NO;
+    
     self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
 
     self.solveButton.enabled = NO;
@@ -391,6 +394,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                 }
                                 else{
                                     
+                                    self.solved = YES;
+                                    
                                     self.solutionRALabel.stringValue = [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
                                                                         [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
                                                                         [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
@@ -443,6 +448,54 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             }
         }];
     }
+}
+
+- (IBAction)openDocument:(id)sender
+{
+    NSOpenPanel* open = [NSOpenPanel openPanel];
+    
+    open.allowedFileTypes = [NSImage imageFileTypes];
+    open.allowsMultipleSelection = NO;
+    
+    [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            self.imageView.imageURL = open.URL;
+        }
+    }];
+}
+
+- (IBAction)saveDocument:(id)sender
+{
+    if (!self.solved){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    
+    save.allowedFileTypes = @[[self.imageView.imageURL pathExtension]];
+    save.canCreateDirectories = YES;
+    save.nameFieldStringValue = [self.imageView.imageURL lastPathComponent];
+    
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            NSError* error;
+            if (![[NSFileManager defaultManager] copyItemAtURL:self.imageView.imageURL toURL:save.URL error:&error]){
+                [NSApp presentError:error];
+            }
+        }
+    }];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem*)menuItem
+{
+    if (menuItem.action == @selector(saveDocument:)){
+        return self.solved;
+    }
+    return YES;
 }
 
 @end
