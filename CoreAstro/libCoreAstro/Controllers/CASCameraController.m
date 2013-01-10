@@ -233,7 +233,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             if (self.movieExporter){
                 NSError* movieError = nil;
                 // todo; option to match histograms across exposures
-                if (![self.movieExporter addExposureNow:exposure error:&movieError]){
+                if (![self.movieExporter addExposure:exposure error:&movieError]){
                     self.movieExporter = nil;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [NSApp presentError:movieError];
