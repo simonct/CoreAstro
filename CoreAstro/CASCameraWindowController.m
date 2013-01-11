@@ -126,6 +126,7 @@
 @property (nonatomic,strong) CASExposuresController *exposuresController;
 @property (nonatomic,weak) IBOutlet NSView *guideControlsContainer;
 @property (nonatomic,assign) NSInteger guidePulseDuration;
+@property (nonatomic,strong) CASPlateSolver* plateSolver;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -1225,7 +1226,52 @@
 
 - (IBAction)plateSolve:(id)sender
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
+    if (self.plateSolver){
+        // todo; solvers should be per exposure
+        NSLog(@"Already solving something");
+        return;
+    }
+    
+    const NSInteger count = [self.exposuresController.selectedObjects count];
+    if (count != 1){
+        return;
+    }
+    
+    CASCCDExposure* exposure = [self.exposuresController.selectedObjects lastObject];
+    
+    NSError* error;
+    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+    if (![self.plateSolver canSolveExposure:exposure error:&error]){
+        [NSApp presentError:error];
+    }
+    else{
+    
+        // todo; should be per exposure rather than blocking the whole app
+        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+        [progress beginSheetModalForWindow:self.window];
+        progress.label.stringValue = NSLocalizedString(@"Solving...", @"Progress sheet status label");
+        [progress.progressBar setIndeterminate:YES];
+        
+        // solve async - beware of races here since we're doing this async
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                    else {
+                        NSLog(@"result: %@",results);
+                    }
+                    self.plateSolver = nil;
+                });
+            }];
+        });
+    }
 }
 
 - (IBAction)toggleRecordAsVideo:(id)sender
