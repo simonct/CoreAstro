@@ -29,6 +29,8 @@
 
 // todo; set movie time interval
 
+@property (nonatomic,strong,readonly) NSError* error;
+
 - (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)error;
 
 - (void)complete;

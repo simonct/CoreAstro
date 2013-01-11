@@ -24,15 +24,33 @@
 //
 
 #import "CASMovieExporter.h"
+#import "CASUtilities.h"
 #import <AVFoundation/AVFoundation.h>
 
+@interface CASMovieExporter ()
+@property (nonatomic,strong) NSURL* url;
+@property (nonatomic,strong) NSError* error;
+@property (nonatomic,strong) AVAssetWriter* writer;
+@property (nonatomic,strong) AVAssetWriterInput* writerInput;
+@property (nonatomic,strong) AVAssetWriterInputPixelBufferAdaptor* writerInputAdaptor;
+@property (nonatomic,strong) NSMutableArray* exposures;
+@end
+
+@interface CASMovieExporterQueueEntry : NSObject
+@property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic,assign) CMTime time;
+@end
+
+@implementation CASMovieExporterQueueEntry
+@end
+
+static NSInteger count;
+
 @implementation CASMovieExporter {
-    NSURL* _url;
-    AVAssetWriter* _writer;
-    AVAssetWriterInput* _writerInput;
-    AVAssetWriterInputPixelBufferAdaptor* _writerInputAdaptor;
     NSInteger _frame;
     NSTimeInterval _startTime;
+    dispatch_queue_t _queue;
+    BOOL _complete;
 }
 
 - (id)initWithURL:(NSURL*)url
@@ -40,8 +58,16 @@
     self = [super init];
     if (self) {
         _url = url;
+        count = 0;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    if (_queue){
+        dispatch_release(_queue);
+    }
 }
 
 - (CVPixelBufferRef)pixelBufferFromExposure:(CASCCDExposure*)exposure
@@ -80,6 +106,8 @@
                 CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
             }
         }
+        
+        [exposure reset];
     }
     
     return pixelBuffer;
@@ -115,6 +143,47 @@
             [_writer startSessionAtSourceTime:kCMTimeZero];
             
             _startTime = [NSDate timeIntervalSinceReferenceDate];
+            
+            if (!_queue){
+                _queue = dispatch_queue_create("org.coreastro.movie-export", DISPATCH_QUEUE_SERIAL);
+            }
+            
+            if (!_exposures){
+                _exposures = [NSMutableArray arrayWithCapacity:5];
+            }
+            
+            [_writerInput requestMediaDataWhenReadyOnQueue:_queue usingBlock:^{
+                
+                @synchronized(self){
+                    
+                    while (!_complete && [_writerInput isReadyForMoreMediaData]) {
+                        
+                        CMTime time;
+                        CASCCDExposure* exposure = nil;
+                        [self _getLastExposure:&exposure time:&time];
+                        if (!exposure){
+                            break;
+                        }
+                        else{
+                            
+                            CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
+                            if (!buffer){
+                                NSLog(@"%@: no pixel buffer",NSStringFromSelector(_cmd));
+                                break;
+                            }
+                            else{
+                                
+                                if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:time]){
+                                    self.error = [_writer error];
+                                    NSLog(@"%@: -appendPixelBuffer:withPresentationTime: %@",NSStringFromSelector(_cmd),self.error);
+                                    [self complete];
+                                }
+                                CFRelease(buffer);
+                            }
+                        }
+                    }
+                }
+            }];
         }
     }
     
@@ -125,18 +194,42 @@
     return (error == nil);
 }
 
+- (void)_prependExposure:(CASCCDExposure*)exposure time:(CMTime)time
+{
+    NSParameterAssert(CMTIME_IS_VALID(time));
+    @synchronized(self){
+        CASMovieExporterQueueEntry* entry = [CASMovieExporterQueueEntry new];
+        entry.exposure = exposure;
+        entry.time = time;
+        [_exposures insertObject:entry atIndex:0];
+    }
+}
+
+- (void)_getLastExposure:(CASCCDExposure**)exposure time:(CMTime*)time
+{
+    @synchronized(self){
+        if ([_exposures count]){
+            CASMovieExporterQueueEntry* entry = [_exposures lastObject];
+            if (exposure) *exposure = entry.exposure;
+            if (time) *time = entry.time;
+            [_exposures removeLastObject];
+        }
+    }
+}
+
 - (BOOL)addExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
 {
     NSError* error = nil;
     
+    // enqueue the frame to the start of the write queue
     if ([self _prepareWithExposure:exposure error:&error]){
-        
-        CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
-        if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:CMTimeMake(++_frame,20)]){
-            error = [_writer error];
-        }
+        [self _prependExposure:exposure time:CMTimeMake(++_frame,20)];
     }
 
+    if (error){
+        [self complete];
+    }
+    
     if (errorPtr){
         *errorPtr = error;
     }
@@ -146,10 +239,17 @@
 
 - (void)complete
 {
-    [_writerInput markAsFinished];
-    [_writer finishWriting];
-    _writerInput = nil;
-    _writer = nil;
+    @synchronized(self){
+        
+        _complete = YES;
+        
+        // this will probably result in enqueued exposures being discarded...
+        [_writerInput markAsFinished];
+        [_writer finishWriting];
+        _writerInputAdaptor = nil;
+        _writerInput = nil;
+        _writer = nil;
+    }
 }
 
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url
