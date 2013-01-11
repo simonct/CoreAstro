@@ -1638,9 +1638,28 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="337713108">
+									<reference key="NSMenu" ref="37679894"/>
+									<string key="NSTitle">Plate Solve</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10012</int>
+								</object>
+								<object class="NSMenuItem" id="808352837">
+									<reference key="NSMenu" ref="37679894"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="682948776">
 									<reference key="NSMenu" ref="37679894"/>
-									<string key="NSTitle">Start Recording</string>
+									<string key="NSTitle">Record as Video</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -2185,6 +2204,13 @@
 				<reference key="NSNextKeyView" ref="207146983"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
+			</object>
+			<object class="NSMenuItem" id="70662656">
+				<string key="NSTitle">Item</string>
+				<string key="NSKeyEquiv"/>
+				<int key="NSMnemonicLoc">2147483647</int>
+				<reference key="NSOnImage" ref="35465992"/>
+				<reference key="NSMixedImage" ref="502551668"/>
 			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -3087,19 +3113,27 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">startRecording:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="682948776"/>
-					</object>
-					<int key="connectionID">852</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">exportToMovie:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="107812181"/>
 					</object>
 					<int key="connectionID">855</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">plateSolve:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="337713108"/>
+					</object>
+					<int key="connectionID">859</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleRecordAsVideo:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="682948776"/>
+					</object>
+					<int key="connectionID">860</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -5318,6 +5352,8 @@
 							<reference ref="1062772022"/>
 							<reference ref="682948776"/>
 							<reference ref="975813938"/>
+							<reference ref="337713108"/>
+							<reference ref="808352837"/>
 						</array>
 						<reference key="parent" ref="797432429"/>
 					</object>
@@ -5446,6 +5482,21 @@
 						<int key="objectID">854</int>
 						<reference key="object" ref="107812181"/>
 						<reference key="parent" ref="720053764"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">856</int>
+						<reference key="object" ref="70662656"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">857</int>
+						<reference key="object" ref="337713108"/>
+						<reference key="parent" ref="37679894"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">858</int>
+						<reference key="object" ref="808352837"/>
+						<reference key="parent" ref="37679894"/>
 					</object>
 				</array>
 			</object>
@@ -5782,13 +5833,16 @@
 				<string key="839.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="840.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="854.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="856.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="857.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="858.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">855</int>
+			<int key="maxID">860</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5828,12 +5882,13 @@
 						<string key="combineSum:">id</string>
 						<string key="exportToFITS:">id</string>
 						<string key="exportToMovie:">id</string>
+						<string key="plateSolve:">id</string>
 						<string key="quickStack:">id</string>
 						<string key="sendFeedback:">id</string>
-						<string key="startRecording:">id</string>
 						<string key="toggleEqualiseHistogram:">id</string>
 						<string key="toggleInvertImage:">id</string>
 						<string key="toggleMedianFilter:">id</string>
+						<string key="toggleRecordAsVideo:">id</string>
 						<string key="toggleScaleSubframe:">id</string>
 						<string key="toggleShowHistogram:">id</string>
 						<string key="toggleShowImageStats:">id</string>
@@ -5897,16 +5952,16 @@
 							<string key="name">exportToMovie:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="plateSolve:">
+							<string key="name">plateSolve:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="quickStack:">
 							<string key="name">quickStack:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="sendFeedback:">
 							<string key="name">sendFeedback:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startRecording:">
-							<string key="name">startRecording:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleEqualiseHistogram:">
@@ -5919,6 +5974,10 @@
 						</object>
 						<object class="IBActionInfo" key="toggleMedianFilter:">
 							<string key="name">toggleMedianFilter:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleRecordAsVideo:">
+							<string key="name">toggleRecordAsVideo:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleScaleSubframe:">

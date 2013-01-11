@@ -108,6 +108,7 @@
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
+@property (nonatomic,assign) BOOL recordAsVideo;
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
@@ -736,11 +737,8 @@
 
 #pragma mark - Actions
 
-- (IBAction)capture:(NSButton*)sender
+- (IBAction)_captureImpl
 {
-    // check to see if we're in continuous mode
-    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
-
     // set the progress indicator settings after setting the continuous flag
     self.progressIndicator.maxValue = 1;
     self.imageView.progress = self.progressIndicator.doubleValue = 0;
@@ -783,6 +781,44 @@
             self.imageView.showProgress = self.cameraController.capturing;
         }
     }];
+}
+
+- (void)_chooseMovieLocationAndStartRecordingWithBlock:(void(^)(void))block
+{
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.canCreateDirectories = YES;
+    save.allowedFileTypes = @[@"mov"];
+    
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            self.cameraController.movieExporter = [CASMovieExporter exporterWithURL:save.URL];
+            
+            // todo; some kind of record indicator on the exposure view
+            
+            if (block){
+                block();
+            }
+        }
+    }];
+}
+
+- (IBAction)capture:(NSButton*)sender
+{
+    // check to see if we're in continuous mode
+    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
+    
+    // if recording to video, select a file todo; just save to exposure library
+    if (self.cameraController.continuous && self.recordAsVideo && !self.cameraController.movieExporter){
+        [self _chooseMovieLocationAndStartRecordingWithBlock:^{
+            [self _captureImpl];
+        }];
+    }
+    else {
+        [self _captureImpl];
+    }
+
 }
 
 - (IBAction)cancelCapture:(NSButton*)sender
@@ -868,55 +904,23 @@
     // run the save panel and save the exposures to the selected location
     [self _runSavePanel:save forExposures:exposures withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
         
-        // get the image
-        CGImageRef image = [exposure newImage].CGImage; // need to apply the current processing settings
-        if (!image){
+        NSData* data = [[exposure newImage] dataForUTType:options.imageUTType options:options.imageProperties]; 
+        if (!data){
             NSLog(@"*** Failed to create image from exposure");
         }
-        else{
+        else {
             
-            // convert to rgb as many common apps, including Preview, seem to be completely baffled by generic gray images
-            const size_t width = CGImageGetWidth(image);
-            const size_t height = CGImageGetHeight(image);
-            CGContextRef rgb = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(width, height)];
-            if (!rgb){
-                NSLog(@"*** Failed to create rgb image context");
+            NSURL* url = save.URL;
+            if ([exposures count] > 1){
+                NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exposure];
+                NSString *extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(options.imageUTType), kUTTagClassFilenameExtension);
+                url = [[url URLByAppendingPathComponent:name] URLByAppendingPathExtension:extension];
             }
-            else{
-                
-                CGContextDrawImage(rgb, CGRectMake(0, 0, width, height), image);
-                CGImageRef image = CGBitmapContextCreateImage(rgb);
-                if (!image){
-                    NSLog(@"*** Failed to create rgb image");
-                }
-                else{
-                    
-                    NSURL* url = save.URL;
-                    if ([exposures count] > 1){
-                        NSString* name = [CASCCDExposureIO defaultFilenameForExposure:exposure];
-                        NSString *extension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(options.imageUTType), kUTTagClassFilenameExtension);
-                        url = [[url URLByAppendingPathComponent:name] URLByAppendingPathExtension:extension];
-                    }
-                    if (![[NSFileManager defaultManager] createDirectoryAtPath:[[url path] stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil]){
-                        NSLog(@"*** Failed to create image directory");
-                    }
-                    else {
-                        CGImageDestinationRef dest = CGImageDestinationCreateWithURL((__bridge CFURLRef)url,(__bridge CFStringRef)[options imageUTType],1,NULL);
-                        if (!dest){
-                            NSLog(@"*** Failed to create image exporter to %@",url);
-                        }
-                        else{
-                            
-                            CGImageDestinationAddImage(dest, image, (__bridge CFDictionaryRef)[options imageProperties]);
-                            if (!CGImageDestinationFinalize(dest)){
-                                NSLog(@"*** Failed to save image to %@",url);
-                            }
-                            CGImageRelease(image);
-                            CFRelease(dest);
-                        }
-                    }
-                }
-                CGContextRelease(rgb);
+
+            NSError* error;
+            [data writeToFile:url.path options:NSDataWritingAtomic error:&error];
+            if (error){
+                [NSApp presentError:error];
             }
         }
     } completionBlock:nil];
@@ -1219,33 +1223,35 @@
     NSLog(@"%@",NSStringFromSelector(_cmd));
 }
 
-- (IBAction)startRecording:(id)sender
+- (IBAction)plateSolve:(id)sender
 {
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (IBAction)toggleRecordAsVideo:(id)sender
+{
+    self.recordAsVideo = !self.recordAsVideo;
+    
     if (!self.cameraController){
         return;
     }
-    
-    if (self.cameraController.movieExporter){
-        [self.cameraController.movieExporter complete];
-        self.cameraController.movieExporter = nil;
+        
+    if (!self.recordAsVideo){
+        
+        // stop any active recoring
+        if (self.cameraController.movieExporter){
+            [self.cameraController.movieExporter complete];
+            self.cameraController.movieExporter = nil;
+        }
     }
     else {
         
-        // todo; have this as an option, by default save to exposure library ?
-        
-        NSSavePanel* save = [NSSavePanel savePanel];
-        save.canCreateDirectories = YES;
-        save.allowedFileTypes = @[@"mov"];
-        
-        [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (!self.cameraController.movieExporter) {
             
-            if (result == NSFileHandlingPanelOKButton){
-             
-                self.cameraController.movieExporter = [CASMovieExporter exporterWithURL:save.URL];
-                
-                // todo; some kind of record indicator on the exposure view
-            }
-        }];
+            // todo; have this as an option, by default save to exposure library ?
+            
+            [self _chooseMovieLocationAndStartRecordingWithBlock:nil];
+        }
     }
 }
 
@@ -1310,15 +1316,13 @@
             break;
 
         case 10011:
-            if (self.cameraController.movieExporter){
-                item.title = NSLocalizedString(@"Stop Recording", @"Menu item title");
-            }
-            else {
-                item.title = NSLocalizedString(@"Start Recording", @"Menu item title");
-            }
-            enabled = self.cameraController.continuous;
+            item.state = self.recordAsVideo;
             break;
-
+            
+        case 10012:
+            enabled = self.currentExposure != nil;
+            break;
+            
         case 11000:
             item.state = self.imageDebayer.mode == kCASImageDebayerNone;
             break;
