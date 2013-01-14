@@ -8,12 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class CASDraggableImageView;
+@class CASPlateSolveImageView;
 
 @interface MKOAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (unsafe_unretained) IBOutlet NSWindow *window;
-@property (unsafe_unretained) IBOutlet CASDraggableImageView *imageView;
+@property (unsafe_unretained) IBOutlet CASPlateSolveImageView *imageView;
 @property (unsafe_unretained) IBOutlet NSProgressIndicator *spinner;
 @property (unsafe_unretained) IBOutlet NSButton *solveButton;
 @property (unsafe_unretained) IBOutlet NSPanel *outputLogPanel;

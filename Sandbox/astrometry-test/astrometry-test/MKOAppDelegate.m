@@ -185,10 +185,11 @@
 @implementation CASSolverModel
 @end
 
-@interface CASDraggableImageView : CASImageView
+@interface CASPlateSolveImageView : CASImageView
+@property (nonatomic,assign) BOOL acceptDrop;
 @end
 
-@implementation CASDraggableImageView
+@implementation CASPlateSolveImageView
 
 - (void)awakeFromNib
 {
@@ -205,11 +206,15 @@
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-    return NSDragOperationCopy;
+    return self.acceptDrop ? NSDragOperationCopy : NSDragOperationNone;
 }
 
 - (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
 {
+    if (!self.acceptDrop){
+        return NO;
+    }
+    
     NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
     if ([urlString isKindOfClass:[NSString class]]){
         self.url = [NSURL URLWithString:urlString];
@@ -220,6 +225,7 @@
             [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
         }
     }
+    
     return NO;
 }
 
@@ -312,48 +318,6 @@
     const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
 
     return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
-    
-    
-//    CALayer* layer = [CALayer layer];
-//    
-//    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
-//
-//    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
-//    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
-//    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
-//
-//    layer.borderColor = colour;
-//    layer.borderWidth = 2.5;
-//    layer.cornerRadius = radius;
-//    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
-//    layer.position = CGPointMake(x, y);
-//    layer.masksToBounds = NO;
-//    
-//    CATextLayer* text = [CATextLayer layer];
-//    text.string = self.name;
-//    const CGFloat fontSize = 24;
-//    NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
-//    const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
-//    text.font = (__bridge CFTypeRef)(font);
-//    text.fontSize = fontSize;
-//    text.bounds = CGRectMake(0, 0, size.width, size.height);
-//    text.position = CGPointMake(CGRectGetMidX(layer.bounds), CGRectGetMidY(layer.bounds) + size.height + 5);
-//    text.alignmentMode = @"center";
-//    text.foregroundColor = colour;
-//    [layer addSublayer:text];
-//    
-//    // want the inverse of the text bounding box as a clip mask for the circle layer
-////    CAShapeLayer* shape = [CAShapeLayer layer];
-////    CGPathRef path = CGPathCreateWithRect(text.frame, nil);
-////    shape.path = path;
-////    shape.fillRule = kCAFillRuleEvenOdd;
-////    layer.mask = shape;
-//
-//    CFBridgingRelease(colour);
-//    
-//    [annotationLayer addSublayer:layer];
-//
-//    return layer;
 }
 
 @end
@@ -395,6 +359,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         }
     }
     
+    self.imageView.acceptDrop = YES;
     [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
 }
 
@@ -450,7 +415,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     return nil;
 }
 
-- (void)updateAnnotations:(NSArray*)annotations
+- (void)updateAnnotations:(NSArray*)annotations // move to image view
 {
     if (_annotations){
         for (id object in self.annotations){
@@ -459,70 +424,28 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
     }
     
-    for (NSDictionary* annotation in annotations){
-        CASPlateSolvedObject* object = [CASPlateSolvedObject new];
-        object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
-        object.annotation = annotation;
-        [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
-        if (!_annotations){
-            _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+    if (!annotations){
+        [self.annotationLayer removeFromSuperlayer];
+        self.annotationLayer = nil;
+    }
+    else {
+        
+        for (NSDictionary* annotation in annotations){
+            CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+            object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+            object.annotation = annotation;
+            [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
+            if (!_annotations){
+                _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+            }
+            [[self mutableArrayValueForKey:@"annotations"] addObject:object];
         }
-        [[self mutableArrayValueForKey:@"annotations"] addObject:object];
-    }
         
-    [self drawAnnotations];
+        [self drawAnnotations];
+    }
 }
 
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
-{
-    CALayer* layer = [CALayer layer];
-    
-    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
-    
-    layer.borderColor = colour;
-    layer.borderWidth = 2.5;
-    layer.cornerRadius = radius;
-    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
-    layer.position = position;
-    layer.masksToBounds = NO;
-
-    [annotationLayer addSublayer:layer];
-
-    if (annotation){
-        
-        CATextLayer* text = [CATextLayer layer];
-        text.string = annotation;
-        const CGFloat fontSize = 24;
-        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
-        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
-        text.font = (__bridge CFTypeRef)(font);
-        text.fontSize = fontSize;
-        text.bounds = CGRectMake(0, 0, size.width, size.height);
-        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 5, CGRectGetMidY(layer.bounds));
-        text.alignmentMode = @"center";
-        text.foregroundColor = colour;
-        [annotationLayer addSublayer:text];
-        
-         // want the inverse of the text bounding box as a clip mask for the circle layer
-        CAShapeLayer* shape = [CAShapeLayer layer];
-        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
-        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
-        CGPathAddRect(mpath, NULL, text.frame);
-        shape.path = mpath;
-        shape.fillRule = kCAFillRuleEvenOdd;
-        layer.mask = shape;
-        
-        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 5, CGRectGetMidY(layer.frame));
-    }
-    
-    
-    CFBridgingRelease(colour);
-    
-    return layer;
-}
-
-
-- (void)drawAnnotations
+- (void)drawAnnotations // move to image view
 {
     if (!self.imageView.image){
         return;
@@ -539,22 +462,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         [layer removeFromSuperlayer];
     }
     
-//    CALayer* test = [self createCircularLayerAtPosition:CGPointMake(self.imageView.image.extent.size.width/2, self.imageView.image.extent.size.height/2)
-//                                                 radius:100
-//                                             annotation:@"M31 Great Andromeda Galaxy"
-//                     inLayer:self.annotationLayer];
-//    [self.annotationLayer addSublayer:test];
-    
     for (CASPlateSolvedObject* object in self.annotations){
         if (object.enabled){
-            
-            CALayer* layer = [object createLayerInLayer:self.annotationLayer];
-            
-//            // flip y
-//            CGPoint p = layer.position;
-//            p.y = self.annotationLayer.bounds.size.height - p.y;
-//            layer.position = p;
-
+            [object createLayerInLayer:self.annotationLayer];
         }
     }
     
@@ -564,15 +474,10 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         p.y = self.annotationLayer.bounds.size.height - p.y;
         sublayer.position = p;
     }
-
-    // sublayerTransform to flip and scale ?
 }
 
 - (IBAction)solve:(id)sender
 {
-//    [self drawAnnotations];
-//    return;
-    
     if (!self.imageView.image || self.solverTask){
         return;
     }
@@ -581,8 +486,21 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         [self presentAlertWithMessage:@"You need to select the location of the astrometry.net indexes before solving"];
         return;
     }
+    
+    void (^completeWithError)(NSString*) = ^(NSString* error) {
+        if (error){
+            [self presentAlertWithMessage:error];
+        }
+        self.imageView.acceptDrop = YES;
+        self.solveButton.enabled = YES;
+        self.imageView.alphaValue = 1;
+        self.spinner.hidden = YES;
+        [self.spinner stopAnimation:nil];
+        self.solverTask = nil;
+    };
 
     self.solved = NO;
+    self.imageView.acceptDrop = NO;
     [self updateAnnotations:nil]; // yuk
     
     // bindings...
@@ -596,7 +514,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field"];
     if (!self.solverTask){
-        [self presentAlertWithMessage:@"Can't find the embedded solve-field tool"];
+        completeWithError(@"Can't find the embedded solve-field tool");
     }
     else {
         
@@ -616,13 +534,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             
         } terminationBlock:^(int terminationStatus) {
             
-            self.solveButton.enabled = YES;
-            self.imageView.alphaValue = 1;
-            self.spinner.hidden = YES;
-            [self.spinner stopAnimation:nil];
-            
             if (terminationStatus){
-                [self presentAlertWithMessage:@"Solve failed"];
+                completeWithError(@"Solve failed");
             }
             else {
 
@@ -641,7 +554,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                     // get solution data
                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
                     if (!self.solverTask){
-                        [self presentAlertWithMessage:@"Can't find the embedded wcsinfo tool"];
+                        completeWithError(@"Can't find the embedded wcsinfo tool");
                     }
                     else {
                         
@@ -651,13 +564,13 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                         [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
                             
                             if (terminationStatus){
-                                [self presentAlertWithMessage:@"Failed to get solution info"];
+                                completeWithError(@"Failed to get solution info");
                             }
                             else {
                                                                 
                                 NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
                                 if (![output count]){
-                                    NSLog(@"No output from wcsinfo");
+                                    completeWithError(@"No output from wcsinfo");
                                 }
                                 else{
                                     
@@ -688,7 +601,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                     // get annotations
                                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
                                     if (!self.solverTask){
-                                        [self presentAlertWithMessage:@"Can't find the embedded plot-constellations tool"];
+                                        completeWithError(@"Can't find the embedded plot-constellations tool");
                                     }
                                     else {
                                         
@@ -698,25 +611,24 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                         [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
                                             
                                             if (terminationStatus){
-                                                [self presentAlertWithMessage:@"Failed to get annotations"];
+                                                completeWithError(@"Failed to get annotations");
                                             }
                                             else {
                                                 
                                                 NSDictionary* report = [NSJSONSerialization JSONObjectWithData:[self.solverTask.taskOutput dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
                                                 if (![report isKindOfClass:[NSDictionary class]]){
-                                                    [self presentAlertWithMessage:@"Couldn't read annotation data"];
+                                                    completeWithError(@"Couldn't read annotation data");
                                                 }
                                                 else {
                                                     // check status=solved
                                                     [self updateAnnotations:[report objectForKey:@"annotations"]];
+                                                    completeWithError(nil);
                                                 }
                                             }
                                         }];
                                     }
                                 }
                             }
-                            
-                            self.solverTask = nil;
                         }];
                     }
                 });
@@ -729,11 +641,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 {
     if (context == (__bridge void *)(self)) {
         if (object == self.imageView){
-            [self updateAnnotations:nil];
+            [self updateAnnotations:nil]; // reset annotations layer
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self drawAnnotations];
-        });
+        [self drawAnnotations];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
