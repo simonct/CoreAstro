@@ -7,6 +7,8 @@
 //
 
 #import "MKOAppDelegate.h"
+#import "CASImageView.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface CASTaskWrapper : NSObject
 @property (nonatomic,readonly) NSString* taskOutput;
@@ -183,14 +185,14 @@
 @implementation CASSolverModel
 @end
 
-@interface CASDraggableImageView : NSImageView
-@property (nonatomic,copy) NSURL* imageURL;
+@interface CASDraggableImageView : CASImageView
 @end
 
 @implementation CASDraggableImageView
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self registerForDraggedTypes:@[(id)kUTTypeFileURL]];
 }
 
@@ -199,14 +201,6 @@
     [[NSColor lightGrayColor] set];
     NSRectFill(dirtyRect);
     [super drawRect:dirtyRect];
-}
-
-- (void)setImageURL:(NSURL *)imageURL
-{
-    if (imageURL != _imageURL){
-        _imageURL = [imageURL copy];
-        [self setImage:[[NSImage alloc] initWithContentsOfURL:_imageURL]];
-    }
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
@@ -218,8 +212,7 @@
 {
     NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
     if ([urlString isKindOfClass:[NSString class]]){
-        NSURL* url = [NSURL URLWithString:urlString];
-        self.imageURL = url;
+        self.url = [NSURL URLWithString:urlString];
         if (self.image){
             return YES;
         }
@@ -232,10 +225,158 @@
 
 @end
 
+@interface CASPlateSolvedObject : NSObject
+@property (nonatomic,assign) BOOL enabled;
+@property (nonatomic,readonly) NSString* name;
+@property (nonatomic,strong) NSDictionary* annotation;
+@end
+
+@implementation CASPlateSolvedObject
+
+/*
+ {
+ names =         (
+ "NGC 6526"
+ );
+ pixelx = "583.327";
+ pixely = "381.319";
+ radius = "418.425";
+ type = ngc;
+ },
+*/
+
+- (NSString*)name
+{
+    NSMutableString* result = [NSMutableString string];
+    for (NSString* name in [self.annotation objectForKey:@"names"]){
+        if ([result length]){
+            [result appendString:@"/"];
+        }
+        [result appendString:name];
+    }
+    return [result copy];
+}
+
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
+{
+    CALayer* layer = [CALayer layer];
+    
+    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.cornerRadius = radius;
+    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+    layer.position = position;
+    layer.masksToBounds = NO;
+    
+    [annotationLayer addSublayer:layer];
+    
+    if (annotation){
+        
+        CATextLayer* text = [CATextLayer layer];
+        text.string = annotation;
+        const CGFloat fontSize = 24;
+        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
+        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
+        text.font = (__bridge CFTypeRef)(font);
+        text.fontSize = fontSize;
+        text.bounds = CGRectMake(0, 0, size.width, size.height);
+        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
+        text.alignmentMode = @"center";
+        text.foregroundColor = colour;
+        [annotationLayer addSublayer:text];
+        
+        // want the inverse of the text bounding box as a clip mask for the circle layer
+        CAShapeLayer* shape = [CAShapeLayer layer];
+        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
+        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
+        CGPathAddRect(mpath, NULL, text.frame);
+        shape.path = mpath;
+        shape.fillRule = kCAFillRuleEvenOdd;
+        layer.mask = shape;
+        
+        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 10, CGRectGetMidY(layer.frame) + size.height/2);
+    }
+    
+    
+    CFBridgingRelease(colour);
+    
+    return layer;
+}
+
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer
+{
+    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
+    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
+    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+
+    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
+    
+    
+//    CALayer* layer = [CALayer layer];
+//    
+//    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
+//
+//    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
+//    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
+//    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+//
+//    layer.borderColor = colour;
+//    layer.borderWidth = 2.5;
+//    layer.cornerRadius = radius;
+//    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+//    layer.position = CGPointMake(x, y);
+//    layer.masksToBounds = NO;
+//    
+//    CATextLayer* text = [CATextLayer layer];
+//    text.string = self.name;
+//    const CGFloat fontSize = 24;
+//    NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
+//    const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
+//    text.font = (__bridge CFTypeRef)(font);
+//    text.fontSize = fontSize;
+//    text.bounds = CGRectMake(0, 0, size.width, size.height);
+//    text.position = CGPointMake(CGRectGetMidX(layer.bounds), CGRectGetMidY(layer.bounds) + size.height + 5);
+//    text.alignmentMode = @"center";
+//    text.foregroundColor = colour;
+//    [layer addSublayer:text];
+//    
+//    // want the inverse of the text bounding box as a clip mask for the circle layer
+////    CAShapeLayer* shape = [CAShapeLayer layer];
+////    CGPathRef path = CGPathCreateWithRect(text.frame, nil);
+////    shape.path = path;
+////    shape.fillRule = kCAFillRuleEvenOdd;
+////    layer.mask = shape;
+//
+//    CFBridgingRelease(colour);
+//    
+//    [annotationLayer addSublayer:layer];
+//
+//    return layer;
+}
+
+@end
+
+@interface CASPlateSolveSolution : NSObject
+@property (nonatomic,copy) NSString* centreRA;
+@property (nonatomic,copy) NSString* centreDec;
+@property (nonatomic,copy) NSString* centreAngle;
+@property (nonatomic,copy) NSString* pixelScale;
+@property (nonatomic,copy) NSString* fieldWidth;
+@property (nonatomic,copy) NSString* fieldHeight;
+@property (nonatomic,strong) NSArray* objects;
+@end
+
+@implementation CASPlateSolveSolution
+@end
+
 @interface MKOAppDelegate ()
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) CASSolverModel* solverModel;
+@property (nonatomic,strong) NSMutableArray* annotations;
 @property (nonatomic,readonly) NSString* cacheDirectory;
+@property (nonatomic,strong) CALayer* annotationLayer;
 @property (nonatomic,assign) BOOL solved;
 @end
 
@@ -247,12 +388,14 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 {
     self.spinner.hidden = YES;
     self.spinner.usesThreadedAnimation = YES;
-    
+        
     if (self.indexDirectoryURL){
         if (![[NSFileManager defaultManager] fileExistsAtPath:[self.indexDirectoryURL path] ]){
             self.indexDirectoryURL = nil;
         }
     }
+    
+    [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -307,8 +450,129 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     return nil;
 }
 
+- (void)updateAnnotations:(NSArray*)annotations
+{
+    if (_annotations){
+        for (id object in self.annotations){
+            [object removeObserver:self forKeyPath:@"enabled"];
+        }
+        [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
+    }
+    
+    for (NSDictionary* annotation in annotations){
+        CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+        object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+        object.annotation = annotation;
+        [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
+        if (!_annotations){
+            _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+        }
+        [[self mutableArrayValueForKey:@"annotations"] addObject:object];
+    }
+        
+    [self drawAnnotations];
+}
+
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
+{
+    CALayer* layer = [CALayer layer];
+    
+    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.cornerRadius = radius;
+    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+    layer.position = position;
+    layer.masksToBounds = NO;
+
+    [annotationLayer addSublayer:layer];
+
+    if (annotation){
+        
+        CATextLayer* text = [CATextLayer layer];
+        text.string = annotation;
+        const CGFloat fontSize = 24;
+        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
+        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
+        text.font = (__bridge CFTypeRef)(font);
+        text.fontSize = fontSize;
+        text.bounds = CGRectMake(0, 0, size.width, size.height);
+        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 5, CGRectGetMidY(layer.bounds));
+        text.alignmentMode = @"center";
+        text.foregroundColor = colour;
+        [annotationLayer addSublayer:text];
+        
+         // want the inverse of the text bounding box as a clip mask for the circle layer
+        CAShapeLayer* shape = [CAShapeLayer layer];
+        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
+        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
+        CGPathAddRect(mpath, NULL, text.frame);
+        shape.path = mpath;
+        shape.fillRule = kCAFillRuleEvenOdd;
+        layer.mask = shape;
+        
+        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 5, CGRectGetMidY(layer.frame));
+    }
+    
+    
+    CFBridgingRelease(colour);
+    
+    return layer;
+}
+
+
+- (void)drawAnnotations
+{
+    if (!self.imageView.image){
+        return;
+    }
+    
+    if (!self.annotationLayer){
+        self.annotationLayer = [CALayer layer];
+        self.annotationLayer.bounds = CGRectMake(0, 0, self.imageView.image.extent.size.width, self.imageView.image.extent.size.height);
+        self.annotationLayer.position = CGPointMake(self.imageView.image.extent.size.width/2, self.imageView.image.extent.size.height/2);
+        [self.imageView.layer addSublayer:self.annotationLayer];
+    }
+    
+    for (CALayer* layer in [[self.annotationLayer sublayers] copy]){
+        [layer removeFromSuperlayer];
+    }
+    
+//    CALayer* test = [self createCircularLayerAtPosition:CGPointMake(self.imageView.image.extent.size.width/2, self.imageView.image.extent.size.height/2)
+//                                                 radius:100
+//                                             annotation:@"M31 Great Andromeda Galaxy"
+//                     inLayer:self.annotationLayer];
+//    [self.annotationLayer addSublayer:test];
+    
+    for (CASPlateSolvedObject* object in self.annotations){
+        if (object.enabled){
+            
+            CALayer* layer = [object createLayerInLayer:self.annotationLayer];
+            
+//            // flip y
+//            CGPoint p = layer.position;
+//            p.y = self.annotationLayer.bounds.size.height - p.y;
+//            layer.position = p;
+
+        }
+    }
+    
+    // flip y
+    for (CALayer* sublayer in [self.annotationLayer sublayers]){
+        CGPoint p = sublayer.position;
+        p.y = self.annotationLayer.bounds.size.height - p.y;
+        sublayer.position = p;
+    }
+
+    // sublayerTransform to flip and scale ?
+}
+
 - (IBAction)solve:(id)sender
 {
+//    [self drawAnnotations];
+//    return;
+    
     if (!self.imageView.image || self.solverTask){
         return;
     }
@@ -319,6 +583,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }
 
     self.solved = NO;
+    [self updateAnnotations:nil]; // yuk
     
     // bindings...
     self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
@@ -342,7 +607,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
         [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
-        [self.solverTask setArguments:@[self.imageView.imageURL.path,@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
+        [self.solverTask setArguments:@[self.imageView.url.path,@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
                 
         [self.solverTask launchWithOutputBlock:^(NSString* string) {
             
@@ -369,9 +634,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     
                     // show the solved image
-                    NSString* name = [[self.imageView.imageURL.path lastPathComponent] stringByDeletingPathExtension];
+                    NSString* name = [[self.imageView.url.path lastPathComponent] stringByDeletingPathExtension];
                     NSString* path = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
-                    self.imageView.imageURL = [NSURL fileURLWithPath:path];
+//                    self.imageView.url = [NSURL fileURLWithPath:path];
                     
                     // get solution data
                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
@@ -443,8 +708,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                                 }
                                                 else {
                                                     // check status=solved
-                                                    NSArray* annotations = [[report objectForKey:@"annotations"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type == 'ngc'"]];
-                                                    NSLog(@"%@",annotations);
+                                                    [self updateAnnotations:[report objectForKey:@"annotations"]];
                                                 }
                                             }
                                         }];
@@ -461,6 +725,20 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        if (object == self.imageView){
+            [self updateAnnotations:nil];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self drawAnnotations];
+        });
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 - (IBAction)openDocument:(id)sender
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
@@ -472,8 +750,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         
         if (result == NSFileHandlingPanelOKButton){
             
-            self.imageView.imageURL = open.URL;
-            if (self.imageView.imageURL){
+            self.imageView.url = open.URL;
+            if (self.imageView.url){
                 // self.solution = nil;
             }
         }
@@ -488,16 +766,16 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     NSSavePanel* save = [NSSavePanel savePanel];
     
-    save.allowedFileTypes = @[[self.imageView.imageURL pathExtension]];
+    save.allowedFileTypes = @[[self.imageView.url pathExtension]];
     save.canCreateDirectories = YES;
-    save.nameFieldStringValue = [self.imageView.imageURL lastPathComponent];
+    save.nameFieldStringValue = [self.imageView.url lastPathComponent];
     
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSFileHandlingPanelOKButton){
             
             NSError* error;
-            if (![[NSFileManager defaultManager] copyItemAtURL:self.imageView.imageURL toURL:save.URL error:&error]){
+            if (![[NSFileManager defaultManager] copyItemAtURL:self.imageView.url toURL:save.URL error:&error]){
                 [NSApp presentError:error];
             }
         }
