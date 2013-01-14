@@ -185,52 +185,6 @@
 @implementation CASSolverModel
 @end
 
-@interface CASPlateSolveImageView : CASImageView
-@property (nonatomic,assign) BOOL acceptDrop;
-@end
-
-@implementation CASPlateSolveImageView
-
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    [self registerForDraggedTypes:@[(id)kUTTypeFileURL]];
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [[NSColor lightGrayColor] set];
-    NSRectFill(dirtyRect);
-    [super drawRect:dirtyRect];
-}
-
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-{
-    return self.acceptDrop ? NSDragOperationCopy : NSDragOperationNone;
-}
-
-- (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
-{
-    if (!self.acceptDrop){
-        return NO;
-    }
-    
-    NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
-    if ([urlString isKindOfClass:[NSString class]]){
-        self.url = [NSURL URLWithString:urlString];
-        if (self.image){
-            return YES;
-        }
-        else {
-            [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
-        }
-    }
-    
-    return NO;
-}
-
-@end
-
 @interface CASPlateSolvedObject : NSObject
 @property (nonatomic,assign) BOOL enabled;
 @property (nonatomic,readonly) NSString* name;
@@ -335,12 +289,137 @@
 @implementation CASPlateSolveSolution
 @end
 
+@interface CASPlateSolveImageView : CASImageView
+@property (nonatomic,assign) BOOL acceptDrop;
+@property (nonatomic,strong) CALayer* annotationLayer;
+@property (nonatomic,strong) NSMutableArray* annotations;
+@end
+
+@implementation CASPlateSolveImageView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    [self registerForDraggedTypes:@[(id)kUTTypeFileURL]];
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor lightGrayColor] set];
+    NSRectFill(dirtyRect);
+    [super drawRect:dirtyRect];
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+{
+    return self.acceptDrop ? NSDragOperationCopy : NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id < NSDraggingInfo >)sender
+{
+    if (!self.acceptDrop){
+        return NO;
+    }
+    
+    NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
+    if ([urlString isKindOfClass:[NSString class]]){
+        self.url = [NSURL URLWithString:urlString];
+        if (self.image){
+            return YES;
+        }
+        else {
+            [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
+        }
+    }
+    
+    return NO;
+}
+
+- (void)setUrl:(NSURL *)url
+{
+    [super setUrl:url];
+    [self updateAnnotations:nil];
+}
+
+- (void)updateAnnotations:(NSArray*)annotations
+{
+    if (_annotations){
+        for (id object in self.annotations){
+            [object removeObserver:self forKeyPath:@"enabled"];
+        }
+        [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
+    }
+    
+    if (!annotations){
+        [self.annotationLayer removeFromSuperlayer];
+        self.annotationLayer = nil;
+    }
+    else {
+        
+        for (NSDictionary* annotation in annotations){
+            CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+            object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+            object.annotation = annotation;
+            [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
+            if (!_annotations){
+                _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+            }
+            [[self mutableArrayValueForKey:@"annotations"] addObject:object];
+        }
+        
+        [self drawAnnotations];
+    }
+}
+
+- (void)drawAnnotations
+{
+    if (!self.image){
+        return;
+    }
+    
+    if (!self.annotationLayer){
+        self.annotationLayer = [CALayer layer];
+        self.annotationLayer.bounds = CGRectMake(0, 0, self.image.extent.size.width, self.image.extent.size.height);
+        self.annotationLayer.position = CGPointMake(self.image.extent.size.width/2, self.image.extent.size.height/2);
+        [self.layer addSublayer:self.annotationLayer];
+    }
+    
+    for (CALayer* layer in [[self.annotationLayer sublayers] copy]){
+        [layer removeFromSuperlayer];
+    }
+    
+    for (CASPlateSolvedObject* object in self.annotations){
+        if (object.enabled){
+            [object createLayerInLayer:self.annotationLayer];
+        }
+    }
+    
+    // flip y
+    for (CALayer* sublayer in [self.annotationLayer sublayers]){
+        CGPoint p = sublayer.position;
+        p.y = self.annotationLayer.bounds.size.height - p.y;
+        sublayer.position = p;
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        if (object == self){
+            [self updateAnnotations:nil]; // reset annotations layer
+        }
+        [self drawAnnotations];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+@end
+
 @interface MKOAppDelegate ()
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) CASSolverModel* solverModel;
-@property (nonatomic,strong) NSMutableArray* annotations;
 @property (nonatomic,readonly) NSString* cacheDirectory;
-@property (nonatomic,strong) CALayer* annotationLayer;
 @property (nonatomic,assign) BOOL solved;
 @end
 
@@ -360,7 +439,6 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }
     
     self.imageView.acceptDrop = YES;
-    [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -415,67 +493,6 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     return nil;
 }
 
-- (void)updateAnnotations:(NSArray*)annotations // move to image view
-{
-    if (_annotations){
-        for (id object in self.annotations){
-            [object removeObserver:self forKeyPath:@"enabled"];
-        }
-        [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
-    }
-    
-    if (!annotations){
-        [self.annotationLayer removeFromSuperlayer];
-        self.annotationLayer = nil;
-    }
-    else {
-        
-        for (NSDictionary* annotation in annotations){
-            CASPlateSolvedObject* object = [CASPlateSolvedObject new];
-            object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
-            object.annotation = annotation;
-            [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
-            if (!_annotations){
-                _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
-            }
-            [[self mutableArrayValueForKey:@"annotations"] addObject:object];
-        }
-        
-        [self drawAnnotations];
-    }
-}
-
-- (void)drawAnnotations // move to image view
-{
-    if (!self.imageView.image){
-        return;
-    }
-    
-    if (!self.annotationLayer){
-        self.annotationLayer = [CALayer layer];
-        self.annotationLayer.bounds = CGRectMake(0, 0, self.imageView.image.extent.size.width, self.imageView.image.extent.size.height);
-        self.annotationLayer.position = CGPointMake(self.imageView.image.extent.size.width/2, self.imageView.image.extent.size.height/2);
-        [self.imageView.layer addSublayer:self.annotationLayer];
-    }
-    
-    for (CALayer* layer in [[self.annotationLayer sublayers] copy]){
-        [layer removeFromSuperlayer];
-    }
-    
-    for (CASPlateSolvedObject* object in self.annotations){
-        if (object.enabled){
-            [object createLayerInLayer:self.annotationLayer];
-        }
-    }
-    
-    // flip y
-    for (CALayer* sublayer in [self.annotationLayer sublayers]){
-        CGPoint p = sublayer.position;
-        p.y = self.annotationLayer.bounds.size.height - p.y;
-        sublayer.position = p;
-    }
-}
-
 - (IBAction)solve:(id)sender
 {
     if (!self.imageView.image || self.solverTask){
@@ -501,7 +518,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
     self.solved = NO;
     self.imageView.acceptDrop = NO;
-    [self updateAnnotations:nil]; // yuk
+    [self.imageView updateAnnotations:nil]; // yuk
     
     // bindings...
     self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
@@ -621,7 +638,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                                 }
                                                 else {
                                                     // check status=solved
-                                                    [self updateAnnotations:[report objectForKey:@"annotations"]];
+                                                    [self.imageView updateAnnotations:[report objectForKey:@"annotations"]];
                                                     completeWithError(nil);
                                                 }
                                             }
@@ -634,18 +651,6 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                 });
             }
         }];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == (__bridge void *)(self)) {
-        if (object == self.imageView){
-            [self updateAnnotations:nil]; // reset annotations layer
-        }
-        [self drawAnnotations];
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
