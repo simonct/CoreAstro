@@ -719,6 +719,8 @@
 
 - (IBAction)guiderMenuAction:(NSMenuItem*)sender
 {
+    return; // tmp
+    
     if (!sender.representedObject){
         self.cameraController.guider = nil;
         self.guideControlsContainer.hidden = YES;
