@@ -33,6 +33,7 @@ typedef enum {
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL scaleSubframe;
+@property (nonatomic,assign) BOOL displayingScaledSubframe;
 @property (nonatomic,assign) BOOL showProgress;
 @property (nonatomic,assign) NSInteger progressInterval;
 @property (nonatomic,assign) CGFloat progress;

@@ -1027,7 +1027,7 @@
 
 - (IBAction)selection:(NSSegmentedControl*)sender
 {
-    if (sender.selectedSegment == 0 && !self.scaleSubframe){
+    if (sender.selectedSegment == 0 && !self.imageView.displayingScaledSubframe){
         self.imageView.showSelection = YES;
     }
     else {

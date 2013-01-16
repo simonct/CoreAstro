@@ -495,6 +495,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     [self updateHistogram];
     
+    self.displayingScaledSubframe = NO;
+
     if (!_currentExposure){
         clearImage();
     }
@@ -528,6 +530,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                             CGContextDrawImage(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height),CGImage);
                         }
                         else{
+                            self.displayingScaledSubframe = YES;
                             CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
                             CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
                             CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
@@ -541,6 +544,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             // set the image
             if (CGImage){
                 [self setImage:CGImage imageProperties:nil];
+                if (CGImage != image.CGImage){
+                    CFRelease(CGImage);
+                }
             }
             else {
                 clearImage();
@@ -715,7 +721,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (BOOL)showSelection
 {
-   return _showSelection && !self.scaleSubframe;
+   return _showSelection && !self.displayingScaledSubframe;
 }
 
 - (void)setShowSelection:(BOOL)showSelection
