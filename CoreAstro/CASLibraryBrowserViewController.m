@@ -22,9 +22,13 @@
 
 - (id)groupInfoDeviceName
 {
+    NSString* name = self.displayDeviceName;
+    if (!name){
+        name = @"Unknown";
+    }
     return @{
-        @"name":self.displayDeviceName,
-        @"value":self.displayDeviceName,
+        @"name":name,
+        @"value":name,
         @"sortKey":@"displayDeviceName"
     };
 }
@@ -162,7 +166,7 @@
 @interface CASLibraryBrowserViewController ()
 @property (nonatomic,strong) IBOutlet NSWindow *titleEditingSheet;
 @property (nonatomic,copy) NSString* currentEditingTitle;
-@property (nonatomic,strong) NSArray* exposures;
+@property (nonatomic,readonly) NSArray* exposures;
 @property (nonatomic,strong) NSArray* groups;
 @property (nonatomic,strong) NSMutableDictionary* wrappers;
 @property (nonatomic,copy) NSString* groupKeyPath;
@@ -172,8 +176,6 @@
 
 @implementation CASLibraryBrowserViewController {
     NSArray* _groups;
-    NSArray* _exposures;
-    NSArray* _defaultExposuresArray;
     BOOL _inImageBrowserSelectionDidChange;
 }
 
@@ -199,21 +201,6 @@
 
 #pragma mark - Exposures
 
-- (NSArray*)defaultExposuresArray
-{
-    // todo; cache this, clearing when appropriate - or possibly move into the exposures controller
-    NSMutableArray* defaultExposuresArray = [NSMutableArray arrayWithCapacity:[[self.exposuresController arrangedObjects] count]];
-    for (CASCCDExposure* exp in [self.exposuresController arrangedObjects]){
-        if (exp.uuid){
-            [defaultExposuresArray addObject:exp];
-        }
-        else {
-//            NSLog(@"No uuid for exposure: %@",exp); // I'm using the uuid as the image browser key - could use the url instead ?
-        }
-    }
-    return [defaultExposuresArray copy];
-}
-
 - (void)setExposuresController:(CASExposuresController *)exposuresController
 {
     if (exposuresController != _exposuresController){
@@ -225,8 +212,12 @@
         
         [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
+                
+        // set filter predicate to remove images with no uuid - probably remove this in prod builds as this should never happen in practice
+        [_exposuresController setFilterPredicate:[NSPredicate predicateWithBlock:^BOOL(CASCCDExposure* exposure, NSDictionary *bindings) {
+            return ([exposure.uuid length] > 0);
+        }]];
         
-        _exposures = nil;
         [self updateForCurrentGroupKey];
         [self.browserView reloadData];
     }
@@ -234,10 +225,7 @@
 
 - (NSArray*)exposures
 {
-    if (!_exposures){
-        _exposures = [self defaultExposuresArray];
-    }
-    return _exposures;
+    return [self.exposuresController arrangedObjects];
 }
 
 #pragma mark - Groups
@@ -252,21 +240,20 @@
 
 - (void)updateForCurrentGroupKey
 {
-    NSArray* defaultExposuresArray = self.defaultExposuresArray;
+    NSSortDescriptor* defaultSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
     if (![_groupKeyPath length]){
         self.groups = nil;
-        self.exposures = defaultExposuresArray;
+        [self.exposuresController setSortDescriptors:@[defaultSortDescriptor]];
     }
     else {
-        NSSet* groupInfos = [NSSet setWithArray:[defaultExposuresArray valueForKeyPath:_groupKeyPath]];
+        NSSet* groupInfos = [NSSet setWithArray:[self.exposures valueForKeyPath:_groupKeyPath]];
         if (![groupInfos count]){
             self.groups = nil;
-            self.exposures = defaultExposuresArray;
+            [self.exposuresController setSortDescriptors:@[defaultSortDescriptor]];
         }
         else {
-            // todo; set sort descriptors on exposuresController rather than doing it on a copy
             self.groups = [[groupInfos allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"value" ascending:NO]]];
-            self.exposures = [defaultExposuresArray sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+            [self.exposuresController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],defaultSortDescriptor]];
         }
     }
 }
@@ -390,7 +377,7 @@
                 [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
             }
             
-            // so, how do I get back to the full browser view ?
+            // todo; back button to return to the browser view
         }
     }
 }
@@ -544,7 +531,7 @@
         // listen for exposure added notifications and add them to the controller
         id proxy = [[NSNotificationCenter defaultCenter] addObserverForName:kCASCCDExposureLibraryExposureAddedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             id exposure = [note userInfo][@"exposure"];
-            if (exposure && ![[self.exposuresController arrangedObjects] containsObject:exposure]){
+            if (exposure && ![self.exposures containsObject:exposure]){
                 [self.exposuresController addObject:exposure];
             }
         }];
@@ -626,6 +613,12 @@
 {
     CASSubtractProcessor* processor = [[CASSubtractProcessor alloc] init];
     processor.base = base;
+    if (base.type == kCASCCDExposureBiasType){
+        processor.mode = kCASSubtractProcessorBias;
+    }
+    else if (base.type == kCASCCDExposureDarkType){
+        processor.mode = kCASSubtractProcessorDark;
+    }
     [self _runBatchProcessor:processor withExposures:exposures];
 }
 

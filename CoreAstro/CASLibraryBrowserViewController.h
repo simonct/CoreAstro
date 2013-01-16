@@ -14,7 +14,7 @@
 
 @protocol CASLibraryBrowserViewControllerDelegate <NSObject>
 @optional
-- (void)focusOnExposure:(CASCCDExposure*)exposure;
+- (void)focusOnExposure:(CASCCDExposure*)exposure; // -> focusOnExposures:
 @end
 
 @interface CASLibraryBrowserViewController : NSViewController
