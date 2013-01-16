@@ -517,7 +517,6 @@
 {
     if (_captureMenuSelectedIndex != index){
         _captureMenuSelectedIndex = index;
-        self.cameraController.continuous = [self captureMenuContinuousItemSelected];
         if (self.cameraController.continuous){
             self.cameraController.captureCount = 0;
         }
@@ -551,11 +550,6 @@
             }
         }
     }
-}
-
-- (BOOL)captureMenuContinuousItemSelected
-{
-    return (_captureMenuSelectedIndex == self.captureMenu.numberOfItems - 1);
 }
 
 - (BOOL)showHistogram
@@ -807,9 +801,6 @@
 
 - (IBAction)capture:(NSButton*)sender
 {
-    // check to see if we're in continuous mode
-    self.cameraController.continuous = [self captureMenuContinuousItemSelected];
-    
     // if recording to video, select a file todo; just save to exposure library
     if (self.cameraController.continuous && self.recordAsVideo && !self.cameraController.movieExporter){
         [self _chooseMovieLocationAndStartRecordingWithBlock:^{
@@ -819,7 +810,6 @@
     else {
         [self _captureImpl];
     }
-
 }
 
 - (IBAction)cancelCapture:(NSButton*)sender
@@ -1655,6 +1645,9 @@
 {
     [self hideLibraryView];
     self.currentExposure = exposure;
+    
+    // self.exposuresController = new array controller with standard settings and content of just these exposures
+    // or should the library controller just set a filter on its arrany controller to select just the ones being inspected
 }
 
 @end

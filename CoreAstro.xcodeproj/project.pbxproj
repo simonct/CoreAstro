@@ -22,6 +22,7 @@
 		F412975F15FCA977009C215E /* zoomtofit.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975715FCA977009C215E /* zoomtofit.pdf */; };
 		F412976115FCAB85009C215E /* opendevices.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412976015FCAB85009C215E /* opendevices.pdf */; };
 		F412976315FCAD16009C215E /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F412976215FCAD16009C215E /* moon.icns */; };
+		F4175A6116A749550032954F /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4175A6016A749550032954F /* loop.png */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */; };
@@ -510,6 +511,7 @@
 		F412976015FCAB85009C215E /* opendevices.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = opendevices.pdf; sourceTree = "<group>"; };
 		F412976215FCAD16009C215E /* moon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = moon.icns; sourceTree = "<group>"; };
 		F412976415FCAE9B009C215E /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO.md; sourceTree = SOURCE_ROOT; };
+		F4175A6016A749550032954F /* loop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loop.png; sourceTree = "<group>"; };
 		F4198F9B1635DDC7009164B0 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = "External/Sparkle 1.5b6/Extras/Signing Tools/dsa_pub.pem"; sourceTree = SOURCE_ROOT; };
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
 		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
@@ -1380,6 +1382,7 @@
 				F412975515FCA977009C215E /* zoomin.pdf */,
 				F412975615FCA977009C215E /* zoomout.pdf */,
 				F412975715FCA977009C215E /* zoomtofit.pdf */,
+				F4175A6016A749550032954F /* loop.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -3047,6 +3050,7 @@
 				F44791F01680C260007A6815 /* CASStarInfoHUDView.xib in Resources */,
 				F44791F81680F5B6007A6815 /* CASHistogramHUDView.xib in Resources */,
 				F40093241698884500E96DBE /* CASPreferencesWindowController.xib in Resources */,
+				F4175A6116A749550032954F /* loop.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
