@@ -54,7 +54,6 @@
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
 @property (nonatomic,weak) IBOutlet NSSegmentedControl *devicesToggleControl;
 @property (nonatomic,weak) IBOutlet NSTextField *sensorSizeField;
-@property (nonatomic,weak) IBOutlet NSTextField *sensorDepthField;
 @property (nonatomic,weak) IBOutlet NSTextField *sensorPixelsField;
 @property (nonatomic,weak) IBOutlet NSTextField *subframeDisplay;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;

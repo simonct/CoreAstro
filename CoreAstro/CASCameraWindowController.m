@@ -394,7 +394,6 @@
     }
     
     [self.sensorSizeField setStringValue:@""];
-    [self.sensorDepthField setStringValue:@""];
     [self.sensorPixelsField setStringValue:@""];
 
     // show camera name
@@ -448,7 +447,6 @@
                     CASCCDDevice* camera = self.cameraController.camera;
                     
                     [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
-                    [self.sensorDepthField setStringValue:[NSString stringWithFormat:@"%ld bits per pixel",camera.sensor.bitsPerPixel]];
                     [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
                 }
             }
