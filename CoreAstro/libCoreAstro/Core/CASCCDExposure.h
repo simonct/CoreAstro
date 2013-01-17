@@ -41,6 +41,7 @@
 @property (nonatomic,readonly) BOOL hasMeta;
 @property (nonatomic,assign) CASExposeParams params;
 @property (nonatomic,readonly) BOOL isSubframe;
+@property (nonatomic,readonly) NSInteger maxPixelValue;
 
 @property (nonatomic,readonly) BOOL rgba;
 @property (nonatomic,readonly) CASSize actualSize; // frame.size / bin.size

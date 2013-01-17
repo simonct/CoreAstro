@@ -76,17 +76,24 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
         [self clearFields];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        
+            const float maxPixelValue = self.exposure.maxPixelValue;
             
-            const float maxPixelValue = 65535;
-            self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor medianPixelValue:exp])];
-            self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor averagePixelValue:exp])];
-            self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp])];
-            self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp])];
+            const float median = floor(maxPixelValue * [self.imageProcessor medianPixelValue:exp]);
+            const float average = floor(maxPixelValue * [self.imageProcessor averagePixelValue:exp]);
+            const float minimum = floor(maxPixelValue * [self.imageProcessor minimumPixelValue:exp]);
+            const float maximum = floor(maxPixelValue * [self.imageProcessor maximumPixelValue:exp]);
+            const float stddev = floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp]);
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if (exp == _exposure){
-                    self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)floor(maxPixelValue * [self.imageProcessor standardDeviationPixelValue:exp])];
+
+                    self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)median];
+                    self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)average];
+                    self.minimumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)minimum];
+                    self.maximumValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)maximum];
+                    self.standardDeviationValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)stddev];
                 }
             });
         });

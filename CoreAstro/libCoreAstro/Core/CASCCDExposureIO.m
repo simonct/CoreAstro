@@ -344,7 +344,7 @@
                     datatype = TFLOAT;
                     pixelData = exposure.floatPixels;
                     pixelCount = [pixelData length]/sizeof(float);
-                    scale = 65535;
+                    scale = exposure.maxPixelValue;
                     break;
                 case kCASCCDExposureFormatFloatRGBA:
                     NSLog(@"*** Unsupported format"); // write as planar rgb ?

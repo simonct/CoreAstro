@@ -188,7 +188,7 @@
                 }
                 else{
                     vDSP_vfltu16((uint16_t*)[pixels bytes],1,fp,1,count);
-                    const float max = 65535;
+                    const float max = self.maxPixelValue;
                     vDSP_vsdiv(fp,1,(float*)&max,fp,1,count);
                     _floatPixels = [NSData dataWithBytesNoCopy:fp length:(count * sizeof(float))];
                 }
@@ -235,6 +235,11 @@
 {
     const CASExposeParams p = self.params;
     return (p.origin.x != 0 || p.origin.y != 0 || p.size.width != p.frame.width || p.size.height != p.frame.height);
+}
+
+- (NSInteger) maxPixelValue
+{
+    return 65535;
 }
 
 - (void)setMetaObject:(id)obj forKey:(id)key
