@@ -637,10 +637,50 @@
     if (!exposure){
         self.imageView.currentExposure = nil;
         self.imageBannerView.camera = nil;
+        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = @"";
         return;
     }
     
     self.imageBannerView.exposure = exposure;
+
+    NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];
+    if (!params){
+        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = @"";
+    }
+    else {
+        
+        self.sensorSizeField.stringValue = [NSString stringWithFormat:@"%@ x %@",
+                                            [params valueForKeyPath:@"width"],
+                                            [params valueForKeyPath:@"height"]];
+        self.sensorPixelsField.stringValue = [NSString stringWithFormat:@"%0.2fµm x %0.2fµm",
+                                              [[params valueForKeyPath:@"pixelWidth"] doubleValue],
+                                              [[params valueForKeyPath:@"pixelHeight"] doubleValue]];
+                
+        NSUInteger ms = exposure.params.ms;
+        if (!ms){
+            self.exposureField.stringValue = @"";
+            [self.exposureScalePopup selectItemAtIndex:0];
+        }
+        else {
+            if (ms > 999){
+                ms /= 1000;
+                [self.exposureScalePopup selectItemAtIndex:0];
+            }
+            else {
+                [self.exposureScalePopup selectItemAtIndex:1];
+            }
+            self.exposureField.stringValue = [NSString stringWithFormat:@"%ld",ms];
+        }
+        
+        [self.binningRadioButtons selectCellAtRow:0 column:exposure.params.bin.width - 1];
+        
+        if (!exposure.isSubframe){
+            self.subframeDisplay.stringValue = @"";
+        }
+        else {
+            self.subframeDisplay.stringValue = [NSString stringWithFormat:@"x=%ld y=%ld\nw=%ld h=%ld",exposure.params.origin.x,exposure.params.origin.y,exposure.params.size.width,exposure.params.size.height];
+        }
+    }
 
     static NSDateFormatter* exposureFormatter = nil;
     static dispatch_once_t onceToken;

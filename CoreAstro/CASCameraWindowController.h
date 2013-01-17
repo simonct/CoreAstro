@@ -47,8 +47,8 @@
 @property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
 @property (nonatomic,weak) IBOutlet NSButton *captureButton;
 @property (nonatomic,weak) IBOutlet NSTextField *exposureField;
-@property (nonatomic,weak) IBOutlet NSPopUpButton *binningPopup;
-@property (nonatomic,weak) IBOutlet NSButton *continuousCheckbox;
+@property (weak) IBOutlet NSPopUpButton *exposureScalePopup;
+@property (weak) IBOutlet NSMatrix *binningRadioButtons;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomControl;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomFitControl;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
