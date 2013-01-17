@@ -490,7 +490,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     void (^clearImage)() = ^() {
         [self setImage:nil imageProperties:nil];
-        self.histogramView.hidden = YES;
     };
     
     [self updateHistogram];
