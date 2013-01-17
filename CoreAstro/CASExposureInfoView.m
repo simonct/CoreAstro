@@ -64,12 +64,13 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
 - (void)_updateImpl
 {
     CASCCDExposure* exp = nil;
+    CASCCDExposure* currentExposure = self.exposure;
     const BOOL isSubframe = _exposure.isSubframe;
     if (_subframe.size.width > 0 && _subframe.size.height > 0 && !isSubframe){ // todo; subframes of subframes
-        exp = [self.exposure subframeWithRect:self.subframe];
+        exp = [currentExposure subframeWithRect:self.subframe];
     }
     else {
-        exp = self.exposure;
+        exp = currentExposure;
     }
     if (exp){
         
@@ -87,7 +88,7 @@ BOOL CASRectEqualToRect(CASRect a,CASRect b)
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (exp == _exposure){
+                if (currentExposure == _exposure){
 
                     self.medianValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)median];
                     self.averageValueField.stringValue = [NSString stringWithFormat:@"%ld",(NSInteger)average];
