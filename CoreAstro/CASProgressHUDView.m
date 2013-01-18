@@ -21,7 +21,7 @@
         
         NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
         outline.lineWidth = 2.5;
-        [[NSColor whiteColor] set];
+        [[NSColor orangeColor] set];
         [outline stroke];
         
         NSBezierPath* arc = [NSBezierPath bezierPath];
@@ -33,7 +33,6 @@
                                       endAngle:90 - (360*self.progress)
                                      clockwise:YES];
         [arc moveToPoint:CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))];
-        [[NSColor whiteColor] set];
         [arc fill];
     }
     @catch (NSException *exception) {
@@ -43,8 +42,9 @@
 
 - (void)setProgress:(CGFloat)progress
 {
-    if (_progress != progress){
-        _progress = MAX(0,MIN(progress,1));
+    progress = MAX(0,MIN(progress,1));
+    if (fabs(progress - _progress) > 0.01){
+        _progress = progress;
         [self setNeedsDisplay:YES];
     }
 }
@@ -52,6 +52,7 @@
 @end
 
 @interface CASProgressHUDView ()
+@property (nonatomic,weak) NSTextField* label;
 @property (nonatomic,weak) CASCircularProgressIndicatorView* progressView;
 @end
 
@@ -66,9 +67,9 @@
         label.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
         label.backgroundColor = [NSColor clearColor];
         label.bordered = NO;
-        label.textColor = [NSColor whiteColor];
+        label.textColor = [NSColor orangeColor];
         label.font = [NSFont boldSystemFontOfSize:18];
-        label.alignment = NSCenterTextAlignment;
+        label.alignment = NSLeftTextAlignment;
         label.editable = NO;
         [self addSubview:label];
         self.label = label;
@@ -98,9 +99,15 @@
     return self.progressView.progress;
 }
 
-- (void)setProgress:(CGFloat)progress
+- (void)setProgress:(CGFloat)progress label:(NSString*)label
 {
+    // throttle update to so many a second ?
+    
     self.progressView.progress = progress;
+    
+    if (![self.label.stringValue isEqualToString:label]){
+        self.label.stringValue = label;
+    }
 }
 
 @end

@@ -9,6 +9,6 @@
 #import "CASHUDView.h"
 
 @interface CASProgressHUDView : CASHUDView
-@property (nonatomic,weak) NSTextField* label;
-@property (nonatomic,assign) CGFloat progress;
+- (CGFloat)progress;
+- (void)setProgress:(CGFloat)progress label:(NSString*)label;
 @end

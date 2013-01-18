@@ -207,12 +207,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)setProgress:(CGFloat)progress
 {
-    self.progressView.progress = progress;
     const NSInteger remainder = self.progressInterval - (progress*self.progressInterval);
     NSString* value = [NSString stringWithFormat:@"%ld secs",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
-    if (![self.progressView.label.stringValue isEqualToString:value]){
-        self.progressView.label.stringValue = value;
-    }
+    [self.progressView setProgress:progress label:value];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
