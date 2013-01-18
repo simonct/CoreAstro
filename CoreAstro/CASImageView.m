@@ -26,6 +26,7 @@
 - (void)awakeFromNib
 {
     self.zoomFactor = 1;
+    self.currentToolMode = IKToolModeMove;
 }
 
 - (void)updateTrackingAreas {
