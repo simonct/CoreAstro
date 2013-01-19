@@ -232,6 +232,48 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return nil;
 }
 
+- (CASCCDExposure*)removeBayerMatrix:(CASCCDExposure*)exposure_
+{
+    __block CASCCDExposure* result = [exposure_ copy];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
+        
+        const NSTimeInterval time = CASTimeBlock(^{
+            
+            const CASSize size = [result actualSize];
+
+            vImage_Buffer source = [self vImageBufferForExposure:result];
+            
+            vImage_Buffer destination = {
+                (void*)malloc(size.height/2 * size.width/2 * sizeof(cas_pixel_t)),
+                size.height/2,
+                size.width/2,
+                size.width/2 * sizeof(cas_pixel_t)
+            };
+            
+            if (!source.data || !destination.data){
+                NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+            }
+            else {
+                
+                // scale down to half size
+                vImageScale_PlanarF(&source,&destination,nil,kvImageHighQualityResampling);
+                
+                // scale back up to full size
+                vImageScale_PlanarF(&destination,&source,nil,kvImageHighQualityResampling);
+                
+                // probably a better way of doing this with a convolution filter ?
+            }
+        });
+        
+        NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    }
+    
+    return result;
+}
+
 // IC = (IR - IB)
 - (void)subtractDark:(CASCCDExposure*)dark from:(CASCCDExposure*)exposure
 {

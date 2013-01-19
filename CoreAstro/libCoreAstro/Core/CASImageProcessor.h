@@ -42,6 +42,8 @@
 - (CASCCDExposure*)medianSum:(NSArray*)exposures;
 - (CASCCDExposure*)averageSum:(NSArray*)exposures;
 
+- (CASCCDExposure*)removeBayerMatrix:(CASCCDExposure*)exposure;
+
 - (NSArray*)histogram:(CASCCDExposure*)exposure;
 
 - (CGFloat)medianPixelValue:(CASCCDExposure*)exposure;
