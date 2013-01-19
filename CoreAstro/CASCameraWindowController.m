@@ -28,6 +28,7 @@
 #import "CASAppDelegate.h" // hmm, dragging the delegate in...
 #import "CASExposuresController.h"
 #import "CASProgressWindowController.h"
+#import "CASCaptureWindowController.h"
 #import "CASExposureView.h"
 #import "CASShadowView.h"
 #import "CASMasterSelectionView.h"
@@ -127,6 +128,8 @@
 @property (nonatomic,weak) IBOutlet NSView *guideControlsContainer;
 @property (nonatomic,assign) NSInteger guidePulseDuration;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
+@property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
+@property (nonatomic,strong) CASCaptureController* captureController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -1239,19 +1242,60 @@
 
 }
 
+- (void)_presentCaptureControllerWithMode:(NSInteger)mode
+{
+    if (!self.cameraController || self.cameraController.capturing){
+        return;
+    }
+    
+    self.captureWindowController = [CASCaptureWindowController createWindowController];
+    self.captureWindowController.model.captureCount = 25;
+    self.captureWindowController.model.captureMode = mode;
+    [self.captureWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSOKButton){
+            
+            self.captureController = [CASCaptureController captureControllerWithWindowController:self.captureWindowController];
+            self.captureWindowController = nil;
+            if (self.captureController){
+                
+                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                [progress beginSheetModalForWindow:self.window];
+                [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
+
+                self.captureController.imageProcessor = self.imageProcessor;
+                self.captureController.cameraController = self.cameraController;
+
+                // self.cameraController pushExposureSettings
+                
+                [self.captureController captureWithBlock:^(NSError *error) {
+                   
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                    
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    // self.cameraController popExposureSettings
+                }];
+            }
+        }
+    }];
+}
+
 - (IBAction)captureDarks:(id)sender
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
+    [self _presentCaptureControllerWithMode:kCASCaptureModelModeDark];
 }
 
 - (IBAction)captureBias:(id)sender
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
+    [self _presentCaptureControllerWithMode:kCASCaptureModelModeBias];
 }
 
 - (IBAction)captureFlats:(id)sender
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
+    [self _presentCaptureControllerWithMode:kCASCaptureModelModeFlat];
 }
 
 - (IBAction)plateSolve:(id)sender
