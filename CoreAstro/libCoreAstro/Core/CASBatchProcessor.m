@@ -101,6 +101,8 @@
                                                               params:CASExposeParamsMake(_final.width,_final.height,0,0,_final.width,_final.height,1,1,self.first.params.bps,0)
                                                                 time:[NSDate date]];
     
+    result.type = self.first.type;
+
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
     NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
     [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":modeStr}} forKey:@"history"];

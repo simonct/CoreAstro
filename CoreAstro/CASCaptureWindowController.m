@@ -51,6 +51,8 @@
 - (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion
 {
     BOOL temperatureLock = NO;
+    CASCCDExposureType exposureType;
+    
     const CGFloat targetFloatAverage = 0.5;
     const CGFloat targetFloatAverageTolerance = 0.1;
 
@@ -63,16 +65,19 @@
             exposureUnits = 0; // seconds
             exposureTime = self.model.exposureSeconds;
             temperatureLock = YES;
+            exposureType = kCASCCDExposureDarkType;
             break;
         case kCASCaptureModelModeBias:
             exposureUnits = 0; // seconds
             exposureTime = 0;
             temperatureLock = YES;
+            exposureType = kCASCCDExposureBiasType;
             break;
         case kCASCaptureModelModeFlat:
             exposureUnits = 1; // ms
             exposureTime = 100;
             temperatureLock = NO;
+            exposureType = kCASCCDExposureFlatType;
             break;
         default:
             NSLog(@"*** Unknown capture mode: %ld",self.model.captureMode);
@@ -88,8 +93,9 @@
         self.cameraController.binningIndex = 0;
         self.cameraController.subframe = CGRectZero;
         self.cameraController.guider = nil;
-        self.cameraController.temperatureLock = temperatureLock;
-        
+        self.cameraController.temperatureLock = 0; // temperatureLock;
+        self.cameraController.exposureType = exposureType;
+
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
             if (error){

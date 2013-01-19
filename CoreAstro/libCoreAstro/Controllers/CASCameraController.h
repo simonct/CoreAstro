@@ -24,11 +24,11 @@
 //
 
 #import "CASScriptableObject.h"
+#import "CASCCDExposure.h"
 
 @class CASCCDDevice;
 @class CASImageProcessor;
 @class CASGuideAlgorithm;
-@class CASCCDExposure;
 @class CASGuiderController;
 @class CASCCDExposure;
 @class CASMovieExporter;
@@ -50,6 +50,7 @@
 @property (nonatomic,assign) NSInteger binningIndex;
 @property (nonatomic,assign) NSInteger interval;
 @property (nonatomic,assign) CGRect subframe;
+@property (nonatomic,assign) CASCCDExposureType exposureType;
 @property (nonatomic,strong) NSDate* exposureStart;
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;

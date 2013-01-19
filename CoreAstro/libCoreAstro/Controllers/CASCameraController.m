@@ -52,6 +52,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.exposureUnits = 0; // seconds
         self.camera = camera;
         self.temperatureLock = YES;
+        self.exposureType = kCASCCDExposureLightType;
     }
     return self;
 }
@@ -221,7 +222,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     _waitingForDevice = YES;
     
-    [self.camera exposeWithParams:exp type:kCASCCDExposureLightType block:^(NSError *error, CASCCDExposure *exposure) {
+    [self.camera exposeWithParams:exp type:self.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
     
         _waitingForDevice = NO;
         
@@ -241,7 +242,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 }
             }
             
-            exposure.type = kCASCCDExposureLightType; // no, need to feed in from window controller
+            exposure.type = self.exposureType;
             
             if (!saveExposure && !_cancel){
                 endCapture(error,exposure);
