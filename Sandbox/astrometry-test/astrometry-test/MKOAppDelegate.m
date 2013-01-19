@@ -372,6 +372,11 @@
 
 @implementation CASPlateSolveImageView
 
+- (void)dealloc
+{
+    self.annotations = nil;
+}
+
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -410,16 +415,10 @@
     return NO;
 }
 
-- (void)removeAnnotationLayer
-{
-    [self.annotationLayer removeFromSuperlayer];
-    self.annotationLayer = nil;
-}
-
 - (void)setUrl:(NSURL *)url
 {
     [super setUrl:url];
-    [self removeAnnotationLayer];
+    self.annotations = nil;
 }
 
 - (void)setAnnotations:(NSArray *)annotations
@@ -438,7 +437,13 @@
             [annotation addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
         }
 
-        [self drawAnnotations];
+        if (_annotations){
+            [self drawAnnotations];
+        }
+        else{
+            [self.annotationLayer removeFromSuperlayer];
+            self.annotationLayer = nil;
+        }
     }
 }
 
@@ -570,6 +575,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     };
 
     self.imageView.acceptDrop = NO;
+    self.imageView.annotations = nil;
     self.solution = nil;
     
     // bindings...
@@ -727,10 +733,53 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSFileHandlingPanelOKButton){
+
+            const CGSize size = self.imageView.image.extent.size;
+
+            // create an offscreen view to render the image+annotations at full resolution
+            NSWindow *offscreenWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(-32000,-32000,size.width,size.height)
+                                                                    styleMask:NSBorderlessWindowMask
+                                                                      backing:NSBackingStoreNonretained
+                                                                        defer:NO];
+            CASPlateSolveImageView* offscreenImageView = [[CASPlateSolveImageView alloc] initWithFrame:NSMakeRect(0, 0, size.width,size.height)];
+            offscreenImageView.wantsLayer = YES;
+            offscreenImageView.layer.opacity = 1;
+            [[offscreenWindow contentView] addSubview:offscreenImageView];
             
-            NSError* error;
-            if (![[NSFileManager defaultManager] copyItemAtURL:self.imageView.url toURL:save.URL error:&error]){
-                [NSApp presentError:error];
+            // set the annotations
+            offscreenImageView.url = self.imageView.url;
+            offscreenImageView.annotations = self.imageView.annotations;
+            
+            [[offscreenWindow contentView] addSubview:offscreenImageView];
+            
+            // create a bitmap to render the contents into
+            CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+            CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+            CFRelease(space);
+            
+            if (context){
+                
+                // render the view's layer
+                [offscreenImageView.layer renderInContext:context];
+                
+                // grab the image and write to the destination url
+                CGImageRef image = CGBitmapContextCreateImage(context);
+                if (image){
+                    
+                    CGImageDestinationRef destination = CGImageDestinationCreateWithURL((__bridge CFURLRef)save.URL, CFSTR("public.png"), 1, nil);
+                    if (!destination){
+                        NSLog(@"Failed to create image destination for thumbnail at %@",save.URL);
+                    }
+                    else{
+                        CGImageDestinationAddImage(destination,image,nil);
+                        if (!CGImageDestinationFinalize(destination)){
+                            NSLog(@"Failed to write thumbnail to %@",save.URL);
+                        }
+                        CFRelease(destination);
+                    }
+                    CGImageRelease(image);
+                }
+                CGContextRelease(context);
             }
         }
     }];
