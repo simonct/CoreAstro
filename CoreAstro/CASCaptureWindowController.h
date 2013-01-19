@@ -8,6 +8,7 @@
 
 #import "CASAuxWindowController.h"
 
+@class CASCCDExposure;
 @class CASImageProcessor;
 @class CASCameraController;
 
@@ -37,6 +38,6 @@ enum {
 @property (nonatomic,strong) CASCaptureModel* model;
 @property (nonatomic,strong) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
-- (void)captureWithBlock:(void(^)(NSError* error))block;
+- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion;
 + (CASCaptureController*)captureControllerWithWindowController:(CASCaptureWindowController*)cwc;
 @end

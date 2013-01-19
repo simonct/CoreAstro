@@ -46,19 +46,32 @@
 
 @implementation CASCaptureController
 
-- (void)captureWithBlock:(void(^)(NSError* error))block
+- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion
 {
+    BOOL temperatureLock = NO;
     __block BOOL saveExposure = YES;
     __block NSInteger exposureTime, exposureUnits;
     __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:self.model.captureCount];
 
-    if (self.model.captureMode == kCASCaptureModelModeFlat){
-        exposureUnits = 1; // ms
-        exposureTime = 100;
-    }
-    else {
-        exposureUnits = 0; // seconds
-        exposureTime = self.model.exposureSeconds;
+    switch (self.model.captureMode) {
+        case kCASCaptureModelModeDark:
+            exposureUnits = 0; // seconds
+            exposureTime = self.model.exposureSeconds;
+            temperatureLock = YES;
+            break;
+        case kCASCaptureModelModeBias:
+            exposureUnits = 0; // seconds
+            exposureTime = 0;
+            temperatureLock = YES;
+            break;
+        case kCASCaptureModelModeFlat:
+            exposureUnits = 1; // ms
+            exposureTime = 100;
+            temperatureLock = NO;
+            break;
+        default:
+            NSLog(@"*** Unknown capture mode: %ld",self.model.captureMode);
+            return;
     }
     
     void (^__block capture)(void) = ^(void) {
@@ -70,12 +83,12 @@
         self.cameraController.binningIndex = 0;
         self.cameraController.subframe = CGRectZero;
         self.cameraController.guider = nil;
-        self.cameraController.temperatureLock = (self.model.captureMode != kCASCaptureModelModeFlat);
+        self.cameraController.temperatureLock = temperatureLock;
         
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
             if (error){
-                if (block) block(error);
+                if (completion) completion(error);
             }
             else{
                                 
@@ -96,7 +109,7 @@
                                 
                                 *exposure = [enumerator nextObject];
                                 
-                                // update progress
+                                if (progress) progress(*exposure,YES);
                                 
                             } completion:^(NSError *error, CASCCDExposure *result) {
                                 
@@ -111,18 +124,19 @@
                                             [exposures makeObjectsPerformSelector:@selector(deleteExposure)]; // doesn't update the library...
                                         }
                                     }
-                                    if (block) block(error);
+                                    if (completion) completion(error);
                                 });
                             }];
                         });
                     }
                     else {
-                        if (block) block(nil);
+                        if (completion) completion(nil);
                     }
                 }
                 else {
                     
                     // update progress
+                    if (progress) progress(exposure,NO);
                     
                     if (self.model.captureMode == kCASCaptureModelModeFlat){
                         
@@ -157,7 +171,7 @@
                             NSLog(@"Added exposure to library at %@",url);
                             
                             if (error){
-                                if (block) block(error);
+                                if (completion) completion(error);
                             }
                             else {
                                 [exposures addObject:exposure];

@@ -1251,6 +1251,8 @@
     self.captureWindowController = [CASCaptureWindowController createWindowController];
     self.captureWindowController.model.captureCount = 25;
     self.captureWindowController.model.captureMode = mode;
+    self.captureWindowController.model.combineMode = kCASCaptureModelCombineAverage;
+    
     [self.captureWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSOKButton){
@@ -1268,7 +1270,20 @@
 
                 // self.cameraController pushExposureSettings
                 
-                [self.captureController captureWithBlock:^(NSError *error) {
+                __block BOOL inPostProcessing = NO;
+                
+                [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
+                
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                        if (postProcessing && !inPostProcessing){
+                            inPostProcessing = YES;
+                            [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Combining...", @"Progress sheet label")];
+                        }
+                        progress.progressBar.doubleValue++;
+                    });
+                    
+                } completion:^(NSError *error) {
                    
                     if (error){
                         [NSApp presentError:error];
