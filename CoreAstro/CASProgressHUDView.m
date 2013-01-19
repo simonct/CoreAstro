@@ -21,7 +21,7 @@
         
         NSBezierPath* outline = [NSBezierPath bezierPathWithOvalInRect:bounds];
         outline.lineWidth = 2.5;
-        [[NSColor orangeColor] set];
+        [[NSColor whiteColor] set];
         [outline stroke];
         
         NSBezierPath* arc = [NSBezierPath bezierPath];
@@ -67,7 +67,7 @@
         label.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
         label.backgroundColor = [NSColor clearColor];
         label.bordered = NO;
-        label.textColor = [NSColor orangeColor];
+        label.textColor = [NSColor whiteColor];
         label.font = [NSFont boldSystemFontOfSize:18];
         label.alignment = NSLeftTextAlignment;
         label.editable = NO;
