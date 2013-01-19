@@ -277,22 +277,97 @@
 @end
 
 @interface CASPlateSolveSolution : NSObject
-@property (nonatomic,copy) NSString* centreRA;
-@property (nonatomic,copy) NSString* centreDec;
-@property (nonatomic,copy) NSString* centreAngle;
-@property (nonatomic,copy) NSString* pixelScale;
-@property (nonatomic,copy) NSString* fieldWidth;
-@property (nonatomic,copy) NSString* fieldHeight;
-@property (nonatomic,strong) NSArray* objects;
+@property (nonatomic,readonly) NSString* centreRA;
+@property (nonatomic,readonly) NSString* centreDec;
+@property (nonatomic,readonly) NSString* centreAngle;
+@property (nonatomic,readonly) NSString* pixelScale;
+@property (nonatomic,readonly) NSString* fieldWidth;
+@property (nonatomic,readonly) NSString* fieldHeight;
+@property (nonatomic,strong) NSArray* wcsinfo;
+@property (nonatomic,strong) NSArray* annotations;
 @end
 
 @implementation CASPlateSolveSolution
+
+- (void)replaceAnnotations:(NSArray*)annotations
+{
+    if (_annotations){
+        [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
+    }
+    
+    for (NSDictionary* annotation in annotations){
+        CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+        object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+        object.annotation = annotation;
+        if (!_annotations){
+            _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+        }
+        [[self mutableArrayValueForKey:@"annotations"] addObject:object]; // this causes a call to -setAnnotations: each time
+    }
+}
+
+- (NSNumber*)numberFromInfo:(NSArray*)values withKey:(NSString*)key
+{
+    for (NSString* string in values){
+        if ([string hasPrefix:key]){
+            NSScanner* scanner = [NSScanner scannerWithString:string];
+            NSString* ignored;
+            [scanner scanString:key intoString:&ignored];
+            double d;
+            if ([scanner scanDouble:&d]){
+                return [NSNumber numberWithDouble:d];
+            }
+        }
+    }
+    return nil;
+}
+
+- (NSString*)centreRA
+{
+    return [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_m"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
+}
+
+- (NSString*)centreDec
+{
+    return [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]];
+}
+
+- (NSString*)centreAngle
+{
+    return [NSString stringWithFormat:@"%02.0f°",
+            [[self numberFromInfo:self.wcsinfo withKey:@"orientation"] doubleValue]];
+}
+
+- (NSString*)pixelScale
+{
+    return [NSString stringWithFormat:@"%.2f\u2033",
+            [[self numberFromInfo:self.wcsinfo withKey:@"pixscale"] doubleValue]];
+}
+
+- (NSString*)fieldWidth
+{
+    return [NSString stringWithFormat:@"%.2f\u2032", // todo; check fieldunits == arcminutes
+            [[self numberFromInfo:self.wcsinfo withKey:@"fieldw"] doubleValue]];
+}
+
+- (NSString*)fieldHeight
+{
+    return [NSString stringWithFormat:@"%.2f\u2032",
+            [[self numberFromInfo:self.wcsinfo withKey:@"fieldh"] doubleValue]];
+}
+
 @end
 
 @interface CASPlateSolveImageView : CASImageView
 @property (nonatomic,assign) BOOL acceptDrop;
 @property (nonatomic,strong) CALayer* annotationLayer;
-@property (nonatomic,strong) NSMutableArray* annotations;
+@property (nonatomic,strong) NSArray* annotations;
 @end
 
 @implementation CASPlateSolveImageView
@@ -335,38 +410,34 @@
     return NO;
 }
 
+- (void)removeAnnotationLayer
+{
+    [self.annotationLayer removeFromSuperlayer];
+    self.annotationLayer = nil;
+}
+
 - (void)setUrl:(NSURL *)url
 {
     [super setUrl:url];
-    [self updateAnnotations:nil];
+    [self removeAnnotationLayer];
 }
 
-- (void)updateAnnotations:(NSArray*)annotations
+- (void)setAnnotations:(NSArray *)annotations
 {
-    if (_annotations){
-        for (id object in self.annotations){
-            [object removeObserver:self forKeyPath:@"enabled"];
-        }
-        [[self mutableArrayValueForKey:@"annotations"] removeAllObjects];
-    }
-    
-    if (!annotations){
-        [self.annotationLayer removeFromSuperlayer];
-        self.annotationLayer = nil;
-    }
-    else {
+    if (annotations != _annotations){
         
-        for (NSDictionary* annotation in annotations){
-            CASPlateSolvedObject* object = [CASPlateSolvedObject new];
-            object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
-            object.annotation = annotation;
-            [object addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
-            if (!_annotations){
-                _annotations = [NSMutableArray arrayWithCapacity:[annotations count]];
+        if (_annotations){
+            for (id object in self.annotations){
+                [object removeObserver:self forKeyPath:@"enabled"];
             }
-            [[self mutableArrayValueForKey:@"annotations"] addObject:object];
         }
+
+        _annotations = annotations;
         
+        for (id annotation in annotations){
+            [annotation addObserver:self forKeyPath:@"enabled" options:0 context:(__bridge void *)(self)];
+        }
+
         [self drawAnnotations];
     }
 }
@@ -405,9 +476,6 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
-        if (object == self){
-            [self updateAnnotations:nil]; // reset annotations layer
-        }
         [self drawAnnotations];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -420,7 +488,7 @@
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) CASSolverModel* solverModel;
 @property (nonatomic,readonly) NSString* cacheDirectory;
-@property (nonatomic,assign) BOOL solved;
+@property (nonatomic,strong) CASPlateSolveSolution* solution;
 @end
 
 @implementation MKOAppDelegate
@@ -439,6 +507,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }
     
     self.imageView.acceptDrop = YES;
+    [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.annotations" options:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -477,22 +546,6 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
-- (NSNumber*)numberFromInfo:(NSArray*)values withKey:(NSString*)key
-{
-    for (NSString* string in values){
-        if ([string hasPrefix:key]){
-            NSScanner* scanner = [NSScanner scannerWithString:string];
-            NSString* ignored;
-            [scanner scanString:key intoString:&ignored];
-            double d;
-            if ([scanner scanDouble:&d]){
-                return [NSNumber numberWithDouble:d];
-            }
-        }
-    }
-    return nil;
-}
-
 - (IBAction)solve:(id)sender
 {
     if (!self.imageView.image || self.solverTask){
@@ -516,9 +569,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         self.solverTask = nil;
     };
 
-    self.solved = NO;
     self.imageView.acceptDrop = NO;
-    [self.imageView updateAnnotations:nil]; // yuk
+    self.solution = nil;
     
     // bindings...
     self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
@@ -591,29 +643,16 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                 }
                                 else{
                                     
-                                    self.solved = YES;
+                                    self.solution = [CASPlateSolveSolution new];
+                                    self.solution.wcsinfo = output;
                                     
-                                    self.solutionRALabel.stringValue = [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
-                                                                        [[self numberFromInfo:output withKey:@"ra_center_h"] doubleValue],
-                                                                        [[self numberFromInfo:output withKey:@"ra_center_m"] doubleValue],
-                                                                        [[self numberFromInfo:output withKey:@"ra_center_s"] doubleValue]];
-                                    
-                                    self.solutionDecLabel.stringValue = [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
-                                                                         [[self numberFromInfo:output withKey:@"dec_center_d"] doubleValue],
-                                                                         [[self numberFromInfo:output withKey:@"dec_center_m"] doubleValue],
-                                                                         [[self numberFromInfo:output withKey:@"dec_center_s"] doubleValue]];
-                                    
-                                    self.solutionAngleLabel.stringValue = [NSString stringWithFormat:@"%02.0f°",
-                                                                           [[self numberFromInfo:output withKey:@"orientation"] doubleValue]];
-                                    
-                                    self.pixelScaleLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2033",
-                                                                           [[self numberFromInfo:output withKey:@"pixscale"] doubleValue]];
-
-                                    self.fieldWidthLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2032", // todo; check fieldunits == arcminutes
-                                                                        [[self numberFromInfo:output withKey:@"fieldw"] doubleValue]];
-                                    
-                                    self.fieldHeightLabel.stringValue = [NSString stringWithFormat:@"%.2f\u2032",
-                                                                        [[self numberFromInfo:output withKey:@"fieldh"] doubleValue]];
+                                    // bindings...
+                                    self.solutionRALabel.stringValue = self.solution.centreRA;
+                                    self.solutionDecLabel.stringValue = self.solution.centreDec;
+                                    self.solutionAngleLabel.stringValue = self.solution.centreAngle;
+                                    self.pixelScaleLabel.stringValue = self.solution.pixelScale;
+                                    self.fieldWidthLabel.stringValue = self.solution.fieldWidth;
+                                    self.fieldHeightLabel.stringValue = self.solution.fieldHeight;
 
                                     // get annotations
                                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
@@ -638,7 +677,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                                 }
                                                 else {
                                                     // check status=solved
-                                                    [self.imageView updateAnnotations:[report objectForKey:@"annotations"]];
+                                                    [self.solution replaceAnnotations:[report objectForKey:@"annotations"]];
                                                     completeWithError(nil);
                                                 }
                                             }
@@ -675,7 +714,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
 - (IBAction)saveDocument:(id)sender
 {
-    if (!self.solved){
+    if (!self.solution){
         return;
     }
     
@@ -700,7 +739,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
     if (menuItem.action == @selector(saveDocument:)){
-        return self.solved;
+        return (self.solution != nil);
     }
     return YES;
 }
