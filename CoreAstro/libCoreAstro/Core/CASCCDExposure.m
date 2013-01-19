@@ -179,7 +179,7 @@
         NSData* pixels = self.pixels;
         if (pixels && !_floatPixels){
             
-            const NSTimeInterval duration = CASTimeBlock(^{
+            //const NSTimeInterval duration = CASTimeBlock(^{
                 
                 const NSInteger count = [pixels length] / sizeof(uint16_t);
                 float* fp = malloc(count * sizeof(float));
@@ -192,8 +192,8 @@
                     vDSP_vsdiv(fp,1,(float*)&max,fp,1,count);
                     _floatPixels = [NSData dataWithBytesNoCopy:fp length:(count * sizeof(float))];
                 }
-            });
-            NSLog(@"floatPixels: %fs",duration);
+            //});
+            // NSLog(@"floatPixels: %fs",duration);
         }
     }
     return _floatPixels;
