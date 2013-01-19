@@ -20,6 +20,22 @@
     return self;
 }
 
+- (void)removeObjects:(NSArray *)objects
+{
+    if ([objects count]){
+        NSMutableIndexSet* indexes = [NSMutableIndexSet indexSet];
+        for (id object in objects){
+            const NSInteger index = [[self arrangedObjects] indexOfObject:object];
+            if (index != NSNotFound){
+                [indexes addIndex:index];
+            }
+        }
+        if ([indexes count]){
+            [self removeObjectsAtArrangedObjectIndexes:indexes];
+        }
+    }
+}
+
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index
 {
     if (index != NSNotFound){

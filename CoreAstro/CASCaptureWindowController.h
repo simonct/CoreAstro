@@ -11,6 +11,7 @@
 @class CASCCDExposure;
 @class CASImageProcessor;
 @class CASCameraController;
+@class CASExposuresController;
 
 @interface CASCaptureModel : NSObject
 @property (nonatomic,assign) NSInteger captureCount;
@@ -38,6 +39,7 @@ enum {
 @property (nonatomic,strong) CASCaptureModel* model;
 @property (nonatomic,strong) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASExposuresController* exposuresController;
 - (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion;
 + (CASCaptureController*)captureControllerWithWindowController:(CASCaptureWindowController*)cwc;
 @end

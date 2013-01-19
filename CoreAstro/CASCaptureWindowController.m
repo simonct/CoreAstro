@@ -12,6 +12,7 @@
 #import "CASCCDExposureLibrary.h"
 #import "CASBatchProcessor.h"
 #import "CASCCDDevice.h"
+#import "CASExposuresController.h"
 
 @implementation CASCaptureModel
 @end
@@ -50,6 +51,9 @@
 - (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion
 {
     BOOL temperatureLock = NO;
+    const CGFloat targetFloatAverage = 0.5;
+    const CGFloat targetFloatAverageTolerance = 0.1;
+
     __block BOOL saveExposure = YES;
     __block NSInteger exposureTime, exposureUnits;
     __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:self.model.captureCount];
@@ -92,103 +96,99 @@
                 if (completion) completion(error);
             }
             else{
-                                
-                if ([exposures count] == self.model.captureCount){
+                
+                // if we're processing flats, adjust the exposure to get around 50% average pixel value
+                if (self.model.captureMode == kCASCaptureModelModeFlat){
                     
-                    NSLog(@"Completed %ld exposures",[exposures count]);
-
-                    if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
-
-                        CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
-
-                        // run the processor in the background
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            
-                            NSEnumerator* enumerator = [exposures objectEnumerator];
-                            
-                            [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
-                                
-                                CASCCDExposure* exp = [enumerator nextObject];
-                                if (exp){
-                                    
-                                    if (self.model.captureMode == kCASCaptureModelModeFlat && self.cameraController.camera.isColour){
-                                        exp = [self.imageProcessor removeBayerMatrix:exp];
-                                    }
-                                }
-                                
-                                *exposure = exp;
-                                
-                                if (progress) progress(exp,YES);
-                                
-                            } completion:^(NSError *error, CASCCDExposure *result) {
-                                
-                                if (self.model.captureMode == kCASCaptureModelModeFlat){
-                                    // todo; save normailised flat data to its exposure bundle
-                                }
-                                
-                                // run completion on the main thread
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    
-                                    if (error){
-                                        [NSApp presentError:error];
-                                    }
-                                    else {
-                                        if (!self.model.keepOriginals){
-                                            [exposures makeObjectsPerformSelector:@selector(deleteExposure)]; // doesn't update the library...
-                                        }
-                                    }
-                                    if (completion) completion(error);
-                                });
-                            }];
-                        });
+                    // assume we might have to adjust the exposure
+                    saveExposure = NO;
+                    
+                    // check intensity todo; need a limit to stop it hunting forever
+                    const CGFloat average = [self.imageProcessor averagePixelValue:exposure];
+                    if (average < 0.1){
+                        exposureTime *= 2;
+                    }
+                    else if (average > 0.9){
+                        exposureTime /= 2;
+                    }
+                    else if (average >= targetFloatAverage-targetFloatAverageTolerance && average <= targetFloatAverage+targetFloatAverageTolerance) {
+                        saveExposure = YES; // nope, good enough
                     }
                     else {
-                        if (completion) completion(nil);
+                        exposureTime *= (targetFloatAverage/average);
                     }
+                    NSLog(@"Flats: average of %f, now using exposure of %ldms",average,exposureTime);
                 }
-                else {
-                                        
-                    if (self.model.captureMode == kCASCaptureModelModeFlat){
-                        
-                        // assume we might have to adjust the exposure
-                        saveExposure = NO;
-                        
-                        // check intensity todo; need a limit to stop it hunting forever
-                        const CGFloat average = [self.imageProcessor averagePixelValue:exposure];
-                        if (average < 0.1){
-                            exposureTime *= 2;
-                        }
-                        else if (average > 0.9){
-                            exposureTime /= 2;
-                        }
-                        else if (average >= 0.4 && average <= 0.6) {
-                            saveExposure = YES; // nope, good enough
-                        }
-                        else {
-                            exposureTime *= (0.5/average);
-                        }
-                        NSLog(@"Flats: average of %f, now using exposure of %ldms",average,exposureTime);
-                    }
+                
+                if (!saveExposure) {
+                    [self.exposuresController removeObjects:@[exposure]]; // cameraController will have saved it to the library so we need to remove it again
+                    capture();
+                }
+                else{
+                
+                    // add the exposure
+                    [exposures addObject:exposure];
                     
-                    if (!saveExposure) {
+                    // check to see if we're done
+                    if ([exposures count] < self.model.captureCount){
+                        
+                        if (progress) progress(exposure,NO);
                         capture();
                     }
-                    else{
-                    
-                        // save exposure to library
-                        [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError *saveError, NSURL *url) {
+                    else {
+                        
+                        // if we've hit the required number, process the accumulated exposures
+
+                        NSLog(@"Completed %ld exposures",[exposures count]);
+                        
+                        if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
                             
-                            NSLog(@"Added exposure to library at %@",url);
+                            CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
                             
-                            if (error){
-                                if (completion) completion(error);
-                            }
-                            else {
-                                [exposures addObject:exposure];
-                                if (progress) progress(exposure,NO);
-                                capture();
-                            }
-                        }];
+                            // run the processor in the background
+                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                
+                                NSEnumerator* enumerator = [exposures objectEnumerator];
+                                
+                                [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
+                                    
+                                    CASCCDExposure* exp = [enumerator nextObject];
+                                    if (exp){
+                                        
+                                        if (self.model.captureMode == kCASCaptureModelModeFlat && self.cameraController.camera.isColour){
+                                            exp = [self.imageProcessor removeBayerMatrix:exp];
+                                        }
+                                    }
+                                    
+                                    *exposure = exp;
+                                    
+                                    if (progress) progress(exp,YES);
+                                    
+                                } completion:^(NSError *error, CASCCDExposure *result) {
+                                    
+                                    if (self.model.captureMode == kCASCaptureModelModeFlat){
+                                        // todo; save normalised flat data to its exposure bundle
+                                    }
+                                    
+                                    // run completion on the main thread
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        
+                                        if (error){
+                                            [NSApp presentError:error];
+                                        }
+                                        else {
+                                            if (!self.model.keepOriginals){
+                                                [self.exposuresController removeObjects:exposures];
+                                            }
+                                        }
+                                        if (completion) completion(error);
+                                    });
+                                }];
+                            });
+                        }
+                        else {
+                            if (completion) completion(nil);
+                        }
                     }
                 }
             }

@@ -1267,7 +1267,8 @@
 
                 self.captureController.imageProcessor = self.imageProcessor;
                 self.captureController.cameraController = self.cameraController;
-
+                self.captureController.exposuresController = self.libraryExposuresController;
+                
                 // self.cameraController pushExposureSettings
                 
                 __block BOOL inPostProcessing = NO;
