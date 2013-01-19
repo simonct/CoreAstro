@@ -11,6 +11,7 @@
 #import "CASImageProcessor.h"
 #import "CASCCDExposureLibrary.h"
 #import "CASBatchProcessor.h"
+#import "CASCCDDevice.h"
 
 @implementation CASCaptureModel
 @end
@@ -96,7 +97,7 @@
                     
                     NSLog(@"Completed %ld exposures",[exposures count]);
 
-                    if (self.model.combineMode == kCASCaptureModelCombineAverage){
+                    if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
 
                         CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
 
@@ -107,11 +108,23 @@
                             
                             [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
                                 
-                                *exposure = [enumerator nextObject];
+                                CASCCDExposure* exp = [enumerator nextObject];
+                                if (exp){
+                                    
+                                    if (self.model.captureMode == kCASCaptureModelModeFlat && self.cameraController.camera.isColour){
+                                        exp = [self.imageProcessor removeBayerMatrix:exp];
+                                    }
+                                }
                                 
-                                if (progress) progress(*exposure,YES);
+                                *exposure = exp;
+                                
+                                if (progress) progress(exp,YES);
                                 
                             } completion:^(NSError *error, CASCCDExposure *result) {
+                                
+                                if (self.model.captureMode == kCASCaptureModelModeFlat){
+                                    // todo; save normailised flat data to its exposure bundle
+                                }
                                 
                                 // run completion on the main thread
                                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -134,10 +147,7 @@
                     }
                 }
                 else {
-                    
-                    // update progress
-                    if (progress) progress(exposure,NO);
-                    
+                                        
                     if (self.model.captureMode == kCASCaptureModelModeFlat){
                         
                         // assume we might have to adjust the exposure
@@ -175,6 +185,7 @@
                             }
                             else {
                                 [exposures addObject:exposure];
+                                if (progress) progress(exposure,NO);
                                 capture();
                             }
                         }];
