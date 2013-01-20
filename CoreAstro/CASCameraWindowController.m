@@ -133,31 +133,9 @@
 @end
 
 @interface CASCameraWindow : NSWindow
-@property (nonatomic,readonly) CASCameraWindowController* cameraController;
 @end
 
 @implementation CASCameraWindow
-
-- (CASCameraWindowController*) cameraController {
-    return (CASCameraWindowController*)self.windowController;
-}
-
-- (void)zoomIn:sender {
-    [self.cameraController.imageView zoomIn:sender];
-}
-
-- (void)zoomOut:sender {
-    [self.cameraController.imageView zoomOut:sender];
-}
-
-- (void)zoomImageToFit:sender {
-    [self.cameraController.imageView zoomImageToFit:sender];
-}
-
-- (void)zoomImageToActualSize:sender {
-    [self.cameraController.imageView zoomImageToActualSize:sender];
-}
-
 @end
 
 @implementation CASCameraWindowController
@@ -1061,6 +1039,16 @@
 - (IBAction)zoomOut:(id)sender
 {
     [self.imageView zoomOut:sender];
+}
+
+- (void)zoomImageToFit:sender
+{
+    [self.imageView zoomImageToFit:sender];
+}
+
+- (void)zoomImageToActualSize:sender
+{
+    [self.imageView zoomImageToActualSize:sender];
 }
 
 - (IBAction)toggleDevices:(id)sender
