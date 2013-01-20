@@ -1719,13 +1719,28 @@
 
 #pragma mark Library delegate
 
-- (void)focusOnExposure:(CASCCDExposure*)exposure
+- (void)focusOnExposures:(CASExposuresController*)exposuresController
 {
-    [self hideLibraryView];
-    self.currentExposure = exposure;
-    
-    // self.exposuresController = new array controller with standard settings and content of just these exposures
-    // or should the library controller just set a filter on its arrany controller to select just the ones being inspected
+    if ([[exposuresController arrangedObjects] count]){
+        
+        [self hideLibraryView];
+        
+        self.exposuresController = exposuresController;
+        
+        NSArray* exposures = [self.exposuresController selectedObjects];
+        if (![exposures count]){
+            exposures = [self.exposuresController arrangedObjects];
+        }
+        
+        self.currentExposure = [exposures objectAtIndex:0];
+        
+        if ([self.exposuresController.selectionIndexes count] == 1){
+            self.imageBannerView.exposure = [self.exposuresController.selectedObjects objectAtIndex:0];
+        }
+        else {
+            self.imageBannerView.exposure = nil;
+        }
+    }
 }
 
 @end

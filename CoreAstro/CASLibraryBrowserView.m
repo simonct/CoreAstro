@@ -18,6 +18,14 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
+    if (theEvent.keyCode == 49){
+        if (![NSResponder instancesRespondToSelector:@selector(quickLookPreviewItems:)]){
+            if ([self.nextResponder respondsToSelector:@selector(quickLookPreviewItems:)]){
+                [self.nextResponder quickLookPreviewItems:nil];
+                return;
+            }
+        }
+    }
     [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
 }
 

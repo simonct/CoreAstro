@@ -228,6 +228,13 @@
     return [self.exposuresController arrangedObjects];
 }
 
+- (CASExposuresController*)exposuresControllerWithExposures:(NSArray*)exposures
+{
+    CASExposuresController* exposuresController = [[CASExposuresController alloc] initWithContent:exposures];
+    exposuresController.project = self.exposuresController.project;
+    return exposuresController;
+}
+
 #pragma mark - Groups
 
 - (NSArray*)groups
@@ -354,7 +361,7 @@
     }
     else {
         
-        if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposure:)]){
+        if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposures:)]){
             
             if (self.exposuresController.project.masterBias || self.exposuresController.project.masterFlat){
                 
@@ -366,7 +373,7 @@
                     [reduction processWithExposures:[NSArray arrayWithObject:[self.exposures objectAtIndex:index]] completion:^(NSError *error, CASCCDExposure *final) {
                         
                         if (!error){
-                            [self.exposureDelegate focusOnExposure:final];
+                            [self.exposureDelegate focusOnExposures:[self exposuresControllerWithExposures:@[final]]];
                         }
                     }];
                 });
@@ -374,7 +381,7 @@
                 NSLog(@"t=%fs",t);
             }
             else {
-                [self.exposureDelegate focusOnExposure:[self.exposures objectAtIndex:index]];
+                [self.exposureDelegate focusOnExposures:self.exposuresController];
             }
             
             // todo; back button to return to the browser view
@@ -635,6 +642,14 @@
 - (IBAction)combineAverage:(id)sender
 {
     NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+- (void)quickLookPreviewItems:(id)sender
+{
+    NSArray* selectedObjects = [self.exposuresController selectedObjects];
+    if ([selectedObjects count] && [self.exposureDelegate respondsToSelector:@selector(focusOnExposures:)]){
+        [self.exposureDelegate focusOnExposures:[self exposuresControllerWithExposures:selectedObjects]];
+    }
 }
 
 #pragma mark - KVO
