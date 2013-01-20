@@ -1459,6 +1459,12 @@
             enabled = self.currentExposure != nil;
             break;
             
+        case 10020:
+        case 10021:
+        case 10022:
+            enabled = (self.cameraController != nil && !self.cameraController.capturing);
+            break;
+
         case 11000:
             item.state = self.imageDebayer.mode == kCASImageDebayerNone;
             break;
