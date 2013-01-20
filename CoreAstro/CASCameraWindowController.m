@@ -142,22 +142,6 @@
     return (CASCameraWindowController*)self.windowController;
 }
 
-- (void)flipImageHorizontal:sender {
-    [self.cameraController.imageView flipImageHorizontal:sender];
-}
-
-- (void)flipImageVertical:sender {
-    [self.cameraController.imageView flipImageVertical:sender];
-}
-
-- (void)rotateImageLeft:sender {
-    [self.cameraController.imageView rotateImageLeft:sender];
-}
-
-- (void)rotateImageRight:sender {
-    [self.cameraController.imageView rotateImageRight:sender];
-}
-
 - (void)zoomIn:sender {
     [self.cameraController.imageView zoomIn:sender];
 }

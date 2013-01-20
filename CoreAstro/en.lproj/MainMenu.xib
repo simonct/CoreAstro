@@ -1251,62 +1251,6 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="693926762">
-									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Flip Horizontal</string>
-									<string key="NSKeyEquiv">h</string>
-									<int key="NSKeyEquivModMask">1572864</int>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="302481305">
-									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Flip Vertical</string>
-									<string key="NSKeyEquiv">v</string>
-									<int key="NSKeyEquivModMask">1572864</int>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="659907497">
-									<reference key="NSMenu" ref="466310130"/>
-									<bool key="NSIsDisabled">YES</bool>
-									<bool key="NSIsSeparator">YES</bool>
-									<string key="NSTitle"/>
-									<string key="NSKeyEquiv"/>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="705782634">
-									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Rotate Left</string>
-									<string key="NSKeyEquiv">l</string>
-									<int key="NSKeyEquivModMask">1048576</int>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="527027426">
-									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Rotate Right</string>
-									<string key="NSKeyEquiv">r</string>
-									<int key="NSKeyEquivModMask">1048576</int>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
-								<object class="NSMenuItem" id="1026195492">
-									<reference key="NSMenu" ref="466310130"/>
-									<bool key="NSIsDisabled">YES</bool>
-									<bool key="NSIsSeparator">YES</bool>
-									<string key="NSTitle"/>
-									<string key="NSKeyEquiv"/>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-								</object>
 								<object class="NSMenuItem" id="872100360">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Zoom In</string>
@@ -1763,7 +1707,7 @@
 				<string key="NSClassName">SUUpdater</string>
 			</object>
 			<object class="NSCustomView" id="1038860813">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSSlider" id="604363284">
@@ -1771,7 +1715,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{44, 21}, {207, 17}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="146411349"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1796,8 +1739,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{255, 21}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="55679703">
@@ -1881,7 +1822,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{9, 24}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="604363284"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1901,7 +1841,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{9, 56}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="855300879"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1921,7 +1860,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{44, 53}, {207, 17}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="264881338"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1946,7 +1884,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{9, 84}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="11587780"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1966,7 +1903,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{44, 81}, {207, 17}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="728168471"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1991,7 +1927,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{251, 54}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="776023472"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -2047,7 +1982,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{251, 84}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="899459386"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -2103,7 +2037,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{251, 115}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="502277987"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -2160,7 +2093,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{9, 115}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="367804169"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -2180,7 +2112,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{44, 112}, {207, 17}}</string>
 						<reference key="NSSuperview" ref="1038860813"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="867592781"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -2202,8 +2133,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{306, 142}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="207146983"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
@@ -2849,38 +2778,6 @@
 						<reference key="destination" ref="1023925487"/>
 					</object>
 					<int key="connectionID">566</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">flipImageHorizontal:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="693926762"/>
-					</object>
-					<int key="connectionID">576</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">flipImageVertical:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="302481305"/>
-					</object>
-					<int key="connectionID">577</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">rotateImageLeft:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="705782634"/>
-					</object>
-					<int key="connectionID">580</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">rotateImageRight:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="527027426"/>
-					</object>
-					<int key="connectionID">581</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3655,13 +3552,7 @@
 							<reference ref="102151532"/>
 							<reference ref="237841660"/>
 							<reference ref="174441126"/>
-							<reference ref="693926762"/>
-							<reference ref="302481305"/>
-							<reference ref="705782634"/>
-							<reference ref="527027426"/>
 							<reference ref="915659718"/>
-							<reference ref="1026195492"/>
-							<reference ref="659907497"/>
 							<reference ref="571551299"/>
 							<reference ref="872100360"/>
 							<reference ref="275578818"/>
@@ -4235,38 +4126,8 @@
 						<reference key="parent" ref="466310130"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">568</int>
-						<reference key="object" ref="693926762"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">570</int>
-						<reference key="object" ref="705782634"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">571</int>
-						<reference key="object" ref="527027426"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">569</int>
-						<reference key="object" ref="302481305"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">572</int>
 						<reference key="object" ref="915659718"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">573</int>
-						<reference key="object" ref="1026195492"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">574</int>
-						<reference key="object" ref="659907497"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -5642,14 +5503,8 @@
 				<string key="534.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="56.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="567.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="568.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="569.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="57.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="570.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="571.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="572.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="573.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="574.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="575.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="58.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="584.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
