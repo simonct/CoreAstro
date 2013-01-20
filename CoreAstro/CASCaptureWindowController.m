@@ -15,6 +15,17 @@
 #import "CASExposuresController.h"
 
 @implementation CASCaptureModel
+
+- (BOOL)exposureSecondsEnabled
+{
+    return (self.captureMode == kCASCaptureModelModeDark);
+}
+
++ (NSSet*)keyPathsForValuesAffectingExposureSecondsEnabled
+{
+    return [NSSet setWithObject:@"captureMode"];
+}
+
 @end
 
 @interface CASCaptureWindowController ()
