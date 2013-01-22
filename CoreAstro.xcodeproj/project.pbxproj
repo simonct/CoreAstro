@@ -97,6 +97,8 @@
 		F46FC8C416455E5000578010 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8C316455E5000578010 /* CASAuxWindowController.m */; };
 		F47B3A8F16346EE9008C73A7 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47B3A9016346EF3008C73A7 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
+		F47BB16616AC535000E3F2FE /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */; };
+		F47BB16C16AC536100E3F2FE /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F47BB16B16AC536100E3F2FE /* CASZoomableView.m */; };
 		F47EF80915C1D244002E9AB1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47EF80815C1D244002E9AB1 /* Accelerate.framework */; };
 		F4849C6B165900AF0069647F /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F4849C6A165900AF0069647F /* CoreAstro.m */; };
 		F4849C7216590C820069647F /* CASImageDebayer.h in Headers */ = {isa = PBXBuildFile; fileRef = F4849C7016590C820069647F /* CASImageDebayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -559,6 +561,10 @@
 		F46FC8C216455E5000578010 /* CASAuxWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAuxWindowController.h; sourceTree = "<group>"; };
 		F46FC8C316455E5000578010 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAuxWindowController.m; sourceTree = "<group>"; };
 		F47B3A7A16346EDC008C73A7 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = "External/Sparkle 1.5b6/Extras/Source Code/Sparkle.xcodeproj"; sourceTree = "<group>"; };
+		F47BB16416AC535000E3F2FE /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCenteringClipView.h; sourceTree = "<group>"; };
+		F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCenteringClipView.m; sourceTree = "<group>"; };
+		F47BB16A16AC536100E3F2FE /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASZoomableView.h; sourceTree = "<group>"; };
+		F47BB16B16AC536100E3F2FE /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASZoomableView.m; sourceTree = "<group>"; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F4849C6A165900AF0069647F /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
 		F4849C7016590C820069647F /* CASImageDebayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageDebayer.h; sourceTree = "<group>"; };
@@ -1621,6 +1627,10 @@
 				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
 				F48DF014160E47B800190D3E /* CASImageView.h */,
 				F48DF015160E47B800190D3E /* CASImageView.m */,
+				F47BB16416AC535000E3F2FE /* CASCenteringClipView.h */,
+				F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */,
+				F47BB16A16AC536100E3F2FE /* CASZoomableView.h */,
+				F47BB16B16AC536100E3F2FE /* CASZoomableView.m */,
 				F45A2DF7166B835100A1D79C /* CASExposureView.h */,
 				F45A2DF8166B835100A1D79C /* CASExposureView.m */,
 				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
@@ -3244,6 +3254,8 @@
 				F44791F61680DBA2007A6815 /* CASSimpleGraphView.m in Sources */,
 				F40093231698884500E96DBE /* CASPreferencesWindowController.m in Sources */,
 				F4B8868716AAD756008E0D5E /* CASCaptureWindowController.m in Sources */,
+				F47BB16616AC535000E3F2FE /* CASCenteringClipView.m in Sources */,
+				F47BB16C16AC536100E3F2FE /* CASZoomableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,149 +1,235 @@
 //
 //  CASImageView.m
-//  CoreAstro
+//  scrollview-test
 //
-//  Created by Simon Taylor on 9/22/12.
-//  Copyright (c) 2012 Mako Technology Ltd. All rights reserved.
+//  Created by Simon Taylor on 10/28/12.
+//  Copyright (c) 2012 Simon Taylor. All rights reserved.
 //
 
 #import "CASImageView.h"
-
-//@interface IKImageView (Private)
-//- (CGRect)selectionRect; // great, a private method to get the selection...
-//@end
+#import "CASCenteringClipView.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface CASImageView ()
-@property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
-@property (nonatomic,strong) NSTrackingArea* trackingArea;
+@property (nonatomic,strong) CIImage* CIImage;
+@property (nonatomic,assign) BOOL sharpen;
+@property (nonatomic,assign) BOOL invert;
+@property (nonatomic,assign) BOOL reticle;
+@property (nonatomic,strong) CALayer* overlayLayer;
+@property (nonatomic,strong) CALayer* reticleLayer;
 @end
 
 @implementation CASImageView {
-    BOOL _zoomToFit:1;
-    BOOL _zoomToActual:1;
-    CGFloat _zoomFactor;
+    CGImageRef _cgImage;
+}
+
+- (void)dealloc
+{
+    if (_cgImage){
+        CGImageRelease(_cgImage);
+    }
 }
 
 - (void)awakeFromNib
 {
-    self.zoomFactor = 1;
-    self.currentToolMode = IKToolModeMove;
-}
-
-- (void)updateTrackingAreas {
+    [super awakeFromNib];
     
-    if (self.trackingArea){
-        [self removeTrackingArea:self.trackingArea];
-        self.trackingArea = nil;
+    if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
+        self.layer.drawsAsynchronously = YES;
     }
-    
-    self.trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:NSTrackingActiveInActiveApp|NSTrackingMouseEnteredAndExited|NSTrackingMouseMoved owner:self userInfo:nil];
-    [self addTrackingArea:self.trackingArea];
-}
-
-- (CGRect)selectionRect
-{
-    return CGRectZero;
-//    return [super selectionRect];
-}
-
-- (NSPoint)convertViewPointToImagePoint: (NSPoint)viewPoint
-{
-    return [super convertViewPointToImagePoint:viewPoint];
-}
-
-- (void)disableAnimations:(void(^)(void))block {
-    const BOOL disableActions = [CATransaction disableActions];
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    if (block){
-        block();
-    }
-    [CATransaction commit];
-    [CATransaction setDisableActions:disableActions];
-}
-
-- (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
-{
-    [self disableAnimations:^{
-        
-        [super setImage:image imageProperties:metaData];
-        
-        if (image){
-            
-            if (_zoomToFit){
-                [self zoomImageToFit:nil];
-            }
-            else if (_zoomToActual){
-                [self zoomImageToActualSize:nil];
-            }
-            else {
-                [self setZoomFactor:_zoomFactor];
-            }
-            
-            if (self.rotationAngle){
-                const CGSize size = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
-                const NSPoint centre = NSMakePoint(size.width/2,size.height/2);
-                [self setRotationAngle:self.rotationAngle centerPoint:centre];
-            }
+    else {
+        if (self.window.allowsConcurrentViewDrawing){
+            self.canDrawConcurrently = YES;
         }
-    }];
+        else {
+            NSLog(@"Window's allowsConcurrentViewDrawing is NO");
+        }
+    }
+    
+    // todo; might need to sync on self to protect CIImage instance
+    
+    // tracking area, mouse moved events, convertPoint:fromLayer
 }
 
-#define ZOOM_IN_FACTOR  1.414214
-#define ZOOM_OUT_FACTOR 0.7071068
-
-- (void)setZoomFactor:(CGFloat)zoomFactor
+- (CIImage*)image
 {
-    _zoomFactor = zoomFactor;
-    [super setZoomFactor:zoomFactor];
+    return self.CIImage;
 }
 
-- (IBAction)zoomIn:(id)sender
+- (void)_setupImageLayer
 {
-    _zoomToFit = _zoomToActual = NO;
-    self.zoomFactor = self.zoomFactor * ZOOM_IN_FACTOR;
+    if (self.CIImage){
+        
+        self.frame = self.CIImage.extent;
+        self.bounds = self.CIImage.extent; // todo; set bounds to maintain zoom level ?
+        
+        self.layer.delegate = self;
+        [self.layer setNeedsDisplay];
+        
+        [self resetContents];
+    }
 }
 
-- (IBAction)zoomOut:(id)sender
+- (void)setFrame:(NSRect)frameRect
 {
-    _zoomToFit = _zoomToActual = NO;
-    self.zoomFactor = self.zoomFactor * ZOOM_OUT_FACTOR;
+    NSLog(@"setFrame %@",NSStringFromRect(frameRect));
+    [super setFrame:frameRect];
 }
 
-- (IBAction)zoomImageToFit: (id)sender
+- (void)setHidden:(BOOL)flag
 {
-    _zoomToFit = YES;
-    _zoomToActual = NO;
-    [super zoomImageToFit:sender];
+    NSLog(@"setHidden %hhd",flag);
+    [super setHidden:flag];
 }
 
-- (IBAction)zoomImageToActualSize: (id)sender
+- (void)setCIImage:(CIImage *)CIImage
 {
-    _zoomToFit = NO;
-    _zoomToActual = YES;
-    [super zoomImageToActualSize:sender];
+    if (CIImage != _CIImage){
+        _CIImage = CIImage;
+        [self _setupImageLayer];
+    }
 }
 
-- (void)flipImageHorizontal:sender
+- (CGImageRef) CGImage
 {
-    [super flipImageHorizontal:sender];
+    if (!_cgImage && self.image){
+        _cgImage = [[NSBitmapImageRep alloc] initWithCIImage:self.image].CGImage;
+    }
+    return _cgImage;
 }
 
-- (void)flipImageVertical:sender
+- (void)setCGImage:(CGImageRef)CGImage
 {
-    [super flipImageVertical:sender];
+    if (_cgImage != CGImage){
+        if (_cgImage){
+           // CGImageRelease(_cgImage);
+        }
+        _cgImage = CGImage;
+        if (_cgImage){
+            self.CIImage = [[CIImage alloc] initWithCGImage:_cgImage];
+        }
+        else {
+            self.CIImage = nil;
+        }
+    }
 }
 
-- (void)rotateImageLeft:sender
+- (void)setUrl:(NSURL *)url
 {
-    [super rotateImageLeft:sender];
-    self.rotationAngle += M_PI/2;
+    if (url != _url){
+        
+        _url = url;
+        
+        CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)url,nil);
+        self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil)];
+        CFRelease(source);
+        
+        [self _setupImageLayer];
+    }
 }
 
-- (void)rotateImageRight:sender
+//- (void)drawRect:(NSRect)dirtyRect
+//{
+//    [[NSColor redColor] set];
+//    NSRectFill(dirtyRect);
+//}
+
+// draws concurrently mode
+
+- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context
 {
-    [super rotateImageRight:sender];
-    self.rotationAngle -= M_PI/2;
+    CIImage* image = self.CIImage;
+    if (!image){
+        return;
+    }
+        
+    if (self.invert){
+        CIFilter* invert = [CIFilter filterWithName:@"CIColorInvert"];
+        [invert setDefaults];
+        [invert setValue:image forKey:@"inputImage"];
+        image = [invert valueForKey:@"outputImage"];
+    }
+
+    if (self.sharpen){
+        CIFilter* invert = [CIFilter filterWithName:@"CIUnsharpMask"];
+        [invert setDefaults];
+        [invert setValue:image forKey:@"inputImage"];
+        [invert setValue:[NSNumber numberWithInt:100] forKey:@"inputRadius"];
+        [invert setValue:[NSNumber numberWithInt:1] forKey:@"inputIntensity"];
+        image = [invert valueForKey:@"outputImage"];
+    }
+    
+    CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
+    if (CGRectEqualToRect(self.CIImage.extent, layer.bounds)){
+        [ciContext drawImage:image inRect:self.CIImage.extent fromRect:self.CIImage.extent];
+    }
+    else {
+        [ciContext drawImage:image inRect:layer.bounds fromRect:layer.frame];
+    }
+}
+
+- (void)setInvert:(BOOL)invert
+{
+    if (_invert != invert){
+        _invert = invert;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (void)setSharpen:(BOOL)sharpen
+{
+    if (_sharpen != sharpen){
+        _sharpen = sharpen;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (CAShapeLayer*)createReticleLayer
+{
+    CAShapeLayer* reticleLayer = [CAShapeLayer layer];
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    const CGFloat width = 1.5;
+    CGPathAddRect(path, nil, CGRectMake(0, self.CIImage.extent.size.height/2.0, self.CIImage.extent.size.width, width));
+    CGPathAddRect(path, nil, CGRectMake(self.CIImage.extent.size.width/2.0, 0, width, self.CIImage.extent.size.height));
+    
+//    CGPathAddRect(path, nil, CGRectMake(0,0,self.CIImage.extent.size.width,self.CIImage.extent.size.height));
+    CGPathAddEllipseInRect(path, nil, CGRectMake(self.CIImage.extent.size.width/2.0 - 50,self.CIImage.extent.size.height/2.0 - 50,100,100));
+    
+    reticleLayer.path = path;
+    reticleLayer.strokeColor = CGColorCreateGenericRGB(1,0,0,1);
+    reticleLayer.fillColor = CGColorGetConstantColor(kCGColorClear);
+    reticleLayer.borderWidth = width;
+    
+    return reticleLayer;
+}
+
+- (void)setReticle:(BOOL)reticle
+{
+    if (_reticle != reticle){
+        _reticle = reticle;
+        if (_reticleLayer){
+            [_reticleLayer removeFromSuperlayer];
+            _reticleLayer = nil;
+        }
+        if (_reticle){
+            _reticleLayer = [self createReticleLayer];
+        }
+        if (_reticleLayer){
+            [self.overlayLayer addSublayer:_reticleLayer];
+            // autoresize mask
+        }
+    }
+}
+
+- (CALayer*)overlayLayer
+{
+    if (!_overlayLayer){
+        _overlayLayer = [CALayer layer];
+        [self.layer addSublayer:_overlayLayer];
+    }
+    return _overlayLayer;
 }
 
 @end

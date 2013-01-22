@@ -16,6 +16,7 @@
 #import "CASHistogramHUDView.h"
 
 #import <CoreAstro/CoreAstro.h>
+#import <QuartzCore/QuartzCore.h>
 
 const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
@@ -136,6 +137,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     BOOL _displayedFirstImage:1;
     NSSize _draggingSelectionOffset;
     CASTaggedLayer* _dragHandleLayer;
+    CALayer* _imageOverlayLayer;
 }
 
 - (void)awakeFromNib
@@ -165,6 +167,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.huds = @[self.exposureInfoView,self.histogramView,self.starInfoView,self.progressView];
 }
 
+//- (BOOL)translatesAutoresizingMaskIntoConstraints
+//{
+//    return NO;
+//}
+
 - (void)layoutHuds
 {
     const CGFloat kTopMargin = 10;
@@ -189,6 +196,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [super setFrame:aRect];
     
     [self layoutHuds];
+}
+
+- (CGPoint)convertViewPointToImagePoint:(CGPoint)point
+{
+    NSLog(@"convertViewPointToImagePoint: not implemented");
+    return point;
 }
 
 - (void)setShowProgress:(BOOL)showProgress
@@ -275,28 +288,25 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         p.x += _draggingSelectionOffset.width;
         p.y += _draggingSelectionOffset.height;
 
-        [self disableAnimations:^{
-            
-            if (_dragHandleLayer){
-                [self.selectionLayer dragHandle:_dragHandleLayer movedToPosition:p];
+        if (_dragHandleLayer){
+            [self.selectionLayer dragHandle:_dragHandleLayer movedToPosition:p];
+        }
+        else {
+            self.selectionLayer.position = p;
+        }
+        
+        const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
+        if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
+            self.selectionRect = frame;
+        }
+        else {
+            if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
+                [self.exposureViewDelegate selectionRectChanged:self];
             }
-            else {
-                self.selectionLayer.position = p;
-            }
-                        
-            const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)));
-            if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
-                self.selectionRect = frame;
-            }
-            else {
-                if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
-                    [self.exposureViewDelegate selectionRectChanged:self];
-                }
-            }
-
-            [self updateStatistics];
-            [self updateStarProfile];
-        }];
+        }
+        
+        [self updateStatistics];
+        [self updateStarProfile];
     }
     [super mouseDragged:theEvent];
 }
@@ -309,7 +319,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
     if (self.image){
         // check point in rect
-        if (NSPointInRect(p, CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)))){
+        if (NSPointInRect(p, CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)))){
             // convert to image co-ords
             // get pixel values
         }
@@ -330,7 +340,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (self.image){
         self.showSelection = YES;
-        self.selectionRect = CGRectMake(0, 0, CGImageGetWidth(self.image),CGImageGetHeight(self.image));
+        self.selectionRect = CGRectMake(0, 0, CGImageGetWidth(self.CGImage),CGImageGetHeight(self.CGImage));
     }
 }
 
@@ -360,14 +370,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)_updateStarProfileImpl
 {
     void (^setStarInfoExposure)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
-        self.starInfoView.hidden = (exposure == nil);
-        if (!self.starInfoView.isHidden){
-            [self.starInfoView setExposure:exposure starPosition:*p];
-        }
-        else {
-            self.starInfoView.showSpinner = NO;
-        }
-        [self layoutHuds];
+//        self.starInfoView.hidden = (exposure == nil);
+//        if (!self.starInfoView.isHidden){
+//            [self.starInfoView setExposure:exposure starPosition:*p];
+//        }
+//        else {
+//            self.starInfoView.showSpinner = NO;
+//        }
+//        [self layoutHuds];
     };
     
     if (!self.showStarProfile){
@@ -381,7 +391,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         return;
     }
     
-    const size_t imageHeight = CGImageGetHeight(self.image);
+    const size_t imageHeight = CGImageGetHeight(self.CGImage);
 
     CGRect selectionRect;
     CASCCDExposure* workingExposure;
@@ -635,7 +645,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             self.showSelection = NO;
         }
         else if (!self.scaleSubframe) {
-            self.selectionRect = CASCGRectConstrainWithinRect(self.selectionRect,CGRectMake(0, 0, CGImageGetWidth(self.image), CGImageGetHeight(self.image)));
+            self.selectionRect = CASCGRectConstrainWithinRect(self.selectionRect,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
         }
     }
 
@@ -651,7 +661,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.searchLayer = nil;
     self.reticleLayer = nil;
     
-    [super setImage:image imageProperties:metaData];
+    [super setCGImage:image];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
     
@@ -726,7 +736,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     if (_showSelection){
         if (!self.selectionLayer){
-            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.image)/2, CGImageGetHeight(self.image)/2) width:250 height:250 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
+            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.CGImage)/2, CGImageGetHeight(self.CGImage)/2) width:250 height:250 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
         }
         [self.imageOverlayLayer addSublayer:self.selectionLayer];
         self.selectionRect = self.selectionLayer.frame;
@@ -796,8 +806,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     if (self.reticleLayer && self.image){
         
-        const CGFloat imageWidth = CGImageGetWidth(self.image);
-        const CGFloat imageHeight = CGImageGetHeight(self.image);
+        const CGFloat imageWidth = CGImageGetWidth(self.CGImage);
+        const CGFloat imageHeight = CGImageGetHeight(self.CGImage);
         
         CATransform3D transform = CATransform3DIdentity;
         transform = CATransform3DConcat(transform, CATransform3DMakeTranslation(-imageWidth/2, -imageHeight/2, 0));
@@ -824,14 +834,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CALayer*)imageOverlayLayer
 {
-    CALayer* layer = [self overlayForType:IKOverlayTypeImage];
-    if (!layer){
-        layer = [CALayer layer];
-        layer.backgroundColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,1,0)));
-        layer.opacity = 0.75;
-        [self setOverlay:layer forType:IKOverlayTypeImage];
+    if (!_imageOverlayLayer){
+        _imageOverlayLayer = [CALayer layer];
+        _imageOverlayLayer.backgroundColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,1,0)));
+        _imageOverlayLayer.opacity = 0.75;
     }
-    return layer;
+    return _imageOverlayLayer;
 }
 
 - (CALayer*)circularRegionLayerWithPosition:(CGPoint)position radius:(CGFloat)radius colour:(CGColorRef)colour
@@ -893,8 +901,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGMutablePathRef path = CGPathCreateMutable();
     
     const CGFloat width = 0.5;
-    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.image)/2.0, CGImageGetWidth(self.image), width));
-    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.image)/2.0, 0, width, CGImageGetHeight(self.image)));
+    CGPathAddRect(path, nil, CGRectMake(0, CGImageGetHeight(self.CGImage)/2.0, CGImageGetWidth(self.CGImage), width));
+    CGPathAddRect(path, nil, CGRectMake(CGImageGetWidth(self.CGImage)/2.0, 0, width, CGImageGetHeight(self.CGImage)));
     
     reticleLayer.path = path;
     reticleLayer.strokeColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,0,0,1)));
@@ -911,8 +919,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     CGMutablePathRef path = CGPathCreateMutable();
     
-    const CGFloat imageWidth = CGImageGetWidth(self.image);
-    const CGFloat imageHeight = CGImageGetHeight(self.image);
+    const CGFloat imageWidth = CGImageGetWidth(self.CGImage);
+    const CGFloat imageHeight = CGImageGetHeight(self.CGImage);
     
     const CGFloat reticleWidth = 0.5;
     const CGFloat reticleLength = MAX(imageWidth,imageHeight);

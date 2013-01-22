@@ -1,16 +1,15 @@
 //
 //  CASImageView.h
-//  CoreAstro
+//  scrollview-test
 //
-//  Created by Simon Taylor on 9/22/12.
-//  Copyright (c) 2012 Mako Technology Ltd. All rights reserved.
+//  Created by Simon Taylor on 10/28/12.
+//  Copyright (c) 2012 Simon Taylor. All rights reserved.
 //
 
-#import <Quartz/Quartz.h>
+#import "CASZoomableView.h"
 
-@interface CASImageView : IKImageView
-- (CGRect)selectionRect;
-- (void)disableAnimations:(void(^)(void))block;
-- (NSPoint)convertViewPointToImagePoint: (NSPoint)viewPoint;
+@interface CASImageView : CASZoomableView
+@property (nonatomic,strong,readonly) CIImage* image;
+@property (nonatomic,assign) CGImageRef CGImage;
+@property (nonatomic,strong) NSURL* url;
 @end
-

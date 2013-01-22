@@ -40,6 +40,7 @@ typedef enum {
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
+@property (nonatomic,assign) CGRect selectionRect;
 @end
 
 extern const CGPoint kCASImageViewInvalidStarLocation;

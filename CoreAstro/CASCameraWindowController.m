@@ -34,6 +34,7 @@
 #import "CASMasterSelectionView.h"
 #import "CASLibraryBrowserViewController.h"
 
+#import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASImageBannerView : NSView
@@ -164,9 +165,9 @@
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
     
-    self.imageView.hasVerticalScroller = YES;
-    self.imageView.hasHorizontalScroller = YES;
-    self.imageView.autohidesScrollers = YES;
+//    self.imageView.hasVerticalScroller = YES;
+//    self.imageView.hasHorizontalScroller = YES;
+//    self.imageView.autohidesScrollers = YES;
     self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
     self.imageView.guideAlgorithm = self.guideAlgorithm;
@@ -194,7 +195,7 @@
     
     // add a drop shadow
     [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
-    [CASShadowView attachToView:self.imageView.superview edge:NSMaxXEdge];
+    [CASShadowView attachToView:self.imageBannerView.superview edge:NSMaxXEdge];
 
     // set up the UI for the current camera controller
     [self configureForCameraController];
@@ -392,7 +393,7 @@
                 CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
                 CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
                 if (CGImage){
-                    [self.imageView setImage:CGImage imageProperties:nil];
+                    [self.imageView setCGImage:CGImage];
                     CGImageRelease(CGImage);
                 }
                 CGContextRelease(bitmap);
@@ -1522,7 +1523,7 @@
                 size = CGSizeMake(sensor.width, sensor.height);
             }
             else {
-                size = CGSizeMake(CGImageGetWidth(self.imageView.image), CGImageGetHeight(self.imageView.image));
+                size = CGSizeMake(CGImageGetWidth(self.imageView.CGImage), CGImageGetHeight(self.imageView.CGImage));
             }
             
             CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
@@ -1659,10 +1660,10 @@
     
     // drop the library view into the same container as the image view
     if (![self.libraryViewController.view superview]){
-        self.libraryViewController.view.frame = CGRectInset(self.imageView.frame, -1, -1);
-        [self.imageView.superview addSubview:self.libraryViewController.view];
+        self.libraryViewController.view.frame = CGRectInset(self.imageView.enclosingScrollView.frame, -1, -1);
+        [self.imageView.enclosingScrollView.superview addSubview:self.libraryViewController.view];
         self.libraryViewController.view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        self.imageView.hidden = YES;
+        self.imageView.enclosingScrollView.hidden = YES;
     }
 
     // set the exposure set to display
@@ -1689,7 +1690,7 @@
 {
     if ([self.libraryViewController.view superview]){
         [self.libraryViewController.view removeFromSuperview];
-        self.imageView.hidden = NO;
+        self.imageView.enclosingScrollView.hidden = NO;
         [self displayExposure:_currentExposure];
     }
 }
