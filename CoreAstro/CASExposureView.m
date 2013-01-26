@@ -506,7 +506,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)displayExposure
 {
     void (^clearImage)() = ^() {
-        [self setImage:nil imageProperties:nil];
+        [self setImage:nil];
     };
     
     [self updateHistogram];
@@ -559,7 +559,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             // set the image
             if (CGImage){
-                [self setImage:CGImage imageProperties:nil];
+                [self setImage:CGImage];
                 if (CGImage != image.CGImage){
                     CFRelease(CGImage);
                 }
@@ -666,7 +666,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self layoutHuds];
 }
 
-- (void)setImage:(CGImageRef)image imageProperties:(NSDictionary *)metaData
+- (void)setImage:(CGImageRef)image
 {
     self.searchLayer = nil;
     self.reticleLayer = nil;
