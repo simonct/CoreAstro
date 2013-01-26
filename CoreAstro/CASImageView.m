@@ -80,18 +80,6 @@
     }
 }
 
-- (void)setFrame:(NSRect)frameRect
-{
-    NSLog(@"setFrame %@",NSStringFromRect(frameRect));
-    [super setFrame:frameRect];
-}
-
-- (void)setHidden:(BOOL)flag
-{
-    NSLog(@"setHidden %hhd",flag);
-    [super setHidden:flag];
-}
-
 - (void)setCIImage:(CIImage *)CIImage
 {
     if (CIImage != _CIImage){
