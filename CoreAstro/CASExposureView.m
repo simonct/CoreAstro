@@ -199,7 +199,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CGPoint)convertViewPointToImagePoint:(CGPoint)point
 {
-    NSLog(@"convertViewPointToImagePoint: not implemented");
+    // assuming there's a 1-to-1 mapping between the view and image co-ords
     return point;
 }
 
@@ -238,7 +238,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
         
         // find the layer at this point
-        CALayer* layer = [self.layer hitTest:p];
+        CALayer* layer = [[self imageOverlayLayer] hitTest:p];
         
         // detect clicks in selection drag handles
         if (layer.superlayer == self.selectionLayer){
@@ -282,27 +282,38 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (_draggingSelection || _dragHandleLayer){
         
-        NSPoint p = [self convertViewPointToImagePoint:[self convertPoint:[theEvent locationInWindow] fromView:nil]]; // use layer transforms instead ?
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
         
-        p.x += _draggingSelectionOffset.width;
-        p.y += _draggingSelectionOffset.height;
-
-        if (_dragHandleLayer){
-            [self.selectionLayer dragHandle:_dragHandleLayer movedToPosition:p];
-        }
-        else {
-            self.selectionLayer.position = p;
-        }
-        
-        const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
-        if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
-            self.selectionRect = frame;
-        }
-        else {
-            if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
-                [self.exposureViewDelegate selectionRectChanged:self];
+        @try {
+            
+            NSPoint p = [self convertViewPointToImagePoint:[self convertPoint:[theEvent locationInWindow] fromView:nil]]; // use layer transforms instead ?
+            
+            p.x += _draggingSelectionOffset.width;
+            p.y += _draggingSelectionOffset.height;
+            
+            if (_dragHandleLayer){
+                [self.selectionLayer dragHandle:_dragHandleLayer movedToPosition:p];
+            }
+            else {
+                self.selectionLayer.position = p;
+            }
+            
+            const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
+            if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
+                self.selectionRect = frame;
+            }
+            else {
+                if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
+                    [self.exposureViewDelegate selectionRectChanged:self];
+                }
             }
         }
+        @catch (NSException *exception) {
+            NSLog(@"*** %@: %@",NSStringFromSelector(_cmd),exception);
+        }
+        
+        [CATransaction commit];
         
         [self updateStatistics];
         [self updateStarProfile];
