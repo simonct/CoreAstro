@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CASZoomableView : NSView
+@property (nonatomic,assign) CGFloat zoom;
+@property (nonatomic,readonly) CGRect unitFrame;
 - (IBAction)zoomIn:(id)sender;
 - (IBAction)zoomOut:(id)sender;
 - (IBAction)zoomImageToFit:(id)sender;

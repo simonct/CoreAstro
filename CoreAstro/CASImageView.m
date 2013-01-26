@@ -51,6 +51,12 @@
     // tracking area, mouse moved events, convertPoint:fromLayer
 }
 
+- (CGRect) unitFrame
+{
+    CIImage* image = self.CIImage;
+    return image ? image.extent : [super unitFrame];
+}
+
 - (CIImage*)image
 {
     return self.CIImage;
@@ -60,6 +66,8 @@
 {
     if (self.CIImage){
         
+        CGFloat savedZoom = self.zoom;
+        
         self.frame = self.CIImage.extent;
         self.bounds = self.CIImage.extent; // todo; set bounds to maintain zoom level ?
         
@@ -67,6 +75,8 @@
         [self.layer setNeedsDisplay];
         
         [self resetContents];
+        
+        self.zoom = savedZoom;
     }
 }
 

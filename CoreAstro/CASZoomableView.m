@@ -22,6 +22,11 @@
 //    return NO;
 //}
 
+- (CGRect) unitFrame
+{
+    return CGRectZero;
+}
+
 - (void)viewDidMoveToSuperview
 {
     if (self.superview){
@@ -29,28 +34,52 @@
     }
 }
 
+// from https://developer.apple.com/library/mac/#qa/qa2004/qa1346.html
+static const NSSize unitSize = {1.0, 1.0};
+
+// Returns the scale of the receiver's coordinate system, relative to the window's base coordinate system.
+- (CGFloat)zoom
+{
+    return [self convertSize:unitSize toView:nil].width;
+}
+
+// Sets the scale in absolute terms.
+- (void)setZoom:(CGFloat)newZoom
+{
+    if (newZoom != self.zoom){
+        
+        [self resetScaling]; // First, match our scaling to the window's coordinate system
+        [self scaleUnitSquareToSize:CGSizeMake(newZoom, newZoom)]; // Then, set the scale.
+        
+        CGRect frame = self.unitFrame;
+        if (CGRectIsEmpty(frame)){
+            [self setNeedsDisplay:YES]; // Finally, mark the view as needing to be redrawn
+        }
+        else {
+            frame.size.width *= newZoom;
+            frame.size.height *= newZoom;
+            self.frame = frame;
+        }
+    }
+}
+
+// Makes the scaling of the receiver equal to the window's base coordinate system.
+- (void)resetScaling;
+{
+    [self scaleUnitSquareToSize:[self convertSize:unitSize fromView:nil]];
+}
+
+
 - (IBAction)zoomIn:(id)sender
 {
-    [self scaleUnitSquareToSize:NSMakeSize(2, 2)];
-        
-    CGRect frame = self.frame;
-    frame.size.width *= 2;
-    frame.size.height *= 2;
-    self.frame = frame;
+    self.zoom = self.zoom * 2;
 
     // todo; keep centred
 }
 
 - (IBAction)zoomOut:(id)sender
 {
-    [self scaleUnitSquareToSize:NSMakeSize(0.5, 0.5)];
-
-    CGRect frame = self.frame;
-    frame.size.width /= 2;
-    frame.size.height /= 2;
-    self.frame = frame;
-    
-    // CGRectInset...
+    self.zoom = self.zoom / 2;
     
     // todo; keep centred
 }
