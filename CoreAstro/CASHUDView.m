@@ -52,11 +52,6 @@
     }
 }
 
-- (BOOL)translatesAutoresizingMaskIntoConstraints
-{
-    return NO;
-}
-
 - (void)setFrame:(NSRect)frameRect
 {
     [super setFrame:frameRect];

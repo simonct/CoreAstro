@@ -147,30 +147,29 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.starLocation = kCASImageViewInvalidStarLocation;
     
     self.exposureInfoView = [CASExposureInfoView loadFromNib];
-    self.exposureInfoView.hidden = YES;
     self.exposureInfoView.imageProcessor = self.imageProcessor;
-    [self addSubview:self.exposureInfoView];
     
     self.histogramView = [CASHistogramHUDView loadFromNib];
-    self.histogramView.hidden = YES;
     self.histogramView.imageProcessor = self.imageProcessor;
-    [self addSubview:self.histogramView];
 
     self.starInfoView = [CASStarInfoHUDView loadFromNib];
-    self.starInfoView.hidden = YES;
-    [self addSubview:self.starInfoView];
 
     self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
-    self.progressView.hidden = YES;
-    [self addSubview:self.progressView];
     
     self.huds = @[self.exposureInfoView,self.histogramView,self.starInfoView,self.progressView];
+    
+    for (NSView* hud in self.huds){
+        hud.hidden = YES;
+        hud.autoresizingMask = NSViewMinXMargin|NSViewMinYMargin;
+        [self.hudContainerView addSubview:hud];
+    }
 }
 
-//- (BOOL)translatesAutoresizingMaskIntoConstraints
-//{
-//    return NO;
-//}
+// todo; move hud layout into an image view controller
+- (NSView*)hudContainerView
+{
+    return self.enclosingScrollView.superview;
+}
 
 - (void)layoutHuds
 {
@@ -182,8 +181,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGFloat top = kTopMargin;
     for (NSView* hud in self.huds){
         if (!hud.isHidden){
-            hud.frame = NSMakeRect(self.bounds.size.width - kHUDWidth - kLeftMargin,
-                                   self.bounds.size.height - hud.frame.size.height - top,
+            hud.frame = NSMakeRect(self.hudContainerView.bounds.size.width - kHUDWidth - kLeftMargin,
+                                   self.hudContainerView.bounds.size.height - hud.frame.size.height - top,
                                    kHUDWidth,
                                    hud.frame.size.height);
             top += kVerticalSpace + hud.frame.size.height;
@@ -677,7 +676,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     // ensure the huds remains at the front.
     for (NSView* hud in self.huds){
-        [self addSubview:hud positioned:NSWindowAbove relativeTo:nil];
+        [self.hudContainerView addSubview:hud positioned:NSWindowAbove relativeTo:nil];
     }
 }
 
@@ -838,6 +837,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _imageOverlayLayer = [CALayer layer];
         _imageOverlayLayer.backgroundColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,1,0)));
         _imageOverlayLayer.opacity = 0.75;
+        [self.layer addSublayer:_imageOverlayLayer];
     }
     return _imageOverlayLayer;
 }
