@@ -369,14 +369,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)_updateStarProfileImpl
 {
     void (^setStarInfoExposure)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
-//        self.starInfoView.hidden = (exposure == nil);
-//        if (!self.starInfoView.isHidden){
-//            [self.starInfoView setExposure:exposure starPosition:*p];
-//        }
-//        else {
-//            self.starInfoView.showSpinner = NO;
-//        }
-//        [self layoutHuds];
+        self.starInfoView.hidden = (exposure == nil);
+        if (!self.starInfoView.isHidden){
+            [self.starInfoView setExposure:exposure starPosition:*p];
+        }
+        else {
+            self.starInfoView.showSpinner = NO;
+        }
+        [self layoutHuds];
     };
     
     if (!self.showStarProfile){
