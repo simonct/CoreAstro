@@ -17,14 +17,14 @@
     [CASCenteringClipView replaceClipViewInScrollView:self.enclosingScrollView];
 }
 
-//- (BOOL)translatesAutoresizingMaskIntoConstraints
-//{
-//    return NO;
-//}
-
 - (CGRect) unitFrame
 {
     return CGRectZero;
+}
+
+- (NSView*) containerView
+{
+    return self.enclosingScrollView.superview;
 }
 
 - (void)viewDidMoveToSuperview
@@ -69,7 +69,6 @@ static const NSSize unitSize = {1.0, 1.0};
     [self scaleUnitSquareToSize:[self convertSize:unitSize fromView:nil]];
 }
 
-
 - (IBAction)zoomIn:(id)sender
 {
     self.zoom = self.zoom * 2;
@@ -86,18 +85,23 @@ static const NSSize unitSize = {1.0, 1.0};
 
 - (IBAction)zoomImageToFit:(id)sender
 {
-    NSLog(@"zoomImageToFit: not implemented");
+    const CGRect unitFrame = self.unitFrame;
+    const CGRect containerFrame = self.containerView.frame;
+    
+    const CGFloat unitAspect = unitFrame.size.width/unitFrame.size.height;
+    const CGFloat containerAspect = containerFrame.size.width/containerFrame.size.height;
+    
+    if (unitAspect > containerAspect){
+        self.zoom = containerFrame.size.width/unitFrame.size.width;
+    }
+    else {
+        self.zoom = containerFrame.size.height/unitFrame.size.height;
+    }
 }
 
 - (IBAction)zoomImageToActualSize:(id)sender
 {
-    NSLog(@"zoomImageToActualSize: not implemented");
-}
-
-- (void)resetContents
-{
-//    [(CASCenteringClipView*)self.enclosingScrollView.contentView resetClipView];
-//    [self scaleUnitSquareToSize:NSMakeSize(1, 1)];
+    self.zoom = 1;
 }
 
 @end

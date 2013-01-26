@@ -168,7 +168,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 // todo; move hud layout into an image view controller
 - (NSView*)hudContainerView
 {
-    return self.enclosingScrollView.superview;
+    return self.containerView;
 }
 
 - (void)layoutHuds

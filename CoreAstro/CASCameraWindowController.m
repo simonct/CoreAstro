@@ -154,7 +154,6 @@
     [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     
     self.exposuresController = [[CASExposuresController alloc] init];
-    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
     self.libraryExposuresController = self.exposuresController;
 
     CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
@@ -165,9 +164,6 @@
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
     
-//    self.imageView.hasVerticalScroller = YES;
-//    self.imageView.hasHorizontalScroller = YES;
-//    self.imageView.autohidesScrollers = YES;
     self.imageView.exposureViewDelegate = self;
     self.imageView.imageProcessor = self.imageProcessor;
     self.imageView.guideAlgorithm = self.guideAlgorithm;
@@ -210,6 +206,9 @@
     // set up the guider controls
     self.guidePulseDuration = 250;
     self.guideControlsContainer.hidden = YES;
+    
+    // all done, bind the exposures controller
+    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
 }
 
 - (void)hideWindow:sender

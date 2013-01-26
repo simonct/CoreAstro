@@ -74,8 +74,6 @@
         self.layer.delegate = self;
         [self.layer setNeedsDisplay];
         
-        [self resetContents];
-        
         self.zoom = savedZoom;
     }
 }

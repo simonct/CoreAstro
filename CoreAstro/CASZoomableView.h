@@ -11,9 +11,9 @@
 @interface CASZoomableView : NSView
 @property (nonatomic,assign) CGFloat zoom;
 @property (nonatomic,readonly) CGRect unitFrame;
+@property (nonatomic,readonly) NSView* containerView;
 - (IBAction)zoomIn:(id)sender;
 - (IBAction)zoomOut:(id)sender;
 - (IBAction)zoomImageToFit:(id)sender;
 - (IBAction)zoomImageToActualSize:(id)sender;
-- (void)resetContents;
 @end
