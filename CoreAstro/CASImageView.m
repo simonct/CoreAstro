@@ -10,6 +10,18 @@
 #import "CASCenteringClipView.h"
 #import <QuartzCore/QuartzCore.h>
 
+@interface CASTiledLayer : CATiledLayer
+@end
+
+@implementation CASTiledLayer
+
++ (CFTimeInterval)fadeDuration
+{
+    return 0;
+}
+
+@end
+
 @interface CASImageView ()
 @property (nonatomic,strong) CIImage* CIImage;
 @property (nonatomic,assign) BOOL sharpen;
@@ -49,6 +61,13 @@
     // todo; might need to sync on self to protect CIImage instance
     
     // tracking area, mouse moved events, convertPoint:fromLayer
+}
+
+- (CALayer *)makeBackingLayer
+{
+    CASTiledLayer* layer = [[CASTiledLayer alloc] init];
+    layer.tileSize = CGSizeMake(512, 512);
+    return layer;
 }
 
 - (CGRect) unitFrame
@@ -156,12 +175,8 @@
     }
     
     CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
-    if (CGRectEqualToRect(self.CIImage.extent, layer.bounds)){
-        [ciContext drawImage:image inRect:self.CIImage.extent fromRect:self.CIImage.extent];
-    }
-    else {
-        [ciContext drawImage:image inRect:layer.bounds fromRect:layer.frame];
-    }
+
+    [ciContext drawImage:image inRect:layer.bounds fromRect:self.CIImage.extent];
 }
 
 - (void)setInvert:(BOOL)invert

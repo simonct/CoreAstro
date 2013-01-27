@@ -34,6 +34,11 @@
     }
 }
 
+- (void)setFrame:(NSRect)frameRect
+{
+    [super setFrame:NSIntegralRect(frameRect)];
+}
+
 // from https://developer.apple.com/library/mac/#qa/qa2004/qa1346.html
 static const NSSize unitSize = {1.0, 1.0};
 
@@ -69,16 +74,19 @@ static const NSSize unitSize = {1.0, 1.0};
     [self scaleUnitSquareToSize:[self convertSize:unitSize fromView:nil]];
 }
 
+#define ZOOM_IN_FACTOR  1.414214
+#define ZOOM_OUT_FACTOR 1/ZOOM_IN_FACTOR
+
 - (IBAction)zoomIn:(id)sender
 {
-    self.zoom = self.zoom * 2;
+    self.zoom = self.zoom * ZOOM_IN_FACTOR;
 
     // todo; keep centred
 }
 
 - (IBAction)zoomOut:(id)sender
 {
-    self.zoom = self.zoom / 2;
+    self.zoom = self.zoom / ZOOM_OUT_FACTOR;
     
     // todo; keep centred
 }
