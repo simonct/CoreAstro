@@ -638,6 +638,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _scaleSubframe = scaleSubframe;
         self.selectionLayer.hidden = _scaleSubframe; // hide the selection in scale mode
         [self displayExposure];
+        [self zoomImageToFit:nil]; // todo; return to zoom level before entering scale subframe mode
     }
 }
 
