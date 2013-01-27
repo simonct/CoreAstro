@@ -93,6 +93,7 @@
         self.zoom = savedZoom;
     }
     
+    self.layer.delegate = self;
     [self.layer setNeedsDisplay];
 }
 
