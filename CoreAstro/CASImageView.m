@@ -90,7 +90,6 @@
         self.frame = self.CIImage.extent;
         self.bounds = self.CIImage.extent; // todo; set bounds to maintain zoom level ?
         
-        self.layer.delegate = self;
         [self.layer setNeedsDisplay];
         
         self.zoom = savedZoom;
@@ -173,10 +172,9 @@
         [invert setValue:[NSNumber numberWithInt:1] forKey:@"inputIntensity"];
         image = [invert valueForKey:@"outputImage"];
     }
-    
-    CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
-
-    [ciContext drawImage:image inRect:layer.bounds fromRect:self.CIImage.extent];
+        
+    const CGRect clip = CGContextGetClipBoundingBox(context);
+    [[CIContext contextWithCGContext:context options:nil] drawImage:image inRect:clip fromRect:clip];
 }
 
 - (void)setInvert:(BOOL)invert
