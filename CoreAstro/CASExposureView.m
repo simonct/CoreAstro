@@ -935,7 +935,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     const CGFloat imageHeight = CGImageGetHeight(self.CGImage);
     
     const CGFloat reticleWidth = 0.5;
-    const CGFloat reticleLength = MAX(imageWidth,imageHeight);
+//    const CGFloat reticleLength = MAX(imageWidth,imageHeight);
     
     CGFloat hoffset = 5.5;
     CGFloat voffset = 5.5;
@@ -961,15 +961,15 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 
     // horizontal lines
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 - voffset, reticleLength, reticleWidth));
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-reticleLength/2, imageHeight/2.0 + voffset, reticleLength, reticleWidth));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-imageWidth/2, imageHeight/2.0 - voffset, imageWidth, reticleWidth));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2-imageWidth/2, imageHeight/2.0 + voffset, imageWidth, reticleWidth));
 
     // vertical lines
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - hoffset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
-    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + hoffset, imageHeight/2-reticleLength/2, reticleWidth, reticleLength));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - hoffset, imageHeight/2-imageHeight/2, reticleWidth, imageHeight));
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + hoffset, imageHeight/2-imageHeight/2, reticleWidth, imageHeight));
     
-    CGPathAddEllipseInRect(path, nil, CGRectMake(imageWidth/2-imageHeight/2, 0, imageHeight, imageHeight));
-    CGPathAddEllipseInRect(path, nil, CGRectMake(0, imageHeight/2-imageWidth/2, imageWidth, imageWidth));
+//    CGPathAddEllipseInRect(path, nil, CGRectMake(imageWidth/2-imageHeight/2, 0, imageHeight, imageHeight));
+//    CGPathAddEllipseInRect(path, nil, CGRectMake(0, imageHeight/2-imageWidth/2, imageWidth, imageWidth));
 
     reticleLayer.path = path;
     reticleLayer.fillColor = (__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(0,0,0,0)));
