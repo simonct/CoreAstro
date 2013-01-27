@@ -193,9 +193,6 @@
     [CASShadowView attachToView:self.detailContainerView edge:NSMinXEdge];
     [CASShadowView attachToView:self.imageBannerView.superview edge:NSMaxXEdge];
 
-    // set up the UI for the current camera controller
-    [self configureForCameraController];
-    
     // listen for guide notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(guideCommandNotification:) name:kCASCameraControllerGuideCommandNotification object:nil];
     
@@ -1707,6 +1704,8 @@
 
 - (void)libraryWasSelected:(id)library
 {
+    NSLog(@"libraryWasSelected: %@",library);
+    
     self.cameraController = nil;
     
     if (!library){
