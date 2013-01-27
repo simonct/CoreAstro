@@ -30,7 +30,7 @@
 - (void)viewDidMoveToSuperview
 {
     if (self.superview){
-        self.enclosingScrollView.contentView.backgroundColor = [NSColor darkGrayColor];
+        self.enclosingScrollView.contentView.backgroundColor = [NSColor lightGrayColor];
     }
 }
 
