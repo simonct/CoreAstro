@@ -1704,8 +1704,6 @@
 
 - (void)libraryWasSelected:(id)library
 {
-    NSLog(@"libraryWasSelected: %@",library);
-    
     self.cameraController = nil;
     
     if (!library){
