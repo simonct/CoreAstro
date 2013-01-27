@@ -104,7 +104,7 @@
         self.cameraController.binningIndex = 0;
         self.cameraController.subframe = CGRectZero;
         self.cameraController.guider = nil;
-        self.cameraController.temperatureLock = 0; // temperatureLock;
+        self.cameraController.temperatureLock = temperatureLock;
         self.cameraController.exposureType = exposureType;
 
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
