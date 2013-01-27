@@ -21,4 +21,5 @@
 @property (nonatomic,unsafe_unretained) id<CASLibraryBrowserViewControllerDelegate> exposureDelegate; // delegate is a window controller
 @property (nonatomic,strong) CASExposuresController* exposuresController;
 @property (nonatomic,weak) IBOutlet CASLibraryBrowserView* browserView;
+ - (void)refresh;
 @end

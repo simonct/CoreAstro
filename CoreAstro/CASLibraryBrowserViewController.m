@@ -205,10 +205,6 @@
 {
     if (exposuresController != _exposuresController){
         
-        for (id exposure in [_exposuresController arrangedObjects]){
-            [exposure removeObserver:self forKeyPath:@"type"];
-        }
-        
         [_exposuresController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
         [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects" context:(__bridge void *)(self)];
         
@@ -216,9 +212,6 @@
         
         self.browserView.project = _exposuresController.project;
         
-        for (id exposure in [_exposuresController arrangedObjects]){
-            [exposure addObserver:self forKeyPath:@"type" options:0 context:(__bridge void *)(self)];
-        }
 
         [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
@@ -520,11 +513,11 @@
     }
 }
 
-- (void)_refresh
+ - (void)refresh
 {
     if (![NSThread isMainThread]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self _refresh];
+            [self refresh];
         });
     }
     else {
@@ -577,7 +570,7 @@
                 [progress endSheetWithCode:NSOKButton];
                 
                 // lazy...
-                [self _refresh];
+                [self refresh];
                 
                 // remove observer
                 [[NSNotificationCenter defaultCenter] removeObserver:proxy];;
@@ -674,10 +667,7 @@
             }
         }
         else if ([@"arrangedObjects" isEqualToString:keyPath]){
-            [self _refresh];
-        }
-        else if ([@"type" isEqualToString:keyPath]){
-            [self _refresh];
+            [self refresh];
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];

@@ -17,6 +17,29 @@
 
 @implementation CASLibraryBrowserViewCell
 
+- (void)dealloc
+{
+    [_exposure removeObserver:self forKeyPath:@"type"];
+}
+
+- (void)setExposure:(CASCCDExposure *)exposure
+{
+    if (exposure != _exposure){
+        [_exposure removeObserver:self forKeyPath:@"type"];
+        _exposure = exposure;
+        [_exposure addObserver:self forKeyPath:@"type" options:0 context:(__bridge void *)(self)];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        [self.imageBrowserView reloadData]; // doesn't seem to be a 'reload this cell' method
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 - (CALayer *) layerForType:(NSString*) type
 {
 	const CGRect frame = [self frame];
@@ -67,7 +90,7 @@
 @end
 
 @interface CASLibraryBrowserView ()
-@property (nonatomic,unsafe_unretained) NSViewController* viewController;
+@property (nonatomic,unsafe_unretained) NSViewController* viewController; // can't be weak pre-10.8
 @end
 
 @implementation CASLibraryBrowserView
