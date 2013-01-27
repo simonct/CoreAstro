@@ -301,7 +301,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
             if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
-                self.selectionRect = frame;
+                self.selectionRect = frame; // invokes -selectionRectChanged: on delegate
             }
             else {
                 if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
@@ -524,7 +524,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         else {
             
-            CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor
+            CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor todo; image.CIImage
             if (CGImage){
                 
                 const CASExposeParams params = _currentExposure.params;
@@ -596,7 +596,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CGRect)selectionRect
 {
-    return self.showSelection ? self.selectionLayer.frame : CGRectZero;
+    return _showSelection ? self.selectionLayer.frame : CGRectZero;
 }
 
 - (void)setSelectionRect:(CGRect)rect
