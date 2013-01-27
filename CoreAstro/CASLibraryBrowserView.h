@@ -7,6 +7,8 @@
 //
 
 #import <Quartz/Quartz.h>
+#import "CASCCDExposureLibrary.h"
 
 @interface CASLibraryBrowserView : IKImageBrowserView // NSCollectionView may be a more flexible choice in the future
+@property (nonatomic,weak) CASCCDExposureLibraryProject* project;
 @end

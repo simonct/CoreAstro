@@ -205,11 +205,21 @@
 {
     if (exposuresController != _exposuresController){
         
+        for (id exposure in [_exposuresController arrangedObjects]){
+            [exposure removeObserver:self forKeyPath:@"type"];
+        }
+        
         [_exposuresController removeObserver:self forKeyPath:@"selectedObjects" context:(__bridge void *)(self)];
         [_exposuresController removeObserver:self forKeyPath:@"arrangedObjects" context:(__bridge void *)(self)];
         
         _exposuresController = exposuresController;
         
+        self.browserView.project = _exposuresController.project;
+        
+        for (id exposure in [_exposuresController arrangedObjects]){
+            [exposure addObserver:self forKeyPath:@"type" options:0 context:(__bridge void *)(self)];
+        }
+
         [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
                 
@@ -594,19 +604,19 @@
 - (void)setAsMasterDark:(NSMenuItem*)sender
 {
     self.exposuresController.project.masterDark = sender.representedObject;
-    // update
+    [self.browserView reloadData]; // ideally should have a per-item reload method
 }
 
 - (void)setAsMasterBias:(NSMenuItem*)sender
 {
     self.exposuresController.project.masterBias = sender.representedObject;
-    // update
+    [self.browserView reloadData]; // ideally should have a per-item reload method
 }
 
 - (void)setAsMasterFlat:(NSMenuItem*)sender
 {
     self.exposuresController.project.masterFlat = sender.representedObject;
-    // update
+    [self.browserView reloadData]; // ideally should have a per-item reload method
 }
 
 - (void)divideExposures:(NSArray*)exposures byFlat:(CASCCDExposure*)flat
@@ -664,6 +674,9 @@
             }
         }
         else if ([@"arrangedObjects" isEqualToString:keyPath]){
+            [self _refresh];
+        }
+        else if ([@"type" isEqualToString:keyPath]){
             [self _refresh];
         }
     } else {
