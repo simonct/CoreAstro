@@ -90,10 +90,10 @@
         self.frame = self.CIImage.extent;
         self.bounds = self.CIImage.extent; // todo; set bounds to maintain zoom level ?
         
-        [self.layer setNeedsDisplay];
-        
         self.zoom = savedZoom;
     }
+    
+    [self.layer setNeedsDisplay];
 }
 
 - (void)setCIImage:(CIImage *)CIImage
