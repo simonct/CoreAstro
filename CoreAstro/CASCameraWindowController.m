@@ -46,10 +46,19 @@
 
 @implementation CASImageBannerView
 
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [[NSColor darkGrayColor] set];
-    NSRectFill(dirtyRect);
+- (void)drawRect:(NSRect)rect {
+    
+    const CGRect bounds = self.bounds;
+    
+    [[[NSGradient alloc] initWithColorsAndLocations:
+      [NSColor colorWithDeviceWhite:0.25f alpha:1.0f], 0.0f,
+      [NSColor colorWithDeviceWhite:0.29f alpha:1.0f], 0.5f,
+      [NSColor colorWithDeviceWhite:0.30f alpha:1.0f], 0.5f,
+      [NSColor colorWithDeviceWhite:0.35f alpha:1.0f], 1.0f,
+      nil] drawInRect:bounds angle:90.0f];
+    
+    [[NSColor blackColor] set];
+    NSFrameRect(CGRectOffset(CGRectInset(bounds, -1, 0), 0, 2.5));
 }
 
 - (void)setExposure:(CASCCDExposure *)exposure
