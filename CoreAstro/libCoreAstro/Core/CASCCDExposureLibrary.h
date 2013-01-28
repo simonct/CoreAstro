@@ -50,6 +50,7 @@
 + (CASCCDExposureLibrary*)sharedLibrary;
 
 @property (nonatomic,strong) NSArray* projects; // array of CASCCDExposureLibraryProject
+@property (nonatomic,strong) CASCCDExposureLibraryProject* currentProject;
 @property (nonatomic,strong) NSArray* exposures;
 
 - (void)addExposure:(CASCCDExposure*)exposure save:(BOOL)save block:(void (^)(NSError*,NSURL*))block;

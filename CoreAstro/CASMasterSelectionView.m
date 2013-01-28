@@ -114,6 +114,31 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     }
 }
 
+- (NSMenu*)menuForEvent:(NSEvent *)event
+{
+    NSMenu* menu = nil;
+    const NSInteger row = [self rowAtPoint:[self convertPoint:[event locationInWindow] fromView:nil]];
+    if (row != -1){
+        
+        NSTreeNode* node = [self itemAtRow:row];
+        id project = [node representedObject];
+        if ([project isKindOfClass:[CASCCDExposureLibraryProject class]]){
+            
+            NSMenuItem* item = nil;
+            menu = [[NSMenu alloc] initWithTitle:@""];
+            if (project == [CASCCDExposureLibrary sharedLibrary].currentProject){
+                item = [[NSMenuItem alloc] initWithTitle:@"Clear Current Project" action:@selector(clearCurrentProject:) keyEquivalent:@""];
+            }
+            else {
+                item = [[NSMenuItem alloc] initWithTitle:@"Make Current Project" action:@selector(makeCurrentProject:) keyEquivalent:@""];
+            }
+            [item setRepresentedObject:project];
+            [menu addItem:item];
+        }
+    }
+    return menu;
+}
+
 - (NSString*)cameraControllersKeyPath
 {
     return @"cameraControllers";
@@ -230,6 +255,15 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     return [node representedObject];
 }
 
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(NSCell*)cell forTableColumn:(NSTableColumn *)tableColumn item:(NSTreeNode*)item
+{
+    NSMutableAttributedString* mas = [[NSMutableAttributedString alloc] initWithAttributedString:[cell attributedStringValue]];
+    if ([item representedObject] == [CASCCDExposureLibrary sharedLibrary].currentProject){
+        [mas setAttributes:@{@"NSFont":[NSFont fontWithName:@"LucidaGrande-Bold" size:13]} range:NSMakeRange(0, [mas length])];
+        cell.attributedStringValue = mas;
+    }
+}
+
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
 {
     return [nodes containsObject:item];
@@ -341,6 +375,18 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
         }
     }];
     [self reloadData];
+}
+
+- (IBAction)makeCurrentProject:(id)sender
+{
+    [CASCCDExposureLibrary sharedLibrary].currentProject = [sender representedObject];
+    [self reloadItem:self.exposuresTreeNode reloadChildren:YES];
+}
+
+- (IBAction)clearCurrentProject:(id)sender
+{
+    [CASCCDExposureLibrary sharedLibrary].currentProject = nil;
+    [self reloadItem:self.exposuresTreeNode reloadChildren:YES];
 }
 
 #pragma mark - Drag & Drop

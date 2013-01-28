@@ -192,24 +192,34 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     return [[[self root] stringByAppendingPathComponent:@"Projects"] stringByAppendingPathComponent:@"index.plist"];
 }
 
-- (NSMutableArray*)readProjects
+- (NSDictionary*)readProjectsArchive
 {
 //    NSError* error = nil;
     NSString* path = [self projectsIndexPath];
     id propList = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
     if ([propList isKindOfClass:[NSArray class]]){
+        return @{@"projects":propList};
+    }
+    if ([propList isKindOfClass:[NSDictionary class]]){
         return propList;
-    };
+    }
     return nil;
 }
 
-- (void)writeProjects:(NSArray*)projects
+- (void)writeProjectsArchive
 {
     NSError* error = nil;
-    if (projects){
+    if (_projects){
         NSString* path = [self projectsIndexPath];
         [[NSFileManager defaultManager] createDirectoryAtPath:[path stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error];
-        [NSKeyedArchiver archiveRootObject:projects toFile:path];
+        NSMutableDictionary* archive = [NSMutableDictionary dictionaryWithCapacity:2];
+        if (_projects){
+            archive[@"projects"] = _projects;
+        }
+        if (_currentProject){
+            archive[@"currentProject"] = _currentProject;
+        }
+        [NSKeyedArchiver archiveRootObject:archive toFile:path];
     }
     else {
 //        [[NSFileManager defaultManager] removeItemAtPath:[self projectsIndexPath] error:nil];
@@ -220,11 +230,21 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
 {
     @synchronized(self){
         if (!_projects){
-            _projects = [self readProjects];
+            NSDictionary* archive = [self readProjectsArchive];
+            _projects = archive[@"projects"];
+            _currentProject = archive[@"currentProject"];
         }
     }
     
     return [_projects copy];
+}
+
+- (void)setCurrentProject:(CASCCDExposureLibraryProject *)currentProject
+{
+    if (currentProject != _currentProject){
+        _currentProject = currentProject;
+        [self writeProjectsArchive];
+    }
 }
 
 - (NSArray*)exposures
@@ -367,13 +387,13 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
         _projects = [NSMutableArray arrayWithCapacity:10];
     }
     [[self mutableArrayValueForKey:@"projects"] addObjectsFromArray:[objects allObjects]];
-    [self writeProjects:_projects];
+    [self writeProjectsArchive];
 }
 
 - (void)removeProjects:(NSSet *)objects
 {
     [[self mutableArrayValueForKey:@"projects"] removeObjectsInArray:[objects allObjects]];
-    [self writeProjects:_projects];
+    [self writeProjectsArchive];
 }
 
 - (void)moveProject:(CASCCDExposureLibraryProject*)project toIndex:(NSInteger)index
@@ -395,7 +415,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     }
     [self didChange:NSKeyValueChangeInsertion valuesAtIndexes:[NSIndexSet indexSetWithIndex:kvIndex] forKey:@"projects"];
     
-    [self writeProjects:_projects];
+    [self writeProjectsArchive];
 }
 
 - (CASCCDExposureLibraryProject*)projecteWithUUID:(NSString*)uuid
@@ -416,7 +436,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
 
 - (void)projectWasUpdated:(CASCCDExposureLibraryProject*)project
 {
-    [self writeProjects:_projects];
+    [self writeProjectsArchive];
 }
 
 @end
