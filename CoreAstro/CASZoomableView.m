@@ -112,4 +112,14 @@ static const NSSize unitSize = {1.0, 1.0};
     self.zoom = 1;
 }
 
+- (void)magnifyWithEvent:(NSEvent *)event
+{
+    self.zoom += event.magnification;
+}
+
+- (void)smartMagnifyWithEvent:(NSEvent *)event
+{
+    [self zoomImageToFit:nil];
+}
+
 @end
