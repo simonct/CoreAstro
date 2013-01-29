@@ -115,8 +115,10 @@
 
 - (void)removeExposures:(NSSet *)objects
 {
-    [[self mutableArrayValueForKey:@"exposures"] removeObjectsInArray:[objects allObjects]];
-    [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    if ([[NSSet setWithArray:self.exposures] intersectsSet:objects]){ // slow ?
+        [[self mutableArrayValueForKey:@"exposures"] removeObjectsInArray:[objects allObjects]];
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
+    }
 }
 
 - (void)setMasterDark:(CASCCDExposure *)masterDark
@@ -265,6 +267,8 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
                 [_exposures addObject:exposure];
             }
         }
+        
+        [self addObserver:self forKeyPath:@"exposures" options:NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
     });
     
     return [_exposures copy];
@@ -275,6 +279,31 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     _exposures = [exposures mutableCopy];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        
+        if ([keyPath isEqualToString:@"exposures"]){
+            
+            switch ([[change objectForKey:NSKeyValueChangeKindKey] integerValue]) {
+                case NSKeyValueChangeRemoval:{
+                    NSArray* exposures = [change objectForKey:NSKeyValueChangeOldKey];
+                    if (![exposures isKindOfClass:[NSArray class]]){
+                        exposures = @[exposures];
+                    }
+                    // todo; this probably won't scale well...
+                    [_projects makeObjectsPerformSelector:@selector(removeExposures:) withObject:[NSSet setWithArray:exposures]];
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 - (void)_addExposureAndPostNotification:(CASCCDExposure*)exposure
 {
     if (![NSThread isMainThread]){
@@ -282,6 +311,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     }
     else {
         [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
+        [[CASCCDExposureLibrary sharedLibrary].currentProject addExposures:[NSSet setWithObject:exposure]];
         [[NSNotificationCenter defaultCenter] postNotificationName:kCASCCDExposureLibraryExposureAddedNotification object:self userInfo:@{@"exposure":exposure}];
     }
 }
