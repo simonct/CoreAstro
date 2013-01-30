@@ -221,7 +221,26 @@
 {
     CALayer* layer = [CALayer layer];
     
-    CGColorRef colour = CGColorCreateGenericRGB(1,1,0,1);
+    CGColorRef colour = nil;
+    
+    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
+    if (archivedColourData){
+        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
+        if (archivedColour){
+            CGFloat red, green, blue, alpha;
+            @try {
+                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
+                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** %@",exception);
+            }
+        }
+    }
+    
+    if (!colour){
+        colour = CGColorCreateGenericRGB(1,1,0,1);
+    }
     
     layer.borderColor = colour;
     layer.borderWidth = 2.5;
@@ -513,10 +532,15 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.annotations" options:nil];
+    
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self.imageView forKeyPath:@"values.CASAnnotationsColour" options:0 context:(__bridge void *)(self.imageView)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
+    [[NSColorPanel sharedColorPanel] orderOut:nil];
+    [[NSColorPanel sharedColorPanel] setHidesOnDeactivate:YES];
+
     [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
 }
 
