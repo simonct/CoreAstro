@@ -256,11 +256,13 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
         
         _exposures = [[NSMutableArray alloc] initWithCapacity:100];
         
-        NSString* pixelsPath;
-        NSString* root = [self root];
-        NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtPath:[self root]];
-        while ((pixelsPath = [e nextObject]) != nil) {
-            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[root stringByAppendingPathComponent:pixelsPath]];
+        NSURL* pixelsURL;
+        NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL fileURLWithPath:[self root]]
+                                                        includingPropertiesForKeys:@[]
+                                                                           options:NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                      errorHandler:nil];
+        while ((pixelsURL = [e nextObject]) != nil) {
+            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[pixelsURL path]];
             if (io){
                 CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
                 exposure.io = io;

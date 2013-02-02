@@ -129,6 +129,21 @@
     return @"thumbnail.png";
 }
 
+- (NSString*)derivedKey
+{
+    return @"derived";
+}
+
+- (NSURL*)derivedURL
+{
+    return [self.url URLByAppendingPathComponent:self.derivedKey];
+}
+
+- (NSURL*)derivedDataURLForName:(NSString*)name
+{
+    return [name length] ? [self.derivedURL URLByAppendingPathComponent:name] : nil;
+}
+
 - (NSImage*)thumbnail
 {
     NSError* error = nil;
@@ -517,6 +532,8 @@
     return name;
 }
 
+- (NSURL*)derivedURL { return nil; }
+
 - (NSImage*) thumbnail { return nil; }
 
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)error { return YES; }
@@ -524,5 +541,7 @@
 - (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)error { return YES; }
 
 - (BOOL)deleteExposure:(CASCCDExposure*)exposure error:(NSError**)error { return YES; }
+
+- (NSURL*)derivedDataURLForName:(NSString*)name { return nil; }
 
 @end

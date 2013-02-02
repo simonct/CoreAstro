@@ -365,28 +365,7 @@
     else {
         
         if ([self.exposureDelegate respondsToSelector:@selector(focusOnExposures:)]){
-            
-            if (self.exposuresController.project.masterBias || self.exposuresController.project.masterFlat){
-                
-                const NSTimeInterval t = CASTimeBlock(^{
-                    
-                    CASCCDReductionProcessor* reduction = [[CASCCDReductionProcessor alloc] init];
-                    reduction.bias = self.exposuresController.project.masterBias;
-                    reduction.flat = self.exposuresController.project.masterFlat;
-                    [reduction processWithExposures:[NSArray arrayWithObject:[self.exposures objectAtIndex:index]] completion:^(NSError *error, CASCCDExposure *final) {
-                        
-                        if (!error){
-                            [self.exposureDelegate focusOnExposures:[self exposuresControllerWithExposures:@[final]]];
-                        }
-                    }];
-                });
-                
-                NSLog(@"t=%fs",t);
-            }
-            else {
-                [self.exposureDelegate focusOnExposures:self.exposuresController];
-            }
-            
+            [self.exposureDelegate focusOnExposures:self.exposuresController];
             // todo; back button to return to the browser view
         }
     }
@@ -435,9 +414,12 @@
                 [menu addItem:createMenuItem(@"Set as Master Flat",exposure,@selector(setAsMasterFlat:))];
             }
         }
+        else {
+            menu = nil;
+        }
     }
-    else if ([exposures count] > 1) {
-        
+    
+    if (!menu && [exposures count] > 0){
         menu = [[NSMenu alloc] initWithTitle:@""];
         NSArray* processors = [CASBatchProcessor batchProcessorsForExposures:exposures];
         for (NSDictionary* processor in processors){
@@ -530,6 +512,9 @@
 {
     // ask processor to check compatibility ... e.g. all the same size, sensor, etc
     
+    // set the project to give it a sense of context
+    processor.project = self.exposuresController.project;
+
     // start progress hud
     CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
     [progress beginSheetModalForWindow:self.browserView.window];

@@ -79,7 +79,7 @@ typedef enum CASCCDExposureFormat {
     kCASCCDExposureFormatFloatRGBA = 2
 } CASCCDExposureFormat;
 
-@property (nonatomic,readonly) CASCCDExposureFormat format;
+@property (nonatomic,assign) CASCCDExposureFormat format;
 
 @property (nonatomic,strong) NSString* note;
 
@@ -97,5 +97,20 @@ typedef enum CASCCDExposureFormat {
 + (id)exposureWithRGBAFloatPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time;
 
 + (id)exposureWithTestStars:(NSArray*)stars params:(CASExposeParams)expParams;
+
+@end
+
+@interface CASCCDExposure (DerivedData)
+
+@property (nonatomic,readonly) CASCCDExposure* normalisedExposure;
+@property (nonatomic,readonly) CASCCDExposure* correctedExposure;
+@property (nonatomic,readonly) CASCCDExposure* debayeredExposure;
+
+extern NSString* const kCASCCDExposureNormalisedKey;
+extern NSString* const kCASCCDExposureCorrectedKey;
+extern NSString* const kCASCCDExposureDebayeredKey;
+extern NSString* const kCASCCDExposurePlateSolutionKey;
+
+- (CASCCDExposure*)derivedExposureWithIdentifier:(NSString*)identifier;
 
 @end

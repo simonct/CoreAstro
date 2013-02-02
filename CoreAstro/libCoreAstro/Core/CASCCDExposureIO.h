@@ -39,4 +39,6 @@
 - (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)error;
 - (BOOL)deleteExposure:(CASCCDExposure*)exposure error:(NSError**)error;
 
+- (NSURL*)derivedDataURLForName:(NSString*)name;
+
 @end

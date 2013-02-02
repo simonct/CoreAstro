@@ -27,9 +27,12 @@
 #import "CASImageProcessor.h"
 #import "CASAutoGuider.h"
 
+@class CASCCDExposureLibraryProject;
+
 @interface CASBatchProcessor : NSObject
 
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASCCDExposureLibraryProject* project;
 
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion;
 - (void)processWithExposures:(NSArray*)exposures completion:(void(^)(NSError* error,CASCCDExposure*))completion;

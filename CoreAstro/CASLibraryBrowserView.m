@@ -46,42 +46,40 @@
     const CGRect imageFrame = [self imageFrame];
     const CGRect relativeImageFrame = NSMakeRect(imageFrame.origin.x - frame.origin.x, imageFrame.origin.y - frame.origin.y, imageFrame.size.width, imageFrame.size.height);
 
-    if (self.exposure.type != kCASCCDExposureLightType){
+    if(type == IKImageBrowserCellForegroundLayer){
         
-        if(type == IKImageBrowserCellForegroundLayer){
-            
-            CALayer *layer = [CALayer layer];
-            layer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-            
-            CATextLayer *textLayer = [CATextLayer layer];
-            CGRect textFrame = relativeImageFrame;
-            textFrame.size.height = 15;
-            textLayer.frame = textFrame;
-            textLayer.backgroundColor = CGColorCreateGenericRGB(0, 0, 0, 0.25); // gradient layer ?
-            textLayer.alignmentMode = kCAAlignmentCenter;
-            textLayer.fontSize = 14;
-            textLayer.font = CFSTR("Helvetica-Bold");
-
-            // masterDark, etc
-            
-            switch (self.exposure.type) {
-                case kCASCCDExposureDarkType:
-                    textLayer.string = (self.exposure == self.project.masterDark) ? @"MASTER DARK" : @"DARK";
-                    break;
-                case kCASCCDExposureBiasType:
-                    textLayer.string = (self.exposure == self.project.masterBias) ? @"MASTER BIAS" : @"BIAS";
-                    break;
-                case kCASCCDExposureFlatType:
-                    textLayer.string = (self.exposure == self.project.masterFlat) ? @"MASTER FLAT" : @"FLAT";
-                    break;
-                default:
-                    break;
-            }
-
-            [layer addSublayer:textLayer];
-            
-            return layer;
+        CALayer *layer = [CALayer layer];
+        layer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+        
+        CATextLayer *textLayer = [CATextLayer layer];
+        CGRect textFrame = relativeImageFrame;
+        textFrame.size.height = 15;
+        textLayer.frame = textFrame;
+        textLayer.backgroundColor = CGColorCreateGenericRGB(0, 0, 0, 0.25); // gradient layer ?
+        textLayer.alignmentMode = kCAAlignmentCenter;
+        textLayer.fontSize = 14;
+        textLayer.font = CFSTR("Helvetica-Bold");
+                
+        switch (self.exposure.type) {
+            case kCASCCDExposureLightType:
+                if (self.exposure.correctedExposure){
+                    textLayer.string = @"CORRECTED"; // todo; tick image not text
+                }
+                break;
+            case kCASCCDExposureDarkType:
+                textLayer.string = (self.exposure == self.project.masterDark) ? @"MASTER DARK" : @"DARK";
+                break;
+            case kCASCCDExposureBiasType:
+                textLayer.string = (self.exposure == self.project.masterBias) ? @"MASTER BIAS" : @"BIAS";
+                break;
+            case kCASCCDExposureFlatType:
+                textLayer.string = (self.exposure == self.project.masterFlat) ? @"MASTER FLAT" : @"FLAT";
+                break;
         }
+        
+        [layer addSublayer:textLayer];
+        
+        return layer;
     }
 
     return nil;

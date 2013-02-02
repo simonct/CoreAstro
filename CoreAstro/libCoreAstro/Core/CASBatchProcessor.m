@@ -26,6 +26,7 @@
 #import "CASBatchProcessor.h"
 #import "CASImageProcessor.h"
 #import "CASCCDExposureLibrary.h"
+#import "CASCCDExposureIO.h"
 #import <Accelerate/Accelerate.h>
 
 @interface CASBatchProcessor ()
@@ -137,7 +138,7 @@
 @end
 
 @implementation CASFlatDividerProcessor {
-    NSMutableData* _normalisedFlat;
+    CASCCDExposure* _normalisedFlat;
 }
 
 - (BOOL)save
@@ -148,28 +149,9 @@
 - (void)start
 {
     [super start];
-
-    // get average flat value
-    float average = 0;
-    float* fbuf = (float*)[self.flat.floatPixels bytes];
-    vDSP_meamgv(fbuf,1,&average,[self.flat.floatPixels length]/sizeof(float));
-    //NSLog(@"average: %f",average);
     
-    if (average == 0){
-        return;
-    }
-    
-    // make a copy with the normalised values
-    _normalisedFlat = [NSMutableData dataWithLength:[self.flat.floatPixels length]];
-    if (_normalisedFlat){
-        float* fnorm = (float*)[_normalisedFlat mutableBytes];
-        vDSP_vsdiv(fbuf,1,(float*)&average,fnorm,1,[_normalisedFlat length]/sizeof(float));
-//        {
-//            float average = 0;
-//            vDSP_meamgv(fnorm,1,&average,[_normalisedFlat length]/sizeof(float));
-//            NSLog(@"average: %f",average);
-//        }
-    }
+    // create a normalised flat
+    _normalisedFlat = [self.imageProcessor normalise:self.flat];
 }
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
@@ -186,7 +168,7 @@
     }
     
     float* fbuf = (float*)[exposure.floatPixels bytes];
-    float* fnorm = (float*)[_normalisedFlat mutableBytes];
+    float* fnorm = (float*)[_normalisedFlat.floatPixels bytes];
     if (!fbuf || !fnorm){
         NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
         return;
@@ -308,6 +290,8 @@
 
 - (void)_subtractExposure:(CASCCDExposure*)base from:(CASCCDExposure*)exposure
 {
+    // todo; move to -subtract on image processor
+    
     float* fbuf = (float*)[exposure.floatPixels bytes];
     float* fbase = (float*)[base.floatPixels bytes];
     if (!fbuf || !fbase){
@@ -349,6 +333,44 @@
     
     // divide light by normalized flat
     [super processExposure:exposure withInfo:info];
+    
+    if (self.result){
+        
+        // cache the corrected exposure in the derived data folder of the original exposure
+        NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureCorrectedKey] path] stringByAppendingPathExtension:@"caExposure"];
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+        if (io){
+            
+            self.result.io = io;
+            
+            NSError* error = nil;
+            if ([io writeExposure:self.result writePixels:YES error:&error]){
+                NSLog(@"Wrote corrected exposure to %@",path);
+            }
+            else {
+                NSLog(@"Error %@ writing corrected exposure to %@",error,path);
+            }
+            
+            self.result.io = nil;
+        }
+    }
+}
+
+@end
+
+@interface CASCCDCorrectionProcessor : CASCCDReductionProcessor
+
+@end
+
+@implementation CASCCDCorrectionProcessor
+
+- (void)start
+{
+    self.flat = self.project.masterFlat;
+    self.dark = self.project.masterDark;
+    self.bias = self.project.masterBias;
+    
+    [super start];
 }
 
 @end
@@ -384,6 +406,14 @@
 - (BOOL)save
 {
     return NO;
+}
+
+- (CASGuideAlgorithm*)guideAlgorithm
+{
+    if (!_guideAlgorithm){
+        _guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
+    }
+    return _guideAlgorithm;
 }
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
@@ -583,6 +613,14 @@
     return @{@"uuid":exposure.uuid};
 }
 
+- (CASImageProcessor*)imageProcessor
+{
+    if (!_imageProcessor){
+        _imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    }
+    return _imageProcessor;
+}
+
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion
 {
     NSParameterAssert(provider);
@@ -634,7 +672,9 @@
 
 + (NSArray*)batchProcessorsForExposures:(NSArray*)exposures
 {
+    // todo; categories
     return [exposures count] ? @[
+        @{@"id":@"correct",@"name":@"Correct"},
         @{@"id":@"stack.average",@"name":@"Quick Stack"},
         @{@"id":@"combine.sum",@"name":@"Combine Sum"},
         @{@"id":@"combine.average",@"name":@"Combine Average"}
@@ -657,6 +697,11 @@
     
     if ([@"stack.average" isEqualToString:identifier]){
         CASCCDStackingProcessor* stack = [[CASCCDStackingProcessor alloc] init];
+        return stack;
+    }
+
+    if ([@"correct" isEqualToString:identifier]){
+        CASCCDCorrectionProcessor* stack = [[CASCCDCorrectionProcessor alloc] init];
         return stack;
     }
 

@@ -110,6 +110,9 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 }
             }
         }
+        
+        // set the exposure type (needed for saving it correctly)
+        result.format = kCASCCDExposureFormatFloat;
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -162,6 +165,9 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 }
             }
         });
+        
+        // set the exposure type (needed for saving it correctly)
+        result.format = kCASCCDExposureFormatFloat;
     }
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
@@ -218,6 +224,9 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                     }
                 });
             }
+            
+            // set the exposure type (needed for saving it correctly)
+            result.format = kCASCCDExposureFormatFloat;
         });
 
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -228,8 +237,28 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)normalise:(CASCCDExposure*)exposure
 {
-    NSLog(@"%@: not implemented",NSStringFromSelector(_cmd));
-    return nil;
+    __block CASCCDExposure* result = [exposure copy];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
+        
+        // get average flat value
+        float average = 0;
+        float* fbuf = (float*)[result.floatPixels bytes];
+        vDSP_meamgv(fbuf,1,&average,[result.floatPixels length]/sizeof(float));
+        
+        if (average != 0){
+            
+            // divide by the average
+            vDSP_vsdiv(fbuf,1,(float*)&average,fbuf,1,[result.floatPixels length]/sizeof(float));
+        }
+
+        // set the exposure type (needed for saving it correctly)
+        result.format = kCASCCDExposureFormatFloat;
+    }
+    
+    return result;
 }
 
 - (CASCCDExposure*)removeBayerMatrix:(CASCCDExposure*)exposure_
@@ -266,6 +295,9 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 
                 // probably a better way of doing this with a convolution filter ?
             }
+            
+            // set the exposure type (needed for saving it correctly)
+            result.format = kCASCCDExposureFormatFloat;
         });
         
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);

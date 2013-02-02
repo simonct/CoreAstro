@@ -612,6 +612,12 @@
         return;
     }
     
+    // prefer corrected exposure (and similarly for debayered)
+    CASCCDExposure* corrected = exposure.correctedExposure;
+    if (corrected){
+        exposure = corrected;
+    }
+    
     self.imageBannerView.exposure = exposure;
 
     NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];

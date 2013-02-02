@@ -276,6 +276,11 @@
     return (CASCCDExposureFormat)[[self.meta objectForKey:@"format"] integerValue];
 }
 
+- (void)setFormat:(CASCCDExposureFormat)format
+{
+    [self setMetaObject:[NSNumber numberWithInteger:format] forKey:@"format"];
+}
+
 - (NSString*)note
 {
     return [self.meta objectForKey:@"note"];
@@ -625,6 +630,44 @@
 {
     NSURL* url = self.io.url;
     return [url isFileURL] ? [self.io.url path] : nil;
+}
+
+@end
+
+@implementation CASCCDExposure (DerivedData)
+
+NSString* const kCASCCDExposureNormalisedKey = @"normalised";
+NSString* const kCASCCDExposureCorrectedKey = @"corrected";
+NSString* const kCASCCDExposureDebayeredKey = @"debayered";
+NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
+
+- (CASCCDExposure*)normalisedExposure
+{
+    return [self derivedExposureWithIdentifier:kCASCCDExposureNormalisedKey];
+}
+
+- (CASCCDExposure*)correctedExposure
+{
+    return [self derivedExposureWithIdentifier:kCASCCDExposureCorrectedKey];
+}
+
+- (CASCCDExposure*)debayeredExposure
+{
+    return [self derivedExposureWithIdentifier:kCASCCDExposureDebayeredKey];
+}
+
+- (CASCCDExposure*)derivedExposureWithIdentifier:(NSString*)identifier
+{
+    CASCCDExposure* exposure = nil;
+    NSURL* url = [[self.io derivedDataURLForName:identifier] URLByAppendingPathExtension:@"caExposure"];
+    if ([url checkResourceIsReachableAndReturnError:nil]){
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+        if (io){
+            exposure = [[CASCCDExposure alloc] init];
+            exposure.io = io;
+        }
+    }
+    return exposure;
 }
 
 @end
