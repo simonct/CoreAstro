@@ -189,9 +189,9 @@
     [self.browserView setDelegate:self];
     [self.browserView setCellsStyleMask:IKCellsStyleTitled|IKCellsStyleSubtitled|IKCellsStyleShadowed];
     [self.browserView setZoomValue:0.5];
-    [self.browserView setDraggingDestinationDelegate:self];
-    [self.browserView setAllowsDroppingOnItems:YES];
-    [self.browserView registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
+//    [self.browserView setDraggingDestinationDelegate:self];
+//    [self.browserView setAllowsDroppingOnItems:YES];
+//    [self.browserView registerForDraggedTypes:@[(id)kUTTypeUTF8PlainText]];
     [self.browserView setValue:[NSColor lightGrayColor] forKey:IKImageBrowserBackgroundColorKey];
     
     if ([self.browserView respondsToSelector:@selector(setViewController:)]){
@@ -669,57 +669,57 @@
 
 #pragma mark - Drag & Drop
 
-- (NSInteger)_indexOfItemAtPoint:(NSPoint)point
-{
-    return [self.browserView indexOfItemAtPoint:[self.browserView convertPoint:point fromView:nil]];
-}
-
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-{
-    return [self _indexOfItemAtPoint:[sender draggingLocation]] == NSNotFound ? NSDragOperationNone : NSDragOperationCopy; // NSDragOperationLink ?
-}
-
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-{
-    const NSInteger index = [self _indexOfItemAtPoint:[sender draggingLocation]];
-    if (index == NSNotFound){
-        return NO;
-    }
-    
-    CASCCDExposureWrapper* targetWrapper = (CASCCDExposureWrapper*)[self imageBrowser:self.browserView itemAtIndex:index];
-    
-    NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[sender draggingPasteboard] pasteboardItems] count]];
-    for (NSPasteboardItem* item in [[sender draggingPasteboard] pasteboardItems]){
-        NSString* uuid = [item propertyListForType:(id)kUTTypeUTF8PlainText];
-        if ([uuid isKindOfClass:[NSString class]]){
-            NSArray* exposures = [self.exposures filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@",uuid]];
-            if ([exposures count]){
-                [sourceExposures addObject:[exposures lastObject]];
-            }
-        }
-    }
-    
-    if ([sourceExposures count]){
-        
-        // popover with buttons for available operations + cancel
-        
-        // dragging exposures onto a flat implements flat division
-        if (targetWrapper.exposure.type == kCASCCDExposureFlatType){
-            dispatch_async(dispatch_get_current_queue(), ^{
-                [self divideExposures:sourceExposures byFlat:targetWrapper.exposure];
-            });
-            return YES;
-        }
-        if (targetWrapper.exposure.type == kCASCCDExposureBiasType || targetWrapper.exposure.type == kCASCCDExposureDarkType){
-            dispatch_async(dispatch_get_current_queue(), ^{
-                [self subtractExposure:targetWrapper.exposure from:sourceExposures];
-            });
-            return YES;
-        }
-
-    }
-    
-    return NO;
-}
+//- (NSInteger)_indexOfItemAtPoint:(NSPoint)point
+//{
+//    return [self.browserView indexOfItemAtPoint:[self.browserView convertPoint:point fromView:nil]];
+//}
+//
+//- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+//{
+//    return [self _indexOfItemAtPoint:[sender draggingLocation]] == NSNotFound ? NSDragOperationNone : NSDragOperationCopy; // NSDragOperationLink ?
+//}
+//
+//- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+//{
+//    const NSInteger index = [self _indexOfItemAtPoint:[sender draggingLocation]];
+//    if (index == NSNotFound){
+//        return NO;
+//    }
+//    
+//    CASCCDExposureWrapper* targetWrapper = (CASCCDExposureWrapper*)[self imageBrowser:self.browserView itemAtIndex:index];
+//    
+//    NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[sender draggingPasteboard] pasteboardItems] count]];
+//    for (NSPasteboardItem* item in [[sender draggingPasteboard] pasteboardItems]){
+//        NSString* uuid = [item propertyListForType:(id)kUTTypeUTF8PlainText];
+//        if ([uuid isKindOfClass:[NSString class]]){
+//            NSArray* exposures = [self.exposures filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@",uuid]];
+//            if ([exposures count]){
+//                [sourceExposures addObject:[exposures lastObject]];
+//            }
+//        }
+//    }
+//    
+//    if ([sourceExposures count]){
+//        
+//        // popover with buttons for available operations + cancel
+//        
+//        // dragging exposures onto a flat implements flat division
+//        if (targetWrapper.exposure.type == kCASCCDExposureFlatType){
+//            dispatch_async(dispatch_get_current_queue(), ^{
+//                [self divideExposures:sourceExposures byFlat:targetWrapper.exposure];
+//            });
+//            return YES;
+//        }
+//        if (targetWrapper.exposure.type == kCASCCDExposureBiasType || targetWrapper.exposure.type == kCASCCDExposureDarkType){
+//            dispatch_async(dispatch_get_current_queue(), ^{
+//                [self subtractExposure:targetWrapper.exposure from:sourceExposures];
+//            });
+//            return YES;
+//        }
+//
+//    }
+//    
+//    return NO;
+//}
 
 @end
