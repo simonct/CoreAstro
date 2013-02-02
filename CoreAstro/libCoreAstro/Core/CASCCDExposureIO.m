@@ -195,9 +195,11 @@
                 switch ([[dict valueForKeyPath:@"exposure.format"] integerValue]) {
                     case kCASCCDExposureFormatFloat:
                     case kCASCCDExposureFormatFloatRGBA:
+                        NSAssert(exposure.floatPixels, @"Pixel format set to floating point but no pixels");
                         [exposure.floatPixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
                         break;
                     default:
+                        NSAssert(exposure.pixels, @"Pixel format set to integer but no pixels");
                         [exposure.pixels writeToURL:[self.url URLByAppendingPathComponent:samplesName] options:NSDataWritingAtomic error:&error];
                         break;
                 }
