@@ -176,7 +176,7 @@
 
 @implementation CASLibraryBrowserViewController {
     NSArray* _groups;
-    BOOL _inImageBrowserSelectionDidChange;
+    BOOL _suppressKeyValueObserving;
 }
 
 #pragma mark - View Controller
@@ -265,6 +265,14 @@
             self.groups = [[groupInfos allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"value" ascending:NO]]];
             [self.exposuresController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.groups[0][@"sortKey"] ascending:NO],defaultSortDescriptor]];
         }
+    }
+    
+    _suppressKeyValueObserving = YES; // yuk
+    @try {
+        [self.exposuresController rearrangeObjects];
+    }
+    @finally {
+        _suppressKeyValueObserving = NO;
     }
 }
 
@@ -456,12 +464,12 @@
 
 - (void) imageBrowserSelectionDidChange:(IKImageBrowserView *) aBrowser
 {
-    _inImageBrowserSelectionDidChange = YES; // yuk
+    _suppressKeyValueObserving = YES; // yuk
     @try {
         [self.exposuresController setSelectedObjects:[self.exposures objectsAtIndexes:[aBrowser selectionIndexes]]];
     }
     @finally {
-        _inImageBrowserSelectionDidChange = NO;
+        _suppressKeyValueObserving = NO;
     }
 }
 
@@ -645,14 +653,14 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
-        if ([@"selectedObjects" isEqualToString:keyPath]){
-            if (!_inImageBrowserSelectionDidChange){
+        if (!_suppressKeyValueObserving){
+            if ([@"selectedObjects" isEqualToString:keyPath]){
                 [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
-                // scroll to selection
+                // todo; scroll to selection
             }
-        }
-        else if ([@"arrangedObjects" isEqualToString:keyPath]){
-            [self refresh];
+            else if ([@"arrangedObjects" isEqualToString:keyPath]){
+                [self refresh];
+            }
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
