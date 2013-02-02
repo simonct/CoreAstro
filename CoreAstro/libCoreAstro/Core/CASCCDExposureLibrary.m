@@ -306,23 +306,31 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     }
 }
 
-- (void)_addExposureAndPostNotification:(CASCCDExposure*)exposure
+- (void)_addExposureAndPostNotification:(CASCCDExposure*)exposure toProject:(CASCCDExposureLibraryProject*)project
 {
-    if (![NSThread isMainThread]){
-        [self performSelectorOnMainThread:_cmd withObject:exposure waitUntilDone:NO];
+    void (^add)() = ^(){
+        [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
+        [project addExposures:[NSSet setWithObject:exposure]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCCDExposureLibraryExposureAddedNotification object:self userInfo:@{@"exposure":exposure}];
+    };
+    if ([NSThread isMainThread]){
+        add();
     }
     else {
-        [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
-        [[CASCCDExposureLibrary sharedLibrary].currentProject addExposures:[NSSet setWithObject:exposure]];
-        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCCDExposureLibraryExposureAddedNotification object:self userInfo:@{@"exposure":exposure}];
+        dispatch_async(dispatch_get_main_queue(), add);
     }
 }
 
 - (void)addExposure:(CASCCDExposure*)exposure save:(BOOL)save block:(void (^)(NSError*,NSURL*))block
 {
+    [self addExposure:exposure toProject:nil save:save block:block];
+}
+
+- (void)addExposure:(CASCCDExposure*)exposure toProject:(CASCCDExposureLibraryProject*)project save:(BOOL)save block:(void (^)(NSError*,NSURL*))block;
+{
     void (^complete)() = ^(NSError* error,NSURL* url){
         if (!error){
-            [self _addExposureAndPostNotification:exposure];
+            [self _addExposureAndPostNotification:exposure toProject:project ? project : [CASCCDExposureLibrary sharedLibrary].currentProject];
         }
         if (block){
             block(error,url);

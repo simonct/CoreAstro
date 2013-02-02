@@ -116,7 +116,7 @@
     
     // this really should be associated with the parent device folder and live in there - perhaps with a special name indicating that it's a combined frame ?
     
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
+    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
         NSLog(@"Added exposure at %@",url);
         
@@ -194,7 +194,7 @@
         [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
         self.result.meta = [mutableMeta copy];
         
-        [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result save:YES block:^(NSError *error, NSURL *url) {
+        [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
             
             NSLog(@"Added flat corrected exposure at %@",url);
         }];
@@ -263,7 +263,7 @@
     }
     result.meta = [mutableMeta copy];
     
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
+    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
         NSLog(@"Added dark/bias corrected exposure at %@",url);
     }];
@@ -578,7 +578,7 @@
     [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %@",self.first.displayName] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
 
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result save:YES block:^(NSError *error, NSURL *url) {
+    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
         NSLog(@"Added stacked exposure at %@",url);
         
