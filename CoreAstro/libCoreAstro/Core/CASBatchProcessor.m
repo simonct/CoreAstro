@@ -187,12 +187,13 @@
                                                    params:exposure.params
                                                      time:[NSDate date]];
     
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
+    [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
+    [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
+    [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
+    self.result.meta = [mutableMeta copy];
+    
     if (self.save){
-        
-        NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
-        [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
-        [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
-        self.result.meta = [mutableMeta copy];
         
         [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
             
@@ -408,6 +409,12 @@
     if (!exposure){
         return;
     }
+     
+    // use a corrected exposure for stacking if one is available (similarly for debayered)
+    CASCCDExposure* corrected = exposure.correctedExposure;
+    if (corrected){
+        exposure = corrected;
+    }
     
     if (!self.first){
         
@@ -560,9 +567,10 @@
                                                               params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
                                                                 time:[NSDate date]];
     
-    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
+    [mutableMeta setObject:[result.meta objectForKey:@"time"] forKey:@"time"];
     [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":@"average"}} forKey:@"history"];
-    [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %@",self.first.displayName] forKey:@"displayName"];
+    [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %ld",_count + 1] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
 
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
