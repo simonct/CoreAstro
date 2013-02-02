@@ -116,6 +116,7 @@
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL medianFilter;
+@property (nonatomic,assign) BOOL preferCorrected;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
@@ -153,6 +154,8 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    
+    self.preferCorrected = YES;
     
     self.colourAdjustments = [[CASColourAdjustments alloc] init];
     
@@ -461,6 +464,14 @@
     }
 }
 
+- (void)setPreferCorrected:(BOOL)preferCorrected
+{
+    if (_preferCorrected != preferCorrected){
+        _preferCorrected = preferCorrected;
+        [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
 - (NSInteger)debayerMode
 {
     return self.imageDebayer.mode;
@@ -613,9 +624,11 @@
     }
     
     // prefer corrected exposure (and similarly for debayered)
-    CASCCDExposure* corrected = exposure.correctedExposure;
-    if (corrected){
-        exposure = corrected;
+    if (self.preferCorrected){
+        CASCCDExposure* corrected = exposure.correctedExposure;
+        if (corrected){
+            exposure = corrected;
+        }
     }
     
     self.imageBannerView.exposure = exposure;
@@ -1141,6 +1154,11 @@
     self.medianFilter = !self.medianFilter;
 }
 
+- (IBAction)togglePreferCorrected:(id)sender
+{
+    self.preferCorrected = !self.preferCorrected;
+}
+
 - (IBAction)applyDebayer:(NSMenuItem*)sender
 {
     switch (sender.tag) {
@@ -1443,6 +1461,10 @@
             enabled = self.currentExposure != nil;
             break;
             
+        case 10013:
+            item.state = self.preferCorrected;
+            break;
+
         case 10020:
         case 10021:
         case 10022:
