@@ -333,6 +333,11 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    if (exposure.type != kCASCCDExposureLightType){
+        NSLog(@"%@: Ignoring exposure of type %d",NSStringFromSelector(_cmd),exposure.type);
+        return;
+    }
+    
     // subtract dark/bias from exposure
     [self _subtractDarkBiasFromExposure:exposure];
     
@@ -406,7 +411,8 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
-    if (!exposure){
+    if (exposure.type != kCASCCDExposureLightType){
+        NSLog(@"%@: Ignoring exposure of type %d",NSStringFromSelector(_cmd),exposure.type);
         return;
     }
      
