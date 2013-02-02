@@ -572,6 +572,8 @@
     [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":@"average"}} forKey:@"history"];
     [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %ld",_count + 1] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
+    
+    result.format = kCASCCDExposureFormatFloat;
 
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
