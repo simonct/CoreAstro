@@ -63,7 +63,7 @@ enum {
 @property (nonatomic,strong) CASCCDExposure* base;
 @end
 
-@interface CASCCDReductionProcessor : CASFlatDividerProcessor
+@interface CASCCDCorrectionProcessor : CASFlatDividerProcessor
 @property (nonatomic,strong) CASCCDExposure* bias;
 @property (nonatomic,strong) CASCCDExposure* dark;
 @property (nonatomic,strong) CASCCDExposure* flat;

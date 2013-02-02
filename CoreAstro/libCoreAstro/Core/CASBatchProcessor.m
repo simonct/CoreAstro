@@ -281,7 +281,7 @@
 
 @end
 
-@implementation CASCCDReductionProcessor
+@implementation CASCCDCorrectionProcessor
 
 - (BOOL)save
 {
@@ -319,6 +319,10 @@
 
 - (void)start
 {
+    self.flat = self.project.masterFlat;
+    self.dark = self.project.masterDark;
+    self.bias = self.project.masterBias;
+
     // subtract dark/bias from flat
     [self _subtractDarkBiasFromExposure:self.flat];
     
@@ -354,23 +358,6 @@
             self.result.io = nil;
         }
     }
-}
-
-@end
-
-@interface CASCCDCorrectionProcessor : CASCCDReductionProcessor
-
-@end
-
-@implementation CASCCDCorrectionProcessor
-
-- (void)start
-{
-    self.flat = self.project.masterFlat;
-    self.dark = self.project.masterDark;
-    self.bias = self.project.masterBias;
-    
-    [super start];
 }
 
 @end
