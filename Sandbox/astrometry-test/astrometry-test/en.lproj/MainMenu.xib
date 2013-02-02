@@ -2108,7 +2108,7 @@
 						</object>
 						<object class="NSBox" id="950871881">
 							<reference key="NSNextResponder" ref="439893737"/>
-							<int key="NSvFlags">36</int>
+							<int key="NSvFlags">33</int>
 							<array class="NSMutableArray" key="NSSubviews">
 								<object class="NSView" id="160212114">
 									<reference key="NSNextResponder" ref="950871881"/>
@@ -4926,17 +4926,25 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">MKOAppDelegate</string>
 					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">solve:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">solve:</string>
-						<object class="IBActionInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="openDocument:">id</string>
+						<string key="saveDocument:">id</string>
+						<string key="solve:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="openDocument:">
+							<string key="name">openDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveDocument:">
+							<string key="name">saveDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="solve:">
 							<string key="name">solve:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="fieldHeightLabel">NSTextField</string>
 						<string key="fieldWidthLabel">NSTextField</string>
