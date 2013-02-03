@@ -866,7 +866,13 @@
                 // export the exposures - beware of races here since we're doing this async
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     
-                    for (CASCCDExposure* exposure in exposures){
+                    for (__strong CASCCDExposure* exposure in exposures){
+                        
+                        // prefer the corrected image
+                        CASCCDExposure* corrected = exposure.correctedExposure;
+                        if (corrected){
+                            exposure = corrected;
+                        }
                         
                         @try {
                             @autoreleasepool {
