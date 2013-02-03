@@ -438,6 +438,9 @@
     // separator, then commands that involve more UI e.g. divide flat where we have to select a flat
     
     // reveal in finder command
+    if (menu){
+        [menu addItem:createMenuItem(@"Reveal In Finder",exposures,@selector(revealInFinder:))];
+    }
     
     if ([[menu itemArray] count]){
         [NSMenu popUpContextMenu:menu withEvent:event forView:self.browserView];
@@ -646,6 +649,11 @@
     if ([selectedObjects count] && [self.exposureDelegate respondsToSelector:@selector(focusOnExposures:)]){
         [self.exposureDelegate focusOnExposures:[self exposuresControllerWithExposures:selectedObjects]];
     }
+}
+
+- (IBAction)revealInFinder:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:[[self.exposuresController selectedObjects] valueForKeyPath:@"io.url"]];
 }
 
 #pragma mark - KVO
