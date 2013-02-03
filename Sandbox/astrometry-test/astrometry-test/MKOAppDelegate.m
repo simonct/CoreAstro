@@ -387,6 +387,7 @@
 @property (nonatomic,assign) BOOL acceptDrop;
 @property (nonatomic,strong) CALayer* annotationLayer;
 @property (nonatomic,strong) NSArray* annotations;
+@property (nonatomic,strong) NSFont* annotationsFont;
 @end
 
 @implementation CASPlateSolveImageView
@@ -466,6 +467,14 @@
     }
 }
 
+- (void)setAnnotationsFont:(NSFont *)annotationsFont
+{
+    if (_annotationsFont != annotationsFont){
+        _annotationsFont = annotationsFont;
+        [self drawAnnotations];
+    }
+}
+
 - (void)drawAnnotations
 {
     if (!self.image){
@@ -494,6 +503,10 @@
         CGPoint p = sublayer.position;
         p.y = self.annotationLayer.bounds.size.height - p.y;
         sublayer.position = p;
+        if ([sublayer isKindOfClass:[CATextLayer class]]){
+            CATextLayer* textLayer = (CATextLayer*)sublayer;
+            textLayer.font = (__bridge CFTypeRef)(self.annotationsFont);
+        }
     }
 }
 
@@ -533,6 +546,14 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.annotations" options:nil];
     
+    NSData* fontData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsFont"];
+    if (fontData){
+        self.imageView.annotationsFont = [NSUnarchiver unarchiveObjectWithData:fontData];
+    }
+    else {
+        self.imageView.annotationsFont = [NSFont boldSystemFontOfSize:18];
+    }
+
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self.imageView forKeyPath:@"values.CASAnnotationsColour" options:0 context:(__bridge void *)(self.imageView)];
 }
 
@@ -721,6 +742,19 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             }
         }];
     }
+}
+
+- (IBAction)showFontPanel:(id)sender
+{
+    NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    [fontManager setDelegate:self];
+    [fontManager orderFrontFontPanel:self];
+}
+
+- (IBAction)changeFont:(id)sender
+{
+    self.imageView.annotationsFont = [sender convertFont:self.imageView.annotationsFont];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSArchiver archivedDataWithRootObject:self.imageView.annotationsFont] forKey:@"CASAnnotationsFont"];
 }
 
 - (IBAction)openDocument:(id)sender

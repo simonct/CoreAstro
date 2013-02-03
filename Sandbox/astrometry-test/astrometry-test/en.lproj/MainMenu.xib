@@ -2132,11 +2132,35 @@
 												<bytes key="NSRGB">MC4wNTgxMzA0OTg5OCAwLjA1NTU0MTg5OTA2IDEAA</bytes>
 											</object>
 										</object>
+										<object class="NSButton" id="854359674">
+											<reference key="NSNextResponder" ref="160212114"/>
+											<int key="NSvFlags">268</int>
+											<string key="NSFrame">{{11, 10}, {101, 28}}</string>
+											<reference key="NSSuperview" ref="160212114"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="551587715"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<bool key="NSEnabled">YES</bool>
+											<object class="NSButtonCell" key="NSCell" id="870011896">
+												<int key="NSCellFlags">67108864</int>
+												<int key="NSCellFlags2">134348800</int>
+												<string key="NSContents">Font</string>
+												<reference key="NSSupport" ref="26"/>
+												<string key="NSCellIdentifier">_NS:9</string>
+												<reference key="NSControlView" ref="854359674"/>
+												<int key="NSButtonFlags">-2038284288</int>
+												<int key="NSButtonFlags2">129</int>
+												<string key="NSAlternateContents"/>
+												<string key="NSKeyEquivalent"/>
+												<int key="NSPeriodicDelay">200</int>
+												<int key="NSPeriodicInterval">25</int>
+											</object>
+										</object>
 									</array>
 									<string key="NSFrame">{{1, 1}, {177, 47}}</string>
 									<reference key="NSSuperview" ref="950871881"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView" ref="551587715"/>
+									<reference key="NSNextKeyView" ref="854359674"/>
 									<string key="NSReuseIdentifierKey">_NS:11</string>
 								</object>
 							</array>
@@ -3130,6 +3154,14 @@
 						<reference key="destination" ref="279875718"/>
 					</object>
 					<int key="connectionID">548</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">showFontPanel:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="854359674"/>
+					</object>
+					<int key="connectionID">653</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -4648,6 +4680,7 @@
 						<reference key="object" ref="950871881"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="551587715"/>
+							<reference ref="854359674"/>
 						</array>
 						<reference key="parent" ref="439893737"/>
 					</object>
@@ -4655,6 +4688,19 @@
 						<int key="objectID">641</int>
 						<reference key="object" ref="551587715"/>
 						<reference key="parent" ref="950871881"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">649</int>
+						<reference key="object" ref="854359674"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="870011896"/>
+						</array>
+						<reference key="parent" ref="950871881"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">650</int>
+						<reference key="object" ref="870011896"/>
+						<reference key="parent" ref="854359674"/>
 					</object>
 				</array>
 			</object>
@@ -4865,6 +4911,8 @@
 				<string key="635.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="641.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="646.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="649.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="650.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4881,7 +4929,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">646</int>
+			<int key="maxID">653</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4927,17 +4975,27 @@
 					<string key="className">MKOAppDelegate</string>
 					<string key="superclassName">NSObject</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="changeFont:">id</string>
 						<string key="openDocument:">id</string>
 						<string key="saveDocument:">id</string>
+						<string key="showFontPanel:">id</string>
 						<string key="solve:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="changeFont:">
+							<string key="name">changeFont:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="openDocument:">
 							<string key="name">openDocument:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="saveDocument:">
 							<string key="name">saveDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showFontPanel:">
+							<string key="name">showFontPanel:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="solve:">

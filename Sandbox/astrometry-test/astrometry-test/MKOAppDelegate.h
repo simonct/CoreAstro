@@ -26,5 +26,6 @@
 @property (weak) IBOutlet NSTextField *fieldHeightLabel;
 
 - (IBAction)solve:(id)sender;
+- (IBAction)showFontPanel:(id)sender;
 
 @end
