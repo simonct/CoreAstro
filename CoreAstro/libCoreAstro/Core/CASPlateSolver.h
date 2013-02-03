@@ -25,13 +25,28 @@
 
 #import "CASCCDExposure.h"
 
-// todo; make this a factory for image processor modules that can describe their actions for an exposure's history
+@interface CASPlateSolvedObject : NSObject
+@property (nonatomic,assign) BOOL enabled;
+@property (nonatomic,readonly) NSString* name;
+@property (nonatomic,strong) NSDictionary* annotation;
+@end
+
+@interface CASPlateSolveSolution : NSObject<NSCoding>
+@property (nonatomic,readonly) NSString* centreRA;
+@property (nonatomic,readonly) NSString* centreDec;
+@property (nonatomic,readonly) NSString* centreAngle;
+@property (nonatomic,readonly) NSString* pixelScale;
+@property (nonatomic,readonly) NSString* fieldWidth;
+@property (nonatomic,readonly) NSString* fieldHeight;
+@property (nonatomic,readonly) NSArray* objects;
+@end
 
 @protocol CASPlateSolver <NSObject>
 @optional
 
-//@property (nonatomic,copy) NSURL* imageURL;
 @property (nonatomic,copy) NSURL* indexDirectoryURL;
+
+- (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure;
 
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error;
 

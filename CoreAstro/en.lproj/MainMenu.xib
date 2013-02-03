@@ -1364,12 +1364,21 @@
 								</object>
 								<object class="NSMenuItem" id="360302842">
 									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Prefer Corrected</string>
+									<string key="NSTitle">Show Corrected</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">10013</int>
+								</object>
+								<object class="NSMenuItem" id="801400410">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show Plate Solution</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10014</int>
 								</object>
 								<object class="NSMenuItem" id="285326412">
 									<reference key="NSMenu" ref="466310130"/>
@@ -3064,6 +3073,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleShowPlateSolution:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="801400410"/>
+					</object>
+					<int key="connectionID">865</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -3594,6 +3611,7 @@
 							<reference ref="469922604"/>
 							<reference ref="360302842"/>
 							<reference ref="285326412"/>
+							<reference ref="801400410"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -5401,6 +5419,11 @@
 						<reference key="object" ref="285326412"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">864</int>
+						<reference key="object" ref="801400410"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5735,13 +5758,14 @@
 				<string key="858.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="861.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="862.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="864.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">863</int>
+			<int key="maxID">865</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5824,6 +5848,7 @@
 						<string key="toggleScaleSubframe:">id</string>
 						<string key="toggleShowHistogram:">id</string>
 						<string key="toggleShowImageStats:">id</string>
+						<string key="toggleShowPlateSolution:">id</string>
 						<string key="toggleShowReticle:">id</string>
 						<string key="toggleShowStarProfile:">id</string>
 					</dictionary>
@@ -5926,6 +5951,10 @@
 						</object>
 						<object class="IBActionInfo" key="toggleShowImageStats:">
 							<string key="name">toggleShowImageStats:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowPlateSolution:">
+							<string key="name">toggleShowPlateSolution:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleShowReticle:">

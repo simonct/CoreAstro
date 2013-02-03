@@ -27,6 +27,140 @@
 #import "CASTaskWrapper.h"
 #import "CASCCDExposureIO.h"
 
+@implementation CASPlateSolvedObject
+
+/*
+ {
+ names =         (
+ "NGC 6526"
+ );
+ pixelx = "583.327";
+ pixely = "381.319";
+ radius = "418.425";
+ type = ngc;
+ },
+ */
+
+- (NSString*)name
+{
+    NSMutableString* result = [NSMutableString string];
+    for (NSString* name in [self.annotation objectForKey:@"names"]){
+        if ([result length]){
+            [result appendString:@"/"];
+        }
+        [result appendString:name];
+    }
+    return [result copy];
+}
+
+@end
+
+@interface CASPlateSolveSolution ()
+@property (nonatomic,strong) NSArray* wcsinfo;
+@property (nonatomic,strong) NSArray* annotations;
+@end
+
+@implementation CASPlateSolveSolution {
+    NSMutableArray* _objects;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.wcsinfo forKey:@"wcsinfo"];
+    [aCoder encodeObject:self.annotations forKey:@"annotations"];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self){
+        self.wcsinfo = [aDecoder decodeObjectForKey:@"wcsinfo"];
+        self.annotations = [aDecoder decodeObjectForKey:@"annotations"];
+    }
+    return self;
+}
+
+- (void)setAnnotations:(NSArray*)annotations
+{
+    if (_annotations != annotations){
+        
+        if (_objects){
+            [[self mutableArrayValueForKey:@"objects"] removeAllObjects];
+        }
+        
+        _annotations = annotations;
+        
+        for (NSDictionary* annotation in _annotations){
+            
+            CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+            object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+            object.annotation = annotation;
+            if (!_objects){
+                _objects = [NSMutableArray arrayWithCapacity:[annotations count]];
+            }
+            [[self mutableArrayValueForKey:@"objects"] addObject:object];
+        }
+    }
+}
+
+- (NSNumber*)numberFromInfo:(NSArray*)values withKey:(NSString*)key
+{
+    for (NSString* string in values){
+        if ([string hasPrefix:key]){
+            NSScanner* scanner = [NSScanner scannerWithString:string];
+            NSString* ignored;
+            [scanner scanString:key intoString:&ignored];
+            double d;
+            if ([scanner scanDouble:&d]){
+                return [NSNumber numberWithDouble:d];
+            }
+        }
+    }
+    return nil;
+}
+
+- (NSString*)centreRA
+{
+    return [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_m"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
+}
+
+- (NSString*)centreDec
+{
+    return [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue],
+            [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]];
+}
+
+- (NSString*)centreAngle
+{
+    return [NSString stringWithFormat:@"%02.0f°",
+            [[self numberFromInfo:self.wcsinfo withKey:@"orientation"] doubleValue]];
+}
+
+- (NSString*)pixelScale
+{
+    return [NSString stringWithFormat:@"%.2f\u2033",
+            [[self numberFromInfo:self.wcsinfo withKey:@"pixscale"] doubleValue]];
+}
+
+- (NSString*)fieldWidth
+{
+    return [NSString stringWithFormat:@"%.2f\u2032", // todo; check fieldunits == arcminutes
+            [[self numberFromInfo:self.wcsinfo withKey:@"fieldw"] doubleValue]];
+}
+
+- (NSString*)fieldHeight
+{
+    return [NSString stringWithFormat:@"%.2f\u2032",
+            [[self numberFromInfo:self.wcsinfo withKey:@"fieldh"] doubleValue]];
+}
+
+@end
+
 @interface CASPlateSolver ()
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
@@ -35,6 +169,7 @@
 
 @implementation CASPlateSolver
 
+static NSString* const kSolutionArchiveName = @"solution.plist";
 static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
@@ -69,12 +204,12 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
 }
 
-- (NSString*)cacheDirectory
+- (NSString*)cacheDirectoryForExposure:(CASCCDExposure*)exposure
 {
     NSString* path = nil;
     
-    if (self.exposure.io){
-        path = [[self.exposure.io.url path] stringByAppendingPathComponent:@"plate-solve"];
+    if (exposure.io){
+        path = [[exposure.io.url path] stringByAppendingPathComponent:@"plate-solve"];
     }
     else {
         path = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
@@ -85,14 +220,39 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     return path;
 }
 
+- (NSString*)cacheDirectory
+{
+    return [self cacheDirectoryForExposure:self.exposure];
+}
+
 - (NSError*)errorWithCode:(NSInteger)code reason:(NSString*)reason
 {
     return [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:@{NSLocalizedFailureReasonErrorKey:reason}];
 }
 
+- (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure
+{
+    CASPlateSolveSolution* result = nil;
+    
+    NSString* cacheDirectory = [self cacheDirectoryForExposure:exposure];
+    if (cacheDirectory){
+        
+        NSData* data = [NSData dataWithContentsOfFile:[cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName]];
+        if (data){
+            
+            result = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            if (![result isKindOfClass:[CASPlateSolveSolution class]]){
+                result = nil;
+            }
+        }
+    }
+    
+    return result;
+}
+
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error
 {
-    if (!self.indexDirectoryURL){
+    if (!self.indexDirectoryURL || ![self.indexDirectoryURL checkResourceIsReachableAndReturnError:nil]){
         if (error){
             *error = [self errorWithCode:1 reason:@"Plate solving index directory has not been set"];
         }
@@ -107,11 +267,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         if (block){
             block(error,results);
         }
-//        if ([imagePath length]){
-//            [[NSFileManager defaultManager] removeItemAtPath:imagePath error:nil];
-//        }
     };
-    
+        
     self.exposure = exposure;
     
     // check we're configured
@@ -165,7 +322,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                     [self.logOutput appendString:string];
                     [self.logOutput appendString:@"\n"];
                     
-                    NSLog(@"Plate Solve: %@",string);
+                    NSLog(@"Plate solve output: %@",string);
                     
                 } terminationBlock:^(int terminationStatus) {
                     
@@ -174,16 +331,10 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                     }
                     else {
                         
-                        // allow to switch between the detected object images, etc ?
-                        
                         // nasty hack to avoid as yet undiagnosed race between solve-field and wcsinfo resulting in empty solution results
                         double delayInSeconds = 0.5;
                         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
                         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            
-                            // show the solved image
-                            NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
-                            NSString* solvedImagePath = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
                             
                             // get solution data by running the wcsinfo tool
                             self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
@@ -192,6 +343,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                             }
                             else {
                                 
+                                NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
                                 [self.solverTask setArguments:@[[[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"]]];
                                 
                                 [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
@@ -206,6 +358,10 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                             NSLog(@"No output from wcsinfo");
                                         }
                                         else{
+                                            
+                                            // create a solution object
+                                            CASPlateSolveSolution* solution = [CASPlateSolveSolution new];
+                                            solution.wcsinfo = output;
                                             
                                             // get annotations by running plot-constellations in json mode
                                             self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
@@ -229,9 +385,19 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                                             complete([self errorWithCode:8 reason:@"Couldn't read annotation data"],nil);
                                                         }
                                                         else {
+                                                            
                                                             // check status=solved
-                                                            NSArray* annotations = [[report objectForKey:@"annotations"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type == 'ngc'"]];
-                                                            complete(nil,@{@"annotations":annotations,@"wcs":output,@"image":solvedImagePath});
+                                                            solution.annotations = [report objectForKey:@"annotations"];
+                                                            
+                                                            NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:solution];
+                                                            if (solutionData){
+                                                                NSString* solutionDataPath = [self.cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName];
+                                                                [solutionData writeToFile:solutionDataPath options:0 error:nil];
+                                                            }
+                                                            
+                                                            NSString* solvedImagePath = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
+                                                            
+                                                            complete(nil,@{@"solution":solution,@"image":solvedImagePath});
                                                         }
                                                     }
                                                 }];

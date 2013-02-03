@@ -117,6 +117,7 @@
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL medianFilter;
 @property (nonatomic,assign) BOOL preferCorrected;
+@property (nonatomic,assign) BOOL showPlateSolution;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
@@ -156,7 +157,8 @@
     [super windowDidLoad];
     
     self.preferCorrected = YES;
-    
+    self.showPlateSolution = YES;
+
     self.colourAdjustments = [[CASColourAdjustments alloc] init];
     
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
@@ -472,6 +474,14 @@
     }
 }
 
+- (void)setShowPlateSolution:(BOOL)showPlateSolution
+{
+    if (_showPlateSolution != showPlateSolution){
+        _showPlateSolution = showPlateSolution;
+        [self _resetAndRedisplayCurrentExposure];
+    }
+}
+
 - (NSInteger)debayerMode
 {
     return self.imageDebayer.mode;
@@ -623,6 +633,9 @@
         return;
     }
     
+    // get the current exposure (need an accessor for this)
+    CASCCDExposure* parentExposure = exposure;
+
     // prefer corrected exposure (and similarly for debayered)
     if (self.preferCorrected){
         CASCCDExposure* corrected = exposure.correctedExposure;
@@ -702,7 +715,16 @@
     
     // check image view is actually visible
     if (!self.imageView.isHidden){
+        
         self.imageView.currentExposure = exposure;
+        
+        // optionally show the solution (note; using the *parent* exposure)
+        if (self.showPlateSolution){
+            self.imageView.plateSolveSolution = [[CASPlateSolver plateSolverWithIdentifier:nil] cachedSolutionForExposure:parentExposure];
+        }
+        else {
+            self.imageView.plateSolveSolution = nil;
+        }
     }
 }
 
@@ -1165,6 +1187,11 @@
     self.preferCorrected = !self.preferCorrected;
 }
 
+- (IBAction)toggleShowPlateSolution:(id)sender
+{
+    self.showPlateSolution = !self.showPlateSolution;
+}
+
 - (IBAction)applyDebayer:(NSMenuItem*)sender
 {
     switch (sender.tag) {
@@ -1363,7 +1390,7 @@
                         [NSApp presentError:error];
                     }
                     else {
-                        NSLog(@"result: %@",results);
+                        [self _resetAndRedisplayCurrentExposure];
                     }
                     self.plateSolver = nil;
                 });
@@ -1469,6 +1496,10 @@
             
         case 10013:
             item.state = self.preferCorrected;
+            break;
+
+        case 10014:
+            item.state = self.showPlateSolution;
             break;
 
         case 10020:

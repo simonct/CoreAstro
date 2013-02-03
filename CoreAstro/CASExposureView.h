@@ -12,6 +12,7 @@
 @class CASImageProcessor;
 @class CASExposureView;
 @class CASGuideAlgorithm;
+@class CASPlateSolveSolution;
 
 @protocol CASExposureViewDelegate <NSObject>
 - (void)selectionRectChanged:(CASExposureView*)view;
@@ -41,6 +42,7 @@ typedef enum {
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
 @property (nonatomic,assign) CGRect selectionRect;
+@property (nonatomic,strong) CASPlateSolveSolution* plateSolveSolution;
 @end
 
 extern const CGPoint kCASImageViewInvalidStarLocation;

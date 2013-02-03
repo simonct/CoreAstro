@@ -113,6 +113,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 @end
 
+#pragma mark - Plate solution annotations
+
+@interface CASPlateSolvedObject (Drawing)
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer;
+@end
+
 #pragma mark - Exposure view
 
 @interface CASExposureView ()
@@ -138,6 +144,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     NSSize _draggingSelectionOffset;
     CASTaggedLayer* _dragHandleLayer;
     CALayer* _imageOverlayLayer;
+    CALayer* _annotationsLayer;
 }
 
 - (void)awakeFromNib
@@ -841,6 +848,35 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
+{
+    if (_plateSolveSolution != plateSolveSolution){
+        
+        _plateSolveSolution = plateSolveSolution;
+        
+        for (CALayer* layer in [[self.annotationsLayer sublayers] copy]){
+            [layer removeFromSuperlayer];
+        }
+        
+        for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
+            if (object.enabled){
+                [object createLayerInLayer:self.annotationsLayer];
+            }
+        }
+        
+        // flip y
+        for (CALayer* sublayer in [self.annotationsLayer sublayers]){
+            CGPoint p = sublayer.position;
+            p.y = self.annotationsLayer.bounds.size.height - p.y;
+            sublayer.position = p;
+//            if ([sublayer isKindOfClass:[CATextLayer class]]){
+//                CATextLayer* textLayer = (CATextLayer*)sublayer;
+//                textLayer.font = (__bridge CFTypeRef)(self.annotationsFont);
+//            }
+        }
+    }
+}
+
 #pragma mark - Layer factories
 
 - (CALayer*)imageOverlayLayer
@@ -852,6 +888,17 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         [self.layer addSublayer:_imageOverlayLayer];
     }
     return _imageOverlayLayer;
+}
+
+- (CALayer*)annotationsLayer
+{
+    if (!_annotationsLayer){
+        _annotationsLayer = [CALayer layer];
+        _annotationsLayer.bounds = CGRectMake(0, 0, self.image.extent.size.width, self.image.extent.size.height);
+        _annotationsLayer.position = CGPointMake(self.image.extent.size.width/2, self.image.extent.size.height/2);
+        [self.imageOverlayLayer addSublayer:_annotationsLayer];
+    }
+    return _annotationsLayer;
 }
 
 - (CALayer*)circularRegionLayerWithPosition:(CGPoint)position radius:(CGFloat)radius colour:(CGColorRef)colour
@@ -999,6 +1046,86 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CFBridgingRelease(colour);
     
     return circle;
+}
+
+@end
+
+@implementation CASPlateSolvedObject (Drawing)
+
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
+{
+    CALayer* layer = [CALayer layer];
+    
+    CGColorRef colour = nil;
+    
+    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
+    if (archivedColourData){
+        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
+        if (archivedColour){
+            CGFloat red, green, blue, alpha;
+            @try {
+                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
+                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** %@",exception);
+            }
+        }
+    }
+    
+    if (!colour){
+        colour = CGColorCreateGenericRGB(1,1,0,1);
+    }
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.cornerRadius = radius;
+    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+    layer.position = position;
+    layer.masksToBounds = NO;
+    
+    [annotationLayer addSublayer:layer];
+    
+    if (annotation){
+        
+        CATextLayer* text = [CATextLayer layer];
+        text.string = annotation;
+        const CGFloat fontSize = 24;
+        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
+        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
+        text.font = (__bridge CFTypeRef)(font);
+        text.fontSize = fontSize;
+        text.bounds = CGRectMake(0, 0, size.width, size.height);
+        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
+        text.alignmentMode = @"center";
+        text.foregroundColor = colour;
+        [annotationLayer addSublayer:text];
+        
+        // want the inverse of the text bounding box as a clip mask for the circle layer
+        CAShapeLayer* shape = [CAShapeLayer layer];
+        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
+        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
+        CGPathAddRect(mpath, NULL, text.frame);
+        shape.path = mpath;
+        shape.fillRule = kCAFillRuleEvenOdd;
+        layer.mask = shape;
+        
+        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 10, CGRectGetMidY(layer.frame) + size.height/2);
+    }
+    
+    
+    CFBridgingRelease(colour);
+    
+    return layer;
+}
+
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer
+{
+    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
+    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
+    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+    
+    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
 }
 
 @end
