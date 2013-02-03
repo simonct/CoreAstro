@@ -14,6 +14,7 @@
 #import "CASProgressHUDView.h"
 #import "CASStarInfoHUDView.h"
 #import "CASHistogramHUDView.h"
+#import "CASPlateSolutionHUDView.h"
 
 #import <CoreAstro/CoreAstro.h>
 #import <QuartzCore/QuartzCore.h>
@@ -119,6 +120,86 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (CALayer*)createLayerInLayer:(CALayer*)annotationLayer;
 @end
 
+@implementation CASPlateSolvedObject (Drawing)
+
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
+{
+    CALayer* layer = [CALayer layer];
+    
+    CGColorRef colour = nil;
+    
+    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
+    if (archivedColourData){
+        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
+        if (archivedColour){
+            CGFloat red, green, blue, alpha;
+            @try {
+                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
+                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** %@",exception);
+            }
+        }
+    }
+    
+    if (!colour){
+        colour = CGColorCreateGenericRGB(1,1,0,1);
+    }
+    
+    layer.borderColor = colour;
+    layer.borderWidth = 2.5;
+    layer.cornerRadius = radius;
+    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+    layer.position = position;
+    layer.masksToBounds = NO;
+    
+    [annotationLayer addSublayer:layer];
+    
+    if (annotation){
+        
+        CATextLayer* text = [CATextLayer layer];
+        text.string = annotation;
+        const CGFloat fontSize = 24;
+        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
+        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
+        text.font = (__bridge CFTypeRef)(font);
+        text.fontSize = fontSize;
+        text.bounds = CGRectMake(0, 0, size.width, size.height);
+        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
+        text.alignmentMode = @"center";
+        text.foregroundColor = colour;
+        [annotationLayer addSublayer:text];
+        
+        // want the inverse of the text bounding box as a clip mask for the circle layer
+        CAShapeLayer* shape = [CAShapeLayer layer];
+        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
+        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
+        CGPathAddRect(mpath, NULL, text.frame);
+        shape.path = mpath;
+        shape.fillRule = kCAFillRuleEvenOdd;
+        layer.mask = shape;
+        
+        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 10, CGRectGetMidY(layer.frame) + size.height/2);
+    }
+    
+    
+    CFBridgingRelease(colour);
+    
+    return layer;
+}
+
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer
+{
+    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
+    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
+    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+    
+    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
+}
+
+@end
+
 #pragma mark - Exposure view
 
 @interface CASExposureView ()
@@ -134,6 +215,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,strong) CASProgressHUDView* progressView;
 @property (nonatomic,strong) CASStarInfoHUDView* starInfoView;
 @property (nonatomic,strong) CASExposureInfoView* exposureInfoView;
+@property (nonatomic,strong) CASPlateSolutionHUDView* plateSolutionView;
 @property (nonatomic,strong) NSArray* huds;
 @end
 
@@ -146,6 +228,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CALayer* _imageOverlayLayer;
     CALayer* _annotationsLayer;
 }
+
+#pragma mark - Object Lifecycle
 
 - (void)awakeFromNib
 {
@@ -163,7 +247,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
     self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
     
-    self.huds = @[self.exposureInfoView,self.histogramView,self.starInfoView,self.progressView];
+    self.plateSolutionView = [CASPlateSolutionHUDView loadFromNib];
+    
+    self.huds = @[self.exposureInfoView,self.histogramView,self.starInfoView,self.progressView,self.plateSolutionView];
     
     for (NSView* hud in self.huds){
         hud.hidden = YES;
@@ -172,64 +258,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
-// todo; move hud layout into an image view controller
-- (NSView*)hudContainerView
-{
-    return self.containerView;
-}
-
-- (void)layoutHuds
-{
-    const CGFloat kTopMargin = 10;
-    const CGFloat kLeftMargin = 10;
-    const CGFloat kVerticalSpace = 10;
-    const CGFloat kHUDWidth = 160;
-    
-    CGFloat top = kTopMargin;
-    for (NSView* hud in self.huds){
-        if (!hud.isHidden){
-            hud.frame = NSMakeRect(self.hudContainerView.bounds.size.width - kHUDWidth - kLeftMargin,
-                                   self.hudContainerView.bounds.size.height - hud.frame.size.height - top,
-                                   kHUDWidth,
-                                   hud.frame.size.height);
-            top += kVerticalSpace + hud.frame.size.height;
-        }
-    }
-}
-
-- (void)setFrame:(NSRect)aRect
-{
-    [super setFrame:aRect];
-    
-    [self layoutHuds];
-}
-
-- (CGPoint)convertViewPointToImagePoint:(CGPoint)point
-{
-    // assuming there's a 1-to-1 mapping between the view and image co-ords
-    return point;
-}
-
-- (void)setShowProgress:(BOOL)showProgress
-{
-    if (showProgress != _showProgress){
-        _showProgress = showProgress;
-        self.progressView.hidden = !_showProgress;
-        [self layoutHuds];
-    }
-}
-
-- (CGFloat)progress
-{
-    return self.progressView.progress;
-}
-
-- (void)setProgress:(CGFloat)progress
-{
-    const NSInteger remainder = self.progressInterval - (progress*self.progressInterval);
-    NSString* value = [NSString stringWithFormat:@"%ld secs",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
-    [self.progressView setProgress:progress label:value];
-}
+#pragma mark - Responder
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
@@ -282,7 +311,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     _dragHandleLayer = nil;
     _draggingSelection = NO;
-//    [super mouseUp:theEvent]; // get another IKImageView crash in here - see if we can do without it...
+    //    [super mouseUp:theEvent]; // get another IKImageView crash in here - see if we can do without it...
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
@@ -332,8 +361,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     p = [self convertViewPointToImagePoint:p];
-//    NSLog(@"mouseMoved: %@",NSStringFromPoint(p));
-
+    //    NSLog(@"mouseMoved: %@",NSStringFromPoint(p));
+    
     if (self.image){
         // check point in rect
         if (NSPointInRect(p, CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)))){
@@ -359,6 +388,21 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.showSelection = YES;
         self.selectionRect = CGRectMake(0, 0, CGImageGetWidth(self.CGImage),CGImageGetHeight(self.CGImage));
     }
+}
+
+#pragma mark - Drawing
+
+- (void)setFrame:(NSRect)aRect
+{
+    [super setFrame:aRect];
+    
+    [self layoutHuds];
+}
+
+- (CGPoint)convertViewPointToImagePoint:(CGPoint)point
+{
+    // assuming there's a 1-to-1 mapping between the view and image co-ords
+    return point;
 }
 
 - (void)updateHistogram
@@ -580,25 +624,16 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 #pragma mark - Properties
 
-- (void)setShowStarProfile:(BOOL)showStarProfile
+- (CGFloat)progress
 {
-    if (showStarProfile != _showStarProfile){
-        _showStarProfile = showStarProfile;
-        if (_showStarProfile){
-            [self updateStarProfile];
-        }
-        self.starInfoView.hidden = !showStarProfile;
-        [self layoutHuds];
-    }
+    return self.progressView.progress;
 }
 
-- (void)setShowImageStats:(BOOL)showImageStats
+- (void)setProgress:(CGFloat)progress
 {
-    if (showImageStats != _showImageStats){
-        _showImageStats = showImageStats;
-        self.exposureInfoView.hidden = !showImageStats;
-        [self layoutHuds];
-    }
+    const NSInteger remainder = self.progressInterval - (progress*self.progressInterval);
+    NSString* value = [NSString stringWithFormat:@"%ld secs",remainder]; // todo; nicer formatting e.g. 1m 12s remaining
+    [self.progressView setProgress:progress label:value];
 }
 
 - (CGRect)selectionRect
@@ -627,6 +662,63 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+#pragma mark - HUDs
+
+// todo; move hud layout into an image view controller
+- (NSView*)hudContainerView
+{
+    return self.containerView;
+}
+
+- (void)layoutHuds
+{
+    const CGFloat kTopMargin = 10;
+    const CGFloat kLeftMargin = 10;
+    const CGFloat kVerticalSpace = 10;
+    const CGFloat kHUDWidth = 160;
+    
+    CGFloat top = kTopMargin;
+    for (NSView* hud in self.huds){
+        if (!hud.isHidden){
+            hud.frame = NSMakeRect(self.hudContainerView.bounds.size.width - kHUDWidth - kLeftMargin,
+                                   self.hudContainerView.bounds.size.height - hud.frame.size.height - top,
+                                   kHUDWidth,
+                                   hud.frame.size.height);
+            top += kVerticalSpace + hud.frame.size.height;
+        }
+    }
+}
+
+- (void)setShowProgress:(BOOL)showProgress
+{
+    if (showProgress != _showProgress){
+        _showProgress = showProgress;
+        self.progressView.hidden = !_showProgress;
+        [self layoutHuds];
+    }
+}
+
+- (void)setShowStarProfile:(BOOL)showStarProfile
+{
+    if (showStarProfile != _showStarProfile){
+        _showStarProfile = showStarProfile;
+        if (_showStarProfile){
+            [self updateStarProfile];
+        }
+        self.starInfoView.hidden = !showStarProfile;
+        [self layoutHuds];
+    }
+}
+
+- (void)setShowImageStats:(BOOL)showImageStats
+{
+    if (showImageStats != _showImageStats){
+        _showImageStats = showImageStats;
+        self.exposureInfoView.hidden = !showImageStats;
+        [self layoutHuds];
+    }
+}
+
 - (void)setShowHistogram:(BOOL)showHistogram
 {
     if (_showHistogram != showHistogram){
@@ -639,6 +731,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+#pragma mark - Display Controls
+
 - (void)setScaleSubframe:(BOOL)scaleSubframe
 {
     if (_scaleSubframe != scaleSubframe){
@@ -646,6 +740,68 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         self.selectionLayer.hidden = _scaleSubframe; // hide the selection in scale mode
         [self displayExposure];
         [self zoomImageToFit:nil]; // todo; return to zoom level before entering scale subframe mode
+    }
+}
+
+- (void)setShowReticle:(BOOL)showReticle
+{
+    _showReticle = showReticle;
+    
+    if (_showReticle){
+        self.reticleLayer = [self createReticleLayer2];
+    }
+    else {
+        self.reticleLayer = nil;
+    }
+}
+
+- (BOOL)showSelection
+{
+    return _showSelection && !self.displayingScaledSubframe;
+}
+
+- (void)setShowSelection:(BOOL)showSelection
+{
+    _showSelection = showSelection;
+    
+    if (_showSelection){
+        if (!self.selectionLayer){
+            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.CGImage)/2, CGImageGetHeight(self.CGImage)/2) width:250 height:250 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
+        }
+        [self.imageOverlayLayer addSublayer:self.selectionLayer];
+        self.selectionRect = self.selectionLayer.frame;
+    }
+    else {
+        [self.selectionLayer removeFromSuperlayer];
+    }
+    
+    [self updateStatistics];
+}
+
+#pragma mark - Display Objects
+
+- (void)setImage:(CGImageRef)image
+{
+    self.searchLayer = nil;
+    self.reticleLayer = nil;
+    
+    [super setCGImage:image];
+    
+    self.starLocation = kCASImageViewInvalidStarLocation;
+    
+    if (self.showReticle){
+        self.reticleLayer = [self createReticleLayer2];
+    }
+    
+    // zoom to fit on the first image
+    if (!_displayedFirstImage){
+        _displayedFirstImage = YES;
+        [self zoomImageToFit:nil];
+    }
+    
+    // ensure the huds remains at the front.
+    for (NSView* hud in self.huds){
+        [self.hudContainerView addSubview:hud positioned:NSWindowAbove relativeTo:nil];
     }
 }
 
@@ -674,30 +830,40 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self layoutHuds];
 }
 
-- (void)setImage:(CGImageRef)image
+- (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
 {
-    self.searchLayer = nil;
-    self.reticleLayer = nil;
-    
-    [super setCGImage:image];
-    
-    self.starLocation = kCASImageViewInvalidStarLocation;
-    
-    if (self.showReticle){
-        self.reticleLayer = [self createReticleLayer2];
-    }
-
-    // zoom to fit on the first image
-    if (!_displayedFirstImage){
-        _displayedFirstImage = YES;
-        [self zoomImageToFit:nil];
-    }
-    
-    // ensure the huds remains at the front.
-    for (NSView* hud in self.huds){
-        [self.hudContainerView addSubview:hud positioned:NSWindowAbove relativeTo:nil];
+    if (_plateSolveSolution != plateSolveSolution){
+        
+        _plateSolveSolution = plateSolveSolution;
+        
+        for (CALayer* layer in [[self.annotationsLayer sublayers] copy]){
+            [layer removeFromSuperlayer];
+        }
+        
+        for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
+            if (object.enabled){
+                [object createLayerInLayer:self.annotationsLayer];
+            }
+        }
+        
+        // flip y
+        for (CALayer* sublayer in [self.annotationsLayer sublayers]){
+            CGPoint p = sublayer.position;
+            p.y = self.annotationsLayer.bounds.size.height - p.y;
+            sublayer.position = p;
+            //            if ([sublayer isKindOfClass:[CATextLayer class]]){
+            //                CATextLayer* textLayer = (CATextLayer*)sublayer;
+            //                textLayer.font = (__bridge CFTypeRef)(self.annotationsFont);
+            //            }
+        }
+        
+        self.plateSolutionView.solution = _plateSolveSolution;
+        self.plateSolutionView.hidden = (_plateSolveSolution == nil);
+        [self layoutHuds];
     }
 }
+
+#pragma mark - Guiding Display
 
 - (void)setStarLocation:(CGPoint)starLocation
 {
@@ -731,40 +897,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.searchLayer = [self circularRegionLayerWithPosition:self.starLocation radius:searchRadius colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(0,0,1,1)))];
 }
 
-- (void)setShowReticle:(BOOL)showReticle
-{
-    _showReticle = showReticle;
-    
-    if (_showReticle){
-        self.reticleLayer = [self createReticleLayer2];
-    }
-    else {
-        self.reticleLayer = nil;
-    }
-}
-
-- (BOOL)showSelection
-{
-   return _showSelection && !self.displayingScaledSubframe;
-}
-
-- (void)setShowSelection:(BOOL)showSelection
-{
-    _showSelection = showSelection;
-    
-    if (_showSelection){
-        if (!self.selectionLayer){
-            self.selectionLayer = [self selectionLayerWithPosition:CGPointMake(CGImageGetWidth(self.CGImage)/2, CGImageGetHeight(self.CGImage)/2) width:250 height:250 colour:(__bridge CGColorRef)(CFBridgingRelease(CGColorCreateGenericRGB(1,1,0,1)))];
-        }
-        [self.imageOverlayLayer addSublayer:self.selectionLayer];
-        self.selectionRect = self.selectionLayer.frame;
-    }
-    else {
-        [self.selectionLayer removeFromSuperlayer];
-    }
-    
-    [self updateStatistics];
-}
+#pragma mark - Layers
 
 - (void)setStarLayer:(CALayer *)starLayer
 {
@@ -844,35 +977,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _selectionLayer = selectionLayer;
         if (_selectionLayer){
             [self.imageOverlayLayer addSublayer:_selectionLayer];
-        }
-    }
-}
-
-- (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
-{
-    if (_plateSolveSolution != plateSolveSolution){
-        
-        _plateSolveSolution = plateSolveSolution;
-        
-        for (CALayer* layer in [[self.annotationsLayer sublayers] copy]){
-            [layer removeFromSuperlayer];
-        }
-        
-        for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
-            if (object.enabled){
-                [object createLayerInLayer:self.annotationsLayer];
-            }
-        }
-        
-        // flip y
-        for (CALayer* sublayer in [self.annotationsLayer sublayers]){
-            CGPoint p = sublayer.position;
-            p.y = self.annotationsLayer.bounds.size.height - p.y;
-            sublayer.position = p;
-//            if ([sublayer isKindOfClass:[CATextLayer class]]){
-//                CATextLayer* textLayer = (CATextLayer*)sublayer;
-//                textLayer.font = (__bridge CFTypeRef)(self.annotationsFont);
-//            }
         }
     }
 }
@@ -1046,86 +1150,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CFBridgingRelease(colour);
     
     return circle;
-}
-
-@end
-
-@implementation CASPlateSolvedObject (Drawing)
-
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
-{
-    CALayer* layer = [CALayer layer];
-    
-    CGColorRef colour = nil;
-    
-    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
-    if (archivedColourData){
-        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
-        if (archivedColour){
-            CGFloat red, green, blue, alpha;
-            @try {
-                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
-                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
-            }
-            @catch (NSException *exception) {
-                NSLog(@"*** %@",exception);
-            }
-        }
-    }
-    
-    if (!colour){
-        colour = CGColorCreateGenericRGB(1,1,0,1);
-    }
-    
-    layer.borderColor = colour;
-    layer.borderWidth = 2.5;
-    layer.cornerRadius = radius;
-    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
-    layer.position = position;
-    layer.masksToBounds = NO;
-    
-    [annotationLayer addSublayer:layer];
-    
-    if (annotation){
-        
-        CATextLayer* text = [CATextLayer layer];
-        text.string = annotation;
-        const CGFloat fontSize = 24;
-        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
-        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
-        text.font = (__bridge CFTypeRef)(font);
-        text.fontSize = fontSize;
-        text.bounds = CGRectMake(0, 0, size.width, size.height);
-        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
-        text.alignmentMode = @"center";
-        text.foregroundColor = colour;
-        [annotationLayer addSublayer:text];
-        
-        // want the inverse of the text bounding box as a clip mask for the circle layer
-        CAShapeLayer* shape = [CAShapeLayer layer];
-        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
-        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
-        CGPathAddRect(mpath, NULL, text.frame);
-        shape.path = mpath;
-        shape.fillRule = kCAFillRuleEvenOdd;
-        layer.mask = shape;
-        
-        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 10, CGRectGetMidY(layer.frame) + size.height/2);
-    }
-    
-    
-    CFBridgingRelease(colour);
-    
-    return layer;
-}
-
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer
-{
-    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
-    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
-    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
-    
-    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
 }
 
 @end
