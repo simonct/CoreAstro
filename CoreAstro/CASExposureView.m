@@ -142,11 +142,27 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             }
         }
     }
-    
     if (!colour){
         colour = CGColorCreateGenericRGB(1,1,0,1);
     }
     
+    NSFont* font = nil;
+    NSData* archivedFontData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsFont"];
+    if (archivedFontData){
+        @try {
+            font = [NSKeyedUnarchiver unarchiveObjectWithData:archivedFontData];
+            if (![font isKindOfClass:[NSFont class]]){
+                font = nil;
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"*** %@",exception);
+        }
+    }
+    if (!font){
+        font = [NSFont boldSystemFontOfSize:24];
+    }
+
     layer.borderColor = colour;
     layer.borderWidth = 2.5;
     layer.cornerRadius = radius;
@@ -160,11 +176,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         
         CATextLayer* text = [CATextLayer layer];
         text.string = annotation;
-        const CGFloat fontSize = 24;
-        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
         const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
         text.font = (__bridge CFTypeRef)(font);
-        text.fontSize = fontSize;
+        text.fontSize = font.pointSize;
         text.bounds = CGRectMake(0, 0, size.width, size.height);
         text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
         text.alignmentMode = @"center";
