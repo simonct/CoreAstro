@@ -47,5 +47,7 @@
 
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
+- (void)cancelExposure;
+
 @end
 

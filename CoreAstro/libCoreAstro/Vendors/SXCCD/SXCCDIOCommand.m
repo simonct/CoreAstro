@@ -273,6 +273,28 @@ static void sxExposePixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffse
     setup_data[USB_REQ_DATA + 13] = msec >> 24;
 }
 
+static void sxLatchPixelsWriteData(USHORT flags, USHORT camIndex, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin, UCHAR setup_data[18])
+{
+    setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
+    setup_data[USB_REQ         ] = SXUSB_READ_PIXELS;
+    setup_data[USB_REQ_VALUE_L ] = flags;
+    setup_data[USB_REQ_VALUE_H ] = flags >> 8;
+    setup_data[USB_REQ_INDEX_L ] = camIndex;
+    setup_data[USB_REQ_INDEX_H ] = 0;
+    setup_data[USB_REQ_LENGTH_L] = 10;
+    setup_data[USB_REQ_LENGTH_H] = 0;
+    setup_data[USB_REQ_DATA + 0] = xoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 1] = xoffset >> 8;
+    setup_data[USB_REQ_DATA + 2] = yoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 3] = yoffset >> 8;
+    setup_data[USB_REQ_DATA + 4] = width & 0xFF;
+    setup_data[USB_REQ_DATA + 5] = width >> 8;
+    setup_data[USB_REQ_DATA + 6] = height & 0xFF;
+    setup_data[USB_REQ_DATA + 7] = height >> 8;
+    setup_data[USB_REQ_DATA + 8] = xbin;
+    setup_data[USB_REQ_DATA + 9] = ybin;
+}
+
 static void sxReadPixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin,UCHAR setup_data[18])
 {
     setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
@@ -458,7 +480,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[22];
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+    
+    if (self.latchPixels){
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+    }
+    else {
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+    }
+    
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -505,7 +534,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originX = 2 * self.params.origin.x;
     const NSUInteger originY = self.params.origin.y / 2;
 
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    if (self.latchPixels){
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
+    }
+    else {
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    }
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }

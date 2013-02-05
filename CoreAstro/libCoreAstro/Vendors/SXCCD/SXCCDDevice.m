@@ -32,8 +32,11 @@
 
 @interface SXCCDDevice ()
 @property (nonatomic,assign) BOOL connected;
+@property (nonatomic,assign) BOOL shutterOpen;
 @property (nonatomic,strong) SXCCDProperties* sensor;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
+@property (nonatomic,strong) NSTimer* latchPixelsTimer;
+@property (nonatomic,copy) void (^exposureCompletion)(NSError*,CASCCDExposure*image);
 - (void)fetchTemperature;
 @end
 
@@ -287,6 +290,9 @@
     
     shutter.open = open;
     
+    // actually, should check the return value...
+    self.shutterOpen = open;
+
     [self.transport submit:shutter block:^(NSError* error){
         
         if (block){
@@ -299,6 +305,9 @@
     
     SXCCDIOExposeCommand* expose = nil;
     
+    // exposures over 5 seconds use external timing so that we can cancel them easily
+    const BOOL externalTiming = (exp.ms > 5000);
+
     if (self.isInterlaced){
         expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
     }
@@ -315,6 +324,9 @@
     expose.ms = exp.ms;
     expose.params = exp;
     
+    // externally timed exposures latch rather than read pixels delayed
+    expose.latchPixels = externalTiming;
+
     if (self.isInterlaced){
         expose.readPixels = NO; // always use an external timer for interlaced cameras
     }
@@ -325,14 +337,22 @@
     return expose;
 }
 
+- (void)_latchPixelsTimerFired:(NSTimer*)timer {
+    void (^block)() = [timer.userInfo objectForKey:@"block"];
+    if (block){
+        block();
+    }
+    self.latchPixelsTimer = nil;
+}
+
 - (void)exposeWithParams:(CASExposeParams)exp type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*image))block {
+    
+    // grab the completion block
+    self.exposureCompletion = block;
     
     // create an exposure command object
     SXCCDIOExposeCommand* expose = [self createExposureCommandWithParams:exp];
     
-    // record the exposure time
-    NSDate* time = [NSDate date];
-
     // prep the exposure temp array
     self.exposureTemperatures = [NSMutableArray arrayWithCapacity:100];
 
@@ -341,11 +361,14 @@
         [self.exposureTemperatures addObject:[NSNumber numberWithFloat:self.temperature]];
     }
     
-    // block to create the exposure object from the read pixels and call the completion block
+    // record the exposure start time
+    NSDate* time = [NSDate date];
+    
+    // helper block to create the exposure object from the exposure's pixels and then call the completion block
     void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
         
         // close the shutter
-        if (self.hasShutter){
+        if (self.shutterOpen){
             [self openShutter:NO block:nil];
         }
         
@@ -354,12 +377,13 @@
             exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:expose.params time:time];
         }
         
-        if (block){
-            block(error,exposure);
+        if (self.exposureCompletion){
+            self.exposureCompletion(error,exposure);
+            self.exposureCompletion = nil;
         }
     };
     
-    // block to issue the expose and read pixels commands
+    // helper block to issue the expose/latch and read pixels commands
     void (^exposePixels)() = ^{
         
         // kick things off by submitting the exposure command
@@ -376,20 +400,29 @@
                 }
                 else {
                     
+                    // schedule the read for the exposure end time unless we're in latch mode in which case we're
+                    // being externally timed and need to execute the command immediately
+                    NSDate* when = nil;
+                    if (!expose.latchPixels){
+                        when = [time dateByAddingTimeInterval:expose.params.ms/1000.0];
+                    }
+                    else {
+                        NSLog(@"Latching pixels now");
+                    }
+                    
+                    // todo; record the actual exposure time to account for inaccuracies in external timing
+
                     // build and submit a command to read pixels from the ccd
                     if (!self.isInterlaced){
                         
                         // with progressive cameras just read all the pixels in a single block from the pipe
                         SXCCDIOReadCommand* read = [[SXCCDIOReadCommand alloc] init];
                         read.params = expose.params;
-                        [self.transport submit:read when:[NSDate dateWithTimeIntervalSinceNow:expose.params.ms/1000.0] block:^(NSError* error){
+                        [self.transport submit:read when:when block:^(NSError* error){
                             exposureCompleted(error,[expose postProcessPixels:read.pixels]);
                         }];
                     }
                     else {
-                        
-                        // schedule the read for the exposure end time
-                        NSDate* when = [time dateByAddingTimeInterval:expose.params.ms/1000.0];
                         
                         // for interlaced cameras in binning mode read both fields together with no de-interlacing necessary...
                         if (exp.bin.width != 1 || exp.bin.height != 1){
@@ -427,23 +460,38 @@
         }];    
     };
     
-    // block to flush any accumulated charge before exposing if required then run the exposure
+    // helper block to optionally flush any accumulated charge before starting the exposure
     __block NSInteger flushCount = self.flushCount;
-    void (^__block flushComplete)(NSError*) = ^(NSError* error){
+    void (^__block __weak flushComplete)(NSError*) = ^(NSError* error){
         
         if (error){
             exposureCompleted(error,nil);
             flushComplete = nil;
         }
-        else if (flushCount-- > 0) {
+        else if (expose.latchPixels || flushCount-- > 0) {
             [self flush:flushComplete];
         }
         else {
-            exposePixels();
+            
+            // if we're externally timing then the exposure time starts with the flush and 
+            // we set a timer to fire at the appropriate time to latch and read the pixels
+            if (expose.latchPixels){
+                self.latchPixelsTimer = [NSTimer timerWithTimeInterval:exp.ms * 1000 // todo; relative to 'time' ?
+                                                                target:self
+                                                              selector:@selector(_latchPixelsTimerFired:)
+                                                              userInfo:@{@"block":[exposePixels copy]}
+                                                               repeats:NO];
+            }
+            else {
+                
+                // we're using internal timing so start exposing now
+                exposePixels();
+            }
             flushComplete = nil;
         }
     };
     
+    // helper block to open the shutter and then proceed either to flushing the chip or starting the exposure
     void (^ openShutter)() = ^(){
       
         [self openShutter:YES block:^(NSError *error) {
@@ -457,13 +505,25 @@
         }];
     };
     
-    // open the shutter if required...
-    if (self.hasShutter){
+    // start off by opening the shutter if required...
+    if (self.hasShutter && (type == kCASCCDExposureLightType || type == kCASCCDExposureFlatType)){
         openShutter();
     }
     else {
         // ...otherwise start the exposure process by optionally flushing the charge from the ccd
         flushComplete(nil);
+    }
+}
+
+- (void)cancelExposure {
+    
+    if (self.latchPixelsTimer){
+        [self.latchPixelsTimer invalidate];
+        self.latchPixelsTimer = nil;
+        if (self.exposureCompletion){
+            self.exposureCompletion(nil,nil); // need to indicate cancelled somehow to block ? nil, nil enough ?
+            self.exposureCompletion = nil;
+        }
     }
 }
 

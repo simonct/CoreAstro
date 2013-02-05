@@ -55,6 +55,7 @@
 @property (nonatomic,assign) NSInteger ms;
 @property (nonatomic,assign) CASExposeParams params;
 @property (nonatomic,assign) BOOL readPixels;
+@property (nonatomic,assign) BOOL latchPixels;
 @property (nonatomic,readonly) NSData* pixels;
 - (NSData*)postProcessPixels:(NSData*)pixels;
 @end
