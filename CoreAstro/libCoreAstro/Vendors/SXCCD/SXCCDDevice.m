@@ -305,9 +305,6 @@
     
     SXCCDIOExposeCommand* expose = nil;
     
-    // exposures over 5 seconds use external timing so that we can cancel them easily
-    const BOOL externalTiming = (exp.ms > 5000);
-
     if (self.isInterlaced){
         expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
     }
@@ -324,8 +321,8 @@
     expose.ms = exp.ms;
     expose.params = exp;
     
-    // externally timed exposures latch rather than read pixels delayed
-    expose.latchPixels = externalTiming;
+    // exposures over 5 seconds use external timing so that we can cancel them easily
+    expose.latchPixels = (exp.ms > 5000);
 
     if (self.isInterlaced){
         expose.readPixels = NO; // always use an external timer for interlaced cameras
@@ -406,9 +403,6 @@
                     if (!expose.latchPixels){
                         when = [time dateByAddingTimeInterval:expose.params.ms/1000.0];
                     }
-                    else {
-                        NSLog(@"Latching pixels now");
-                    }
                     
                     // todo; record the actual exposure time to account for inaccuracies in external timing
 
@@ -461,14 +455,14 @@
     };
     
     // helper block to optionally flush any accumulated charge before starting the exposure
-    __block NSInteger flushCount = self.flushCount;
-    void (^__block __weak flushComplete)(NSError*) = ^(NSError* error){
+    // if we're externally timing then set the flushCount to at least one to clear the ccd first
+    __block NSInteger flushCount = MAX(self.flushCount, expose.latchPixels ? 1 : 0);
+    void (^__block flushComplete)(NSError*) = ^(NSError* error){
         
         if (error){
             exposureCompleted(error,nil);
-            flushComplete = nil;
         }
-        else if (expose.latchPixels || flushCount-- > 0) {
+        else if (flushCount-- > 0) {
             [self flush:flushComplete];
         }
         else {
@@ -476,19 +470,20 @@
             // if we're externally timing then the exposure time starts with the flush and 
             // we set a timer to fire at the appropriate time to latch and read the pixels
             if (expose.latchPixels){
-                self.latchPixelsTimer = [NSTimer timerWithTimeInterval:exp.ms * 1000 // todo; relative to 'time' ?
-                                                                target:self
-                                                              selector:@selector(_latchPixelsTimerFired:)
-                                                              userInfo:@{@"block":[exposePixels copy]}
-                                                               repeats:NO];
+                const NSTimeInterval interval = exp.ms / 1000.0; // todo; relative to 'time' ?;
+                self.latchPixelsTimer = [NSTimer scheduledTimerWithTimeInterval:interval
+                                                                         target:self
+                                                                       selector:@selector(_latchPixelsTimerFired:)
+                                                                       userInfo:@{@"block":[exposePixels copy]}
+                                                                        repeats:NO];
             }
             else {
                 
                 // we're using internal timing so start exposing now
                 exposePixels();
             }
-            flushComplete = nil;
         }
+        flushComplete = nil;
     };
     
     // helper block to open the shutter and then proceed either to flushing the chip or starting the exposure

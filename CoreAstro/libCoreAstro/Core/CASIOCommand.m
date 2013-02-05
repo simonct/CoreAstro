@@ -46,6 +46,7 @@
 
 - (void)submit:(id<CASIOTransport>)transport block:(void (^)(NSError*))block {
     
+    //NSLog(@"submit: %@",self);
     NSError* error = [transport send:[self toDataRepresentation]];
     if (!error){
         const NSInteger readSize = [self readSize];

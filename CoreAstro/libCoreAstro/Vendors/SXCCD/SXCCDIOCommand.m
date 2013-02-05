@@ -468,7 +468,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer);
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer); // SXCCD_EXP_FLAGS_NOWIPE_FRAME
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -479,16 +479,23 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 @synthesize ms, params, readPixels, pixels = _pixels;
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[22];
     
     if (self.latchPixels){
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+        
+        NSLog(@"SXCCDIOExposeCommand latching");
+        
+        uint8_t buffer[18];
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        
+        NSLog(@"SXCCDIOExposeCommand exposing");
+
+        uint8_t buffer[22];
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
-    
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
 - (NSInteger) readSize { // have the read as a separate command ?
@@ -498,9 +505,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // only currently handling 16-bit bit might have to round so that 14 => 2
 }
 
-- (BOOL) allowsUnderrun {
-    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
-}
+//- (BOOL) allowsUnderrun {
+//    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
+//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = [self postProcessPixels:data];
@@ -535,10 +542,16 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originY = self.params.origin.y / 2;
 
     if (self.latchPixels){
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
+        
+        NSLog(@"SXCCDIOExposeCommandM25C latching");
+        
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,buffer);
     }
     else {
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+        
+        NSLog(@"SXCCDIOExposeCommandM25C exposing");
+
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     }
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
@@ -674,9 +687,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // round so that 14 => 2
 }
 
-- (BOOL) allowsUnderrun {
-    return YES;
-}
+//- (BOOL) allowsUnderrun {
+//    return YES;
+//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = data;
