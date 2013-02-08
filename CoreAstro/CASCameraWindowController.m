@@ -1356,14 +1356,13 @@
         NSLog(@"Already solving something");
         return;
     }
-    
-    const NSInteger count = [self.exposuresController.selectedObjects count];
-    if (count != 1){
+        
+    CASCCDExposure* exposure = self.currentExposure;
+    if (!exposure){
+        NSLog(@"No current exposure");
         return;
     }
-    
-    CASCCDExposure* exposure = [self.exposuresController.selectedObjects lastObject];
-    
+
     NSError* error;
     self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
     if (![self.plateSolver canSolveExposure:exposure error:&error]){
