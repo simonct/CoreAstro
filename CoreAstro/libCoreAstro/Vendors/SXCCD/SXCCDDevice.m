@@ -36,6 +36,7 @@
 @property (nonatomic,strong) SXCCDProperties* sensor;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
 @property (nonatomic,strong) NSTimer* latchPixelsTimer;
+@property (nonatomic,strong) NSDate* lastCompletionDate;
 @property (nonatomic,copy) void (^exposureCompletion)(NSError*,CASCCDExposure*image);
 - (void)fetchTemperature;
 @end
@@ -201,6 +202,10 @@
     return 5;
 }
 
+- (NSInteger)maximumFlushInterval {
+    return 3;
+}
+
 - (NSInteger)flushCount {
     const NSInteger flushCount = [[[self deviceParams] objectForKey:@"flush-count"] integerValue];
     // incorporate time since last exposure ?
@@ -334,13 +339,6 @@
     return expose;
 }
 
-- (void)_latchPixelsTimerFired:(NSTimer*)timer {
-    void (^block)() = [timer.userInfo objectForKey:@"block"];
-    if (block){
-        block();
-    }
-    self.latchPixelsTimer = nil;
-}
 
 - (void)exposeWithParams:(CASExposeParams)exp type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*image))block {
     
@@ -364,6 +362,9 @@
     // helper block to create the exposure object from the exposure's pixels and then call the completion block
     void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
         
+        // record the approximate end time of the last exposure
+        self.lastCompletionDate = [NSDate date];
+        
         // close the shutter
         if (self.shutterOpen){
             [self openShutter:NO block:nil];
@@ -381,10 +382,10 @@
     };
     
     // helper block to issue the expose/latch and read pixels commands
-    void (^exposePixels)() = ^{
+    void (^exposePixels)(NSDate* when) = ^(NSDate* when){
         
         // kick things off by submitting the exposure command
-        [self.transport submit:expose block:^(NSError* error){
+        [self.transport submit:expose when:when block:^(NSError* error){
             
             if (error) {
                 exposureCompleted(error,nil);
@@ -457,56 +458,55 @@
     // helper block to optionally flush any accumulated charge before starting the exposure
     // if we're externally timing then set the flushCount to at least one to clear the ccd first
     __block NSInteger flushCount = MAX(self.flushCount, expose.latchPixels ? 1 : 0);
-    void (^__block flushComplete)(NSError*) = ^(NSError* error){
+    
+    // always flush the camera if the last exposure was more than 3 seconds ago
+    if (!flushCount && [[NSDate date] timeIntervalSinceDate:self.lastCompletionDate] > self.maximumFlushInterval){
+        flushCount = 1;
+    }
+    
+    void (^__weak weakClearCharge)(NSError*) = nil;
+    void (^__block clearCharge)(NSError*) = ^(NSError* error){
         
         if (error){
             exposureCompleted(error,nil);
         }
         else if (flushCount-- > 0) {
-            [self flush:flushComplete];
+            [self flush:weakClearCharge];
         }
         else {
             
             // if we're externally timing then the exposure time starts with the flush and 
             // we set a timer to fire at the appropriate time to latch and read the pixels
             if (expose.latchPixels){
-                const NSTimeInterval interval = exp.ms / 1000.0; // todo; relative to 'time' ?;
-                self.latchPixelsTimer = [NSTimer scheduledTimerWithTimeInterval:interval
-                                                                         target:self
-                                                                       selector:@selector(_latchPixelsTimerFired:)
-                                                                       userInfo:@{@"block":[exposePixels copy]}
-                                                                        repeats:NO];
+                exposePixels([NSDate dateWithTimeIntervalSinceNow:(exp.ms / 1000.0)]);
             }
             else {
                 
                 // we're using internal timing so start exposing now
-                exposePixels();
+                exposePixels(nil);
             }
         }
-        flushComplete = nil;
     };
     
-    // helper block to open the shutter and then proceed either to flushing the chip or starting the exposure
-    void (^ openShutter)() = ^(){
-      
+    weakClearCharge = clearCharge;
+    
+    // start off by opening the shutter if required...
+    if (self.hasShutter && (type == kCASCCDExposureLightType || type == kCASCCDExposureFlatType)){
+
         [self openShutter:YES block:^(NSError *error) {
             
             if (error){
                 exposureCompleted(error,nil);
             }
             else {
-                flushComplete(nil);
+                clearCharge(nil);
             }
         }];
-    };
-    
-    // start off by opening the shutter if required...
-    if (self.hasShutter && (type == kCASCCDExposureLightType || type == kCASCCDExposureFlatType)){
-        openShutter();
     }
     else {
+        
         // ...otherwise start the exposure process by optionally flushing the charge from the ccd
-        flushComplete(nil);
+        clearCharge(nil);
     }
 }
 
