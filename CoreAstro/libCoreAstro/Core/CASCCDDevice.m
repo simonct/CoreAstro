@@ -60,5 +60,9 @@
     }
 }
 
+- (void)cancelExposure {
+    NSLog(@"-[CASCCDDevice cancelExposure] not implemented");
+}
+
 @end
 

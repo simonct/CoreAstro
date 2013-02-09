@@ -273,6 +273,28 @@ static void sxExposePixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffse
     setup_data[USB_REQ_DATA + 13] = msec >> 24;
 }
 
+static void sxLatchPixelsWriteData(USHORT flags, USHORT camIndex, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin, UCHAR setup_data[18])
+{
+    setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
+    setup_data[USB_REQ         ] = SXUSB_READ_PIXELS;
+    setup_data[USB_REQ_VALUE_L ] = flags;
+    setup_data[USB_REQ_VALUE_H ] = flags >> 8;
+    setup_data[USB_REQ_INDEX_L ] = camIndex;
+    setup_data[USB_REQ_INDEX_H ] = 0;
+    setup_data[USB_REQ_LENGTH_L] = 10;
+    setup_data[USB_REQ_LENGTH_H] = 0;
+    setup_data[USB_REQ_DATA + 0] = xoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 1] = xoffset >> 8;
+    setup_data[USB_REQ_DATA + 2] = yoffset & 0xFF;
+    setup_data[USB_REQ_DATA + 3] = yoffset >> 8;
+    setup_data[USB_REQ_DATA + 4] = width & 0xFF;
+    setup_data[USB_REQ_DATA + 5] = width >> 8;
+    setup_data[USB_REQ_DATA + 6] = height & 0xFF;
+    setup_data[USB_REQ_DATA + 7] = height >> 8;
+    setup_data[USB_REQ_DATA + 8] = xbin;
+    setup_data[USB_REQ_DATA + 9] = ybin;
+}
+
 static void sxReadPixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin,UCHAR setup_data[18])
 {
     setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
@@ -446,7 +468,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer);
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer); // SXCCD_EXP_FLAGS_NOWIPE_FRAME
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -457,9 +479,23 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 @synthesize ms, params, readPixels, pixels = _pixels;
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[22];
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    
+    if (self.latchPixels){
+        
+        NSLog(@"SXCCDIOExposeCommand latching");
+        
+        uint8_t buffer[18];
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
+    else {
+        
+        NSLog(@"SXCCDIOExposeCommand exposing");
+
+        uint8_t buffer[22];
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
 }
 
 - (NSInteger) readSize { // have the read as a separate command ?
@@ -469,9 +505,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // only currently handling 16-bit bit might have to round so that 14 => 2
 }
 
-- (BOOL) allowsUnderrun {
-    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
-}
+//- (BOOL) allowsUnderrun {
+//    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
+//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = [self postProcessPixels:data];
@@ -505,7 +541,18 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originX = 2 * self.params.origin.x;
     const NSUInteger originY = self.params.origin.y / 2;
 
-    sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    if (self.latchPixels){
+        
+        NSLog(@"SXCCDIOExposeCommandM25C latching");
+        
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,buffer);
+    }
+    else {
+        
+        NSLog(@"SXCCDIOExposeCommandM25C exposing");
+
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+    }
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
@@ -640,9 +687,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // round so that 14 => 2
 }
 
-- (BOOL) allowsUnderrun {
-    return YES;
-}
+//- (BOOL) allowsUnderrun {
+//    return YES;
+//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = data;

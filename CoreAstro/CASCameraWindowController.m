@@ -324,12 +324,13 @@
                     self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
                     self.captureButton.action = @selector(capture:);
                     self.captureButton.enabled = YES;
+                    self.captureButton.keyEquivalent = [NSString stringWithFormat:@"%c",NSCarriageReturnCharacter];
                 }
                 else {
                     self.progressStatusText.stringValue = @"Capturing...";
                     self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
                     self.captureButton.action = @selector(cancelCapture:);
-                    self.captureButton.enabled = self.cameraController.waitingForNextCapture;
+                    self.captureButton.keyEquivalent = @"";
                 }
             }
         }
@@ -813,8 +814,10 @@
         else{
             
             // check it's the still the currently displayed camera before displaying the exposure
-            if (cameraController == self.cameraController){
-                self.currentExposure = exposure;
+            if (exposure){
+                if (cameraController == self.cameraController){
+                    self.currentExposure = exposure;
+                }
             }
             
             if (self.cameraController.capturing){
@@ -866,6 +869,8 @@
 
 - (IBAction)cancelCapture:(NSButton*)sender
 {
+    // todo; confirm !
+    
     self.captureButton.enabled = NO;
     [self.cameraController cancelCapture];
     self.imageView.showProgress = NO;

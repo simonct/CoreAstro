@@ -231,33 +231,40 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }
         else {
             
-            if (self.movieExporter){
-                NSError* movieError = nil;
-                // todo; option to match histograms across exposures
-                if (![self.movieExporter addExposure:exposure error:&movieError]){
-                    self.movieExporter = nil;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [NSApp presentError:movieError];
+            // no exposure means it was cancelled
+            if (!exposure){
+                endCapture(nil,nil);
+            }
+            else {
+                
+                if (self.movieExporter){
+                    NSError* movieError = nil;
+                    // todo; option to match histograms across exposures
+                    if (![self.movieExporter addExposure:exposure error:&movieError]){
+                        self.movieExporter = nil;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [NSApp presentError:movieError];
+                        });
+                    }
+                }
+                
+                exposure.type = self.exposureType;
+                
+                if (!saveExposure && !_cancel){
+                    endCapture(error,exposure);
+                }
+                else{
+                    
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        
+                        [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                endCapture(saveError,exposure);
+                            });
+                        }];
                     });
                 }
-            }
-            
-            exposure.type = self.exposureType;
-            
-            if (!saveExposure && !_cancel){
-                endCapture(error,exposure);
-            }
-            else{
-                
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    
-                    [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            endCapture(saveError,exposure);
-                        });
-                    }];
-                });
             }
         }
     }];
@@ -283,6 +290,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     _cancel = YES;
     self.continuous = NO;
+    
+    [self.camera cancelExposure];
     
     if (_waitingForDevice){
         // ask the device to cancel the exposure and wait for it to complete to clear the capturing flag, don't save any resulting exposure

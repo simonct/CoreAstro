@@ -28,6 +28,7 @@
 
 @interface CASIOpendingCommand : NSObject
 @property (nonatomic,strong) NSBlockOperation* commandOp;
+@property (nonatomic,strong) CASIOCommand* command;
 @property (nonatomic,strong) NSDate* when;
 @property (nonatomic,strong) NSTimer* timer;
 @end
@@ -116,12 +117,14 @@
         // if when is in the future, enque in a pending list and start a timer
         CASIOpendingCommand* pending = [[CASIOpendingCommand alloc] init];
         pending.commandOp = commandOp;
+        pending.command = command;
         pending.when = when;
-        pending.timer = [NSTimer scheduledTimerWithTimeInterval:[when timeIntervalSinceDate:[NSDate date]]
-                                                          target:self
-                                                        selector:@selector(pendingTimerFired:)
-                                                        userInfo:[NSDictionary dictionaryWithObject:pending forKey:@"pending"]
-                                                         repeats:NO];
+        pending.timer = [NSTimer timerWithTimeInterval:[when timeIntervalSinceDate:[NSDate date]]
+                                                target:self
+                                              selector:@selector(pendingTimerFired:)
+                                              userInfo:[NSDictionary dictionaryWithObject:pending forKey:@"pending"]
+                                               repeats:NO];
+        [[NSRunLoop currentRunLoop] addTimer:pending.timer forMode:NSRunLoopCommonModes]; // todo; this timer will still not fire if the run loop is blocked; possibly need a dispatch timer on its own queue
         [self.pending addObject:pending];
     }
     else {
@@ -137,6 +140,21 @@
         
         // submit to the op queue
         [self.ioq addOperation:commandOp];
+    }
+}
+
+- (void)remove:(CASIOCommand*)command {
+    NSMutableArray* commands = [NSMutableArray arrayWithCapacity:5];
+    for (CASIOpendingCommand* pending in self.pending){
+        if (pending.command == command){
+            [commands addObject:pending];
+            [pending.commandOp cancel];
+            [pending.timer invalidate];
+        }
+    }
+    if ([commands count]){
+        NSLog(@"Removed %@",commands);
+        [self.pending removeObjectsInArray:commands];
     }
 }
 
