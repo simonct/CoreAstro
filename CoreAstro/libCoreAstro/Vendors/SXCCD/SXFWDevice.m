@@ -33,11 +33,6 @@
 @end
 
 @implementation SXFWIOCommand
-
-- (NSInteger) readSize {
-    return 2;
-}
-
 @end
 
 @interface SXFWIOGetFilterCountCommand : SXFWIOCommand
@@ -111,14 +106,36 @@
 
 @end
 
+@interface SXFWDeviceCallback : NSObject
+@property (nonatomic,copy) id block;
+- (void)invokeWithResult:(uint16_t)result error:(NSError*)error;
+@end
+@implementation SXFWDeviceCallback
+- (void)invokeWithResult:(uint16_t)result error:(NSError*)error {}
+@end
+
+@interface SXFWDeviceCountFilterCallback : SXFWDeviceCallback
+@end
+@implementation SXFWDeviceCountFilterCallback
+- (void)invokeWithResult:(uint16_t)result error:(NSError*)error {
+    if (self.block){
+        void (^callback)(NSError*,NSInteger) = self.block;
+        callback(error,result >> 8);
+    }
+}
+@end
+
 @interface SXFWDevice ()
+@property (nonatomic,assign) NSInteger filterCount;
 @end
 
 @implementation SXFWDevice {
     BOOL _connected;
-    NSInteger _filterCount;
     NSInteger _currentFilter;
+    NSMutableArray* _completionStack;
 }
+
+@synthesize currentFilter = _currentFilter;
 
 #pragma mark - Device
 
@@ -127,6 +144,7 @@
     self = [super init];
     if (self) {
         _currentFilter = NSNotFound;
+        _completionStack = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
 }
@@ -145,20 +163,23 @@
 
 - (void)_getCountUntilCalibrated {
     
-    [self getFilterCount:^(NSError* error, NSInteger count) {
+    if (!self.filterCount){
         
-        if (error){
-            _connected = NO;
-        }
-        else{
-            if (count){
-                _filterCount = count;
+        [self getFilterCount:^(NSError* error, NSInteger count) {
+            
+            if (error){
+                _connected = NO;
             }
-            else {
-                [self _getCountUntilCalibrated];
+            else{
+                if (count){
+                    self.filterCount = count;
+                }
+                else {
+                    [self _getCountUntilCalibrated];
+                }
             }
-        }
-    }];
+        }];
+    }
 }
 
 - (void)connect:(void (^)(NSError*))block {
@@ -176,10 +197,6 @@
 
 #pragma mark - Properties
 
-- (NSInteger) filterCount {
-    return _filterCount;
-}
-
 - (void)setCurrentFilter:(NSInteger)currentFilter {
     if (_currentFilter != currentFilter){
         _currentFilter = currentFilter;
@@ -195,10 +212,15 @@
     
     SXFWIOGetFilterCountCommand* getCount = [[SXFWIOGetFilterCountCommand alloc] init];
     
+    SXFWDeviceCountFilterCallback* callback = [[SXFWDeviceCountFilterCallback alloc] init];
+    callback.block = block;
+    [_completionStack addObject:callback];
+    
     [self.transport submit:getCount block:^(NSError* error){
         
-        if (block){
-            block(error,getCount.count);
+        if (error){
+            block(error,0);
+            [_completionStack removeObject:callback];
         }
     }];
 }
@@ -227,6 +249,26 @@
             block(error);
         }
     }];
+}
+
+#pragma mark HID Transport
+
+- (void)receivedInputReport:(NSData*)data {
+    
+    NSLog(@"receivedInputReport: %@",data);
+    
+    uint16_t result;
+    if ([data length] == sizeof(result)){
+        [data getBytes:&result length:sizeof(result)];
+        SXFWDeviceCallback* callback = [_completionStack lastObject];
+        if (callback){
+            [callback invokeWithResult:result error:nil];
+            [_completionStack removeLastObject];
+        }
+    }
+    else {
+        NSLog(@"Got input report of %ld bytes",[data length]);
+    }
 }
 
 @end
