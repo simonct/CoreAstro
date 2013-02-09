@@ -52,7 +52,9 @@
     if ([floatPixels mutableBytes]){
         memcpy([floatPixels mutableBytes], [self.floatPixels bytes], [self.floatPixels length]);
         result = [CASCCDExposure exposureWithFloatPixels:floatPixels camera:nil params:self.params time:[NSDate date]];
-        result.meta = [[NSDictionary alloc] initWithDictionary:self.meta copyItems:YES]; // or serialize/deserialize
+        NSMutableDictionary* meta = [[NSMutableDictionary alloc] initWithDictionary:self.meta copyItems:YES]; // or serialize/deserialize
+        [meta setObject:CASCreateUUID() forKey:@"uuid"];
+        result.meta = [meta copy];
         result.rgba = self.rgba;
     }
     return result;
@@ -480,11 +482,7 @@
         [meta setObject:temp forKey:@"temperature"];
     }
 
-    CFUUIDRef uuid = CFUUIDCreate(NULL);
-    CFStringRef uuids = CFUUIDCreateString(NULL, uuid);
-    [meta setObject:(__bridge NSString*)uuids forKey:@"uuid"];
-    CFRelease(uuid);
-    CFRelease(uuids);
+    [meta setObject:CASCreateUUID() forKey:@"uuid"];
 
     const CASExposeParams check = CASExposeParamsFromNSString([meta objectForKey:@"exposure"]);;
     NSAssert(memcmp(&expParams, &check, sizeof check) == 0,@"CASExposeParams check failed");
