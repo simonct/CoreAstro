@@ -44,6 +44,8 @@
 
 - (CASCCDExposure*)removeBayerMatrix:(CASCCDExposure*)exposure;
 
+- (CASCCDExposure*)luminance:(CASCCDExposure*)exposure;
+
 - (NSArray*)histogram:(CASCCDExposure*)exposure;
 
 - (CGFloat)medianPixelValue:(CASCCDExposure*)exposure;

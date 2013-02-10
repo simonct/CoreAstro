@@ -294,6 +294,9 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 vImageScale_PlanarF(&destination,&source,nil,kvImageHighQualityResampling);
                 
                 // probably a better way of doing this with a convolution filter ?
+                
+                // cleanup
+                free(destination.data);
             }
             
             // set the exposure type (needed for saving it correctly)
@@ -301,6 +304,48 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         });
         
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    }
+    
+    return result;
+}
+
+- (CASCCDExposure*)luminance:(CASCCDExposure*)exposure
+{
+    if (!exposure.rgba){
+        return exposure;
+    }
+    
+    __block CASCCDExposure* result = [exposure copy];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
+        
+        typedef struct { float r,g,b,a; } rgba_pixel_t;
+        
+        const CASSize size = result.actualSize;
+        const NSInteger count = size.width * size.height;
+        
+        result.floatPixels = [NSMutableData dataWithCapacity:count * sizeof(float)];
+        
+        float* fp = (float*)[exposure.floatPixels bytes];
+        rgba_pixel_t* rgbp = (rgba_pixel_t*)[result.floatPixels bytes];
+
+        if (fp && rgbp){
+            
+            dispatch_apply(size.height, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t row) {
+                
+                float* fp1 = fp + row * size.width;
+                rgba_pixel_t* rgbp1 = rgbp + row * size.width;
+                for (NSInteger i = 0; i < size.width; i++, fp1++, rgbp1++){
+                    *fp1 = MIN(1.0,(0.2126*rgbp1->r) + (0.7152*rgbp1->g) + (0.0722*rgbp1->b));
+                }
+            });
+            
+//            for (NSInteger i = 0; i < count; i++, fp++, rgbp++){
+//                *fp = MIN(1.0,(0.2126*rgbp->r) + (0.7152*rgbp->g) + (0.0722*rgbp->b));
+//            }
+        }
     }
     
     return result;
