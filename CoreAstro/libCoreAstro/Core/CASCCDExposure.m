@@ -24,15 +24,12 @@
 //
 
 #import "CASCCDExposure.h"
+#import "CASCCDExposurePriv.h"
 #import "CASCCDExposureIO.h"
 #import "CASCCDDevice.h"
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 #import <QuartzCore/QuartzCore.h>
-
-@interface CASCCDExposure ()
-@property (nonatomic) BOOL rgba;
-@end
 
 @implementation CASCCDExposure {
     NSData* _pixels;

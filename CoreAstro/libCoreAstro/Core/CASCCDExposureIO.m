@@ -24,6 +24,8 @@
 //
 
 #import "CASCCDExposureIO.h"
+#import "CASCCDExposurePriv.h"
+
 #if CAS_ENABLE_FITS
 #import "fitsio.h"
 #endif
@@ -271,12 +273,18 @@
                 NSData* pixels = [NSData dataWithContentsOfURL:[self.url URLByAppendingPathComponent:samples.filename] options:NSDataReadingUncached error:&error];
                 if (pixels){
                     
-                    switch ([[exposure.meta valueForKey:@"format"] integerValue]) {
+                    const NSInteger format = [[exposure.meta valueForKey:@"format"] integerValue];
+                    switch (format) {
                         case kCASCCDExposureFormatFloat:
+                            exposure.rgba = NO;
+                            exposure.floatPixels = pixels;
+                            break;
                         case kCASCCDExposureFormatFloatRGBA:
+                            exposure.rgba = YES;
                             exposure.floatPixels = pixels;
                             break;
                         default:
+                            exposure.rgba = NO;
                             exposure.pixels = pixels;
                             break;
                     }
