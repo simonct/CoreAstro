@@ -622,26 +622,6 @@
     [self.browserView reloadData]; // ideally should have a per-item reload method
 }
 
-- (void)divideExposures:(NSArray*)exposures byFlat:(CASCCDExposure*)flat
-{
-    CASFlatDividerProcessor* processor = [[CASFlatDividerProcessor alloc] init];
-    processor.flat = flat;
-    [self _runBatchProcessor:processor withExposures:exposures];
-}
-
-- (void)subtractExposure:(CASCCDExposure*)base from:(NSArray*)exposures
-{
-    CASSubtractProcessor* processor = [[CASSubtractProcessor alloc] init];
-    processor.base = base;
-    if (base.type == kCASCCDExposureBiasType){
-        processor.mode = kCASSubtractProcessorBias;
-    }
-    else if (base.type == kCASCCDExposureDarkType){
-        processor.mode = kCASSubtractProcessorDark;
-    }
-    [self _runBatchProcessor:processor withExposures:exposures];
-}
-
 - (IBAction)quickStack:(id)sender
 {
     NSLog(@"%@",NSStringFromSelector(_cmd));
@@ -688,60 +668,5 @@
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
-
-#pragma mark - Drag & Drop
-
-//- (NSInteger)_indexOfItemAtPoint:(NSPoint)point
-//{
-//    return [self.browserView indexOfItemAtPoint:[self.browserView convertPoint:point fromView:nil]];
-//}
-//
-//- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-//{
-//    return [self _indexOfItemAtPoint:[sender draggingLocation]] == NSNotFound ? NSDragOperationNone : NSDragOperationCopy; // NSDragOperationLink ?
-//}
-//
-//- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
-//{
-//    const NSInteger index = [self _indexOfItemAtPoint:[sender draggingLocation]];
-//    if (index == NSNotFound){
-//        return NO;
-//    }
-//    
-//    CASCCDExposureWrapper* targetWrapper = (CASCCDExposureWrapper*)[self imageBrowser:self.browserView itemAtIndex:index];
-//    
-//    NSMutableArray* sourceExposures = [NSMutableArray arrayWithCapacity:[[[sender draggingPasteboard] pasteboardItems] count]];
-//    for (NSPasteboardItem* item in [[sender draggingPasteboard] pasteboardItems]){
-//        NSString* uuid = [item propertyListForType:(id)kUTTypeUTF8PlainText];
-//        if ([uuid isKindOfClass:[NSString class]]){
-//            NSArray* exposures = [self.exposures filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uuid == %@",uuid]];
-//            if ([exposures count]){
-//                [sourceExposures addObject:[exposures lastObject]];
-//            }
-//        }
-//    }
-//    
-//    if ([sourceExposures count]){
-//        
-//        // popover with buttons for available operations + cancel
-//        
-//        // dragging exposures onto a flat implements flat division
-//        if (targetWrapper.exposure.type == kCASCCDExposureFlatType){
-//            dispatch_async(dispatch_get_current_queue(), ^{
-//                [self divideExposures:sourceExposures byFlat:targetWrapper.exposure];
-//            });
-//            return YES;
-//        }
-//        if (targetWrapper.exposure.type == kCASCCDExposureBiasType || targetWrapper.exposure.type == kCASCCDExposureDarkType){
-//            dispatch_async(dispatch_get_current_queue(), ^{
-//                [self subtractExposure:targetWrapper.exposure from:sourceExposures];
-//            });
-//            return YES;
-//        }
-//
-//    }
-//    
-//    return NO;
-//}
 
 @end
