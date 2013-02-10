@@ -53,10 +53,16 @@
         NSString* label = nil;
         
         switch (self.exposure.type) {
-            case kCASCCDExposureLightType:
-                if (self.exposure.correctedExposure){
+            case kCASCCDExposureLightType: {
+                CASCCDExposure* exposure = self.exposure;
+                if (exposure.correctedExposure){
+                    exposure = exposure.correctedExposure;
                     label = @"CORRECTED"; // todo; tick image not text
                 }
+                if (exposure.debayeredExposure){
+                    label = @"DEBAYERED"; // todo; tick image not text
+                }
+            }
                 break;
             case kCASCCDExposureDarkType:
                 label = (self.exposure == self.project.masterDark) ? @"MASTER DARK" : @"DARK";
