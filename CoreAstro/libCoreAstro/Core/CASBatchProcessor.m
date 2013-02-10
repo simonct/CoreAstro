@@ -31,6 +31,8 @@
 #import <Accelerate/Accelerate.h>
 
 @interface CASBatchProcessor ()
+@property (nonatomic,strong) CASCCDExposure* first;
+@property (nonatomic,strong) CASCCDExposure* result;
 @property (nonatomic,strong) NSMutableArray* history;
 - (void)start;
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info;
@@ -40,7 +42,6 @@
 
 @interface CASCombineProcessor ()
 @property (nonatomic,assign) NSInteger count;
-@property (nonatomic,strong) CASCCDExposure* first;
 @end
 
 @implementation CASCombineProcessor { // todo; bench this against -averageSum, upgrage -averageSum to vDSP, combine the two models
@@ -107,7 +108,7 @@
 
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
     NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
-    [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":modeStr}} forKey:@"history"];
+    [mutableMeta setObject:@[@{@"stack":@{@"images":self.history,@"mode":modeStr}}] forKey:@"history"];
     if (self.mode == kCASCombineProcessorAverage){
         [mutableMeta setObject:[NSString stringWithFormat:@"Average of %@",self.first.displayName] forKey:@"displayName"];
     }else{
@@ -132,158 +133,9 @@
 
 @end
 
-@interface CASFlatDividerProcessor ()
-@property (nonatomic,readonly) BOOL save;
-@property (nonatomic,strong) CASCCDExposure* first;
-@property (nonatomic,strong) CASCCDExposure* result;
-@end
-
-@implementation CASFlatDividerProcessor {
+@implementation CASCCDCorrectionProcessor {
     CASCCDExposure* _normalisedFlat;
 }
-
-- (BOOL)save
-{
-    return YES;
-}
-
-- (void)start
-{
-    [super start];
-    
-    // create a normalised flat
-    _normalisedFlat = [self.imageProcessor normalise:self.flat];
-}
-
-- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
-{
-    if (!self.first){
-        self.first = exposure;
-    }
-    
-    const CASSize size1 = self.flat.actualSize;
-    const CASSize size2 = exposure.actualSize;
-    if (size1.width != size2.width || size1.height != size2.height){
-        NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
-        return;
-    }
-    
-    float* fbuf = (float*)[exposure.floatPixels bytes];
-    float* fnorm = (float*)[_normalisedFlat.floatPixels bytes];
-    if (!fbuf || !fnorm){
-        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
-        return;
-    }
-
-    NSMutableData* corrected = [NSMutableData dataWithLength:[self.flat.floatPixels length]];
-    if (!corrected){
-        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
-        return;
-    }
-
-    vDSP_vdiv(fnorm,1,fbuf,1,(float*)[corrected mutableBytes],1,[corrected length]/sizeof(float));
-    
-    self.result = [CASCCDExposure exposureWithFloatPixels:corrected
-                                                   camera:nil // exposure.camera
-                                                   params:exposure.params
-                                                     time:[NSDate date]];
-    
-    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
-    [mutableMeta setObject:@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}} forKey:@"history"];
-    [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
-    [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
-    self.result.meta = [mutableMeta copy];
-    
-    if (self.save){
-        
-        [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
-            
-            NSLog(@"Added flat corrected exposure at %@",url);
-        }];
-    }
-}
-
-- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
-{
-    block(nil,self.result);
-}
-
-- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
-{
-    return nil;
-}
-
-@end
-
-@interface CASSubtractProcessor ()
-@property (nonatomic,strong) CASCCDExposure* first;
-@end
-
-@implementation CASSubtractProcessor
-
-- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
-{
-    if (!self.first){
-        self.first = exposure;
-    }
-    
-    const CASSize size1 = self.base.actualSize;
-    const CASSize size2 = exposure.actualSize;
-    if (size1.width != size2.width || size1.height != size2.height){
-        NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
-        return;
-    }
-    
-    float* fbuf = (float*)[exposure.floatPixels bytes];
-    float* fbase = (float*)[self.base.floatPixels bytes];
-    if (!fbuf || !fbase){
-        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
-        return;
-    }
-    
-    NSMutableData* corrected = [NSMutableData dataWithLength:[self.base.floatPixels length]];
-    if (!corrected){
-        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
-        return;
-    }
-    
-    vDSP_vsub(fbase,1,fbuf,1,(float*)[corrected mutableBytes],1,[corrected length]/sizeof(float));
-    
-    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:corrected
-                                                              camera:nil // exposure.camera
-                                                              params:exposure.params
-                                                                time:[NSDate date]];
-    
-    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:result.meta];
-    if (self.mode == kCASSubtractProcessorDark){
-        [mutableMeta setObject:@{@"dark-correction":@{@"dark":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
-        [mutableMeta setObject:@"Dark Corrected" forKey:@"displayName"];
-    }
-    else {
-        [mutableMeta setObject:@{@"bias-correction":@{@"bias":self.base.uuid,@"light":exposure.uuid}} forKey:@"history"];
-        [mutableMeta setObject:@"Bias Corrected" forKey:@"displayName"];
-    }
-    result.meta = [mutableMeta copy];
-    
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
-        
-        NSLog(@"Added dark/bias corrected exposure at %@",url);
-    }];
-}
-
-- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
-{
-    block(nil,nil);
-}
-
-- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
-{
-    return nil;
-}
-
-@end
-
-@implementation CASCCDCorrectionProcessor
 
 - (BOOL)save
 {
@@ -320,17 +172,21 @@
 
 - (void)start
 {
+    [super start];
+    
     self.flat = self.project.masterFlat;
     self.dark = self.project.masterDark;
     self.bias = self.project.masterBias;
+
+    // create a normalised flat
+    if (self.flat){
+        _normalisedFlat = [self.imageProcessor normalise:self.flat];
+    }
 
     // subtract bias from flat
     if ([self.bias floatPixels]){
         [self _subtractExposure:self.bias from:self.flat];
     }
-    
-    // normalise
-    [super start];
 }
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
@@ -340,6 +196,52 @@
         return;
     }
     
+    if (!self.first){
+        self.first = exposure;
+    }
+    
+    const CASSize size1 = self.flat.actualSize;
+    const CASSize size2 = exposure.actualSize;
+    if (size1.width != size2.width || size1.height != size2.height){
+        NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    float* fbuf = (float*)[exposure.floatPixels bytes];
+    float* fnorm = (float*)[_normalisedFlat.floatPixels bytes];
+    if (!fbuf || !fnorm){
+        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    NSMutableData* corrected = [NSMutableData dataWithLength:[self.flat.floatPixels length]];
+    if (!corrected){
+        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+        return;
+    }
+    
+    vDSP_vdiv(fnorm,1,fbuf,1,(float*)[corrected mutableBytes],1,[corrected length]/sizeof(float));
+    
+    self.result = [CASCCDExposure exposureWithFloatPixels:corrected
+                                                   camera:nil // exposure.camera
+                                                   params:exposure.params
+                                                     time:[NSDate date]];
+    
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
+    [mutableMeta setObject:@[@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}}] forKey:@"history"];
+    [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
+    [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
+    [mutableMeta setObject:self.first.meta[@"time"] forKey:@"time"];
+    self.result.meta = [mutableMeta copy];
+    
+    if (self.save){
+        
+        [[CASCCDExposureLibrary sharedLibrary] addExposure:self.result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
+            
+            NSLog(@"Added flat corrected exposure at %@",url);
+        }];
+    }
+
     // subtract dark/bias from exposure
     [self _subtractDarkBiasFromExposure:exposure];
     
@@ -366,6 +268,16 @@
             self.result.io = nil;
         }
     }
+}
+
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
+{
+    block(nil,self.result);
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return nil;
 }
 
 @end
@@ -574,7 +486,7 @@
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
     [mutableMeta setObject:[result.meta objectForKey:@"time"] forKey:@"time"];
-    [mutableMeta setObject:@{@"stack":@{@"images":self.history,@"mode":@"average"}} forKey:@"history"];
+    [mutableMeta setObject:@[@{@"stack":@{@"images":self.history,@"mode":@"average"}}] forKey:@"history"];
     [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %ld",_count + 1] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
     
@@ -618,9 +530,25 @@
     exposure = [self exposureFromExposure:exposure];
 
     CASCCDExposure* debayered = [self.imageDebayer debayer:exposure];
-
-    NSString* modeStr;
+    
+    // fixup metadata
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:debayered.meta];
+
+    [mutableMeta setObject:[exposure.meta objectForKey:@"device"] forKey:@"device"];
+    
+    // get current history, append this value
+    NSMutableArray* history = nil;
+    id existingHistory = exposure.meta[@"history"];
+    if ([existingHistory isKindOfClass:[NSArray class]]){
+        history = [NSMutableArray arrayWithArray:existingHistory];
+    }
+    else {
+        history = [NSMutableArray arrayWithObject:existingHistory];
+    }
+    if (!history){
+        history = [NSMutableArray arrayWithCapacity:1];
+    }
+    NSString* modeStr;
     switch (self.mode) {
         case kCASImageDebayerRGGB:
             modeStr = @"RGGB";
@@ -635,7 +563,12 @@
             modeStr = @"GBRG";
             break;
     }
-    [mutableMeta setObject:@{@"debayer":@{@"images":exposure.uuid,@"mode":modeStr}} forKey:@"history"];
+    [history addObject:@{@"debayer":@{@"images":exposure.uuid,@"mode":modeStr}}];
+    [mutableMeta setObject:[history copy] forKey:@"history"];
+    
+    // preserve exposure time
+    [mutableMeta setObject:exposure.meta[@"time"] forKey:@"time"];
+
     debayered.meta = [mutableMeta copy];
 
     // cache the debayered exposure in the derived data folder of the original exposure
