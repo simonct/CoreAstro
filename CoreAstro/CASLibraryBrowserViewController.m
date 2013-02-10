@@ -431,7 +431,18 @@
         menu = [[NSMenu alloc] initWithTitle:@""];
         NSArray* processors = [CASBatchProcessor batchProcessorsForExposures:exposures];
         for (NSDictionary* processor in processors){
-            [menu addItem:createMenuItem(processor[@"name"],processor[@"id"],@selector(batchItemSelected:))];
+            if (processor[@"id"]){
+                [menu addItem:createMenuItem(processor[@"name"],processor[@"id"],@selector(batchItemSelected:))];
+            }
+            else if (processor[@"category"]){
+                NSMenuItem* item = createMenuItem(processor[@"category"],nil,nil);
+                NSMenu* submenu = [[NSMenu alloc] initWithTitle:processor[@"category"]];
+                for (NSDictionary* action in processor[@"actions"]){
+                    [submenu addItem:createMenuItem(action[@"name"],action[@"id"],@selector(batchItemSelected:))];
+                }
+                [item setSubmenu:submenu];
+                [menu addItem:item];
+            }
         }
     }
     
@@ -439,6 +450,9 @@
     
     // reveal in finder command
     if (menu){
+        if ([[menu itemArray] count]){
+            [menu addItem:[NSMenuItem separatorItem]];
+        }
         [menu addItem:createMenuItem(@"Reveal In Finder",exposures,@selector(revealInFinder:))];
     }
     

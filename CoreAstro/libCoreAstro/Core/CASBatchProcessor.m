@@ -27,6 +27,7 @@
 #import "CASImageProcessor.h"
 #import "CASCCDExposureLibrary.h"
 #import "CASCCDExposureIO.h"
+#import "CASImageDebayer.h"
 #import <Accelerate/Accelerate.h>
 
 @interface CASBatchProcessor ()
@@ -312,8 +313,7 @@
     if ([self.dark floatPixels]){
         [self _subtractExposure:self.dark from:exposure];
     }
-    
-    if ([self.bias floatPixels]){
+    else if ([self.bias floatPixels]){
         [self _subtractExposure:self.bias from:exposure];
     }
 }
@@ -324,8 +324,10 @@
     self.dark = self.project.masterDark;
     self.bias = self.project.masterBias;
 
-    // subtract dark/bias from flat
-    [self _subtractDarkBiasFromExposure:self.flat];
+    // subtract bias from flat
+    if ([self.bias floatPixels]){
+        [self _subtractExposure:self.bias from:self.flat];
+    }
     
     // normalise
     [super start];
@@ -417,10 +419,7 @@
     }
      
     // use a corrected exposure for stacking if one is available (similarly for debayered)
-    CASCCDExposure* corrected = exposure.correctedExposure;
-    if (corrected){
-        exposure = corrected;
-    }
+    exposure = [self exposureFromExposure:exposure];
     
     if (!self.first){
         
@@ -562,7 +561,7 @@
 {
     // divide by number of images in the stack
     if ([self.accumulate mutableBytes]){
-        if (_count > 1){
+        if (_count > 0){
             float fcount = _count + 1;
             vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
         }
@@ -596,11 +595,102 @@
 
 @end
 
+@interface CASCCDDebayerProcessor : CASBatchProcessor
+@property (nonatomic,assign) NSInteger mode;
+@property (nonatomic,strong) CASImageDebayer* imageDebayer;
+@end
+
+@implementation CASCCDDebayerProcessor
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
+    }
+    return self;
+}
+
+- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
+{
+    self.imageDebayer.mode = self.mode;
+    
+    exposure = [self exposureFromExposure:exposure];
+
+    CASCCDExposure* debayered = [self.imageDebayer debayer:exposure];
+
+    // cache the debayered exposure in the derived data folder of the original exposure
+    NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureDebayeredKey] path] stringByAppendingPathExtension:@"caExposure"];
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    if (io){
+        
+        debayered.io = io;
+        
+        NSError* error = nil;
+        if ([io writeExposure:debayered writePixels:YES error:&error]){
+            NSLog(@"Wrote debayered exposure to %@",path);
+        }
+        else {
+            NSLog(@"Error %@ writing corrected exposure to %@",error,path);
+        }
+        
+        debayered.io = nil;
+    }
+}
+
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
+{
+    block(nil,nil);
+}
+
+@end
+
+@interface CASCCDRevertProcessor : CASBatchProcessor
+@end
+
+@implementation CASCCDRevertProcessor
+
+- (CASCCDExposure*)exposureFromExposure:(CASCCDExposure*)exposure
+{
+    return exposure;
+}
+
+- (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
+{
+    BOOL isDirectory;
+    NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureDebayeredKey] path] stringByDeletingLastPathComponent];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory]){
+        if (isDirectory){
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+        }
+    }
+}
+
+- (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
+{
+    block(nil,nil);
+}
+
+@end
+
 @implementation CASBatchProcessor
 
 - (void)start
 {
     self.history = [NSMutableArray arrayWithCapacity:100];
+}
+
+- (CASCCDExposure*)exposureFromExposure:(CASCCDExposure*)exposure
+{
+    CASCCDExposure* corrected = exposure.correctedExposure;
+    if (corrected){
+        exposure = corrected;
+    }
+    CASCCDExposure* debayered = exposure.debayeredExposure;
+    if (debayered){
+        exposure = debayered;
+    }
+    return exposure;
 }
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
@@ -680,7 +770,13 @@
         @{@"id":@"correct",@"name":@"Correct"},
         @{@"id":@"stack.average",@"name":@"Quick Stack"},
         @{@"id":@"combine.sum",@"name":@"Combine Sum"},
-        @{@"id":@"combine.average",@"name":@"Combine Average"}
+        @{@"id":@"combine.average",@"name":@"Combine Average"},
+        @{@"category":@"Debayer",@"actions":@[
+                  @{@"id":@"debayer.RGGB",@"name":@"Debayer RGGB"},
+                  @{@"id":@"debayer.GRBG",@"name":@"Debayer GRBG"},
+                  @{@"id":@"debayer.BGGR",@"name":@"Debayer BGGR"},
+                  @{@"id":@"debayer.GBRG",@"name":@"Debayer GBRG"}]},
+        @{@"id":@"revert",@"name":@"Revert to Original"}
     ] : nil;
 }
 
@@ -707,6 +803,36 @@
         CASCCDCorrectionProcessor* stack = [[CASCCDCorrectionProcessor alloc] init];
         return stack;
     }
+
+    if ([identifier hasPrefix:@"debayer."]){
+        
+        CASCCDDebayerProcessor* debayer = [[CASCCDDebayerProcessor alloc] init];
+        
+        if ([identifier hasSuffix:@"RGGB"]){
+            debayer.mode = kCASImageDebayerRGGB;
+        }
+        else if ([identifier hasSuffix:@"GRBG"]){
+            debayer.mode = kCASImageDebayerGRBG;
+        }
+        else if ([identifier hasSuffix:@"BGGR"]){
+            debayer.mode = kCASImageDebayerBGGR;
+        }
+        else if ([identifier hasSuffix:@"GBRG"]){
+            debayer.mode = kCASImageDebayerGBRG;
+        }
+        else {
+            NSLog(@"Unrecognised debayer identifier %@",identifier);
+            debayer = nil;
+        }
+
+        return debayer;
+    }
+
+    if ([@"revert" isEqualToString:identifier]){
+        CASCCDRevertProcessor* revert = [[CASCCDRevertProcessor alloc] init];
+        return revert;
+    }
+    
 
     NSLog(@"*** No batch processor with identifier: %@",identifier);
     

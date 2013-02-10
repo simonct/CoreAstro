@@ -37,6 +37,8 @@
 - (void)processWithProvider:(void(^)(CASCCDExposure** exposure,NSDictionary** info))provider completion:(void(^)(NSError* error,CASCCDExposure*))completion;
 - (void)processWithExposures:(NSArray*)exposures completion:(void(^)(NSError* error,CASCCDExposure*))completion;
 
+- (CASCCDExposure*)exposureFromExposure:(CASCCDExposure*)exposure;
+
 + (NSArray*)batchProcessorsForExposures:(NSArray*)exposures;
 + (CASBatchProcessor*)batchProcessorsWithIdentifier:(id)identifier;
 
