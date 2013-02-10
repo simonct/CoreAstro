@@ -619,6 +619,25 @@
 
     CASCCDExposure* debayered = [self.imageDebayer debayer:exposure];
 
+    NSString* modeStr;
+    NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:debayered.meta];
+    switch (self.mode) {
+        case kCASImageDebayerRGGB:
+            modeStr = @"RGGB";
+            break;
+        case kCASImageDebayerGRBG:
+            modeStr = @"GRBG";
+            break;
+        case kCASImageDebayerBGGR:
+            modeStr = @"BGGR";
+            break;
+        case kCASImageDebayerGBRG:
+            modeStr = @"GBRG";
+            break;
+    }
+    [mutableMeta setObject:@{@"debayer":@{@"images":exposure.uuid,@"mode":modeStr}} forKey:@"history"];
+    debayered.meta = [mutableMeta copy];
+
     // cache the debayered exposure in the derived data folder of the original exposure
     NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureDebayeredKey] path] stringByAppendingPathExtension:@"caExposure"];
     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
@@ -641,6 +660,11 @@
 - (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
 {
     block(nil,nil);
+}
+
+- (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
+{
+    return nil;
 }
 
 @end
