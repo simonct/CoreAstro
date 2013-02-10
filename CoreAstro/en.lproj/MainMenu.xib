@@ -1362,15 +1362,6 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="360302842">
-									<reference key="NSMenu" ref="466310130"/>
-									<string key="NSTitle">Show Corrected</string>
-									<string key="NSKeyEquiv"/>
-									<int key="NSMnemonicLoc">2147483647</int>
-									<reference key="NSOnImage" ref="35465992"/>
-									<reference key="NSMixedImage" ref="502551668"/>
-									<int key="NSTag">10013</int>
-								</object>
 								<object class="NSMenuItem" id="801400410">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Show Plate Solution</string>
@@ -3065,14 +3056,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">togglePreferCorrected:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="360302842"/>
-					</object>
-					<int key="connectionID">863</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleShowPlateSolution:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="801400410"/>
@@ -3609,7 +3592,6 @@
 							<reference ref="1025705258"/>
 							<reference ref="56908968"/>
 							<reference ref="469922604"/>
-							<reference ref="360302842"/>
 							<reference ref="285326412"/>
 							<reference ref="801400410"/>
 						</array>
@@ -5410,11 +5392,6 @@
 						<reference key="parent" ref="37679894"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">861</int>
-						<reference key="object" ref="360302842"/>
-						<reference key="parent" ref="466310130"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">862</int>
 						<reference key="object" ref="285326412"/>
 						<reference key="parent" ref="466310130"/>
@@ -5756,7 +5733,6 @@
 				<string key="856.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="857.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="858.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="861.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="862.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="864.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>

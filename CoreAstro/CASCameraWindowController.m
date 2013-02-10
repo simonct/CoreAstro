@@ -116,7 +116,6 @@
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL medianFilter;
-@property (nonatomic,assign) BOOL preferCorrected;
 @property (nonatomic,assign) BOOL showPlateSolution;
 @property (nonatomic,assign) BOOL showHistogram;
 @property (nonatomic,assign) BOOL enableGuider;
@@ -156,7 +155,6 @@
 {
     [super windowDidLoad];
     
-    self.preferCorrected = YES;
     self.showPlateSolution = YES;
 
     self.colourAdjustments = [[CASColourAdjustments alloc] init];
@@ -467,14 +465,6 @@
     }
 }
 
-- (void)setPreferCorrected:(BOOL)preferCorrected
-{
-    if (_preferCorrected != preferCorrected){
-        _preferCorrected = preferCorrected;
-        [self _resetAndRedisplayCurrentExposure];
-    }
-}
-
 - (void)setShowPlateSolution:(BOOL)showPlateSolution
 {
     if (_showPlateSolution != showPlateSolution){
@@ -638,13 +628,15 @@
     CASCCDExposure* parentExposure = exposure;
 
     // prefer corrected exposure (and similarly for debayered)
-    if (self.preferCorrected){
-        CASCCDExposure* corrected = exposure.correctedExposure;
-        if (corrected){
-            exposure = corrected;
-        }
+    CASCCDExposure* corrected = exposure.correctedExposure;
+    if (corrected){
+        exposure = corrected;
     }
-    
+    CASCCDExposure* debayered = exposure.debayeredExposure;
+    if (debayered){
+        exposure = debayered;
+    }
+
     self.imageBannerView.exposure = exposure;
 
     NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];
@@ -1187,11 +1179,6 @@
     self.medianFilter = !self.medianFilter;
 }
 
-- (IBAction)togglePreferCorrected:(id)sender
-{
-    self.preferCorrected = !self.preferCorrected;
-}
-
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
@@ -1498,10 +1485,6 @@
             enabled = self.currentExposure != nil;
             break;
             
-        case 10013:
-            item.state = self.preferCorrected;
-            break;
-
         case 10014:
             item.state = self.showPlateSolution;
             break;
