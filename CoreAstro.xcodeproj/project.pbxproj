@@ -290,7 +290,6 @@
 		F4CA5425169CC9FD00832CFF /* wcs-rd2xy.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DD169CC9FB00832CFF /* wcs-rd2xy.h */; };
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
-		F4CAFB0B16C7BA9100BE783B /* CASCCDExposurePriv.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CAFB0A16C7BA9100BE783B /* CASCCDExposurePriv.h */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
 		F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */; };
 		F4EAFCAA15D7E749001B7993 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */; };
@@ -1255,7 +1254,6 @@
 		F4CA532D169CC9FD00832CFF /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
 		F4CA532E169CC9FD00832CFF /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F4CA532F169CC9FD00832CFF /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
-		F4CAFB0A16C7BA9100BE783B /* CASCCDExposurePriv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposurePriv.h; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
 		F4E979E4161F85470037ED1B /* CoreAstro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CoreAstro.entitlements; sourceTree = "<group>"; };
@@ -1772,7 +1770,6 @@
 				F4A0E3AF15C70FD4002878C9 /* CASCCDImage.h */,
 				F4A0E3B015C70FD4002878C9 /* CASCCDImage.m */,
 				F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */,
-				F4CAFB0A16C7BA9100BE783B /* CASCCDExposurePriv.h */,
 				F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */,
 				F4FEFBA415E8178600DB6951 /* CASCCDExposureIO.h */,
 				F4FEFBA515E8178600DB6951 /* CASCCDExposureIO.m */,
@@ -2779,7 +2776,6 @@
 				F4CA5425169CC9FD00832CFF /* wcs-rd2xy.h in Headers */,
 				F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */,
 				F4CA5427169CC9FD00832CFF /* xylist.h in Headers */,
-				F4CAFB0B16C7BA9100BE783B /* CASCCDExposurePriv.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

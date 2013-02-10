@@ -24,7 +24,6 @@
 //
 
 #import "CASCCDExposure.h"
-#import "CASCCDExposurePriv.h"
 #import "CASCCDExposureIO.h"
 #import "CASCCDDevice.h"
 #import "CASUtilities.h"
@@ -52,7 +51,6 @@
         NSMutableDictionary* meta = [[NSMutableDictionary alloc] initWithDictionary:self.meta copyItems:YES]; // or serialize/deserialize
         [meta setObject:CASCreateUUID() forKey:@"uuid"];
         result.meta = [meta copy];
-        result.rgba = self.rgba;
     }
     return result;
 }
@@ -244,6 +242,11 @@
     return 65535;
 }
 
+- (NSInteger) pixelSize
+{
+    return self.rgba ? sizeof(Pixel_FFFF) : sizeof(Pixel_F);
+}
+
 - (void)setMetaObject:(id)obj forKey:(id)key
 {
     // update meta
@@ -278,6 +281,11 @@
 - (void)setFormat:(CASCCDExposureFormat)format
 {
     [self setMetaObject:[NSNumber numberWithInteger:format] forKey:@"format"];
+}
+
+- (BOOL) rgba
+{
+    return ([[self.meta valueForKey:@"format"] integerValue] == kCASCCDExposureFormatFloatRGBA);
 }
 
 - (NSString*)note
@@ -318,7 +326,9 @@
         return nil;
     }
 
-    NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*sizeof(float)]; // bin size
+    const NSInteger pixelSize = self.pixelSize;
+
+    NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*pixelSize]; // bin size
     if (!subframePixels){
         return nil;
     }
@@ -345,17 +355,19 @@
     
     const CASSize actualSize = self.actualSize;
 
+    // todo; revist need for this as actualSize already accounts for binning...
     CASRect scaledRect = rect;
     scaledRect.size.width /= self.params.bin.width;
     scaledRect.size.height /= self.params.bin.height;
     scaledRect.origin.x /= self.params.bin.width;
     scaledRect.origin.y /= self.params.bin.height;
 
-    float* floatPixels = scaledRect.origin.x + (scaledRect.origin.y * actualSize.width) + (float*)[self.floatPixels bytes];
-    float* subframeFloatPixels = (float*)[subframePixels bytes];
+    uint8_t* floatPixels = (scaledRect.origin.x  * pixelSize) + (scaledRect.origin.y * actualSize.width /* todo; scaledRect.size.width ? */  * pixelSize) + (uint8_t*)[self.floatPixels bytes];
+    uint8_t* subframeFloatPixels = (uint8_t*)[subframePixels bytes];
     
-    for (NSInteger y = 0; y < scaledRect.size.height; ++y, subframeFloatPixels += scaledRect.size.width, floatPixels += actualSize.width){
-        memcpy(subframeFloatPixels, floatPixels, scaledRect.size.width*sizeof(float));
+    // todo; dispatch_apply
+    for (NSInteger y = 0; y < scaledRect.size.height; ++y, subframeFloatPixels += scaledRect.size.width * pixelSize, floatPixels += actualSize.width * pixelSize){
+        memcpy(subframeFloatPixels, floatPixels, scaledRect.size.width * pixelSize);
     }
     
     subframe.floatPixels = subframePixels;
@@ -425,8 +437,6 @@
 + (id)exposureWithPixels:(NSData*)pixels camera:(CASCCDDevice*)camera params:(CASExposeParams)expParams time:(NSDate*)time floatPixels:(BOOL)floatPixels rgba:(BOOL)rgba
 {
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-    
-    exp.rgba = rgba;
     
     if (floatPixels){
         exp.floatPixels = pixels;

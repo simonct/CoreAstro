@@ -112,7 +112,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         }
         
         // set the exposure type (needed for saving it correctly)
-        result.format = kCASCCDExposureFormatFloat;
+        result.format = exposure_.format;
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -167,7 +167,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         });
         
         // set the exposure type (needed for saving it correctly)
-        result.format = kCASCCDExposureFormatFloat;
+        result.format = exposure_.format;
     }
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
@@ -226,7 +226,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             }
             
             // set the exposure type (needed for saving it correctly)
-            result.format = kCASCCDExposureFormatFloat;
+            result.format = exposure_.format;
         });
 
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -255,7 +255,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         }
 
         // set the exposure type (needed for saving it correctly)
-        result.format = kCASCCDExposureFormatFloat;
+        result.format = exposure.format;
     }
     
     return result;
@@ -300,7 +300,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             }
             
             // set the exposure type (needed for saving it correctly)
-            result.format = kCASCCDExposureFormatFloat;
+            result.format = exposure_.format;
         });
         
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -326,25 +326,26 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         const CASSize size = result.actualSize;
         const NSInteger count = size.width * size.height;
         
-        result.floatPixels = [NSMutableData dataWithCapacity:count * sizeof(float)];
+        result.floatPixels = [NSMutableData dataWithLength:count * sizeof(float)];
+        result.format = kCASCCDExposureFormatFloat;
         
-        float* fp = (float*)[exposure.floatPixels bytes];
-        rgba_pixel_t* rgbp = (rgba_pixel_t*)[result.floatPixels bytes];
+        float* fp = (float*)[result.floatPixels bytes];
+        rgba_pixel_t* rgbp = (rgba_pixel_t*)[exposure.floatPixels bytes];
 
         if (fp && rgbp){
             
-            dispatch_apply(size.height, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t row) {
-                
-                float* fp1 = fp + row * size.width;
-                rgba_pixel_t* rgbp1 = rgbp + row * size.width;
-                for (NSInteger i = 0; i < size.width; i++, fp1++, rgbp1++){
-                    *fp1 = MIN(1.0,(0.2126*rgbp1->r) + (0.7152*rgbp1->g) + (0.0722*rgbp1->b));
-                }
-            });
+//            dispatch_apply(size.height, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t row) {
+//                
+//                float* fp1 = fp + row * size.width;
+//                rgba_pixel_t* rgbp1 = rgbp + row * size.width;
+//                for (NSInteger i = 0; i < size.width; i++, fp1++, rgbp1++){
+//                    *fp1 = MIN(1.0,(0.2126*rgbp1->r) + (0.7152*rgbp1->g) + (0.0722*rgbp1->b));
+//                }
+//            });
             
-//            for (NSInteger i = 0; i < count; i++, fp++, rgbp++){
-//                *fp = MIN(1.0,(0.2126*rgbp->r) + (0.7152*rgbp->g) + (0.0722*rgbp->b));
-//            }
+            for (NSInteger i = 0; i < count; i++, fp++, rgbp++){
+                *fp = MIN(1.0,(0.2126*rgbp->r) + (0.7152*rgbp->g) + (0.0722*rgbp->b));
+            }
         }
     }
     

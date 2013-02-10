@@ -364,8 +364,9 @@
                 self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
             }
             
-            // locate the reference star
-            CASCCDExposure* subframe = [self.first subframeWithRect:_initialSearchFrame];
+            // locate the reference star making sure we're using a luminance frame
+            CASCCDExposure* subframe = [self.imageProcessor luminance:[self.first subframeWithRect:_initialSearchFrame]];
+
             NSArray* stars = [self.guideAlgorithm locateStars:subframe];
             if (![stars count]){
                 NSLog(@"%@: Found no stars in reference frame",NSStringFromSelector(_cmd));
@@ -397,9 +398,14 @@
         NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
         return;
     }
+    
+    if (exposure.rgba != self.first.rgba){
+        NSLog(@"%@: Pixel formats don't match",NSStringFromSelector(_cmd));
+        return;
+    }
         
     // search within the same area that we found the reference star for the corresponding one
-    const NSPoint star = [self.guideAlgorithm locateStar:[exposure subframeWithRect:_initialSearchFrame] inArea:_searchFrame];
+    const NSPoint star = [self.guideAlgorithm locateStar:[self.imageProcessor luminance:[exposure subframeWithRect:_initialSearchFrame]] inArea:_searchFrame];
     if (star.x == -1){
         NSLog(@"%@: Found no stars in exposure frame",NSStringFromSelector(_cmd));
         return;
@@ -426,14 +432,14 @@
         .data = (void*)[[exposure floatPixels] bytes],
         .width = _actualSize.width,
         .height = _actualSize.height,
-        .rowBytes = _actualSize.width * sizeof(float)
+        .rowBytes = _actualSize.width * exposure.pixelSize
     };
     
     vImage_Buffer output = {
         .data = [self.working mutableBytes],
         .width = _actualSize.width,
         .height = _actualSize.height,
-        .rowBytes = _actualSize.width * sizeof(float)
+        .rowBytes = _actualSize.width * exposure.pixelSize
     };
 
     CGAffineTransform xform = CGAffineTransformIdentity;
@@ -452,18 +458,24 @@
     
     // translate the exposure relative to the reference star
     if (CGAffineTransformIsIdentity(xform)){
-        memcpy([self.working mutableBytes],[[exposure floatPixels] bytes],_actualSize.width*_actualSize.height*sizeof(float));
+        memcpy([self.working mutableBytes],[[exposure floatPixels] bytes],_actualSize.width*_actualSize.height*exposure.pixelSize);
     }
     else {
         const vImage_AffineTransform vxform = {
             .a = xform.a, .b = xform.b, .c = xform.c, .d = xform.d,
             .tx = xform.tx, .ty = xform.ty
         };
-        vImageAffineWarp_PlanarF(&input, &output, nil, &vxform, 0, kvImageHighQualityResampling);
+        if (exposure.rgba){
+            vImageAffineWarp_ARGBFFFF(&input, &output, nil, &vxform, 0, kvImageHighQualityResampling|kvImageEdgeExtend);
+        }
+        else {
+            vImageAffineWarp_PlanarF(&input, &output, nil, &vxform, 0, kvImageHighQualityResampling|kvImageEdgeExtend);
+        }
     }
     
     // add the translated pixels to accumulation buffer
-    vDSP_vadd([self.accumulate mutableBytes],1,output.data,1,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
+    const NSInteger length = exposure.rgba ? _actualSize.width*_actualSize.height*4 : _actualSize.width*_actualSize.height;
+    vDSP_vadd([self.accumulate mutableBytes],1,output.data,1,[self.accumulate mutableBytes],1,length);
     
     // bump the count
     ++_count;
@@ -475,14 +487,24 @@
     if ([self.accumulate mutableBytes]){
         if (_count > 0){
             float fcount = _count + 1;
-            vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,_actualSize.width*_actualSize.height);
+            const NSInteger length = self.first.rgba ? _actualSize.width*_actualSize.height*4 : _actualSize.width*_actualSize.height;
+            vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,length);
         }
     }
     
-    CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:self.accumulate
-                                                              camera:nil
-                                                              params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
-                                                                time:[NSDate date]];
+    CASCCDExposure* result = nil;
+    if (self.first.rgba){
+        result = [CASCCDExposure exposureWithRGBAFloatPixels:self.accumulate
+                                                      camera:nil
+                                                      params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
+                                                        time:[NSDate date]];
+    }
+    else {
+        result = [CASCCDExposure exposureWithFloatPixels:self.accumulate
+                                                  camera:nil
+                                                  params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
+                                                    time:[NSDate date]];
+    }
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
     [mutableMeta setObject:[result.meta objectForKey:@"time"] forKey:@"time"];
@@ -490,7 +512,7 @@
     [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %ld",_count + 1] forKey:@"displayName"];
     result.meta = [mutableMeta copy];
     
-    result.format = kCASCCDExposureFormatFloat;
+    result.format = self.first.rgba ? kCASCCDExposureFormatFloatRGBA : kCASCCDExposureFormatFloat;
 
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
@@ -539,11 +561,13 @@
     // get current history, append this value
     NSMutableArray* history = nil;
     id existingHistory = exposure.meta[@"history"];
-    if ([existingHistory isKindOfClass:[NSArray class]]){
-        history = [NSMutableArray arrayWithArray:existingHistory];
-    }
-    else {
-        history = [NSMutableArray arrayWithObject:existingHistory];
+    if (existingHistory){
+        if ([existingHistory isKindOfClass:[NSArray class]]){
+            history = [NSMutableArray arrayWithArray:existingHistory];
+        }
+        else {
+            history = [NSMutableArray arrayWithObject:existingHistory];
+        }
     }
     if (!history){
         history = [NSMutableArray arrayWithCapacity:1];
