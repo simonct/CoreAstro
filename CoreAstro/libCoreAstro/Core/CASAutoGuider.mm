@@ -313,6 +313,8 @@ typedef struct {
 
 - (CASStarQuality)_locateStar:(CASCCDExposure*)exposure inArea:(CGRect)area {
     
+    NSAssert(!exposure.rgba, @"Star locator can't handle rgba images");
+    
     NSInteger base_x, base_y;  // expected position in image (potentially cropped) coordinates
 	NSInteger start_x, start_y, rowsize;
 	NSInteger x, y, searchsize;
