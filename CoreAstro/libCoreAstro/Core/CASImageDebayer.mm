@@ -67,12 +67,14 @@ typedef struct { float r,g,b,a; } fpixel_t;
     #define source_pixel(x,y) (*(gp + clipx(x) + clipy(y) * size.width))
     #define destination_pixel(x,y) *(cp + clipx(x) + clipy(y) * size.width)
     #define make_rgba(rx,gx,bx,ax) { .r = rx, .g = gx, .b = bx, .a = ax };
-        
+
     const NSTimeInterval time = CASTimeBlock(^{
-        
-        for (int y = 0; y < size.height; y += 2){
+
+        dispatch_apply(size.height/2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0), ^(size_t row){
             
-            for (int x = 0; x < size.width; x += 2){
+            const size_t y = 2*row;
+            
+            for (size_t x = 0; x < size.width; x += 2){
                 
                 const float a = 1.0;
                 
@@ -83,7 +85,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                 
                 if (self.mode == kCASImageDebayerRGGB){
                     
-                    int i = x, j = y;
+                    size_t i = x, j = y;
                     
                     float r1 = source_pixel(i,j);
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
@@ -92,7 +94,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r1 = all * red * r1;
                     g1 = all * green * g1;
                     b1 = all * blue * b1;
-
+                    
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
                     i = x + 1, j = y + 1;
@@ -104,7 +106,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r2 = all * red * r2;
                     g2 = all * green * g2;
                     b2 = all * blue * b2;
-
+                    
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
                     i = x + 1, j = y;
@@ -116,7 +118,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r3 = all * red * r3;
                     g3 = all * green * g3;
                     b3 = all * blue * b3;
-
+                    
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
                     i = x, j = y + 1;
@@ -128,7 +130,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r4 = all * red * r4;
                     g4 = all * green * g4;
                     b4 = all * blue * b4;
-
+                    
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
                 
@@ -139,7 +141,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                 
                 if (self.mode == kCASImageDebayerGRBG){
                     
-                    int i = x + 1, j = y;
+                    size_t i = x + 1, j = y;
                     
                     float r1 = source_pixel(i,j);
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
@@ -148,7 +150,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r1 = all * red * r1;
                     g1 = all * green * g1;
                     b1 = all * blue * b1;
-
+                    
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
                     i = x, j = y + 1;
@@ -160,7 +162,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r2 = all * red * r2;
                     g2 = all * green * g2;
                     b2 = all * blue * b2;
-
+                    
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
                     i = x, j = y;
@@ -172,7 +174,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r3 = all * red * r3;
                     g3 = all * green * g3;
                     b3 = all * blue * b3;
-
+                    
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
                     i = x + 1, j = y + 1;
@@ -184,7 +186,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r4 = all * red * r4;
                     g4 = all * green * g4;
                     b4 = all * blue * b4;
-
+                    
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
                 
@@ -195,7 +197,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                 
                 if (self.mode == kCASImageDebayerBGGR){
                     
-                    int i = x + 1, j = y + 1;
+                    size_t i = x + 1, j = y + 1;
                     
                     float r1 = source_pixel(i,j);
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
@@ -204,7 +206,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r1 = all * red * r1;
                     g1 = all * green * g1;
                     b1 = all * blue * b1;
-
+                    
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
                     i = x, j = y;
@@ -216,7 +218,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r2 = all * red * r2;
                     g2 = all * green * g2;
                     b2 = all * blue * b2;
-
+                    
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
                     i = x + 1, j = y;
@@ -228,7 +230,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r3 = all * red * r3;
                     g3 = all * green * g3;
                     b3 = all * blue * b3;
-
+                    
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
                     i = x, j = y + 1;
@@ -240,7 +242,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r4 = all * red * r4;
                     g4 = all * green * g4;
                     b4 = all * blue * b4;
-
+                    
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
                 
@@ -251,7 +253,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                 
                 if (self.mode == kCASImageDebayerGBRG){
                     
-                    int i = x, j = y + 1;
+                    size_t i = x, j = y + 1;
                     
                     float r1 = source_pixel(i,j);
                     float g1 = (source_pixel(i-1,j) + source_pixel(i,j-1) + source_pixel(i,j+1) + source_pixel(i+1,j))/4;
@@ -260,7 +262,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r1 = all * red * r1;
                     g1 = all * green * g1;
                     b1 = all * blue * b1;
-
+                    
                     destination_pixel(i,j) = make_rgba(r1,g1,b1,a);
                     
                     i = x + 1, j = y;
@@ -272,7 +274,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r2 = all * red * r2;
                     g2 = all * green * g2;
                     b2 = all * blue * b2;
-
+                    
                     destination_pixel(i,j) = make_rgba(r2,g2,b2,a);
                     
                     i = x, j = y;
@@ -284,7 +286,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r3 = all * red * r3;
                     g3 = all * green * g3;
                     b3 = all * blue * b3;
-
+                    
                     destination_pixel(i,j) = make_rgba(r3,g3,b3,a);
                     
                     i = x + 1, j = y + 1;
@@ -296,11 +298,12 @@ typedef struct { float r,g,b,a; } fpixel_t;
                     r4 = all * red * r4;
                     g4 = all * green * g4;
                     b4 = all * blue * b4;
-
+                    
                     destination_pixel(i,j) = make_rgba(r4,g4,b4,a);
                 }
             }
-        }
+            
+        });
         
         float low = 0, high = 1;
         vDSP_vclip((float*)cp,1,&low,&high,(float*)cp,1,finalPixelsLength/4);
