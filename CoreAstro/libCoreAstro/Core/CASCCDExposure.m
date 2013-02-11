@@ -365,10 +365,13 @@
     uint8_t* floatPixels = (scaledRect.origin.x  * pixelSize) + (scaledRect.origin.y * actualSize.width /* todo; scaledRect.size.width ? */  * pixelSize) + (uint8_t*)[self.floatPixels bytes];
     uint8_t* subframeFloatPixels = (uint8_t*)[subframePixels bytes];
     
-    // todo; dispatch_apply
-    for (NSInteger y = 0; y < scaledRect.size.height; ++y, subframeFloatPixels += scaledRect.size.width * pixelSize, floatPixels += actualSize.width * pixelSize){
-        memcpy(subframeFloatPixels, floatPixels, scaledRect.size.width * pixelSize);
-    }
+    dispatch_apply(scaledRect.size.height, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t row) {
+        
+        uint8_t* floatPixels1 = floatPixels + (row * actualSize.width /* todo; scaledRect.size.width ? */  * pixelSize);
+        uint8_t* subframeFloatPixels1 = subframeFloatPixels + (row * scaledRect.size.width * pixelSize);
+        
+        memcpy(subframeFloatPixels1, floatPixels1, scaledRect.size.width * pixelSize);
+    });
     
     subframe.floatPixels = subframePixels;
     
