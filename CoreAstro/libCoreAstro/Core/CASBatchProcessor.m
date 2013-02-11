@@ -290,13 +290,13 @@
 @end
 
 @implementation CASCCDStackingProcessor {
-    NSInteger _count;
     CGRect _searchFrame;
     CASRect _initialSearchFrame;
     CASSize _actualSize;
     NSPoint _referenceStar;
     CGFloat _searchInsetFraction;
     CGFloat _xThresh, _yThresh;
+    NSInteger _totalExposureTimeMS;
 }
 
 - (id)init
@@ -351,6 +351,7 @@
             
             // get some basic stats
             _actualSize = self.first.actualSize;
+            _totalExposureTimeMS = self.first.params.ms;
             
             // figure out the subframe we'll do the initial star search in
             _initialSearchFrame = CASRectMake(CASPointMake(_actualSize.width * _searchInsetFraction,_actualSize.height * _searchInsetFraction),
@@ -454,7 +455,10 @@
     // add and entry to the history
     [self.history addObject:@{
         @"uuid":exposure.uuid,@"translate":translateInfo
-     }];
+    }];
+    
+    // accumulate the exposure time
+    _totalExposureTimeMS += exposure.params.ms;
     
     // translate the exposure relative to the reference star
     if (CGAffineTransformIsIdentity(xform)){
@@ -476,40 +480,38 @@
     // add the translated pixels to accumulation buffer
     const NSInteger length = exposure.rgba ? _actualSize.width*_actualSize.height*4 : _actualSize.width*_actualSize.height;
     vDSP_vadd([self.accumulate mutableBytes],1,output.data,1,[self.accumulate mutableBytes],1,length);
-    
-    // bump the count
-    ++_count;
 }
 
 - (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block
 {
+    const float fcount = [self.history count] + 1;
+
     // divide by number of images in the stack
-    if ([self.accumulate mutableBytes]){
-        if (_count > 0){
-            float fcount = _count + 1;
-            const NSInteger length = self.first.rgba ? _actualSize.width*_actualSize.height*4 : _actualSize.width*_actualSize.height;
-            vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,length);
-        }
+    if (fcount > 1){
+        const NSInteger length = self.first.rgba ? _actualSize.width*_actualSize.height*4 : _actualSize.width*_actualSize.height;
+        vDSP_vsdiv([self.accumulate mutableBytes],1,(float*)&fcount,[self.accumulate mutableBytes],1,length);
+        // clip ?
     }
     
     CASCCDExposure* result = nil;
     if (self.first.rgba){
         result = [CASCCDExposure exposureWithRGBAFloatPixels:self.accumulate
                                                       camera:nil
-                                                      params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
+                                                      params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,_totalExposureTimeMS)
                                                         time:[NSDate date]];
     }
     else {
         result = [CASCCDExposure exposureWithFloatPixels:self.accumulate
                                                   camera:nil
-                                                  params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,0)
+                                                  params:CASExposeParamsMake(_actualSize.width,_actualSize.height,0,0,_actualSize.width,_actualSize.height,1,1,self.first.params.bps,_totalExposureTimeMS)
                                                     time:[NSDate date]];
     }
     
     NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
-    [mutableMeta setObject:[result.meta objectForKey:@"time"] forKey:@"time"];
-    [mutableMeta setObject:@[@{@"stack":@{@"images":self.history,@"mode":@"average"}}] forKey:@"history"];
-    [mutableMeta setObject:[NSString stringWithFormat:@"Stack of %ld",_count + 1] forKey:@"displayName"];
+    mutableMeta[@"time"] = [result.meta objectForKey:@"time"];
+    mutableMeta[@"history"] = @[@{@"stack":@{@"images":self.history,@"mode":@"average"}}];
+    mutableMeta[@"displayName"] = [NSString stringWithFormat:@"Stack of %ld",(NSInteger)fcount];
+    mutableMeta[@"exposure"] = NSStringFromCASExposeParams(result.params);
     result.meta = [mutableMeta copy];
     
     result.format = self.first.rgba ? kCASCCDExposureFormatFloatRGBA : kCASCCDExposureFormatFloat;
