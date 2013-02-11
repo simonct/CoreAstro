@@ -119,7 +119,14 @@
 - (id)imageRepresentation
 {
     if (!_image){
-        _image = self.exposure.thumbnail;
+        CASCCDExposure* exposure = self.exposure;
+        if (exposure.correctedExposure){
+            exposure = exposure.correctedExposure;
+        }
+        if (exposure.debayeredExposure){
+            exposure = exposure.debayeredExposure;
+        }
+        _image = exposure.thumbnail;
         if (!_image){
             // NSLog(@"No thumbnail for %@",self.exposure.date); // make one from the full res image
         }
