@@ -162,7 +162,15 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             }
         }
         else {
+            
             self.capturing = NO;
+            
+            if ([NSUserNotification class]){
+                NSUserNotification* note = [[NSUserNotification alloc] init];
+                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                note.soundName = NSUserNotificationDefaultSoundName;
+                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+            }
         }
         self.exposureStart = nil;
 
@@ -182,7 +190,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     if (self.temperatureLock && self.camera.hasCooler){
         
         const CGFloat temperatureLatitude = 0.5;
-        const NSInteger temperatureWaitInterval = 10;
+        const NSInteger temperatureWaitInterval = 5;
 
         const CGFloat temperature = self.camera.temperature;
         const CGFloat targetTemperature = self.camera.targetTemperature;
