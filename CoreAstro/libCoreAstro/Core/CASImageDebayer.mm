@@ -45,6 +45,11 @@ typedef struct { float r,g,b,a; } fpixel_t;
 
 - (CASCCDExposure*)debayer:(CASCCDExposure*)exposure adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all
 {
+    if (exposure.rgba){
+        NSLog(@"%@: passed an rgba image",NSStringFromSelector(_cmd));
+        return exposure;
+    }
+    
     const CASSize size = exposure.actualSize;
     if (size.width < 4 || size.height < 4){
         NSLog(@"Debayer asked to process an exposure of %ldx%ld",size.width,size.height);
