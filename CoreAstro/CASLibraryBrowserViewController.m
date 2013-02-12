@@ -219,14 +219,17 @@
         
         self.browserView.project = _exposuresController.project;
         
-
         [_exposuresController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
         [_exposuresController addObserver:self forKeyPath:@"arrangedObjects" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void *)(self)];
-                
+        
+        NSArray* currentSelection = [_exposuresController.selectedObjects copy];
+        
         // set filter predicate to remove images with no uuid - probably remove this in prod builds as this should never happen in practice
         [_exposuresController setFilterPredicate:[NSPredicate predicateWithBlock:^BOOL(CASCCDExposure* exposure, NSDictionary *bindings) {
             return ([exposure.uuid length] > 0);
         }]];
+        
+        [_exposuresController setSelectedObjects:currentSelection];
         
         [self updateForCurrentGroupKey];
         [self.browserView reloadData];

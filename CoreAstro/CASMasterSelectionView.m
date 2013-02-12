@@ -7,15 +7,29 @@
 //
 
 #import "CASMasterSelectionView.h"
-#import "CASCCDExposureLibrary.h"
 #import "CASUtilities.h"
+#import <objc/runtime.h>
 
-@interface CASCCDExposureLibraryProject (CASMasterSelectionView)<NSPasteboardWriting>
+@implementation CASCCDExposureLibraryProject (CASMasterSelectionView)
+
+static const char exposuresControllerKey;
+
+- (CASExposuresController*) exposuresController {
+    return objc_getAssociatedObject(self,&exposuresControllerKey);
+}
+
+- (void)setExposuresController:(CASExposuresController *)exposuresController {
+    objc_setAssociatedObject(self, &exposuresControllerKey, exposuresController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
+
+@interface CASCCDExposureLibraryProject (CASMasterSelectionView1)<NSPasteboardWriting>
 @end
 
 NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid";
 
-@implementation CASCCDExposureLibraryProject (CASMasterSelectionView)
+@implementation CASCCDExposureLibraryProject (CASMasterSelectionView1)
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol
 {

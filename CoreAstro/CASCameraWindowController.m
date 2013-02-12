@@ -624,21 +624,10 @@
         return;
     }
     
-    // get the current exposure (need an accessor for this)
-    CASCCDExposure* parentExposure = exposure;
-
-    // prefer corrected exposure (and similarly for debayered)
-    CASCCDExposure* corrected = exposure.correctedExposure;
-    if (corrected){
-        exposure = corrected;
-    }
-    CASCCDExposure* debayered = exposure.debayeredExposure;
-    if (debayered){
-        exposure = debayered;
-    }
-
+    // set the banner exposure to display name, date, etc
     self.imageBannerView.exposure = exposure;
 
+    // show the exposure specifics in the sidebar (todo; encapsulate sidebar and just set the exposure as with the banner)
     NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];
     if (!params){
         self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = @"";
@@ -678,8 +667,21 @@
         }
     }
 
-    // check image view is actually visible
-    if (!self.imageView.isHidden){
+    // check image view is actually visible before bothering to display it
+    if (!self.imageView.isHiddenOrHasHiddenAncestor){
+        
+        // get the current exposure (need an accessor for this)
+        CASCCDExposure* parentExposure = exposure;
+        
+        // prefer corrected exposure (and similarly for debayered)
+        CASCCDExposure* corrected = exposure.correctedExposure;
+        if (corrected){
+            exposure = corrected;
+        }
+        CASCCDExposure* debayered = exposure.debayeredExposure;
+        if (debayered){
+            exposure = debayered;
+        }
         
         static NSDateFormatter* exposureFormatter = nil;
         static dispatch_once_t onceToken;
@@ -1728,8 +1730,12 @@
         self.libraryViewController.exposuresController = self.libraryExposuresController;
     }
     else {
-        CASExposuresController* exposuresController = [[CASExposuresController alloc] initWithContent:project.exposures];
-        exposuresController.project = project;
+        CASExposuresController* exposuresController = project.exposuresController;
+        if (!exposuresController){
+            exposuresController = [[CASExposuresController alloc] initWithContent:project.exposures];
+            exposuresController.project = project;
+            project.exposuresController = exposuresController;
+        }
         self.libraryViewController.exposuresController = exposuresController;
     }
     

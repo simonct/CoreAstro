@@ -7,7 +7,7 @@
 //
 
 #import "CASLibraryBrowserView.h"
-#import "CASCCDExposure.h"
+#import <CoreAstro/CoreAstro.h>
 
 // from ImageBrowserViewAppearance sample code
 @interface CASLibraryBrowserViewCell : IKImageBrowserCell
