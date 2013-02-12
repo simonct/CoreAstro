@@ -553,6 +553,8 @@
     
     exposure = [self exposureFromExposure:exposure];
 
+    self.imageDebayer.mode = self.mode; // todo; should really be an arg to -debayer:
+    
     CASCCDExposure* debayered = [self.imageDebayer debayer:exposure];
     
     // fixup metadata
