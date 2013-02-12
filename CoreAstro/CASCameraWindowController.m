@@ -678,36 +678,36 @@
         }
     }
 
-    static NSDateFormatter* exposureFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        exposureFormatter = [[NSDateFormatter alloc] init];
-        [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
-        [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
-    });
-    
-    if (self.medianFilter){
-        exposure = [self.imageProcessor medianFilter:exposure];
-    }
-    
-    if (self.equalise){
-        exposure = [self.imageProcessor equalise:exposure];
-    }
-    
-    if (self.invert){
-        exposure = [self.imageProcessor invert:exposure];
-    }
-
-    // debayer if required
-    if (self.imageDebayer.mode != kCASImageDebayerNone){
-        CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
-        if (debayeredExposure){
-            exposure = debayeredExposure;
-        }
-    }
-    
     // check image view is actually visible
     if (!self.imageView.isHidden){
+        
+        static NSDateFormatter* exposureFormatter = nil;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            exposureFormatter = [[NSDateFormatter alloc] init];
+            [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
+            [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
+        });
+        
+        // debayer if required
+        if (self.imageDebayer.mode != kCASImageDebayerNone){
+            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
+            if (debayeredExposure){
+                exposure = debayeredExposure;
+            }
+        }
+        
+        if (self.medianFilter){
+            exposure = [self.imageProcessor medianFilter:exposure];
+        }
+        
+        if (self.equalise){
+            exposure = [self.imageProcessor equalise:exposure];
+        }
+        
+        if (self.invert){
+            exposure = [self.imageProcessor invert:exposure];
+        }
         
         self.imageView.currentExposure = exposure;
         
