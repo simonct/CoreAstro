@@ -141,6 +141,8 @@
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 @property (nonatomic,strong) CASCaptureController* captureController;
+@property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureField;
+@property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureLabel;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -630,7 +632,7 @@
     // show the exposure specifics in the sidebar (todo; encapsulate sidebar and just set the exposure as with the banner)
     NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];
     if (!params){
-        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = @"";
+        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = self.measuredTemperatureField.stringValue = @"";
     }
     else {
         
@@ -664,6 +666,22 @@
         }
         else {
             self.subframeDisplay.stringValue = [NSString stringWithFormat:@"x=%ld y=%ld\nw=%ld h=%ld",exposure.params.origin.x,exposure.params.origin.y,exposure.params.size.width,exposure.params.size.height];
+        }
+        
+        double avTemp = 0;
+        NSArray* temps = [exposure valueForKeyPath:@"meta.temperature.temperatures"];
+        for (NSNumber* temp in temps){
+            avTemp += [temp doubleValue];
+        }
+        avTemp /= [temps count];
+        
+        if ([temps count]){
+            self.measuredTemperatureLabel.hidden = self.measuredTemperatureField.hidden = NO;
+            self.measuredTemperatureField.stringValue = [NSString stringWithFormat:@"%.1f",avTemp];
+        }
+        else {
+            self.measuredTemperatureLabel.hidden = self.measuredTemperatureField.hidden = YES;
+            self.measuredTemperatureField.stringValue = @"";
         }
     }
 
