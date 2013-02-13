@@ -15,5 +15,6 @@
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes;
 - (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window;
+- (void)removeCurrentlySelectedExposuresWithWindow:(NSWindow*)window;
 @end
 

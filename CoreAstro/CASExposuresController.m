@@ -44,7 +44,7 @@
     }
 }
 
-- (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes
+- (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes deletingPermanently:(BOOL)deletingPermanently
 {
     if ([indexes count]){
         id nextObject = nil;
@@ -61,7 +61,7 @@
             [self removeObjectAtArrangedObjectIndex:[indexes firstIndex]];
         }
         else {
-            if (!self.project){
+            if (deletingPermanently){
                 [[arrangedObjects objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
             }
             [super removeObjectsAtArrangedObjectIndexes:indexes];
@@ -75,6 +75,11 @@
     }
 }
 
+- (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes
+{
+    [self removeObjectsAtArrangedObjectIndexes:indexes deletingPermanently:!self.project];
+}
+
 - (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window
 {
     if(self.isEditable) {
@@ -82,12 +87,16 @@
         const NSInteger count = [[self selectedObjects] count];
         if (count > 0){
             
-            NSString* message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+            NSString* message = message = (count == 1) ? @"Are you sure you want to delete this exposure ? This cannot be undone." : [NSString stringWithFormat:@"Are you sure you want to delete these %ld exposures ? This cannot be undone.",count];
+
+            if (self.project){
+                message = [NSString stringWithFormat:@"%@\n\nPress Project Only to only remove it from the project\n",message];
+            }
             
             NSAlert* alert = [NSAlert alertWithMessageText:@"Delete Exposure"
                                              defaultButton:nil
                                            alternateButton:@"Cancel"
-                                               otherButton:nil
+                                               otherButton:self.project ? @"Project Only" : nil
                                  informativeTextWithFormat:message,nil];
             
             [alert beginSheetModalForWindow:window modalDelegate:self didEndSelector:@selector(deleteConfirmSheetCompleted:returnCode:contextInfo:) contextInfo:nil];
@@ -95,10 +104,30 @@
     }
 }
 
+- (void)removeCurrentlySelectedExposuresWithWindow:(NSWindow*)window
+{
+    [self promptToDeleteCurrentSelectionWithWindow:window];
+    return;
+    
+    if (!self.project){
+        [self promptToDeleteCurrentSelectionWithWindow:window];
+    }
+    else {
+        [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes]];
+    }
+}
+
 - (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
-    if (returnCode == NSAlertDefaultReturn){
-        [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes]];
+    switch (returnCode) {
+        case NSAlertDefaultReturn:
+            [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes] deletingPermanently:YES];
+            break;
+        case NSAlertOtherReturn:
+            [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes] deletingPermanently:NO];
+            break;
+        default:
+            break;
     }
 }
 
