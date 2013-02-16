@@ -26,7 +26,9 @@
 
 #import "CASFocusMetric.h"
 
+
 NSString* const keyFocusMetric = @"focus metric";
+NSString* const keyBrightnessCentroid = @"brightness centroid";
 
 
 @interface CASFocusMetric ()
@@ -101,11 +103,16 @@ NSString* const keyFocusMetric = @"focus metric";
     self.region = (CASRegion*) objInDataD;
     [resultsMutD setObject: objInDataD forKey: keyRegion];
 
+    CGPoint brightnessCentroid = CGPointMake(0, 0);
     CGFloat focusMetric = [self focusMetricForRegion: self.region
                                      inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
                                             ofLength: self.numPixels
                                              numRows: self.numRows
-                                             numCols: self.numCols];
+                                             numCols: self.numCols
+                                  brightnessCentroid: &brightnessCentroid];
+
+    NSValue* value = [NSValue valueWithBytes: &brightnessCentroid objCType: @encode(CGPoint)];
+    [resultsMutD setObject: value forKey: keyBrightnessCentroid];
 
     [resultsMutD setObject: [NSNumber numberWithFloat: focusMetric] forKey: keyFocusMetric];
     return [NSDictionary dictionaryWithDictionary: resultsMutD];
@@ -119,7 +126,8 @@ NSString* const keyFocusMetric = @"focus metric";
                  inExposureArray: (uint16_t*) values
                         ofLength: (NSUInteger) len
                          numRows: (NSUInteger) numRows
-                         numCols: (NSUInteger) numCols;
+                         numCols: (NSUInteger) numCols
+              brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 {
     return 0.0;
 }

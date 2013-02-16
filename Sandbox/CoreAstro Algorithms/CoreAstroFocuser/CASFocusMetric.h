@@ -25,7 +25,10 @@
 
 
 //  A class declaring a general interface for computing focus metric values
-//  for rectangular regions of an exposure.
+//  for rectangular regions of an exposure. It also computes and returns the
+//  brightness centroid of the region (in image coords), and returns it as
+//  an NSValue-wrapped CGPoint entry with key 'keyBrightnessCentroid' in the
+//  dictionary returned by -resultsFromData:.
 
 
 #import "CASAlgorithm.h"
@@ -34,6 +37,8 @@
 
 
 extern NSString* const keyFocusMetric;
+extern NSString* const keyBrightnessCentroid;
+
 
 @interface CASFocusMetric: CASAlgorithm
 
@@ -44,6 +49,8 @@ extern NSString* const keyFocusMetric;
 @property (readonly, nonatomic) NSUInteger numCols;
 @property (readonly, nonatomic) NSUInteger numPixels;
 
+@property (readonly, nonatomic) CGPoint brightnessCentroid;
+
 // Subclasses must override. Default returns zero.
 // Subclasses may directly access the data dictionary inherited from CASAlgorithm
 // if there are extra arguments not directly passed to this method.
@@ -51,6 +58,7 @@ extern NSString* const keyFocusMetric;
                  inExposureArray: (uint16_t*) values
                         ofLength: (NSUInteger) len
                          numRows: (NSUInteger) numRows
-                         numCols: (NSUInteger) numCols;
+                         numCols: (NSUInteger) numCols
+              brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 
 @end
