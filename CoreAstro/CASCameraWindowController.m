@@ -668,14 +668,15 @@
             self.subframeDisplay.stringValue = [NSString stringWithFormat:@"x=%ld y=%ld\nw=%ld h=%ld",exposure.params.origin.x,exposure.params.origin.y,exposure.params.size.width,exposure.params.size.height];
         }
         
-        double avTemp = 0;
-        NSArray* temps = [exposure valueForKeyPath:@"meta.temperature.temperatures"];
-        for (NSNumber* temp in temps){
-            avTemp += [temp doubleValue];
-        }
-        avTemp /= [temps count];
+        // need to see how this interacts with a camera connected e.g. is this conflicting with bindings ?
         
+        NSArray* temps = [exposure valueForKeyPath:@"meta.temperature.temperatures"];
         if ([temps count]){
+            double avTemp = 0;
+            for (NSNumber* temp in temps){
+                avTemp += [temp doubleValue];
+            }
+            avTemp /= [temps count];
             self.measuredTemperatureLabel.hidden = self.measuredTemperatureField.hidden = NO;
             self.measuredTemperatureField.stringValue = [NSString stringWithFormat:@"%.1f",avTemp];
         }
