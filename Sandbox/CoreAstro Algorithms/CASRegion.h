@@ -24,7 +24,7 @@
 //
 
 
-#import "CASCCDParams.h"
+#import "CASCCDProperties.h"
 
 extern NSString* const keyRegion;
 

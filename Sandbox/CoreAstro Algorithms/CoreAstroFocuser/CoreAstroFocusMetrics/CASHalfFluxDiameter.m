@@ -41,6 +41,8 @@
 
 @end
 
+// XXX - argument params should be declared const ! (same for the other project)
+
 // XXX here just for quick reference
 //@property (nonatomic) NSUInteger regionID;
 //@property (nonatomic) NSUInteger brightestPixelIndex; // index in the exposure array
