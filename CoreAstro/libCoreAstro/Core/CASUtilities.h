@@ -34,3 +34,5 @@
 
 CAS_EXTERN NSString* CASCreateUUID();
 CAS_EXTERN NSTimeInterval CASTimeBlock(void(^)(void));
+CAS_EXTERN void CASThrowException(Class klass,NSString* message);
+CAS_EXTERN void CASThrowOOMException(Class klass);
