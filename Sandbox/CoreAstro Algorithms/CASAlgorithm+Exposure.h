@@ -62,19 +62,22 @@ typedef enum
 // are measured with respect to the image coordinate system. Note that they're
 // never negative.
 
-NS_INLINE NSUInteger cas_alg_kx(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
+NS_INLINE NSUInteger cas_alg_kx(const NSUInteger numRows, const NSUInteger numCols,
+                                const NSUInteger p)
 {
     assert(numCols != 0);
     return (p % numCols);
 }
 
-NS_INLINE NSUInteger cas_alg_ky(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
+NS_INLINE NSUInteger cas_alg_ky(const NSUInteger numRows, const NSUInteger numCols,
+                                const NSUInteger p)
 {
     assert(numRows != 0 && numCols != 0);
     return ((numRows - 1) - (p / numCols));
 }
 
-NS_INLINE NSUInteger cas_alg_p(NSUInteger numRows, NSUInteger numCols, NSUInteger kx, NSUInteger ky)
+NS_INLINE NSUInteger cas_alg_p(const NSUInteger numRows, const NSUInteger numCols,
+                               const NSUInteger kx, const NSUInteger ky)
 {
     assert(numRows != 0 && ky < numRows);
     return (numCols * (numRows - 1 - ky) + kx);
@@ -87,7 +90,7 @@ NS_INLINE NSUInteger cas_alg_p(NSUInteger numRows, NSUInteger numCols, NSUIntege
 //
 // Note: the thresholding is done in place.
 // Note: expects unsigned 16-bit values.
-void cas_alg_thresh(uint16_t* values, NSUInteger len, uint16_t threshold);
+void cas_alg_thresh(uint16_t* const values, const NSUInteger len, const uint16_t threshold);
 
 
 // An utility function to compute a histogram from an array of exposure values.
@@ -98,7 +101,7 @@ void cas_alg_thresh(uint16_t* values, NSUInteger len, uint16_t threshold);
 //
 // Note: binWidth must not be zero, or nil is returned.
 // Note: expects unsigned 16-bit values.
-NSArray* cas_alg_hist(uint16_t* values, NSUInteger len, uint16_t binWidth);
+NSArray* cas_alg_hist(const uint16_t* const values, const NSUInteger len, const uint16_t binWidth);
 
 
 // An utility function to find the minimum, maximum, and average values
@@ -111,24 +114,38 @@ NSArray* cas_alg_hist(uint16_t* values, NSUInteger len, uint16_t binWidth);
 // you're not interested in.
 //
 // Note: expects unsigned 16-bit values.
-void cas_alg_stats(uint16_t* values,                    // the array of exposure values
-                   NSUInteger len,                      // the length of the array
-                   double* totalExposure,               // the sum of all exposure values
-                   uint16_t* min,                       // the minimum exposure value
-                   NSUInteger* countOfMin,              // how many entries have the min value
-                   uint16_t* max,                       // the maximum exposure value
-                   NSUInteger* countOfMax,              // how many entries have the max value
-                   double* avg,                         // the average exposure value
-                   NSUInteger* countOfLessThanAvg,      // how many entries have values below the average
-                   NSUInteger* countOfAvg,              // how many entries have values equal to the average
-                   NSUInteger* countOfMoreThanAvg,      // how many entries have values above the average
-                   uint16_t* nzMin,                     // same as min, ignoring zero-valued entries
-                   NSUInteger* countOfNzMin,            // same as countOfMin, ignoring zero-valued entries
-                   double* nzAvg,                       // same as avg, ignoring zero-valued entries
-                   NSUInteger* countOfLessThanNzAvg,    // same as countOfLessThanAvg, ignoring zero-valued entries
-                   NSUInteger* countOfNzAvg,            // same as countOfAvg, ignoring zero-valued entries
-                   NSUInteger* countOfMoreThanNzAvg,    // same as countOfMoreThanAvg, ignoring zero-valued entries
-                   NSUInteger* countOfNonZeroValues);   // how many entries have zero exposure values
+void cas_alg_stats(const uint16_t* const values,              // the array of exposure values
+                   const NSUInteger len,                      // the length of the array
+                   double* const totalExposure,               // the sum of all exposure values
+                   uint16_t* const min,                       // the minimum exposure value
+                   NSUInteger* const countOfMin,              // how many entries have the min value
+                   uint16_t* const max,                       // the maximum exposure value
+                   NSUInteger* const countOfMax,              // how many entries have the max value
+                   double* const avg,                         // the average exposure value
+                   NSUInteger* const countOfLessThanAvg,      // how many entries have values below the average
+                   NSUInteger* const countOfAvg,              // how many entries have values equal to the average
+                   NSUInteger* const countOfMoreThanAvg,      // how many entries have values above the average
+                   uint16_t* const nzMin,                     // same as min, ignoring zero-valued entries
+                   NSUInteger* const countOfNzMin,            // same as countOfMin, ignoring zero-valued entries
+                   double* const nzAvg,                       // same as avg, ignoring zero-valued entries
+                   NSUInteger* const countOfLessThanNzAvg,    // same as countOfLessThanAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfNzAvg,            // same as countOfAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfMoreThanNzAvg,    // same as countOfMoreThanAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfNonZeroValues);   // how many entries have zero exposure values
+
+
+// An utility function to find the exposure centroid,
+// in the image coordinate system.
+//
+// Note: expects unsigned 16-bit values.
+void cas_alg_exp_centroid(const uint16_t* const values,       // the array of exposure values
+                          const NSUInteger len,               // the length of the array
+                          const NSUInteger numRows,           // the number of rows in the exposure
+                          const NSUInteger numCols,           // the number of columns in the exposure
+                          const double pixelW,                // the pixel width, common to all pixels
+                          const double pixelH,                // the pixel height, common to all pixels
+                          double* const totalExposure,        // the sum of all exposure values
+                          CGPoint* const exposureCentroid);   // the exposure centroid, in the image coord system
 
 
 @interface CASAlgorithm (Exposure)
