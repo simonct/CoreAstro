@@ -59,8 +59,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
     const NSInteger finalPixelsLength = (size.width * size.height * sizeof(fpixel_t));
     NSMutableData* finalPixels = [NSMutableData dataWithLength:finalPixelsLength];
     if (!finalPixels){
-        NSLog(@"*** Out of memory");
-        return nil;
+        CASThrowOOMException([self class]);
     }
     
     float *gp = (float*)[exposure.floatPixels bytes];
