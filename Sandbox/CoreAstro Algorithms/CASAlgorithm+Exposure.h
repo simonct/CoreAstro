@@ -58,7 +58,7 @@ typedef enum
 
 // These map the lower-left corner pixel of an exposure to the integer coordinates
 // (kx=0, ky=0), with kx growing to the right and ky growing upwards. These are
-// not coordinates of any particular point, but of coordinates of a pixel, and
+// not coordinates of any particular point, but coordinates of a pixel, and
 // are measured with respect to the image coordinate system. Note that they're
 // never negative.
 
