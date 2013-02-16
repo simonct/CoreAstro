@@ -56,25 +56,28 @@ typedef enum
 } ThresholdingMode;
 
 
-// These map the lower-left corner pixel of an exposure to the coordinates
-// (x=0, y=0), with x growing to the right and y growing upwards.
+// These map the lower-left corner pixel of an exposure to the integer coordinates
+// (kx=0, ky=0), with kx growing to the right and ky growing upwards. These are
+// not coordinates of any particular point, but of coordinates of a pixel, and
+// are measured with respect to the image coordinate system. Note that they're
+// never negative.
 
-NS_INLINE NSInteger cas_alg_X(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
+NS_INLINE NSUInteger cas_alg_kx(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
 {
     assert(numCols != 0);
     return (p % numCols);
 }
 
-NS_INLINE NSInteger cas_alg_Y(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
+NS_INLINE NSUInteger cas_alg_ky(NSUInteger numRows, NSUInteger numCols, NSUInteger p)
 {
     assert(numRows != 0 && numCols != 0);
     return ((numRows - 1) - (p / numCols));
 }
 
-NS_INLINE NSInteger cas_alg_P(NSUInteger numRows, NSUInteger numCols, NSInteger x, NSInteger y)
+NS_INLINE NSUInteger cas_alg_p(NSUInteger numRows, NSUInteger numCols, NSUInteger kx, NSUInteger ky)
 {
-    assert(numRows != 0 && y < numRows);
-    return (numCols * (numRows - 1 - y) + x);
+    assert(numRows != 0 && ky < numRows);
+    return (numCols * (numRows - 1 - ky) + kx);
 }
 
 
