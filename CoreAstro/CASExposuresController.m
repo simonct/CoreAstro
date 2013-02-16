@@ -107,14 +107,6 @@
 - (void)removeCurrentlySelectedExposuresWithWindow:(NSWindow*)window
 {
     [self promptToDeleteCurrentSelectionWithWindow:window];
-    return;
-    
-    if (!self.project){
-        [self promptToDeleteCurrentSelectionWithWindow:window];
-    }
-    else {
-        [self removeObjectsAtArrangedObjectIndexes:[self selectionIndexes]];
-    }
 }
 
 - (void)deleteConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
