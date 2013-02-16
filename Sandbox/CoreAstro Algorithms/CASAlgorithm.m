@@ -99,4 +99,51 @@
 }
 
 
+// Utility method for subclass-only use. Not to be overridden.
+// Returns the entry value, if valid, or nil, if invalid.
+- (id) entryOfClass: (Class) klass
+             forKey: (NSString*) key
+       inDictionary: (NSDictionary*) dataD
+   withDefaultValue: (id) defaultValue;
+{
+    id objInDataD = [dataD objectForKey: key];
+    
+    if (!objInDataD)
+    {
+        if (defaultValue)
+        {
+            NSLog(@"%s :: dataD dictionary %@ does not contain a value for the key '%@'. "
+                  "Will use the default value: '%@'.", __FUNCTION__, dataD, key, defaultValue);
+
+            objInDataD = defaultValue;
+        }
+        else
+        {
+            NSLog(@"%s :: dataD dictionary %@ does not contain a value for the key '%@'. ",
+                  __FUNCTION__, dataD, key);
+
+            return nil;
+        }
+    }
+    
+    if (![objInDataD isKindOfClass: klass])
+    {
+        if (defaultValue)
+        {
+            NSLog(@"%s :: Default value '%@' for key '%@' in dataD dictionary %@ is not of class '%@'.",
+                  __FUNCTION__, defaultValue, key, dataD, NSStringFromClass(klass));
+        }
+        else
+        {
+            NSLog(@"%s :: Value '%@' for key '%@' in dataD dictionary %@ is not of class '%@'.",
+                  __FUNCTION__, objInDataD, key, dataD, NSStringFromClass(klass));
+        }
+
+        return nil;
+    }
+
+    return objInDataD;
+}
+
+
 @end

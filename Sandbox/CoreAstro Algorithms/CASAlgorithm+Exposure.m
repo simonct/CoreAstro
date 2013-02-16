@@ -33,6 +33,9 @@ NSString* const keyNumRows = @"num rows";
 NSString* const keyNumCols = @"num cols";
 NSString* const keyNumPixels = @"num pixels";
 
+NSString* const keyPixelW = @"pixel width";
+NSString* const keyPixelH = @"pixel height";
+
 NSString* const keyThresholdingMode = @"thresholding mode";
 NSString* const keyThreshold = @"threshold";
 

@@ -59,25 +59,17 @@ NSString* const keyRegions = @"regions";
 
 - (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
 {
-    CASCCDExposure* exposure = nil;
+    id objInDataD = nil;
 
-    id objInDataD = [dataD objectForKey: keyExposure];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyExposure'.",
-              __FUNCTION__);
-        
-        return nil;
-    }
-    if (![objInDataD isKindOfClass: [CASCCDExposure class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'CASCCDExposure'.",
-              __FUNCTION__, keyExposure);
-        
-        return nil;
-    }
+    // === keyExposure === //
+    
+    objInDataD = [self entryOfClass: [CASCCDExposure class]
+                             forKey: keyExposure
+                       inDictionary: dataD
+                   withDefaultValue: nil];
+    if (!objInDataD) return nil;
 
-    exposure = (CASCCDExposure*) objInDataD;
+    CASCCDExposure* exposure = (CASCCDExposure*) objInDataD;
 
     if (exposure.params.bps != 16)
     {
@@ -96,95 +88,62 @@ NSString* const keyRegions = @"regions";
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
 
-    
-    objInDataD = [dataD objectForKey: keyMaxNumRegions];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyMaxNumRegions'. "
-              "Will use the default value of 'NSUIntegerMax' (effectively, 'no limit').", __FUNCTION__);
+    // === keyMaxNumRegions === //
 
-        objInDataD = [NSNumber numberWithUnsignedInteger: NSUIntegerMax];
-    }
-    if (![objInDataD isKindOfClass: [NSNumber class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'NSNumber'.",
-              __FUNCTION__, keyMaxNumRegions);
+    objInDataD = [self entryOfClass: [NSNumber class]
+                             forKey: keyMaxNumRegions
+                       inDictionary: dataD
+                   withDefaultValue: [NSNumber numberWithUnsignedInteger: NSUIntegerMax]];
+    if (!objInDataD) return nil;
 
-        return nil;
-    }
     self.maxNumRegions = [objInDataD unsignedIntegerValue];
     [resultsMutD setObject: objInDataD forKey: keyMaxNumRegions];
 
-    
-    objInDataD = [dataD objectForKey: keyMinNumPixelsInRegion];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyMinNumPixelsInRegion'. "
-              "Will use the default value of 1.", __FUNCTION__);
+    // === keyMinNumPixelsInRegion === //
 
-        objInDataD = [NSNumber numberWithUnsignedInteger: 1];
-    }
-    if (![objInDataD isKindOfClass: [NSNumber class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'NSNumber'.",
-              __FUNCTION__, keyMinNumPixelsInRegion);
+    objInDataD = [self entryOfClass: [NSNumber class]
+                             forKey: keyMinNumPixelsInRegion
+                       inDictionary: dataD
+                   withDefaultValue: [NSNumber numberWithUnsignedInteger: 1]];
+    if (!objInDataD) return nil;
 
-        return nil;
-    }
     self.minNumPixelsInRegion = [objInDataD unsignedIntegerValue];
     [resultsMutD setObject: objInDataD forKey: keyMinNumPixelsInRegion];
 
-    
-    objInDataD = [dataD objectForKey: keyThresholdingMode];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyThresholdingMode'. "
-              "Will use the default thresholding mode, 'kThresholdingModeUseAverage'.", __FUNCTION__);
+    // === keyThresholdingMode === //
 
-        objInDataD = [NSNumber numberWithInteger: kThresholdingModeUseAverage];
-    }
-    if (![objInDataD isKindOfClass: [NSNumber class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'NSNumber'.",
-              __FUNCTION__, keyThresholdingMode);
+    objInDataD = [self entryOfClass: [NSNumber class]
+                             forKey: keyThresholdingMode
+                       inDictionary: dataD
+                   withDefaultValue: [NSNumber numberWithInteger: kThresholdingModeUseAverage]];
+    if (!objInDataD) return nil;
 
-        return nil;
-    }
-    ThresholdingMode mode = (ThresholdingMode) [(NSNumber*) objInDataD integerValue];
+    self.thresholdingMode = [objInDataD integerValue];
     [resultsMutD setObject: objInDataD forKey: keyThresholdingMode];
-    self.thresholdingMode = mode;
+
+    // === regions === //
 
     NSArray* regions = nil;
 
-    switch (mode)
+    switch (self.thresholdingMode)
     {
         case kThresholdingModeNoThresholding:
         case kThresholdingModeUseMininum:
         case kThresholdingModeUseAverage:
         {
-            regions = [self segmentExposureWithThresholdingMode: mode];
+            regions = [self segmentExposureWithThresholdingMode: self.thresholdingMode];
         }
             break;
 
         case kThresholdingModeUseCustomValue:
         {
-            objInDataD = [dataD objectForKey: keyThreshold];
-            if (!objInDataD)
-            {
-                NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyThreshold'.",
-                      __FUNCTION__);
+            objInDataD = [self entryOfClass: [NSNumber class]
+                                     forKey: keyThreshold
+                               inDictionary: dataD
+                           withDefaultValue: nil];
+            if (!objInDataD) return nil;
 
-                return nil;
-            }
-            if (![objInDataD isKindOfClass: [NSNumber class]])
-            {
-                NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'NSNumber'.",
-                      __FUNCTION__, keyThreshold);
-
-                return nil;
-            }
-
-            self.threshold = [(NSNumber*) objInDataD unsignedShortValue];
+            self.threshold = [objInDataD unsignedShortValue];
             regions = [self segmentExposureWithThreshold: self.threshold];
         }
             break;
@@ -192,13 +151,13 @@ NSString* const keyRegions = @"regions";
         default:
         {
             NSLog(@"%s :: unknown/invalid thresholding mode ('%d') for the key '%@' in dataD dictionary.",
-                  __FUNCTION__, mode, keyThreshold);
+                  __FUNCTION__, self.thresholdingMode, keyThresholdingMode);
 
             return nil;
         }
             break;
     }
-
+    
     [resultsMutD setObject: [NSNumber numberWithUnsignedShort: self.threshold] forKey: keyThreshold];
 
     if (regions)
@@ -209,6 +168,8 @@ NSString* const keyRegions = @"regions";
         [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: [regions count]] forKey: keyNumRegions];
         [resultsMutD setObject: regions forKey: keyRegions];
     }
+
+    // =========================== //
 
     return [NSDictionary dictionaryWithDictionary: resultsMutD];
 }

@@ -63,4 +63,12 @@ typedef void(^CASAlgorithmCompletionBlock)(NSDictionary*);
                  async: (BOOL) async
           withArgument: (NSDictionary*) resultsD;
 
+
+// Utility method for subclass-only use. Not to be overridden.
+// Returns the entry value, if valid, or nil, if invalid.
+- (id) entryOfClass: (Class) klass
+             forKey: (NSString*) key
+       inDictionary: (NSDictionary*) dataD
+   withDefaultValue: (id) defaultValue;
+
 @end

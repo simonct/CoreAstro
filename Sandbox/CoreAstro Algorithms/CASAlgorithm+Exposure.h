@@ -35,6 +35,9 @@ extern NSString* const keyNumRows;
 extern NSString* const keyNumCols;
 extern NSString* const keyNumPixels;
 
+extern NSString* const keyPixelW;
+extern NSString* const keyPixelH;
+
 extern NSString* const keyThresholdingMode;
 extern NSString* const keyThreshold;
 
