@@ -81,6 +81,7 @@
         {
             uint16_t min;
             cas_alg_stats(values, self.numPixels,
+                          NULL, // totalExposure
                           &min, // min
                           NULL, // countOfMin
                           NULL, // max
@@ -106,6 +107,7 @@
         {
             double avg;
             cas_alg_stats(values, self.numPixels,
+                          NULL, // totalExposure
                           NULL, // min
                           NULL, // countOfMin
                           NULL, // max

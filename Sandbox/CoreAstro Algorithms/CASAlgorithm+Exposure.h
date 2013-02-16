@@ -102,22 +102,33 @@ NSArray* cas_alg_hist(uint16_t* values, NSUInteger len, uint16_t binWidth);
 
 
 // An utility function to find the minimum, maximum, and average values
-// of an array of exposure values. The nz variables represent values
-// computed by ignoring the zero values in the array. The function needs
-// at least one and at most three passes through the array to compute
-// all returned values but it won't do the second or third passes if the
-// caller isn't interested in the returned values that require those passes.
+// of an array of exposure values, as well as the total exposure. The nz
+// variables represent values computed by ignoring the zero values in the
+// array. The function needs at least one and at most three passes through
+// the array to compute all returned values but it won't do the second or
+// third passes if the caller isn't interested in the returned values that
+// require those passes. Pass nil as the pointer argument to a value that
+// you're not interested in.
 //
 // Note: expects unsigned 16-bit values.
-void cas_alg_stats(uint16_t* values, NSUInteger len,
-                   uint16_t* min, NSUInteger* countOfMin,
-                   uint16_t* max, NSUInteger* countOfMax,
-                   double* avg, NSUInteger* countOfLessThanAvg,
-                   NSUInteger* countOfAvg, NSUInteger* countOfMoreThanAvg,
-                   uint16_t* nzMin, NSUInteger* countOfNzMin,
-                   double* nzAvg, NSUInteger* countOfLessThanNzAvg,
-                   NSUInteger* countOfNzAvg, NSUInteger* countOfMoreThanNzAvg,
-                   NSUInteger* countOfNonZeroValues);
+void cas_alg_stats(uint16_t* values,                    // the array of exposure values
+                   NSUInteger len,                      // the length of the array
+                   double* totalExposure,               // the sum of all exposure values
+                   uint16_t* min,                       // the minimum exposure value
+                   NSUInteger* countOfMin,              // how many entries have the min value
+                   uint16_t* max,                       // the maximum exposure value
+                   NSUInteger* countOfMax,              // how many entries have the max value
+                   double* avg,                         // the average exposure value
+                   NSUInteger* countOfLessThanAvg,      // how many entries have values below the average
+                   NSUInteger* countOfAvg,              // how many entries have values equal to the average
+                   NSUInteger* countOfMoreThanAvg,      // how many entries have values above the average
+                   uint16_t* nzMin,                     // same as min, ignoring zero-valued entries
+                   NSUInteger* countOfNzMin,            // same as countOfMin, ignoring zero-valued entries
+                   double* nzAvg,                       // same as avg, ignoring zero-valued entries
+                   NSUInteger* countOfLessThanNzAvg,    // same as countOfLessThanAvg, ignoring zero-valued entries
+                   NSUInteger* countOfNzAvg,            // same as countOfAvg, ignoring zero-valued entries
+                   NSUInteger* countOfMoreThanNzAvg,    // same as countOfMoreThanAvg, ignoring zero-valued entries
+                   NSUInteger* countOfNonZeroValues);   // how many entries have zero exposure values
 
 
 @interface CASAlgorithm (Exposure)
