@@ -15,6 +15,18 @@
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASLibraryBrowserViewController ()
+@property (nonatomic,strong) IBOutlet NSWindow *titleEditingSheet;
+@property (nonatomic,copy) NSString* currentEditingTitle;
+@property (nonatomic,readonly) NSArray* exposures;
+@property (nonatomic,strong) NSArray* groups;
+@property (nonatomic,strong) NSMutableDictionary* wrappers;
+@property (nonatomic,copy) NSString* groupKeyPath;
+@property (assign) NSUInteger version;
+- (IBAction)editTitleOK:(NSButton*)sender;
+- (IBAction)editTitleCancel:(NSButton*)sender;
+@end
+
 @interface CASCCDExposure (CASLibraryBrowserViewController)<NSPasteboardWriting>
 @end
 
@@ -105,6 +117,7 @@
 
 @interface CASCCDExposureWrapper : NSObject
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic,unsafe_unretained) CASLibraryBrowserViewController* viewController; // can't have a weak ref to a VC in 10.7
 @end
 
 @implementation CASCCDExposureWrapper {
@@ -153,6 +166,17 @@
     return self.exposure.displayDate;
 }
 
+- (NSUInteger) imageVersion
+{
+    return self.viewController.version;
+//    NSDate* date;
+//    if ([self.exposure.io.url getResourceValue:&date forKey:NSURLContentModificationDateKey error:nil]){
+//        NSLog(@"self.exposure.io.url: %@ -> %@",self.exposure.io.url,date);
+//        return (NSUInteger)[date timeIntervalSinceReferenceDate];
+//    }
+//    return 0;
+}
+
 + (CASCCDExposureWrapper*)wrapperWithExposure:(CASCCDExposure*)exposure
 {
     CASCCDExposureWrapper* wrapper = [[CASCCDExposureWrapper alloc] init];
@@ -168,17 +192,6 @@
 @end
 
 @implementation CASLibraryBrowserGroupInfo
-@end
-
-@interface CASLibraryBrowserViewController ()
-@property (nonatomic,strong) IBOutlet NSWindow *titleEditingSheet;
-@property (nonatomic,copy) NSString* currentEditingTitle;
-@property (nonatomic,readonly) NSArray* exposures;
-@property (nonatomic,strong) NSArray* groups;
-@property (nonatomic,strong) NSMutableDictionary* wrappers;
-@property (nonatomic,copy) NSString* groupKeyPath;
-- (IBAction)editTitleOK:(NSButton*)sender;
-- (IBAction)editTitleCancel:(NSButton*)sender;
 @end
 
 @implementation CASLibraryBrowserViewController {
@@ -311,6 +324,7 @@
     CASCCDExposureWrapper* wrapper = self.wrappers[exposure.uuid];
     if (!wrapper && exposure.uuid){
         wrapper = [CASCCDExposureWrapper wrapperWithExposure:exposure];
+        wrapper.viewController = self;
         [self.wrappers setObject:wrapper forKey:exposure.uuid];
     }
     return wrapper;
@@ -538,6 +552,7 @@
         });
     }
     else {
+        ++self.version;
         [self updateForCurrentGroupKey];
         [self.browserView reloadData];
     }
