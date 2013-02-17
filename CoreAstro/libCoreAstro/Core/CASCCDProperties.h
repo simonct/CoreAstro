@@ -109,6 +109,10 @@ NS_INLINE NSString* NSStringFromCASPoint(CASPoint pt) {
     return [NSString stringWithFormat:@"{%ld,%ld}",pt.x,pt.y];
 }
 
+NS_INLINE NSString* NSStringFromCGPoint(CGPoint pt) {
+    return [NSString stringWithFormat:@"{%f,%f}",pt.x,pt.y];
+}
+
 NS_INLINE NSString* NSStringFromCASSize(CASSize sz) {
     return [NSString stringWithFormat:@"{%ld,%ld}",sz.width,sz.height];
 }

@@ -81,6 +81,7 @@
         {
             uint16_t min;
             cas_alg_stats(values, self.numPixels,
+                          NULL, // totalExposure
                           &min, // min
                           NULL, // countOfMin
                           NULL, // max
@@ -106,6 +107,7 @@
         {
             double avg;
             cas_alg_stats(values, self.numPixels,
+                          NULL, // totalExposure
                           NULL, // min
                           NULL, // countOfMin
                           NULL, // max
@@ -221,8 +223,8 @@
         }
 
         // (x,y) coordinates of the brightest pixel.
-        NSInteger xbp = cas_alg_X(numRows, numCols, idxOfMax);
-        NSInteger ybp = cas_alg_Y(numRows, numCols, idxOfMax);
+        NSUInteger xbp = cas_alg_kx(numRows, numCols, idxOfMax);
+        NSUInteger ybp = cas_alg_ky(numRows, numCols, idxOfMax);
 
         // A frame for the current region. It will be updated
         // as we grow the region.
@@ -243,8 +245,8 @@
             [regionPixels addObject: pObj];
 
             // (x,y) coordinates of the pixel we're processing.
-            NSInteger x = cas_alg_X(numRows, numCols, p);
-            NSInteger y = cas_alg_Y(numRows, numCols, p);
+            NSUInteger x = cas_alg_kx(numRows, numCols, p);
+            NSUInteger y = cas_alg_ky(numRows, numCols, p);
 
             // Update the region frame. If the pixel being processed lies
             // outside of the current frame, extend the frame to contain it.
@@ -288,7 +290,7 @@
                 nx = (x-1);
                 ny = y;
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -303,7 +305,7 @@
                 nx = (x-1);
                 ny = (y-1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -318,7 +320,7 @@
                 nx = x;
                 ny = (y-1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -333,7 +335,7 @@
                 nx = (x+1);
                 ny = (y-1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -348,7 +350,7 @@
                 nx = (x+1);
                 ny = y;
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -363,7 +365,7 @@
                 nx = (x+1);
                 ny = (y+1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -378,7 +380,7 @@
                 nx = x;
                 ny = (y+1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])
@@ -393,7 +395,7 @@
                 nx = (x-1);
                 ny = (y+1);
 
-                np = cas_alg_P(numRows, numCols, nx, ny);
+                np = cas_alg_p(numRows, numCols, nx, ny);
                 npObj = [NSNumber numberWithUnsignedInteger: np];
 
                 if ([candidates containsObject: npObj])

@@ -33,6 +33,9 @@ NSString* const keyNumRows = @"num rows";
 NSString* const keyNumCols = @"num cols";
 NSString* const keyNumPixels = @"num pixels";
 
+NSString* const keyPixelW = @"pixel width";
+NSString* const keyPixelH = @"pixel height";
+
 NSString* const keyThresholdingMode = @"thresholding mode";
 NSString* const keyThreshold = @"threshold";
 
@@ -49,7 +52,7 @@ NSString* const keyBinCount = @"bin count";
 //
 // Note: the thresholding is done in place.
 // Note: expects unsigned 16-bit values.
-void cas_alg_thresh(uint16_t* values, NSUInteger len, uint16_t threshold)
+void cas_alg_thresh(uint16_t* const values, const NSUInteger len, const uint16_t threshold)
 {
     for (NSUInteger i = 0; i < len; ++i)
     {
@@ -69,7 +72,7 @@ void cas_alg_thresh(uint16_t* values, NSUInteger len, uint16_t threshold)
 //
 // Note: binWidth must not be zero, or nil is returned.
 // Note: expects unsigned 16-bit values.
-NSArray* cas_alg_hist(uint16_t* values, NSUInteger len, uint16_t binWidth)
+NSArray* cas_alg_hist(const uint16_t* const values, const NSUInteger len, const uint16_t binWidth)
 {
     if (binWidth == 0) return nil;
 
@@ -127,23 +130,36 @@ NSArray* cas_alg_hist(uint16_t* values, NSUInteger len, uint16_t binWidth)
 
 
 // An utility function to find the minimum, maximum, and average values
-// of an array of exposure values. The nz variables represent values
-// computed by ignoring the zero values in the array. The function needs
-// at least one and at most three passes through the array to compute
-// all returned values but it won't do the second or third passes if the
-// caller isn't interested in the returned values that require those passes.
+// of an array of exposure values, as well as the total exposure. The nz
+// variables represent values computed by ignoring the zero values in the
+// array. The function needs at least one and at most three passes through
+// the array to compute all returned values but it won't do the second or
+// third passes if the caller isn't interested in the returned values that
+// require those passes. Pass nil as the pointer argument to a value that
+// you're not interested in.
 //
 // Note: expects unsigned 16-bit values.
-void cas_alg_stats(uint16_t* values, NSUInteger len,
-                   uint16_t* min, NSUInteger* countOfMin,
-                   uint16_t* max, NSUInteger* countOfMax,
-                   double* avg, NSUInteger* countOfLessThanAvg,
-                   NSUInteger* countOfAvg, NSUInteger* countOfMoreThanAvg,
-                   uint16_t* nzMin, NSUInteger* countOfNzMin,
-                   double* nzAvg, NSUInteger* countOfLessThanNzAvg,
-                   NSUInteger* countOfNzAvg, NSUInteger* countOfMoreThanNzAvg,
-                   NSUInteger* countOfNonZeroValues)
+void cas_alg_stats(const uint16_t* const values,              // the array of exposure values
+                   const NSUInteger len,                      // the length of the array
+                   double* const totalExposure,               // the sum of all exposure values
+                   uint16_t* const min,                       // the minimum exposure value
+                   NSUInteger* const countOfMin,              // how many entries have the min value
+                   uint16_t* const max,                       // the maximum exposure value
+                   NSUInteger* const countOfMax,              // how many entries have the max value
+                   double* const avg,                         // the average exposure value
+                   NSUInteger* const countOfLessThanAvg,      // how many entries have values below the average
+                   NSUInteger* const countOfAvg,              // how many entries have values equal to the average
+                   NSUInteger* const countOfMoreThanAvg,      // how many entries have values above the average
+                   uint16_t* const nzMin,                     // same as min, ignoring zero-valued entries
+                   NSUInteger* const countOfNzMin,            // same as countOfMin, ignoring zero-valued entries
+                   double* const nzAvg,                       // same as avg, ignoring zero-valued entries
+                   NSUInteger* const countOfLessThanNzAvg,    // same as countOfLessThanAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfNzAvg,            // same as countOfAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfMoreThanNzAvg,    // same as countOfMoreThanAvg, ignoring zero-valued entries
+                   NSUInteger* const countOfNonZeroValues)    // how many entries have zero exposure values
 {
+    double totalExposureVal = 0.0;
+
     uint16_t minVal = USHRT_MAX;
     NSUInteger countOfMinVal = 0;
 
@@ -180,6 +196,7 @@ void cas_alg_stats(uint16_t* values, NSUInteger len,
         }
 
         avgVal += (1.0 * value) / len;
+        totalExposureVal += value;
     }
 
     // No need to do another pass if the caller isn't interested
@@ -221,6 +238,7 @@ void cas_alg_stats(uint16_t* values, NSUInteger len,
         }
     }
 
+    if (totalExposure) { *totalExposure = totalExposureVal; }
     if (min) { *min = minVal; }
     if (countOfMin) { *countOfMin = countOfMinVal; }
     if (max) { *max = maxVal; }
@@ -236,6 +254,47 @@ void cas_alg_stats(uint16_t* values, NSUInteger len,
     if (countOfNzAvg) { *countOfNzAvg = countOfNzAvgVal; }
     if (countOfMoreThanNzAvg) { *countOfMoreThanNzAvg = countOfMoreThanNzAvgVal; }
     if (countOfNonZeroValues) { *countOfNonZeroValues = countOfNonZeroVals; }
+}
+
+
+// An utility function to find the exposure centroid,
+// in the image coordinate system.
+//
+// Note: expects unsigned 16-bit values.
+void cas_alg_exp_centroid(const uint16_t* const values,       // the array of exposure values
+                          const NSUInteger len,               // the length of the array
+                          const NSUInteger numRows,           // the number of rows in the exposure
+                          const NSUInteger numCols,           // the number of columns in the exposure
+                          const double pixelW,                // the pixel width, common to all pixels
+                          const double pixelH,                // the pixel height, common to all pixels
+                          double* const totalExposure,        // the sum of all exposure values
+                          CGPoint* const exposureCentroid)    // the exposure centroid, in the image coord system
+{
+    double bSum = 0.0;
+    double bkxSum = 0.0;
+    double bkySum = 0.0;
+
+    for (NSUInteger p = 0; p < len; ++p)
+    {
+        uint16_t value = values[p];
+        bSum += value;
+
+        NSUInteger kx = cas_alg_kx(numRows, numCols, p);
+        bkxSum += (kx * value);
+
+        NSUInteger ky = cas_alg_ky(numRows, numCols, p);
+        bkySum += (ky * value);
+    }
+
+    if (totalExposure) { *totalExposure = bSum; }
+    
+    if (exposureCentroid)
+    {
+        CGFloat xbar = (CGFloat) ((bkxSum / bSum) + 0.5) * pixelW;
+        CGFloat ybar = (CGFloat) ((bkySum / bSum) + 0.5) * pixelH;
+
+        *exposureCentroid = CGPointMake(xbar, ybar);
+    }
 }
 
 
