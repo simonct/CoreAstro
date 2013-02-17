@@ -57,12 +57,12 @@ NSString* const keyRegions = @"regions";
 
 @implementation CASSegmenter
 
-- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+- (NSMutableDictionary*) resultsMutableDictionaryForDataDictionary: (NSDictionary*) dataD;
 {
     id objInDataD = nil;
 
     // === keyExposure === //
-    
+
     objInDataD = [self entryOfClass: [CASCCDExposure class]
                              forKey: keyExposure
                        inDictionary: dataD
@@ -87,6 +87,15 @@ NSString* const keyRegions = @"regions";
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numRows] forKey: keyNumRows];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
+
+    return resultsMutD;
+}
+
+
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+{
+    NSMutableDictionary* resultsMutD = [self resultsMutableDictionaryForDataDictionary: dataD];
+    id objInDataD = nil;
 
     // === keyMaxNumRegions === //
 
