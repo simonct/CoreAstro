@@ -41,6 +41,8 @@
                         ofLength: (NSUInteger) len
                          numRows: (NSUInteger) numRows
                          numCols: (NSUInteger) numCols
+                          pixelW: (double) pixelW
+                          pixelH: (double) pixelH
               brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 {
     // XXX must not forget to set self.brightnessCentroid at the end!

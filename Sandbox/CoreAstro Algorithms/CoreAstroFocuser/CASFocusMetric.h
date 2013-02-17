@@ -49,6 +49,9 @@ extern NSString* const keyBrightnessCentroid;
 @property (readonly, nonatomic) NSUInteger numCols;
 @property (readonly, nonatomic) NSUInteger numPixels;
 
+@property (readonly, nonatomic) double pixelW;
+@property (readonly, nonatomic) double pixelH;
+
 @property (readonly, nonatomic) CGPoint brightnessCentroid;
 
 // Subclasses must override. Default returns zero.
@@ -59,6 +62,8 @@ extern NSString* const keyBrightnessCentroid;
                         ofLength: (NSUInteger) len
                          numRows: (NSUInteger) numRows
                          numCols: (NSUInteger) numCols
+                          pixelW: (double) pixelW
+                          pixelH: (double) pixelH
               brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 
 @end

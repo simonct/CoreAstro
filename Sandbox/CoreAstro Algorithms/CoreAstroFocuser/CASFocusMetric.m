@@ -40,32 +40,27 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
 @property (readwrite, nonatomic) NSUInteger numCols;
 @property (readwrite, nonatomic) NSUInteger numPixels;
 
+@property (readwrite, nonatomic) double pixelW;
+@property (readwrite, nonatomic) double pixelH;
+
 @end
 
 
 @implementation CASFocusMetric
 
-- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+- (NSMutableDictionary*) resultsMutableDictionaryForDataDictionary: (NSDictionary*) dataD;
 {
-    CASCCDExposure* exposure = nil;
+    id objInDataD = nil;
 
-    id objInDataD = [dataD objectForKey: keyExposure];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyExposure'.",
-              __FUNCTION__);
+    // === keyExposure === //
 
-        return nil;
-    }
-    if (![objInDataD isKindOfClass: [CASCCDExposure class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'CASCCDExposure'.",
-              __FUNCTION__, keyExposure);
+    objInDataD = [self entryOfClass: [CASCCDExposure class]
+                             forKey: keyExposure
+                       inDictionary: dataD
+                   withDefaultValue: nil];
+    if (!objInDataD) return nil;
 
-        return nil;
-    }
-
-    exposure = (CASCCDExposure*) objInDataD;
+    CASCCDExposure* exposure = (CASCCDExposure*) objInDataD;
 
     if (exposure.params.bps != 16)
     {
@@ -84,24 +79,49 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
 
+    return resultsMutD;
+}
 
-    objInDataD = [dataD objectForKey: keyRegion];
-    if (!objInDataD)
-    {
-        NSLog(@"%s :: dataD dictionary does not contain a value for the key 'keyRegion'. "
-              , __FUNCTION__);
 
-        return nil;
-    }
-    if (![objInDataD isKindOfClass: [CASRegion class]])
-    {
-        NSLog(@"%s :: Value for key '%@' in dataD dictionary is not of class 'CASRegion'.",
-              __FUNCTION__, keyRegion);
+- (NSDictionary*) resultsFromData: (NSDictionary*) dataD;
+{
+    NSMutableDictionary* resultsMutD = [self resultsMutableDictionaryForDataDictionary: dataD];
+    id objInDataD = nil;
 
-        return nil;
-    }
+    // === keyRegion === //
+
+    objInDataD = [self entryOfClass: [CASRegion class]
+                             forKey: keyRegion
+                       inDictionary: dataD
+                   withDefaultValue: nil];
+    if (!objInDataD) return nil;
+
     self.region = (CASRegion*) objInDataD;
     [resultsMutD setObject: objInDataD forKey: keyRegion];
+
+    // === keyPixelW === //
+
+    objInDataD = [self entryOfClass: [NSNumber class]
+                             forKey: keyPixelW
+                       inDictionary: dataD
+                   withDefaultValue: nil];
+    if (!objInDataD) return nil;
+
+    self.pixelW = [(NSNumber*) objInDataD doubleValue];
+    [resultsMutD setObject: objInDataD forKey: keyPixelW];
+
+    // === keyPixelH === //
+
+    objInDataD = [self entryOfClass: [NSNumber class]
+                             forKey: keyPixelH
+                       inDictionary: dataD
+                   withDefaultValue: nil];
+    if (!objInDataD) return nil;
+
+    self.pixelH = [(NSNumber*) objInDataD doubleValue];
+    [resultsMutD setObject: objInDataD forKey: keyPixelH];
+
+    // === focusMetric === //
 
     CGPoint brightnessCentroid = CGPointMake(0, 0);
     CGFloat focusMetric = [self focusMetricForRegion: self.region
@@ -109,12 +129,17 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
                                             ofLength: self.numPixels
                                              numRows: self.numRows
                                              numCols: self.numCols
+                                              pixelW: self.pixelW
+                                              pixelH: self.pixelH
                                   brightnessCentroid: &brightnessCentroid];
 
     NSValue* value = [NSValue valueWithBytes: &brightnessCentroid objCType: @encode(CGPoint)];
     [resultsMutD setObject: value forKey: keyBrightnessCentroid];
 
     [resultsMutD setObject: [NSNumber numberWithFloat: focusMetric] forKey: keyFocusMetric];
+
+    // =========================== //
+    
     return [NSDictionary dictionaryWithDictionary: resultsMutD];
 }
 
@@ -127,6 +152,8 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
                         ofLength: (NSUInteger) len
                          numRows: (NSUInteger) numRows
                          numCols: (NSUInteger) numCols
+                          pixelW: (double) pixelW
+                          pixelH: (double) pixelH
               brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 {
     return 0.0;
