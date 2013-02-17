@@ -680,10 +680,18 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
+        
         if (!_suppressKeyValueObserving){
+            
             if ([@"selectedObjects" isEqualToString:keyPath]){
-                [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
+                
                 // todo; scroll to selection
+
+                // prevent -imageBrowserSelectionDidChange: from being called during the selection change
+                NSAssert(self.browserView.delegate == self, @"You need to update the KVO code in the browser view controller");
+                self.browserView.delegate = nil;
+                [self.browserView setSelectionIndexes:self.exposuresController.selectionIndexes byExtendingSelection:NO];
+                self.browserView.delegate = self;
             }
             else if ([@"arrangedObjects" isEqualToString:keyPath]){
                 [self refresh];
