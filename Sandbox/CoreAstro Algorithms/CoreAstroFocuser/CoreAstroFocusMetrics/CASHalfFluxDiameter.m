@@ -29,7 +29,7 @@
 #import "CASHalfFluxDiameter.h"
 
 
-NSString* const keyRadiusTolerance = @"radius tolerance";
+NSString* const keyScaledRadiusToleranceFactor = @"scaled radius tolerance factor";
 NSString* const keyBrightnessTolerance = @"brightness tolerance";
 
 
@@ -93,50 +93,26 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     id objInDataD = nil;
     NSMutableDictionary* mutDataD = [dataD mutableCopy];
 
-    // === keyPixelW === //
+    // === keyScaledRadiusToleranceFactor === //
 
     objInDataD = [self entryOfClass: [NSNumber class]
-                             forKey: keyPixelW
+                             forKey: keyScaledRadiusToleranceFactor
                        inDictionary: dataD
-                   withDefaultValue: nil];
+                   withDefaultValue: [NSNumber numberWithDouble: DEFAULT_SCALED_RADIUS_TOLERANCE_FACTOR]];
     if (!objInDataD) return nil;
 
-    double pixelW = [(NSNumber*) objInDataD doubleValue];
-
-    // === keyPixelH === //
-
-    objInDataD = [self entryOfClass: [NSNumber class]
-                             forKey: keyPixelH
-                       inDictionary: dataD
-                   withDefaultValue: nil];
-    if (!objInDataD) return nil;
-
-    double pixelH = [(NSNumber*) objInDataD doubleValue];
-
-    // === keyRadiusTolerance === //
-
-    double rtol = DEFAULT_RADIUS_TOLERANCE_FACTOR * MIN(pixelW, pixelH);
-
-    objInDataD = [self entryOfClass: [NSNumber class]
-                             forKey: keyRadiusTolerance
-                       inDictionary: dataD
-                   withDefaultValue: [NSNumber numberWithDouble: rtol]];
-    if (!objInDataD) return nil;
-
-    self.radiusTolerance = [(NSNumber*) objInDataD doubleValue];
-    [mutDataD setObject: objInDataD forKey: keyRadiusTolerance];
+    self.scaledRadiusToleranceFactor = [(NSNumber*) objInDataD doubleValue];
+    [mutDataD setObject: objInDataD forKey: keyScaledRadiusToleranceFactor];
 
     // === keyBrightnessTolerance === //
-
-    double btol = DEFAULT_BRIGHTNESS_TOLERANCE;
 
     objInDataD = [self entryOfClass: [NSNumber class]
                              forKey: keyBrightnessTolerance
                        inDictionary: dataD
-                   withDefaultValue: [NSNumber numberWithDouble: btol]];
+                   withDefaultValue: [NSNumber numberWithDouble: DEFAULT_SCALED_BRIGHTNESS_TOLERANCE]];
     if (!objInDataD) return nil;
 
-    self.brightnessTolerance = [(NSNumber*) objInDataD doubleValue];
+    self.scaledBrightnessTolerance = [(NSNumber*) objInDataD doubleValue];
     [mutDataD setObject: objInDataD forKey: keyBrightnessTolerance];
 
     // ============================== //
@@ -678,9 +654,10 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 {
     // === Pre-compute some values. === //
 
-    // Pixel width and height.
-    double w = pixelW;
-    double h = pixelH;
+    // Pixel width and height, scaled so that the larger of the two equals 1.
+    double largerOfWH = MAX(pixelW, pixelH);
+    double w = pixelW / largerOfWH;
+    double h = pixelH / largerOfWH;
 
     // Area of a pixel.
     self.pixelArea = (w * h);
@@ -696,24 +673,33 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     self.brightnessCentroid = centroid;
     *brightnessCentroidPtr = centroid;
 
+    double averageBrightness = totalBrightness / (numRows * numCols);
+
+    NSLog(@"  totalBrightness: %f", totalBrightness);
+    NSLog(@"averageBrightness: %f\n\n", averageBrightness);
+
+    // Scale the centroid.
+    centroid.x /= largerOfWH;
+    centroid.y /= largerOfWH;
+
     // === Binary search variables === //
 
-    if (self.radiusTolerance == 0.0)
+    if (self.scaledRadiusToleranceFactor == 0.0)
     {
-        self.radiusTolerance = DEFAULT_RADIUS_TOLERANCE_FACTOR * MIN(w, h);
+        self.scaledRadiusToleranceFactor = DEFAULT_SCALED_RADIUS_TOLERANCE_FACTOR;
     }
 
-    if (self.brightnessTolerance == 0.0)
+    if (self.scaledBrightnessTolerance == 0.0)
     {
-        self.brightnessTolerance = DEFAULT_BRIGHTNESS_TOLERANCE;
+        self.scaledBrightnessTolerance = DEFAULT_SCALED_BRIGHTNESS_TOLERANCE;
     }
 
-    // Our brightness goal.
-    double bgoal = 0.5 * totalBrightness;
+    // Our brightness goal (scaled).
+    double bgoal = (0.5 * totalBrightness) / averageBrightness;
 
     // Tolerance values.
-    double rtol = self.radiusTolerance;
-    double btol = self.brightnessTolerance;
+    double rtol = self.scaledRadiusToleranceFactor * MIN(w, h);
+    double btol = self.scaledBrightnessTolerance;
 
     // Current minimum and maximum radii.
     // rmax is the maximum of the exposure width and the exposure height.
@@ -725,30 +711,34 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     // Current running value of the radius.
     double rcur = 0.0; // arbitrary initial value
 
+    // Current running value of the brightness inside the
+    // circle of radius rcur.
+    double bcur = 0.0;
+
     // === Start binary search === //
 
     BOOL done = NO;
     while (!done)
     {
-        // Current running value of the brightness inside the
-        // circle of radius rcur.
-        double bcur = 0.0;
+        // Must be reset in every iteration of the binary search.
+        bcur = 0.0;
 
         // The binary search step.
         rcur = (rmin + rmax) / 2.0;
 
-        // NSLog(@"rmin = %f", rmin);
-        // NSLog(@"rcur = %f", rcur);
-        // NSLog(@"rmax = %f\n\n", rmax);
+        NSLog(@"rmin = %f", rmin);
+        NSLog(@"rcur = %f", rcur);
+        NSLog(@"rmax = %f\n\n", rmax);
 
         // For every pixel with a non-zero brightness value...
         for (NSUInteger p = 0; p < len; ++p)
         {
+            // Scaled brightness value of the current pixel.
             uint16_t bpixel = values[p];
             if (bpixel == 0) continue;
 
-            // Brightness per unit of area for the current pixel.
-            double bpa = (bpixel / self.pixelArea);
+            // Scaled brightness per unit of area for the current pixel.
+            double bpa = ((bpixel / averageBrightness) / self.pixelArea);
 
             // Pixel indices.
 
@@ -839,8 +829,12 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             done = (rmax - rmin <= rtol);
         }
     }
-    
-    return (rmin + rmax); // HFD = 2*rcur = (rmin + rmax)
+
+    NSLog(@"brightness at HFR / total brightness: %f", ((bcur * averageBrightness) / totalBrightness));
+
+    // HFD = 2*rcur = (rmin + rmax), but we need to scale back
+    // to the actual pixel size.
+    return (rmin + rmax) * largerOfWH;
 }
 
 
@@ -856,9 +850,10 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 {
     // === Pre-compute some values. === //
 
-    // Pixel width and height.
-    double w = pixelW;
-    double h = pixelH;
+    // Pixel width and height, scaled so that the larger of the two equals 1.
+    double largerOfWH = MAX(pixelW, pixelH);
+    double w = pixelW / largerOfWH;
+    double h = pixelH / largerOfWH;
 
     NSUInteger numPixelsMinus1 = numRows * numCols - 1;
 
@@ -869,6 +864,15 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     cas_alg_exp_centroid(values, len, numRows, numCols, w, h, &totalBrightness, &centroid);
     self.brightnessCentroid = centroid;
     *brightnessCentroidPtr = centroid;
+
+    double averageBrightness = totalBrightness / (numRows * numCols);
+
+    NSLog(@"  totalBrightness: %f", totalBrightness);
+    NSLog(@"averageBrightness: %f", averageBrightness);
+
+    // Scale the centroid.
+    centroid.x /= largerOfWH;
+    centroid.y /= largerOfWH;
 
     // === Run an outward-growing spiral around the pixel that contains  === //
     // === the centroid point, adding up the pixel brightness values as  === //
@@ -894,6 +898,8 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     NSUInteger kx = cx;
     NSUInteger ky = cy;
 
+    double totOverAvg = totalBrightness / averageBrightness;
+
     while (!done)
     {
         for (NSUInteger s = 0; s < 2*step && !done; ++s)
@@ -907,8 +913,8 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 
             // NSLog(@"pixel = %ld : (%ld, %ld) : %hd", p, kx, ky, values[p]);
 
-            bcur += values[p];
-            done = (bcur > 0.5 * totalBrightness);
+            bcur += (values[p] / averageBrightness);
+            done = (bcur > (0.5 * totOverAvg));
             if (done) break;
 
             if (xturn)
@@ -954,7 +960,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     double y = (ky + 0.5) * h;
     CGPoint ptP = CGPointMake(x, y);
 
-    return 2.0 * sqrt(segmSquaredLength(centroid, ptP));
+    return 2.0 * sqrt(segmSquaredLength(centroid, ptP)) * largerOfWH;
 }
 
 

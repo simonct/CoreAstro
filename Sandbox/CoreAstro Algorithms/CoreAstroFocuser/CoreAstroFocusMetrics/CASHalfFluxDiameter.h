@@ -26,13 +26,13 @@
 
 #import "CASFocusMetric.h"
 
-// Used as a fraction of min(w,h).
-#define DEFAULT_RADIUS_TOLERANCE_FACTOR     0.01
+// Used as a fraction of min(scaled width, scaled height).
+#define DEFAULT_SCALED_RADIUS_TOLERANCE_FACTOR     0.0001
 
 // Used in absolute terms.
-#define DEFAULT_BRIGHTNESS_TOLERANCE        0.01
+#define DEFAULT_SCALED_BRIGHTNESS_TOLERANCE        0.00001
 
-extern NSString* const keyRadiusTolerance;
+extern NSString* const keyScaledRadiusToleranceFactor;
 extern NSString* const keyBrightnessTolerance;
 
 @interface CASHalfFluxDiameter: CASFocusMetric
@@ -43,12 +43,11 @@ extern NSString* const keyBrightnessTolerance;
 // not set by the client code, suitable default
 // values are used.
 
-// Default value is DEFAULT_RADIUS_TOLERANCE_FACTOR of
-// min(pixel width, pixel height).
-@property (nonatomic) double radiusTolerance;
+// Default value is DEFAULT_SCALED_RADIUS_TOLERANCE_FACTOR.
+@property (nonatomic) double scaledRadiusToleranceFactor;
 
-// Default value is DEFAULT_BRIGHTNESS_TOLERANCE.
-@property (nonatomic) double brightnessTolerance;
+// Default value is DEFAULT_SCALED_BRIGHTNESS_TOLERANCE.
+@property (nonatomic) double scaledBrightnessTolerance;
 
 // Computes a faster but less accurate estimate of the HFD,
 // using a spiral approach.
