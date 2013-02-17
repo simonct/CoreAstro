@@ -45,3 +45,13 @@ NSTimeInterval CASTimeBlock(void(^block)(void))
     }
     return result;
 }
+
+void CASThrowException(Class klass,NSString* message)
+{
+    @throw [NSException exceptionWithName:NSStringFromClass(klass) reason:message userInfo:nil];
+}
+
+void CASThrowOOMException(Class klass)
+{
+    @throw [NSException exceptionWithName:NSStringFromClass(klass) reason:NSLocalizedString(@"Out of memory", @"Exception reason message") userInfo:nil];
+}

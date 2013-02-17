@@ -348,40 +348,34 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 }
 
 // IC = (IR - IB)
-- (void)subtractDark:(CASCCDExposure*)dark from:(CASCCDExposure*)exposure
+- (CASCCDExposure*)subtract:(CASCCDExposure*)darkOrBias from:(CASCCDExposure*)exposure
 {
-    if (![self preflightA:dark b:exposure]){
+    if (![self preflightA:darkOrBias b:exposure]){
         NSLog(@"%@: unsupported",NSStringFromSelector(_cmd));
-        return;
+        return nil;
     }
  
-    const NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+    __block CASCCDExposure* result = [exposure copy];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
 
-    const CASSize size = [exposure actualSize];
-
-    const NSInteger groupCount = [self standardGroupSize];
-    const NSInteger pixelCount = size.width * size.height;
-    const NSInteger pixelsPerGroup = pixelCount / groupCount;
-    
-    cas_pixel_t* darkPixels = (cas_pixel_t*)[dark.floatPixels bytes];
-    cas_pixel_t* exposurePixels = (cas_pixel_t*)[exposure.floatPixels bytes];
-    
-    __block NSInteger totalPixels = 0;
-    
-    dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
-        
-        // todo: AVX
-        const NSInteger offset = pixelsPerGroup * groupIndex;
-        const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
-        for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-            const cas_pixel_t pixel = exposurePixels[i];
-            const cas_pixel_t dark = darkPixels[i];
-            exposurePixels[i] = pixel > dark ? pixel - dark : 0;
+        float* fbuf = (float*)[result.floatPixels bytes];
+        float* fdarkOrBias = (float*)[darkOrBias.floatPixels bytes];
+        if (!fbuf || !fdarkOrBias){
+            NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
+            result = nil;
         }
-        totalPixels += pixelsInThisGroup;
-    });
+        else {
+            vDSP_vsub(fdarkOrBias,1,fbuf,1,fbuf,1,[result.floatPixels length]/sizeof(float));
+        }
+        
+        // set the exposure type (needed for saving it correctly)
+        result.format = exposure.format;
+    }
     
-    NSLog(@"%@: %fs, %ld/%ld pixels",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start,totalPixels,pixelCount);
+    return result;
 }
 
 // IC = [(IR - IB) * M] / (IF - IB)

@@ -111,6 +111,9 @@
         [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[objects allObjects]];
         [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
     }
+    else {
+        NSLog(@"Exposures with UUIDs %@ already in project with UUIDs %@",[objects valueForKeyPath:@"meta.uuid"],[_exposures valueForKeyPath:@"meta.uuid"]);
+    }
 }
 
 - (void)removeExposures:(NSSet *)objects

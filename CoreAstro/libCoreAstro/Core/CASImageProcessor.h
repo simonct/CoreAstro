@@ -36,7 +36,7 @@
 - (CASCCDExposure*)invert:(CASCCDExposure*)exposure;
 - (CASCCDExposure*)normalise:(CASCCDExposure*)exposure;
 
-- (void)subtractDark:(CASCCDExposure*)dark from:(CASCCDExposure*)exposure;
+- (CASCCDExposure*)subtract:(CASCCDExposure*)darkOrBias from:(CASCCDExposure*)exposure;
 - (void)divideFlat:(CASCCDExposure*)flat into:(CASCCDExposure*)exposure;
 
 - (CASCCDExposure*)medianSum:(NSArray*)exposures;

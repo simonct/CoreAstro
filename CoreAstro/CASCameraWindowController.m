@@ -1561,12 +1561,7 @@
 {
     if ([[self.exposuresController selectedObjects] count]){
         if ([self.exposuresController isKindOfClass:[CASExposuresController class]]){
-            if (!self.exposuresController.project){
-                [self.exposuresController promptToDeleteCurrentSelectionWithWindow:self.window];
-            }
-            else {
-                [self.exposuresController removeObjectsAtArrangedObjectIndexes:[self.exposuresController selectionIndexes]];
-            }
+            [self.exposuresController removeCurrentlySelectedExposuresWithWindow:self.window];
         }
         else {
             [self.exposuresController remove:sender]; // change no being saved

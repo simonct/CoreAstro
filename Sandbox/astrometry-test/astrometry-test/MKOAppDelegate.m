@@ -217,7 +217,7 @@
     return [result copy];
 }
 
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font
 {
     CALayer* layer = [CALayer layer];
     
@@ -255,11 +255,9 @@
         
         CATextLayer* text = [CATextLayer layer];
         text.string = annotation;
-        const CGFloat fontSize = 24;
-        NSFont* font = [NSFont boldSystemFontOfSize:fontSize];
         const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
         text.font = (__bridge CFTypeRef)(font);
-        text.fontSize = fontSize;
+        text.fontSize = font.pointSize;
         text.bounds = CGRectMake(0, 0, size.width, size.height);
         text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
         text.alignmentMode = @"center";
@@ -284,13 +282,13 @@
     return layer;
 }
 
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font
 {
     const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
     const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
     const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
 
-    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer];
+    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font];
 }
 
 @end
@@ -494,7 +492,7 @@
     
     for (CASPlateSolvedObject* object in self.annotations){
         if (object.enabled){
-            [object createLayerInLayer:self.annotationLayer];
+            [object createLayerInLayer:self.annotationLayer withFont:self.annotationsFont];
         }
     }
     
@@ -503,10 +501,6 @@
         CGPoint p = sublayer.position;
         p.y = self.annotationLayer.bounds.size.height - p.y;
         sublayer.position = p;
-        if ([sublayer isKindOfClass:[CATextLayer class]]){
-            CATextLayer* textLayer = (CATextLayer*)sublayer;
-            textLayer.font = (__bridge CFTypeRef)(self.annotationsFont);
-        }
     }
 }
 

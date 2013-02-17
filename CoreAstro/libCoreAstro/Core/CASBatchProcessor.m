@@ -46,6 +46,7 @@
 
 @implementation CASCombineProcessor { // todo; bench this against -averageSum, upgrage -averageSum to vDSP, combine the two models
     vImage_Buffer _final;
+    NSInteger _totalExposureTimeMS;
 }
 
 - (void)start
@@ -57,6 +58,8 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    NSParameterAssert(exposure);
+    
     const CASSize size = exposure.actualSize;
     
     if (!self.first){
@@ -87,6 +90,8 @@
     }
 
     ++self.count;
+    
+    _totalExposureTimeMS += exposure.params.ms;
 
     vDSP_vadd(fbuf,1,_final.data,1,_final.data,1,_final.width*_final.height);
 }
@@ -99,9 +104,16 @@
         vDSP_vsdiv(_final.data,1,(float*)&fcount,_final.data,1,_final.width*_final.height);
     }
 
+    NSInteger exposureTime = 0;
+    if (self.mode == kCASCombineProcessorAverage){
+        exposureTime = _totalExposureTimeMS / self.count;
+    }else{
+        exposureTime = _totalExposureTimeMS;
+    }
+
     CASCCDExposure* result = [CASCCDExposure exposureWithFloatPixels:[NSData dataWithBytesNoCopy:_final.data length:_final.height*_final.rowBytes freeWhenDone:YES]
                                                               camera:nil
-                                                              params:CASExposeParamsMake(_final.width,_final.height,0,0,_final.width,_final.height,1,1,self.first.params.bps,0)
+                                                              params:CASExposeParamsMake(_final.width,_final.height,0,0,_final.width,_final.height,1,1,self.first.params.bps,exposureTime)
                                                                 time:[NSDate date]];
     
     result.type = self.first.type;
@@ -110,17 +122,20 @@
     NSString* modeStr = (self.mode == kCASCombineProcessorAverage) ? @"average" : @"sum";
     [mutableMeta setObject:@[@{@"stack":@{@"images":self.history,@"mode":modeStr}}] forKey:@"history"];
     if (self.mode == kCASCombineProcessorAverage){
+        exposureTime = _totalExposureTimeMS / self.count;
         [mutableMeta setObject:[NSString stringWithFormat:@"Average of %@",self.first.displayName] forKey:@"displayName"];
     }else{
+        exposureTime = _totalExposureTimeMS;
         [mutableMeta setObject:[NSString stringWithFormat:@"Sum of %@",self.first.displayName] forKey:@"displayName"];
     }
+    [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
+    [mutableMeta setObject:self.first.meta[@"time"] forKey:@"time"];
     result.meta = [mutableMeta copy];
-    
-    // this really should be associated with the parent device folder and live in there - perhaps with a special name indicating that it's a combined frame ?
-    
+    result.format = kCASCCDExposureFormatFloat;
+
     [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
         
-        NSLog(@"Added exposure at %@",url);
+        NSLog(@"Added combined exposure at %@",url);
         
         block(error,result);
     }];
@@ -142,33 +157,18 @@
     return NO;
 }
 
-- (void)_subtractExposure:(CASCCDExposure*)base from:(CASCCDExposure*)exposure
+- (CASCCDExposure*)_subtractDarkBiasFromExposure:(CASCCDExposure*)exposure
 {
-    // todo; move to -subtract on image processor
-    
-    float* fbuf = (float*)[exposure.floatPixels bytes];
-    float* fbase = (float*)[base.floatPixels bytes];
-    if (!fbuf || !fbase){
-        NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
-        return;
+    if (self.dark){
+        return [self.imageProcessor subtract:self.dark from:exposure];
     }
-    if ([exposure.floatPixels length] != [base.floatPixels length]){
-        NSLog(@"%@: Exposure sizes don't match",NSStringFromSelector(_cmd));
-        return;
+    else if (self.bias){
+        return [self.imageProcessor subtract:self.bias from:exposure];
     }
     
-    vDSP_vsub(fbase,1,fbuf,1,fbuf,1,[exposure.floatPixels length]/sizeof(float));
-}
+    // todo; dark, bias history
 
-- (void)_subtractDarkBiasFromExposure:(CASCCDExposure*)exposure
-{
-    // todo; - (CASCCDExposure*)subtract:(CASCCDExposure*)dark from:(CASCCDExposure*)exposure;
-    if ([self.dark floatPixels]){
-        [self _subtractExposure:self.dark from:exposure];
-    }
-    else if ([self.bias floatPixels]){
-        [self _subtractExposure:self.bias from:exposure];
-    }
+    return [exposure copy];
 }
 
 - (void)start
@@ -184,7 +184,7 @@
     // create a normalised flat
     if (self.flat){
         
-        [self _subtractDarkBiasFromExposure:self.flat];
+        self.flat = [self _subtractDarkBiasFromExposure:self.flat];
         
         _normalisedFlat = [self.imageProcessor normalise:self.flat];
     }
@@ -192,35 +192,37 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    NSParameterAssert(exposure);
+
     if (exposure.type != kCASCCDExposureLightType){
         NSLog(@"%@: Ignoring exposure of type %d",NSStringFromSelector(_cmd),exposure.type);
         return;
     }
+    if (exposure.rgba){
+        NSLog(@"%@: Ignoring RGBA exposure",NSStringFromSelector(_cmd));
+        return;
+    }
+
+    NSAssert(exposure.io, @"Exposure has no IO");
     
     if (!self.first){
         self.first = exposure;
     }
     
     // subtract dark/bias from exposure
-    [self _subtractDarkBiasFromExposure:exposure];
+    self.result = [self _subtractDarkBiasFromExposure:exposure];
     
     // divide out the flat if we've got one
-    if (!self.flat){
-    
-        self.result = exposure;
-    }
-    else{
-        
-        // todo; dark, bias history
+    if (self.flat){
     
         const CASSize size1 = self.flat.actualSize;
-        const CASSize size2 = exposure.actualSize;
+        const CASSize size2 = self.result.actualSize;
         if (size1.width != size2.width || size1.height != size2.height){
             NSLog(@"%@: Image sizes don't match",NSStringFromSelector(_cmd));
             return;
         }
         
-        float* fbuf = (float*)[exposure.floatPixels bytes];
+        float* fbuf = (float*)[self.result.floatPixels bytes];
         float* fnorm = (float*)[_normalisedFlat.floatPixels bytes];
         if (!fbuf || !fnorm){
             NSLog(@"%@: Out of memory",NSStringFromSelector(_cmd));
@@ -237,11 +239,11 @@
         
         self.result = [CASCCDExposure exposureWithFloatPixels:corrected
                                                        camera:nil // exposure.camera
-                                                       params:exposure.params
+                                                       params:self.result.params
                                                          time:[NSDate date]];
         
-        NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.result.meta];
-        [mutableMeta setObject:@[@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":exposure.uuid}}] forKey:@"history"];
+        NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
+        [mutableMeta setObject:@[@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":self.result.uuid}}] forKey:@"history"];
         [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
         [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
         [mutableMeta setObject:self.first.meta[@"time"] forKey:@"time"];
@@ -253,19 +255,24 @@
         // cache the corrected exposure in the derived data folder of the original exposure
         NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureCorrectedKey] path] stringByAppendingPathExtension:@"caExposure"];
         CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-        if (io){
+        if (!io){
+            NSLog(@"%@: No IO for %@",NSStringFromSelector(_cmd),path);
+        }
+        else{
+        
+            // remove any existing corrected exposure
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             
-            self.result.io = io;
-            
+            // write the corrected exposure out
             NSError* error = nil;
+            self.result.io = io;
+            self.result.format = kCASCCDExposureFormatFloat;
             if ([io writeExposure:self.result writePixels:YES error:&error]){
                 NSLog(@"Wrote corrected exposure to %@",path);
             }
             else {
                 NSLog(@"Error %@ writing corrected exposure to %@",error,path);
             }
-            
-            self.result.io = nil;
         }
     }
 }
@@ -325,6 +332,8 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    NSParameterAssert(exposure);
+
     if (exposure.type != kCASCCDExposureLightType){
         NSLog(@"%@: Ignoring exposure of type %d",NSStringFromSelector(_cmd),exposure.type);
         return;
@@ -547,8 +556,19 @@
     return self;
 }
 
+- (CASCCDExposure*)exposureFromExposure:(CASCCDExposure*)exposure
+{
+    // get any corrected exposure (not getting any debayered one for obvious reasons)
+    if (exposure.correctedExposure){
+        exposure = exposure.correctedExposure;
+    }
+    return exposure;
+}
+
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    NSParameterAssert(exposure);
+
     self.imageDebayer.mode = self.mode;
     
     exposure = [self exposureFromExposure:exposure];
@@ -602,7 +622,13 @@
     // cache the debayered exposure in the derived data folder of the original exposure
     NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureDebayeredKey] path] stringByAppendingPathExtension:@"caExposure"];
     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-    if (io){
+    if (!io){
+        NSLog(@"%@: No IO for %@",NSStringFromSelector(_cmd),path);
+    }
+    else{
+    
+        // remove any existing debayered exposure
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         
         debayered.io = io;
         
@@ -613,8 +639,6 @@
         else {
             NSLog(@"Error %@ writing corrected exposure to %@",error,path);
         }
-        
-        debayered.io = nil;
     }
 }
 
@@ -642,11 +666,16 @@
 
 - (void)processExposure:(CASCCDExposure*)exposure withInfo:(NSDictionary*)info
 {
+    NSParameterAssert(exposure);
+
     BOOL isDirectory;
     NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureDebayeredKey] path] stringByDeletingLastPathComponent];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory]){
         if (isDirectory){
-            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+            NSError* error;
+            if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]){
+                NSLog(@"Failed to revert exposure: %@",error);
+            }
         }
     }
 }
