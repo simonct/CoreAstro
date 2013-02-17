@@ -217,78 +217,56 @@
     return [result copy];
 }
 
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font
+- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
 {
-    CALayer* layer = [CALayer layer];
+    CALayer* objectLayer = [CALayer layer];
     
-    CGColorRef colour = nil;
+    // flip y
+    position.y = annotationLayer.bounds.size.height - position.y;
     
-    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
-    if (archivedColourData){
-        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
-        if (archivedColour){
-            CGFloat red, green, blue, alpha;
-            @try {
-                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
-                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
-            }
-            @catch (NSException *exception) {
-                NSLog(@"*** %@",exception);
-            }
-        }
-    }
+    objectLayer.borderColor = colour;
+    objectLayer.borderWidth = 2.5;
+    objectLayer.cornerRadius = radius;
+    objectLayer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
+    objectLayer.position = position;
+    objectLayer.masksToBounds = NO;
     
-    if (!colour){
-        colour = CGColorCreateGenericRGB(1,1,0,1);
-    }
-    
-    layer.borderColor = colour;
-    layer.borderWidth = 2.5;
-    layer.cornerRadius = radius;
-    layer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
-    layer.position = position;
-    layer.masksToBounds = NO;
-    
-    [annotationLayer addSublayer:layer];
+    [annotationLayer addSublayer:objectLayer];
     
     if (annotation){
         
-        CATextLayer* text = [CATextLayer layer];
-        text.string = annotation;
-        const CGSize size = [text.string sizeWithAttributes:@{NSFontAttributeName:font}];
-        text.font = (__bridge CFTypeRef)(font);
-        text.fontSize = font.pointSize;
-        text.bounds = CGRectMake(0, 0, size.width, size.height);
-        text.position = CGPointMake(CGRectGetMidX(layer.bounds) + size.width/2 + 10, CGRectGetMidY(layer.bounds) + size.height/2);
-        text.alignmentMode = @"center";
-        text.foregroundColor = colour;
-        [annotationLayer addSublayer:text];
+        CATextLayer* textLayer = [CATextLayer layer];
+        textLayer.string = annotation;
+        const CGSize size = [textLayer.string sizeWithAttributes:@{NSFontAttributeName:font}];
+        textLayer.font = (__bridge CFTypeRef)(font);
+        textLayer.fontSize = font.pointSize;
+        textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
+        textLayer.position = CGPointMake(CGRectGetMidX(objectLayer.frame) + size.width/2 + 10, CGRectGetMidY(objectLayer.frame) + size.height/2 + 10);
+        textLayer.alignmentMode = @"center";
+        textLayer.foregroundColor = colour;
+        
+        [annotationLayer addSublayer:textLayer];
         
         // want the inverse of the text bounding box as a clip mask for the circle layer
         CAShapeLayer* shape = [CAShapeLayer layer];
-        CGPathRef path = CGPathCreateWithRect(layer.bounds, nil);
+        CGPathRef path = CGPathCreateWithRect(objectLayer.bounds, nil);
         CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
-        CGPathAddRect(mpath, NULL, text.frame);
+        CGPathAddRect(mpath, NULL, [annotationLayer convertRect:textLayer.frame toLayer:objectLayer]);
         shape.path = mpath;
         shape.fillRule = kCAFillRuleEvenOdd;
-        layer.mask = shape;
-        
-        text.position = CGPointMake(CGRectGetMidX(layer.frame) + size.width/2 + 10, CGRectGetMidY(layer.frame) + size.height/2);
+        objectLayer.mask = shape;
     }
-    
-    
-    CFBridgingRelease(colour);
-    
-    return layer;
+
+    return objectLayer;
 }
 
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
 {
     const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
     const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
     const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
 
-    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font];
+    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
 }
 
 @end
@@ -399,6 +377,16 @@
 {
     [super awakeFromNib];
     [self registerForDraggedTypes:@[(id)kUTTypeFileURL]];
+    
+    NSData* fontData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsFont"];
+    if (fontData){
+        self.annotationsFont = [NSUnarchiver unarchiveObjectWithData:fontData];
+    }
+    else {
+        self.annotationsFont = [NSFont boldSystemFontOfSize:18];
+    }
+    
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASAnnotationsColour" options:0 context:(__bridge void *)(self)];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -473,6 +461,32 @@
     }
 }
 
+- (CGColorRef)annotationsColour
+{
+    CGColorRef colour = nil;
+    
+    NSData* archivedColourData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsColour"];
+    if (archivedColourData){
+        NSColor* archivedColour = [NSUnarchiver unarchiveObjectWithData:archivedColourData];
+        if (archivedColour){
+            CGFloat red, green, blue, alpha;
+            @try {
+                [archivedColour getRed:&red green:&green blue:&blue alpha:&alpha];
+                colour = CGColorCreateGenericRGB(red,green,blue,alpha);
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** %@",exception);
+            }
+        }
+    }
+    
+    if (!colour){
+        colour = CGColorCreateGenericRGB(1,1,0,1);
+    }
+    
+    return colour;
+}
+
 - (void)drawAnnotations
 {
     if (!self.image){
@@ -490,18 +504,16 @@
         [layer removeFromSuperlayer];
     }
     
+    NSFont* annotationsFont = self.annotationsFont;
+    CGColorRef annotationsColour = self.annotationsColour;
+    
     for (CASPlateSolvedObject* object in self.annotations){
         if (object.enabled){
-            [object createLayerInLayer:self.annotationLayer withFont:self.annotationsFont];
+            [object createLayerInLayer:self.annotationLayer withFont:annotationsFont andColour:annotationsColour];
         }
     }
     
-    // flip y
-    for (CALayer* sublayer in [self.annotationLayer sublayers]){
-        CGPoint p = sublayer.position;
-        p.y = self.annotationLayer.bounds.size.height - p.y;
-        sublayer.position = p;
-    }
+    CFBridgingRelease(annotationsColour);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -539,16 +551,6 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.annotations" options:nil];
-    
-    NSData* fontData = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASAnnotationsFont"];
-    if (fontData){
-        self.imageView.annotationsFont = [NSUnarchiver unarchiveObjectWithData:fontData];
-    }
-    else {
-        self.imageView.annotationsFont = [NSFont boldSystemFontOfSize:18];
-    }
-
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self.imageView forKeyPath:@"values.CASAnnotationsColour" options:0 context:(__bridge void *)(self.imageView)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
