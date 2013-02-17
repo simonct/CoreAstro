@@ -382,7 +382,7 @@
     if (fontData){
         self.annotationsFont = [NSUnarchiver unarchiveObjectWithData:fontData];
     }
-    else {
+    if (!self.annotationsFont){
         self.annotationsFont = [NSFont boldSystemFontOfSize:18];
     }
     
@@ -800,8 +800,9 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             offscreenImageView.layer.opacity = 1;
             [[offscreenWindow contentView] addSubview:offscreenImageView];
             
-            // set the annotations
+            // set the annotations and attributes
             offscreenImageView.url = self.imageView.url;
+            offscreenImageView.annotationsFont = self.imageView.annotationsFont;
             offscreenImageView.annotations = self.imageView.annotations;
             
             [[offscreenWindow contentView] addSubview:offscreenImageView];
