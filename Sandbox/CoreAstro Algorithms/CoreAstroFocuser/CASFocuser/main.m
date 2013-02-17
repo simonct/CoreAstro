@@ -26,44 +26,42 @@
 
 #import <Foundation/Foundation.h>
 
-//#import "CASCCDExposure.h"
-//#import "CASCCDExposureIO.h"
-//
-//#import "CASFocuser.h"
+#import "CASCCDExposure.h"
+#import "CASCCDExposureIO.h"
+// #import "CASFocuser.h"
+#import "CASHalfFluxDiameter.h"
 
 
 int main(int argc, const char * argv[])
 {
     @autoreleasepool {
 
-//        if (argc != 2)
-//        {
-//            NSLog(@"This command line tool requires a single argument, a path to an exposure.");
-//            return -1;
-//        }
-//        NSString* path = [NSString stringWithCString: argv[1] encoding: NSASCIIStringEncoding];
-//        NSLog(@"Loading exposure at path:\r'%@'", path);
-//
-//        CASCCDExposureIO* expIO = [CASCCDExposureIO exposureIOWithPath: path];
-//        NSError* error = nil;
-//
-//        CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
-//        BOOL readSuccess = [expIO readExposure: exposure readPixels: YES error: &error];
-//
-//        if (!readSuccess || error)
-//        {
-//            NSLog(@"Unable to load exposure at path:\r'%@'", path);
-//            NSLog(@"Error: %@", error);
-//            return -1;
-//        }
-//
-//        NSDictionary* dataD = [NSDictionary dictionaryWithObjectsAndKeys: exposure, keyExposure,
-//                               [NSNumber numberWithInteger: kThresholdingModeUseAverage], keyThresholdingMode,
-////                             [NSNumber numberWithUnsignedShort: 8000], keyThreshold,
-//                               [NSNumber numberWithInteger: 20], keyMaxNumRegions,
-//                               [NSNumber numberWithInteger: 5], keyMinNumPixelsInRegion,
-//                               nil];
-//
+        if (argc != 2)
+        {
+            NSLog(@"This command line tool requires a single argument, a path to an exposure.");
+            return -1;
+        }
+        NSString* path = [NSString stringWithCString: argv[1] encoding: NSASCIIStringEncoding];
+        NSLog(@"Loading exposure at path:\r'%@'", path);
+
+        CASCCDExposureIO* expIO = [CASCCDExposureIO exposureIOWithPath: path];
+        NSError* error = nil;
+
+        CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
+        BOOL readSuccess = [expIO readExposure: exposure readPixels: YES error: &error];
+
+        if (!readSuccess || error)
+        {
+            NSLog(@"Unable to load exposure at path:\r'%@'", path);
+            NSLog(@"Error: %@", error);
+            return -1;
+        }
+
+        NSDictionary* dataD = [NSDictionary dictionaryWithObjectsAndKeys: exposure, keyExposure,
+                               [NSNumber numberWithDouble: 4.539062], keyPixelW,
+                               [NSNumber numberWithDouble: 4.539062], keyPixelH,
+                               nil];
+
 //        CASAlgorithm* alg = [[CASFocuser alloc] init];
 //        [alg executeWithDictionary: dataD
 //                   completionAsync: NO
@@ -71,8 +69,34 @@ int main(int argc, const char * argv[])
 //                   completionBlock: ^(NSDictionary* resultsD) {
 //
 //                       NSLog(@"%@ :: resultsD:\r%@", [alg class], resultsD);
-//
+//                       
 //                   }];
+
+        CASAlgorithm* alg = [[CASHalfFluxDiameter alloc] init];
+        [alg executeWithDictionary: dataD
+                   completionAsync: NO
+                   completionQueue: dispatch_get_current_queue()
+                   completionBlock: ^(NSDictionary* resultsD) {
+
+                       NSLog(@"%@ :: resultsD:\r%@", [alg class], resultsD);
+                       
+                   }];
+
+        CASHalfFluxDiameter* hfdAlg = (CASHalfFluxDiameter*) alg;
+        NSUInteger numRows = exposure.actualSize.height;
+        NSUInteger numCols = exposure.actualSize.width;
+        NSUInteger numPixels = numRows * numCols;
+
+        CGPoint centroid = CGPointZero;
+        double roughHFD = [hfdAlg hfdForExposureArray: (uint16_t*) [exposure.pixels bytes]
+                                             ofLength: numPixels
+                                              numRows: numRows
+                                              numCols: numCols
+                                               pixelW: 4.539062
+                                               pixelH: 4.539062
+                                   brightnessCentroid: &centroid];
+        
+        NSLog(@"roughHFD (spiral) = %f", roughHFD);
     }
 
     return 0;

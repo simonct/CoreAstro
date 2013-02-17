@@ -26,5 +26,38 @@
 
 #import "CASFocusMetric.h"
 
+// Used as a fraction of min(w,h).
+#define DEFAULT_RADIUS_TOLERANCE_FACTOR     0.01
+
+// Used in absolute terms.
+#define DEFAULT_BRIGHTNESS_TOLERANCE        0.01
+
+extern NSString* const keyRadiusTolerance;
+extern NSString* const keyBrightnessTolerance;
+
 @interface CASHalfFluxDiameter: CASFocusMetric
+
+@property (readonly, nonatomic) CGPoint brightnessCentroid;
+
+// These are used to stop the binary search. If
+// not set by the client code, suitable default
+// values are used.
+
+// Default value is DEFAULT_RADIUS_TOLERANCE_FACTOR of
+// min(pixel width, pixel height).
+@property (nonatomic) double radiusTolerance;
+
+// Default value is DEFAULT_BRIGHTNESS_TOLERANCE.
+@property (nonatomic) double brightnessTolerance;
+
+// Computes a faster but less accurate estimate of the HFD,
+// using a spiral approach.
+- (double) hfdForExposureArray: (uint16_t*) values
+                      ofLength: (NSUInteger) len
+                       numRows: (NSUInteger) numRows
+                       numCols: (NSUInteger) numCols
+                        pixelW: (double) pixelW
+                        pixelH: (double) pixelH
+            brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
+
 @end

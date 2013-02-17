@@ -83,7 +83,7 @@ NSString* const keyRegions = @"regions";
     self.numPixels = self.numRows * self.numCols;
 
     NSMutableDictionary* resultsMutD = [[NSMutableDictionary alloc] init];
-    [resultsMutD setObject: exposure forKey: keyExposure];
+    // [resultsMutD setObject: exposure forKey: keyExposure];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numRows] forKey: keyNumRows];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];

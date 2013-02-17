@@ -34,7 +34,6 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
 @interface CASFocusMetric ()
 
 @property (readwrite, nonatomic, strong) CASCCDExposure* exposure;
-@property (readwrite, nonatomic, strong) CASRegion* region;
 
 @property (readwrite, nonatomic) NSUInteger numRows;
 @property (readwrite, nonatomic) NSUInteger numCols;
@@ -74,7 +73,7 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
     self.numPixels = self.numRows * self.numCols;
 
     NSMutableDictionary* resultsMutD = [[NSMutableDictionary alloc] init];
-    [resultsMutD setObject: exposure forKey: keyExposure];
+    // [resultsMutD setObject: exposure forKey: keyExposure];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numRows] forKey: keyNumRows];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numCols] forKey: keyNumCols];
     [resultsMutD setObject: [NSNumber numberWithUnsignedInteger: self.numPixels] forKey: keyNumPixels];
@@ -87,17 +86,6 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
 {
     NSMutableDictionary* resultsMutD = [self resultsMutableDictionaryForDataDictionary: dataD];
     id objInDataD = nil;
-
-    // === keyRegion === //
-
-    objInDataD = [self entryOfClass: [CASRegion class]
-                             forKey: keyRegion
-                       inDictionary: dataD
-                   withDefaultValue: nil];
-    if (!objInDataD) return nil;
-
-    self.region = (CASRegion*) objInDataD;
-    [resultsMutD setObject: objInDataD forKey: keyRegion];
 
     // === keyPixelW === //
 
@@ -123,15 +111,14 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
 
     // === focusMetric === //
 
-    CGPoint brightnessCentroid = CGPointMake(0, 0);
-    CGFloat focusMetric = [self focusMetricForRegion: self.region
-                                     inExposureArray: (uint16_t*) [self.exposure.pixels bytes]
-                                            ofLength: self.numPixels
-                                             numRows: self.numRows
-                                             numCols: self.numCols
-                                              pixelW: self.pixelW
-                                              pixelH: self.pixelH
-                                  brightnessCentroid: &brightnessCentroid];
+    CGPoint brightnessCentroid = CGPointZero;
+    CGFloat focusMetric = [self focusMetricForExposureArray: (uint16_t*) [self.exposure.pixels bytes]
+                                                   ofLength: self.numPixels
+                                                    numRows: self.numRows
+                                                    numCols: self.numCols
+                                                     pixelW: self.pixelW
+                                                     pixelH: self.pixelH
+                                         brightnessCentroid: &brightnessCentroid];
 
     NSValue* value = [NSValue valueWithBytes: &brightnessCentroid objCType: @encode(CGPoint)];
     [resultsMutD setObject: value forKey: keyBrightnessCentroid];
@@ -147,14 +134,13 @@ NSString* const keyBrightnessCentroid = @"brightness centroid";
 // Subclasses must override.
 // Subclasses may directly access the data dictionary inherited from CASAlgorithm
 // if there are extra arguments not directly passed to this method.
-- (CGFloat) focusMetricForRegion: (CASRegion*) region
-                 inExposureArray: (uint16_t*) values
-                        ofLength: (NSUInteger) len
-                         numRows: (NSUInteger) numRows
-                         numCols: (NSUInteger) numCols
-                          pixelW: (double) pixelW
-                          pixelH: (double) pixelH
-              brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
+- (double) focusMetricForExposureArray: (uint16_t*) values
+                              ofLength: (NSUInteger) len
+                               numRows: (NSUInteger) numRows
+                               numCols: (NSUInteger) numCols
+                                pixelW: (double) pixelW
+                                pixelH: (double) pixelH
+                    brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 {
     return 0.0;
 }

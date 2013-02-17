@@ -33,7 +33,6 @@
 
 #import "CASAlgorithm.h"
 #import "CASAlgorithm+Exposure.h"
-#import "CASRegion.h"
 
 
 extern NSString* const keyFocusMetric;
@@ -43,7 +42,6 @@ extern NSString* const keyBrightnessCentroid;
 @interface CASFocusMetric: CASAlgorithm
 
 @property (readonly, nonatomic, strong) CASCCDExposure* exposure;
-@property (readonly, nonatomic, strong) CASRegion* region;
 
 @property (readonly, nonatomic) NSUInteger numRows;
 @property (readonly, nonatomic) NSUInteger numCols;
@@ -57,13 +55,12 @@ extern NSString* const keyBrightnessCentroid;
 // Subclasses must override. Default returns zero.
 // Subclasses may directly access the data dictionary inherited from CASAlgorithm
 // if there are extra arguments not directly passed to this method.
-- (CGFloat) focusMetricForRegion: (CASRegion*) region
-                 inExposureArray: (uint16_t*) values
-                        ofLength: (NSUInteger) len
-                         numRows: (NSUInteger) numRows
-                         numCols: (NSUInteger) numCols
-                          pixelW: (double) pixelW
-                          pixelH: (double) pixelH
-              brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
+- (double) focusMetricForExposureArray: (uint16_t*) values
+                              ofLength: (NSUInteger) len
+                               numRows: (NSUInteger) numRows
+                               numCols: (NSUInteger) numCols
+                                pixelW: (double) pixelW
+                                pixelH: (double) pixelH
+                    brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 
 @end

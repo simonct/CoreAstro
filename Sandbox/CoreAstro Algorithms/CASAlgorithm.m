@@ -112,15 +112,15 @@
     {
         if (defaultValue)
         {
-            NSLog(@"%s :: dataD dictionary %@ does not contain a value for the key '%@'. "
-                  "Will use the default value: '%@'.", __FUNCTION__, dataD, key, defaultValue);
+            NSLog(@"%s :: dataD dictionary does not contain a value for the key '%@'. "
+                  "Will use the default value: '%@'.", __FUNCTION__, key, defaultValue);
 
             objInDataD = defaultValue;
         }
         else
         {
-            NSLog(@"%s :: dataD dictionary %@ does not contain a value for the key '%@'. ",
-                  __FUNCTION__, dataD, key);
+            NSLog(@"%s :: dataD dictionary does not contain a value for the key '%@'. ",
+                  __FUNCTION__, key);
 
             return nil;
         }
@@ -130,13 +130,13 @@
     {
         if (defaultValue)
         {
-            NSLog(@"%s :: Default value '%@' for key '%@' in dataD dictionary %@ is not of class '%@'.",
-                  __FUNCTION__, defaultValue, key, dataD, NSStringFromClass(klass));
+            NSLog(@"%s :: Default value '%@' for key '%@' in dataD dictionary is not of class '%@'.",
+                  __FUNCTION__, defaultValue, key, NSStringFromClass(klass));
         }
         else
         {
-            NSLog(@"%s :: Value '%@' for key '%@' in dataD dictionary %@ is not of class '%@'.",
-                  __FUNCTION__, objInDataD, key, dataD, NSStringFromClass(klass));
+            NSLog(@"%s :: Value '%@' for key '%@' in dataD dictionary is not of class '%@'.",
+                  __FUNCTION__, objInDataD, key, NSStringFromClass(klass));
         }
 
         return nil;
