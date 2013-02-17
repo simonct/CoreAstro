@@ -72,6 +72,8 @@ int main(int argc, const char * argv[])
 //                       
 //                   }];
 
+        NSLog(@"----------------------------------------------------------");
+
         CASAlgorithm* alg = [[CASHalfFluxDiameter alloc] init];
         [alg executeWithDictionary: dataD
                    completionAsync: NO
@@ -81,6 +83,8 @@ int main(int argc, const char * argv[])
                        NSLog(@"%@ :: resultsD:\r%@", [alg class], resultsD);
                        
                    }];
+
+        NSLog(@"----------------------------------------------------------");
 
         CASHalfFluxDiameter* hfdAlg = (CASHalfFluxDiameter*) alg;
         NSUInteger numRows = exposure.actualSize.height;
@@ -97,6 +101,17 @@ int main(int argc, const char * argv[])
                                    brightnessCentroid: &centroid];
         
         NSLog(@"roughHFD (spiral) = %f", roughHFD);
+
+        NSLog(@"----------------------------------------------------------");
+        
+        NSDictionary* resD = [hfdAlg gaussianExposureWithDecayRate: 1.0e-4
+                                                     angularFactor: 0.0
+                                                        centeredAt: CGPointMake(200.0, 200.0)
+                                                           numRows: 100
+                                                           numCols: 100
+                                                            pixelW: 4.0
+                                                            pixelH: 4.0];
+        NSLog(@"gaussian test exposure: %@", resD);
     }
 
     return 0;

@@ -33,6 +33,15 @@ NSString* const keyScaledRadiusToleranceFactor = @"scaled radius tolerance facto
 NSString* const keyBrightnessTolerance = @"brightness tolerance";
 
 
+NSString* const keyDecayRate = @"decay rate a";
+NSString* const keyAngularFactor = @"angular factor s";
+NSString* const keyDistributionCenter = @"center of the distribution";
+NSString* const keyExposureValues = @"exposure values";
+NSString* const keyExactBrightnessCentroid = @"exact brightness centroid";
+NSString* const keyExactTotalBrightness = @"exact total brightness";
+NSString* const keyExactHFD = @"exact HFD";
+
+
 // A vector from point A to point B, represented as a point from the origin.
 NS_INLINE CGPoint vecfromAtoB(CGPoint pA, CGPoint pB)
 {
@@ -726,9 +735,9 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
         // The binary search step.
         rcur = (rmin + rmax) / 2.0;
 
-        NSLog(@"rmin = %f", rmin);
-        NSLog(@"rcur = %f", rcur);
-        NSLog(@"rmax = %f\n\n", rmax);
+        // NSLog(@"rmin = %f", rmin);
+        // NSLog(@"rcur = %f", rcur);
+        // NSLog(@"rmax = %f\n\n", rmax);
 
         // For every pixel with a non-zero brightness value...
         for (NSUInteger p = 0; p < len; ++p)
@@ -916,7 +925,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             bcur += (values[p] / averageBrightness);
             done = (bcur > (0.5 * totOverAvg));
             if (done) break;
-            
+
             if (xturn)
             {
                 if (kx == 0 && sign == -1)
@@ -924,7 +933,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                     done = YES;
                     break;
                 }
-                
+
                 kx += sign;
             }
             else
@@ -934,33 +943,163 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                     done = YES;
                     break;
                 }
-                
+
                 ky += sign;
             }
-            
+
             if (!done && s == step - 1)
             {
                 xturn = !xturn;
             }
         }
-        
+
         if (!done && !xturn)
         {
             sign = -sign;
             xturn = YES;
         }
-        
+
         if (!done && xturn)
         {
             step += 1;
         }
     }
-    
+
     double x = (kx + 0.5) * w;
     double y = (ky + 0.5) * h;
     CGPoint ptP = CGPointMake(x, y);
-    
+
     return 2.0 * sqrt(segmSquaredLength(centroid, ptP)) * largerOfWH;
+}
+
+
+// Returns a dictionary containing a test exposure discretized from the
+// continuous Gaussian profile given by
+//
+// b(r,theta) = b0 exp(-ar^2) [ 1 + s cos(theta) ] / (1 + s)
+//
+// with b0 > 0, a > 0, and s != -1, and centered at a given point.
+// Note that s != 0 gives a distribution that is not circularly symmetric,
+// but biased towards a point on the horizontal axis. b0 is chosen to
+// equal the largest unsigned short value.
+//
+// The exact coordinates of the centroid in the continuous case are
+// xbar = (s/2) sqrt(pi/a) + center.x and ybar = center.y.
+//
+// The total brightness in the continuous case is (b0/a) pi/(1 + s).
+//
+// The total brightness, in the continuous case, inside a circle of
+// radius R centered at the given *center* (not the centroid!) is the total
+// brightness above times the factor [1 - e^(-aR^2)].
+//
+// The exact HFD in the continuous case, for s = 0, is 2 sqrt[ln(2)/a].
+//
+// I have yet to compute the exact HFD in the continuous case for arbitrary
+// values of s. The brightness distribution expressed in coordinates relative
+// to the centroid is extremely complicated. I'm not sure it's even possible
+// to obtain an analytic result for arbitrary values of s.
+//
+// The key/value pairs are:
+//
+// keyDecayRate: an NSNumber-boxed double representing a
+// keyAngularFactor: an NSNumber-boxed double representing s
+// keyDistributionCenter: an NSValue-boxed CGPoint representing
+//   the center of the distribution (the point with the maximum brightness),
+//   in the image coordinate system
+// keyNumRows: an NSNumber-boxed NSUInteger representing numRows
+// keyNumCols: an NSNumber-boxed NSUInteger representing numCols
+// keyNumPixels: an NSNumber-boxed NSUInteger representing numPixels
+//    (numPixels = numRows x numCols)
+// keyPixelW: an NSNumber-boxed double representing pixelW
+// keyPixelH: an NSNumber-boxed double representing pixelH
+// keyExposureValues: an array of NSNumber-boxed unsigned short values
+//    ordered appropriately
+// keyExactBrightnessCentroid: an NSValue-boxed CGPoint representing
+//   the exact centroid in the continuous case, measured in the image
+//   coordinate system
+// keyExactTotalBrightness: an NSNumber-boxed double representing
+//   the exact total brightness in the continuous case
+// keyExactHFD: an NSNumber-boxed double representing
+//   the exact HFD in the continuous case
+//
+- (NSDictionary*) gaussianExposureWithDecayRate: (double) a
+                                  angularFactor: (double) s
+                                     centeredAt: (CGPoint) centerPt
+                                        numRows: (NSUInteger) numRows
+                                        numCols: (NSUInteger) numCols
+                                         pixelW: (double) pixelW
+                                         pixelH: (double) pixelH;
+{
+    assert(a > 0);
+    assert(s != -1);
+    assert(centerPt.x >= 0);
+    assert(centerPt.y >= 0);
+    assert(pixelW > 0);
+    assert(pixelH > 0);
+
+    NSUInteger numPixels = numRows * numCols;
+    NSMutableArray* bValsMut = [[NSMutableArray alloc] initWithCapacity: numPixels];
+    
+    for (NSUInteger p = 0; p < numPixels; ++p)
+    {
+        NSUInteger kx = cas_alg_kx(numRows, numCols, p);
+        NSUInteger ky = cas_alg_ky(numRows, numCols, p);
+
+        double pcenterX = (kx + 0.5) * pixelW;
+        double pcenterY = (ky + 0.5) * pixelH;
+
+        double dx = pcenterX - centerPt.x;
+        double dy = pcenterY - centerPt.y;
+
+        double rsq = dx*dx + dy*dy;
+        double cosTheta;
+        if (rsq == 0.0)
+        {
+            cosTheta = 0.0;
+        }
+        else
+        {
+            cosTheta = dx / sqrt(rsq);
+        }
+
+        double b = (USHRT_MAX * exp(-a * rsq)) * (1 + s * cosTheta) / (1 + s);
+        uint16_t pb = (uint16_t) ceil(b);
+
+        [bValsMut addObject: [NSNumber numberWithUnsignedShort: pb]];
+    }
+    NSArray* bValues = [NSArray arrayWithArray: bValsMut];
+
+    CGPoint centroid = CGPointZero;
+    centroid.x = (s/2) * sqrt(pi/a) + centerPt.x;
+    centroid.y = 0.0 + centerPt.y;
+
+    double btotal = ((pi * USHRT_MAX) / a) / (1 + s);
+    double hfd = 0.0;
+    if (s == 0.0)
+    {
+        hfd = 2 * sqrt(log(2) / a);
+    }
+    else
+    {
+        // WLT XXX - yet to be analytically computed!
+        hfd = NSUIntegerMax;
+    }
+
+    NSMutableDictionary* mutD = [[NSMutableDictionary alloc] initWithCapacity: 12];
+    [mutD setObject: [NSNumber numberWithDouble: a] forKey: keyDecayRate];
+    [mutD setObject: [NSNumber numberWithDouble: s] forKey: keyAngularFactor];
+    [mutD setObject: [NSValue value: &centerPt withObjCType: @encode(CGPoint)] forKey: keyDistributionCenter];
+    [mutD setObject: [NSNumber numberWithUnsignedInteger: numRows] forKey: keyNumRows];
+    [mutD setObject: [NSNumber numberWithUnsignedInteger: numCols] forKey: keyNumCols];
+    [mutD setObject: [NSNumber numberWithUnsignedInteger: numPixels] forKey: keyNumPixels];
+    [mutD setObject: [NSNumber numberWithDouble: pixelW] forKey: keyPixelW];
+    [mutD setObject: [NSNumber numberWithDouble: pixelH] forKey: keyPixelH];
+    [mutD setObject: bValues forKey: keyExposureValues];
+    [mutD setObject: [NSValue value: &centroid withObjCType: @encode(CGPoint)] forKey: keyExactBrightnessCentroid];
+    [mutD setObject: [NSNumber numberWithDouble: btotal] forKey: keyExactTotalBrightness];
+    [mutD setObject: [NSNumber numberWithDouble: hfd] forKey: keyExactHFD];
+
+    return [NSDictionary dictionaryWithDictionary: mutD];
 }
 
 
