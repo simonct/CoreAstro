@@ -308,7 +308,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     double aTrianglePOQ = [self areaOfTriangularSectorOfRadius: r
                                                      fromPoint: ptP
                                                        toPoint: ptQ];
-    
+
     // Area of triangle PZQ.
     double aTrianglePZQ = 0.0;
     if (hasZin)
@@ -322,16 +322,16 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     {
         // Area of circular sector MON.
         aSectorMON = [self areaOfCircularSectorOfRadius: r
-                                                     fromPoint: ptM
-                                                       toPoint: ptN];
+                                              fromPoint: ptM
+                                                toPoint: ptN];
 
         // Area of isosceles triangle MON.
         aTriangleMON = [self areaOfTriangularSectorOfRadius: r
-                                                         fromPoint: ptM
-                                                           toPoint: ptN];
+                                                  fromPoint: ptM
+                                                    toPoint: ptN];
     }
 
-    return aSectorPOQ + (aTrianglePZQ + (aTriangleMON - (aTrianglePOQ + aSectorMON)));
+    return ((aSectorPOQ + aTrianglePZQ + aTriangleMON) - (aTrianglePOQ + aSectorMON));
 }
 
 
@@ -360,7 +360,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                                                      fromPoint: ptP
                                                        toPoint: ptQ];
 
-    return (aTriangleABC + (aSectorPOQ - (aTrianglePOQ + aTrianglePZQ)));
+    return ((aTriangleABC + aSectorPOQ) - (aTrianglePOQ + aTrianglePZQ));
 }
 
 
@@ -824,7 +824,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             {
                 rmin = rcur;
             }
-            
+
             // Have we converged to a radius within the tolerance?
             done = (rmax - rmin <= rtol);
         }
@@ -916,7 +916,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             bcur += (values[p] / averageBrightness);
             done = (bcur > (0.5 * totOverAvg));
             if (done) break;
-
+            
             if (xturn)
             {
                 if (kx == 0 && sign == -1)
@@ -924,7 +924,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                     done = YES;
                     break;
                 }
-
+                
                 kx += sign;
             }
             else
@@ -934,10 +934,10 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                     done = YES;
                     break;
                 }
-
+                
                 ky += sign;
             }
-
+            
             if (!done && s == step - 1)
             {
                 xturn = !xturn;
@@ -955,11 +955,11 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             step += 1;
         }
     }
-
+    
     double x = (kx + 0.5) * w;
     double y = (ky + 0.5) * h;
     CGPoint ptP = CGPointMake(x, y);
-
+    
     return 2.0 * sqrt(segmSquaredLength(centroid, ptP)) * largerOfWH;
 }
 
