@@ -722,7 +722,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 
     // Current running value of the brightness inside the
     // circle of radius rcur.
-    double bcur = 0.0;
+    double bcur = 0.0; // arbitrary initial value
 
     // === Start binary search === //
 
@@ -739,11 +739,13 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
         // NSLog(@"rcur = %f", rcur);
         // NSLog(@"rmax = %f\n\n", rmax);
 
-        // For every pixel with a non-zero brightness value...
+        // For every pixel...
         for (NSUInteger p = 0; p < len; ++p)
         {
             // Scaled brightness value of the current pixel.
             uint16_t bpixel = values[p];
+
+            // ...with a non-zero brightness value.
             if (bpixel == 0) continue;
 
             // Scaled brightness per unit of area for the current pixel.
@@ -997,7 +999,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 // I have yet to compute the exact HFD in the continuous case for arbitrary
 // values of s. The brightness distribution expressed in coordinates relative
 // to the centroid is extremely complicated. I'm not sure it's even possible
-// to obtain an analytic result for arbitrary values of s.
+// to obtain an analytical result for arbitrary values of s.
 //
 // The key/value pairs are:
 //
@@ -1085,7 +1087,9 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     else
     {
         // WLT XXX - yet to be analytically computed!
-        NSLog(@"*** Warning: At the moment, only HFD values computed with s = 0 are exact. Any other value of s will result in an arbitrarily large value of HFD. That's intentional, until I figure out how to compute HFDs for arbitrary values of s.");
+        NSLog(@"*** Warning: At the moment, only HFD values computed with s = 0 are exact. "
+              "Any other value of s will result in an arbitrarily large value of HFD. "
+              "That's intentional, until I figure out how to analytically compute HFDs for arbitrary values of s.");
         hfd = NSUIntegerMax;
     }
 

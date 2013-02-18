@@ -103,7 +103,7 @@ extern NSString* const keyExactHFD;
 // I have yet to compute the exact HFD in the continuous case for arbitrary
 // values of s. The brightness distribution expressed in coordinates relative
 // to the centroid is extremely complicated. I'm not sure it's even possible
-// to obtain an analytic result for arbitrary values of s.
+// to obtain an analytical result for arbitrary values of s.
 //
 // The key/value pairs are:
 //

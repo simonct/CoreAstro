@@ -32,6 +32,11 @@
 #import "CASHalfFluxDiameter.h"
 
 
+// XXX WLT TODO: use CASCCDExposure's -subframeWithRect: method to create
+// subframe exposures from the full-sized exposures used here and do better
+// testing of the HFD algs.
+
+
 int main(int argc, const char * argv[])
 {
     @autoreleasepool {
