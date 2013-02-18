@@ -381,11 +381,6 @@
         return;
     }
     
-    // ignore multiple selections for now
-    if ([self.exposuresController.selectedObjects count] > 1){
-        return;
-    }
-    
     NSPoint point = [aBrowser convertPoint:[[aBrowser.window currentEvent] locationInWindow] fromView:nil];
     if (NSPointInRect(point, [cell titleFrame])){
         

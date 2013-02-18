@@ -1806,17 +1806,8 @@
         self.exposuresController = exposuresController;
         
         NSArray* exposures = [self.exposuresController selectedObjects];
-        if (![exposures count]){
-            exposures = [self.exposuresController arrangedObjects];
-        }
-        
-        self.currentExposure = [exposures objectAtIndex:0];
-        
-        if ([self.exposuresController.selectionIndexes count] == 1){
-            self.imageBannerView.exposure = [self.exposuresController.selectedObjects objectAtIndex:0];
-        }
-        else {
-            self.imageBannerView.exposure = nil;
+        if ([exposures count]){
+            self.currentExposure = [exposures objectAtIndex:0];
         }
     }
 }

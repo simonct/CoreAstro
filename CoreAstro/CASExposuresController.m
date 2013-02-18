@@ -36,12 +36,19 @@
     }
 }
 
-- (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index
+- (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index deletingPermanently:(BOOL)deletingPermanently
 {
     if (index != NSNotFound){
-        [[[self arrangedObjects] objectAtIndex:index] deleteExposure];
+        if (deletingPermanently){
+            [[[self arrangedObjects] objectAtIndex:index] deleteExposure];
+        }
         [super removeObjectAtArrangedObjectIndex:index];
     }
+}
+
+- (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index
+{
+    [self removeObjectAtArrangedObjectIndex:index deletingPermanently:YES];
 }
 
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes deletingPermanently:(BOOL)deletingPermanently
@@ -58,7 +65,7 @@
             nextObject = [arrangedObjects objectAtIndex:firstIndex-1];
         }
         if ([indexes count] == 1){
-            [self removeObjectAtArrangedObjectIndex:[indexes firstIndex]];
+            [self removeObjectAtArrangedObjectIndex:[indexes firstIndex] deletingPermanently:deletingPermanently];
         }
         else {
             if (deletingPermanently){
