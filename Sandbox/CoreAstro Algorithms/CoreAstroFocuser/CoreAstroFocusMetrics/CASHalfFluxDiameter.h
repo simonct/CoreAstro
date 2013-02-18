@@ -70,13 +70,13 @@ extern NSString* const keyExactHFD;
 
 // Computes a faster but less accurate estimate of the HFD,
 // using a spiral approach.
-- (double) hfdForExposureArray: (uint16_t*) values
-                      ofLength: (NSUInteger) len
-                       numRows: (NSUInteger) numRows
-                       numCols: (NSUInteger) numCols
-                        pixelW: (double) pixelW
-                        pixelH: (double) pixelH
-            brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
+- (double) roughHfdForExposureArray: (uint16_t*) values
+                           ofLength: (NSUInteger) len
+                            numRows: (NSUInteger) numRows
+                            numCols: (NSUInteger) numCols
+                             pixelW: (double) pixelW
+                             pixelH: (double) pixelH
+                 brightnessCentroid: (CGPoint*) brightnessCentroidPtr;
 
 
 // Returns a dictionary containing a test exposure discretized from the

@@ -92,14 +92,14 @@ int main(int argc, const char * argv[])
         NSUInteger numPixels = numRows * numCols;
 
         CGPoint centroid = CGPointZero;
-        double roughHFD = [hfdAlg hfdForExposureArray: (uint16_t*) [exposure.pixels bytes]
-                                             ofLength: numPixels
-                                              numRows: numRows
-                                              numCols: numCols
-                                               pixelW: 4.539062
-                                               pixelH: 4.539062
-                                   brightnessCentroid: &centroid];
-        
+        double roughHFD = [hfdAlg roughHfdForExposureArray: (uint16_t*) [exposure.pixels bytes]
+                                                  ofLength: numPixels
+                                                   numRows: numRows
+                                                   numCols: numCols
+                                                    pixelW: 4.539062
+                                                    pixelH: 4.539062
+                                        brightnessCentroid: &centroid];
+
         NSLog(@"roughHFD (spiral) = %f", roughHFD);
 
         NSLog(@"----------------------------------------------------------");
