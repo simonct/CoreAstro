@@ -82,9 +82,9 @@ extern NSString* const keyExactHFD;
 // Returns a dictionary containing a test exposure discretized from the
 // continuous Gaussian profile given by
 //
-// b(r,theta) = b0 exp(-ar^2) [ 1 + s cos(theta) ] / (1 + s)
+// b(r,theta) = b0 exp(-ar^2) [ 1 + s cos(theta) ] / (1 + |s|)
 //
-// with b0 > 0, a > 0, and s != -1, and centered at a given point.
+// with b0 > 0, a > 0, and |s| <= 1, and centered at a given point.
 // Note that s != 0 gives a distribution that is not circularly symmetric,
 // but biased towards a point on the horizontal axis. b0 is chosen to
 // equal the largest unsigned short value.
@@ -92,7 +92,7 @@ extern NSString* const keyExactHFD;
 // The exact coordinates of the centroid in the continuous case are
 // xbar = (s/2) sqrt(pi/a) + center.x and ybar = center.y.
 //
-// The total brightness in the continuous case is (b0/a) pi/(1 + s).
+// The total brightness in the continuous case is (b0/a) pi/(1 + |s|).
 //
 // The total brightness, in the continuous case, inside a circle of
 // radius R centered at the given *center* (not the centroid!) is the total

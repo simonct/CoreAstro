@@ -976,9 +976,9 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 // Returns a dictionary containing a test exposure discretized from the
 // continuous Gaussian profile given by
 //
-// b(r,theta) = b0 exp(-ar^2) [ 1 + s cos(theta) ] / (1 + s)
+// b(r,theta) = b0 exp(-ar^2) [ 1 + s cos(theta) ] / (1 + |s|)
 //
-// with b0 > 0, a > 0, and s != -1, and centered at a given point.
+// with b0 > 0, a > 0, and |s| <= 1, and centered at a given point.
 // Note that s != 0 gives a distribution that is not circularly symmetric,
 // but biased towards a point on the horizontal axis. b0 is chosen to
 // equal the largest unsigned short value.
@@ -986,7 +986,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
 // The exact coordinates of the centroid in the continuous case are
 // xbar = (s/2) sqrt(pi/a) + center.x and ybar = center.y.
 //
-// The total brightness in the continuous case is (b0/a) pi/(1 + s).
+// The total brightness in the continuous case is (b0/a) pi/(1 + |s|).
 //
 // The total brightness, in the continuous case, inside a circle of
 // radius R centered at the given *center* (not the centroid!) is the total
@@ -1031,11 +1031,13 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
                                          pixelH: (double) pixelH;
 {
     assert(a > 0);
-    assert(s != -1);
+    assert(fabs(s) <= 1);
     assert(centerPt.x >= 0);
     assert(centerPt.y >= 0);
     assert(pixelW > 0);
     assert(pixelH > 0);
+
+    double splus1 = (1 + fabs(s));
 
     NSUInteger numPixels = numRows * numCols;
     NSMutableArray* bValsMut = [[NSMutableArray alloc] initWithCapacity: numPixels];
@@ -1062,7 +1064,8 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
             cosTheta = dx / sqrt(rsq);
         }
 
-        double b = (USHRT_MAX * exp(-a * rsq)) * (1 + s * cosTheta) / (1 + s);
+        double b = (USHRT_MAX * exp(-a * rsq)) * (1 + s * cosTheta) / splus1;
+        if (b < 0.0) b = 0.0; // sanity test
         uint16_t pb = (uint16_t) ceil(b);
 
         [bValsMut addObject: [NSNumber numberWithUnsignedShort: pb]];
@@ -1073,7 +1076,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     centroid.x = (s/2) * sqrt(pi/a) + centerPt.x;
     centroid.y = 0.0 + centerPt.y;
 
-    double btotal = ((pi * USHRT_MAX) / a) / (1 + s);
+    double btotal = ((pi * USHRT_MAX) / a) / splus1;
     double hfd = 0.0;
     if (s == 0.0)
     {
@@ -1082,6 +1085,7 @@ NS_INLINE BOOL pointOutsideOrOnCircle(CGPoint p, double r)
     else
     {
         // WLT XXX - yet to be analytically computed!
+        NSLog(@"*** Warning: At the moment, only HFD values computed with s = 0 are exact. Any other value of s will result in an arbitrarily large value of HFD. That's intentional, until I figure out how to compute HFDs for arbitrary values of s.");
         hfd = NSUIntegerMax;
     }
 

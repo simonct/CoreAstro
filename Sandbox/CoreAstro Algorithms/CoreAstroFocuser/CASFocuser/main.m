@@ -104,7 +104,7 @@ int main(int argc, const char * argv[])
 
         NSLog(@"----------------------------------------------------------");
         
-        NSDictionary* resD = [hfdAlg gaussianExposureWithDecayRate: 1.0e-4
+        NSDictionary* resD = [hfdAlg gaussianExposureWithDecayRate: 1.0e-3
                                                      angularFactor: 0.0
                                                         centeredAt: CGPointMake(200.0, 200.0)
                                                            numRows: 100
