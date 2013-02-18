@@ -24,6 +24,9 @@
 //
 
 
+// XXX WLT TODO: merge regions that are contained within one another.
+
+
 // A segmentation algorithm that finds connected regions by growing them
 // from starting points, much like the bucket tool in paint programs.
 

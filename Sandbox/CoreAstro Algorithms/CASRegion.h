@@ -23,6 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
+// XXX WLT TODO: Add a method that converts a region into an exposure.
 
 #import "CASCCDProperties.h"
 
