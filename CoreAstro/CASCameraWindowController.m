@@ -290,27 +290,13 @@
     }
 }
 
-- (CASCCDExposure*)_currentlySelectedExposure
-{
-    NSArray* exposures = [self.exposuresController selectedObjects];
-    if ([exposures isKindOfClass:[NSArray class]]){
-        if ([exposures count] == 1){
-            id exposure = [exposures objectAtIndex:0];
-            if ([exposure isKindOfClass:[CASCCDExposure class]]){
-                return exposure;
-            }
-        }
-    }
-    return nil;
-}
-
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
         
         if (object == self.exposuresController){
             if ([keyPath isEqualToString:@"selectedObjects"]){
-                self.currentExposure = [self _currentlySelectedExposure];
+                self.currentExposure = [[self.exposuresController selectedObjects] lastObject];
             }
         }
         else if (object == self.cameraController){
