@@ -273,7 +273,7 @@ static void sxExposePixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffse
     setup_data[USB_REQ_DATA + 13] = msec >> 24;
 }
 
-static void sxLatchPixelsWriteData(USHORT flags, USHORT camIndex, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin, UCHAR setup_data[18])
+static void sxLatchPixelsWriteData(USHORT camIndex, USHORT flags, USHORT xoffset, USHORT yoffset, USHORT width, USHORT height, USHORT xbin, USHORT ybin, UCHAR setup_data[18])
 {
     setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAOUT;
     setup_data[USB_REQ         ] = SXUSB_READ_PIXELS;
@@ -468,7 +468,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,buffer); // SXCCD_EXP_FLAGS_NOWIPE_FRAME
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,buffer); // SXCCD_EXP_FLAGS_NOWIPE_FRAME
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -485,7 +485,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         NSLog(@"SXCCDIOExposeCommand latching");
         
         uint8_t buffer[18];
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
@@ -493,7 +493,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         NSLog(@"SXCCDIOExposeCommand exposing");
 
         uint8_t buffer[22];
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
 }
@@ -544,14 +544,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     if (self.latchPixels){
         
         NSLog(@"SXCCDIOExposeCommandM25C latching");
-        
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,buffer);
+
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
     }
     else {
         
         NSLog(@"SXCCDIOExposeCommandM25C exposing");
 
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,0,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     }
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
