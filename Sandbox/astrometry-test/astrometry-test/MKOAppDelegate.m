@@ -551,6 +551,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.annotations" options:nil];
+    
+    [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -567,6 +569,17 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
         [self.solverTask terminate];
     }
     [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        if (object == self.imageView){
+            self.solution = nil;
+        };
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (NSURL*)indexDirectoryURL
