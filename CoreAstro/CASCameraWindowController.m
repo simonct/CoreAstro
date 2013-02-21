@@ -1732,7 +1732,7 @@
     else {
         CASExposuresController* exposuresController = project.exposuresController;
         if (!exposuresController){
-            exposuresController = [[CASExposuresController alloc] initWithContent:project.exposures];
+            exposuresController = [[CASExposuresController alloc] initWithContainer:project keyPath:@"exposures"];
             exposuresController.project = project;
             project.exposuresController = exposuresController;
         }

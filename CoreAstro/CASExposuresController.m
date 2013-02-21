@@ -9,6 +9,11 @@
 #import "CASExposuresController.h"
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASExposuresController ()
+@property (nonatomic,weak) id container;
+@property (nonatomic,copy) NSString* keyPath;
+@end
+
 @implementation CASExposuresController
 
 - (id)initWithContent:(id)content
@@ -18,6 +23,32 @@
         [self setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     }
     return self;
+}
+
+- (id)initWithContainer:(id)container keyPath:(NSString*)keyPath
+{
+    self = [super initWithContent:[container valueForKeyPath:keyPath]];
+    if (self) {
+        self.keyPath = keyPath;
+        self.container = container;
+        [self.container addObserver:self forKeyPath:self.keyPath options:0 context:(__bridge void *)(self)];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [self.container removeObserver:self forKeyPath:self.keyPath];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == (__bridge void *)(self)) {
+        NSLog(@"Fixme: move exposures controller into library project");
+        self.content = [self.container valueForKeyPath:self.keyPath];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)removeObjects:(NSArray *)objects

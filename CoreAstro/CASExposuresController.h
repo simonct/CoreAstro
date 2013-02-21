@@ -12,6 +12,7 @@
 
 @interface CASExposuresController : NSArrayController // make part of CASCCDExposures ?
 @property (nonatomic,weak) CASCCDExposureLibraryProject* project;
+- (id)initWithContainer:(id)container keyPath:(NSString*)keyPath;
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes;
 - (void)promptToDeleteCurrentSelectionWithWindow:(NSWindow*)window;
