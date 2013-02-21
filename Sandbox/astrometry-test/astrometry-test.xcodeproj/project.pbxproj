@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F45E325316A15EB1004DBAF5 /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45E324E16A15EB1004DBAF5 /* CASCenteringClipView.m */; };
-		F45E325416A15EB1004DBAF5 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45E325016A15EB1004DBAF5 /* CASImageView.m */; };
-		F45E325516A15EB1004DBAF5 /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45E325216A15EB1004DBAF5 /* CASZoomableView.m */; };
+		F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */; };
+		F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72D16D6D8F500C4C01D /* CASImageView.m */; };
+		F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C73016D6D8FE00C4C01D /* CASZoomableView.m */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
 		F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A386C9168887FE00E77631 /* InfoPlist.strings */; };
 		F4A386CD168887FE00E77631 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386CC168887FE00E77631 /* main.m */; };
@@ -20,6 +20,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F416C72916D6D8E900C4C01D /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
+		F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCenteringClipView.m; path = ../../../CoreAstro/CASCenteringClipView.m; sourceTree = "<group>"; };
+		F416C72C16D6D8F500C4C01D /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
+		F416C72D16D6D8F500C4C01D /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
+		F416C72F16D6D8FE00C4C01D /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASZoomableView.h; path = ../../../CoreAstro/CASZoomableView.h; sourceTree = "<group>"; };
+		F416C73016D6D8FE00C4C01D /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASZoomableView.m; path = ../../../CoreAstro/CASZoomableView.m; sourceTree = "<group>"; };
 		F43E210F168A52DA00C942CF /* atktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = atktopbm; sourceTree = "<group>"; };
 		F43E2110168A52DA00C942CF /* brushtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = brushtopbm; sourceTree = "<group>"; };
 		F43E2111168A52DA00C942CF /* cistopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cistopbm; sourceTree = "<group>"; };
@@ -53,12 +59,6 @@
 		F43E2143168A596B00C942CF /* libcairo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcairo.a; sourceTree = "<group>"; };
 		F43E2144168A596B00C942CF /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.dylib; sourceTree = "<group>"; };
 		F43E2145168A596B00C942CF /* libcairo.la */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = libcairo.la; sourceTree = "<group>"; };
-		F45E324D16A15EB1004DBAF5 /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCenteringClipView.h; sourceTree = "<group>"; };
-		F45E324E16A15EB1004DBAF5 /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCenteringClipView.m; sourceTree = "<group>"; };
-		F45E324F16A15EB1004DBAF5 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageView.h; sourceTree = "<group>"; };
-		F45E325016A15EB1004DBAF5 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageView.m; sourceTree = "<group>"; };
-		F45E325116A15EB1004DBAF5 /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASZoomableView.h; sourceTree = "<group>"; };
-		F45E325216A15EB1004DBAF5 /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASZoomableView.m; sourceTree = "<group>"; };
 		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4A386C3168887FE00E77631 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -491,12 +491,12 @@
 				F4A386D2168887FE00E77631 /* MKOAppDelegate.h */,
 				F4A386D3168887FE00E77631 /* MKOAppDelegate.m */,
 				F4A386D5168887FF00E77631 /* MainMenu.xib */,
-				F45E324D16A15EB1004DBAF5 /* CASCenteringClipView.h */,
-				F45E324E16A15EB1004DBAF5 /* CASCenteringClipView.m */,
-				F45E324F16A15EB1004DBAF5 /* CASImageView.h */,
-				F45E325016A15EB1004DBAF5 /* CASImageView.m */,
-				F45E325116A15EB1004DBAF5 /* CASZoomableView.h */,
-				F45E325216A15EB1004DBAF5 /* CASZoomableView.m */,
+				F416C72C16D6D8F500C4C01D /* CASImageView.h */,
+				F416C72D16D6D8F500C4C01D /* CASImageView.m */,
+				F416C72F16D6D8FE00C4C01D /* CASZoomableView.h */,
+				F416C73016D6D8FE00C4C01D /* CASZoomableView.m */,
+				F416C72916D6D8E900C4C01D /* CASCenteringClipView.h */,
+				F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */,
 				F4A386C7168887FE00E77631 /* Supporting Files */,
 			);
 			path = "astrometry-test";
@@ -1026,9 +1026,9 @@
 			files = (
 				F4A386CD168887FE00E77631 /* main.m in Sources */,
 				F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */,
-				F45E325316A15EB1004DBAF5 /* CASCenteringClipView.m in Sources */,
-				F45E325416A15EB1004DBAF5 /* CASImageView.m in Sources */,
-				F45E325516A15EB1004DBAF5 /* CASZoomableView.m in Sources */,
+				F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */,
+				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
+				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
