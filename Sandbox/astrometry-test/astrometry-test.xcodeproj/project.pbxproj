@@ -1133,7 +1133,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/astrometry-test/astrometry/lib\"",
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
-					"\"$(SRCROOT)/astrometry-test/cairo\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1153,7 +1152,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/astrometry-test/astrometry/lib\"",
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
-					"\"$(SRCROOT)/astrometry-test/cairo\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
