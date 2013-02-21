@@ -330,6 +330,17 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     return NO;
 }
 
+- (NSString *)outlineView:(NSOutlineView *)outlineView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn item:(NSTreeNode*)item mouseLocation:(NSPoint)mouseLocation
+{
+    if (item.parentNode == self.camerasTreeNode){
+        CASCameraController* controller = item.representedObject;
+        if ([controller isKindOfClass:[CASCameraController class]]){
+            return controller.camera.path;
+        }
+    }
+    return nil;
+}
+
 - (void) textDidEndEditing: (NSNotification *) notification
 {
     const NSInteger reason = [[[notification userInfo] objectForKey:@"NSTextMovement"] integerValue];
