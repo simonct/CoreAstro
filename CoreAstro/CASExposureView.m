@@ -117,7 +117,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 #pragma mark - Plate solution annotations
 
 @interface CASPlateSolvedObject (Drawing)
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour;
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour scaling:(NSInteger)scaling;
 @end
 
 @implementation CASPlateSolvedObject (Drawing)
@@ -165,11 +165,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     return objectLayer;
 }
 
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
+- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour scaling:(NSInteger)scaling
 {
-    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
-    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
-    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue] * scaling;
+    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue] * scaling;
+    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue] * scaling;
     
     return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
 }
@@ -761,6 +761,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.searchLayer = nil;
     self.reticleLayer = nil;
     
+    if (_annotationsLayer){
+        [_annotationsLayer removeFromSuperlayer];
+        _annotationsLayer = nil;
+    }
+    
     [super setCGImage:image];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
@@ -818,12 +823,15 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         
         if (_plateSolveSolution){
             
-            NSFont* font = [NSFont boldSystemFontOfSize:24];
+            // todo; choose font based on image size
+            const NSUInteger width = self.currentExposure.params.frame.width;
+            NSFont* font = [NSFont boldSystemFontOfSize:32 * (width/1932)];
+
             CGColorRef colour = CGColorCreateGenericRGB(1, 1, 0, 0.75);
             
             for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
                 if (/*object.enabled*/1){
-                    [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour];
+                    [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour scaling:self.currentExposure.params.bin.width];
                 }
             }
             
