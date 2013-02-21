@@ -700,6 +700,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOReadFieldCommand
 
+- (NSInteger) readSize {
+    NSInteger count = [super readSize];
+    if (self.field != kSXCCDIOReadFieldCommandBoth){
+        count /= 2;
+    }
+    return count;
+}
+
 - (NSData*)toDataRepresentation {
     
     uint8_t buffer[18];
