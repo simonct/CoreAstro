@@ -576,6 +576,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     if (context == (__bridge void *)(self)) {
         if (object == self.imageView){
             self.solution = nil;
+            NSString* title = [[NSFileManager defaultManager] displayNameAtPath:self.imageView.url.path];
+            self.window.title = title ? title : @"";
         };
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
