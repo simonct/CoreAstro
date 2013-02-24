@@ -24,7 +24,6 @@
 		F4250821160F0D3F0054443B /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507B9160F0D3F0054443B /* CASCCDExposureIO.m */; };
 		F4250822160F0D3F0054443B /* CASCCDExposureLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507BB160F0D3F0054443B /* CASCCDExposureLibrary.m */; };
 		F4250823160F0D3F0054443B /* CASCCDImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507BD160F0D3F0054443B /* CASCCDImage.m */; };
-		F4250824160F0D3F0054443B /* CASCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507BF160F0D3F0054443B /* CASCCDParams.m */; };
 		F4250825160F0D3F0054443B /* CASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507C1160F0D3F0054443B /* CASDevice.m */; };
 		F4250826160F0D3F0054443B /* CASDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F42507C5160F0D3F0054443B /* CASDeviceManager.m */; };
 		F4250827160F0D3F0054443B /* CASImageProcessor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F42507C7160F0D3F0054443B /* CASImageProcessor.mm */; };
@@ -62,12 +61,17 @@
 		F4250847160F0D3F0054443B /* SXCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F425080E160F0D3F0054443B /* SXCCDDevice.m */; };
 		F4250848160F0D3F0054443B /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F4250810160F0D3F0054443B /* SXCCDDeviceFactory.m */; };
 		F4250849160F0D3F0054443B /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4250812160F0D3F0054443B /* SXCCDIOCommand.m */; };
-		F425084A160F0D3F0054443B /* SXCCDParams.m in Sources */ = {isa = PBXBuildFile; fileRef = F4250814160F0D3F0054443B /* SXCCDParams.m */; };
 		F425084B160F0D3F0054443B /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F4250815160F0D3F0054443B /* SXDevices.plist */; };
 		F425084C160F0D3F0054443B /* SXFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4250817160F0D3F0054443B /* SXFWDevice.m */; };
 		F4250856160F0D600054443B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4250855160F0D600054443B /* IOKit.framework */; };
 		F4250858160F0D720054443B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4250857160F0D720054443B /* Accelerate.framework */; };
 		F425085A160F166D0054443B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4250859160F166D0054443B /* QuartzCore.framework */; };
+		F4E87F4516DA941100596D82 /* CASMovieExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E87F4416DA941100596D82 /* CASMovieExporter.m */; };
+		F4E87F4A16DA944100596D82 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E87F4916DA944100596D82 /* AVFoundation.framework */; };
+		F4E87F4C16DA944C00596D82 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E87F4B16DA944C00596D82 /* CoreMedia.framework */; };
+		F4FA8642166A972F0070BC00 /* CASCCDProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FA8641166A972F0070BC00 /* CASCCDProperties.m */; };
+		F4FA8645166A973D0070BC00 /* SXCCDProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FA8644166A973D0070BC00 /* SXCCDProperties.m */; };
+		F4FA8648166A975A0070BC00 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FA8647166A975A0070BC00 /* CASUtilities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,8 +132,6 @@
 		F42507BB160F0D3F0054443B /* CASCCDExposureLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureLibrary.m; sourceTree = "<group>"; };
 		F42507BC160F0D3F0054443B /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDImage.h; sourceTree = "<group>"; };
 		F42507BD160F0D3F0054443B /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
-		F42507BE160F0D3F0054443B /* CASCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDParams.h; sourceTree = "<group>"; };
-		F42507BF160F0D3F0054443B /* CASCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDParams.m; sourceTree = "<group>"; };
 		F42507C0160F0D3F0054443B /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDevice.h; sourceTree = "<group>"; };
 		F42507C1160F0D3F0054443B /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDevice.m; sourceTree = "<group>"; };
 		F42507C2160F0D3F0054443B /* CASDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceBrowser.h; sourceTree = "<group>"; };
@@ -198,14 +200,22 @@
 		F4250810160F0D3F0054443B /* SXCCDDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDDeviceFactory.m; sourceTree = "<group>"; };
 		F4250811160F0D3F0054443B /* SXCCDIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDIOCommand.h; sourceTree = "<group>"; };
 		F4250812160F0D3F0054443B /* SXCCDIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDIOCommand.m; sourceTree = "<group>"; };
-		F4250813160F0D3F0054443B /* SXCCDParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDParams.h; sourceTree = "<group>"; };
-		F4250814160F0D3F0054443B /* SXCCDParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDParams.m; sourceTree = "<group>"; };
 		F4250815160F0D3F0054443B /* SXDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SXDevices.plist; sourceTree = "<group>"; };
 		F4250816160F0D3F0054443B /* SXFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXFWDevice.h; sourceTree = "<group>"; };
 		F4250817160F0D3F0054443B /* SXFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXFWDevice.m; sourceTree = "<group>"; };
 		F4250855160F0D600054443B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F4250857160F0D720054443B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F4250859160F166D0054443B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F4E87F4316DA941100596D82 /* CASMovieExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMovieExporter.h; sourceTree = "<group>"; };
+		F4E87F4416DA941100596D82 /* CASMovieExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMovieExporter.m; sourceTree = "<group>"; };
+		F4E87F4916DA944100596D82 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F4E87F4B16DA944C00596D82 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F4FA8640166A972F0070BC00 /* CASCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDProperties.h; sourceTree = "<group>"; };
+		F4FA8641166A972F0070BC00 /* CASCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDProperties.m; sourceTree = "<group>"; };
+		F4FA8643166A973D0070BC00 /* SXCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXCCDProperties.h; sourceTree = "<group>"; };
+		F4FA8644166A973D0070BC00 /* SXCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXCCDProperties.m; sourceTree = "<group>"; };
+		F4FA8646166A975A0070BC00 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
+		F4FA8647166A975A0070BC00 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +223,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4E87F4C16DA944C00596D82 /* CoreMedia.framework in Frameworks */,
+				F4E87F4A16DA944100596D82 /* AVFoundation.framework in Frameworks */,
 				F425085A160F166D0054443B /* QuartzCore.framework in Frameworks */,
 				F4250858160F0D720054443B /* Accelerate.framework in Frameworks */,
 				F4250856160F0D600054443B /* IOKit.framework in Frameworks */,
@@ -254,6 +266,8 @@
 		F4250778160F0D110054443B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4E87F4B16DA944C00596D82 /* CoreMedia.framework */,
+				F4E87F4916DA944100596D82 /* AVFoundation.framework */,
 				F4250859160F166D0054443B /* QuartzCore.framework */,
 				F4250857160F0D720054443B /* Accelerate.framework */,
 				F4250855160F0D600054443B /* IOKit.framework */,
@@ -353,8 +367,6 @@
 				F42507BB160F0D3F0054443B /* CASCCDExposureLibrary.m */,
 				F42507BC160F0D3F0054443B /* CASCCDImage.h */,
 				F42507BD160F0D3F0054443B /* CASCCDImage.m */,
-				F42507BE160F0D3F0054443B /* CASCCDParams.h */,
-				F42507BF160F0D3F0054443B /* CASCCDParams.m */,
 				F42507C0160F0D3F0054443B /* CASDevice.h */,
 				F42507C1160F0D3F0054443B /* CASDevice.m */,
 				F42507C2160F0D3F0054443B /* CASDeviceBrowser.h */,
@@ -373,6 +385,12 @@
 				F42507CF160F0D3F0054443B /* CASPluginManager.m */,
 				F42507D0160F0D3F0054443B /* CASScriptableObject.h */,
 				F42507D1160F0D3F0054443B /* CASScriptableObject.m */,
+				F4FA8640166A972F0070BC00 /* CASCCDProperties.h */,
+				F4FA8641166A972F0070BC00 /* CASCCDProperties.m */,
+				F4FA8646166A975A0070BC00 /* CASUtilities.h */,
+				F4FA8647166A975A0070BC00 /* CASUtilities.m */,
+				F4E87F4316DA941100596D82 /* CASMovieExporter.h */,
+				F4E87F4416DA941100596D82 /* CASMovieExporter.m */,
 				F42507D2160F0D3F0054443B /* CoreAstro.h */,
 			);
 			path = Core;
@@ -502,11 +520,11 @@
 				F4250810160F0D3F0054443B /* SXCCDDeviceFactory.m */,
 				F4250811160F0D3F0054443B /* SXCCDIOCommand.h */,
 				F4250812160F0D3F0054443B /* SXCCDIOCommand.m */,
-				F4250813160F0D3F0054443B /* SXCCDParams.h */,
-				F4250814160F0D3F0054443B /* SXCCDParams.m */,
 				F4250815160F0D3F0054443B /* SXDevices.plist */,
 				F4250816160F0D3F0054443B /* SXFWDevice.h */,
 				F4250817160F0D3F0054443B /* SXFWDevice.m */,
+				F4FA8643166A973D0070BC00 /* SXCCDProperties.h */,
+				F4FA8644166A973D0070BC00 /* SXCCDProperties.m */,
 			);
 			path = SXCCD;
 			sourceTree = "<group>";
@@ -662,7 +680,6 @@
 				F4250821160F0D3F0054443B /* CASCCDExposureIO.m in Sources */,
 				F4250822160F0D3F0054443B /* CASCCDExposureLibrary.m in Sources */,
 				F4250823160F0D3F0054443B /* CASCCDImage.m in Sources */,
-				F4250824160F0D3F0054443B /* CASCCDParams.m in Sources */,
 				F4250825160F0D3F0054443B /* CASDevice.m in Sources */,
 				F4250826160F0D3F0054443B /* CASDeviceManager.m in Sources */,
 				F4250827160F0D3F0054443B /* CASImageProcessor.mm in Sources */,
@@ -692,8 +709,11 @@
 				F4250847160F0D3F0054443B /* SXCCDDevice.m in Sources */,
 				F4250848160F0D3F0054443B /* SXCCDDeviceFactory.m in Sources */,
 				F4250849160F0D3F0054443B /* SXCCDIOCommand.m in Sources */,
-				F425084A160F0D3F0054443B /* SXCCDParams.m in Sources */,
 				F425084C160F0D3F0054443B /* SXFWDevice.m in Sources */,
+				F4FA8642166A972F0070BC00 /* CASCCDProperties.m in Sources */,
+				F4FA8645166A973D0070BC00 /* SXCCDProperties.m in Sources */,
+				F4FA8648166A975A0070BC00 /* CASUtilities.m in Sources */,
+				F4E87F4516DA941100596D82 /* CASMovieExporter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
