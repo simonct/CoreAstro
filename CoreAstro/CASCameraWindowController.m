@@ -143,6 +143,8 @@
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureField;
 @property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureLabel;
+@property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
+@property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -217,6 +219,9 @@
     // set up the guider controls
     self.guidePulseDuration = 250;
     self.guideControlsContainer.hidden = YES;
+    
+    // set up the Back button
+    [self configureLibraryBackButton];
     
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
@@ -1526,6 +1531,11 @@
     return enabled;
 }
 
+- (IBAction)libraryBackButtonPressed:(id)sender
+{
+    [self.devicesTableView selectProject:self.exposuresController.project];
+}
+
 #pragma mark NSResponder
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -1758,6 +1768,47 @@
     }
 }
 
+- (void)configureLibraryBackButton
+{
+    if (self.libraryViewController.view.superview || self.cameraController){
+        
+        // if we're displaying the library view or in camera mode then hide the Back button
+        
+        self.libraryBackButton.hidden = YES;
+        
+        NSView* cameraNameField = self.imageBannerView.cameraNameField;
+        if (self.libraryBackButtonConstraints){
+            [self.imageBannerView removeConstraints:self.libraryBackButtonConstraints];
+        }
+        self.libraryBackButtonConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-[cameraNameField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(cameraNameField)];
+        [self.imageBannerView addConstraints:self.libraryBackButtonConstraints];
+    }
+    else {
+        
+        // otherwise, if we're in archived image mode, show the Back button and set the title to the name of the exposure's parent project
+        
+        self.libraryBackButton.hidden = NO;
+        
+        NSView* libraryBackButton = self.libraryBackButton;
+        NSView* cameraNameField = self.imageBannerView.cameraNameField;
+        if (self.libraryBackButtonConstraints){
+            [self.imageBannerView removeConstraints:self.libraryBackButtonConstraints];
+        }
+        self.libraryBackButtonConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-[libraryBackButton(>=85)]-[cameraNameField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(cameraNameField,libraryBackButton)];
+        [self.imageBannerView addConstraints:self.libraryBackButtonConstraints];
+        
+        if (self.exposuresController.project.name){
+            self.libraryBackButton.title = self.exposuresController.project.name;
+        }
+        else {
+            self.libraryBackButton.title = @"All Exposures";
+        }
+        [self.libraryBackButton sizeToFit];
+    }
+}
+
+#pragma mark Master selection delegate
+
 - (void)cameraWasSelected:(id)cameraController
 {
     [self hideLibraryView];
@@ -1767,6 +1818,8 @@
     if (!cameraController){
         [self configureForCameraController];
     }
+    
+    [self configureLibraryBackButton];
 }
 
 - (void)libraryWasSelected:(id)library
@@ -1779,6 +1832,8 @@
     else{
         [self showLibraryViewWithProject:[library isKindOfClass:[CASCCDExposureLibraryProject class]] ? library : nil];
     }
+
+    [self configureLibraryBackButton];
 }
 
 #pragma mark Library delegate
@@ -1795,6 +1850,8 @@
         if ([exposures count]){
             self.currentExposure = [exposures objectAtIndex:0];
         }
+        
+        [self configureLibraryBackButton];
     }
 }
 

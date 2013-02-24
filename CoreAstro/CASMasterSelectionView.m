@@ -64,6 +64,25 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     NSTreeNode* _editingNode;
 }
 
+- (void)awakeFromNib
+{
+    // should probably have all this logic in a viewcontroller, especially when we get to user-defined library folders
+    self.dataSource = (id)self;
+    self.delegate = (id)self;
+    
+    nodes = [NSMutableArray arrayWithCapacity:2];
+    
+    NSTreeNode* devices = [NSTreeNode treeNodeWithRepresentedObject:@"CAMERAS"];
+    [nodes addObject:devices];
+    
+    NSTreeNode* library = [NSTreeNode treeNodeWithRepresentedObject:@"LIBRARY"];
+    [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:@"All Exposures"]];
+    for (CASCCDExposureLibraryProject* project in [CASCCDExposureLibrary sharedLibrary].projects){
+        [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+    }
+    [nodes addObject:library];
+}
+
 - (void)completeSetup
 {
     [self reloadData];
@@ -90,23 +109,23 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     [self addSubview:minusButton];
 }
 
-- (void)awakeFromNib
+- (void)selectProject:(CASCCDExposureLibraryProject*)project
 {
-    // should probably have all this logic in a viewcontroller, especially when we get to user-defined library folders
-    self.dataSource = (id)self;
-    self.delegate = (id)self;
-    
-    nodes = [NSMutableArray arrayWithCapacity:2];
-    
-    NSTreeNode* devices = [NSTreeNode treeNodeWithRepresentedObject:@"CAMERAS"];
-    [nodes addObject:devices];
-    
-    NSTreeNode* library = [NSTreeNode treeNodeWithRepresentedObject:@"LIBRARY"];
-    [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:@"All Exposures"]];
-    for (CASCCDExposureLibraryProject* project in [CASCCDExposureLibrary sharedLibrary].projects){
-        [[library mutableChildNodes] addObject:[NSTreeNode treeNodeWithRepresentedObject:project]];
+    NSInteger projectRow = NSNotFound;
+    if (project){
+        projectRow = [self rowForItem:[self nodeWithProjectUUID:project.uuid]];
     }
-    [nodes addObject:library];
+    else{
+        NSTreeNode* node = [[self.exposuresTreeNode childNodes] objectAtIndex:0];
+        projectRow = [self rowForItem:node];
+        project = node.representedObject;
+    }
+    if (projectRow != NSNotFound){
+        [self selectRowIndexes:[NSIndexSet indexSetWithIndex:projectRow] byExtendingSelection:NO];
+        if (delegateRespondsToLibraryWasSelected){
+            [self.masterViewDelegate libraryWasSelected:project];
+        }
+    }
 }
 
 - (void)setMasterViewDelegate:(id<CASMasterSelectionViewDelegate>)masterViewDelegate

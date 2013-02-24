@@ -291,6 +291,7 @@
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
+		F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E98F9816D90675005F9C5B /* CASGradientButton.m */; };
 		F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */; };
 		F4EAFCAA15D7E749001B7993 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */; };
 		F4EAFCB315D7EDAB001B7993 /* CASScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCB215D7EDAB001B7993 /* CASScriptCommand.m */; };
@@ -1257,6 +1258,8 @@
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
 		F4E979E4161F85470037ED1B /* CoreAstro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CoreAstro.entitlements; sourceTree = "<group>"; };
+		F4E98F9716D90675005F9C5B /* CASGradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGradientButton.h; sourceTree = "<group>"; };
+		F4E98F9816D90675005F9C5B /* CASGradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGradientButton.m; sourceTree = "<group>"; };
 		F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CoreAstro.sdef; sourceTree = "<group>"; };
 		F4EAFCA815D7E749001B7993 /* NSApplication+CASScripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSApplication+CASScripting.h"; sourceTree = "<group>"; };
 		F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+CASScripting.m"; sourceTree = "<group>"; };
@@ -1669,6 +1672,8 @@
 				F4849CBF1659570A0069647F /* CASLibraryBrowserViewController.h */,
 				F4849CC01659570A0069647F /* CASLibraryBrowserViewController.m */,
 				F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */,
+				F4E98F9716D90675005F9C5B /* CASGradientButton.h */,
+				F4E98F9816D90675005F9C5B /* CASGradientButton.m */,
 				F413F14315D7FF7B00CA105B /* Scripting */,
 				F412974F15FCA977009C215E /* Resources */,
 				F49E52C815A971610018DC75 /* Supporting Files */,
@@ -3266,6 +3271,7 @@
 				F47BB16616AC535000E3F2FE /* CASCenteringClipView.m in Sources */,
 				F47BB16C16AC536100E3F2FE /* CASZoomableView.m in Sources */,
 				F4B26F6916BEC408001F1D03 /* CASPlateSolutionHUDView.m in Sources */,
+				F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,7 @@
 
 @interface CASMasterSelectionView : NSOutlineView
 - (void)completeSetup;
+- (void)selectProject:(CASCCDExposureLibraryProject*)project;
 @property (nonatomic,strong) id camerasContainer;
 @property (nonatomic,unsafe_unretained) id<CASMasterSelectionViewDelegate> masterViewDelegate; // can't use weak as NSWindowController on Lion can't be weak-linked to
 @end
