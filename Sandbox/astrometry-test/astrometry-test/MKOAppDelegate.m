@@ -364,6 +364,7 @@
 @property (nonatomic,strong) CALayer* annotationLayer;
 @property (nonatomic,strong) NSArray* annotations;
 @property (nonatomic,strong) NSFont* annotationsFont;
+@property (nonatomic,strong) CATextLayer* draggingAnnotation;
 @end
 
 @implementation CASPlateSolveImageView
@@ -393,7 +394,6 @@
 {
     [[NSColor lightGrayColor] set];
     NSRectFill(dirtyRect);
-    [super drawRect:dirtyRect];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
@@ -409,12 +409,38 @@
     
     NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
     if ([urlString isKindOfClass:[NSString class]]){
-        self.url = [NSURL URLWithString:urlString];
-        if (self.image){
-            return YES;
+#if DEBUG
+        if ([[urlString pathExtension] isEqualToString:@"plist"]){
+            
+            NSDictionary* annotations = [NSDictionary dictionaryWithContentsOfFile:[[NSURL URLWithString:urlString] path]];
+            if ([annotations isKindOfClass:[NSDictionary class]]){
+                
+                NSMutableArray* objects = nil;
+                for (NSDictionary* annotation in [annotations objectForKey:@"annotations"]){
+                    CASPlateSolvedObject* object = [CASPlateSolvedObject new];
+                    object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
+                    object.annotation = annotation;
+                    if (!objects){
+                        objects = [NSMutableArray arrayWithCapacity:[annotations count]];
+                    }
+                    [objects addObject:object];
+                }
+
+                self.annotations = objects;
+                [self createAnnotations];
+                return YES;
+            }
         }
-        else {
-            [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
+        else
+#endif
+        {
+            self.url = [NSURL URLWithString:urlString];
+            if (self.image){
+                return YES;
+            }
+            else {
+                [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
+            }
         }
     }
     
@@ -444,7 +470,7 @@
         }
 
         if (_annotations){
-            [self drawAnnotations];
+            [self createAnnotations];
         }
         else{
             [self.annotationLayer removeFromSuperlayer];
@@ -457,7 +483,7 @@
 {
     if (_annotationsFont != annotationsFont){
         _annotationsFont = annotationsFont;
-        [self drawAnnotations];
+        [self updateAnnotations];
     }
 }
 
@@ -487,7 +513,56 @@
     return colour;
 }
 
-- (void)drawAnnotations
+- (void)updateAnnotations
+{
+    NSFont* annotationsFont = self.annotationsFont;
+    CGColorRef annotationsColour = self.annotationsColour;
+
+    for (CALayer* layer in self.annotationLayer.sublayers){
+        if ([layer isKindOfClass:[CATextLayer class]]){
+            CATextLayer* textLayer = (CATextLayer*)layer;
+            if (self.draggingAnnotation == textLayer){
+                textLayer.foregroundColor = CGColorCreateCopyWithAlpha(annotationsColour, 0.75);
+            }
+            else {
+                textLayer.foregroundColor = annotationsColour;
+            }
+            textLayer.font = (__bridge CFTypeRef)annotationsFont;
+            textLayer.fontSize = annotationsFont.pointSize;
+            const CGSize size = [textLayer.string sizeWithAttributes:@{NSFontAttributeName:annotationsFont}];
+            textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
+            // todo; pin to image rect
+        }
+    }
+    
+    for (CALayer* objectLayer in self.annotationLayer.sublayers){
+        
+        if ([objectLayer isKindOfClass:[CATextLayer class]]){
+            continue;
+        }
+
+        objectLayer.borderColor = annotationsColour;
+        
+        // want the inverse of the text bounding box as a clip mask for the circle layer
+        CAShapeLayer* shape = [CAShapeLayer layer];
+        CGPathRef path = CGPathCreateWithRect(objectLayer.bounds, nil);
+        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
+        
+        for (CALayer* textLayer in self.annotationLayer.sublayers){
+            if ([textLayer isKindOfClass:[CATextLayer class]]){
+                CGPathAddRect(mpath, NULL, [self.annotationLayer convertRect:textLayer.frame toLayer:objectLayer]);
+            }
+        }
+        
+        shape.path = mpath;
+        shape.fillRule = kCAFillRuleEvenOdd;
+        objectLayer.mask = shape;
+    }
+    
+    CFBridgingRelease(annotationsColour);
+}
+
+- (void)createAnnotations
 {
     if (!self.image){
         return;
@@ -513,15 +588,53 @@
         }
     }
     
+    [self updateAnnotations];
+    
     CFBridgingRelease(annotationsColour);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
-        [self drawAnnotations];
+        [self updateAnnotations];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    const CGPoint pointInLayer = [self.layer convertPoint:theEvent.locationInWindow fromLayer:nil];
+    CALayer* layer = [self.annotationLayer hitTest:pointInLayer];
+    
+    if ([layer isKindOfClass:[CATextLayer class]]){
+        
+        self.draggingAnnotation = (CATextLayer*)layer;
+        self.draggingAnnotation.foregroundColor = CGColorCreateCopyWithAlpha(self.draggingAnnotation.foregroundColor, 0.75);
+
+        CGPoint anchorPoint = [self.layer convertPoint:pointInLayer toLayer:self.draggingAnnotation];
+        anchorPoint.x /= self.draggingAnnotation.bounds.size.width;
+        anchorPoint.y /= self.draggingAnnotation.bounds.size.height;
+        self.draggingAnnotation.anchorPoint = anchorPoint;
+        
+        self.draggingAnnotation.position = pointInLayer;
+    }
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+        context.duration = 0;
+        self.draggingAnnotation.position = [self.annotationLayer convertPoint:theEvent.locationInWindow fromLayer:nil];
+        [self updateAnnotations];
+    } completionHandler:0];
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    if (self.draggingAnnotation){
+        self.draggingAnnotation = nil;
+        [self updateAnnotations];
     }
 }
 
@@ -740,6 +853,11 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                                 else {
                                                     // check status=solved
                                                     [self.solution replaceAnnotations:[report objectForKey:@"annotations"]];
+#if DEBUG
+                                                    NSString* solutionPath = [self.imageView.url.path stringByDeletingLastPathComponent];
+                                                    NSString* solutionName = [[[self.imageView.url.path lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"plist"];
+                                                    [report writeToFile:[solutionPath stringByAppendingPathComponent:solutionName] atomically:YES];
+#endif
                                                     completeWithError(nil);
                                                 }
                                             }
@@ -766,6 +884,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 {
     self.imageView.annotationsFont = [sender convertFont:self.imageView.annotationsFont];
     [[NSUserDefaults standardUserDefaults] setObject:[NSArchiver archivedDataWithRootObject:self.imageView.annotationsFont] forKey:@"CASAnnotationsFont"];
+    [self.imageView updateAnnotations];
 }
 
 - (IBAction)openDocument:(id)sender
@@ -819,6 +938,14 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             offscreenImageView.url = self.imageView.url;
             offscreenImageView.annotationsFont = self.imageView.annotationsFont;
             offscreenImageView.annotations = self.imageView.annotations;
+            
+            // set annotation positions (assuming both arrays of annotations are in the same order)
+            NSInteger i = 0;
+            for (CALayer* layer in offscreenImageView.annotationLayer.sublayers){
+                CALayer* layer2 = [self.imageView.annotationLayer.sublayers objectAtIndex:i++];
+                layer.position = layer2.position;
+                layer.anchorPoint = layer2.anchorPoint;
+            }
             
             [[offscreenWindow contentView] addSubview:offscreenImageView];
             
