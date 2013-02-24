@@ -7,6 +7,7 @@
 //
 
 #import "MKOAppDelegate.h"
+#import "CASCCDExposure.h"
 #import "CASCCDExposureIO.h"
 #import "CASRegionGrowerSegmenter.h"
 
@@ -30,7 +31,7 @@
     if (!self.exposure){
         return nil;
     }
-    CGImageRef image = [self.exposure createImage].CGImage;
+    CGImageRef image = [self.exposure newImage].CGImage;
     return [[NSImage alloc] initWithCGImage:image size:NSMakeSize(CGImageGetWidth(image), CGImageGetHeight(image))];
 }
 
