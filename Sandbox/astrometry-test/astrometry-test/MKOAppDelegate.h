@@ -27,5 +27,6 @@
 
 - (IBAction)solve:(id)sender;
 - (IBAction)showFontPanel:(id)sender;
+- (IBAction)resetAnnotations:(id)sender;
 
 @end

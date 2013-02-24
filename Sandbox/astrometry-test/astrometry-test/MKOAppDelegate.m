@@ -880,6 +880,11 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     [fontManager orderFrontFontPanel:self];
 }
 
+- (IBAction)resetAnnotations:(id)sender
+{
+    [self.imageView createAnnotations];
+}
+
 - (IBAction)changeFont:(id)sender
 {
     self.imageView.annotationsFont = [sender convertFont:self.imageView.annotationsFont];
