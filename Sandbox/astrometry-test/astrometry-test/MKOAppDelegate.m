@@ -179,6 +179,16 @@
 
 @end
 
+@class CASPlateSolvedObject;
+
+@interface CASAnnotationLayer : CALayer
+@property (nonatomic,weak) CATextLayer* textLayer;
+@property (nonatomic,weak) CASPlateSolvedObject* object;
+@end
+
+@implementation CASAnnotationLayer
+@end
+
 @interface CASSolverModel : NSObject
 @property (nonatomic,assign) float scaleLow;
 @property (nonatomic,assign) float scaleHigh;
@@ -219,9 +229,9 @@
     return [result copy];
 }
 
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
+- (CASAnnotationLayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
 {
-    CALayer* objectLayer = [CALayer layer];
+    CASAnnotationLayer* objectLayer = [CASAnnotationLayer layer];
     
     // flip y
     position.y = annotationLayer.bounds.size.height - position.y;
@@ -249,11 +259,13 @@
         
         [annotationLayer addSublayer:textLayer];
         
+        objectLayer.textLayer = textLayer;
+        
         // want the inverse of the text bounding box as a clip mask for the circle layer
         CAShapeLayer* shape = [CAShapeLayer layer];
         CGPathRef path = CGPathCreateWithRect(objectLayer.bounds, nil);
         CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
-        CGPathAddRect(mpath, NULL, [annotationLayer convertRect:textLayer.frame toLayer:objectLayer]);
+        CGPathAddRect(mpath, NULL, [annotationLayer convertRect:objectLayer.textLayer.frame toLayer:objectLayer]);
         shape.path = mpath;
         shape.fillRule = kCAFillRuleEvenOdd;
         objectLayer.mask = shape;
@@ -262,13 +274,17 @@
     return objectLayer;
 }
 
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
+- (CASAnnotationLayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
 {
     const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
     const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
     const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
 
-    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
+    CASAnnotationLayer* result = [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
+    
+    result.object = self;
+    
+    return result;
 }
 
 @end
@@ -515,17 +531,36 @@
     return colour;
 }
 
+- (CASAnnotationLayer*)layerForObject:(CASPlateSolvedObject*)object
+{
+    // revisit this if we end up with lots of layers...
+    for (CASAnnotationLayer* layer in self.annotationLayer.sublayers){
+        if ([layer isKindOfClass:[CASAnnotationLayer class]]){
+            if (layer.object == object){
+                return layer;
+            }
+        }
+    }
+    return nil;
+}
+
 - (void)updateAnnotations
 {
     NSFont* annotationsFont = self.annotationsFont;
     CGColorRef annotationsColour = self.annotationsColour;
 
-    // check annotations for enabled/disabled flag
-    // will need to remove disabled ones and add enabled ones
-    // means we have to be able to associate a later with an annotation so probably do need a custom subclass for this...
-    
+    // hide/show annotations based on the enabled flag
+    for (CASAnnotationLayer* layer in self.annotationLayer.sublayers){
+        if ([layer isKindOfClass:[CASAnnotationLayer class]]){
+            layer.hidden = layer.textLayer.hidden = !layer.object.enabled;
+        }
+    }
+
+    // now update all the annotations in the layer with the current settings
     for (CALayer* layer in self.annotationLayer.sublayers){
+        
         if ([layer isKindOfClass:[CATextLayer class]]){
+            
             CATextLayer* textLayer = (CATextLayer*)layer;
             if (self.draggingAnnotation == textLayer){
                 textLayer.foregroundColor = CGColorCreateCopyWithAlpha(annotationsColour, 0.75);
@@ -555,7 +590,7 @@
         CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
         
         for (CALayer* textLayer in self.annotationLayer.sublayers){
-            if ([textLayer isKindOfClass:[CATextLayer class]]){
+            if (!textLayer.hidden && [textLayer isKindOfClass:[CATextLayer class]]){
                 CGPathAddRect(mpath, NULL, [self.annotationLayer convertRect:textLayer.frame toLayer:objectLayer]);
             }
         }
@@ -589,9 +624,7 @@
     CGColorRef annotationsColour = self.annotationsColour;
     
     for (CASPlateSolvedObject* object in self.annotations){
-        if (object.enabled){
-            [object createLayerInLayer:self.annotationLayer withFont:annotationsFont andColour:annotationsColour];
-        }
+        [object createLayerInLayer:self.annotationLayer withFont:annotationsFont andColour:annotationsColour];
     }
     
     [self updateAnnotations];
