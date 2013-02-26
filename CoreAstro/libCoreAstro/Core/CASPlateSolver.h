@@ -28,7 +28,7 @@
 @interface CASPlateSolvedObject : NSObject
 @property (nonatomic,assign) BOOL enabled;
 @property (nonatomic,readonly) NSString* name;
-@property (nonatomic,strong) NSDictionary* annotation;
+@property (nonatomic,strong,readonly) NSDictionary* annotation;
 @end
 
 @interface CASPlateSolveSolution : NSObject<NSCoding>

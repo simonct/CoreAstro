@@ -27,6 +27,10 @@
 #import "CASTaskWrapper.h"
 #import "CASCCDExposureIO.h"
 
+@interface CASPlateSolvedObject ()
+@property (nonatomic,strong) NSDictionary* annotation;
+@end
+
 @implementation CASPlateSolvedObject
 
 /*
