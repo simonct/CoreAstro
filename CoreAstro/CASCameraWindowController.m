@@ -1494,7 +1494,7 @@
             break;
             
         case 10012:
-            enabled = self.currentExposure != nil;
+            enabled = (self.currentExposure != nil && !self.cameraController.capturing);
             break;
             
         case 10014:
