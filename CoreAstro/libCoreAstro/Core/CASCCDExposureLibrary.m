@@ -108,7 +108,7 @@
     NSMutableSet* ms = [NSMutableSet setWithSet:objects];
     [ms minusSet:[NSSet setWithArray:self.exposures]];
     if ([ms count]){
-        [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[objects allObjects]];
+        [[self mutableArrayValueForKey:@"exposures"] addObjectsFromArray:[ms allObjects]];
         [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self];
     }
     else {
