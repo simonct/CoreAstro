@@ -61,10 +61,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     [self.camera connect:^(NSError *error) {
         
-        if (error){
-            if (block){
-                block(error);
-            }
+        if (block){
+            block(error);
         }
     }];
 }
