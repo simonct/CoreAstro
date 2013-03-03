@@ -1794,7 +1794,7 @@
         if (self.libraryBackButtonConstraints){
             [self.imageBannerView removeConstraints:self.libraryBackButtonConstraints];
         }
-        self.libraryBackButtonConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-[libraryBackButton(>=85)]-[cameraNameField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(cameraNameField,libraryBackButton)];
+        self.libraryBackButtonConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-8-[libraryBackButton(>=85)]-[cameraNameField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(cameraNameField,libraryBackButton)];
         [self.imageBannerView addConstraints:self.libraryBackButtonConstraints];
         
         if (self.exposuresController.project.name){
