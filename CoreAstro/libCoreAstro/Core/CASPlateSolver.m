@@ -314,7 +314,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                 NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
                 [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
                 
-                [self.solverTask setArguments:@[imagePath,@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
+                [self.solverTask setArguments:@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
                 
                 // run the solver task
                 [self.solverTask launchWithOutputBlock:^(NSString* string) {
