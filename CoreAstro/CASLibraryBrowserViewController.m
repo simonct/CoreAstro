@@ -254,10 +254,11 @@
     return [self.exposuresController arrangedObjects];
 }
 
-- (CASExposuresController*)exposuresControllerWithExposures:(NSArray*)exposures
+- (CASExposuresController*)exposuresControllerWithExposures:(NSArray*)exposures // not currently used
 {
     CASExposuresController* exposuresController = [[CASExposuresController alloc] initWithContent:exposures];
     exposuresController.project = self.exposuresController.project;
+    // select all the exposures ?...
     return exposuresController;
 }
 
@@ -661,7 +662,10 @@
 {
     NSArray* selectedObjects = [self.exposuresController selectedObjects];
     if ([selectedObjects count] && [self.exposureDelegate respondsToSelector:@selector(focusOnExposures:)]){
-        [self.exposureDelegate focusOnExposures:[self exposuresControllerWithExposures:selectedObjects]];
+        // todo; using current array controller as that handles deletes correctly but we really want
+        // next, previous to only navigate within the selection so probably need the exposures controller to
+        // handle that mode
+        [self.exposureDelegate focusOnExposures:self.exposuresController];
     }
 }
 
