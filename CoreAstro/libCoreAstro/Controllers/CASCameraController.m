@@ -66,15 +66,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 block(error);
             }
         }
-        else {
-            
-            [self.camera flush:^(NSError *error) {
-                
-                if (block){
-                    block(error);
-                }
-            }];
-        }
     }];
 }
 
