@@ -430,7 +430,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     
     const size_t imageHeight = CGImageGetHeight(self.CGImage);
 
-    CGRect selectionRect;
+    CGRect selectionRect = CGRectZero;
     CASCCDExposure* workingExposure;
     if (!self.showSelection){
         workingExposure = currentExposure;
@@ -477,7 +477,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                     if (self.scaleSubframe){
                         
                         // selection is being displayed full screen so don't have to correct x,y
-                        const CGFloat selectionBinnedHeight = selectionRect.size.height/currentExposure.params.bin.height;
+                        const CGFloat selectionBinnedHeight = currentExposure.params.size.height/currentExposure.params.bin.height;
                         self.starLocation = NSMakePoint(displayPoint.x,selectionBinnedHeight - displayPoint.y);
                     }
                     else {
@@ -554,11 +554,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor todo; image.CIImage
             if (CGImage){
                 
+                // grab a local copy as we're going to use this a bit
                 const CASExposeParams params = _currentExposure.params;
-                const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
                 
                 // draw subframes as an inset within a full frame sized gray background unless the scaleSubframe flag is set
-                const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
                 if (!self.scaleSubframe){
                     
                     // todo; this is using the unbinned co-ords but should probably be using binned
@@ -569,6 +568,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                     else {
                         
                         // always make the image the full frame size
+                        const CGRect frame = CGRectMake(0, 0, params.frame.width, params.frame.height);
+                        const CGRect subframe = CGRectMake(params.origin.x, params.origin.y, params.size.width, params.size.height);
                         if (CGRectEqualToRect(subframe, frame)){
                             CGContextDrawImage(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height),CGImage);
                         }
