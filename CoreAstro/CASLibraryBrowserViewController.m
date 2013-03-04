@@ -665,6 +665,7 @@
         // todo; using current array controller as that handles deletes correctly but we really want
         // next, previous to only navigate within the selection so probably need the exposures controller to
         // handle that mode
+        self.exposuresController.navigateSelection = YES;
         [self.exposureDelegate focusOnExposures:self.exposuresController];
     }
 }

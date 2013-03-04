@@ -12,6 +12,7 @@
 @interface CASExposuresController ()
 @property (nonatomic,weak) id container;
 @property (nonatomic,copy) NSString* keyPath;
+@property (nonatomic,strong) NSMutableArray* navigationObjects;
 @end
 
 @implementation CASExposuresController
@@ -41,6 +42,31 @@
     [self.container removeObserver:self forKeyPath:self.keyPath];
 }
 
+- (NSArray *)arrangeObjects:(NSArray *)objects
+{
+    if (self.navigateSelection){
+        objects = [self.navigationObjects copy];
+    }
+    return [super arrangeObjects:objects];
+}
+
+- (void)setNavigateSelection:(BOOL)navigateSelection
+{
+    if (navigateSelection != _navigateSelection){
+        _navigateSelection = navigateSelection;
+        if (_navigateSelection){
+            self.navigationObjects = [self.selectedObjects mutableCopy];
+            if ([self.navigationObjects count]){
+                self.selectedObjects = @[self.selectedObjects[0]];
+            }
+        }
+        else {
+            self.navigationObjects = nil;
+        }
+        [self rearrangeObjects];
+    }
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
@@ -48,6 +74,13 @@
         self.content = [self.container valueForKeyPath:self.keyPath];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)removeObject:(id)object
+{
+    if (object){
+        [self removeObjects:@[object]];
     }
 }
 
@@ -70,10 +103,15 @@
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index deletingPermanently:(BOOL)deletingPermanently
 {
     if (index != NSNotFound){
+        id exposure = [[self arrangedObjects] objectAtIndex:index];
         if (deletingPermanently){
-            [[[self arrangedObjects] objectAtIndex:index] deleteExposure];
+            [exposure deleteExposure];
         }
         [super removeObjectAtArrangedObjectIndex:index];
+        if (self.navigationObjects){
+            [self.navigationObjects removeObject:exposure];
+            [self rearrangeObjects];
+        }
     }
 }
 
@@ -99,10 +137,15 @@
             [self removeObjectAtArrangedObjectIndex:[indexes firstIndex] deletingPermanently:deletingPermanently];
         }
         else {
+            NSArray* exposures = [arrangedObjects objectsAtIndexes:indexes];
             if (deletingPermanently){
-                [[arrangedObjects objectsAtIndexes:indexes] makeObjectsPerformSelector:@selector(deleteExposure)];
+                [exposures makeObjectsPerformSelector:@selector(deleteExposure)];
             }
             [super removeObjectsAtArrangedObjectIndexes:indexes];
+            if (self.navigationObjects){
+                [self.navigationObjects removeObjectsInArray:exposures];
+                [self rearrangeObjects];
+            }
         }
         if (nextObject){
             [self setSelectedObjects:[NSArray arrayWithObject:nextObject]];

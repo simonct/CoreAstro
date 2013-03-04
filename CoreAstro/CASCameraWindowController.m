@@ -1748,6 +1748,7 @@
         }
         self.libraryViewController.exposuresController = exposuresController;
     }
+    self.libraryViewController.exposuresController.navigateSelection = NO;
     
     self.exposuresController = (CASExposuresController*)self.libraryViewController.exposuresController;
     
