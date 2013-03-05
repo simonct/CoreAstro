@@ -33,16 +33,18 @@
 
 @interface CASDeviceManager ()
 @property (nonatomic,strong) CASPluginManager* pluginManager;
-@property (nonatomic,strong) NSMutableArray* guiderControllers;
-@property (nonatomic,strong) NSMutableArray* cameraControllers;
 @end
 
 @implementation CASDeviceManager {
     NSMutableArray* _devices;
+    NSMutableArray* _cameraControllers;
+    NSMutableArray* _guiderControllers;
 }
 
 @synthesize pluginManager;
 @synthesize devices = _devices;
+@synthesize cameraControllers = _cameraControllers;
+@synthesize guiderControllers = _guiderControllers;
 
 + (CASDeviceManager*)sharedManager {
     static CASDeviceManager* manager = nil;
@@ -58,14 +60,22 @@
     self = [super init];
     if (self) {
         self.pluginManager = [[CASPluginManager alloc] init];
-        self.guiderControllers = [NSMutableArray arrayWithCapacity:10];
-        self.cameraControllers = [NSMutableArray arrayWithCapacity:10];
+        _cameraControllers = [NSMutableArray arrayWithCapacity:10];
+        _guiderControllers = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
 }
 
 - (NSArray*) devices {
     return [_devices copy]; // ensure we return an immutable copy to clients
+}
+
+- (NSArray*) cameraControllers {
+    return [_cameraControllers copy]; // ensure we return an immutable copy to clients
+}
+
+- (NSArray*) guiderControllers {
+    return [_guiderControllers copy]; // ensure we return an immutable copy to clients
 }
 
 - (id)deviceWithPath:(NSString*)path {

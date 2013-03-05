@@ -29,8 +29,8 @@
 
 @property (nonatomic,readonly) NSArray* devices;
 
-@property (nonatomic,readonly,strong) NSMutableArray* guiderControllers;
-@property (nonatomic,readonly,strong) NSMutableArray* cameraControllers;
+@property (nonatomic,readonly) NSArray* cameraControllers;
+@property (nonatomic,readonly) NSArray* guiderControllers;
 
 // todo...
 //@property (nonatomic,readonly,strong) NSMutableArray* mountControllers;
