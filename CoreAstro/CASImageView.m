@@ -95,6 +95,7 @@
     
     self.layer.delegate = self;
     [self.layer setNeedsDisplay];
+    [self setNeedsDisplay:YES];
 }
 
 - (void)setCIImage:(CIImage *)CIImage
