@@ -1436,12 +1436,7 @@
     switch (item.tag) {
             
         case 10000:
-            if (self.showHistogram){
-                item.title = NSLocalizedString(@"Hide Histogram", @"Menu item title");
-            }
-            else {
-                item.title = NSLocalizedString(@"Show Histogram", @"Menu item title");
-            }
+            item.state = self.showHistogram;
             break;
             
         case 10001:
@@ -1457,30 +1452,15 @@
             break;
 
         case 10003:
-            if (self.imageView.showReticle){
-                item.title = NSLocalizedString(@"Hide Reticle", @"Menu item title");
-            }
-            else {
-                item.title = NSLocalizedString(@"Show Reticle", @"Menu item title");
-            }
+            item.state = self.imageView.showReticle;
             break;
             
         case 10004:
-            if (self.imageView.showStarProfile){
-                item.title = NSLocalizedString(@"Hide Star Profile", @"Menu item title");
-            }
-            else {
-                item.title = NSLocalizedString(@"Show Star Profile", @"Menu item title");
-            }
+            item.state = self.imageView.showStarProfile;
             break;
 
         case 10005:
-            if (self.imageView.showImageStats){
-                item.title = NSLocalizedString(@"Hide Image Stats", @"Menu item title");
-            }
-            else {
-                item.title = NSLocalizedString(@"Show Image Stats", @"Menu item title");
-            }
+            item.state = self.imageView.showImageStats;
             break;
 
         case 10010:
