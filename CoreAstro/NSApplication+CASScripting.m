@@ -24,24 +24,18 @@
 //
 
 #import "NSApplication+CASScripting.h"
-#import "CASAppDelegate.h"
 #import <CoreAstro/CoreAstro.h>
 
 @implementation NSApplication (CASScripting)
 
-- (CASAppDelegate*)casDelegate
-{
-    return (CASAppDelegate*)self.delegate;
-}
-
 - (NSArray*)cameraControllers
 {
-    return self.casDelegate.cameraControllers;
+    return [CASDeviceManager sharedManager].cameraControllers;
 }
 
 - (NSArray*)guiderControllers
 {
-    return self.casDelegate.guiderControllers;
+    return [CASDeviceManager sharedManager].guiderControllers;
 }
 
 - (NSArray*)exposures // todo: move this to the camera controller ?

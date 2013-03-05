@@ -29,6 +29,14 @@
 
 @property (nonatomic,readonly) NSArray* devices;
 
+@property (nonatomic,readonly,strong) NSMutableArray* guiderControllers;
+@property (nonatomic,readonly,strong) NSMutableArray* cameraControllers;
+
+// todo...
+//@property (nonatomic,readonly,strong) NSMutableArray* mountControllers;
+//@property (nonatomic,readonly,strong) NSMutableArray* filterWheelControllers;
+// etc
+
 + (CASDeviceManager*)sharedManager;
 
 - (void)scan;

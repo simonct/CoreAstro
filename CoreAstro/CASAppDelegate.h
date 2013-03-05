@@ -26,6 +26,4 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CASAppDelegate : NSObject <NSApplicationDelegate>
-@property (nonatomic,strong) NSMutableArray* guiderControllers;
-@property (nonatomic,strong) NSMutableArray* cameraControllers;
 @end

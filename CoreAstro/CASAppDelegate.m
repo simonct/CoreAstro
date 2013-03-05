@@ -53,7 +53,7 @@
 
 @implementation CASAppDelegate
 
-@synthesize windows, cameraControllers;
+@synthesize windows;
 
 + (void)initialize
 {
@@ -66,8 +66,6 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     self.windows = [NSMutableArray arrayWithCapacity:10];
-    self.guiderControllers = [NSMutableArray arrayWithCapacity:10];
-    self.cameraControllers = [NSMutableArray arrayWithCapacity:10];
 
     CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
     cameraWindow.delegate = self;
@@ -76,15 +74,13 @@
     [self.windows addObject:cameraWindow];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
         [[CASDeviceManager sharedManager] scan];
     });
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-    for (CASCameraController* controller in self.cameraControllers){
+    for (CASCameraController* controller in [CASDeviceManager sharedManager].cameraControllers){
         
         if (controller.capturing){
             
@@ -105,7 +101,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-    for (CASCameraController* controller in self.cameraControllers){
+    for (CASCameraController* controller in [CASDeviceManager sharedManager].cameraControllers){
         [controller disconnect];
     }
 }
@@ -113,154 +109,6 @@
 - (void)quitConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
-}
-
-- (CASCameraWindowController*)windowControllerForCamera:(CASDevice*)camera
-{
-    for (CASCameraWindowController* controller in self.windows){
-        if (controller.cameraController.camera == camera){
-            return controller;
-        }
-    }
-    return nil;
-}
-
-- (void)cameraWindowWillClose:(CASCameraWindowController*)window
-{
-    [self.windows removeObject:window];
-}
-
-- (CASGuiderController*)guiderControllerForDevice:(CASDevice*)device
-{
-    for (CASGuiderController* guiderController in self.guiderControllers){
-        if (guiderController.guider == device){
-            return guiderController;
-        }
-    }
-    return nil;
-}
-
-- (NSMutableArray*)mutableCameraControllers
-{
-    return [self mutableArrayValueForKey:@"cameraControllers"];
-}
-
-- (NSMutableArray*)mutableGuiderControllers
-{
-    return [self mutableArrayValueForKey:@"guiderControllers"];
-}
-
-- (void)recogniseGuider:(CASDevice*)device
-{
-    id<CASGuider> guider = (id<CASGuider>)device;
-    if ([guider conformsToProtocol:@protocol(CASGuider)]){
-        if (![self guiderControllerForDevice:guider]){
-            [self.mutableGuiderControllers addObject:[[CASGuiderController alloc] initWithGuider:guider]];
-        }
-    }
-}
-
-- (void)recogniseCCD:(CASDevice*)device
-{
-    CASCCDDevice* ccd = (CASCCDDevice*)device;
-    if ([ccd isKindOfClass:[CASCCDDevice class]]){ // todo; need a CASCCDDevice protocol and check for that instead of a class
-        
-        [ccd connect:^(NSError* error) {
-            
-            if (error){
-                [NSApp presentError:error]; // todo: specific error message
-            }
-            else {
-                
-                if (![self.windows count]){
-                    CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
-                    cameraWindow.delegate = self;
-                    cameraWindow.shouldCascadeWindows = NO;
-                    [cameraWindow.window makeKeyAndOrderFront:nil];
-                    [self.windows addObject:cameraWindow];
-                }
-                CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
-                if (cameraController){
-                    cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-                    cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
-                    [self.mutableCameraControllers addObject:cameraController];
-
-                }
-                if ([self.windows count] == 1){
-                    CASCameraWindowController* cameraWindow = [self.windows lastObject];
-                    if (!cameraWindow.cameraController){
-                        cameraWindow.cameraController = cameraController;
-                    }
-                }
-            }
-
-            // re-check to see if it's now capable of being a guider
-            [self recogniseGuider:device];
-        }];
-    }
-}
-
-// todo; most of this should probably be in the device manager
-- (void)processDevices:(NSArray*)devices
-{
-    for (CASDevice* device in devices){
-        [self recogniseCCD:device];
-        [self recogniseGuider:device];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == nil) {
-        
-        switch ([[change objectForKey:NSKeyValueChangeKindKey] integerValue]) {
-                
-            case NSKeyValueChangeSetting:
-            case NSKeyValueChangeInsertion: {
-                NSArray* devices = nil;
-                NSIndexSet* indexes = [change objectForKey:NSKeyValueChangeIndexesKey];
-                if (indexes){
-                    devices = [[CASDeviceManager sharedManager].devices objectsAtIndexes:indexes];
-                }
-                else {
-                    devices = [CASDeviceManager sharedManager].devices;
-                }
-                [self processDevices:devices];
-            }
-                break;
-                
-            case NSKeyValueChangeRemoval: {
-                NSArray* old = [change objectForKey:NSKeyValueChangeOldKey];
-                if (old){
-                    if (![old isKindOfClass:[NSArray class]]){
-                        old = [NSArray arrayWithObject:old];
-                    }
-                    for (CASDevice* device in old){
-                        CASCameraWindowController* cameraWindow = [self windowControllerForCamera:device];
-                        if (cameraWindow){
-                            [cameraWindow.cameraController disconnect];
-                            [self.mutableCameraControllers removeObject:cameraWindow.cameraController];
-                            if ([self.windows count] > 1){
-                                [cameraWindow close];
-                                [self.windows removeObject:cameraWindow];
-                            }
-                            else {
-                                cameraWindow.cameraController = nil;
-                            }
-                        }
-                        CASGuiderController* guiderController = [self guiderControllerForDevice:device];
-                        if (guiderController){
-                            [self.mutableGuiderControllers removeObject:guiderController];
-                        }
-                    }
-                }
-            }
-                break;
-        }
-
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
 }
 
 - (IBAction)showPreferences:(id)sender

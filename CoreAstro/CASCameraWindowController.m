@@ -25,7 +25,6 @@
 //  Todo: split this up into view controllers, do less in -windowDidLoad 
 
 #import "CASCameraWindowController.h"
-#import "CASAppDelegate.h" // hmm, dragging the delegate in...
 #import "CASExposuresController.h"
 #import "CASProgressWindowController.h"
 #import "CASCaptureWindowController.h"
@@ -167,7 +166,7 @@
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
     
-    [[NSApp delegate] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     
     self.exposuresController = [[CASExposuresController alloc] init];
     self.libraryExposuresController = self.exposuresController;
@@ -214,7 +213,7 @@
     
     // listen for master selection changes
     self.devicesTableView.masterViewDelegate = (id)self;
-    self.devicesTableView.camerasContainer = [NSApp delegate];
+    self.devicesTableView.camerasContainer = [CASDeviceManager sharedManager];
     
     // set up the guider controls
     self.guidePulseDuration = 250;
@@ -325,7 +324,7 @@
                 }
             }
         }
-        else if (object == [NSApp delegate]){
+        else if (object == [CASDeviceManager sharedManager]){
             if ([keyPath isEqualToString:@"guiderControllers"]){
                 [self updateGuiderMenu];
                 // guider came or went
@@ -747,10 +746,9 @@
     [menu addItem:item];
     
     NSMenuItem* selectedItem = nil;
-    CASAppDelegate* delegate = [NSApp delegate];
-    if ([delegate.guiderControllers count]){
+    if ([[CASDeviceManager sharedManager].guiderControllers count]){
         [menu addItem:[NSMenuItem separatorItem]];
-        for (CASGuiderController* guider in delegate.guiderControllers){
+        for (CASGuiderController* guider in [CASDeviceManager sharedManager].guiderControllers){
             NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:guider.guider.deviceName action:@selector(guiderMenuAction:) keyEquivalent:@""];
             item.representedObject = guider;
             [menu addItem:item];
