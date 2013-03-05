@@ -110,7 +110,6 @@
 		F4849CC41659570B0069647F /* CASLibraryBrowserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */; };
 		F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00C160E46A800190D3E /* CASImageControlsView.m */; };
 		F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00F160E46F300190D3E /* CASExposuresController.m */; };
-		F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF012160E475B00190D3E /* CASExposureTableView.m */; };
 		F48DF016160E47B800190D3E /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF015160E47B800190D3E /* CASImageView.m */; };
 		F48DF046160EF83000190D3E /* CASCameraController.h in Headers */ = {isa = PBXBuildFile; fileRef = F48DF044160EF83000190D3E /* CASCameraController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F48DF047160EF83000190D3E /* CASCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF045160EF83000190D3E /* CASCameraController.m */; };
@@ -586,8 +585,6 @@
 		F48DF00C160E46A800190D3E /* CASImageControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageControlsView.m; sourceTree = "<group>"; };
 		F48DF00E160E46F300190D3E /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresController.h; sourceTree = "<group>"; };
 		F48DF00F160E46F300190D3E /* CASExposuresController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposuresController.m; sourceTree = "<group>"; };
-		F48DF011160E475B00190D3E /* CASExposureTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureTableView.h; sourceTree = "<group>"; };
-		F48DF012160E475B00190D3E /* CASExposureTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureTableView.m; sourceTree = "<group>"; };
 		F48DF014160E47B800190D3E /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageView.h; sourceTree = "<group>"; };
 		F48DF015160E47B800190D3E /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageView.m; sourceTree = "<group>"; };
 		F48DF044160EF83000190D3E /* CASCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraController.h; sourceTree = "<group>"; };
@@ -1646,8 +1643,6 @@
 				F45A2DF8166B835100A1D79C /* CASExposureView.m */,
 				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
 				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
-				F48DF011160E475B00190D3E /* CASExposureTableView.h */,
-				F48DF012160E475B00190D3E /* CASExposureTableView.m */,
 				F44791E916806D42007A6815 /* CASHUDView.h */,
 				F44791EA16806D42007A6815 /* CASHUDView.m */,
 				F4849CB316591EC60069647F /* CASExposureInfoView.h */,
@@ -3255,7 +3250,6 @@
 				F4EAFCB615D7EDDC001B7993 /* CASCaptureCommand.m in Sources */,
 				F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */,
 				F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */,
-				F48DF013160E475B00190D3E /* CASExposureTableView.m in Sources */,
 				F48DF016160E47B800190D3E /* CASImageView.m in Sources */,
 				F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */,
 				F46FC8C016455D6400578010 /* CASProgressWindowController.m in Sources */,
