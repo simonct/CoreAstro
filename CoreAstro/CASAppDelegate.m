@@ -26,24 +26,8 @@
 #import "CASAppDelegate.h"
 #import "CASCameraWindowController.h"
 #import "CASPreferencesWindowController.h"
+#import "CASTemperatureTransformer.h"
 #import <CoreAstro/CoreAstro.h>
-
-@interface CASTemperatureTransformer : NSValueTransformer
-@end
-
-@implementation CASTemperatureTransformer
-
-- (id)transformedValue:(id)value
-{
-    return [NSNumber numberWithDouble:[value doubleValue]];
-}
-
-- (id)reverseTransformedValue:(id)value
-{
-    return [NSString stringWithFormat:@"%@",value];
-}
-
-@end
 
 @interface CASAppDelegate () <CASCameraWindowControllerDelegate>
 @property (nonatomic,strong) NSMutableArray* windows;

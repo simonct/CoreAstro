@@ -144,6 +144,7 @@
 		F4A4F2C71631F6AA00A3B4E9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F4A4F2D41632929400A3B4E9 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F4A4F2D51632929400A3B4E9 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
+		F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
 		F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B08B631673AF1A00771948 /* CASBatchProcessor.h */; };
@@ -663,6 +664,8 @@
 		F4A4F2BC1631DDDE00A3B4E9 /* QuickLook Plugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickLook Plugin-Prefix.pch"; sourceTree = "<group>"; };
 		F4A84E1915C52B7300B1164F /* SXCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDProperties.h; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDProperties.h; sourceTree = "<group>"; };
 		F4A84E1A15C52B7300B1164F /* SXCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXCCDProperties.m; path = ../CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDProperties.m; sourceTree = "<group>"; };
+		F4AD8E8216E6973C00CF3083 /* CASTemperatureTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASTemperatureTransformer.h; sourceTree = "<group>"; };
+		F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASTemperatureTransformer.m; sourceTree = "<group>"; };
 		F4AEDF171614DC16007641A2 /* CASGuiderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderController.h; sourceTree = "<group>"; };
 		F4AEDF181614DC16007641A2 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
 		F4B08B631673AF1A00771948 /* CASBatchProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASBatchProcessor.h; sourceTree = "<group>"; };
@@ -1674,6 +1677,8 @@
 				F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */,
 				F4E98F9716D90675005F9C5B /* CASGradientButton.h */,
 				F4E98F9816D90675005F9C5B /* CASGradientButton.m */,
+				F4AD8E8216E6973C00CF3083 /* CASTemperatureTransformer.h */,
+				F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */,
 				F413F14315D7FF7B00CA105B /* Scripting */,
 				F412974F15FCA977009C215E /* Resources */,
 				F49E52C815A971610018DC75 /* Supporting Files */,
@@ -3272,6 +3277,7 @@
 				F47BB16C16AC536100E3F2FE /* CASZoomableView.m in Sources */,
 				F4B26F6916BEC408001F1D03 /* CASPlateSolutionHUDView.m in Sources */,
 				F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */,
+				F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
