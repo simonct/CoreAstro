@@ -1612,68 +1612,14 @@
 		F49E52C715A971610018DC75 /* CoreAstro */ = {
 			isa = PBXGroup;
 			children = (
-				F4E979E4161F85470037ED1B /* CoreAstro.entitlements */,
-				F422B05F15FC8D6000D86260 /* Docs */,
 				F49E52D315A971610018DC75 /* CASAppDelegate.h */,
 				F49E52D415A971610018DC75 /* CASAppDelegate.m */,
 				F49E52D615A971620018DC75 /* MainMenu.xib */,
-				F4849CBA165921510069647F /* CASMasterSelectionView.h */,
-				F4849CBB165921510069647F /* CASMasterSelectionView.m */,
-				F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */,
-				F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */,
-				F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */,
-				F46FC8C216455E5000578010 /* CASAuxWindowController.h */,
-				F46FC8C316455E5000578010 /* CASAuxWindowController.m */,
-				F46FC8BD16455D6400578010 /* CASProgressWindowController.h */,
-				F46FC8BE16455D6400578010 /* CASProgressWindowController.m */,
-				F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */,
-				F4B8868416AAD756008E0D5E /* CASCaptureWindowController.h */,
-				F4B8868516AAD756008E0D5E /* CASCaptureWindowController.m */,
-				F4B8868616AAD756008E0D5E /* CASCaptureWindowController.xib */,
-				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
-				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
-				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
-				F48DF014160E47B800190D3E /* CASImageView.h */,
-				F48DF015160E47B800190D3E /* CASImageView.m */,
-				F47BB16416AC535000E3F2FE /* CASCenteringClipView.h */,
-				F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */,
-				F47BB16A16AC536100E3F2FE /* CASZoomableView.h */,
-				F47BB16B16AC536100E3F2FE /* CASZoomableView.m */,
-				F45A2DF7166B835100A1D79C /* CASExposureView.h */,
-				F45A2DF8166B835100A1D79C /* CASExposureView.m */,
-				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
-				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
-				F44791E916806D42007A6815 /* CASHUDView.h */,
-				F44791EA16806D42007A6815 /* CASHUDView.m */,
-				F4849CB316591EC60069647F /* CASExposureInfoView.h */,
-				F4849CB416591EC60069647F /* CASExposureInfoView.m */,
-				F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */,
-				F44791EC1680C1D8007A6815 /* CASStarInfoHUDView.h */,
-				F44791ED1680C1D8007A6815 /* CASStarInfoHUDView.m */,
-				F44791EF1680C260007A6815 /* CASStarInfoHUDView.xib */,
-				F44791E616806BB1007A6815 /* CASProgressHUDView.h */,
-				F44791E716806BB1007A6815 /* CASProgressHUDView.m */,
-				F44791F11680DB77007A6815 /* CASHistogramHUDView.h */,
-				F44791F21680DB78007A6815 /* CASHistogramHUDView.m */,
-				F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */,
-				F4B26F6616BEC408001F1D03 /* CASPlateSolutionHUDView.h */,
-				F4B26F6716BEC408001F1D03 /* CASPlateSolutionHUDView.m */,
-				F4B26F6816BEC408001F1D03 /* CASPlateSolutionHUDView.xib */,
-				F44791F41680DBA1007A6815 /* CASSimpleGraphView.h */,
-				F44791F51680DBA1007A6815 /* CASSimpleGraphView.m */,
-				F48DF00B160E46A800190D3E /* CASImageControlsView.h */,
-				F48DF00C160E46A800190D3E /* CASImageControlsView.m */,
-				F41157DE1639CC7A00ABCA69 /* CASShadowView.h */,
-				F41157DF1639CC7A00ABCA69 /* CASShadowView.m */,
-				F4849CBD1659570A0069647F /* CASLibraryBrowserView.h */,
-				F4849CBE1659570A0069647F /* CASLibraryBrowserView.m */,
-				F4849CBF1659570A0069647F /* CASLibraryBrowserViewController.h */,
-				F4849CC01659570A0069647F /* CASLibraryBrowserViewController.m */,
-				F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */,
-				F4E98F9716D90675005F9C5B /* CASGradientButton.h */,
-				F4E98F9816D90675005F9C5B /* CASGradientButton.m */,
-				F4AD8E8216E6973C00CF3083 /* CASTemperatureTransformer.h */,
-				F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */,
+				F422B05F15FC8D6000D86260 /* Docs */,
+				F4AD8E8916E6998A00CF3083 /* Views */,
+				F4AD8E8C16E69A4900CF3083 /* View Controllers */,
+				F4AD8E8816E6998100CF3083 /* Window Controllers */,
+				F4AD8E8D16E69A9E00CF3083 /* Model Utilities */,
 				F413F14315D7FF7B00CA105B /* Scripting */,
 				F412974F15FCA977009C215E /* Resources */,
 				F49E52C815A971610018DC75 /* Supporting Files */,
@@ -1685,6 +1631,7 @@
 			isa = PBXGroup;
 			children = (
 				F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */,
+				F4E979E4161F85470037ED1B /* CoreAstro.entitlements */,
 				F49E52C915A971610018DC75 /* CoreAstro-Info.plist */,
 				F49E52CA15A971610018DC75 /* InfoPlist.strings */,
 				F49E52CD15A971610018DC75 /* main.m */,
@@ -1832,6 +1779,107 @@
 				F4A4F2BC1631DDDE00A3B4E9 /* QuickLook Plugin-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4AD8E8816E6998100CF3083 /* Window Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */,
+				F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */,
+				F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */,
+				F46FC8C216455E5000578010 /* CASAuxWindowController.h */,
+				F46FC8C316455E5000578010 /* CASAuxWindowController.m */,
+				F46FC8BD16455D6400578010 /* CASProgressWindowController.h */,
+				F46FC8BE16455D6400578010 /* CASProgressWindowController.m */,
+				F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */,
+				F4B8868416AAD756008E0D5E /* CASCaptureWindowController.h */,
+				F4B8868516AAD756008E0D5E /* CASCaptureWindowController.m */,
+				F4B8868616AAD756008E0D5E /* CASCaptureWindowController.xib */,
+				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
+				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
+				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
+			);
+			name = "Window Controllers";
+			sourceTree = "<group>";
+		};
+		F4AD8E8916E6998A00CF3083 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F4849CBA165921510069647F /* CASMasterSelectionView.h */,
+				F4849CBB165921510069647F /* CASMasterSelectionView.m */,
+				F48DF00B160E46A800190D3E /* CASImageControlsView.h */,
+				F48DF00C160E46A800190D3E /* CASImageControlsView.m */,
+				F41157DE1639CC7A00ABCA69 /* CASShadowView.h */,
+				F41157DF1639CC7A00ABCA69 /* CASShadowView.m */,
+				F4849CBD1659570A0069647F /* CASLibraryBrowserView.h */,
+				F4849CBE1659570A0069647F /* CASLibraryBrowserView.m */,
+				F4E98F9716D90675005F9C5B /* CASGradientButton.h */,
+				F4E98F9816D90675005F9C5B /* CASGradientButton.m */,
+				F4AD8E8A16E699E500CF3083 /* Image View */,
+				F4AD8E8B16E699FA00CF3083 /* HUDs */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		F4AD8E8A16E699E500CF3083 /* Image View */ = {
+			isa = PBXGroup;
+			children = (
+				F48DF014160E47B800190D3E /* CASImageView.h */,
+				F48DF015160E47B800190D3E /* CASImageView.m */,
+				F47BB16416AC535000E3F2FE /* CASCenteringClipView.h */,
+				F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */,
+				F47BB16A16AC536100E3F2FE /* CASZoomableView.h */,
+				F47BB16B16AC536100E3F2FE /* CASZoomableView.m */,
+				F45A2DF7166B835100A1D79C /* CASExposureView.h */,
+				F45A2DF8166B835100A1D79C /* CASExposureView.m */,
+			);
+			name = "Image View";
+			sourceTree = "<group>";
+		};
+		F4AD8E8B16E699FA00CF3083 /* HUDs */ = {
+			isa = PBXGroup;
+			children = (
+				F44791E916806D42007A6815 /* CASHUDView.h */,
+				F44791EA16806D42007A6815 /* CASHUDView.m */,
+				F4849CB316591EC60069647F /* CASExposureInfoView.h */,
+				F4849CB416591EC60069647F /* CASExposureInfoView.m */,
+				F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */,
+				F44791EC1680C1D8007A6815 /* CASStarInfoHUDView.h */,
+				F44791ED1680C1D8007A6815 /* CASStarInfoHUDView.m */,
+				F44791EF1680C260007A6815 /* CASStarInfoHUDView.xib */,
+				F44791E616806BB1007A6815 /* CASProgressHUDView.h */,
+				F44791E716806BB1007A6815 /* CASProgressHUDView.m */,
+				F44791F11680DB77007A6815 /* CASHistogramHUDView.h */,
+				F44791F21680DB78007A6815 /* CASHistogramHUDView.m */,
+				F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */,
+				F4B26F6616BEC408001F1D03 /* CASPlateSolutionHUDView.h */,
+				F4B26F6716BEC408001F1D03 /* CASPlateSolutionHUDView.m */,
+				F4B26F6816BEC408001F1D03 /* CASPlateSolutionHUDView.xib */,
+				F44791F41680DBA1007A6815 /* CASSimpleGraphView.h */,
+				F44791F51680DBA1007A6815 /* CASSimpleGraphView.m */,
+			);
+			name = HUDs;
+			sourceTree = "<group>";
+		};
+		F4AD8E8C16E69A4900CF3083 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F4849CBF1659570A0069647F /* CASLibraryBrowserViewController.h */,
+				F4849CC01659570A0069647F /* CASLibraryBrowserViewController.m */,
+				F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		F4AD8E8D16E69A9E00CF3083 /* Model Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
+				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
+				F4AD8E8216E6973C00CF3083 /* CASTemperatureTransformer.h */,
+				F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */,
+			);
+			name = "Model Utilities";
 			sourceTree = "<group>";
 		};
 		F4CA50E0169CC9EE00832CFF /* astrometry.net */ = {
