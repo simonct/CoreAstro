@@ -1427,6 +1427,11 @@
     }
 }
 
+- (IBAction)libraryBackButtonPressed:(id)sender
+{
+    [self.devicesTableView selectProject:self.exposuresController.project];
+}
+
 #pragma mark Menu validation
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
@@ -1507,11 +1512,6 @@
 
     }
     return enabled;
-}
-
-- (IBAction)libraryBackButtonPressed:(id)sender
-{
-    [self.devicesTableView selectProject:self.exposuresController.project];
 }
 
 #pragma mark NSResponder
