@@ -30,14 +30,11 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASAppDelegate () <CASCameraWindowControllerDelegate>
-@property (nonatomic,strong) NSMutableArray* windows;
 @property (nonatomic,strong) CASPreferencesWindowController* prefsController;
 - (IBAction)showPreferences:(id)sender;
 @end
 
 @implementation CASAppDelegate
-
-@synthesize windows;
 
 + (void)initialize
 {
@@ -49,13 +46,10 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.windows = [NSMutableArray arrayWithCapacity:10];
-
     CASCameraWindowController* cameraWindow = [[CASCameraWindowController alloc] initWithWindowNibName:@"CASCameraWindowController"];
     cameraWindow.delegate = self;
     cameraWindow.shouldCascadeWindows = NO;
     [cameraWindow.window makeKeyAndOrderFront:nil];
-    [self.windows addObject:cameraWindow];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [[CASDeviceManager sharedManager] scan];
