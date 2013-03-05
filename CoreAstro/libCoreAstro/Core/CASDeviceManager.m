@@ -79,15 +79,12 @@
 }
 
 - (id)deviceWithPath:(NSString*)path {
-    __block CASDevice* result = nil;
-    [self.devices enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        CASDevice* device = (CASDevice*)obj;
+    for (CASDevice* device in self.devices){
         if ([device.path isEqualToString:path]){
-            *stop = YES;
-            result = device;
+            return device;
         }
-    }];
-    return result;
+    }
+    return nil;
 }
 
 - (void)scan {
@@ -200,7 +197,6 @@
                     cameraController.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
                     cameraController.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
                     [self.mutableCameraControllers addObject:cameraController];
-                    
                 }
             }
             
