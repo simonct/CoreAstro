@@ -47,7 +47,7 @@
 
 // flush the chip
 @interface SXCCDIOFlushCommand : CASIOCommand
-// todo; wipe/nowipe flag ?
+@property (nonatomic,assign) BOOL noWipe;
 @end
 
 // read delayed; flushes, exposes using an internal timer and reads the pixels in one command

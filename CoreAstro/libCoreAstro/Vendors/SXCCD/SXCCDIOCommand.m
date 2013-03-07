@@ -468,7 +468,11 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,buffer); // SXCCD_EXP_FLAGS_NOWIPE_FRAME
+    USHORT flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+    if (self.noWipe){
+        flags |= SXCCD_EXP_FLAGS_NOWIPE_FRAME;
+    }
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
