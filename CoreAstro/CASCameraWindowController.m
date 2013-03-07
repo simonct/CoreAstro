@@ -1491,24 +1491,31 @@
             break;
 
         case 11000:
+            enabled = !self.imageView.currentExposure.rgba;
             item.state = self.imageDebayer.mode == kCASImageDebayerNone;
             break;
 
         case 11001:
+            enabled = !self.imageView.currentExposure.rgba;
             item.state = self.imageDebayer.mode == kCASImageDebayerRGGB;
             break;
             
         case 11002:
+            enabled = !self.imageView.currentExposure.rgba;
             item.state = self.imageDebayer.mode == kCASImageDebayerGRBG;
             break;
             
         case 11003:
+            enabled = !self.imageView.currentExposure.rgba;
             item.state = self.imageDebayer.mode == kCASImageDebayerBGGR;
             break;
             
         case 11004:
+            enabled = !self.imageView.currentExposure.rgba;
             item.state = self.imageDebayer.mode == kCASImageDebayerGBRG;
             break;
+            
+        // todo; option to show debayerd image as luminance image
 
     }
     return enabled;
