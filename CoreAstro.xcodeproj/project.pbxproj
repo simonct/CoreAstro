@@ -95,6 +95,8 @@
 		F46FC8C016455D6400578010 /* CASProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8BE16455D6400578010 /* CASProgressWindowController.m */; };
 		F46FC8C116455D6400578010 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */; };
 		F46FC8C416455E5000578010 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8C316455E5000578010 /* CASAuxWindowController.m */; };
+		F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */; };
+		F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */; };
 		F47B3A8F16346EE9008C73A7 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47B3A9016346EF3008C73A7 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F47B3A8616346EDC008C73A7 /* Sparkle.framework */; };
 		F47BB16616AC535000E3F2FE /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */; };
@@ -563,6 +565,8 @@
 		F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASProgressWindowController.xib; sourceTree = "<group>"; };
 		F46FC8C216455E5000578010 /* CASAuxWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAuxWindowController.h; sourceTree = "<group>"; };
 		F46FC8C316455E5000578010 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAuxWindowController.m; sourceTree = "<group>"; };
+		F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASClassDefaults.h; sourceTree = "<group>"; };
+		F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASClassDefaults.m; sourceTree = "<group>"; };
 		F47B3A7A16346EDC008C73A7 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = "External/Sparkle 1.5b6/Extras/Source Code/Sparkle.xcodeproj"; sourceTree = "<group>"; };
 		F47BB16416AC535000E3F2FE /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCenteringClipView.h; sourceTree = "<group>"; };
 		F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCenteringClipView.m; sourceTree = "<group>"; };
@@ -1755,6 +1759,8 @@
 				F4CA50D8169CB50900832CFF /* CASPlateSolver.m */,
 				F4CA50DB169CB62F00832CFF /* CASTaskWrapper.h */,
 				F4CA50DC169CB62F00832CFF /* CASTaskWrapper.m */,
+				F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */,
+				F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -2829,6 +2835,7 @@
 				F4CA5425169CC9FD00832CFF /* wcs-rd2xy.h in Headers */,
 				F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */,
 				F4CA5427169CC9FD00832CFF /* xylist.h in Headers */,
+				F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3263,6 +3270,7 @@
 				F4CA53B2169CC9FD00832CFF /* bl-nl.inc in Sources */,
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
+				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,6 +29,7 @@
 #import "SXCCDDeviceFactory.h"
 #import "CASCCDExposure.h"
 #import "CASAutoGuider.h"
+#import "CASClassDefaults.h"
 
 @interface SXCCDDevice ()
 @property (nonatomic,assign) BOOL connected;
@@ -48,11 +49,18 @@
 
 #pragma mark - Properties
 
++ (void)initialize
+{
+    if (self == [SXCCDDevice class]){
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"SXCCDDevice_targetTemperature": [NSNumber numberWithInteger:-10]}];
+    }
+}
+
 - (id)init
 {
     self = [super init];
     if (self) {
-        self.targetTemperature = -10;
+        [[CASClassDefaults defaultsForClassname:@"SXCCDDevice"] registerKeys:@[@"targetTemperature"] ofInstance:self];
     }
     return self;
 }
@@ -60,6 +68,7 @@
 - (void)dealloc
 {
     [self disconnect];
+    [[CASClassDefaults defaultsForClassname:@"SXCCDDevice"] unregisterKeys:@[@"targetTemperature"] ofInstance:self];
 }
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol
