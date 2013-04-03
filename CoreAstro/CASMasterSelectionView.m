@@ -394,11 +394,13 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
     });
     project.name = [NSString stringWithFormat:@"Project %@",[formatter stringFromDate:[NSDate date]]];
     
-    [[CASCCDExposureLibrary sharedLibrary] addProjects:[NSArray arrayWithObject:project]];
+    [[CASCCDExposureLibrary sharedLibrary] addProjects:[NSSet setWithObject:project]];
     
     NSTreeNode* node = [NSTreeNode treeNodeWithRepresentedObject:project];
     [[self.exposuresTreeNode mutableChildNodes] addObject:node];
     [self reloadData];
+    
+    [CASCCDExposureLibrary sharedLibrary].currentProject = project;
     
     const NSInteger row = [self rowForItem:[[self.exposuresTreeNode childNodes] lastObject]];
     if (row != -1){
@@ -412,9 +414,15 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
 {
     NSIndexSet* selection = [self selectedRowIndexes];
     [selection enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+        
         NSTreeNode* node = [self itemAtRow:idx];
         if (node.parentNode == self.exposuresTreeNode && node != self.exposuresTreeNode.childNodes[0]){
-            [[CASCCDExposureLibrary sharedLibrary] removeProjects:[NSArray arrayWithObject:node.representedObject]];
+            
+            // ensure the exposures controller unbinds first
+            CASCCDExposureLibraryProject* project = (CASCCDExposureLibraryProject*)node.representedObject;
+            project.exposuresController = nil;
+            
+            [[CASCCDExposureLibrary sharedLibrary] removeProjects:[NSSet setWithObject:project]];
             [[self.exposuresTreeNode mutableChildNodes] removeObject:node];
         }
     }];
