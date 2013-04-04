@@ -39,6 +39,8 @@
         return;
     }
     
+    self.error = nil;
+    
     NSHost* host = self.host;
     
     NSInputStream* is;

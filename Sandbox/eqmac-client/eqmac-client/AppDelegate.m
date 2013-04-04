@@ -41,7 +41,7 @@
             self.connectStatusLabel.stringValue = [self.client.error localizedDescription];
         }
         else {
-            self.connectStatusImage.image = nil;
+            self.connectStatusImage.image = [NSImage imageNamed:@"fail.tiff"];
             self.connectStatusLabel.stringValue = @"Not connected";
         }
         

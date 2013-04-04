@@ -17,7 +17,25 @@
 		F4F5B53D170E0A4800D39015 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B53C170E0A4800D39015 /* CASSocketClient.m */; };
 		F4F5B540170E0E2300D39015 /* ok.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F4F5B53E170E0E2300D39015 /* ok.tiff */; };
 		F4F5B541170E0E2300D39015 /* fail.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F4F5B53F170E0E2300D39015 /* fail.tiff */; };
+		F4F5B548170E1E9C00D39015 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F5B547170E1E9C00D39015 /* Foundation.framework */; };
+		F4F5B54B170E1E9C00D39015 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B54A170E1E9C00D39015 /* main.m */; };
+		F4F5B54F170E1E9C00D39015 /* echo_server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4F5B54E170E1E9C00D39015 /* echo_server.1 */; };
+		F4F5B557170E1F2300D39015 /* EchoServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B553170E1F2300D39015 /* EchoServer.m */; };
+		F4F5B558170E1F2300D39015 /* EchoConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B554170E1F2300D39015 /* EchoConnection.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F4F5B544170E1E9C00D39015 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				F4F5B54F170E1E9C00D39015 /* echo_server.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F44C923516B86D5600822E29 /* eqmac-client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "eqmac-client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,6 +57,15 @@
 		F4F5B53C170E0A4800D39015 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F4F5B53E170E0E2300D39015 /* ok.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ok.tiff; sourceTree = "<group>"; };
 		F4F5B53F170E0E2300D39015 /* fail.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = fail.tiff; sourceTree = "<group>"; };
+		F4F5B546170E1E9C00D39015 /* echo-server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "echo-server"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4F5B547170E1E9C00D39015 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4F5B54A170E1E9C00D39015 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4F5B54D170E1E9C00D39015 /* echo-server-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "echo-server-Prefix.pch"; sourceTree = "<group>"; };
+		F4F5B54E170E1E9C00D39015 /* echo_server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = echo_server.1; sourceTree = "<group>"; };
+		F4F5B553170E1F2300D39015 /* EchoServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EchoServer.m; sourceTree = "<group>"; };
+		F4F5B554170E1F2300D39015 /* EchoConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EchoConnection.m; sourceTree = "<group>"; };
+		F4F5B555170E1F2300D39015 /* EchoConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EchoConnection.h; sourceTree = "<group>"; };
+		F4F5B556170E1F2300D39015 /* EchoServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EchoServer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +77,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4F5B543170E1E9C00D39015 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F5B548170E1E9C00D39015 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -57,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				F44C923E16B86D5700822E29 /* eqmac-client */,
+				F4F5B549170E1E9C00D39015 /* echo-server */,
 				F44C923716B86D5600822E29 /* Frameworks */,
 				F44C923616B86D5600822E29 /* Products */,
 			);
@@ -66,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				F44C923516B86D5600822E29 /* eqmac-client.app */,
+				F4F5B546170E1E9C00D39015 /* echo-server */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -74,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				F44C923816B86D5600822E29 /* Cocoa.framework */,
+				F4F5B547170E1E9C00D39015 /* Foundation.framework */,
 				F44C923A16B86D5700822E29 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -118,6 +156,28 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		F4F5B549170E1E9C00D39015 /* echo-server */ = {
+			isa = PBXGroup;
+			children = (
+				F4F5B54A170E1E9C00D39015 /* main.m */,
+				F4F5B556170E1F2300D39015 /* EchoServer.h */,
+				F4F5B553170E1F2300D39015 /* EchoServer.m */,
+				F4F5B555170E1F2300D39015 /* EchoConnection.h */,
+				F4F5B554170E1F2300D39015 /* EchoConnection.m */,
+				F4F5B54E170E1E9C00D39015 /* echo_server.1 */,
+				F4F5B54C170E1E9C00D39015 /* Supporting Files */,
+			);
+			path = "echo-server";
+			sourceTree = "<group>";
+		};
+		F4F5B54C170E1E9C00D39015 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4F5B54D170E1E9C00D39015 /* echo-server-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -137,6 +197,23 @@
 			productName = "eqmac-client";
 			productReference = F44C923516B86D5600822E29 /* eqmac-client.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F4F5B545170E1E9C00D39015 /* echo-server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4F5B550170E1E9C00D39015 /* Build configuration list for PBXNativeTarget "echo-server" */;
+			buildPhases = (
+				F4F5B542170E1E9C00D39015 /* Sources */,
+				F4F5B543170E1E9C00D39015 /* Frameworks */,
+				F4F5B544170E1E9C00D39015 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "echo-server";
+			productName = "echo-server";
+			productReference = F4F5B546170E1E9C00D39015 /* echo-server */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -160,6 +237,7 @@
 			projectRoot = "";
 			targets = (
 				F44C923416B86D5600822E29 /* eqmac-client */,
+				F4F5B545170E1E9C00D39015 /* echo-server */,
 			);
 		};
 /* End PBXProject section */
@@ -188,6 +266,16 @@
 				F44C924C16B86D5700822E29 /* AppDelegate.m in Sources */,
 				F4F5B53A170E092500D39015 /* CASEQMacClient.m in Sources */,
 				F4F5B53D170E0A4800D39015 /* CASSocketClient.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4F5B542170E1E9C00D39015 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F5B54B170E1E9C00D39015 /* main.m in Sources */,
+				F4F5B557170E1F2300D39015 /* EchoServer.m in Sources */,
+				F4F5B558170E1F2300D39015 /* EchoConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +394,26 @@
 			};
 			name = Release;
 		};
+		F4F5B551170E1E9C00D39015 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "echo-server/echo-server-Prefix.pch";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F4F5B552170E1E9C00D39015 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "echo-server/echo-server-Prefix.pch";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -323,6 +431,15 @@
 			buildConfigurations = (
 				F44C925316B86D5700822E29 /* Debug */,
 				F44C925416B86D5700822E29 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4F5B550170E1E9C00D39015 /* Build configuration list for PBXNativeTarget "echo-server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4F5B551170E1E9C00D39015 /* Debug */,
+				F4F5B552170E1E9C00D39015 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
