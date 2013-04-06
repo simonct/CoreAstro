@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CASSocketClient : NSObject
+@interface CASSocketClient : NSObject // CASTransport ?
 @property (nonatomic,retain) NSHost* host;
 @property (nonatomic,assign) NSInteger port;
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) NSError* error;
 - (void)connect;
 - (void)disconnect;
-- (void)enqueue:(NSData*)data completion:(void (^)(NSData*))completion;
+- (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion;
 @end

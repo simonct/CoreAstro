@@ -11,10 +11,21 @@
 @interface CASSocketClientRequest : NSObject
 @property (nonatomic,strong) NSData* data;
 @property (nonatomic,copy) void (^completion)(NSData*);
+@property (nonatomic,assign) NSUInteger readCount;
 @property (nonatomic,assign) NSUInteger writtenCount;
+@property (nonatomic,strong) NSMutableData* response;
 @end
 
 @implementation CASSocketClientRequest
+
+- (NSMutableData*) response
+{
+    if (!_response && self.readCount > 0){
+        _response = [NSMutableData dataWithCapacity:self.readCount];
+    }
+    return _response;
+}
+
 @end
 
 @interface CASSocketClient ()<NSStreamDelegate>
@@ -132,12 +143,13 @@
     NSLog(@"%@: %@",aStream,name);
 }
 
-- (void)enqueue:(NSData*)data completion:(void (^)(NSData*))completion
+- (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion
 {
     CASSocketClientRequest* request = [[CASSocketClientRequest alloc] init];
     
     request.data = data;
     request.completion = completion;
+    request.readCount = readCount;
     
     if (!_queue){
         _queue = [[NSMutableArray alloc] initWithCapacity:5];
@@ -149,21 +161,24 @@
 
 - (void)process
 {
-    if ([_queue count]){
+    if ([_queue count] && [self.outputStream hasSpaceAvailable]){
         
-        if ([self.outputStream hasSpaceAvailable]){
+        CASSocketClientRequest* request = [_queue lastObject];
+        if (request.writtenCount < [request.data length]){
             
-            CASSocketClientRequest* request = [_queue lastObject];
-            if (request.writtenCount < [request.data length]){
-                
-                const NSInteger count = [self.outputStream write:[request.data bytes] + request.writtenCount maxLength:[request.data length] - request.writtenCount];
-                if (count < 0){
-                    NSLog(@"Failed to write the whole packet"); // disconnect ?
-                }
-                else {
-                    request.writtenCount += count;
-                    NSLog(@"wrote %ld bytes",count);
-                }
+            const NSInteger count = [self.outputStream write:[request.data bytes] + request.writtenCount maxLength:[request.data length] - request.writtenCount];
+            if (count < 0){
+                NSLog(@"Failed to write the whole packet"); // disconnect ?
+            }
+            else {
+                request.writtenCount += count;
+                NSLog(@"wrote %ld bytes",count);
+            }
+            
+            // no response expected, all done
+            if (!request.completion || !request.readCount){
+                [_queue removeLastObject];
+                [self process];
             }
         }
     }
@@ -172,26 +187,33 @@
 - (void)read
 {
     CASSocketClientRequest* request = [_queue lastObject];
-    NSMutableData* data = [NSMutableData dataWithCapacity:1024];
-    while ([self.inputStream hasBytesAvailable]){
-        uint8_t byte[1024];
-        const NSInteger count = [self.inputStream read:byte maxLength:sizeof(byte)];
-        if (count > 0){
-            [data appendBytes:byte length:count];
+    if (request.readCount > 0){
+        
+        // read data while there's some available in the input buffer
+        while ([self.inputStream hasBytesAvailable] && request.readCount > 0){
+            
+            NSMutableData* buffer = [NSMutableData dataWithCapacity:request.readCount];
+            const NSInteger count = [self.inputStream read:[buffer mutableBytes] maxLength:[buffer length]];
+            if (count > 0){
+                [request.response appendData:buffer];
+                request.readCount -= count;
+            }
+            else{
+                break;
+            }
+            NSLog(@"read %ld bytes",[buffer length]);
+        }
+        
+        // check we've read everything we wanted, complete if we have
+        if (request.readCount == 0){
+            
+            if (request.completion){
+                request.completion(request.response);
+            }
+            [_queue removeLastObject];
+            [self process];
         }
     }
-    
-    NSLog(@"read %ld bytes",[data length]);
-    
-    if (request.completion){
-        request.completion(data);
-    }
-    [_queue removeLastObject];
-}
-
-- (void)enqueueCommand:(uint8_t)cmd completion:(void (^)(NSData*))completion
-{
-    [self enqueue:[NSData dataWithBytes:&cmd length:sizeof(cmd)] completion:completion];
 }
 
 @end

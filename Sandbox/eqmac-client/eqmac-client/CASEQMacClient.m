@@ -7,6 +7,7 @@
 //
 
 #import "CASEQMacClient.h"
+#import "CASSocketClient.h"
 
 @interface CASEQMacClient ()
 @end

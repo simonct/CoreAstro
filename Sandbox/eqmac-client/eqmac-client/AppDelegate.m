@@ -68,7 +68,7 @@
         
         NSLog(@"self.sendString: %@",self.sendString);
         
-        [self.client enqueue:[self.sendString dataUsingEncoding:NSASCIIStringEncoding] completion:^(NSData *response) {
+        [self.client enqueue:[self.sendString dataUsingEncoding:NSASCIIStringEncoding] readCount:1 /*temp*/ completion:^(NSData *response) {
             
             NSString* value = [[NSString alloc] initWithData:response encoding:NSASCIIStringEncoding];
             self.receiveTextLabel.stringValue = value ? value : @"Unknown response";
