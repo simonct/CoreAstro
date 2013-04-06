@@ -22,6 +22,7 @@
 		F4F5B54F170E1E9C00D39015 /* echo_server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4F5B54E170E1E9C00D39015 /* echo_server.1 */; };
 		F4F5B557170E1F2300D39015 /* EchoServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B553170E1F2300D39015 /* EchoServer.m */; };
 		F4F5B558170E1F2300D39015 /* EchoConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B554170E1F2300D39015 /* EchoConnection.m */; };
+		F4F5B55B170E25F200D39015 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B55A170E25F200D39015 /* CASLX200Commands.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +67,8 @@
 		F4F5B554170E1F2300D39015 /* EchoConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EchoConnection.m; sourceTree = "<group>"; };
 		F4F5B555170E1F2300D39015 /* EchoConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EchoConnection.h; sourceTree = "<group>"; };
 		F4F5B556170E1F2300D39015 /* EchoServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EchoServer.h; sourceTree = "<group>"; };
+		F4F5B559170E25F200D39015 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200Commands.h; sourceTree = "<group>"; };
+		F4F5B55A170E25F200D39015 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200Commands.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +139,8 @@
 				F4F5B53C170E0A4800D39015 /* CASSocketClient.m */,
 				F4F5B539170E092500D39015 /* CASEQMacClient.h */,
 				F4F5B538170E092500D39015 /* CASEQMacClient.m */,
+				F4F5B559170E25F200D39015 /* CASLX200Commands.h */,
+				F4F5B55A170E25F200D39015 /* CASLX200Commands.m */,
 				F44C924D16B86D5700822E29 /* MainMenu.xib */,
 				F44C923F16B86D5700822E29 /* Supporting Files */,
 			);
@@ -266,6 +271,7 @@
 				F44C924C16B86D5700822E29 /* AppDelegate.m in Sources */,
 				F4F5B53A170E092500D39015 /* CASEQMacClient.m in Sources */,
 				F4F5B53D170E0A4800D39015 /* CASSocketClient.m in Sources */,
+				F4F5B55B170E25F200D39015 /* CASLX200Commands.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

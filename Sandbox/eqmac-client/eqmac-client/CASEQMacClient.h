@@ -9,5 +9,7 @@
 #import "CASSocketClient.h"
 
 @interface CASEQMacClient : CASSocketClient
+@property (nonatomic,copy,readonly) NSString* ra;
+@property (nonatomic,copy,readonly) NSString* dec;
 + (NSUInteger)standardPort;
 @end

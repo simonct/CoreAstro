@@ -8,14 +8,6 @@
 
 #import "CASSocketClient.h"
 
-@interface CASSocketClientRequest : NSObject
-@property (nonatomic,strong) NSData* data;
-@property (nonatomic,copy) void (^completion)(NSData*);
-@property (nonatomic,assign) NSUInteger readCount;
-@property (nonatomic,assign) NSUInteger writtenCount;
-@property (nonatomic,strong) NSMutableData* response;
-@end
-
 @implementation CASSocketClientRequest
 
 - (NSMutableData*) response
@@ -24,6 +16,13 @@
         _response = [NSMutableData dataWithCapacity:self.readCount];
     }
     return _response;
+}
+
+- (BOOL)appendResponseData:(NSData*)data
+{
+    [self.response appendData:data];
+    self.readCount -= MIN([data length], self.readCount);
+    return (self.readCount == 0);
 }
 
 @end
@@ -106,6 +105,11 @@
     return [NSSet setWithObject:@"openCount"];
 }
 
+- (CASSocketClientRequest*)makeRequest
+{
+    return [[CASSocketClientRequest alloc] init];
+}
+
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
     NSLog(@"stream: %@ handleEvent: %ld",aStream,eventCode);
@@ -145,7 +149,7 @@
 
 - (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion
 {
-    CASSocketClientRequest* request = [[CASSocketClientRequest alloc] init];
+    CASSocketClientRequest* request = [self makeRequest];
     
     request.data = data;
     request.completion = completion;
@@ -154,7 +158,7 @@
     if (!_queue){
         _queue = [[NSMutableArray alloc] initWithCapacity:5];
     }
-    [_queue addObject:request];
+    [_queue insertObject:request atIndex:0];
     
     [self process];
 }
@@ -189,23 +193,28 @@
     CASSocketClientRequest* request = [_queue lastObject];
     if (request.readCount > 0){
         
+        BOOL readComplete = NO;
+        
         // read data while there's some available in the input buffer
-        while ([self.inputStream hasBytesAvailable] && request.readCount > 0){
+        while ([self.inputStream hasBytesAvailable] && !readComplete){
             
-            NSMutableData* buffer = [NSMutableData dataWithCapacity:request.readCount];
+            NSMutableData* buffer = [NSMutableData dataWithLength:request.readCount];
             const NSInteger count = [self.inputStream read:[buffer mutableBytes] maxLength:[buffer length]];
             if (count > 0){
-                [request.response appendData:buffer];
-                request.readCount -= count;
+                [buffer setLength:count];
+                if ((readComplete = [request appendResponseData:buffer]) == YES){
+                    break;
+                }
             }
             else{
+                readComplete = YES;
                 break;
             }
             NSLog(@"read %ld bytes",[buffer length]);
         }
         
         // check we've read everything we wanted, complete if we have
-        if (request.readCount == 0){
+        if (readComplete){
             
             if (request.completion){
                 request.completion(request.response);
