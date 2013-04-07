@@ -8,8 +8,20 @@
 
 #import "CASSocketClient.h"
 
+typedef NS_OPTIONS(NSUInteger, CASEQMacClientPrecision) {
+    CASEQMacClientPrecisionUnknown = 0,
+    CASEQMacClientPrecisionLow = 1, // DD*MM
+    CASEQMacClientPrecisionHigh = 2 // DD*MM:SS
+};
+
 @interface CASEQMacClient : CASSocketClient
 @property (nonatomic,copy,readonly) NSString* ra;
 @property (nonatomic,copy,readonly) NSString* dec;
+@property (nonatomic,readonly) CASEQMacClientPrecision precision;
+
+- (void)startSlewToRA:(NSString*)ra dec:(NSString*)dec completion:(void (^)(BOOL))completion;
+- (void)halt;
+
 + (NSUInteger)standardPort;
+
 @end

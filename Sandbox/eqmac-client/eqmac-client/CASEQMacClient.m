@@ -11,7 +11,7 @@
 #import "CASLX200Commands.h"
 
 @interface CASEQMacClientClientRequest : CASSocketClientRequest
-
+@property (nonatomic) BOOL limitToReadCount;
 @end
 
 @implementation CASEQMacClientClientRequest
@@ -19,11 +19,18 @@
 - (BOOL)appendResponseData:(NSData*)data
 {
     [self.response appendData:data];
+    
+    if (self.limitToReadCount && [self.response length] >= self.readCount){
+        return YES;
+    }
+    
     const NSRange range = [self.response rangeOfData:[@"#" dataUsingEncoding:NSASCIIStringEncoding] options:0 range:NSMakeRange(0, [self.response length])];
     if (range.location == NSNotFound){
         return NO;
     }
+    
     self.response = [[self.response subdataWithRange:NSMakeRange(0, range.location)] mutableCopy];
+    
     return YES;
 }
 
@@ -32,9 +39,12 @@
 @interface CASEQMacClient ()
 @property (nonatomic,copy) NSString* ra;
 @property (nonatomic,copy) NSString* dec;
+@property (nonatomic) CASEQMacClientPrecision precision;
 @end
 
-@implementation CASEQMacClient
+@implementation CASEQMacClient {
+    CASEQMacClientPrecision _precision;
+}
 
 + (NSUInteger)standardPort {
     return 4030;
@@ -70,28 +80,94 @@
     }
 }
 
-- (void)enqueue:(NSString*)command completion:(void (^)(NSString*))completion
+- (void)enqueueCommand:(NSString*)command completion:(void (^)(NSString*))completion
 {
-    [self enqueue:[command dataUsingEncoding:NSASCIIStringEncoding] readCount:1 completion:^(NSData* responseData){
-        if (completion){
-            completion([[NSString alloc] initWithData:responseData encoding:NSASCIIStringEncoding]);
-        }
-    }];
+    [self enqueueCommand:command limitToReadCount:NO completion:completion];
+}
+
+- (void)enqueueCommand:(NSString*)command limitToReadCount:(BOOL)limitToReadCount completion:(void (^)(NSString*))completion
+{
+    CASEQMacClientClientRequest* request = (CASEQMacClientClientRequest*)[self makeRequest];
+    
+    request.data = [command dataUsingEncoding:NSASCIIStringEncoding];
+    if (completion){
+        request.completion = ^(NSData* responseData){
+            if (completion){
+                completion([[NSString alloc] initWithData:responseData encoding:NSASCIIStringEncoding]);
+            }
+        };
+    }
+    request.readCount = 1;
+    request.limitToReadCount = limitToReadCount;
+    
+    [self enqueueRequest:request];
+
+//    [self enqueue:[command dataUsingEncoding:NSASCIIStringEncoding] readCount:1 completion:^(NSData* responseData){
+//        if (completion){
+//            completion([[NSString alloc] initWithData:responseData encoding:NSASCIIStringEncoding]);
+//        }
+//    }];
 }
 
 - (void)updateState
 {
-    [self enqueue:[CASLX200Commands getTelescopeDeclination] completion:^(NSString *decResponse) {
+    [self enqueueCommand:[CASLX200Commands getTelescopeDeclination] completion:^(NSString *decResponse) {
     
         self.dec = decResponse;
+        
+        if ([self.dec length]){
+            self.precision = [self.dec length] > 5 ? CASEQMacClientPrecisionHigh : CASEQMacClientPrecisionLow;
+        }
 
-        [self enqueue:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *raResponse) {
+        [self enqueueCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *raResponse) {
             
             self.ra = raResponse;
 
-            [self performSelector:_cmd withObject:nil afterDelay:2];
+            [self performSelector:_cmd withObject:nil afterDelay:1];
         }];
     }];
+}
+
+- (void)startSlewToRA:(NSString*)ra dec:(NSString*)dec completion:(void (^)(BOOL))completion
+{
+    // :SdsDD*MM#, :SdsDD*MM:SS
+    // :SrHH:MM.T#, :SrHH:MM:SS#
+    
+    NSLog(@"startSlewToRA:%@ dec:%@",ra,dec);
+    
+    [self enqueueCommand:[NSString stringWithFormat:@":Sds%@#",dec] limitToReadCount:YES completion:^(NSString *setDecResponse) {
+        
+        if (![setDecResponse isEqualToString:@"1"]){
+            if (completion){
+                completion(NO);
+            }
+        }
+        else {
+            
+            [self enqueueCommand:[NSString stringWithFormat:@":Sr%@#",ra] limitToReadCount:YES completion:^(NSString *setRAResponse) {
+                
+                if (![setRAResponse isEqualToString:@"1"]){
+                    if (completion){
+                        completion(NO);
+                    }
+                }
+                else {
+                    
+                    [self enqueueCommand:@":MS#" limitToReadCount:YES completion:^(NSString *slewResponse) {
+                        
+                        if (completion){
+                            completion([slewResponse isEqualToString:@"0"]);
+                        }
+                    }];
+                }
+            }];
+        }
+    }];
+}
+
+- (void)halt
+{
+    [self enqueueCommand:@":Q#" limitToReadCount:NO completion:nil];
 }
 
 - (CASSocketClientRequest*)makeRequest

@@ -112,7 +112,7 @@
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    NSLog(@"stream: %@ handleEvent: %ld",aStream,eventCode);
+//    NSLog(@"stream: %@ handleEvent: %ld",aStream,eventCode);
     
     NSString* name;
     switch (eventCode) {
@@ -144,16 +144,12 @@
             name = [NSString stringWithFormat:@"%ld",eventCode];
             break;
     }
-    NSLog(@"%@: %@",aStream,name);
+//    NSLog(@"%@: %@",aStream,name);
 }
 
-- (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion
+- (void)enqueueRequest:(CASSocketClientRequest*)request
 {
-    CASSocketClientRequest* request = [self makeRequest];
-    
-    request.data = data;
-    request.completion = completion;
-    request.readCount = readCount;
+    NSParameterAssert(request);
     
     if (!_queue){
         _queue = [[NSMutableArray alloc] initWithCapacity:5];
@@ -161,6 +157,19 @@
     [_queue insertObject:request atIndex:0];
     
     [self process];
+}
+
+- (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion
+{
+    NSParameterAssert(data);
+
+    CASSocketClientRequest* request = [self makeRequest];
+    
+    request.data = data;
+    request.completion = completion;
+    request.readCount = readCount;
+    
+    [self enqueueRequest:request];
 }
 
 - (void)process
@@ -176,7 +185,7 @@
             }
             else {
                 request.writtenCount += count;
-                NSLog(@"wrote %ld bytes",count);
+//                NSLog(@"wrote %ld bytes",count);
             }
             
             // no response expected, all done
@@ -210,7 +219,8 @@
                 readComplete = YES;
                 break;
             }
-            NSLog(@"read %ld bytes",[buffer length]);
+//            NSLog(@"read %ld bytes",[buffer length]);
+//            NSLog(@"read %@ -> %@",buffer,[[NSString alloc] initWithData:buffer encoding:NSASCIIStringEncoding]);
         }
         
         // check we've read everything we wanted, complete if we have

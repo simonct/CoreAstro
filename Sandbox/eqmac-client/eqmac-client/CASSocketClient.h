@@ -24,6 +24,7 @@
 @property (nonatomic,readonly) NSError* error;
 - (void)connect;
 - (void)disconnect;
+- (void)enqueueRequest:(CASSocketClientRequest*)request;
 - (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion;
 - (CASSocketClientRequest*)makeRequest;
 @end

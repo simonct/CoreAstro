@@ -17,5 +17,7 @@
 
 - (IBAction)connectOrDisconnect:(id)sender;
 - (IBAction)send:(id)sender;
+- (IBAction)slew:(id)sender;
+- (IBAction)halt:(id)sender;
 
 @end
