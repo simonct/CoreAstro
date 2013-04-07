@@ -15,61 +15,61 @@
 @property (nonatomic,copy) NSString* slewRA;
 @property (nonatomic,copy) NSString* slewDec;
 @end
-
-// HH:MM:SS
-static NSString* CASHighPrecisionRA(double ra)
-{
-    const double trunc_ra = trunc(ra);
-    
-    const double h = trunc_ra;
-    const double m = trunc((ra - trunc_ra)*60.0);
-    const double s = (ra - trunc_ra)*60.0*60.0 - 60.0*m;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
-    
-    return formattedRA;
-}
-
-// HH:MM.T
-static NSString* CASLowPrecisionRA(double ra)
-{
-    const double trunc_ra = trunc(ra);
-    
-    const double h = trunc_ra;
-    const double m = (ra - trunc_ra)*60.0;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02.1f",(int)h,m];
-    
-    return formattedRA;
-}
-
-// DD*MM:SS
-static NSString* CASHighPrecisionDec(double dec)
-{
-    const double trunc_dec = trunc(dec);
-    
-    const double h = trunc_dec;
-    const double m = trunc((dec - trunc_dec)*60.0);
-    const double s = (dec - trunc_dec)*60.0*60.0 - 60.0*m;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d:%02d",(int)h,(int)m,(int)s];
-    
-    return formattedRA;
-}
-
-// DD*MM
-static NSString* CASLowPrecisionDec(double dec)
-{
-    const double trunc_dec = trunc(dec);
-    
-    const double h = trunc_dec;
-    const double m = (dec - trunc_dec)*60.0;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)h,(int)m];
-    
-    return formattedRA;
-}
-
+//
+//// HH:MM:SS
+//static NSString* CASHighPrecisionRA(double ra)
+//{
+//    const double trunc_ra = trunc(ra);
+//    
+//    const double h = trunc_ra;
+//    const double m = trunc((ra - trunc_ra)*60.0);
+//    const double s = (ra - trunc_ra)*60.0*60.0 - 60.0*m;
+//    
+//    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
+//    
+//    return formattedRA;
+//}
+//
+//// HH:MM.T
+//static NSString* CASLowPrecisionRA(double ra)
+//{
+//    const double trunc_ra = trunc(ra);
+//    
+//    const double h = trunc_ra;
+//    const double m = (ra - trunc_ra)*60.0;
+//    
+//    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02.1f",(int)h,m];
+//    
+//    return formattedRA;
+//}
+//
+//// DD*MM:SS
+//static NSString* CASHighPrecisionDec(double dec)
+//{
+//    const double trunc_dec = trunc(dec);
+//    
+//    const double h = trunc_dec;
+//    const double m = trunc((dec - trunc_dec)*60.0);
+//    const double s = (dec - trunc_dec)*60.0*60.0 - 60.0*m;
+//    
+//    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d:%02d",(int)h,(int)m,(int)s];
+//    
+//    return formattedRA;
+//}
+//
+//// DD*MM
+//static NSString* CASLowPrecisionDec(double dec)
+//{
+//    const double trunc_dec = trunc(dec);
+//    
+//    const double h = trunc_dec;
+//    const double m = (dec - trunc_dec)*60.0;
+//    
+//    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)h,(int)m];
+//    
+//    return formattedRA;
+//}
+//
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -136,20 +136,10 @@ static NSString* CASLowPrecisionDec(double dec)
     
     if (self.client.connected && self.client.precision != CASEQMacClientPrecisionUnknown){
         
-        NSString* formattedRA, *formattedDec;
         const double ra = [self.slewRA doubleValue];
         const double dec = [self.slewDec doubleValue];
 
-        if (self.client.precision == CASEQMacClientPrecisionHigh){
-            formattedRA = CASHighPrecisionRA(ra);
-            formattedDec = CASHighPrecisionDec(dec);
-        }
-        else {
-            formattedRA = CASLowPrecisionRA(ra);
-            formattedDec = CASLowPrecisionDec(dec);
-        }
-        
-        [self.client startSlewToRA:formattedRA dec:formattedDec completion:^(BOOL ok) {
+        [self.client startSlewToRA:ra dec:dec completion:^(BOOL ok) {
             
             if (ok){
                 NSLog(@"Slew started OK");

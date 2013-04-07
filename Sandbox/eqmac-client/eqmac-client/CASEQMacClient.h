@@ -19,7 +19,7 @@ typedef NS_OPTIONS(NSUInteger, CASEQMacClientPrecision) {
 @property (nonatomic,copy,readonly) NSString* dec;
 @property (nonatomic,readonly) CASEQMacClientPrecision precision;
 
-- (void)startSlewToRA:(NSString*)ra dec:(NSString*)dec completion:(void (^)(BOOL))completion;
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion;
 - (void)halt;
 
 + (NSUInteger)standardPort;

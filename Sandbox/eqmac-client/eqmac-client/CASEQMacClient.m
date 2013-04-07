@@ -122,20 +122,38 @@
         [self enqueueCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *raResponse) {
             
             self.ra = raResponse;
-
+            
+//            [self enqueueCommand:[CASLX200Commands getDistanceBars] completion:^(NSString *distanceBars) {
+//                
+//                NSLog(@"distanceBars: %@",distanceBars);
+//
+//                [self performSelector:_cmd withObject:nil afterDelay:1];
+//            }];
             [self performSelector:_cmd withObject:nil afterDelay:1];
         }];
     }];
 }
 
-- (void)startSlewToRA:(NSString*)ra dec:(NSString*)dec completion:(void (^)(BOOL))completion
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion
 {
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
+        
+    NSString* formattedRA;
+    NSString* formattedDec;
     
-    NSLog(@"startSlewToRA:%@ dec:%@",ra,dec);
+    if (self.precision == CASEQMacClientPrecisionHigh){
+        formattedRA = [CASLX200Commands highPrecisionRA:ra];
+        formattedDec = [CASLX200Commands highPrecisionDec:dec];
+    }
+    else {
+        formattedRA = [CASLX200Commands lowPrecisionRA:ra];
+        formattedDec = [CASLX200Commands lowPrecisionDec:dec];
+    }
     
-    [self enqueueCommand:[NSString stringWithFormat:@":Sds%@#",dec] limitToReadCount:YES completion:^(NSString *setDecResponse) {
+    NSLog(@"startSlewToRA:%f (%@) dec:%f (%@)",ra,formattedRA,dec,formattedDec);
+
+    [self enqueueCommand:[CASLX200Commands setTargetObjectDeclination:formattedDec] limitToReadCount:YES completion:^(NSString *setDecResponse) {
         
         if (![setDecResponse isEqualToString:@"1"]){
             if (completion){
@@ -144,7 +162,7 @@
         }
         else {
             
-            [self enqueueCommand:[NSString stringWithFormat:@":Sr%@#",ra] limitToReadCount:YES completion:^(NSString *setRAResponse) {
+            [self enqueueCommand:[CASLX200Commands setTargetObjectRightAscension:formattedRA] limitToReadCount:YES completion:^(NSString *setRAResponse) {
                 
                 if (![setRAResponse isEqualToString:@"1"]){
                     if (completion){
@@ -153,7 +171,7 @@
                 }
                 else {
                     
-                    [self enqueueCommand:@":MS#" limitToReadCount:YES completion:^(NSString *slewResponse) {
+                    [self enqueueCommand:[CASLX200Commands slewToTargetObject] limitToReadCount:YES completion:^(NSString *slewResponse) {
                         
                         if (completion){
                             completion([slewResponse isEqualToString:@"0"]);

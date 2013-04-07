@@ -10,6 +10,7 @@
 
 @interface CASLX200Commands : NSObject
 
+// Get commands
 + (NSString*)getTelescopeAltitude;
 + (NSString*)getTargetAltitude;
 + (NSString*)getDate;
@@ -30,5 +31,22 @@
 + (NSString*)getProductName;
 + (NSString*)getFirmwareTime;
 + (NSString*)getTelescopeAzimuth;
+
+// Set commands
++ (NSString*)setTargetObjectDeclination:(NSString*)dec;
++ (NSString*)setTargetObjectRightAscension:(NSString*)ra;
+
+// Move commands
++ (NSString*)slewToTargetObject;
+
+// Distance bars
++ (NSString*)getDistanceBars;
+
+// co-ordinate formatting
++ (NSString*)highPrecisionRA:(double)ra;
++ (NSString*)lowPrecisionRA:(double)ra;
+
++ (NSString*)highPrecisionDec:(double)dec;
++ (NSString*)lowPrecisionDec:(double)dec;
 
 @end
