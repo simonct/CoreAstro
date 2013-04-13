@@ -137,8 +137,10 @@
         _url = url;
         
         CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)url,nil);
-        self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil)];
-        CFRelease(source);
+        if (source){
+            self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil)];
+            CFRelease(source);
+        }
         
         [self _setupImageLayer];
     }
