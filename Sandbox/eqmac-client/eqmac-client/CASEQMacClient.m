@@ -39,6 +39,7 @@
 @interface CASEQMacClient ()
 @property (nonatomic,copy) NSString* ra;
 @property (nonatomic,copy) NSString* dec;
+@property (nonatomic,copy) void(^connectCompletion)();
 @property (nonatomic) CASEQMacClientPrecision precision;
 @end
 
@@ -111,6 +112,8 @@
 
 - (void)updateState
 {
+    // might need to run a heartbeat in here to detect if the client's gone away
+    
     [self enqueueCommand:[CASLX200Commands getTelescopeDeclination] completion:^(NSString *decResponse) {
     
         self.dec = decResponse;
@@ -130,8 +133,19 @@
 //                [self performSelector:_cmd withObject:nil afterDelay:1];
 //            }];
             [self performSelector:_cmd withObject:nil afterDelay:1];
+            
+            if (self.connectCompletion){
+                self.connectCompletion();
+                self.connectCompletion = nil;
+            }
         }];
     }];
+}
+
+- (void)connectWithCompletion:(void(^)())completion
+{
+    self.connectCompletion = completion;
+    [self connect];
 }
 
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion
@@ -141,6 +155,14 @@
         
     NSString* formattedRA;
     NSString* formattedDec;
+    
+    if (self.precision == CASEQMacClientPrecisionUnknown){
+        NSLog(@"Attempt to slew with unknown precision");
+        if (completion){
+            completion(NO);
+        }
+        return;
+    }
     
     if (self.precision == CASEQMacClientPrecisionHigh){
         formattedRA = [CASLX200Commands highPrecisionRA:ra];
