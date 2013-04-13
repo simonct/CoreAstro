@@ -10,7 +10,58 @@
 
 #import "MKOAppDelegate.h"
 #import "CASImageView.h"
+#import "CASEQMacClient.h"
 #import <QuartzCore/QuartzCore.h>
+
+/* example wcs output
+ "crpix0 506.983792063",
+ "crpix1 378.635784858",
+ "crval0 10.6280698245",
+ "crval1 41.1611877064",
+ "ra_tangent 10.6280698245",
+ "dec_tangent 41.1611877064",
+ "pixx_tangent 506.983792063",
+ "pixy_tangent 378.635784858",
+ "imagew 1024",
+ "imageh 681",
+ "cd11 -0.0022474834073",
+ "cd12 -0.00292001370413",
+ "cd21 0.00291952260955",
+ "cd22 -0.00224608703052",
+ "det 1.35730893618e-05",
+ "parity 1",
+ "pixscale 13.2630026061",
+ "orientation -127.57857",
+ "ra_center 10.7577556576",
+ "dec_center 41.261762611",
+ "orientation_center -127.49322",
+ "ra_center_h 0",
+ "ra_center_m 43",
+ "ra_center_s 1.86135782312",
+ "dec_center_sign 1",
+ "dec_center_d 41",
+ "dec_center_m 15",
+ "dec_center_s 42.3453995364",
+ "ra_center_hms 00:43:01.861",
+ "dec_center_dms +41:15:42.345",
+ "ra_center_merc 0.029882655",
+ "dec_center_merc 0.62603934",
+ "fieldarea 9.46511",
+ "fieldw 3.771",
+ "fieldh 2.508",
+ "fieldunits degrees",
+ "decmin 39.0048",
+ "decmax 43.5225",
+ "ramin 7.87173",
+ "ramax 13.5709",
+ "ra_min_merc 0.037697",
+ "ra_max_merc 0.0218659",
+ "dec_min_merc 0.634544",
+ "dec_max_merc 0.617838",
+ "merc_diff 0.0167061",
+ "merczoom 6",
+ ""
+*/
 
 @interface CASTaskWrapper : NSObject
 @property (nonatomic,readonly) NSString* taskOutput;
@@ -291,7 +342,9 @@
 
 @interface CASPlateSolveSolution : NSObject
 @property (nonatomic,readonly) NSString* centreRA;
+@property (nonatomic,readonly) double centreRADouble;
 @property (nonatomic,readonly) NSString* centreDec;
+@property (nonatomic,readonly) double centreDecDouble;
 @property (nonatomic,readonly) NSString* centreAngle;
 @property (nonatomic,readonly) NSString* pixelScale;
 @property (nonatomic,readonly) NSString* fieldWidth;
@@ -343,12 +396,26 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
 }
 
+- (double) centreRADouble
+{
+    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue] +
+    ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_m"] doubleValue]/60.0) +
+    ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]/3600.0);
+}
+
 - (NSString*)centreDec
 {
     return [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue],
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue],
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]];
+}
+
+- (double) centreDecDouble
+{
+    return [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue] +
+    ([[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue]/60.0) +
+    ([[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]/3600.0);
 }
 
 - (NSString*)centreAngle
@@ -383,6 +450,8 @@
 @property (nonatomic,strong) NSArray* annotations;
 @property (nonatomic,strong) NSFont* annotationsFont;
 @property (nonatomic,strong) CATextLayer* draggingAnnotation;
+@property (nonatomic,strong) CATextLayer* eqMacAnnotation;
+@property (nonatomic,weak) CASEQMacClient* eqMacClient;
 @end
 
 @implementation CASPlateSolveImageView
@@ -452,7 +521,7 @@
         else
 #endif
         {
-            self.url = [NSURL URLWithString:urlString];
+            self.url = [NSURL URLWithString:urlString]; // todo; deal with alias/bookmarks
             if (self.image){
                 return YES;
             }
@@ -531,6 +600,17 @@
     return colour;
 }
 
+- (void)setEqMacClient:(CASEQMacClient *)eqMacClient
+{
+    if (eqMacClient != _eqMacClient){
+        [_eqMacClient removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
+        [_eqMacClient removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
+        _eqMacClient = eqMacClient;
+        [_eqMacClient addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
+        [_eqMacClient addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
+    }
+}
+
 - (CASAnnotationLayer*)layerForObject:(CASPlateSolvedObject*)object
 {
     // revisit this if we end up with lots of layers...
@@ -600,6 +680,23 @@
         objectLayer.mask = shape;
     }
     
+    if (self.eqMacClient){
+        
+        if (!self.eqMacAnnotation){
+            self.eqMacAnnotation = [CATextLayer layer];
+            self.eqMacAnnotation.alignmentMode = @"center";
+            [self.annotationLayer addSublayer:self.eqMacAnnotation];
+        }
+        
+        self.eqMacAnnotation.font = (__bridge CFTypeRef)annotationsFont;
+        self.eqMacAnnotation.fontSize = annotationsFont.pointSize;
+        self.eqMacAnnotation.foregroundColor = annotationsColour;
+        self.eqMacAnnotation.string = [NSString stringWithFormat:@"RA: %@ Dec: %@",self.eqMacClient.ra,self.eqMacClient.dec];
+        const CGSize size = [self.eqMacAnnotation.string sizeWithAttributes:@{NSFontAttributeName:annotationsFont}];
+        self.eqMacAnnotation.bounds = CGRectMake(0, 0, size.width + 10, size.height + 5);
+        self.eqMacAnnotation.position = CGPointMake(CGRectGetMidX(self.annotationLayer.frame), CGRectGetMaxY(self.annotationLayer.frame) - self.eqMacAnnotation.bounds.size.height - 5);
+    }
+    
     CFBridgingRelease(annotationsColour);
 }
 
@@ -619,6 +716,7 @@
     for (CALayer* layer in [[self.annotationLayer sublayers] copy]){
         [layer removeFromSuperlayer];
     }
+    self.eqMacAnnotation = nil;
     
     NSFont* annotationsFont = self.annotationsFont;
     CGColorRef annotationsColour = self.annotationsColour;
@@ -646,7 +744,7 @@
     const CGPoint pointInLayer = [self.layer convertPoint:theEvent.locationInWindow fromLayer:nil];
     CALayer* layer = [self.annotationLayer hitTest:pointInLayer];
     
-    if ([layer isKindOfClass:[CATextLayer class]]){
+    if ([layer isKindOfClass:[CATextLayer class]] && layer != self.eqMacAnnotation){
         
         self.draggingAnnotation = (CATextLayer*)layer;
         self.draggingAnnotation.foregroundColor = CGColorCreateCopyWithAlpha(self.draggingAnnotation.foregroundColor, 0.75);
@@ -684,6 +782,7 @@
 @property (nonatomic,strong) CASSolverModel* solverModel;
 @property (nonatomic,readonly) NSString* cacheDirectory;
 @property (nonatomic,strong) CASPlateSolveSolution* solution;
+@property (nonatomic,strong) CASEQMacClient* eqMacClient;
 @end
 
 @implementation MKOAppDelegate
@@ -730,7 +829,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             self.solution = nil;
             NSString* title = [[NSFileManager defaultManager] displayNameAtPath:self.imageView.url.path];
             self.window.title = title ? title : @"";
-        };
+        }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -1029,10 +1128,51 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
-    if (menuItem.action == @selector(saveDocument:)){
+    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToInEQMac:)){
         return (self.solution != nil);
     }
     return YES;
+}
+
+@end
+
+@implementation MKOAppDelegate (EQMacSupport)
+
+- (void)slewToSolutionCentre
+{
+    [self.eqMacClient startSlewToRA:self.solution.centreRADouble dec:self.solution.centreDecDouble completion:^(BOOL ok) {
+        
+        if (!ok){
+            [self presentAlertWithMessage:@"Failed to slew to the target"];
+            // hide current ra/dec
+        }
+        else {
+            // show current ra/dec
+        }
+    }];
+}
+
+- (IBAction)goToInEQMac:(id)sender
+{
+    if (!self.solution){
+        return;
+    }
+    
+    if (!self.eqMacClient){
+        self.eqMacClient = [[CASEQMacClient alloc] init];
+        self.eqMacClient.port = [CASEQMacClient standardPort];
+        self.eqMacClient.host = [NSHost hostWithName:@"localhost"];
+        self.imageView.eqMacClient = self.eqMacClient;
+    }
+    
+    if (!self.eqMacClient.connected){
+        [self.eqMacClient connectWithCompletion:^{
+            [self slewToSolutionCentre];
+        }];
+    }
+    else {
+        [self slewToSolutionCentre];
+    }
 }
 
 @end

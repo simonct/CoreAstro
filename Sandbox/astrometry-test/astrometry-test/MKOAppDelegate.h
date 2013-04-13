@@ -30,3 +30,9 @@
 - (IBAction)resetAnnotations:(id)sender;
 
 @end
+
+@interface MKOAppDelegate (EQMacSupport)
+
+- (IBAction)goToInEQMac:(id)sender;
+
+@end
