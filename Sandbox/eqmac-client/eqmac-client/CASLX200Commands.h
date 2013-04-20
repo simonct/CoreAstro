@@ -45,8 +45,10 @@
 // co-ordinate formatting
 + (NSString*)highPrecisionRA:(double)ra;
 + (NSString*)lowPrecisionRA:(double)ra;
++ (double)fromRAString:(NSString*)ras asDegrees:(BOOL)asDegrees;
 
 + (NSString*)highPrecisionDec:(double)dec;
 + (NSString*)lowPrecisionDec:(double)dec;
++ (double)fromDecString:(NSString*)dec;
 
 @end

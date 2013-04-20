@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "CASEQMacClient.h"
+#import "CASSocketClient.h"
 
 @interface AppDelegate ()
 @property (nonatomic,strong) CASEQMacClient* client;
@@ -74,10 +75,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.client = [CASEQMacClient new];
-    
-    self.client.port = [CASEQMacClient standardPort];
-    self.client.host = [NSHost hostWithName:@"localhost"];
+    self.client = [CASEQMacClient standardClient];
     
     [self.client addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
 }
@@ -113,7 +111,7 @@
         sender.title = @"Connect";
     }
     else {
-        [self.client connect];
+        [self.client connectWithCompletion:nil];
         sender.title = @"Disconnect";
     }
 }
@@ -124,7 +122,8 @@
         
         NSLog(@"self.sendString: %@",self.sendString);
         
-        [self.client enqueue:[self.sendString dataUsingEncoding:NSASCIIStringEncoding] readCount:[self.sendString length] completion:^(NSData *response) {
+        CASSocketClient* client = [self.client valueForKey:@"client"];
+        [client enqueue:[self.sendString dataUsingEncoding:NSASCIIStringEncoding] readCount:[self.sendString length] completion:^(NSData *response) {
             
             NSString* value = [[NSString alloc] initWithData:response encoding:NSASCIIStringEncoding];
             self.receiveTextLabel.stringValue = value ? value : @"Unknown response";

@@ -131,6 +131,26 @@
     return formattedRA;
 }
 
++ (double)fromRAString:(NSString*)ras asDegrees:(BOOL)asDegrees {
+    
+    double ra = -1;
+    
+    NSArray* comps = [ras componentsSeparatedByString:@":"];
+    if ([comps count] == 3){
+        ra = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
+    }
+    else if ([comps count] == 2){
+        ra = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0);
+    }
+    
+    if (asDegrees){
+        const double trunc_ra = trunc(ra);
+        ra = (trunc_ra * (360.0/24.0)) + (ra - trunc_ra);
+    }
+    
+    return ra;
+}
+
 + (NSString*)highPrecisionDec:(double)dec {
     
     const double trunc_dec = trunc(dec);
@@ -160,6 +180,21 @@
     NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)h,(int)m];
     
     return formattedRA;
+}
+
++ (double)fromDecString:(NSString*)decs {
+    
+    double dec = -1;
+    
+    NSArray* comps = [decs componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"*':"]];
+    if ([comps count] == 3){
+        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
+    }
+    else if ([comps count] == 2){
+        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0);
+    }
+    
+    return dec;
 }
 
 @end

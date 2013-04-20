@@ -37,6 +37,7 @@
 @end
 
 @interface CASEQMacClient ()
+@property (nonatomic,strong) CASSocketClient* client;
 @property (nonatomic,copy) NSString* ra;
 @property (nonatomic,copy) NSString* dec;
 @property (nonatomic,copy) void(^connectCompletion)();
@@ -47,29 +48,64 @@
     CASEQMacClientPrecision _precision;
 }
 
-+ (NSUInteger)standardPort {
++ (NSUInteger)standardPort
+{
     return 4030;
+}
+
++ (CASEQMacClient*)standardClient
+{
+    return [self clientWithHost:[NSHost hostWithName:@"localhost"] port:[CASEQMacClient standardPort]];
+}
+
++ (CASEQMacClient*)clientWithHost:(NSHost*)host port:(NSUInteger)port
+{
+    CASEQMacClient* client = [[CASEQMacClient alloc] init];
+    client.client.port = port;
+    client.client.host = host;
+    return client;
 }
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        [self addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
+        self.client = [[CASSocketClient alloc] init];
+        [self.client addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
+    [self.client removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
+}
+
+- (BOOL) connected
+{
+    return self.client.connected;
+}
+
++ (NSSet*)keyPathsForValuesAffectingConnected
+{
+    return [NSSet setWithObject:@"client.connected"];
+}
+
+- (NSError*) error
+{
+    return self.client.error;
+}
+
++ (NSSet*)keyPathsForValuesAffectingError
+{
+    return [NSSet setWithObject:@"client.error"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
         
-        if (self.connected){
+        if (self.client.connected){
             [self updateState];
         }
         else {
@@ -101,7 +137,7 @@
     request.readCount = 1;
     request.limitToReadCount = limitToReadCount;
     
-    [self enqueueRequest:request];
+    [self.client enqueueRequest:request];
 
 //    [self enqueue:[command dataUsingEncoding:NSASCIIStringEncoding] readCount:1 completion:^(NSData* responseData){
 //        if (completion){
@@ -118,6 +154,8 @@
     
         self.dec = decResponse;
         
+        NSLog(@"self.dec: %@ (%f)",self.dec,[CASLX200Commands fromDecString:self.dec]);
+
         if ([self.dec length]){
             self.precision = [self.dec length] > 5 ? CASEQMacClientPrecisionHigh : CASEQMacClientPrecisionLow;
         }
@@ -125,6 +163,8 @@
         [self enqueueCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *raResponse) {
             
             self.ra = raResponse;
+            
+            NSLog(@"self.ra: %@ (%f° %f)",self.ra,[CASLX200Commands fromRAString:self.ra asDegrees:YES],[CASLX200Commands fromRAString:self.ra asDegrees:NO]);
             
 //            [self enqueueCommand:[CASLX200Commands getDistanceBars] completion:^(NSString *distanceBars) {
 //                
@@ -145,7 +185,12 @@
 - (void)connectWithCompletion:(void(^)())completion
 {
     self.connectCompletion = completion;
-    [self connect];
+    [self.client connect];
+}
+
+- (void)disconnect
+{
+    [self.client disconnect];
 }
 
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion
