@@ -37,11 +37,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
+@property (nonatomic) CASCameraControllerState state;
+@property (nonatomic) float progress;
 @end
 
 @implementation CASCameraController {
     BOOL _cancel:1;
     BOOL _waitingForDevice:1;
+    CASExposeParams _expParams;
 }
 
 - (id)initWithCamera:(CASCCDDevice*)camera
@@ -73,6 +76,39 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     self.camera = nil;
 }
 
+- (void)setState:(CASCameraControllerState)state
+{
+    if (state != _state){
+        _state = state;
+        NSLog(@"Changed state to %ld",_state);
+    }
+}
+
+- (void)updateProgress
+{
+    if (self.state == CASCameraControllerStateNone || self.state == CASCameraControllerStateWaitingForTemperature){
+        self.progress = 0;
+        return;
+    }
+    
+    if (self.state == CASCameraControllerStateExposing){
+        
+        // progress counts up from 0 to 1
+        const NSTimeInterval interval = [NSDate timeIntervalSinceReferenceDate] - [self.exposureStart timeIntervalSinceReferenceDate];
+        self.progress = MIN(1,(interval * 1000.0)/(double)_expParams.ms);
+//        NSLog(@"Exposing progress: %f",self.progress);
+    }
+    else if (self.state == CASCameraControllerStateWaitingForNextExposure){
+        
+        // progress counts down from 1 to 0
+        const NSTimeInterval interval = self.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate];
+        self.progress = MAX(0,interval/self.exposureInterval);
+//        NSLog(@"Waiting progress: %f",self.progress);
+    }
+
+    [self performSelector:_cmd withObject:nil afterDelay:0.1];
+}
+
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
 {
     void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
@@ -89,10 +125,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         // figure out if we need to go round again
         if (!error && !_cancel && (self.continuous || ++self.currentCaptureIndex < self.captureCount) ){
             
+            self.state = CASCameraControllerStateWaitingForNextExposure;
+
             if (!self.guider || !self.guideAlgorithm){
                 
                 // not guiding, figure out the next exposure time
-                scheduleNextCapture(self.interval);
+                scheduleNextCapture(self.exposureInterval);
             }
             else {
                 
@@ -116,7 +154,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                                                             object:self
                                                                           userInfo:@{@"direction":@(direction),@"@duration":@(duration)}];
                         
-                        const NSTimeInterval nextExposureTimeInterval = MAX(self.interval,ceil((float)duration/1000.0));
+                        const NSTimeInterval nextExposureTimeInterval = MAX(self.exposureInterval,ceil((float)duration/1000.0));
                         
                         if (direction == kCASGuiderDirection_None || duration < 1){
                             
@@ -153,7 +191,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         else {
             
             self.capturing = NO;
-            
+            self.state = CASCameraControllerStateNone;
+
             if ([NSUserNotification class]){
                 NSUserNotification* note = [[NSUserNotification alloc] init];
                 note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
@@ -185,6 +224,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         const CGFloat targetTemperature = self.camera.targetTemperature;
         if (MIN(temperature,targetTemperature) == targetTemperature && fabs(targetTemperature - temperature) > temperatureLatitude){
             
+            self.state = CASCameraControllerStateWaitingForTemperature;
+
             // todo; give up and alert user if we've waited in excess of some limit ?
             // todo; min capture interval in temp lock mode to allow temp commands to run
 
@@ -198,10 +239,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }
     }
     
+    self.state = CASCameraControllerStateExposing;
+    
     const BOOL saveExposure = !self.continuous;
         
-    CASExposeParams exp;
-    bzero(&exp, sizeof exp);
+    bzero(&_expParams, sizeof _expParams);
     
     const NSInteger xBin = self.binningIndex + 1;
     const NSInteger yBin = self.binningIndex + 1;
@@ -209,18 +251,23 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     const CGRect subframe = self.subframe;
     
     if (CGRectIsEmpty(subframe)){
-        exp = CASExposeParamsMake(self.camera.sensor.width, self.camera.sensor.height, 0, 0, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
+        _expParams = CASExposeParamsMake(self.camera.sensor.width, self.camera.sensor.height, 0, 0, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
     }
     else {
-        exp = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
+        _expParams = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
     }
     
     self.exposureStart = [NSDate date];
     
+    self.progress = 0;
+    [self updateProgress];
+
     _waitingForDevice = YES;
     
-    [self.camera exposeWithParams:exp type:self.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
+    [self.camera exposeWithParams:_expParams type:self.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
     
+        self.progress = 1;
+
         _waitingForDevice = NO;
         
         if (error){
@@ -296,6 +343,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     else {
         // if we're waiting for the next exposure, stop the timer and clear the capturing flag
         self.capturing = NO;
+        self.state = CASCameraControllerStateNone;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
     
@@ -307,7 +355,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (BOOL)waitingForNextCapture
 {
-    return (self.continuous || (self.captureCount > 1 && self.currentCaptureIndex < self.captureCount));
+    return (self.state == CASCameraControllerStateWaitingForNextExposure);
 }
 
 - (void)setGuider:(CASGuiderController*)guider
@@ -387,7 +435,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSNumber*)scriptingSequenceInterval
 {
-    return [NSNumber numberWithInteger:self.interval];
+    return [NSNumber numberWithInteger:self.exposureInterval];
 }
 
 - (void)setScriptingSequenceInterval:(NSNumber*)interval
@@ -397,7 +445,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         [[NSScriptCommand currentCommand] setScriptErrorString:NSLocalizedString(@"You can't set the sequence interval while the camera is busy", @"Scripting error message")];
         return;
     }
-    self.interval = MIN(1000,MAX(0,[interval integerValue]));
+    self.exposureInterval = MIN(1000,MAX(0,[interval integerValue]));
 }
 
 @end

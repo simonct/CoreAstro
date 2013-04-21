@@ -249,13 +249,13 @@
 {
     if (_cameraController != cameraController){
         if (_cameraController){
-            [_cameraController removeObserver:self forKeyPath:@"exposureStart" context:(__bridge void *)(self)];
-            [_cameraController removeObserver:self forKeyPath:@"capturing" context:(__bridge void *)(self)];
+            [_cameraController removeObserver:self forKeyPath:@"state" context:(__bridge void *)(self)];
+            [_cameraController removeObserver:self forKeyPath:@"progress" context:(__bridge void *)(self)];
         }
         _cameraController = cameraController;
         if (_cameraController){
-            [_cameraController addObserver:self forKeyPath:@"exposureStart" options:0 context:(__bridge void *)(self)];
-            [_cameraController addObserver:self forKeyPath:@"capturing" options:0 context:(__bridge void *)(self)];
+            [_cameraController addObserver:self forKeyPath:@"state" options:0 context:(__bridge void *)(self)];
+            [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:(__bridge void *)(self)];
         }
         [self configureForCameraController];
     }
@@ -304,24 +304,8 @@
             }
         }
         else if (object == self.cameraController){
-            if ([keyPath isEqualToString:@"exposureStart"]){
+            if ([keyPath isEqualToString:@"state"] || [keyPath isEqualToString:@"progress"]){
                 [self updateExposureIndicator];
-            }
-            if ([keyPath isEqualToString:@"capturing"]){
-                if (!self.cameraController.capturing){
-                    self.progressStatusText.hidden = self.progressIndicator.hidden = YES;
-                    self.imageView.showProgress = NO;
-                    self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
-                    self.captureButton.action = @selector(capture:);
-                    self.captureButton.enabled = YES;
-                    self.captureButton.keyEquivalent = [NSString stringWithFormat:@"%c",NSCarriageReturnCharacter];
-                }
-                else {
-                    self.progressStatusText.stringValue = @"Capturing...";
-                    self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
-                    self.captureButton.action = @selector(cancelCapture:);
-                    self.captureButton.keyEquivalent = @"";
-                }
             }
         }
         else if (object == [CASDeviceManager sharedManager]){
@@ -558,52 +542,61 @@
 
 - (void)updateExposureIndicator
 {
-    NSDate* start = self.cameraController.exposureStart;
-    if (self.cameraController.exposureStart){
+    void (^commonShowProgressSetup)(NSString*) = ^(NSString* statusText){
         
-        const double interval = [[NSDate date] timeIntervalSinceDate:start];
-        const NSInteger scaling = (self.cameraController.exposureUnits == 0) ? 1 : 1000;
-        
+        // todo; tidy this interface up
         self.imageView.showProgress = YES;
         self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
-        if (self.cameraController.exposure){
-            self.imageView.progress = self.progressIndicator.doubleValue = (interval * scaling) / self.cameraController.exposure;
-        }
-        else {
-            self.imageView.progress = self.progressIndicator.doubleValue = 0;;
-        }
         
         self.progressIndicator.hidden = NO;
-        if (self.progressIndicator.doubleValue >= self.progressIndicator.maxValue){
-            self.progressIndicator.indeterminate = YES;
-            self.progressStatusText.stringValue = @"Downloading image...";
-            self.imageView.progress = 0;
+        self.progressIndicator.indeterminate = NO;
+        self.progressStatusText.stringValue = statusText ? statusText : @"";
+    };
+    
+    switch (self.cameraController.state) {
+            
+        case CASCameraControllerStateNone:{
+            self.imageView.showProgress = NO;
+            self.progressIndicator.hidden = YES;
+            self.progressStatusText.stringValue = @"";
         }
-        else {
-            self.progressIndicator.indeterminate = NO;
+            break;
+            
+        case CASCameraControllerStateWaitingForTemperature:{
+            commonShowProgressSetup(@"Waiting for °C...");
         }
-        [self.progressIndicator startAnimation:self];
-        [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
+            break;
+            
+        case CASCameraControllerStateWaitingForNextExposure:{
+            commonShowProgressSetup(@"Waiting...");
+        }
+            break;
+            
+        case CASCameraControllerStateExposing:{
+            commonShowProgressSetup(nil);
+            if (self.cameraController.progress >= 1){
+                self.progressIndicator.indeterminate = YES;
+                self.progressStatusText.stringValue = @"Downloading image...";
+            }
+            else {
+                self.progressStatusText.stringValue = @"Capturing...";
+            }
+        }
+            break;
+    }
+    
+    self.imageView.progress = self.progressIndicator.doubleValue = self.cameraController.progress;
+
+    if (self.cameraController.capturing){
+        self.captureButton.title = NSLocalizedString(@"Cancel", @"Button title");
+        self.captureButton.action = @selector(cancelCapture:);
+        self.captureButton.keyEquivalent = @"";
     }
     else {
-        
-        if (self.cameraController.waitingForNextCapture){
-            self.progressIndicator.indeterminate = NO;
-            self.progressIndicator.hidden = NO;
-            self.imageView.showProgress = YES;
-            self.progressStatusText.stringValue = @"Waiting...";
-            self.imageView.progressInterval = self.cameraController.interval;
-            const double fraction = self.cameraController.interval ? (self.cameraController.continuousNextExposureTime - [NSDate timeIntervalSinceReferenceDate])/(double)self.cameraController.interval : 0;
-            self.imageView.progress = fraction;
-            self.progressIndicator.doubleValue = 1 - fraction;
-            [self performSelector:@selector(updateExposureIndicator) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
-        }
-        else {
-            self.progressIndicator.hidden = YES;
-            self.imageView.showProgress = NO;
-            self.imageView.progress = self.progressIndicator.doubleValue = 0;
-            [self.progressIndicator stopAnimation:self];
-        }
+        self.captureButton.title = NSLocalizedString(@"Capture", @"Button title");
+        self.captureButton.action = @selector(capture:);
+        self.captureButton.keyEquivalent = [NSString stringWithFormat:@"%c",NSCarriageReturnCharacter];
+        self.captureButton.enabled = YES; // set to NO in -cancelCapture:
     }
 }
 
@@ -788,20 +781,7 @@
 #pragma mark - Actions
 
 - (IBAction)_captureImpl
-{
-    // set the progress indicator settings after setting the continuous flag
-    self.progressIndicator.maxValue = 1;
-    self.imageView.progress = self.progressIndicator.doubleValue = 0;
-    self.progressStatusText.hidden = self.progressIndicator.hidden = NO;
-    
-    if (self.cameraController.exposureUnits == 0 && self.cameraController.exposure > 1){
-        self.imageView.showProgress = YES;
-        self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
-    }
-    else {
-        self.imageView.showProgress = NO;
-    }
-    
+{    
     // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
     
@@ -811,7 +791,6 @@
         if (error){
             // todo; run completion actions e.g. email, run processing scripts, etc
             [NSApp presentError:error];
-            self.imageView.showProgress = NO;
         }
         else{
             
@@ -821,16 +800,6 @@
                     self.currentExposure = exposure;
                 }
             }
-            
-            if (self.cameraController.capturing){
-                self.progressStatusText.stringValue = @"Waiting...";
-            }
-            else{
-                // todo; run completion actions e.g. email, run processing scripts, etc
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExposureIndicator) object:nil];
-            }
-            self.progressStatusText.hidden = self.progressIndicator.hidden = !self.cameraController.capturing;
-            self.imageView.showProgress = self.cameraController.capturing;
         }
     }];
 }
@@ -875,7 +844,6 @@
     
     self.captureButton.enabled = NO;
     [self.cameraController cancelCapture];
-    self.imageView.showProgress = NO;
 }
 
 - (void)_runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock

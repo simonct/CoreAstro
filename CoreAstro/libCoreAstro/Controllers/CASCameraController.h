@@ -37,8 +37,18 @@
 
 @property (nonatomic,readonly,strong) CASCCDDevice* camera;
 
+typedef NS_ENUM(NSInteger, CASCameraControllerState) {
+    CASCameraControllerStateNone,
+    CASCameraControllerStateWaitingForTemperature,
+    CASCameraControllerStateExposing, // or downloading
+    CASCameraControllerStateWaitingForNextExposure
+};
+@property (nonatomic,readonly) CASCameraControllerState state;
+@property (nonatomic,readonly) float progress;
+
 @property (nonatomic,readonly) BOOL capturing;
 @property (nonatomic,readonly) BOOL waitingForNextCapture;
+
 @property (nonatomic,assign) BOOL temperatureLock;
 @property (nonatomic,assign) BOOL continuous;
 @property (nonatomic,assign) NSInteger captureCount;
@@ -48,7 +58,7 @@
 @property (nonatomic,assign) NSInteger exposure; // -> exposureTime/exposureDuration
 @property (nonatomic,assign) NSInteger exposureUnits;
 @property (nonatomic,assign) NSInteger binningIndex;
-@property (nonatomic,assign) NSInteger interval;
+@property (nonatomic,assign) NSInteger exposureInterval;
 @property (nonatomic,assign) CGRect subframe;
 @property (nonatomic,assign) CASCCDExposureType exposureType;
 @property (nonatomic,strong) NSDate* exposureStart;
