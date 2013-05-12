@@ -133,7 +133,7 @@
 
 - (IBAction)slew:(id)sender {
     
-    if (self.client.connected && self.client.precision != CASEQMacClientPrecisionUnknown){
+    if (self.client.connected && self.client.precision != CASLX200ClientPrecisionUnknown){
         
         const double ra = [self.slewRA doubleValue];
         const double dec = [self.slewDec doubleValue];

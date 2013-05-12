@@ -13,6 +13,7 @@
 		F44C924916B86D5700822E29 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F44C924716B86D5700822E29 /* Credits.rtf */; };
 		F44C924C16B86D5700822E29 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F44C924B16B86D5700822E29 /* AppDelegate.m */; };
 		F44C924F16B86D5700822E29 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44C924D16B86D5700822E29 /* MainMenu.xib */; };
+		F483D382173FC1BD001A4790 /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F483D381173FC1BD001A4790 /* CASLX200IPClient.m */; };
 		F4F5B53A170E092500D39015 /* CASEQMacClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B538170E092500D39015 /* CASEQMacClient.m */; };
 		F4F5B53D170E0A4800D39015 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5B53C170E0A4800D39015 /* CASSocketClient.m */; };
 		F4F5B540170E0E2300D39015 /* ok.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F4F5B53E170E0E2300D39015 /* ok.tiff */; };
@@ -52,6 +53,8 @@
 		F44C924A16B86D5700822E29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F44C924B16B86D5700822E29 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F44C924E16B86D5700822E29 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F483D380173FC1BD001A4790 /* CASLX200IPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200IPClient.h; sourceTree = "<group>"; };
+		F483D381173FC1BD001A4790 /* CASLX200IPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200IPClient.m; sourceTree = "<group>"; };
 		F4F5B538170E092500D39015 /* CASEQMacClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASEQMacClient.m; sourceTree = "<group>"; };
 		F4F5B539170E092500D39015 /* CASEQMacClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASEQMacClient.h; sourceTree = "<group>"; };
 		F4F5B53B170E0A4800D39015 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
@@ -137,6 +140,8 @@
 				F44C924B16B86D5700822E29 /* AppDelegate.m */,
 				F4F5B53B170E0A4800D39015 /* CASSocketClient.h */,
 				F4F5B53C170E0A4800D39015 /* CASSocketClient.m */,
+				F483D380173FC1BD001A4790 /* CASLX200IPClient.h */,
+				F483D381173FC1BD001A4790 /* CASLX200IPClient.m */,
 				F4F5B539170E092500D39015 /* CASEQMacClient.h */,
 				F4F5B538170E092500D39015 /* CASEQMacClient.m */,
 				F4F5B559170E25F200D39015 /* CASLX200Commands.h */,
@@ -272,6 +277,7 @@
 				F4F5B53A170E092500D39015 /* CASEQMacClient.m in Sources */,
 				F4F5B53D170E0A4800D39015 /* CASSocketClient.m in Sources */,
 				F4F5B55B170E25F200D39015 /* CASLX200Commands.m in Sources */,
+				F483D382173FC1BD001A4790 /* CASLX200IPClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
