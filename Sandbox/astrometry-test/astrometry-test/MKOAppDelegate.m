@@ -1160,8 +1160,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     
     if (!self.eqMacClient){
         self.eqMacClient = [[CASEQMacClient alloc] init];
-        self.eqMacClient.port = [CASEQMacClient standardPort];
-        self.eqMacClient.host = [NSHost hostWithName:@"localhost"];
+        self.eqMacClient.client.port = [CASEQMacClient standardPort];
+        self.eqMacClient.client.host = [NSHost hostWithName:@"localhost"];
         self.imageView.eqMacClient = self.eqMacClient;
     }
     
