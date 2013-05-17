@@ -164,6 +164,8 @@
 }
 @end
 
+static NSString* const kCASCCDExposureLibraryLocationKey = @"CASCCDExposureLibraryLocation";
+
 @interface CASCCDExposureLibrary ()
 @end
 
@@ -186,10 +188,16 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     return _library;
 }
 
++ (void)initialize
+{
+    if (self == [CASCCDExposureLibrary class]){
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASCCDExposureLibraryLocationKey:[[NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoreAstro"]}];
+    }
+}
+
 - (NSString*)root
 {
-//    return @"/Volumes/Media1TB/CoreAstro"; // doesn't work if sandboxing is enabled...
-    return [[NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoreAstro"];
+    return [[[NSUserDefaults standardUserDefaults] stringForKey:kCASCCDExposureLibraryLocationKey] stringByResolvingSymlinksInPath];
 }
 
 - (NSString*)projectsIndexPath

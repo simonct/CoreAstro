@@ -193,13 +193,13 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 + (void)initialize
 {
     if (self == [CASPlateSolver class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:@"/Volumes/Media1TB/astrometry.net"}];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Library/Application Support/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
     }
 }
 
 - (NSURL*)indexDirectoryURL
 {
-    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:kCASAstrometryIndexDirectoryURLKey];
+    NSString* s = [[[NSUserDefaults standardUserDefaults] stringForKey:kCASAstrometryIndexDirectoryURLKey] stringByResolvingSymlinksInPath];
     return s ? [NSURL fileURLWithPath:s] : nil;
 }
 
