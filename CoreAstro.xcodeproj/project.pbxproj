@@ -157,6 +157,8 @@
 		F4B8868716AAD756008E0D5E /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B8868516AAD756008E0D5E /* CASCaptureWindowController.m */; };
 		F4B8868816AAD756008E0D5E /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4B8868616AAD756008E0D5E /* CASCaptureWindowController.xib */; };
 		F4C4033C16419FF000218E0F /* H25.png in Resources */ = {isa = PBXBuildFile; fileRef = F4C4033B16419FF000218E0F /* H25.png */; };
+		F4C70E901749405B003D35CA /* CASFWDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4C70E8E1749405A003D35CA /* CASFWDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C70E8F1749405B003D35CA /* CASFWDevice.m */; };
 		F4CA50D9169CB50900832CFF /* CASPlateSolver.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA50D7169CB50900832CFF /* CASPlateSolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4CA50DA169CB50900832CFF /* CASPlateSolver.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CA50D8169CB50900832CFF /* CASPlateSolver.m */; };
 		F4CA50DD169CB62F00832CFF /* CASTaskWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA50DB169CB62F00832CFF /* CASTaskWrapper.h */; };
@@ -680,6 +682,8 @@
 		F4B8868516AAD756008E0D5E /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4B8868616AAD756008E0D5E /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCaptureWindowController.xib; sourceTree = "<group>"; };
 		F4C4033B16419FF000218E0F /* H25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H25.png; sourceTree = "<group>"; };
+		F4C70E8E1749405A003D35CA /* CASFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFWDevice.h; sourceTree = "<group>"; };
+		F4C70E8F1749405B003D35CA /* CASFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFWDevice.m; sourceTree = "<group>"; };
 		F4CA50D7169CB50900832CFF /* CASPlateSolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPlateSolver.h; sourceTree = "<group>"; };
 		F4CA50D8169CB50900832CFF /* CASPlateSolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPlateSolver.m; sourceTree = "<group>"; };
 		F4CA50DB169CB62F00832CFF /* CASTaskWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASTaskWrapper.h; sourceTree = "<group>"; };
@@ -1723,6 +1727,8 @@
 				F49E536115A995570018DC75 /* CASDevice.m */,
 				F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */,
 				F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */,
+				F4C70E8E1749405A003D35CA /* CASFWDevice.h */,
+				F4C70E8F1749405B003D35CA /* CASFWDevice.m */,
 				F4A0E3AF15C70FD4002878C9 /* CASCCDImage.h */,
 				F4A0E3B015C70FD4002878C9 /* CASCCDImage.m */,
 				F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */,
@@ -2836,6 +2842,7 @@
 				F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */,
 				F4CA5427169CC9FD00832CFF /* xylist.h in Headers */,
 				F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */,
+				F4C70E901749405B003D35CA /* CASFWDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3271,6 +3278,7 @@
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
 				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
+				F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

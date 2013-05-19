@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F45185551749412500C69387 /* CASFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F45185541749412500C69387 /* CASFWDevice.m */; };
 		F4C70E8C17493D02003D35CA /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C70E8B17493D02003D35CA /* CASClassDefaults.m */; };
 		F4CAFA2416C6502E00BE783B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CAFA2316C6502E00BE783B /* Cocoa.framework */; };
 		F4CAFA2E16C6502E00BE783B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4CAFA2C16C6502E00BE783B /* InfoPlist.strings */; };
@@ -82,6 +83,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F45185531749412500C69387 /* CASFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASFWDevice.h; path = ../../../CoreAstro/libCoreAstro/Core/CASFWDevice.h; sourceTree = "<group>"; };
+		F45185541749412500C69387 /* CASFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASFWDevice.m; path = ../../../CoreAstro/libCoreAstro/Core/CASFWDevice.m; sourceTree = "<group>"; };
 		F4C70E8A17493D02003D35CA /* CASClassDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASClassDefaults.h; path = ../../../CoreAstro/libCoreAstro/Core/CASClassDefaults.h; sourceTree = "<group>"; };
 		F4C70E8B17493D02003D35CA /* CASClassDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASClassDefaults.m; path = ../../../CoreAstro/libCoreAstro/Core/CASClassDefaults.m; sourceTree = "<group>"; };
 		F4CAFA2016C6502E00BE783B /* fw-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fw-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -328,6 +331,8 @@
 				F4CAFAA316C651EA00BE783B /* CASDevice.m */,
 				F4CAFAA416C651EA00BE783B /* CASCCDDevice.h */,
 				F4CAFAA516C651EA00BE783B /* CASCCDDevice.m */,
+				F45185531749412500C69387 /* CASFWDevice.h */,
+				F45185541749412500C69387 /* CASFWDevice.m */,
 				F4CAFAA616C651EA00BE783B /* CASCCDImage.h */,
 				F4CAFAA716C651EA00BE783B /* CASCCDImage.m */,
 				F4CAFAA816C651EA00BE783B /* CASCCDExposure.h */,
@@ -518,6 +523,7 @@
 				F4CAFAF216C6520400BE783B /* SXCCDIOCommand.m in Sources */,
 				F4CAFAF316C6520400BE783B /* SXCCDDeviceFactory.m in Sources */,
 				F4C70E8C17493D02003D35CA /* CASClassDefaults.m in Sources */,
+				F45185551749412500C69387 /* CASFWDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

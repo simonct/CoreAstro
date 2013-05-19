@@ -1,8 +1,8 @@
 //
-//  SXFWDevice.h
+//  CASFWDevice.h
 //  CoreAstro
 //
-//  Copyright (c) 2012, Simon Taylor
+//  Copyright (c) 2013, Simon Taylor
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to deal 
@@ -22,9 +22,15 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 //
+//  This is the base class of all CoreAstro CCD devices. Make this a protocol ?
 
-#import "CASFWDevice.h"
+#import "CASDevice.h"
 
-@interface SXFWDevice : CASFWDevice
+@protocol CASFWDevice <NSObject>
+@property (nonatomic,assign,readonly) NSInteger filterCount; // 0 until calibration is complete
+@property (nonatomic,assign) NSInteger currentFilter; // 0 -> filterCount-1 (NSNotFound before calibration is complete)
+@end
+
+@interface CASFWDevice : CASDevice<CASFWDevice>
 @end
 

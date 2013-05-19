@@ -1,8 +1,8 @@
 //
-//  SXFWDevice.h
+//  CASFWDevice.m
 //  CoreAstro
 //
-//  Copyright (c) 2012, Simon Taylor
+//  Copyright (c) 2013, Simon Taylor
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to deal 
@@ -25,6 +25,14 @@
 
 #import "CASFWDevice.h"
 
-@interface SXFWDevice : CASFWDevice
+@interface CASFWDevice ()
+@end
+
+@implementation CASFWDevice
+
+- (CASDeviceType)type {
+    return kCASDeviceTypeFilterWheel;   
+}
+
 @end
 
