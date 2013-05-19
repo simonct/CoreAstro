@@ -55,6 +55,7 @@
 
 - (void)addExposure:(CASCCDExposure*)exposure save:(BOOL)save block:(void (^)(NSError*,NSURL*))block;
 - (void)addExposure:(CASCCDExposure*)exposure toProject:(CASCCDExposureLibraryProject*)project save:(BOOL)save block:(void (^)(NSError*,NSURL*))block;
+- (void)removeExposure:(CASCCDExposure*)exposure;
 
 - (CASCCDExposure*)exposureWithUUID:(NSString*)uuid;
 

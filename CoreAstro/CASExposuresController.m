@@ -105,9 +105,12 @@
     if (index != NSNotFound){
         id exposure = [[self arrangedObjects] objectAtIndex:index];
         if (deletingPermanently){
-            [exposure deleteExposure];
+            [[CASCCDExposureLibrary sharedLibrary] removeExposure:exposure];
+            index = [self.arrangedObjects indexOfObject:exposure];
         }
-        [super removeObjectAtArrangedObjectIndex:index];
+        if (index != NSNotFound){
+            [super removeObjectAtArrangedObjectIndex:index];
+        }
         if (self.navigationObjects){
             [self.navigationObjects removeObject:exposure];
             [self rearrangeObjects];
@@ -122,37 +125,59 @@
 
 - (void)removeObjectsAtArrangedObjectIndexes:(NSIndexSet *)indexes deletingPermanently:(BOOL)deletingPermanently
 {
-    if ([indexes count]){
-        id nextObject = nil;
-        const NSInteger firstIndex = [indexes firstIndex];
-        const NSInteger lastIndex = [indexes lastIndex];
-        NSArray* arrangedObjects = [self arrangedObjects];
-        if (lastIndex+1 < [arrangedObjects count]){
-            nextObject = [arrangedObjects objectAtIndex:lastIndex+1];
-        }
-        else if (firstIndex - 1 >= 0){
-            nextObject = [arrangedObjects objectAtIndex:firstIndex-1];
-        }
-        if ([indexes count] == 1){
-            [self removeObjectAtArrangedObjectIndex:[indexes firstIndex] deletingPermanently:deletingPermanently];
-        }
-        else {
-            NSArray* exposures = [arrangedObjects objectsAtIndexes:indexes];
-            if (deletingPermanently){
-                [exposures makeObjectsPerformSelector:@selector(deleteExposure)];
+    if ([indexes count] < 1){
+        return;
+    }
+    
+    id nextObject = nil;
+    const NSInteger firstIndex = [indexes firstIndex];
+    const NSInteger lastIndex = [indexes lastIndex];
+    
+    NSArray* arrangedObjects = [self arrangedObjects];
+    if (lastIndex+1 < [arrangedObjects count]){
+        nextObject = [arrangedObjects objectAtIndex:lastIndex+1];
+    }
+    else if (firstIndex - 1 >= 0){
+        nextObject = [arrangedObjects objectAtIndex:firstIndex-1];
+    }
+    
+    if ([indexes count] == 1){
+        [self removeObjectAtArrangedObjectIndex:[indexes firstIndex] deletingPermanently:deletingPermanently];
+    }
+    else {
+        
+        NSArray* exposures = [arrangedObjects objectsAtIndexes:indexes];
+        if (deletingPermanently){
+            
+            for (id exposure in exposures){
+                [[CASCCDExposureLibrary sharedLibrary] removeExposure:exposure];
             }
+            NSMutableIndexSet* updatedIndexes = [NSMutableIndexSet indexSet];
+            for (id exposure in exposures){
+                const NSInteger index = [self.arrangedObjects indexOfObject:exposure];
+                if (index != NSNotFound){
+                    [updatedIndexes addIndex:index];
+                }
+            }
+            indexes = [updatedIndexes copy];
+        }
+        
+        if ([indexes count]){
             [super removeObjectsAtArrangedObjectIndexes:indexes];
-            if (self.navigationObjects){
-                [self.navigationObjects removeObjectsInArray:exposures];
-                [self rearrangeObjects];
-            }
         }
-        if (nextObject){
-            [self setSelectedObjects:[NSArray arrayWithObject:nextObject]];
+        
+        if (self.navigationObjects){
+            [self.navigationObjects removeObjectsInArray:exposures];
+            [self rearrangeObjects];
         }
-        if (self.project){
-            [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self.project]; // yuk
-        }
+    }
+    
+    if (nextObject){
+        [self setSelectedObjects:[NSArray arrayWithObject:nextObject]];
+    }
+    
+    if (self.project){
+        [[CASCCDExposureLibrary sharedLibrary] projectWasUpdated:self.project]; // yuk
     }
 }
 

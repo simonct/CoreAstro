@@ -292,6 +292,12 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     _exposures = [exposures mutableCopy];
 }
 
+- (void)removeExposureFromAllProjects:(NSArray *)exposures
+{
+    // todo; this probably won't scale well...
+    [_projects makeObjectsPerformSelector:@selector(removeExposures:) withObject:[NSSet setWithArray:exposures]];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
@@ -304,8 +310,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
                     if (![exposures isKindOfClass:[NSArray class]]){
                         exposures = @[exposures];
                     }
-                    // todo; this probably won't scale well...
-                    [_projects makeObjectsPerformSelector:@selector(removeExposures:) withObject:[NSSet setWithArray:exposures]];
+                    [self removeExposureFromAllProjects:exposures];
                 }
                     break;
                 default:
@@ -317,7 +322,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
     }
 }
 
-- (void)_addExposureAndPostNotification:(CASCCDExposure*)exposure toProject:(CASCCDExposureLibraryProject*)project
+- (void)addExposureAndPostNotification:(CASCCDExposure*)exposure toProject:(CASCCDExposureLibraryProject*)project
 {
     void (^add)() = ^(){
         [[self mutableArrayValueForKey:@"exposures"] addObject:exposure];
@@ -341,7 +346,7 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
 {
     void (^complete)() = ^(NSError* error,NSURL* url){
         if (!error){
-            [self _addExposureAndPostNotification:exposure toProject:project ? project : [CASCCDExposureLibrary sharedLibrary].currentProject];
+            [self addExposureAndPostNotification:exposure toProject:project ? project : [CASCCDExposureLibrary sharedLibrary].currentProject];
         }
         if (block){
             block(error,url);
@@ -389,6 +394,22 @@ NSString* kCASCCDExposureLibraryExposureAddedNotification = @"kCASCCDExposureLib
             complete(error,[NSURL fileURLWithPath:path]);
         }
     }
+}
+
+- (void)removeExposure:(CASCCDExposure*)exposure
+{
+    if (!exposure){
+        return;
+    }
+    
+    // delete the physical file
+    [exposure deleteExposure];
+
+    // remove from all projects
+    [self removeExposureFromAllProjects:@[exposure]];
+
+    // from from the main exposures array
+    [[self mutableArrayValueForKey:@"exposures"] removeObject:exposure];
 }
 
 - (CASCCDExposure*)exposureWithUUID:(NSString*)uuid
