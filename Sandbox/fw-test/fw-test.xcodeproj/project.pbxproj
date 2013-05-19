@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F4C70E8C17493D02003D35CA /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C70E8B17493D02003D35CA /* CASClassDefaults.m */; };
 		F4CAFA2416C6502E00BE783B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CAFA2316C6502E00BE783B /* Cocoa.framework */; };
 		F4CAFA2E16C6502E00BE783B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4CAFA2C16C6502E00BE783B /* InfoPlist.strings */; };
 		F4CAFA3016C6502E00BE783B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CAFA2F16C6502E00BE783B /* main.m */; };
@@ -81,6 +82,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F4C70E8A17493D02003D35CA /* CASClassDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASClassDefaults.h; path = ../../../CoreAstro/libCoreAstro/Core/CASClassDefaults.h; sourceTree = "<group>"; };
+		F4C70E8B17493D02003D35CA /* CASClassDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASClassDefaults.m; path = ../../../CoreAstro/libCoreAstro/Core/CASClassDefaults.m; sourceTree = "<group>"; };
 		F4CAFA2016C6502E00BE783B /* fw-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fw-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4CAFA2316C6502E00BE783B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4CAFA2616C6502E00BE783B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -375,6 +378,8 @@
 				F4CAFAEC16C6520400BE783B /* SXCCDIOCommand.m */,
 				F4CAFAED16C6520400BE783B /* SXCCDDeviceFactory.h */,
 				F4CAFAEE16C6520400BE783B /* SXCCDDeviceFactory.m */,
+				F4C70E8A17493D02003D35CA /* CASClassDefaults.h */,
+				F4C70E8B17493D02003D35CA /* CASClassDefaults.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -512,6 +517,7 @@
 				F4CAFAF116C6520400BE783B /* SXCCDProperties.m in Sources */,
 				F4CAFAF216C6520400BE783B /* SXCCDIOCommand.m in Sources */,
 				F4CAFAF316C6520400BE783B /* SXCCDDeviceFactory.m in Sources */,
+				F4C70E8C17493D02003D35CA /* CASClassDefaults.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -679,6 +685,7 @@
 				F4CAFA3F16C6502E00BE783B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
