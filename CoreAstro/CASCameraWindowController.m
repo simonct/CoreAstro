@@ -542,10 +542,10 @@
 
 - (void)updateExposureIndicator
 {
-    void (^commonShowProgressSetup)(NSString*) = ^(NSString* statusText){
+    void (^commonShowProgressSetup)(NSString*,BOOL) = ^(NSString* statusText,BOOL showIndicator){
         
         // todo; tidy this interface up
-        self.imageView.showProgress = YES;
+        self.imageView.showProgress = showIndicator;
         self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
         
         self.progressIndicator.hidden = NO;
@@ -563,17 +563,17 @@
             break;
             
         case CASCameraControllerStateWaitingForTemperature:{
-            commonShowProgressSetup(@"Waiting for °C...");
+            commonShowProgressSetup(@"Waiting for °C...",NO);
         }
             break;
             
         case CASCameraControllerStateWaitingForNextExposure:{
-            commonShowProgressSetup(@"Waiting...");
+            commonShowProgressSetup(@"Waiting...",NO);
         }
             break;
             
         case CASCameraControllerStateExposing:{
-            commonShowProgressSetup(nil);
+            commonShowProgressSetup(nil,YES);
             if (self.cameraController.progress >= 1){
                 self.progressIndicator.indeterminate = YES;
                 self.progressStatusText.stringValue = @"Downloading image...";
