@@ -34,5 +34,16 @@
     return kCASDeviceTypeFilterWheel;   
 }
 
+- (NSUInteger)filterCount {
+    return 0;
+}
+
+- (NSInteger)currentFilter {
+    return NSNotFound;
+}
+
+- (void)setCurrentFilter:(NSInteger)currentFilter {
+}
+
 @end
 

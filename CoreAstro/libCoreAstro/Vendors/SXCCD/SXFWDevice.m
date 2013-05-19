@@ -126,15 +126,17 @@
 @end
 
 @interface SXFWDevice ()
-@property (nonatomic,assign) NSInteger filterCount;
+@property (nonatomic,assign) NSUInteger filterCount;
 @end
 
 @implementation SXFWDevice {
     BOOL _connected;
+    NSUInteger _filterCount;
     NSInteger _currentFilter;
     NSMutableArray* _completionStack;
 }
 
+@synthesize filterCount = _filterCount;
 @synthesize currentFilter = _currentFilter;
 
 #pragma mark - Device
@@ -147,10 +149,6 @@
         _completionStack = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
-}
-
-- (CASDeviceType)type {
-    return kCASDeviceTypeFilterWheel;
 }
 
 - (NSString*)deviceName {
@@ -197,6 +195,10 @@
 
 #pragma mark - Properties
 
+- (NSInteger)currentFilter {
+    return _currentFilter;
+}
+
 - (void)setCurrentFilter:(NSInteger)currentFilter {
     if (_currentFilter != currentFilter){
         _currentFilter = currentFilter;
@@ -204,6 +206,10 @@
             NSLog(@"Setting filter index: %@",error);
         }];
     }
+}
+
+- (NSUInteger)filterCount {
+    return _FILESEC_REMOVE_ACL;
 }
 
 #pragma mark - Commands

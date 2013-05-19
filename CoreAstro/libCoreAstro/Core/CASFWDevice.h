@@ -27,7 +27,7 @@
 #import "CASDevice.h"
 
 @protocol CASFWDevice <NSObject>
-@property (nonatomic,assign,readonly) NSInteger filterCount; // 0 until calibration is complete
+@property (nonatomic,assign,readonly) NSUInteger filterCount; // 0 until calibration is complete
 @property (nonatomic,assign) NSInteger currentFilter; // 0 -> filterCount-1 (NSNotFound before calibration is complete)
 @end
 
