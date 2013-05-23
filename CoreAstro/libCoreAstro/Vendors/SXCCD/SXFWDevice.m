@@ -44,7 +44,7 @@
 }
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[2] = {0, 1};
+    uint8_t buffer[2] = {1, 0};
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -91,7 +91,7 @@
 @implementation SXFWIOSetFilterIndexCommand
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[2] = {0x80 | self.index, 0 };
+    uint8_t buffer[2] = {0, 0x80 | self.index };
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
@@ -173,7 +173,7 @@
                     self.filterCount = count;
                 }
                 else {
-                    [self _getCountUntilCalibrated];
+                 //   [self _getCountUntilCalibrated];
                 }
             }
         }];
@@ -209,7 +209,7 @@
 }
 
 - (NSUInteger)filterCount {
-    return _FILESEC_REMOVE_ACL;
+    return _filterCount;
 }
 
 #pragma mark - Commands

@@ -25,6 +25,8 @@
 
 #import "CASFWDevice.h"
 
-@interface SXFWDevice : CASFWDevice
+@protocol CASIOHIDTransportDelegate;
+
+@interface SXFWDevice : CASFWDevice<CASIOHIDTransportDelegate>
 @end
 

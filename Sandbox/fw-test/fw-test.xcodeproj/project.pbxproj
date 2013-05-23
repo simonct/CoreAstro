@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F4342D42174E345C00922FA7 /* SXDevices.plist in Resources */ = {isa = PBXBuildFile; fileRef = F4342D41174E345C00922FA7 /* SXDevices.plist */; };
 		F45185551749412500C69387 /* CASFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F45185541749412500C69387 /* CASFWDevice.m */; };
 		F4C70E8C17493D02003D35CA /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C70E8B17493D02003D35CA /* CASClassDefaults.m */; };
 		F4CAFA2416C6502E00BE783B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4CAFA2316C6502E00BE783B /* Cocoa.framework */; };
@@ -83,6 +84,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F4342D41174E345C00922FA7 /* SXDevices.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SXDevices.plist; sourceTree = SOURCE_ROOT; };
 		F45185531749412500C69387 /* CASFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASFWDevice.h; path = ../../../CoreAstro/libCoreAstro/Core/CASFWDevice.h; sourceTree = "<group>"; };
 		F45185541749412500C69387 /* CASFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASFWDevice.m; path = ../../../CoreAstro/libCoreAstro/Core/CASFWDevice.m; sourceTree = "<group>"; };
 		F4C70E8A17493D02003D35CA /* CASClassDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASClassDefaults.h; path = ../../../CoreAstro/libCoreAstro/Core/CASClassDefaults.h; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				F4CAFA3516C6502E00BE783B /* CASAppDelegate.h */,
 				F4CAFA3616C6502E00BE783B /* CASAppDelegate.m */,
 				F4CAFA3816C6502E00BE783B /* MainMenu.xib */,
+				F4342D41174E345C00922FA7 /* SXDevices.plist */,
 				F4CAFA9716C651D700BE783B /* Core */,
 				F4CAFA5416C650A200BE783B /* HID_Utilities */,
 				F4CAFA2A16C6502E00BE783B /* Supporting Files */,
@@ -473,6 +476,7 @@
 				F4CAFA7216C650A200BE783B /* HID_usage_strings.plist in Resources */,
 				F4CAFA7316C650A200BE783B /* InfoPlist.strings in Resources */,
 				F4CAFA7916C650A200BE783B /* Info.plist in Resources */,
+				F4342D42174E345C00922FA7 /* SXDevices.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
