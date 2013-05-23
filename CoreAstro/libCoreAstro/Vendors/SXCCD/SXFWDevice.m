@@ -36,25 +36,13 @@
 @end
 
 @interface SXFWIOGetFilterCountCommand : SXFWIOCommand
-@property (nonatomic,assign,readonly) uint8_t count;
 @end
 
-@implementation SXFWIOGetFilterCountCommand {
-    uint8_t _count;
-}
+@implementation SXFWIOGetFilterCountCommand
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[2] = {1, 0};
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
-}
-
-- (NSError*)fromDataRepresentation:(NSData*)data {
-    uint8_t buffer[2];
-    if ([data length] == sizeof(buffer)){
-        [data getBytes:buffer length:sizeof(buffer)];
-        _count = buffer[0];
-    }
-    return nil;
 }
 
 @end
@@ -63,23 +51,11 @@
 @property (nonatomic,assign,readonly) uint8_t index, count;
 @end
 
-@implementation SXFWIOGetFilterIndexCommand {
-    uint8_t _index, _count;
-}
+@implementation SXFWIOGetFilterIndexCommand
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[2] = {0, 0};
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
-}
-
-- (NSError*)fromDataRepresentation:(NSData*)data {
-    uint8_t buffer[2];
-    if ([data length] == sizeof(buffer)){
-        [data getBytes:buffer length:sizeof(buffer)];
-        _index = buffer[0];
-        _count = buffer[1];
-    }
-    return nil;
 }
 
 @end
@@ -91,17 +67,10 @@
 @implementation SXFWIOSetFilterIndexCommand
 
 - (NSData*)toDataRepresentation {
-    uint8_t buffer[2] = {0, 0x80 | self.index };
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
-}
-
-- (NSError*)fromDataRepresentation:(NSData*)data {
-    uint8_t buffer[2];
-    if ([data length] == sizeof(buffer)){
-        [data getBytes:buffer length:sizeof(buffer)];
-        _index = buffer[0];
-    }
-    return nil;
+    uint8_t buffer[2] = { 0x80 | self.index + 1 , 0 }; // our index is 0-based but the filter wheel is 1-based
+    NSData* msg = [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    NSLog(@"SXFWIOSetFilterIndexCommand: %@",msg);
+    return msg;
 }
 
 @end
@@ -119,8 +88,8 @@
 @implementation SXFWDeviceCountFilterCallback
 - (void)invokeWithResult:(uint16_t)result error:(NSError*)error {
     if (self.block){
-        void (^callback)(NSError*,NSInteger) = self.block;
-        callback(error,result >> 8);
+        void (^callback)(NSError*,NSInteger,NSInteger) = self.block;
+        callback(error,result >> 8,result & 0x00ff);
     }
 }
 @end
@@ -152,7 +121,7 @@
 }
 
 - (NSString*)deviceName {
-    return @"Filter Wheel";
+    return @"SX USB filter wheel";
 }
 
 - (NSString*)vendorName {
@@ -163,7 +132,7 @@
     
     if (!self.filterCount){
         
-        [self getFilterCount:^(NSError* error, NSInteger count) {
+        [self getFilterCount:^(NSError* error, NSInteger count, NSInteger index) {
             
             if (error){
                 _connected = NO;
@@ -171,9 +140,17 @@
             else{
                 if (count){
                     self.filterCount = count;
+                    [self willChangeValueForKey:@"currentFilter"];
+                    if (index > 0){
+                        _currentFilter = index - 1;
+                    }
+                    else {
+                        _currentFilter = NSNotFound;
+                    }
+                    [self didChangeValueForKey:@"currentFilter"];
                 }
                 else {
-                 //   [self _getCountUntilCalibrated];
+                    [self _getCountUntilCalibrated];
                 }
             }
         }];
@@ -203,7 +180,9 @@
     if (_currentFilter != currentFilter){
         _currentFilter = currentFilter;
         [self setFilterIndex:_currentFilter block:^(NSError* error) {
-            NSLog(@"Setting filter index: %@",error);
+            if (error){
+                NSLog(@"Setting filter index: error=%@",error);
+            }
         }];
     }
 }
@@ -214,7 +193,7 @@
 
 #pragma mark - Commands
 
-- (void)getFilterCount:(void (^)(NSError*,NSInteger count))block {
+- (void)getFilterCount:(void (^)(NSError*,NSInteger count,NSInteger index))block {
     
     SXFWIOGetFilterCountCommand* getCount = [[SXFWIOGetFilterCountCommand alloc] init];
     
@@ -225,7 +204,7 @@
     [self.transport submit:getCount block:^(NSError* error){
         
         if (error){
-            block(error,0);
+            block(error,0,0);
             [_completionStack removeObject:callback];
         }
     }];
@@ -245,6 +224,8 @@
 
 - (void)setFilterIndex:(NSInteger)index block:(void (^)(NSError*))block {
     
+    NSLog(@"setFilterIndex: %ld",(long)index);
+    
     SXFWIOSetFilterIndexCommand* setIndex = [[SXFWIOSetFilterIndexCommand alloc] init];
 
     setIndex.index = index;
@@ -261,7 +242,7 @@
 
 - (void)receivedInputReport:(NSData*)data {
     
-    NSLog(@"receivedInputReport: %@",data);
+    NSLog(@"-[SXFWDevice receivedInputReport]: %@",data);
     
     uint16_t result;
     if ([data length] == sizeof(result)){
