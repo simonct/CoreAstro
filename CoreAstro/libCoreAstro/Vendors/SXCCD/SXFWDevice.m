@@ -120,6 +120,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+}
+
 - (NSString*)deviceName {
     return @"SX USB filter wheel";
 }
@@ -128,33 +133,56 @@
     return @"Starlight Xpress";
 }
 
+- (void)_updateCurrentFilterIndex:(NSInteger)index {
+    
+    [self willChangeValueForKey:@"currentFilter"];
+    if (index > 0){
+        _currentFilter = index - 1;
+    }
+    else {
+        _currentFilter = NSNotFound;
+    }
+    [self didChangeValueForKey:@"currentFilter"];
+}
+
+- (void)_pollCurrentFilter {
+    
+    [self getFilterIndex:^(NSError *error, NSInteger count, NSInteger index) {
+        
+        if (error){
+            _connected = NO;
+        }
+        else {
+            
+            [self _updateCurrentFilterIndex:index];
+            
+            [self performSelector:_cmd withObject:nil afterDelay:1];
+        }
+    }];
+}
+
 - (void)_getCountUntilCalibrated {
     
-    if (!self.filterCount){
+    [self getFilterCount:^(NSError* error, NSInteger count, NSInteger index) {
         
-        [self getFilterCount:^(NSError* error, NSInteger count, NSInteger index) {
+        if (error){
+            _connected = NO;
+        }
+        else{
             
-            if (error){
-                _connected = NO;
+            if (count){
+                
+                self.filterCount = count;
+                
+                [self _updateCurrentFilterIndex:index];
+                
+                [self _pollCurrentFilter];
             }
             else{
-                if (count){
-                    self.filterCount = count;
-                    [self willChangeValueForKey:@"currentFilter"];
-                    if (index > 0){
-                        _currentFilter = index - 1;
-                    }
-                    else {
-                        _currentFilter = NSNotFound;
-                    }
-                    [self didChangeValueForKey:@"currentFilter"];
-                }
-                else {
-                    [self _getCountUntilCalibrated];
-                }
+                [self performSelector:_cmd withObject:nil afterDelay:0.5];
             }
-        }];
-    }
+        }
+    }];
 }
 
 - (void)connect:(void (^)(NSError*))block {
@@ -168,6 +196,11 @@
         _connected = YES;
         [self _getCountUntilCalibrated];
     }
+}
+
+- (void)disconnect {
+    [super disconnect];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 
 #pragma mark - Properties
@@ -205,19 +238,22 @@
         
         if (error){
             block(error,0,0);
-            [_completionStack removeObject:callback];
         }
     }];
 }
 
-- (void)getFilterIndex:(void (^)(NSError*,NSInteger index,NSInteger count))block {
+- (void)getFilterIndex:(void (^)(NSError*,NSInteger count,NSInteger index))block {
     
     SXFWIOGetFilterIndexCommand* getIndex = [[SXFWIOGetFilterIndexCommand alloc] init];
     
+    SXFWDeviceCountFilterCallback* callback = [[SXFWDeviceCountFilterCallback alloc] init];
+    callback.block = block;
+    [_completionStack addObject:callback];
+
     [self.transport submit:getIndex block:^(NSError* error){
         
-        if (block){
-            block(error,getIndex.index,getIndex.count);
+        if (error){
+            block(error,0,0);
         }
     }];
 }
@@ -247,10 +283,10 @@
     uint16_t result;
     if ([data length] == sizeof(result)){
         [data getBytes:&result length:sizeof(result)];
-        SXFWDeviceCallback* callback = [_completionStack lastObject];
+        SXFWDeviceCallback* callback = [_completionStack count] ?  [_completionStack objectAtIndex:0] : nil;
         if (callback){
             [callback invokeWithResult:result error:nil];
-            [_completionStack removeLastObject];
+            [_completionStack removeObject:callback];
         }
     }
     else {

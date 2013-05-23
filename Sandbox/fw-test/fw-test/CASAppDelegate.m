@@ -71,7 +71,7 @@
 - (IBAction)setCurrentFilter:(NSMatrix*)sender
 {
     [self.fw setCurrentFilter:sender.selectedColumn];
-//    self.filterSelectionMatrix.enabled = NO;
+    self.filterSelectionMatrix.enabled = NO;
 }
 
 @end
