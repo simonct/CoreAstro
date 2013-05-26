@@ -29,7 +29,9 @@
 #import "CASPluginManager.h"
 #import "CASGuiderController.h"
 #import "CASCameraController.h"
+#import "CASFilterWheelController.h"
 #import "CASCCDDevice.h"
+#import "CASFWDevice.h"
 
 @interface CASDeviceManager ()
 @property (nonatomic,strong) CASPluginManager* pluginManager;
@@ -39,12 +41,14 @@
     NSMutableArray* _devices;
     NSMutableArray* _cameraControllers;
     NSMutableArray* _guiderControllers;
+    NSMutableArray* _filterWheelControllers;
 }
 
 @synthesize pluginManager;
 @synthesize devices = _devices;
 @synthesize cameraControllers = _cameraControllers;
 @synthesize guiderControllers = _guiderControllers;
+@synthesize filterWheelControllers = _filterWheelControllers;
 
 + (CASDeviceManager*)sharedManager {
     static CASDeviceManager* manager = nil;
@@ -62,6 +66,7 @@
         self.pluginManager = [[CASPluginManager alloc] init];
         _cameraControllers = [NSMutableArray arrayWithCapacity:10];
         _guiderControllers = [NSMutableArray arrayWithCapacity:10];
+        _filterWheelControllers = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
 }
@@ -76,6 +81,10 @@
 
 - (NSArray*) guiderControllers {
     return [_guiderControllers copy]; // ensure we return an immutable copy to clients
+}
+
+- (NSArray*) filterWheelControllers {
+    return [_filterWheelControllers copy]; // ensure we return an immutable copy to clients
 }
 
 - (id)deviceWithPath:(NSString*)path {
@@ -120,7 +129,7 @@
                             
                             device.transport = [browser createTransportWithDevice:device];
                             if (!device.transport){
-                                NSLog(@"No transport for %@",device);
+                                NSLog(@"No transport for %@, another client has grabbed it or the transport is inappropriate e.g. HID device with bulk USB transport",device);
                             }
                             else {
                                 NSLog(@"Added device %@",device);
@@ -159,6 +168,16 @@
     return nil;
 }
 
+- (CASFilterWheelController*)filterWheelControllerForDevice:(CASDevice*)device
+{
+    for (CASFilterWheelController* filterWheelController in self.filterWheelControllers){
+        if (filterWheelController.filterWheel == device){
+            return filterWheelController;
+        }
+    }
+    return nil;
+}
+
 - (NSMutableArray*)mutableCameraControllers
 {
     return [self mutableArrayValueForKey:@"cameraControllers"];
@@ -167,6 +186,11 @@
 - (NSMutableArray*)mutableGuiderControllers
 {
     return [self mutableArrayValueForKey:@"guiderControllers"];
+}
+
+- (NSMutableArray*)mutableFilterWheelControllers
+{
+    return [self mutableArrayValueForKey:@"filterWheelControllers"];
 }
 
 - (void)recogniseGuider:(CASDevice*)device
@@ -182,13 +206,13 @@
 - (void)recogniseCamera:(CASDevice*)device
 {
     CASCCDDevice* ccd = (CASCCDDevice*)device;
-    if ([ccd isKindOfClass:[CASCCDDevice class]]){ // todo; need a CASCCDDevice protocol and check for that instead of a class
+    if (ccd.type == kCASDeviceTypeCamera){
         
-        // todo; defer this until the device is actually clicked on in the master selection view
+        // todo; defer this until the device is actually clicked on in the master selection view ?
         [ccd connect:^(NSError* error) {
             
             if (error){
-                [NSApp presentError:error]; // todo: specific error message
+                NSLog(@"Error connecting to camera: %@",error);
             }
             else {
                 
@@ -202,6 +226,31 @@
             
             // re-check to see if it's now capable of being a guider
             [self recogniseGuider:device];
+            
+            // re-check to see if it's now capable of being a filter wheel
+            [self recogniseFilterWheel:device];
+        }];
+    }
+}
+
+- (void)recogniseFilterWheel:(CASDevice*)device
+{
+    CASFWDevice* fw = (CASFWDevice*)device;
+    if (fw.type == kCASDeviceTypeFilterWheel){
+        
+        // todo; defer this until the device is actually clicked on in the master selection view ?
+        [fw connect:^(NSError* error) {
+           
+            if (error){
+                NSLog(@"Error connecting to filter wheel: %@",error);
+            }
+            else {
+                
+                CASFilterWheelController* filterWheelController = [[CASFilterWheelController alloc] initWithFilterWheel:fw];
+                if (filterWheelController){
+                    [self.mutableFilterWheelControllers addObject:filterWheelController];
+                }
+            }
         }];
     }
 }
@@ -212,6 +261,7 @@
     for (CASDevice* device in devices){
         [self recogniseCamera:device];
         [self recogniseGuider:device];
+        [self recogniseFilterWheel:device];
     }
 }
 

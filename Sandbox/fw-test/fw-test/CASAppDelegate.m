@@ -51,13 +51,15 @@
 {
     if (context == (__bridge void *)(self)) {
         
+        NSLog(@"keyPath %@ -> %@",keyPath,[object valueForKeyPath:keyPath]);
+        
         if ([@"filterCount" isEqualToString:keyPath]){
-            while (self.filterSelectionMatrix.numberOfColumns < self.fw.filterCount) {
+            while (self.filterSelectionMatrix.numberOfColumns > self.fw.filterCount) {
                 [self.filterSelectionMatrix removeColumn:[self.filterSelectionMatrix numberOfColumns]-1];
             }
         }
-        else {
-            [self.filterSelectionMatrix selectCellAtRow:self.fw.currentFilter column:0];
+        else if ([@"currentFilter" isEqualToString:keyPath]) {
+            [self.filterSelectionMatrix selectCellAtRow:0 column:self.fw.currentFilter];
         }
         self.filterSelectionMatrix.enabled = YES;
         
