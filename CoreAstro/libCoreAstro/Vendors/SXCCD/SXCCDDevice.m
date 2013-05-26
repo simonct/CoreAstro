@@ -233,18 +233,24 @@
     cooler.on = self.temperature > self.targetTemperature;
     cooler.centigrade = self.targetTemperature;
     
+    __weak SXCCDDevice* weakDevice = self;
+    
     [self.transport submit:cooler block:^(NSError* error) {
         
         if (self.connected){
         
-            if (!error){
+            SXCCDDevice* strongDevice = weakDevice;
+            if (strongDevice){
                 
-                self.temperature = cooler.centigrade;
+                if (!error){
+                    
+                    strongDevice.temperature = cooler.centigrade;
+                    
+                    [strongDevice.exposureTemperatures addObject:[NSNumber numberWithFloat:strongDevice.temperature]];
+                }
                 
-                [self.exposureTemperatures addObject:[NSNumber numberWithFloat:self.temperature]];
+                [strongDevice performSelector:_cmd withObject:nil afterDelay:strongDevice.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
             }
-            
-            [self performSelector:_cmd withObject:nil afterDelay:self.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
         }
     }];
 }
