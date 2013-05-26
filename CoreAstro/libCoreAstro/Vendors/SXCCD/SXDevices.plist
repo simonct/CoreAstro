@@ -137,5 +137,12 @@
 		<key>has-cooler</key>
 		<true/>
 	</dict>
+	<key>2336</key>
+	<dict>
+		<key>name</key>
+		<string>Filter Wheel</string>
+		<key>type</key>
+		<integer>1</integer>
+	</dict>
 </dict>
 </plist>

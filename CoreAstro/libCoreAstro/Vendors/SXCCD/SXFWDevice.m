@@ -96,6 +96,7 @@
 
 @interface SXFWDevice ()
 @property (nonatomic,assign) NSUInteger filterCount;
+@property (nonatomic,copy) void (^completionBlock)(NSError*);
 @end
 
 @implementation SXFWDevice {
@@ -147,6 +148,10 @@
 
 - (void)_pollCurrentFilter {
     
+    if (!_connected){
+        return;
+    }
+
     [self getFilterIndex:^(NSError *error, NSInteger count, NSInteger index) {
         
         if (error){
@@ -156,17 +161,26 @@
             
             [self _updateCurrentFilterIndex:index];
             
-            [self performSelector:_cmd withObject:nil afterDelay:1];
+            [self performSelector:_cmd withObject:nil afterDelay:1]; // only while index == 0 ?
         }
     }];
 }
 
 - (void)_getCountUntilCalibrated {
     
+    if (!_connected){
+        return;
+    }
+    
+    // need to gix up after a certain amount of time - 10s ?
+    
     [self getFilterCount:^(NSError* error, NSInteger count, NSInteger index) {
         
         if (error){
             _connected = NO;
+            if (self.completionBlock){
+                self.completionBlock(error);
+            }
         }
         else{
             
@@ -177,6 +191,10 @@
                 [self _updateCurrentFilterIndex:index];
                 
                 [self _pollCurrentFilter];
+                
+                if (self.completionBlock){
+                    self.completionBlock(nil);
+                }
             }
             else{
                 [self performSelector:_cmd withObject:nil afterDelay:0.5];
@@ -193,6 +211,7 @@
         }
     }
     else {
+        self.completionBlock = block;
         _connected = YES;
         [self _getCountUntilCalibrated];
     }

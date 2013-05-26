@@ -21,6 +21,10 @@
                 <cocoa key="guiderControllers"/>
             </element>
 
+            <element type="filter wheel" access="r">
+                <cocoa key="filterWheelControllers"/>
+            </element>
+
             <element type="exposure" access="r">
                 <cocoa key="exposures"/>
             </element>
@@ -91,7 +95,33 @@
             
         </class>
 
-        <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item"> 
+        <class name="filter wheel" plural="filter wheels" code="CASF" description="A filter wheel object." inherits="item">
+            
+            <cocoa class="CASFilterWheelController"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the filter wheel">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="name" code="Name" type="text" access="r" description="The name of the filter wheel">
+                <cocoa key="scriptingDeviceName"/>
+            </property>
+            
+            <property name="vendor" code="Vend" type="text" access="r" description="The vendor of the filter wheel">
+                <cocoa key="scriptingVendorName"/>
+            </property>
+            
+            <property name="filter count" code="Filc" type="number" access="r" description="The number of filter slots in the filter wheel">
+                <cocoa key="scriptingFilterCount"/>
+            </property>
+            
+            <property name="current filter" code="Curf" type="number" description="The index of the curretly selected filter">
+                <cocoa key="scriptingCurrentFilter"/>
+            </property>
+
+        </class>
+
+        <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item">
             
             <cocoa class="CASCCDExposure"/> 
             

@@ -1,8 +1,8 @@
 //
-//  NSApplication+CASScripting.m
+//  CASFilterWheelController.h
 //  CoreAstro
 //
-//  Copyright (c) 2012, Simon Taylor
+//  Copyright (c) 2013, Simon Taylor
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to deal 
@@ -23,29 +23,16 @@
 //  IN THE SOFTWARE.
 //
 
-#import "NSApplication+CASScripting.h"
-#import <CoreAstro/CoreAstro.h>
+#import "CASScriptableObject.h"
+#import "CASFWDevice.h"
 
-@implementation NSApplication (CASScripting)
+@interface CASFilterWheelController : CASScriptableObject<CASFWDevice>
 
-- (NSArray*)cameraControllers
-{
-    return [CASDeviceManager sharedManager].cameraControllers;
-}
+@property (nonatomic,strong,readonly) CASDevice<CASFWDevice>* filterWheel;
 
-- (NSArray*)guiderControllers
-{
-    return [CASDeviceManager sharedManager].guiderControllers;
-}
+- (id)initWithFilterWheel:(CASDevice<CASFWDevice>*)guider;
 
-- (NSArray*)filterWheelControllers
-{
-    return [CASDeviceManager sharedManager].filterWheelControllers;
-}
-
-- (NSArray*)exposures // todo: move this to the camera controller ?
-{
-    return [[CASCCDExposureLibrary sharedLibrary] exposures];
-}
+- (void)connect:(void(^)(NSError*))block;
+- (void)disconnect;
 
 @end

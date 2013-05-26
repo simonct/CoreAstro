@@ -119,7 +119,7 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
 }
 
 - (NSArray*)browserClasses {
-    return [NSArray arrayWithObject:@"CASUSBDeviceBrowser"]; // todo: get these from loadable bundles in future from the frameworks Plugins directory and NSSearchDirectories
+    return @[@"CASUSBDeviceBrowser",@"CASHIDDeviceBrowser"]; // todo: get these from loadable bundles in future from the frameworks Plugins directory and NSSearchDirectories
 }
 
 - (NSArray*)factoryClasses {

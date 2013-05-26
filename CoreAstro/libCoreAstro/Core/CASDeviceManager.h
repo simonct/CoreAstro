@@ -31,10 +31,11 @@
 
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property (nonatomic,readonly) NSArray* guiderControllers;
+@property (nonatomic,readonly) NSArray* filterWheelControllers;
 
 // todo...
 //@property (nonatomic,readonly,strong) NSMutableArray* mountControllers;
-//@property (nonatomic,readonly,strong) NSMutableArray* filterWheelControllers;
+//@property (nonatomic,readonly,strong) NSMutableArray* cameraRotatorControllers;
 // etc
 
 + (CASDeviceManager*)sharedManager;
