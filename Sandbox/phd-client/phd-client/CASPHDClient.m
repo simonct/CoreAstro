@@ -33,190 +33,156 @@ enum {
 	MSG_CLEARCAL            //22
 };
 
-@interface CASPHDClientRequest : NSObject
-@property (nonatomic,strong) NSData* data;
-@property (nonatomic,copy) void (^completion)(NSData*);
+@interface CASPHDClient ()
+@property (nonatomic,strong) CASSocketClient* client;
 @end
 
-@implementation CASPHDClientRequest
-@end
-
-@interface CASPHDClient ()<NSStreamDelegate>
-@property (nonatomic,assign) NSInteger openCount;
-@property (nonatomic,strong) NSInputStream* inputStream;
-@property (nonatomic,strong) NSOutputStream* outputStream;
-@end
-
-@implementation CASPHDClient {
-    NSMutableArray* _queue;
-}
+@implementation CASPHDClient 
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        
-        const NSInteger port = 4300;
-        NSHost* host = [NSHost hostWithName:@"localhost"];
-        
-        NSInputStream* is;
-        NSOutputStream* os;
-        [NSStream getStreamsToHost:host port:port inputStream:&is outputStream:&os];
-        
-        if (!is || !os){
-            NSLog(@"Can't open connection to %@",host.name);
-            self = nil;
-        }
-        else {
-            
-            self.inputStream = is;
-            self.outputStream = os;
-            
-            [self.inputStream setDelegate:self];
-            [self.outputStream setDelegate:self];
-            
-            [self.inputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-            [self.outputStream scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-            
-            [self.inputStream open];
-            [self.outputStream open];
-        }
+        self.client = [[CASSocketClient alloc] init];
+        self.client.host = [NSHost hostWithAddress:@"127.0.0.1"];
+        self.client.port = 4300;
+        [self.client connect];
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [self cleanup];
-}
-
-- (void)cleanup
-{
-    [self.inputStream close];
-    [self.inputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    self.inputStream = nil;
-    
-    [self.outputStream close];
-    [self.outputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    self.outputStream = nil;
-    
-    self.openCount = 0;
-    
-    // call completion blocks ?
-}
-
-- (BOOL)connected
-{
-    return (self.openCount == 2);
-}
-
-+ (NSSet*)keyPathsForValuesAffectingConnected
-{
-    return [NSSet setWithObject:@"openCount"];
-}
-
-- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
-{
-    NSLog(@"stream: %@ handleEvent: %ld",aStream,eventCode);
-    
-    NSString* name;
-    switch (eventCode) {
-        case NSStreamEventNone:
-            name = @"NSStreamEventNone";
-            break;
-        case NSStreamEventOpenCompleted:
-            name = @"NSStreamEventOpenCompleted";
-            self.openCount++;
-            break;
-        case NSStreamEventHasBytesAvailable:
-            name = @"NSStreamEventHasBytesAvailable";
-            [self read];
-            break;
-        case NSStreamEventHasSpaceAvailable:
-            name = @"NSStreamEventHasSpaceAvailable";
-            [self process];
-            break;
-        case NSStreamEventErrorOccurred:
-            name = [NSString stringWithFormat:@"NSStreamEventErrorOccurred: %@",[aStream streamError]];
-            [self cleanup];
-            break;
-        case NSStreamEventEndEncountered:
-            name = @"NSStreamEventEndEncountered";
-            [self cleanup];
-            break;
-        default:
-            name = [NSString stringWithFormat:@"%ld",eventCode];
-            break;
-    }
-    NSLog(@"%@: %@",aStream,name);
-}
-
-- (void)enqueue:(NSData*)data completion:(void (^)(NSData*))completion
-{
-    CASPHDClientRequest* request = [[CASPHDClientRequest alloc] init];
-    
-    request.data = data;
-    request.completion = completion;
-    
-    if (!_queue){
-        _queue = [[NSMutableArray alloc] initWithCapacity:5];
-    }
-    [_queue addObject:request];
-    
-    [self process];
-}
-
-- (void)process
-{
-    if ([_queue count]){
-        
-        if ([self.outputStream hasSpaceAvailable]){
-            
-            CASPHDClientRequest* request = [_queue lastObject];
-            const NSInteger count = [self.outputStream write:[request.data bytes] maxLength:[request.data length]];
-            if (count < 0){
-                NSLog(@"Failed to write the whole packet");
-            }
-            else {
-                NSLog(@"wrote %ld bytes",count);
-            }
-        }
-    }
-}
-
-- (void)read
-{
-    CASPHDClientRequest* request = [_queue lastObject];
-    NSMutableData* data = [NSMutableData dataWithCapacity:1024];
-    while ([self.inputStream hasBytesAvailable]){
-        uint8_t byte[1024];
-        const NSInteger count = [self.inputStream read:byte maxLength:sizeof(byte)];
-        if (count > 0){
-            [data appendBytes:byte length:count];
-        }
-    }
-    
-    NSLog(@"read %ld bytes",[data length]);
-
-    if (request.completion){
-        request.completion(data);
-    }
-    [_queue removeLastObject];
-}
-
 - (void)enqueueCommand:(uint8_t)cmd completion:(void (^)(NSData*))completion
 {
-    [self enqueue:[NSData dataWithBytes:&cmd length:sizeof(cmd)] completion:completion];
+    [self.client enqueue:[NSData dataWithBytes:&cmd length:sizeof(cmd)] readCount:1 completion:completion];
 }
 
 - (void)pause
 {
-    [self enqueueCommand:MSG_PAUSE completion:nil];
+    [self enqueueCommand:MSG_PAUSE completion:^(NSData* response){
+        NSLog(@"pause: %@",response);
+    }];
 }
 
 - (void)resume
 {
-    [self enqueueCommand:MSG_RESUME completion:nil];
+    [self enqueueCommand:MSG_RESUME completion:^(NSData* response){
+        NSLog(@"resume: %@",response);
+    }];
+}
+
+- (void)move1
+{
+    [self enqueueCommand:MSG_MOVE1 completion:^(NSData* response){
+        NSLog(@"move1: %@",response);
+    }];
+}
+
+- (void)move2
+{
+    [self enqueueCommand:MSG_MOVE2 completion:^(NSData* response){
+        NSLog(@"move2: %@",response);
+    }];
+}
+
+- (void)move3
+{
+    [self enqueueCommand:MSG_MOVE3 completion:^(NSData* response){
+        NSLog(@"move3: %@",response);
+    }];
+}
+
+- (void)move4
+{
+    [self enqueueCommand:MSG_MOVE4 completion:^(NSData* response){
+        NSLog(@"move4: %@",response);
+    }];
+}
+
+
+- (void)move5
+{
+    [self enqueueCommand:MSG_MOVE5 completion:^(NSData* response){
+        NSLog(@"move5: %@",response);
+    }];
+}
+
+- (void)requestDistance
+{
+    [self enqueueCommand:MSG_REQDIST completion:^(NSData* response){
+        NSLog(@"requestDistance: %@",response);
+    }];
+}
+
+- (void)autoFindStar
+{
+    [self enqueueCommand:MSG_AUTOFINDSTAR completion:^(NSData* response){
+        NSLog(@"autoFindStar: %@",response);
+    }];
+}
+
+- (void)setLockPositionToX:(int16_t)x y:(int16_t)y
+{
+    NSMutableData* cmdData = [NSMutableData dataWithCapacity:1 + 2*sizeof(int16_t)];
+    
+    const uint8_t cmd = MSG_SETLOCKPOSITION;
+    [cmdData appendBytes:&cmd length:sizeof(cmd)];
+    
+    // assuming endianess is the same as this process (phd doesn't define a netwoek byte order)
+    [cmdData appendBytes:&x length:sizeof(x)];
+    [cmdData appendBytes:&y length:sizeof(y)];
+
+    [self.client enqueue:cmdData readCount:1 completion:^(NSData* response){
+        NSLog(@"setLockPositionToX:y: %@",response);
+    }];
+}
+
+- (void)flipRACalibration
+{
+    [self enqueueCommand:MSG_FLIPRACAL completion:^(NSData* response){
+        NSLog(@"flipRACalibration: %@",response);
+    }];
+}
+
+- (void)getStatus
+{
+    [self enqueueCommand:MSG_GETSTATUS completion:^(NSData* response){
+        NSLog(@"getStatus: %@",response);
+    }];
+}
+
+- (void)stop
+{
+    [self enqueueCommand:MSG_STOP completion:^(NSData* response){
+        NSLog(@"stop: %@",response);
+    }];
+}
+
+- (void)loop
+{
+    [self enqueueCommand:MSG_LOOP completion:^(NSData* response){
+        NSLog(@"loop: %@",response);
+    }];
+}
+
+- (void)startGuiding
+{
+    [self enqueueCommand:MSG_STARTGUIDING completion:^(NSData* response){
+        NSLog(@"startGuiding: %@",response);
+    }];
+}
+
+- (void)loopFrameCount
+{
+    [self enqueueCommand:MSG_LOOPFRAMECOUNT completion:^(NSData* response){
+        NSLog(@"loopFrameCount: %@",response);
+    }];    
+}
+
+- (void)clearCalibration
+{
+    [self enqueueCommand:MSG_CLEARCAL completion:^(NSData* response){
+        NSLog(@"clearCalibration: %@",response);
+    }];
 }
 
 @end
