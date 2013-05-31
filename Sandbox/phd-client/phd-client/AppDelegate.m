@@ -11,6 +11,7 @@
 
 @interface AppDelegate ()
 @property (nonatomic,strong) CASPHDClient* client;
+@property (assign) NSInteger x, y;
 @end
 
 @implementation AppDelegate
@@ -18,6 +19,14 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     self.client = [CASPHDClient new];
+}
+
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([@[@"x",@"y"] containsObject:key]){
+        return;
+    }
+    [super setNilValueForKey:key];
 }
 
 - (IBAction)pause:(id)sender {
@@ -29,23 +38,23 @@
 }
 
 - (IBAction)move1:(id)sender {
-    [self.client move1];
+    [self.client move:1];
 }
 
 - (IBAction)move2:(id)sender {
-    [self.client move2];
+    [self.client move:2];
 }
 
 - (IBAction)move3:(id)sender {
-    [self.client move3];
+    [self.client move:3];
 }
 
 - (IBAction)move4:(id)sender {
-    [self.client move4];
+    [self.client move:4];
 }
 
 - (IBAction)move5:(id)sender {
-    [self.client move5];
+    [self.client move:5];
 }
 
 - (IBAction)requestDistance:(id)sender {
@@ -57,7 +66,7 @@
 }
 
 - (IBAction)setLockPosition:(id)sender {
-//    [self.client setLockPosition];
+    [self.client setLockPositionToX:self.x y:self.y];
 }
 
 - (IBAction)filpRACalibration:(id)sender {

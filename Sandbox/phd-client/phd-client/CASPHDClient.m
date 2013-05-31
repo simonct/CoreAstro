@@ -70,39 +70,31 @@ enum {
     }];
 }
 
-- (void)move1
+- (void)move:(NSInteger)amount
 {
-    [self enqueueCommand:MSG_MOVE1 completion:^(NSData* response){
-        NSLog(@"move1: %@",response);
-    }];
-}
-
-- (void)move2
-{
-    [self enqueueCommand:MSG_MOVE2 completion:^(NSData* response){
-        NSLog(@"move2: %@",response);
-    }];
-}
-
-- (void)move3
-{
-    [self enqueueCommand:MSG_MOVE3 completion:^(NSData* response){
-        NSLog(@"move3: %@",response);
-    }];
-}
-
-- (void)move4
-{
-    [self enqueueCommand:MSG_MOVE4 completion:^(NSData* response){
-        NSLog(@"move4: %@",response);
-    }];
-}
-
-
-- (void)move5
-{
-    [self enqueueCommand:MSG_MOVE5 completion:^(NSData* response){
-        NSLog(@"move5: %@",response);
+    NSInteger command = 0;
+    switch (amount) {
+        case 1:
+            command = MSG_MOVE1;
+            break;
+        case 2:
+            command = MSG_MOVE2;
+            break;
+        case 3:
+            command = MSG_MOVE3;
+            break;
+        case 4:
+            command = MSG_MOVE4;
+            break;
+        case 5:
+            command = MSG_MOVE5;
+            break;
+        default:
+            NSLog(@"Allowed -move: amounts are 1-5");
+            return;
+    }
+    [self enqueueCommand:command completion:^(NSData* response){
+        NSLog(@"move: %ld %@",(long)amount,response);
     }];
 }
 
@@ -132,7 +124,7 @@ enum {
     [cmdData appendBytes:&y length:sizeof(y)];
 
     [self.client enqueue:cmdData readCount:1 completion:^(NSData* response){
-        NSLog(@"setLockPositionToX:y: %@",response);
+        NSLog(@"setLockPositionToX: %d y: %d %@",x,y,response);
     }];
 }
 

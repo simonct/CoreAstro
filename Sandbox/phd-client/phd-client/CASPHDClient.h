@@ -15,11 +15,7 @@
 - (void)pause;
 - (void)resume;
 
-- (void)move1;
-- (void)move2;
-- (void)move3;
-- (void)move4;
-- (void)move5;
+- (void)move:(NSInteger)amount;
 
 - (void)requestDistance;
 
