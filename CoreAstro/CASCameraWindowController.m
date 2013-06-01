@@ -36,6 +36,10 @@
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASExposureView (CASCameraWindowControllerPrivate)
+- (void)layoutHuds; // I currently call this in -showLibraryViewWithProject:
+@end
+
 @interface CASImageBannerView : NSView
 @property (nonatomic,weak) IBOutlet NSTextField *dateField;
 @property (nonatomic,weak) IBOutlet NSTextField *cameraNameField;
@@ -1706,6 +1710,8 @@
     else {
         self.imageBannerView.exposure = nil;
     }
+    
+    [self.imageView layoutHuds]; // yuk - needed to prevent HUDs being drawn over the library view
 }
 
 - (void)hideLibraryView

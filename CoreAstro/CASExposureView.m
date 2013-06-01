@@ -654,14 +654,20 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     const CGFloat kVerticalSpace = 10;
     const CGFloat kHUDWidth = 160;
     
+    const BOOL viewHidden = self.isHiddenOrHasHiddenAncestor; // this is only really needed because at the moment HUDs are not subviews of the image view but of a superview so that they aren't zoomed, etc with the image
+    
     CGFloat top = kTopMargin;
-    for (NSView* hud in self.huds){
-        if (!hud.isHidden){
+    for (CASHUDView* hud in self.huds){
+        if (hud.visible && !viewHidden){
+            hud.hidden = NO;
             hud.frame = NSMakeRect(self.hudContainerView.bounds.size.width - kHUDWidth - kLeftMargin,
                                    self.hudContainerView.bounds.size.height - hud.frame.size.height - top,
                                    kHUDWidth,
                                    hud.frame.size.height);
             top += kVerticalSpace + hud.frame.size.height;
+        }
+        else {
+            hud.hidden = YES;
         }
     }
 }
@@ -670,7 +676,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (showProgress != _showProgress){
         _showProgress = showProgress;
-        self.progressView.hidden = !_showProgress;
+        self.progressView.visible = _showProgress;
         [self layoutHuds];
     }
 }
@@ -682,7 +688,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         if (_showStarProfile){
             [self updateStarProfile];
         }
-        self.starInfoView.hidden = !showStarProfile;
+        self.starInfoView.visible = showStarProfile;
         [self layoutHuds];
     }
 }
@@ -691,7 +697,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (showImageStats != _showImageStats){
         _showImageStats = showImageStats;
-        self.exposureInfoView.hidden = !showImageStats;
+        self.exposureInfoView.visible = showImageStats;
         [self layoutHuds];
     }
 }
@@ -700,7 +706,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (_showHistogram != showHistogram){
         _showHistogram = showHistogram;
-        self.histogramView.hidden = !_showHistogram;
+        self.histogramView.visible = _showHistogram;
         if (_showHistogram){
             [self updateHistogram];
         }

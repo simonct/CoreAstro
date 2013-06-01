@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CASHUDView : NSView
+@property (nonatomic,assign) BOOL visible;
 @property (nonatomic,assign) BOOL showSpinner;
 + (id)loadFromNib;
 @end
