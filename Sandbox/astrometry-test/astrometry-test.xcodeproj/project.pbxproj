@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F4034B9A1719547A00A73F9F /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4034B951719547A00A73F9F /* CASSocketClient.m */; };
 		F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4034B971719547A00A73F9F /* CASEQMacClient.m */; };
-		F4034B9C1719547A00A73F9F /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F4034B991719547A00A73F9F /* CASLX200Commands.m */; };
+		F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572BF17636F8E009CEC05 /* CASLX200Commands.m */; };
+		F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C117636F8E009CEC05 /* CASLX200IPClient.m */; };
+		F40572C617636F8E009CEC05 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C317636F8E009CEC05 /* CASSocketClient.m */; };
 		F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */; };
 		F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72D16D6D8F500C4C01D /* CASImageView.m */; };
 		F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C73016D6D8FE00C4C01D /* CASZoomableView.m */; };
-		F4A2F21F173AF9690020613D /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2F21E173AF9690020613D /* CASLX200IPClient.m */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
 		F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A386C9168887FE00E77631 /* InfoPlist.strings */; };
 		F4A386CD168887FE00E77631 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386CC168887FE00E77631 /* main.m */; };
@@ -24,12 +24,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F4034B941719547A00A73F9F /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSocketClient.h; path = "../../eqmac-client/eqmac-client/CASSocketClient.h"; sourceTree = "<group>"; };
-		F4034B951719547A00A73F9F /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSocketClient.m; path = "../../eqmac-client/eqmac-client/CASSocketClient.m"; sourceTree = "<group>"; };
 		F4034B961719547A00A73F9F /* CASEQMacClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASEQMacClient.h; path = "../../eqmac-client/eqmac-client/CASEQMacClient.h"; sourceTree = "<group>"; };
 		F4034B971719547A00A73F9F /* CASEQMacClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASEQMacClient.m; path = "../../eqmac-client/eqmac-client/CASEQMacClient.m"; sourceTree = "<group>"; };
-		F4034B981719547A00A73F9F /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASLX200Commands.h; path = "../../eqmac-client/eqmac-client/CASLX200Commands.h"; sourceTree = "<group>"; };
-		F4034B991719547A00A73F9F /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASLX200Commands.m; path = "../../eqmac-client/eqmac-client/CASLX200Commands.m"; sourceTree = "<group>"; };
+		F40572BE17636F8E009CEC05 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200Commands.h; sourceTree = "<group>"; };
+		F40572BF17636F8E009CEC05 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200Commands.m; sourceTree = "<group>"; };
+		F40572C017636F8E009CEC05 /* CASLX200IPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200IPClient.h; sourceTree = "<group>"; };
+		F40572C117636F8E009CEC05 /* CASLX200IPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200IPClient.m; sourceTree = "<group>"; };
+		F40572C217636F8E009CEC05 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
+		F40572C317636F8E009CEC05 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F416C72916D6D8E900C4C01D /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
 		F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCenteringClipView.m; path = ../../../CoreAstro/CASCenteringClipView.m; sourceTree = "<group>"; };
 		F416C72C16D6D8F500C4C01D /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
@@ -69,8 +71,6 @@
 		F43E2143168A596B00C942CF /* libcairo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcairo.a; sourceTree = "<group>"; };
 		F43E2144168A596B00C942CF /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.dylib; sourceTree = "<group>"; };
 		F43E2145168A596B00C942CF /* libcairo.la */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = libcairo.la; sourceTree = "<group>"; };
-		F4A2F21D173AF9690020613D /* CASLX200IPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = CASLX200IPClient.h; path = "../../eqmac-client/eqmac-client/CASLX200IPClient.h"; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
-		F4A2F21E173AF9690020613D /* CASLX200IPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; name = CASLX200IPClient.m; path = "../../eqmac-client/eqmac-client/CASLX200IPClient.m"; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
 		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4A386C3168887FE00E77631 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -411,16 +411,37 @@
 		F4034B931719546300A73F9F /* EQMac */ = {
 			isa = PBXGroup;
 			children = (
-				F4034B941719547A00A73F9F /* CASSocketClient.h */,
-				F4034B951719547A00A73F9F /* CASSocketClient.m */,
-				F4A2F21D173AF9690020613D /* CASLX200IPClient.h */,
-				F4A2F21E173AF9690020613D /* CASLX200IPClient.m */,
 				F4034B961719547A00A73F9F /* CASEQMacClient.h */,
 				F4034B971719547A00A73F9F /* CASEQMacClient.m */,
-				F4034B981719547A00A73F9F /* CASLX200Commands.h */,
-				F4034B991719547A00A73F9F /* CASLX200Commands.m */,
 			);
 			name = EQMac;
+			sourceTree = "<group>";
+		};
+		F40572BD17636F8E009CEC05 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F40572BE17636F8E009CEC05 /* CASLX200Commands.h */,
+				F40572BF17636F8E009CEC05 /* CASLX200Commands.m */,
+				F40572C017636F8E009CEC05 /* CASLX200IPClient.h */,
+				F40572C117636F8E009CEC05 /* CASLX200IPClient.m */,
+				F40572C217636F8E009CEC05 /* CASSocketClient.h */,
+				F40572C317636F8E009CEC05 /* CASSocketClient.m */,
+			);
+			name = Shared;
+			path = ../../Shared;
+			sourceTree = "<group>";
+		};
+		F40572C717636F99009CEC05 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F416C72C16D6D8F500C4C01D /* CASImageView.h */,
+				F416C72D16D6D8F500C4C01D /* CASImageView.m */,
+				F416C72F16D6D8FE00C4C01D /* CASZoomableView.h */,
+				F416C73016D6D8FE00C4C01D /* CASZoomableView.m */,
+				F416C72916D6D8E900C4C01D /* CASCenteringClipView.h */,
+				F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		F43E210E168A52DA00C942CF /* netpbm */ = {
@@ -518,13 +539,9 @@
 				F4A386D2168887FE00E77631 /* MKOAppDelegate.h */,
 				F4A386D3168887FE00E77631 /* MKOAppDelegate.m */,
 				F4A386D5168887FF00E77631 /* MainMenu.xib */,
-				F416C72C16D6D8F500C4C01D /* CASImageView.h */,
-				F416C72D16D6D8F500C4C01D /* CASImageView.m */,
-				F416C72F16D6D8FE00C4C01D /* CASZoomableView.h */,
-				F416C73016D6D8FE00C4C01D /* CASZoomableView.m */,
-				F416C72916D6D8E900C4C01D /* CASCenteringClipView.h */,
-				F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */,
+				F40572C717636F99009CEC05 /* Views */,
 				F4034B931719546300A73F9F /* EQMac */,
+				F40572BD17636F8E009CEC05 /* Shared */,
 				F4A386C7168887FE00E77631 /* Supporting Files */,
 			);
 			path = "astrometry-test";
@@ -1057,10 +1074,10 @@
 				F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */,
 				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
 				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
-				F4034B9A1719547A00A73F9F /* CASSocketClient.m in Sources */,
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
-				F4034B9C1719547A00A73F9F /* CASLX200Commands.m in Sources */,
-				F4A2F21F173AF9690020613D /* CASLX200IPClient.m in Sources */,
+				F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */,
+				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
+				F40572C617636F8E009CEC05 /* CASSocketClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

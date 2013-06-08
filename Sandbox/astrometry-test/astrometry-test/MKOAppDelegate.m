@@ -351,6 +351,7 @@
 @property (nonatomic,readonly) NSString* fieldHeight;
 @property (nonatomic,strong) NSArray* wcsinfo;
 @property (nonatomic,strong) NSArray* annotations;
+@property (nonatomic,copy) NSString* wcsPath;
 @end
 
 @implementation CASPlateSolveSolution
@@ -396,9 +397,9 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
 }
 
-- (double) centreRADouble
+- (double) centreRADouble // ra_center ?
 {
-    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue] +
+    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center"] doubleValue] +
     ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_m"] doubleValue]/60.0) +
     ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]/3600.0);
 }
@@ -411,7 +412,7 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]];
 }
 
-- (double) centreDecDouble
+- (double) centreDecDouble // dec_center ?
 {
     return [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue] +
     ([[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue]/60.0) +
@@ -605,9 +606,11 @@
     if (eqMacClient != _eqMacClient){
         [_eqMacClient removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
         [_eqMacClient removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
+        [_eqMacClient removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
         _eqMacClient = eqMacClient;
         [_eqMacClient addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
         [_eqMacClient addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
+        [_eqMacClient addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
     }
 }
 
@@ -680,7 +683,12 @@
         objectLayer.mask = shape;
     }
     
-    if (self.eqMacClient){
+    if (!self.eqMacClient.connected){
+        
+        [self.eqMacAnnotation removeFromSuperlayer];
+        self.eqMacAnnotation = nil;
+    }
+    else{
         
         if (!self.eqMacAnnotation){
             self.eqMacAnnotation = [CATextLayer layer];
@@ -733,7 +741,13 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
+        
         [self updateAnnotations];
+        
+        if (object == self.eqMacClient){
+            // update scope position annotation
+        }
+        
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -934,7 +948,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                     NSString* path = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
 //                    self.imageView.url = [NSURL fileURLWithPath:path];
                     
-                    // get solution data
+                    // get solution data todo; move this into the solution class
                     self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
                     if (!self.solverTask){
                         completeWithError(@"Can't find the embedded wcsinfo tool");
@@ -958,6 +972,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                 else{
                                     
                                     self.solution = [CASPlateSolveSolution new];
+                                    self.solution.wcsPath = path;
                                     self.solution.wcsinfo = output;
                                     
                                     // bindings...
@@ -1159,19 +1174,29 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }
     
     if (!self.eqMacClient){
-        self.eqMacClient = [[CASEQMacClient alloc] init];
-        self.eqMacClient.client.port = [CASEQMacClient standardPort];
-        self.eqMacClient.client.host = [NSHost hostWithName:@"localhost"];
+        self.eqMacClient = [CASEQMacClient standardClient];
         self.imageView.eqMacClient = self.eqMacClient;
     }
     
-    if (!self.eqMacClient.connected){
-        [self.eqMacClient connectWithCompletion:^{
-            [self slewToSolutionCentre];
-        }];
+    if (![[NSRunningApplication runningApplicationsWithBundleIdentifier:@"au.id.hulse.Mount"] count]){
+        [self presentAlertWithMessage:@"EQMac is not running. Please start it, connect to your mount and try again"]; // todo; offer to launch it
     }
     else {
-        [self slewToSolutionCentre];
+        
+        if (self.eqMacClient.connected){
+            [self slewToSolutionCentre];
+        }
+        else {
+            
+            [self.eqMacClient connectWithCompletion:^{
+                if (self.eqMacClient.connected){
+                    [self slewToSolutionCentre];
+                }
+                else {
+                    [self presentAlertWithMessage:@"Failed to connect to EQMac. Please ensure it's running and connected to your mount"];
+                }
+            }];
+        }
     }
 }
 
