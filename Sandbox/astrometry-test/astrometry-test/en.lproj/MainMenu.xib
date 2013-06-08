@@ -1291,6 +1291,32 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="228184016">
+									<reference key="NSMenu" ref="567707459"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="384296504">
+									<reference key="NSMenu" ref="567707459"/>
+									<string key="NSTitle">GoTo in IP Mount</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="1051900761">
+									<reference key="NSMenu" ref="567707459"/>
+									<string key="NSTitle">Configure IP Mount...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 							</array>
 						</object>
 					</object>
@@ -1413,7 +1439,6 @@
 							<string key="NSFrame">{{795, 12}, {115, 32}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="19444374">
@@ -2089,7 +2114,7 @@
 									<string key="NSFrame">{{746, 1}, {15, 646}}</string>
 									<reference key="NSSuperview" ref="452838794"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
+									<reference key="NSNextKeyView" ref="1068076859"/>
 									<string key="NSReuseIdentifierKey">_NS:26</string>
 									<reference key="NSTarget" ref="452838794"/>
 									<string key="NSAction">_doScroller:</string>
@@ -3193,6 +3218,22 @@
 						<reference key="destination" ref="371474204"/>
 					</object>
 					<int key="connectionID">678</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">configureIPMount:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="1051900761"/>
+					</object>
+					<int key="connectionID">685</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">goToInIPMount:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="384296504"/>
+					</object>
+					<int key="connectionID">686</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -4791,12 +4832,30 @@
 						<reference key="object" ref="567707459"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="371474204"/>
+							<reference ref="228184016"/>
+							<reference ref="384296504"/>
+							<reference ref="1051900761"/>
 						</array>
 						<reference key="parent" ref="47350522"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">675</int>
 						<reference key="object" ref="371474204"/>
+						<reference key="parent" ref="567707459"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">681</int>
+						<reference key="object" ref="228184016"/>
+						<reference key="parent" ref="567707459"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">682</int>
+						<reference key="object" ref="384296504"/>
+						<reference key="parent" ref="567707459"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">683</int>
+						<reference key="object" ref="1051900761"/>
 						<reference key="parent" ref="567707459"/>
 					</object>
 				</array>
@@ -5015,6 +5074,9 @@
 				<string key="673.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="674.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="675.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="681.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="682.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="683.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -5031,7 +5093,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">680</int>
+			<int key="maxID">686</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5088,7 +5150,9 @@
 					<string key="superclassName">NSObject</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="changeFont:">id</string>
+						<string key="configureIPMount:">id</string>
 						<string key="goToInEQMac:">id</string>
+						<string key="goToInIPMount:">id</string>
 						<string key="openDocument:">id</string>
 						<string key="resetAnnotations:">id</string>
 						<string key="saveDocument:">id</string>
@@ -5100,8 +5164,16 @@
 							<string key="name">changeFont:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="configureIPMount:">
+							<string key="name">configureIPMount:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="goToInEQMac:">
 							<string key="name">goToInEQMac:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="goToInIPMount:">
+							<string key="name">goToInIPMount:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="openDocument:">

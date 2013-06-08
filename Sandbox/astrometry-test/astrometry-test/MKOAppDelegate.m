@@ -11,6 +11,8 @@
 #import "MKOAppDelegate.h"
 #import "CASImageView.h"
 #import "CASEQMacClient.h"
+#import "CASConfigureIPMountWindowController.h"
+
 #import <QuartzCore/QuartzCore.h>
 
 /* example wcs output
@@ -452,7 +454,7 @@
 @property (nonatomic,strong) NSFont* annotationsFont;
 @property (nonatomic,strong) CATextLayer* draggingAnnotation;
 @property (nonatomic,strong) CATextLayer* eqMacAnnotation;
-@property (nonatomic,weak) CASEQMacClient* eqMacClient;
+@property (nonatomic,weak) CASLX200IPClient* ipMountClient;
 @end
 
 @implementation CASPlateSolveImageView
@@ -601,16 +603,16 @@
     return colour;
 }
 
-- (void)setEqMacClient:(CASEQMacClient *)eqMacClient
+- (void)setIpMountClient:(CASLX200IPClient *)ipMountClient
 {
-    if (eqMacClient != _eqMacClient){
-        [_eqMacClient removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
-        [_eqMacClient removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
-        [_eqMacClient removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
-        _eqMacClient = eqMacClient;
-        [_eqMacClient addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
-        [_eqMacClient addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
-        [_eqMacClient addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
+    if (ipMountClient != _ipMountClient){
+        [_ipMountClient removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
+        [_ipMountClient removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
+        [_ipMountClient removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
+        _ipMountClient = ipMountClient;
+        [_ipMountClient addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
+        [_ipMountClient addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
+        [_ipMountClient addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
     }
 }
 
@@ -683,7 +685,7 @@
         objectLayer.mask = shape;
     }
     
-    if (!self.eqMacClient.connected){
+    if (!self.ipMountClient.connected){
         
         [self.eqMacAnnotation removeFromSuperlayer];
         self.eqMacAnnotation = nil;
@@ -699,7 +701,7 @@
         self.eqMacAnnotation.font = (__bridge CFTypeRef)annotationsFont;
         self.eqMacAnnotation.fontSize = annotationsFont.pointSize;
         self.eqMacAnnotation.foregroundColor = annotationsColour;
-        self.eqMacAnnotation.string = [NSString stringWithFormat:@"RA: %@ Dec: %@",self.eqMacClient.ra,self.eqMacClient.dec];
+        self.eqMacAnnotation.string = [NSString stringWithFormat:@"RA: %@ Dec: %@",self.ipMountClient.ra,self.ipMountClient.dec];
         const CGSize size = [self.eqMacAnnotation.string sizeWithAttributes:@{NSFontAttributeName:annotationsFont}];
         self.eqMacAnnotation.bounds = CGRectMake(0, 0, size.width + 10, size.height + 5);
         self.eqMacAnnotation.position = CGPointMake(CGRectGetMidX(self.annotationLayer.frame), CGRectGetMaxY(self.annotationLayer.frame) - self.eqMacAnnotation.bounds.size.height - 5);
@@ -744,7 +746,7 @@
         
         [self updateAnnotations];
         
-        if (object == self.eqMacClient){
+        if (object == self.ipMountClient){
             // update scope position annotation
         }
         
@@ -796,12 +798,18 @@
 @property (nonatomic,strong) CASSolverModel* solverModel;
 @property (nonatomic,readonly) NSString* cacheDirectory;
 @property (nonatomic,strong) CASPlateSolveSolution* solution;
-@property (nonatomic,strong) CASEQMacClient* eqMacClient;
+@property (nonatomic,strong) CASLX200IPClient* ipMountClient;
+@property (nonatomic,strong) CASConfigureIPMountWindowController* configureIPController;
 @end
 
 @implementation MKOAppDelegate
 
 static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
+
++ (void)initialize
+{
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASIPMountHost":@"localhost",@"CASIPMountPort":@(4030)}];
+}
 
 - (void)awakeFromNib
 {
@@ -1143,7 +1151,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
-    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToInEQMac:)){
+    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToInEQMac:) || menuItem.action == @selector(goToInIPMount:)){
         return (self.solution != nil);
     }
     return YES;
@@ -1153,9 +1161,17 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
 @implementation MKOAppDelegate (EQMacSupport)
 
+- (void)setIpMountClient:(CASLX200IPClient *)ipMountClient
+{
+    if (ipMountClient != _ipMountClient){
+        _ipMountClient = ipMountClient;
+        self.imageView.ipMountClient = _ipMountClient;
+    }
+}
+
 - (void)slewToSolutionCentre
 {
-    [self.eqMacClient startSlewToRA:self.solution.centreRADouble dec:self.solution.centreDecDouble completion:^(BOOL ok) {
+    [self.ipMountClient startSlewToRA:self.solution.centreRADouble dec:self.solution.centreDecDouble completion:^(BOOL ok) {
         
         if (!ok){
             [self presentAlertWithMessage:@"Failed to slew to the target"];
@@ -1167,37 +1183,88 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     }];
 }
 
+- (void)disconnectMount
+{
+    if (self.ipMountClient){
+        [self.ipMountClient disconnect];
+        self.ipMountClient = nil;
+    }
+}
+
+- (void)slewMountCommon
+{
+    if (self.ipMountClient.connected){
+        [self slewToSolutionCentre];
+    }
+    else {
+        
+        [self.ipMountClient connectWithCompletion:^{
+            
+            if (self.ipMountClient.connected){
+                [self slewToSolutionCentre];
+            }
+            else {
+                if ([self.ipMountClient isKindOfClass:[CASEQMacClient class]]){
+                    [self presentAlertWithMessage:@"Failed to connect to EQMac."];
+                }
+                else{
+                    [self presentAlertWithMessage:@"Failed to connect to mount."];
+                }
+            }
+        }];
+    }
+}
+
 - (IBAction)goToInEQMac:(id)sender
 {
     if (!self.solution){
         return;
     }
     
-    if (!self.eqMacClient){
-        self.eqMacClient = [CASEQMacClient standardClient];
-        self.imageView.eqMacClient = self.eqMacClient;
+    [self disconnectMount];
+    
+    if (!self.ipMountClient){
+        self.ipMountClient = [CASEQMacClient standardClient];
     }
     
     if (![[NSRunningApplication runningApplicationsWithBundleIdentifier:@"au.id.hulse.Mount"] count]){
         [self presentAlertWithMessage:@"EQMac is not running. Please start it, connect to your mount and try again"]; // todo; offer to launch it
     }
     else {
-        
-        if (self.eqMacClient.connected){
-            [self slewToSolutionCentre];
-        }
-        else {
-            
-            [self.eqMacClient connectWithCompletion:^{
-                if (self.eqMacClient.connected){
-                    [self slewToSolutionCentre];
-                }
-                else {
-                    [self presentAlertWithMessage:@"Failed to connect to EQMac. Please ensure it's running and connected to your mount"];
-                }
-            }];
-        }
+        [self slewMountCommon];
     }
+}
+
+- (IBAction)goToInIPMount:(id)sender {
+    
+    if (!self.solution){
+        return;
+    }
+
+    NSString* host = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASIPMountHost"];
+    NSString* port = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASIPMountPort"];
+    if (![host length] || ![port integerValue]){
+        [self configureIPMount:nil];
+    }
+    else {
+        
+        [self disconnectMount];
+
+        if (!self.ipMountClient){
+            self.ipMountClient = [CASLX200IPClient clientWithHost:[NSHost hostWithName:host] port:[port integerValue]];
+        }
+        
+        [self slewMountCommon];
+    }
+}
+
+- (IBAction)configureIPMount:(id)sender {
+    
+    if (!self.configureIPController){
+        self.configureIPController = [[CASConfigureIPMountWindowController alloc] initWithWindowNibName:@"CASConfigureIPMountWindowController"];
+    }
+    
+    [self.configureIPController beginSheetModalForWindow:self.window completionHandler:nil];
 }
 
 @end
