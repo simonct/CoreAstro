@@ -69,6 +69,7 @@
 - (void)dealloc
 {
     [self.client removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateState) object:nil];
 }
 
 - (BOOL) connected
@@ -100,6 +101,10 @@
         }
         else {
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateState) object:nil];
+            if (self.connectCompletion){
+                self.connectCompletion();
+                self.connectCompletion = nil;
+            }
         }
         
     } else {

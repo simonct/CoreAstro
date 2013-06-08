@@ -28,6 +28,7 @@
 @end
 
 @interface CASSocketClient ()<NSStreamDelegate>
+@property (nonatomic,assign) BOOL connected;
 @property (nonatomic,assign) NSInteger openCount;
 @property (nonatomic,strong) NSInputStream* inputStream;
 @property (nonatomic,strong) NSOutputStream* outputStream;
@@ -112,9 +113,17 @@
     return (self.openCount == 2);
 }
 
-+ (NSSet*)keyPathsForValuesAffectingConnected
+- (void)setOpenCount:(NSInteger)openCount
 {
-    return [NSSet setWithObject:@"openCount"];
+    _openCount = openCount;
+    switch (_openCount) {
+        case 0:
+            self.connected = NO;
+            break;
+        case 2:
+            self.connected = YES;
+            break;
+    }
 }
 
 - (CASSocketClientRequest*)makeRequest
