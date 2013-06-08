@@ -343,10 +343,10 @@
 @end
 
 @interface CASPlateSolveSolution : NSObject
-@property (nonatomic,readonly) NSString* centreRA;
-@property (nonatomic,readonly) double centreRADouble;
-@property (nonatomic,readonly) NSString* centreDec;
-@property (nonatomic,readonly) double centreDecDouble;
+@property (nonatomic,readonly) double centreRA;
+@property (nonatomic,readonly) NSString* displayCentreRA;
+@property (nonatomic,readonly) double centreDec;
+@property (nonatomic,readonly) NSString* displayCentreDec;
 @property (nonatomic,readonly) NSString* centreAngle;
 @property (nonatomic,readonly) NSString* pixelScale;
 @property (nonatomic,readonly) NSString* fieldWidth;
@@ -391,7 +391,7 @@
     return nil;
 }
 
-- (NSString*)centreRA
+- (NSString*)displayCentreRA
 {
     return [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue],
@@ -399,14 +399,12 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
 }
 
-- (double) centreRADouble // ra_center ?
+- (double) centreRA
 {
-    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center"] doubleValue] +
-    ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_m"] doubleValue]/60.0) +
-    ([[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]/3600.0);
+    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center"] doubleValue];
 }
 
-- (NSString*)centreDec
+- (NSString*)displayCentreDec
 {
     return [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue],
@@ -414,11 +412,9 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]];
 }
 
-- (double) centreDecDouble // dec_center ?
+- (double) centreDec
 {
-    return [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue] +
-    ([[self numberFromInfo:self.wcsinfo withKey:@"dec_center_m"] doubleValue]/60.0) +
-    ([[self numberFromInfo:self.wcsinfo withKey:@"dec_center_s"] doubleValue]/3600.0);
+    return [[self numberFromInfo:self.wcsinfo withKey:@"dec_center"] doubleValue];
 }
 
 - (NSString*)centreAngle
@@ -984,8 +980,8 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
                                     self.solution.wcsinfo = output;
                                     
                                     // bindings...
-                                    self.solutionRALabel.stringValue = self.solution.centreRA;
-                                    self.solutionDecLabel.stringValue = self.solution.centreDec;
+                                    self.solutionRALabel.stringValue = self.solution.displayCentreRA;
+                                    self.solutionDecLabel.stringValue = self.solution.displayCentreDec;
                                     self.solutionAngleLabel.stringValue = self.solution.centreAngle;
                                     self.pixelScaleLabel.stringValue = self.solution.pixelScale;
                                     self.fieldWidthLabel.stringValue = self.solution.fieldWidth;
@@ -1171,7 +1167,7 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
 
 - (void)slewToSolutionCentre
 {
-    [self.ipMountClient startSlewToRA:self.solution.centreRADouble dec:self.solution.centreDecDouble completion:^(BOOL ok) {
+    [self.ipMountClient startSlewToRA:self.solution.centreRA dec:self.solution.centreDec completion:^(BOOL ok) {
         
         if (!ok){
             [self presentAlertWithMessage:@"Failed to slew to the target"];
