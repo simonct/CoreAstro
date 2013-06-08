@@ -92,7 +92,19 @@
     
     self.openCount = 0;
     
-    // call completion blocks ?
+    // close off any current requests - use a response of nil to indicate that the connection was dropped
+    for (CASSocketClientRequest* request in _queue){
+        if (request.completion){
+            @try {
+                request.completion(nil);
+            }
+            @catch (id ex) {
+                NSLog(@"Exception calling request completion: %@",ex);
+            }
+        }
+    }
+    
+    [_queue removeAllObjects];
 }
 
 - (BOOL)connected
@@ -199,39 +211,74 @@
 
 - (void)read
 {
-    CASSocketClientRequest* request = [_queue lastObject];
-    if (request.readCount > 0){
+    
+    // need to check for a 0 read even if we don't have an outstanding request as it may be the remote peer disconnecting
+    
+    BOOL readComplete = NO;
+    CASSocketClientRequest* request = nil;
+    
+    // read data while there's some available in the input buffer
+    while ([self.inputStream hasBytesAvailable] && !readComplete){
         
-        BOOL readComplete = NO;
-        
-        // read data while there's some available in the input buffer
-        while ([self.inputStream hasBytesAvailable] && !readComplete){
+        NSMutableData* buffer;
+        if (!request.readCount){
+            buffer = [NSMutableData dataWithLength:1]; // -hasBytesAvailable returned YES but we've no outstanding request, attempt to read 1 byte to check for disconnect
+        }
+        else {
+            buffer = [NSMutableData dataWithLength:request.readCount];
+        }
+
+        const NSInteger count = [self.inputStream read:[buffer mutableBytes] maxLength:[buffer length]];
+        if (count > 0){
             
-            NSMutableData* buffer = [NSMutableData dataWithLength:request.readCount];
-            const NSInteger count = [self.inputStream read:[buffer mutableBytes] maxLength:[buffer length]];
-            if (count > 0){
+            request = [_queue lastObject];
+            if (request.readCount > 0){
+                
+                // resize the read buffer
                 [buffer setLength:count];
+                
+                // pass the buffer to the request object; it will determine if we've read an entire message
                 if ((readComplete = [request appendResponseData:buffer]) == YES){
                     break;
                 }
             }
-            else{
+            else {
+                
+                NSLog(@"Read %ld bytes but there was no outstanding request to handle them",count);
+                
                 readComplete = YES;
-                break;
             }
-//            NSLog(@"read %ld bytes",[buffer length]);
-//            NSLog(@"read %@ -> %@",buffer,[[NSString alloc] initWithData:buffer encoding:NSASCIIStringEncoding]);
         }
-        
-        // check we've read everything we wanted, complete if we have
-        if (readComplete){
+        else {
             
-            if (request.completion){
+            if (count == 0){
+                // remote peer closed connection
+                NSLog(@"peer disconnected");
+            }
+            else {
+                // some other sort of error
+                NSLog(@"read error ?");
+            }
+            readComplete = YES;
+            break;
+        }
+        //            NSLog(@"read %ld bytes",[buffer length]);
+        //            NSLog(@"read %@ -> %@",buffer,[[NSString alloc] initWithData:buffer encoding:NSASCIIStringEncoding]);
+    }
+    
+    // check we've read everything we wanted, complete if we have
+    if (readComplete){
+        
+        if (request.completion){
+            @try {
                 request.completion(request.response);
             }
-            [_queue removeLastObject];
-            [self process];
+            @catch (id ex) {
+                NSLog(@"Exception calling request completion: %@",ex);
+            }
         }
+        [_queue removeLastObject];
+        [self process];
     }
 }
 
