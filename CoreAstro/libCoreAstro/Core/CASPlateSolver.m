@@ -45,6 +45,56 @@
  },
  */
 
+/* example wcs output
+ "crpix0 506.983792063",
+ "crpix1 378.635784858",
+ "crval0 10.6280698245",
+ "crval1 41.1611877064",
+ "ra_tangent 10.6280698245",
+ "dec_tangent 41.1611877064",
+ "pixx_tangent 506.983792063",
+ "pixy_tangent 378.635784858",
+ "imagew 1024",
+ "imageh 681",
+ "cd11 -0.0022474834073",
+ "cd12 -0.00292001370413",
+ "cd21 0.00291952260955",
+ "cd22 -0.00224608703052",
+ "det 1.35730893618e-05",
+ "parity 1",
+ "pixscale 13.2630026061",
+ "orientation -127.57857",
+ "ra_center 10.7577556576",
+ "dec_center 41.261762611",
+ "orientation_center -127.49322",
+ "ra_center_h 0",
+ "ra_center_m 43",
+ "ra_center_s 1.86135782312",
+ "dec_center_sign 1",
+ "dec_center_d 41",
+ "dec_center_m 15",
+ "dec_center_s 42.3453995364",
+ "ra_center_hms 00:43:01.861",
+ "dec_center_dms +41:15:42.345",
+ "ra_center_merc 0.029882655",
+ "dec_center_merc 0.62603934",
+ "fieldarea 9.46511",
+ "fieldw 3.771",
+ "fieldh 2.508",
+ "fieldunits degrees",
+ "decmin 39.0048",
+ "decmax 43.5225",
+ "ramin 7.87173",
+ "ramax 13.5709",
+ "ra_min_merc 0.037697",
+ "ra_max_merc 0.0218659",
+ "dec_min_merc 0.634544",
+ "dec_max_merc 0.617838",
+ "merc_diff 0.0167061",
+ "merczoom 6",
+ ""
+ */
+
 - (NSString*)name
 {
     NSMutableString* result = [NSMutableString string];
@@ -123,7 +173,12 @@
     return nil;
 }
 
-- (NSString*)centreRA
+- (double) centreRA
+{
+    return [[self numberFromInfo:self.wcsinfo withKey:@"ra_center"] doubleValue];
+}
+
+- (NSString*)displayCentreRA
 {
     return [NSString stringWithFormat:@"%02.0fh %02.0fm %02.2fs",
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_h"] doubleValue],
@@ -131,7 +186,12 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"ra_center_s"] doubleValue]];
 }
 
-- (NSString*)centreDec
+- (double) centreDec
+{
+    return [[self numberFromInfo:self.wcsinfo withKey:@"dec_center"] doubleValue];
+}
+
+- (NSString*)displayCentreDec
 {
     return [NSString stringWithFormat:@"%02.0f° %02.0fm %02.2fs",
             [[self numberFromInfo:self.wcsinfo withKey:@"dec_center_d"] doubleValue],
@@ -174,7 +234,7 @@
 @implementation CASPlateSolver
 
 static NSString* const kSolutionArchiveName = @"solution.plist";
-static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
+NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
@@ -265,6 +325,130 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
     return YES;
 }
 
+- (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block
+{
+    void (^complete)(NSError*,NSDictionary*) = ^(NSError* error,NSDictionary* results){
+        if (block){
+            block(error,results);
+        }
+    };
+
+    // create tasks on main queue otherwise we end up with no data being returned to the app (rings a bell but can't remember why this happens)
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        // create a solver task for the embedded tool
+        self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field"];
+        if (!self.solverTask){
+            complete([self errorWithCode:2 reason:@"Can't find the embedded solve-field tool"],nil);
+        }
+        else {
+            
+            // update the config with the index location
+            NSMutableString* config = [NSMutableString string];
+            [config appendFormat:@"add_path %@\n",[self.indexDirectoryURL path]];
+            [config appendString:@"autoindex\n"];
+            NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
+            [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            
+            [self.solverTask setArguments:@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
+            
+            // run the solver task
+            [self.solverTask launchWithOutputBlock:^(NSString* string) {
+                
+                // accumulate the log output
+                if (!self.logOutput){
+                    self.logOutput = [NSMutableString stringWithCapacity:1024];
+                }
+                [self.logOutput appendString:string];
+                [self.logOutput appendString:@"\n"];
+                
+                NSLog(@"Plate solve output: %@",string);
+                
+            } terminationBlock:^(int terminationStatus) {
+                
+                if (terminationStatus){
+                    complete([self errorWithCode:3 reason:@"Plate solve failed"],nil);
+                }
+                else {
+                    
+                    // nasty hack to avoid as yet undiagnosed race between solve-field and wcsinfo resulting in empty solution results
+                    double delayInSeconds = 0.5;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        
+                        // get solution data by running the wcsinfo tool
+                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
+                        if (!self.solverTask){
+                            complete([self errorWithCode:4 reason:@"Can't find the embedded wcsinfo tool"],nil);
+                        }
+                        else {
+                            
+                            NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
+                            [self.solverTask setArguments:@[[[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"]]];
+                            
+                            [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                                
+                                if (terminationStatus){
+                                    complete([self errorWithCode:5 reason:@"Failed to get solution info"],nil);
+                                }
+                                else {
+                                    
+                                    NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+                                    if (![output count]){
+                                        NSLog(@"No output from wcsinfo");
+                                    }
+                                    else{
+                                        
+                                        // create a solution object
+                                        CASPlateSolveSolution* solution = [CASPlateSolveSolution new];
+                                        solution.wcsinfo = output;
+                                        
+                                        // get annotations by running plot-constellations in json mode
+                                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
+                                        if (!self.solverTask){
+                                            complete([self errorWithCode:6 reason:@"Can't find the embedded plot-constellations tool"],nil);
+                                        }
+                                        else {
+                                            
+                                            NSString* path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
+                                            [self.solverTask setArguments:@[@"-w",path,@"-NCBJL"]];
+                                            
+                                            [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                                                
+                                                if (terminationStatus){
+                                                    complete([self errorWithCode:7 reason:@"Failed to get annotations"],nil);
+                                                }
+                                                else {
+                                                    
+                                                    NSDictionary* report = [NSJSONSerialization JSONObjectWithData:[self.solverTask.taskOutput dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
+                                                    if (![report isKindOfClass:[NSDictionary class]]){
+                                                        complete([self errorWithCode:8 reason:@"Couldn't read annotation data"],nil);
+                                                    }
+                                                    else {
+                                                        
+                                                        // check status=solved
+                                                        solution.annotations = [report objectForKey:@"annotations"];
+                                                        
+                                                        NSString* solvedImagePath = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
+                                                        
+                                                        complete(nil,@{@"solution":solution,@"image":solvedImagePath});
+                                                    }
+                                                }
+                                            }];
+                                        }
+                                    }
+                                }
+                                
+                                self.solverTask = nil;
+                            }];
+                        }
+                    });
+                }
+            }];
+        }
+    });
+}
+
 - (void)solveExposure:(CASCCDExposure*)exposure completion:(void(^)(NSError*,NSDictionary*))block;
 {
     void (^complete)(NSError*,NSDictionary*) = ^(NSError* error,NSDictionary* results){
@@ -297,126 +481,20 @@ static NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndex
             return;
         }
         
-        // create tasks on main queue otherwise we end up with no data being returned to the app (rings a bell but can't remember why this happens)
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            // create a solver task for the embedded tool
-            self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field"];
-            if (!self.solverTask){
-                complete([self errorWithCode:2 reason:@"Can't find the embedded solve-field tool"],nil);
+        // solve it
+        [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
+            
+            if (!error){
+                
+                // cache the solution in the exposure bundle
+                NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"]solution"]];
+                if (solutionData){
+                    NSString* solutionDataPath = [self.cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName];
+                    [solutionData writeToFile:solutionDataPath options:0 error:nil];
+                }
             }
-            else {
-                
-                // update the config with the index location
-                NSMutableString* config = [NSMutableString string];
-                [config appendFormat:@"add_path %@\n",[self.indexDirectoryURL path]];
-                [config appendString:@"autoindex\n"];
-                NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
-                [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
-                
-                [self.solverTask setArguments:@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
-                
-                // run the solver task
-                [self.solverTask launchWithOutputBlock:^(NSString* string) {
-                    
-                    // accumulate the log output
-                    if (!self.logOutput){
-                        self.logOutput = [NSMutableString stringWithCapacity:1024];
-                    }
-                    [self.logOutput appendString:string];
-                    [self.logOutput appendString:@"\n"];
-                    
-                    NSLog(@"Plate solve output: %@",string);
-                    
-                } terminationBlock:^(int terminationStatus) {
-                    
-                    if (terminationStatus){
-                        complete([self errorWithCode:3 reason:@"Plate solve failed"],nil);
-                    }
-                    else {
-                        
-                        // nasty hack to avoid as yet undiagnosed race between solve-field and wcsinfo resulting in empty solution results
-                        double delayInSeconds = 0.5;
-                        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-                        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                            
-                            // get solution data by running the wcsinfo tool
-                            self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
-                            if (!self.solverTask){
-                                complete([self errorWithCode:4 reason:@"Can't find the embedded wcsinfo tool"],nil);
-                            }
-                            else {
-                                
-                                NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
-                                [self.solverTask setArguments:@[[[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"]]];
-                                
-                                [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
-                                    
-                                    if (terminationStatus){
-                                        complete([self errorWithCode:5 reason:@"Failed to get solution info"],nil);
-                                    }
-                                    else {
-                                        
-                                        NSArray* output = [self.solverTask.taskOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-                                        if (![output count]){
-                                            NSLog(@"No output from wcsinfo");
-                                        }
-                                        else{
-                                            
-                                            // create a solution object
-                                            CASPlateSolveSolution* solution = [CASPlateSolveSolution new];
-                                            solution.wcsinfo = output;
-                                            
-                                            // get annotations by running plot-constellations in json mode
-                                            self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
-                                            if (!self.solverTask){
-                                                complete([self errorWithCode:6 reason:@"Can't find the embedded plot-constellations tool"],nil);
-                                            }
-                                            else {
-                                                
-                                                NSString* path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
-                                                [self.solverTask setArguments:@[@"-w",path,@"-NCBJL"]];
-                                                
-                                                [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
-                                                    
-                                                    if (terminationStatus){
-                                                        complete([self errorWithCode:7 reason:@"Failed to get annotations"],nil);
-                                                    }
-                                                    else {
-                                                        
-                                                        NSDictionary* report = [NSJSONSerialization JSONObjectWithData:[self.solverTask.taskOutput dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
-                                                        if (![report isKindOfClass:[NSDictionary class]]){
-                                                            complete([self errorWithCode:8 reason:@"Couldn't read annotation data"],nil);
-                                                        }
-                                                        else {
-                                                            
-                                                            // check status=solved
-                                                            solution.annotations = [report objectForKey:@"annotations"];
-                                                            
-                                                            NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:solution];
-                                                            if (solutionData){
-                                                                NSString* solutionDataPath = [self.cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName];
-                                                                [solutionData writeToFile:solutionDataPath options:0 error:nil];
-                                                            }
-                                                            
-                                                            NSString* solvedImagePath = [self.cacheDirectory stringByAppendingPathComponent:[[NSString stringWithFormat:@"%@-ngc",name] stringByAppendingPathExtension:@"png"]];
-                                                            
-                                                            complete(nil,@{@"solution":solution,@"image":solvedImagePath});
-                                                        }
-                                                    }
-                                                }];
-                                            }
-                                        }
-                                    }
-                                    
-                                    self.solverTask = nil;
-                                }];
-                            }
-                        });
-                    }
-                }];
-            }
-        });
+            complete(error,results);
+        }];
     });
 }
 

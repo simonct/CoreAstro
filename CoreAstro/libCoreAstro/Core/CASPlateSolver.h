@@ -32,13 +32,16 @@
 @end
 
 @interface CASPlateSolveSolution : NSObject<NSCoding>
-@property (nonatomic,readonly) NSString* centreRA;
-@property (nonatomic,readonly) NSString* centreDec;
+@property (nonatomic,readonly) double centreRA;
+@property (nonatomic,readonly) NSString* displayCentreRA;
+@property (nonatomic,readonly) double centreDec;
+@property (nonatomic,readonly) NSString* displayCentreDec;
 @property (nonatomic,readonly) NSString* centreAngle;
 @property (nonatomic,readonly) NSString* pixelScale;
 @property (nonatomic,readonly) NSString* fieldWidth;
 @property (nonatomic,readonly) NSString* fieldHeight;
 @property (nonatomic,readonly) NSArray* objects;
+@property (nonatomic,copy) NSString* wcsPath;
 @end
 
 @protocol CASPlateSolver <NSObject>
@@ -50,7 +53,9 @@
 
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error;
 
+// results dictionary is @{"solution":<CASPlateSolveSolution>, "image":<path to solved image>}
 - (void)solveExposure:(CASCCDExposure*)exposure completion:(void(^)(NSError*,NSDictionary*))block;
+- (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block;
 
 @end
 
@@ -59,3 +64,5 @@
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident;
 
 @end
+
+extern NSString* const kCASAstrometryIndexDirectoryURLKey;
