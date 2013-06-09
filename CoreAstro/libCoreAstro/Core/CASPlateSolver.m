@@ -487,8 +487,11 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
             if (!error){
                 
                 // cache the solution in the exposure bundle
-                NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"]solution"]];
-                if (solutionData){
+                NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
+                if (!solutionData){
+                    NSLog(@"Failed to archive solution data");
+                }
+                else{
                     NSString* solutionDataPath = [self.cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName];
                     [solutionData writeToFile:solutionDataPath options:0 error:nil];
                 }
