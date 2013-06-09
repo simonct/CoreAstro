@@ -785,7 +785,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         
         self.plateSolutionView.solution = _plateSolveSolution;
-        self.plateSolutionView.hidden = (_plateSolveSolution == nil);
+        self.plateSolutionView.visible = (_plateSolveSolution != nil);
         [self layoutHuds];
     }
 }
