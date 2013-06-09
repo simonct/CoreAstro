@@ -294,6 +294,8 @@
                     }
                     for (CASDevice* device in old){
                         
+                        [device disconnect];
+                        
                         CASCameraController* cameraController = [self cameraControllerForDevice:device];
                         if (cameraController){
                             [self.mutableCameraControllers removeObject:cameraController];
@@ -301,6 +303,10 @@
                         CASGuiderController* guiderController = [self guiderControllerForDevice:device];
                         if (guiderController){
                             [self.mutableGuiderControllers removeObject:guiderController];
+                        }
+                        CASFilterWheelController* filterWheelController = [self filterWheelControllerForDevice:device];
+                        if (filterWheelController){
+                            [self.mutableFilterWheelControllers removeObject:filterWheelController];
                         }
                     }
                 }

@@ -34,5 +34,7 @@
 @interface MKOAppDelegate (EQMacSupport)
 
 - (IBAction)goToInEQMac:(id)sender;
+- (IBAction)goToInIPMount:(id)sender;
+- (IBAction)configureIPMount:(id)sender;
 
 @end

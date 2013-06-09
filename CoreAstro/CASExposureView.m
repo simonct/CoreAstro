@@ -15,6 +15,7 @@
 #import "CASStarInfoHUDView.h"
 #import "CASHistogramHUDView.h"
 #import "CASPlateSolutionHUDView.h"
+#import "CASPlateSolvedObject+Drawing.h"
 
 #import <CoreAstro/CoreAstro.h>
 #import <QuartzCore/QuartzCore.h>
@@ -110,68 +111,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [super setFrame:frame];
     
     [self updateDragHandlePositions];
-}
-
-@end
-
-#pragma mark - Plate solution annotations
-
-@interface CASPlateSolvedObject (Drawing)
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour scaling:(NSInteger)scaling;
-@end
-
-@implementation CASPlateSolvedObject (Drawing)
-
-- (CALayer*)createCircularLayerAtPosition:(CGPoint)position radius:(CGFloat)radius annotation:(NSString*)annotation inLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour
-{
-    CALayer* objectLayer = [CALayer layer];
-    
-    // flip y
-    position.y = annotationLayer.bounds.size.height - position.y;
-    
-    objectLayer.borderColor = colour;
-    objectLayer.borderWidth = 2.5;
-    objectLayer.cornerRadius = radius;
-    objectLayer.bounds = CGRectMake(0, 0, 2*radius, 2*radius);
-    objectLayer.position = position;
-    objectLayer.masksToBounds = NO;
-    
-    [annotationLayer addSublayer:objectLayer];
-    
-    if (annotation){
-        
-        CATextLayer* textLayer = [CATextLayer layer];
-        textLayer.string = annotation;
-        const CGSize size = [textLayer.string sizeWithAttributes:@{NSFontAttributeName:font}];
-        textLayer.font = (__bridge CFTypeRef)(font);
-        textLayer.fontSize = font.pointSize;
-        textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
-        textLayer.position = CGPointMake(CGRectGetMidX(objectLayer.frame) + size.width/2 + 10, CGRectGetMidY(objectLayer.frame) + size.height/2 + 10);
-        textLayer.alignmentMode = @"center";
-        textLayer.foregroundColor = colour;
-        
-        [annotationLayer addSublayer:textLayer];
-        
-        // want the inverse of the text bounding box as a clip mask for the circle layer
-        CAShapeLayer* shape = [CAShapeLayer layer];
-        CGPathRef path = CGPathCreateWithRect(objectLayer.bounds, nil);
-        CGMutablePathRef mpath = CGPathCreateMutableCopy(path);
-        CGPathAddRect(mpath, NULL, [annotationLayer convertRect:textLayer.frame toLayer:objectLayer]);
-        shape.path = mpath;
-        shape.fillRule = kCAFillRuleEvenOdd;
-        objectLayer.mask = shape;
-    }
-    
-    return objectLayer;
-}
-
-- (CALayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour scaling:(NSInteger)scaling
-{
-    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue] * scaling;
-    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue] * scaling;
-    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue] * scaling;
-    
-    return [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
 }
 
 @end
@@ -654,14 +593,20 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     const CGFloat kVerticalSpace = 10;
     const CGFloat kHUDWidth = 160;
     
+    const BOOL viewHidden = self.isHiddenOrHasHiddenAncestor; // this is only really needed because at the moment HUDs are not subviews of the image view but of a superview so that they aren't zoomed, etc with the image
+    
     CGFloat top = kTopMargin;
-    for (NSView* hud in self.huds){
-        if (!hud.isHidden){
+    for (CASHUDView* hud in self.huds){
+        if (hud.visible && !viewHidden){
+            hud.hidden = NO;
             hud.frame = NSMakeRect(self.hudContainerView.bounds.size.width - kHUDWidth - kLeftMargin,
                                    self.hudContainerView.bounds.size.height - hud.frame.size.height - top,
                                    kHUDWidth,
                                    hud.frame.size.height);
             top += kVerticalSpace + hud.frame.size.height;
+        }
+        else {
+            hud.hidden = YES;
         }
     }
 }
@@ -670,7 +615,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (showProgress != _showProgress){
         _showProgress = showProgress;
-        self.progressView.hidden = !_showProgress;
+        self.progressView.visible = _showProgress;
         [self layoutHuds];
     }
 }
@@ -682,7 +627,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         if (_showStarProfile){
             [self updateStarProfile];
         }
-        self.starInfoView.hidden = !showStarProfile;
+        self.starInfoView.visible = showStarProfile;
         [self layoutHuds];
     }
 }
@@ -691,7 +636,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (showImageStats != _showImageStats){
         _showImageStats = showImageStats;
-        self.exposureInfoView.hidden = !showImageStats;
+        self.exposureInfoView.visible = showImageStats;
         [self layoutHuds];
     }
 }
@@ -700,7 +645,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     if (_showHistogram != showHistogram){
         _showHistogram = showHistogram;
-        self.histogramView.hidden = !_showHistogram;
+        self.histogramView.visible = _showHistogram;
         if (_showHistogram){
             [self updateHistogram];
         }
@@ -840,7 +785,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         
         self.plateSolutionView.solution = _plateSolveSolution;
-        self.plateSolutionView.hidden = (_plateSolveSolution == nil);
+        self.plateSolutionView.visible = (_plateSolveSolution != nil);
         [self layoutHuds];
     }
 }

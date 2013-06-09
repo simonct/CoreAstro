@@ -223,22 +223,35 @@
 }
 
 - (void)fetchTemperature {
-        
+    
+    if (!self.connected){
+        return;
+    }
+    
     SXCCDIOCoolerCommand* cooler = [[SXCCDIOCoolerCommand alloc] init];
     
     cooler.on = self.temperature > self.targetTemperature;
     cooler.centigrade = self.targetTemperature;
     
+    __weak SXCCDDevice* weakDevice = self;
+    
     [self.transport submit:cooler block:^(NSError* error) {
         
-        if (!error){
-            
-            self.temperature = cooler.centigrade;
-            
-            [self.exposureTemperatures addObject:[NSNumber numberWithFloat:self.temperature]];
-        }
+        if (self.connected){
         
-        [self performSelector:_cmd withObject:nil afterDelay:self.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
+            SXCCDDevice* strongDevice = weakDevice;
+            if (strongDevice){
+                
+                if (!error){
+                    
+                    strongDevice.temperature = cooler.centigrade;
+                    
+                    [strongDevice.exposureTemperatures addObject:[NSNumber numberWithFloat:strongDevice.temperature]];
+                }
+                
+                [strongDevice performSelector:_cmd withObject:nil afterDelay:strongDevice.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
+            }
+        }
     }];
 }
 

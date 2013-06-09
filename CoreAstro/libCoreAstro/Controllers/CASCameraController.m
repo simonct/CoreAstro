@@ -287,7 +287,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                     if (![self.movieExporter addExposure:exposure error:&movieError]){
                         self.movieExporter = nil;
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [NSApp presentError:movieError];
+                            [NSApp presentError:movieError]; // no; might be running in something with no NSApp instance
                         });
                     }
                 }

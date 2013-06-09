@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
 		<string key="IBDocument.SystemVersion">11G63</string>
-		<string key="IBDocument.InterfaceBuilderVersion">3083</string>
+		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
 		<string key="IBDocument.AppKitVersion">1138.51</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">3083</string>
+			<string key="NS.object.0">3084</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -382,35 +382,35 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.solution.centreRA</string>
+						<string key="label">value: selection.solution.displayCentreRA</string>
 						<reference key="source" ref="3339302"/>
 						<reference key="destination" ref="776562132"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="3339302"/>
 							<reference key="NSDestination" ref="776562132"/>
-							<string key="NSLabel">value: selection.solution.centreRA</string>
+							<string key="NSLabel">value: selection.solution.displayCentreRA</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.solution.centreRA</string>
+							<string key="NSKeyPath">selection.solution.displayCentreRA</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">141</int>
+					<int key="connectionID">421</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: selection.solution.centreDec</string>
+						<string key="label">value: selection.solution.displayCentreDec</string>
 						<reference key="source" ref="305985325"/>
 						<reference key="destination" ref="776562132"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="305985325"/>
 							<reference key="NSDestination" ref="776562132"/>
-							<string key="NSLabel">value: selection.solution.centreDec</string>
+							<string key="NSLabel">value: selection.solution.displayCentreDec</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">selection.solution.centreDec</string>
+							<string key="NSKeyPath">selection.solution.displayCentreDec</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">142</int>
+					<int key="connectionID">422</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1540,7 +1540,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">420</int>
+			<int key="maxID">422</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
