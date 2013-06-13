@@ -46,15 +46,9 @@
 @property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
 @property (nonatomic,weak) IBOutlet NSButton *captureButton;
-@property (nonatomic,weak) IBOutlet NSTextField *exposureField;
-@property (weak) IBOutlet NSPopUpButton *exposureScalePopup;
-@property (weak) IBOutlet NSMatrix *binningRadioButtons;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomControl;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomFitControl;
 @property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
 @property (nonatomic,weak) IBOutlet NSSegmentedControl *devicesToggleControl;
-@property (nonatomic,weak) IBOutlet NSTextField *sensorSizeField;
-@property (nonatomic,weak) IBOutlet NSTextField *sensorPixelsField;
-@property (nonatomic,weak) IBOutlet NSTextField *subframeDisplay;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 @end

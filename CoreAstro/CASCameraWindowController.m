@@ -131,10 +131,8 @@
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
-@property (nonatomic,weak) IBOutlet NSTextField *exposuresStatusText;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *guiderMenu;
-@property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
 @property (nonatomic,readonly) CASCCDExposureLibrary* library;
@@ -145,12 +143,8 @@
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 @property (nonatomic,strong) CASCaptureController* captureController;
-@property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureField;
-@property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureLabel;
 @property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
-@property (nonatomic,assign) BOOL ditherInPHD;
-@property (nonatomic,assign) NSInteger ditherInPHDAmount;
 @property (nonatomic,strong) NSWindow* cameraControlsWindow;
 @property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
 @end
@@ -227,9 +221,6 @@
     // set up the guider controls
     self.guidePulseDuration = 250;
     self.guideControlsContainer.hidden = YES;
-    
-    // set up dither
-    self.ditherInPHDAmount = 3;
     
     // set up the Back button
     [self configureLibraryBackButton];
@@ -366,9 +357,6 @@
         self.window.title = @"";
     }
     
-    [self.sensorSizeField setStringValue:@""];
-    [self.sensorPixelsField setStringValue:@""];
-
     // show camera name
     self.imageBannerView.camera = self.cameraController.camera;
 
@@ -413,15 +401,6 @@
                 [NSApp presentError:error];
             }
             else {
-                
-                // check it's the same camera...
-                if (self.cameraController == cameraController){
-                    
-                    CASCCDDevice* camera = self.cameraController.camera;
-                    
-                    [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
-                    [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
-                }
             }
         }];
     }
@@ -491,45 +470,6 @@
     if (invert != _invert){
         _invert = invert;
         [self _resetAndRedisplayCurrentExposure];
-    }
-}
-
-- (void)setCaptureMenuSelectedIndex:(NSUInteger)index
-{
-    if (_captureMenuSelectedIndex != index){
-        _captureMenuSelectedIndex = index;
-        if (self.cameraController.continuous){
-            self.cameraController.captureCount = 0;
-        }
-        else {
-            
-            // tmp - probably replace with a different control style
-            switch (_captureMenuSelectedIndex) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
-                    break;
-                case 5:
-                    self.cameraController.captureCount = 10;
-                    break;
-                case 6:
-                    self.cameraController.captureCount = 25;
-                    break;
-                case 7:
-                    self.cameraController.captureCount = 50;
-                    break;
-                case 8:
-                    self.cameraController.captureCount = 75;
-                    break;
-                default:
-                    self.cameraController.captureCount = 1;
-                    NSLog(@"Unknown exposure index: %ld",_captureMenuSelectedIndex);
-                    break;
-            }
-        }
     }
 }
 
@@ -629,69 +569,11 @@
     if (!exposure){
         self.imageView.currentExposure = nil;
         self.imageBannerView.camera = nil;
-        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = @"";
         return;
     }
     
     // set the banner exposure to display name, date, etc
     self.imageBannerView.exposure = exposure;
-
-    // show the exposure specifics in the sidebar (todo; encapsulate sidebar and just set the exposure as with the banner)
-    NSDictionary* params = [exposure.meta valueForKeyPath:@"device.params"];
-    if (!params){
-        self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = self.measuredTemperatureField.stringValue = @"";
-    }
-    else {
-        
-        self.sensorSizeField.stringValue = [NSString stringWithFormat:@"%@ x %@",
-                                            [params valueForKeyPath:@"width"],
-                                            [params valueForKeyPath:@"height"]];
-        self.sensorPixelsField.stringValue = [NSString stringWithFormat:@"%0.2fµm x %0.2fµm",
-                                              [[params valueForKeyPath:@"pixelWidth"] doubleValue],
-                                              [[params valueForKeyPath:@"pixelHeight"] doubleValue]];
-                
-        NSUInteger ms = exposure.params.ms;
-        if (!ms){
-            self.exposureField.stringValue = @"";
-            [self.exposureScalePopup selectItemAtIndex:0];
-        }
-        else {
-            if (ms > 999){
-                ms /= 1000;
-                [self.exposureScalePopup selectItemAtIndex:0];
-            }
-            else {
-                [self.exposureScalePopup selectItemAtIndex:1];
-            }
-            self.exposureField.stringValue = [NSString stringWithFormat:@"%ld",ms];
-        }
-        
-        [self.binningRadioButtons selectCellAtRow:0 column:exposure.params.bin.width - 1];
-        
-        if (!exposure.isSubframe){
-            self.subframeDisplay.stringValue = @"";
-        }
-        else {
-            self.subframeDisplay.stringValue = [NSString stringWithFormat:@"x=%ld y=%ld\nw=%ld h=%ld",exposure.params.origin.x,exposure.params.origin.y,exposure.params.size.width,exposure.params.size.height];
-        }
-        
-        // need to see how this interacts with a camera connected e.g. is this conflicting with bindings ?
-        
-        NSArray* temps = [exposure valueForKeyPath:@"meta.temperature.temperatures"];
-        if ([temps count]){
-            double avTemp = 0;
-            for (NSNumber* temp in temps){
-                avTemp += [temp doubleValue];
-            }
-            avTemp /= [temps count];
-            self.measuredTemperatureLabel.hidden = self.measuredTemperatureField.hidden = NO;
-            self.measuredTemperatureField.stringValue = [NSString stringWithFormat:@"%.1f",avTemp];
-        }
-        else {
-            self.measuredTemperatureLabel.hidden = self.measuredTemperatureField.hidden = YES;
-            self.measuredTemperatureField.stringValue = @"";
-        }
-    }
 
     // check image view is actually visible before bothering to display it
     if (!self.imageView.isHiddenOrHasHiddenAncestor){
@@ -1554,7 +1436,7 @@
         if (CGRectIsEmpty(rect)){
             
             self.cameraController.subframe = CGRectZero;
-            [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+            //[self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
         }
         else {
             
@@ -1569,7 +1451,7 @@
             
             CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-            [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+            //[self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             self.cameraController.subframe = subframe;
         }
     }
