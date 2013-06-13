@@ -32,6 +32,7 @@
 #import "CASShadowView.h"
 #import "CASMasterSelectionView.h"
 #import "CASLibraryBrowserViewController.h"
+#import "CASCameraControlsViewController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
@@ -148,6 +149,10 @@
 @property (nonatomic,weak) IBOutlet NSTextField *measuredTemperatureLabel;
 @property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
+@property (nonatomic,assign) BOOL ditherInPHD;
+@property (nonatomic,assign) NSInteger ditherInPHDAmount;
+@property (nonatomic,strong) NSWindow* cameraControlsWindow;
+@property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -223,11 +228,24 @@
     self.guidePulseDuration = 250;
     self.guideControlsContainer.hidden = YES;
     
+    // set up dither
+    self.ditherInPHDAmount = 3;
+    
     // set up the Back button
     [self configureLibraryBackButton];
     
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
+    
+    if (1) {
+        self.cameraControlsWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(10, 10, 250, 500) styleMask:NSTitledWindowMask|NSUnifiedTitleAndToolbarWindowMask backing:NSBackingStoreBuffered defer:NO];
+        [self.cameraControlsWindow makeKeyAndOrderFront:nil];
+        self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
+        [self.cameraControlsWindow.contentView addSubview:self.cameraControlsViewController.view];
+        [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
+        [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
+        
+    }
 }
 
 - (void)hideWindow:sender
@@ -428,6 +446,8 @@
         [self displayExposure:self.currentExposure];
     }
 }
+
+#pragma mark - Settings
 
 - (void)setEqualise:(BOOL)equalise
 {

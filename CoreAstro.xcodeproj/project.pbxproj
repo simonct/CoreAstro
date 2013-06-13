@@ -92,6 +92,8 @@
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45A2DF8166B835100A1D79C /* CASExposureView.m */; };
+		F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */; };
+		F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F46FC8C016455D6400578010 /* CASProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8BE16455D6400578010 /* CASProgressWindowController.m */; };
 		F46FC8C116455D6400578010 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */; };
@@ -565,6 +567,9 @@
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
 		F45A2DF7166B835100A1D79C /* CASExposureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureView.h; sourceTree = "<group>"; };
 		F45A2DF8166B835100A1D79C /* CASExposureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureView.m; sourceTree = "<group>"; };
+		F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraControlsViewController.h; sourceTree = "<group>"; };
+		F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraControlsViewController.m; sourceTree = "<group>"; };
+		F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraControlsViewController.xib; sourceTree = "<group>"; };
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F46FC8BD16455D6400578010 /* CASProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASProgressWindowController.h; sourceTree = "<group>"; };
@@ -1819,6 +1824,9 @@
 				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
 				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
 				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
+				F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */,
+				F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */,
+				F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -3149,6 +3157,7 @@
 				F4175A6116A749550032954F /* loop.png in Resources */,
 				F4B8868816AAD756008E0D5E /* CASCaptureWindowController.xib in Resources */,
 				F4B26F6A16BEC408001F1D03 /* CASPlateSolutionHUDView.xib in Resources */,
+				F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3350,6 +3359,7 @@
 				F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */,
 				F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */,
 				F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */,
+				F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
