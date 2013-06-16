@@ -150,8 +150,7 @@
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
 @property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
 
-@property (weak) IBOutlet CASControlsContainerView *controlsConatainer;
-@property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
+@property (nonatomic,weak) IBOutlet CASControlsContainerView *controlsConatainer;
 @property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
 @property (nonatomic,weak) IBOutlet NSView *detailContainerView;
 @property (nonatomic,weak) IBOutlet NSToolbar *toolbar;
@@ -160,9 +159,9 @@
 @property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
 @property (nonatomic,weak) IBOutlet NSButton *captureButton;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomControl;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomFitControl;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
+@property (nonatomic,weak) IBOutlet NSSegmentedControl *zoomControl;
+@property (nonatomic,weak) IBOutlet NSSegmentedControl *zoomFitControl;
+@property (nonatomic,weak) IBOutlet NSSegmentedControl *selectionControl;
 @property (nonatomic,weak) IBOutlet NSSegmentedControl *devicesToggleControl;
 @property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 
@@ -238,9 +237,6 @@
     // set up the Back button
     [self configureLibraryBackButton];
     
-    // all done, bind the exposures controller
-    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
-    
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     if (1) {
         
@@ -261,6 +257,9 @@
     if (0){
     
     }
+
+    // all done, bind the exposures controller
+    [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
 }
 
 - (void)hideWindow:sender
