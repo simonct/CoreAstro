@@ -123,6 +123,7 @@
 #pragma Camera Window
 
 @interface CASCameraWindowController ()<CASMasterSelectionViewDelegate,CASLibraryBrowserViewControllerDelegate,CASExposureViewDelegate>
+
 @property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL equalise;
 @property (nonatomic,assign) BOOL medianFilter;
@@ -131,13 +132,13 @@
 @property (nonatomic,assign) BOOL enableGuider;
 @property (nonatomic,assign) BOOL scaleSubframe;
 @property (nonatomic,assign) BOOL recordAsVideo;
+
 @property (nonatomic,assign) NSInteger debayerMode;
 @property (nonatomic,strong) CASCCDExposure* currentExposure;
 @property (nonatomic,strong) NSLayoutConstraint* detailLeadingConstraint;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
-@property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
 @property (nonatomic,readonly) CASCCDExposureLibrary* library;
@@ -146,10 +147,25 @@
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 @property (nonatomic,strong) CASCaptureController* captureController;
-@property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
 @property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
+
 @property (weak) IBOutlet CASControlsContainerView *controlsConatainer;
+@property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
+@property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
+@property (nonatomic,weak) IBOutlet NSView *detailContainerView;
+@property (nonatomic,weak) IBOutlet NSToolbar *toolbar;
+@property (nonatomic,weak) IBOutlet CASImageBannerView *imageBannerView;
+@property (nonatomic,weak) IBOutlet CASExposureView *imageView;
+@property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
+@property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
+@property (nonatomic,weak) IBOutlet NSButton *captureButton;
+@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomControl;
+@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomFitControl;
+@property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
+@property (nonatomic,weak) IBOutlet NSSegmentedControl *devicesToggleControl;
+@property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
+
 @end
 
 @interface CASCameraWindow : NSWindow

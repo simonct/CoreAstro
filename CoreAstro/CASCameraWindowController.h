@@ -38,17 +38,5 @@
 
 @interface CASCameraWindowController : NSWindowController
 @property (nonatomic,strong) CASCameraController* cameraController;
-@property (nonatomic,weak) IBOutlet NSView *detailContainerView;
 @property (nonatomic,weak) id<CASCameraWindowControllerDelegate> delegate;
-@property (nonatomic,weak) IBOutlet NSToolbar *toolbar;
-@property (nonatomic,weak) IBOutlet CASImageBannerView *imageBannerView;
-@property (nonatomic,weak) IBOutlet CASExposureView *imageView;
-@property (nonatomic,weak) IBOutlet NSProgressIndicator *progressIndicator;
-@property (nonatomic,weak) IBOutlet NSTextField *progressStatusText;
-@property (nonatomic,weak) IBOutlet NSButton *captureButton;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomControl;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *zoomFitControl;
-@property (nonatomic,strong) IBOutlet NSSegmentedControl *selectionControl;
-@property (nonatomic,weak) IBOutlet NSSegmentedControl *devicesToggleControl;
-@property (nonatomic,weak) IBOutlet CASMasterSelectionView *devicesTableView;
 @end
