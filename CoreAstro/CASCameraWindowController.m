@@ -233,6 +233,7 @@
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
     
+    // slot the camera controls into the controls container view
     if (1) {
         
         self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
@@ -409,8 +410,6 @@
             
             if (error){
                 [NSApp presentError:error];
-            }
-            else {
             }
         }];
     }
