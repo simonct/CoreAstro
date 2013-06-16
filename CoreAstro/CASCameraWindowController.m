@@ -95,6 +95,11 @@
 @implementation CASCamerasArrayController
 @end
 
+@interface CASControlsContainerView : NSBox
+@end
+@implementation CASControlsContainerView
+@end
+
 #pragma Colour adjustments
 
 @interface CASColourAdjustments : NSObject
@@ -145,8 +150,8 @@
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
-@property (nonatomic,strong) NSWindow* cameraControlsWindow;
 @property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
+@property (weak) IBOutlet CASControlsContainerView *controlsConatainer;
 @end
 
 @interface CASCameraWindow : NSWindow
@@ -229,13 +234,18 @@
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
     
     if (1) {
-        self.cameraControlsWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(10, 10, 250, 500) styleMask:NSTitledWindowMask|NSUnifiedTitleAndToolbarWindowMask backing:NSBackingStoreBuffered defer:NO];
-        [self.cameraControlsWindow makeKeyAndOrderFront:nil];
+        
         self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
-        [self.cameraControlsWindow.contentView addSubview:self.cameraControlsViewController.view];
+        self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.controlsConatainer addSubview:self.cameraControlsViewController.view];
+        
+        id cameraControlsViewController1 = self.cameraControlsViewController.view;
+        NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
+        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
+
         [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
         [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
-        
     }
 }
 
