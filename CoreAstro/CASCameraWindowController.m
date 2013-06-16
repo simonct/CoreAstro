@@ -33,6 +33,7 @@
 #import "CASMasterSelectionView.h"
 #import "CASLibraryBrowserViewController.h"
 #import "CASCameraControlsViewController.h"
+#import "CASGuiderControlsViewController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
@@ -137,14 +138,11 @@
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *captureMenu;
-@property (nonatomic,weak) IBOutlet NSPopUpButton *guiderMenu;
 @property (nonatomic,strong) CASLibraryBrowserViewController* libraryViewController;
 @property (nonatomic,strong) CASColourAdjustments* colourAdjustments;
 @property (nonatomic,readonly) CASCCDExposureLibrary* library;
 @property (nonatomic,strong) CASExposuresController *libraryExposuresController;
 @property (nonatomic,strong) CASExposuresController *exposuresController;
-@property (nonatomic,weak) IBOutlet NSView *guideControlsContainer;
-@property (nonatomic,assign) NSInteger guidePulseDuration;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 @property (nonatomic,strong) CASCaptureController* captureController;
@@ -173,9 +171,7 @@
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
     self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
-    
-    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"guiderControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    
+        
     self.exposuresController = [[CASExposuresController alloc] init];
     self.libraryExposuresController = self.exposuresController;
 
@@ -223,17 +219,13 @@
     self.devicesTableView.masterViewDelegate = (id)self;
     self.devicesTableView.camerasContainer = [CASDeviceManager sharedManager];
     
-    // set up the guider controls
-    self.guidePulseDuration = 250;
-    self.guideControlsContainer.hidden = YES;
-    
     // set up the Back button
     [self configureLibraryBackButton];
     
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
     
-    // slot the camera controls into the controls container view
+    // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     if (1) {
         
         self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
@@ -247,6 +239,11 @@
 
         [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
         [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
+    }
+    
+    // slot in guider controls
+    if (0){
+    
     }
 }
 
@@ -330,16 +327,6 @@
         else if (object == self.cameraController){
             if ([keyPath isEqualToString:@"state"] || [keyPath isEqualToString:@"progress"]){
                 [self updateExposureIndicator];
-            }
-        }
-        else if (object == [CASDeviceManager sharedManager]){
-            if ([keyPath isEqualToString:@"guiderControllers"]){
-                [self updateGuiderMenu];
-                // guider came or went
-//                NSLog(@"%@: %@ -> %@",object,keyPath,[object valueForKeyPath:keyPath]);
-//                NSLog(@"%@: %@",object,change);
-                // add, kind == 2 (NSKeyValueChangeInsertion)
-                // remove, kind == 3 (NSKeyValueChangeRemoval)
             }
         }
         else if (object == self.imageView){
@@ -644,53 +631,6 @@
 {
     self.selectionControl.selectedSegment = 1;
     [self selection:self.selectionControl]; // yuk
-}
-
-- (void)updateGuiderMenu
-{
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
-    
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"None" action:@selector(guiderMenuAction:) keyEquivalent:@""];
-    [menu addItem:item];
-    
-    NSMenuItem* selectedItem = nil;
-    if ([[CASDeviceManager sharedManager].guiderControllers count]){
-        [menu addItem:[NSMenuItem separatorItem]];
-        for (CASGuiderController* guider in [CASDeviceManager sharedManager].guiderControllers){
-            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:guider.guider.deviceName action:@selector(guiderMenuAction:) keyEquivalent:@""];
-            item.representedObject = guider;
-            [menu addItem:item];
-            if (self.cameraController.guider == guider){
-                selectedItem = item;
-            }
-        }
-    }
-    
-    self.guiderMenu.menu = menu;
-    if (!selectedItem){
-        selectedItem = [[menu itemArray] objectAtIndex:0]; // None item
-    }
-    [self.guiderMenu selectItem:selectedItem];
-    
-    if (self.cameraController.guider && !selectedItem){
-        self.cameraController.guider = nil;
-        // hide guider UI
-    }
-}
-
-- (IBAction)guiderMenuAction:(NSMenuItem*)sender
-{
-    return; // tmp
-    
-    if (!sender.representedObject){
-        self.cameraController.guider = nil;
-        self.guideControlsContainer.hidden = YES;
-    }
-    else {
-        self.cameraController.guider = sender.representedObject;
-        self.guideControlsContainer.hidden = NO;
-        self.imageView.showStarProfile = YES;
-    }
 }
 
 #pragma mark - Actions
@@ -1138,28 +1078,6 @@
 {
     self.colourAdjustments.allAdjust = sender.floatValue;
     [self displayExposure:_currentExposure];
-}
-
-// todo; implement click and hold behaviour for pulse buttons
-- (IBAction)pulseNorth:(id)sender
-{
-    [self.cameraController.guider pulse:kCASGuiderDirection_DecPlus duration:self.guidePulseDuration block:nil];
-}
-
-- (IBAction)pulseSouth:(id)sender
-{
-    [self.cameraController.guider pulse:kCASGuiderDirection_DecMinus duration:self.guidePulseDuration block:nil];
-}
-
-- (IBAction)pulseEast:(id)sender
-{
-    [self.cameraController.guider pulse:kCASGuiderDirection_RAMinus duration:self.guidePulseDuration block:nil];
-}
-
-- (IBAction)pulseWest:(id)sender
-{
-    [self.cameraController.guider pulse:kCASGuiderDirection_RAPlus duration:self.guidePulseDuration block:nil];
-
 }
 
 - (void)_presentCaptureControllerWithMode:(NSInteger)mode

@@ -34,6 +34,8 @@
 		F44791F31680DB78007A6815 /* CASHistogramHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791F21680DB78007A6815 /* CASHistogramHUDView.m */; };
 		F44791F61680DBA2007A6815 /* CASSimpleGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791F51680DBA1007A6815 /* CASSimpleGraphView.m */; };
 		F44791F81680F5B6007A6815 /* CASHistogramHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */; };
+		F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */; };
+		F4489947176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */; };
 		F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */; };
 		F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52DF15A971620018DC75 /* SenTestingKit.framework */; };
@@ -544,6 +546,9 @@
 		F44791F41680DBA1007A6815 /* CASSimpleGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSimpleGraphView.h; sourceTree = "<group>"; };
 		F44791F51680DBA1007A6815 /* CASSimpleGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSimpleGraphView.m; sourceTree = "<group>"; };
 		F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASHistogramHUDView.xib; sourceTree = "<group>"; };
+		F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderControlsViewController.h; sourceTree = "<group>"; };
+		F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderControlsViewController.m; sourceTree = "<group>"; };
+		F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASGuiderControlsViewController.xib; sourceTree = "<group>"; };
 		F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
 		F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
 		F448EBB315E6B628002AB171 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
@@ -1827,6 +1832,9 @@
 				F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */,
 				F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */,
 				F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */,
+				F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */,
+				F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */,
+				F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -3158,6 +3166,7 @@
 				F4B8868816AAD756008E0D5E /* CASCaptureWindowController.xib in Resources */,
 				F4B26F6A16BEC408001F1D03 /* CASPlateSolutionHUDView.xib in Resources */,
 				F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */,
+				F4489947176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3360,6 +3369,7 @@
 				F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */,
 				F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */,
+				F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
