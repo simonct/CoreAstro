@@ -45,6 +45,7 @@
 #import <CoreAstro/CASUSBDeviceBrowser.h>
 #import <CoreAstro/CASCameraController.h>
 #import <CoreAstro/CASGuiderController.h>
+#import <CoreAstro/CASFilterWheelController.h>
 #import <CoreAstro/CASUtilities.h>
 #import <CoreAstro/CASMovieExporter.h>
 #import <CoreAstro/CASPlateSolver.h>

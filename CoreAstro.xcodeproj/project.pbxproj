@@ -36,6 +36,8 @@
 		F44791F81680F5B6007A6815 /* CASHistogramHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */; };
 		F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */; };
 		F4489947176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */; };
+		F44899501770E5F400C0F8DD /* CASFilterWheelControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */; };
+		F44899511770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */; };
 		F44EDEFB15FCC385003B1B4C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */; };
 		F44EDF0C15FCC386003B1B4C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52DF15A971620018DC75 /* SenTestingKit.framework */; };
@@ -335,7 +337,7 @@
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
-		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; };
+		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -549,6 +551,9 @@
 		F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderControlsViewController.h; sourceTree = "<group>"; };
 		F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderControlsViewController.m; sourceTree = "<group>"; };
 		F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASGuiderControlsViewController.xib; sourceTree = "<group>"; };
+		F448994D1770E5F400C0F8DD /* CASFilterWheelControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelControlsViewController.h; sourceTree = "<group>"; };
+		F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelControlsViewController.m; sourceTree = "<group>"; };
+		F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASFilterWheelControlsViewController.xib; sourceTree = "<group>"; };
 		F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
 		F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
 		F448EBB315E6B628002AB171 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
@@ -1835,6 +1840,9 @@
 				F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */,
 				F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */,
 				F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */,
+				F448994D1770E5F400C0F8DD /* CASFilterWheelControlsViewController.h */,
+				F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */,
+				F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -3167,6 +3175,7 @@
 				F4B26F6A16BEC408001F1D03 /* CASPlateSolutionHUDView.xib in Resources */,
 				F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */,
 				F4489947176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib in Resources */,
+				F44899511770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3370,6 +3379,7 @@
 				F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */,
 				F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */,
+				F44899501770E5F400C0F8DD /* CASFilterWheelControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

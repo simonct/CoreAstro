@@ -34,6 +34,7 @@
 #import "CASLibraryBrowserViewController.h"
 #import "CASCameraControlsViewController.h"
 #import "CASGuiderControlsViewController.h"
+#import "CASFilterWheelControlsViewController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreAstro/CoreAstro.h>
@@ -149,6 +150,7 @@
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) NSArray *libraryBackButtonConstraints;
 @property (nonatomic,strong) CASCameraControlsViewController* cameraControlsViewController;
+@property (nonatomic,strong) CASFilterWheelControlsViewController* filterWheelControlsViewController;
 
 @property (nonatomic,weak) IBOutlet CASControlsContainerView *controlsConatainer;
 @property (nonatomic,weak) IBOutlet NSButton *libraryBackButton;
@@ -238,26 +240,32 @@
     [self configureLibraryBackButton];
     
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
-    if (1) {
-        
-        self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
-        self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.controlsConatainer addSubview:self.cameraControlsViewController.view];
-        
-        id cameraControlsViewController1 = self.cameraControlsViewController.view;
-        NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
-        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
-
-        [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
-        [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
-    }
+    self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
+    self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.controlsConatainer addSubview:self.cameraControlsViewController.view];
     
-    // slot in guider controls
-    if (0){
+    // layout camera controls
+    id cameraControlsViewController1 = self.cameraControlsViewController.view;
+    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
     
-    }
+    [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
+    [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
+    
+    // create filter wheel controls
+    self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
+    self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.controlsConatainer addSubview:self.filterWheelControlsViewController.view];
 
+    // layout filter wheel controls
+    id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
+    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+
+    // todo; slot in guider controls
+    
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
 }
