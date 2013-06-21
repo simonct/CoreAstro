@@ -45,6 +45,7 @@
 
 - (void)dealloc
 {
+    self.currentFilterWheel = nil; // unobserves the current filter wheel
     [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"filterWheelControllers"];
 }
 
@@ -141,22 +142,27 @@
 
 - (IBAction)filterWheelMenuAction:(NSMenuItem*)sender
 {
-    NSLog(@"filterWheelMenuAction");
-    
-    [self.currentFilterWheel removeObserver:self forKeyPath:@"currentFilter"];
-    [self.currentFilterWheel removeObserver:self forKeyPath:@"filterCount"];
-    
     self.currentFilterWheel = sender.representedObject;
-
-    [self.currentFilterWheel addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [self.currentFilterWheel addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 }
 
 - (IBAction)filterWheelFilterMenuAction:(NSMenuItem*)sender
 {
-    NSLog(@"filterWheelFilterMenuAction");
-    
     self.currentFilterWheel.currentFilter = [[self.filterWheelFilterMenu.menu itemArray] indexOfObject:sender];
+}
+
+- (void)setCurrentFilterWheel:(CASFilterWheelController *)currentFilterWheel
+{
+    if (_currentFilterWheel){
+        [_currentFilterWheel removeObserver:self forKeyPath:@"currentFilter"];
+        [_currentFilterWheel removeObserver:self forKeyPath:@"filterCount"];
+    }
+    
+    _currentFilterWheel = currentFilterWheel;
+    
+    if (_currentFilterWheel){
+        [_currentFilterWheel addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+        [_currentFilterWheel addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    }
 }
 
 @end
