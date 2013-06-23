@@ -26,6 +26,21 @@
     self.browser = [[CASHIDDeviceBrowser alloc] init];
     self.factory = [[SXCCDDeviceFactory alloc] init];
     
+    __weak CASAppDelegate* weakSelf = self;
+    self.browser.deviceRemoved = ^(void* dev,NSString* path,NSDictionary* props) {
+        
+        CASAppDelegate* strongSelf = weakSelf;
+        if (strongSelf && [path isEqualToString:strongSelf.fw.path]){
+            [strongSelf.fw removeObserver:strongSelf forKeyPath:@"filterCount" context:(__bridge void *)(strongSelf)];
+            [strongSelf.fw removeObserver:strongSelf forKeyPath:@"currentFilter" context:(__bridge void *)(strongSelf)];
+            [strongSelf.fw disconnect];
+            strongSelf.fw = nil;
+            strongSelf.filterSelectionMatrix.enabled = NO;
+        }
+        
+        return (CASDevice*)nil;
+    };
+
     [self.browser scan:^CASDevice *(void *dev, NSString *path, NSDictionary *props) {
         
         CASDevice* fw =[self.factory createDeviceWithDeviceRef:dev path:path properties:props];
