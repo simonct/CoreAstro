@@ -21,8 +21,6 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.filterSelectionMatrix.enabled = NO;
-
     self.browser = [[CASHIDDeviceBrowser alloc] init];
     self.factory = [[SXCCDDeviceFactory alloc] init];
     
@@ -35,7 +33,6 @@
             [strongSelf.fw removeObserver:strongSelf forKeyPath:@"currentFilter" context:(__bridge void *)(strongSelf)];
             [strongSelf.fw disconnect];
             strongSelf.fw = nil;
-            strongSelf.filterSelectionMatrix.enabled = NO;
         }
         
         return (CASDevice*)nil;
@@ -43,17 +40,20 @@
 
     [self.browser scan:^CASDevice *(void *dev, NSString *path, NSDictionary *props) {
         
-        CASDevice* fw =[self.factory createDeviceWithDeviceRef:dev path:path properties:props];
+        SXFWDevice* fw = (SXFWDevice*)[self.factory createDeviceWithDeviceRef:dev path:path properties:props];
         if ([fw isKindOfClass:[SXFWDevice class]]){
             
-            self.fw = (SXFWDevice*)fw;
-            self.fw.transport = [self.browser createTransportWithDevice:self.fw];
-            [self.fw addObserver:self forKeyPath:@"filterCount" options:0 context:(__bridge void *)(self)];
-            [self.fw addObserver:self forKeyPath:@"currentFilter" options:0 context:(__bridge void *)(self)];
+            fw.transport = [self.browser createTransportWithDevice:fw];
             
-            [self.fw connect:^(NSError* error) {
+            [fw connect:^(NSError* error) {
+                
                 if (error){
                     NSLog(@"connect: %@",error);
+                }
+                else {
+                    self.fw = fw;
+                    [self.fw addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+                    [self.fw addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
                 }
             }];
         }
@@ -69,14 +69,18 @@
         NSLog(@"keyPath %@ -> %@",keyPath,[object valueForKeyPath:keyPath]);
         
         if ([@"filterCount" isEqualToString:keyPath]){
+            
             while (self.filterSelectionMatrix.numberOfColumns > self.fw.filterCount) {
                 [self.filterSelectionMatrix removeColumn:[self.filterSelectionMatrix numberOfColumns]-1];
             }
+            [self.filterSelectionMatrix sizeToCells];
+            [self.filterSelectionMatrix.superview layout];
         }
         else if ([@"currentFilter" isEqualToString:keyPath]) {
+            
+            self.filterSelectionMatrix.enabled = (self.fw.currentFilter != NSNotFound);
             [self.filterSelectionMatrix selectCellAtRow:0 column:self.fw.currentFilter];
         }
-        self.filterSelectionMatrix.enabled = YES;
         
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
