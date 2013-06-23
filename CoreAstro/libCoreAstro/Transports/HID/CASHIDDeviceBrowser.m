@@ -88,14 +88,14 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
                                     [NSNumber numberWithLong:product],@"idProduct",
                                     nil];
         
-        NSLog(@"%@: %@",path,properties);
+//        NSLog(@"%@: %@",path,properties);
         callback(device,path,properties);
     }
 }
 
 - (void)deviceAdded:(IOHIDDeviceRef)device {
     
-    NSLog(@"HID device added: %@",device);
+//    NSLog(@"HID device added: %@",device);
     
     if (!_devices){
         _devices = [[NSMutableArray alloc] initWithCapacity:10];
@@ -109,7 +109,7 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
 
 - (void)deviceRemoved:(IOHIDDeviceRef)device {
     
-    NSLog(@"HID device removed: %@",device);
+//    NSLog(@"HID device removed: %@",device);
 
     if (self.deviceRemoved){
         [self invokeCallback:self.deviceRemoved withDevice:device];
@@ -140,7 +140,7 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
             IOHIDManagerRegisterDeviceRemovalCallback(_hidManager,CASIOHIDDeviceRemovedCallback,(__bridge void *)(self));
             IOHIDManagerRegisterDeviceMatchingCallback(_hidManager,CASIOHIDDeviceMatchedCallback,(__bridge void *)(self));
             
-            _runLoop = CFRunLoopGetCurrent();
+            _runLoop = CFRunLoopGetMain(); // todo; set up a dedicated run loop
             IOHIDManagerScheduleWithRunLoop(_hidManager,_runLoop,kCFRunLoopCommonModes);
 		}
 	}

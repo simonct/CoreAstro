@@ -127,7 +127,7 @@
 }
 
 - (NSString*)deviceName {
-    return @"SX USB filter wheel";
+    return @"SX USB Filter Wheel";
 }
 
 - (NSString*)vendorName {

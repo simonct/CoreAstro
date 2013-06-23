@@ -61,6 +61,8 @@
             return @"Firewire";
         case kCASTransportTypeEthernet:
             return @"Ethernet";
+        case kCASTransportTypeHID:
+            return @"HID";
         default:
             break;
     }

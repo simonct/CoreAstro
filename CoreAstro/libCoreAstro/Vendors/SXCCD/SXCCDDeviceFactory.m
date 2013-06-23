@@ -84,6 +84,7 @@ static NSDictionary* _deviceLookup = nil;
                 case 1: {
                     SXFWDevice* fw = [[SXFWDevice alloc] init];
                     fw.device = dev;
+                    fw.path = path;
                     result = fw;
                 }
                     break;

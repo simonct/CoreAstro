@@ -33,6 +33,7 @@
     BOOL _open;
     IOHIDDeviceRef _device;
     NSMutableData* _inputBuffer;
+    CFRunLoopRef _runLoop;
 }
 
 static void CASIOHIDReportCallback (void *                  context,
@@ -61,6 +62,10 @@ static void CASIOHIDReportCallback (void *                  context,
     return self;
 }
 
+- (CASIOTransportType)type {
+    return kCASTransportTypeHID;
+}
+
 - (NSError*)connect {
     
     IOReturn result = kIOReturnSuccess;
@@ -73,6 +78,8 @@ static void CASIOHIDReportCallback (void *                  context,
         }
         else {
             
+            CFRetain(_device);
+            
             const long size = IOHIDDevice_GetMaxInputReportSize(_device);
             if (size < 1){
                 NSLog(@"IOHIDDevice_GetMaxInputReportSize: %ld",size);
@@ -80,10 +87,11 @@ static void CASIOHIDReportCallback (void *                  context,
             else {
                 
                 _inputBuffer = [NSMutableData dataWithLength:size];
+                _runLoop = CFRunLoopGetMain(); // todo; really need a dedicated run loop for these
                 
                 IOHIDDeviceScheduleWithRunLoop(_device,
-                                               CFRunLoopGetCurrent(),
-                                               CFSTR("CASIOHIDTransport"));
+                                               _runLoop,
+                                               kCFRunLoopCommonModes);
                 
                 IOHIDDeviceRegisterInputReportCallback(_device,
                                                        [_inputBuffer mutableBytes],
@@ -100,10 +108,29 @@ static void CASIOHIDReportCallback (void *                  context,
 }
 
 - (void)disconnect {
-    if (_device){
-        _open = NO;
-        IOHIDDeviceRegisterInputReportCallback(_device, nil, 0, nil, nil);
+    
+    if (!_device){
+        return;
     }
+    
+    NSLog(@"[CASIOHIDTransport disconnect]");
+    
+    _open = NO;
+    IOHIDDeviceRegisterInputReportCallback(_device,
+                                           [_inputBuffer mutableBytes],
+                                           [_inputBuffer length],
+                                           nil,
+                                           (__bridge void *)(self));
+    
+    IOHIDDeviceUnscheduleFromRunLoop(_device,
+                                     _runLoop,
+                                     kCFRunLoopCommonModes);
+    
+    IOHIDDeviceClose(_device, kIOHIDOptionsTypeNone);
+    
+    CFRelease(_device);
+    
+    _device = nil;
 }
 
 - (NSError*)send:(NSData*)data {
@@ -115,14 +142,25 @@ static void CASIOHIDReportCallback (void *                  context,
         error = [self connect];
         if (!error){
             
-            IOReturn result = IOHIDDeviceSetReport(_device,
-                                                   kIOHIDReportTypeOutput,
-                                                   0,
-                                                   [data bytes],
-                                                   [data length]);
-            if (result != kIOReturnSuccess){
-                error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
-            }
+            // grim hack; since we usually connect on an operation queue thread this only seems to reliably work if some settle time is allowed
+            // (there is presumably something else going on here e.g. some state I need to wait for before sending data, etc)
+            double delayInSeconds = 0.1;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                if (_device){
+                    
+                    IOReturn result = IOHIDDeviceSetReport(_device,
+                                                           kIOHIDReportTypeOutput,
+                                                           0,
+                                                           [data bytes],
+                                                           [data length]);
+                    if (result != kIOReturnSuccess){
+                        NSLog(@"IOHIDDeviceSetReport: %x",result);
+                        //                    error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
+                    }
+                }
+            });
         }
     }
     
