@@ -69,7 +69,7 @@
 - (NSData*)toDataRepresentation {
     uint8_t buffer[2] = { 0x80 | self.index + 1 , 0 }; // our index is 0-based but the filter wheel is 1-based
     NSData* msg = [NSData dataWithBytes:buffer length:sizeof(buffer)];
-    NSLog(@"SXFWIOSetFilterIndexCommand: %@",msg);
+//    NSLog(@"SXFWIOSetFilterIndexCommand: %@",msg);
     return msg;
 }
 
@@ -101,6 +101,7 @@
 
 @implementation SXFWDevice {
     BOOL _connected;
+    BOOL _settingFilter;
     NSUInteger _filterCount;
     NSInteger _currentFilter;
     NSMutableArray* _completionStack;
@@ -225,17 +226,39 @@
 #pragma mark - Properties
 
 - (NSInteger)currentFilter {
-    return _currentFilter;
+    return _settingFilter ? NSNotFound : _currentFilter;
 }
 
 - (void)setCurrentFilter:(NSInteger)currentFilter {
+    
+    NSLog(@"setCurrentFilter: %ld",currentFilter);
+    
     if (_currentFilter != currentFilter){
-        _currentFilter = currentFilter;
-        [self setFilterIndex:_currentFilter block:^(NSError* error) {
-            if (error){
-                NSLog(@"Setting filter index: error=%@",error);
-            }
-        }];
+        
+        if (_settingFilter){
+            NSLog(@"Attempt to set filter index to while already setting it");
+        }
+        else {
+            
+            _settingFilter = YES;
+            
+            __weak SXFWDevice* weakDev = self;
+            [self setFilterIndex:currentFilter block:^(NSError* error) {
+
+                SXFWDevice* strongDev = weakDev;
+                if (error){
+                    NSLog(@"Setting filter index: error=%@",error);
+                }
+                else {
+                    if (strongDev){
+                        strongDev->_currentFilter = currentFilter;
+                    }
+                }
+                if (strongDev){
+                    strongDev->_settingFilter = NO;
+                }
+            }];
+        }
     }
 }
 
@@ -279,7 +302,7 @@
 
 - (void)setFilterIndex:(NSInteger)index block:(void (^)(NSError*))block {
     
-    NSLog(@"setFilterIndex: %ld",(long)index);
+//    NSLog(@"setFilterIndex: %ld",(long)index);
     
     SXFWIOSetFilterIndexCommand* setIndex = [[SXFWIOSetFilterIndexCommand alloc] init];
 
