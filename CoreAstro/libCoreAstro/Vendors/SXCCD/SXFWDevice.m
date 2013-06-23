@@ -231,7 +231,7 @@
 
 - (void)setCurrentFilter:(NSInteger)currentFilter {
     
-    NSLog(@"setCurrentFilter: %ld",currentFilter);
+//    NSLog(@"setCurrentFilter: %ld",currentFilter);
     
     if (_currentFilter != currentFilter){
         
@@ -320,7 +320,7 @@
 
 - (void)receivedInputReport:(NSData*)data {
     
-    NSLog(@"-[SXFWDevice receivedInputReport]: %@",data);
+//    NSLog(@"-[SXFWDevice receivedInputReport]: %@",data);
     
     uint16_t result;
     if ([data length] == sizeof(result)){

@@ -66,7 +66,7 @@
 {
     if (context == (__bridge void *)(self)) {
         
-        NSLog(@"keyPath %@ -> %@",keyPath,[object valueForKeyPath:keyPath]);
+//        NSLog(@"keyPath %@ -> %@",keyPath,[object valueForKeyPath:keyPath]);
         
         if ([@"filterCount" isEqualToString:keyPath]){
             
