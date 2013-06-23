@@ -1,0 +1,530 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F420A8CD1774E8220087D013 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F420A8CC1774E8220087D013 /* Cocoa.framework */; };
+		F420A8D71774E8220087D013 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F420A8D51774E8220087D013 /* InfoPlist.strings */; };
+		F420A8D91774E8220087D013 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8D81774E8220087D013 /* main.m */; };
+		F420A8DD1774E8220087D013 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F420A8DB1774E8220087D013 /* Credits.rtf */; };
+		F420A8E01774E8220087D013 /* CASAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8DF1774E8220087D013 /* CASAppDelegate.m */; };
+		F420A8E31774E8220087D013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F420A8E11774E8220087D013 /* MainMenu.xib */; };
+		F420A8F71774E8330087D013 /* CASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8EA1774E8330087D013 /* CASDevice.m */; };
+		F420A8F81774E8330087D013 /* CASIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8EC1774E8330087D013 /* CASIOCommand.m */; };
+		F420A8F91774E8330087D013 /* CASIOTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8EE1774E8330087D013 /* CASIOTransport.m */; };
+		F420A8FA1774E8330087D013 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8F01774E8330087D013 /* CASSHGPUSBDevice.m */; };
+		F420A8FB1774E8330087D013 /* CASSHDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8F21774E8330087D013 /* CASSHDeviceFactory.m */; };
+		F420A8FC1774E8330087D013 /* CASIOHIDTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8F41774E8330087D013 /* CASIOHIDTransport.m */; };
+		F420A8FD1774E8330087D013 /* CASHIDDeviceBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A8F61774E8330087D013 /* CASHIDDeviceBrowser.m */; };
+		F420A91A1774E8840087D013 /* HID_cookie_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F420A8FF1774E8840087D013 /* HID_cookie_strings.plist */; };
+		F420A91B1774E8840087D013 /* HID_device_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F420A9011774E8840087D013 /* HID_device_usage_strings.plist */; };
+		F420A91C1774E8840087D013 /* HID_usage_strings.plist in Resources */ = {isa = PBXBuildFile; fileRef = F420A9031774E8840087D013 /* HID_usage_strings.plist */; };
+		F420A91D1774E8840087D013 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F420A9051774E8840087D013 /* InfoPlist.strings */; };
+		F420A91E1774E8840087D013 /* HID_Config_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A90B1774E8840087D013 /* HID_Config_Utilities.c */; };
+		F420A91F1774E8840087D013 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A90C1774E8840087D013 /* HID_Error_Handler.c */; };
+		F420A9201774E8840087D013 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A90D1774E8840087D013 /* HID_Name_Lookup.c */; };
+		F420A9211774E8840087D013 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A90E1774E8840087D013 /* HID_Queue_Utilities.c */; };
+		F420A9221774E8840087D013 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A90F1774E8840087D013 /* HID_Utilities.c */; };
+		F420A9231774E8840087D013 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F420A9111774E8840087D013 /* Info.plist */; };
+		F420A9241774E8840087D013 /* ImmrHIDUtilAddOn.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A9131774E8840087D013 /* ImmrHIDUtilAddOn.c */; };
+		F420A9251774E8840087D013 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A9151774E8840087D013 /* IOHIDDevice_.c */; };
+		F420A9261774E8840087D013 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = F420A9171774E8840087D013 /* IOHIDElement_.c */; };
+		F420A92F1774E8EB0087D013 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F420A92E1774E8EB0087D013 /* IOKit.framework */; };
+		F420A9321775B8230087D013 /* CASSHFCUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F420A9311775B8230087D013 /* CASSHFCUSBDevice.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F420A92A1774E8840087D013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F420A9071774E8840087D013 /* HID Utilities.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D07F2C80486CC7A007CD1D0;
+			remoteInfo = Framework;
+		};
+		F420A92C1774E8840087D013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F420A9071774E8840087D013 /* HID Utilities.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 97F808C710347C9A00D58924;
+			remoteInfo = "dynamic library";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F420A8C91774E8220087D013 /* fcusb-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fcusb-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F420A8CC1774E8220087D013 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F420A8CF1774E8220087D013 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F420A8D01774E8220087D013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F420A8D11774E8220087D013 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F420A8D41774E8220087D013 /* fcusb-test-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "fcusb-test-Info.plist"; sourceTree = "<group>"; };
+		F420A8D61774E8220087D013 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F420A8D81774E8220087D013 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F420A8DA1774E8220087D013 /* fcusb-test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fcusb-test-Prefix.pch"; sourceTree = "<group>"; };
+		F420A8DC1774E8220087D013 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F420A8DE1774E8220087D013 /* CASAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CASAppDelegate.h; sourceTree = "<group>"; };
+		F420A8DF1774E8220087D013 /* CASAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CASAppDelegate.m; sourceTree = "<group>"; };
+		F420A8E21774E8220087D013 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F420A8E91774E8330087D013 /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASDevice.h; path = ../../../CoreAstro/libCoreAstro/Core/CASDevice.h; sourceTree = "<group>"; };
+		F420A8EA1774E8330087D013 /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASDevice.m; path = ../../../CoreAstro/libCoreAstro/Core/CASDevice.m; sourceTree = "<group>"; };
+		F420A8EB1774E8330087D013 /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOCommand.h; path = ../../../CoreAstro/libCoreAstro/Core/CASIOCommand.h; sourceTree = "<group>"; };
+		F420A8EC1774E8330087D013 /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOCommand.m; path = ../../../CoreAstro/libCoreAstro/Core/CASIOCommand.m; sourceTree = "<group>"; };
+		F420A8ED1774E8330087D013 /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOTransport.h; path = ../../../CoreAstro/libCoreAstro/Core/CASIOTransport.h; sourceTree = "<group>"; };
+		F420A8EE1774E8330087D013 /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOTransport.m; path = ../../../CoreAstro/libCoreAstro/Core/CASIOTransport.m; sourceTree = "<group>"; };
+		F420A8EF1774E8330087D013 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHGPUSBDevice.h; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.h; sourceTree = "<group>"; };
+		F420A8F01774E8330087D013 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHGPUSBDevice.m; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.m; sourceTree = "<group>"; };
+		F420A8F11774E8330087D013 /* CASSHDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHDeviceFactory.h; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.h; sourceTree = "<group>"; };
+		F420A8F21774E8330087D013 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = "<group>"; };
+		F420A8F31774E8330087D013 /* CASIOHIDTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASIOHIDTransport.h; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASIOHIDTransport.h; sourceTree = "<group>"; };
+		F420A8F41774E8330087D013 /* CASIOHIDTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASIOHIDTransport.m; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASIOHIDTransport.m; sourceTree = "<group>"; };
+		F420A8F51774E8330087D013 /* CASHIDDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASHIDDeviceBrowser.h; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASHIDDeviceBrowser.h; sourceTree = "<group>"; };
+		F420A8F61774E8330087D013 /* CASHIDDeviceBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASHIDDeviceBrowser.m; path = ../../../CoreAstro/libCoreAstro/Transports/HID/CASHIDDeviceBrowser.m; sourceTree = "<group>"; };
+		F420A9001774E8840087D013 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_cookie_strings.plist; sourceTree = "<group>"; };
+		F420A9021774E8840087D013 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_device_usage_strings.plist; sourceTree = "<group>"; };
+		F420A9041774E8840087D013 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = English; path = English.lproj/HID_usage_strings.plist; sourceTree = "<group>"; };
+		F420A9061774E8840087D013 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F420A9071774E8840087D013 /* HID Utilities.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "HID Utilities.xcodeproj"; sourceTree = "<group>"; };
+		F420A90A1774E8840087D013 /* HID Utilities_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HID Utilities_Prefix.pch"; sourceTree = "<group>"; };
+		F420A90B1774E8840087D013 /* HID_Config_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Config_Utilities.c; sourceTree = "<group>"; };
+		F420A90C1774E8840087D013 /* HID_Error_Handler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Error_Handler.c; sourceTree = "<group>"; };
+		F420A90D1774E8840087D013 /* HID_Name_Lookup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Name_Lookup.c; sourceTree = "<group>"; };
+		F420A90E1774E8840087D013 /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
+		F420A90F1774E8840087D013 /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
+		F420A9101774E8840087D013 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
+		F420A9111774E8840087D013 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F420A9131774E8840087D013 /* ImmrHIDUtilAddOn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ImmrHIDUtilAddOn.c; sourceTree = "<group>"; };
+		F420A9141774E8840087D013 /* ImmrHIDUtilAddOn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmrHIDUtilAddOn.h; sourceTree = "<group>"; };
+		F420A9151774E8840087D013 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		F420A9161774E8840087D013 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		F420A9171774E8840087D013 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		F420A9181774E8840087D013 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
+		F420A9191774E8840087D013 /* IOHIDLib_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDLib_.h; sourceTree = "<group>"; };
+		F420A92E1774E8EB0087D013 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		F420A9301775B8230087D013 /* CASSHFCUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHFCUSBDevice.h; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.h; sourceTree = "<group>"; };
+		F420A9311775B8230087D013 /* CASSHFCUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHFCUSBDevice.m; path = ../../../CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F420A8C61774E8220087D013 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F420A8CD1774E8220087D013 /* Cocoa.framework in Frameworks */,
+				F420A92F1774E8EB0087D013 /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F420A8C01774E8220087D013 = {
+			isa = PBXGroup;
+			children = (
+				F420A8D21774E8220087D013 /* fcusb-test */,
+				F420A8CB1774E8220087D013 /* Frameworks */,
+				F420A8CA1774E8220087D013 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F420A8CA1774E8220087D013 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F420A8C91774E8220087D013 /* fcusb-test.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F420A8CB1774E8220087D013 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F420A92E1774E8EB0087D013 /* IOKit.framework */,
+				F420A8CC1774E8220087D013 /* Cocoa.framework */,
+				F420A8CE1774E8220087D013 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F420A8CE1774E8220087D013 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F420A8CF1774E8220087D013 /* AppKit.framework */,
+				F420A8D01774E8220087D013 /* CoreData.framework */,
+				F420A8D11774E8220087D013 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F420A8D21774E8220087D013 /* fcusb-test */ = {
+			isa = PBXGroup;
+			children = (
+				F420A8DE1774E8220087D013 /* CASAppDelegate.h */,
+				F420A8DF1774E8220087D013 /* CASAppDelegate.m */,
+				F420A8E11774E8220087D013 /* MainMenu.xib */,
+				F420A8E91774E8330087D013 /* CASDevice.h */,
+				F420A8EA1774E8330087D013 /* CASDevice.m */,
+				F420A8EB1774E8330087D013 /* CASIOCommand.h */,
+				F420A8EC1774E8330087D013 /* CASIOCommand.m */,
+				F420A8ED1774E8330087D013 /* CASIOTransport.h */,
+				F420A8EE1774E8330087D013 /* CASIOTransport.m */,
+				F420A8EF1774E8330087D013 /* CASSHGPUSBDevice.h */,
+				F420A8F01774E8330087D013 /* CASSHGPUSBDevice.m */,
+				F420A9301775B8230087D013 /* CASSHFCUSBDevice.h */,
+				F420A9311775B8230087D013 /* CASSHFCUSBDevice.m */,
+				F420A8F11774E8330087D013 /* CASSHDeviceFactory.h */,
+				F420A8F21774E8330087D013 /* CASSHDeviceFactory.m */,
+				F420A8F31774E8330087D013 /* CASIOHIDTransport.h */,
+				F420A8F41774E8330087D013 /* CASIOHIDTransport.m */,
+				F420A8F51774E8330087D013 /* CASHIDDeviceBrowser.h */,
+				F420A8F61774E8330087D013 /* CASHIDDeviceBrowser.m */,
+				F420A8FE1774E8840087D013 /* HID_Utilities */,
+				F420A8D31774E8220087D013 /* Supporting Files */,
+			);
+			path = "fcusb-test";
+			sourceTree = "<group>";
+		};
+		F420A8D31774E8220087D013 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F420A8D41774E8220087D013 /* fcusb-test-Info.plist */,
+				F420A8D51774E8220087D013 /* InfoPlist.strings */,
+				F420A8D81774E8220087D013 /* main.m */,
+				F420A8DA1774E8220087D013 /* fcusb-test-Prefix.pch */,
+				F420A8DB1774E8220087D013 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F420A8FE1774E8840087D013 /* HID_Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F420A8FF1774E8840087D013 /* HID_cookie_strings.plist */,
+				F420A9011774E8840087D013 /* HID_device_usage_strings.plist */,
+				F420A9031774E8840087D013 /* HID_usage_strings.plist */,
+				F420A9051774E8840087D013 /* InfoPlist.strings */,
+				F420A9071774E8840087D013 /* HID Utilities.xcodeproj */,
+				F420A90A1774E8840087D013 /* HID Utilities_Prefix.pch */,
+				F420A90B1774E8840087D013 /* HID_Config_Utilities.c */,
+				F420A90C1774E8840087D013 /* HID_Error_Handler.c */,
+				F420A90D1774E8840087D013 /* HID_Name_Lookup.c */,
+				F420A90E1774E8840087D013 /* HID_Queue_Utilities.c */,
+				F420A90F1774E8840087D013 /* HID_Utilities.c */,
+				F420A9101774E8840087D013 /* HID_Utilities_External.h */,
+				F420A9111774E8840087D013 /* Info.plist */,
+				F420A9121774E8840087D013 /* IOHIDManager */,
+			);
+			name = HID_Utilities;
+			path = ../../../CoreAstro/libCoreAstro/Transports/HID/HID_Utilities;
+			sourceTree = "<group>";
+		};
+		F420A9081774E8840087D013 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F420A92B1774E8840087D013 /* HID Utilities.framework */,
+				F420A92D1774E8840087D013 /* libHID_Utilities.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F420A9121774E8840087D013 /* IOHIDManager */ = {
+			isa = PBXGroup;
+			children = (
+				F420A9131774E8840087D013 /* ImmrHIDUtilAddOn.c */,
+				F420A9141774E8840087D013 /* ImmrHIDUtilAddOn.h */,
+				F420A9151774E8840087D013 /* IOHIDDevice_.c */,
+				F420A9161774E8840087D013 /* IOHIDDevice_.h */,
+				F420A9171774E8840087D013 /* IOHIDElement_.c */,
+				F420A9181774E8840087D013 /* IOHIDElement_.h */,
+				F420A9191774E8840087D013 /* IOHIDLib_.h */,
+			);
+			path = IOHIDManager;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F420A8C81774E8220087D013 /* fcusb-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F420A8E61774E8220087D013 /* Build configuration list for PBXNativeTarget "fcusb-test" */;
+			buildPhases = (
+				F420A8C51774E8220087D013 /* Sources */,
+				F420A8C61774E8220087D013 /* Frameworks */,
+				F420A8C71774E8220087D013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "fcusb-test";
+			productName = "fcusb-test";
+			productReference = F420A8C91774E8220087D013 /* fcusb-test.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F420A8C11774E8220087D013 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CAS;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Simon Taylor";
+			};
+			buildConfigurationList = F420A8C41774E8220087D013 /* Build configuration list for PBXProject "fcusb-test" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+			);
+			mainGroup = F420A8C01774E8220087D013;
+			productRefGroup = F420A8CA1774E8220087D013 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F420A9081774E8840087D013 /* Products */;
+					ProjectRef = F420A9071774E8840087D013 /* HID Utilities.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F420A8C81774E8220087D013 /* fcusb-test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F420A92B1774E8840087D013 /* HID Utilities.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = "HID Utilities.framework";
+			remoteRef = F420A92A1774E8840087D013 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F420A92D1774E8840087D013 /* libHID_Utilities.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libHID_Utilities.dylib;
+			remoteRef = F420A92C1774E8840087D013 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F420A8C71774E8220087D013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F420A8D71774E8220087D013 /* InfoPlist.strings in Resources */,
+				F420A8DD1774E8220087D013 /* Credits.rtf in Resources */,
+				F420A8E31774E8220087D013 /* MainMenu.xib in Resources */,
+				F420A91A1774E8840087D013 /* HID_cookie_strings.plist in Resources */,
+				F420A91B1774E8840087D013 /* HID_device_usage_strings.plist in Resources */,
+				F420A91C1774E8840087D013 /* HID_usage_strings.plist in Resources */,
+				F420A91D1774E8840087D013 /* InfoPlist.strings in Resources */,
+				F420A9231774E8840087D013 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F420A8C51774E8220087D013 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F420A8D91774E8220087D013 /* main.m in Sources */,
+				F420A8E01774E8220087D013 /* CASAppDelegate.m in Sources */,
+				F420A8F71774E8330087D013 /* CASDevice.m in Sources */,
+				F420A8F81774E8330087D013 /* CASIOCommand.m in Sources */,
+				F420A8F91774E8330087D013 /* CASIOTransport.m in Sources */,
+				F420A8FA1774E8330087D013 /* CASSHGPUSBDevice.m in Sources */,
+				F420A8FB1774E8330087D013 /* CASSHDeviceFactory.m in Sources */,
+				F420A8FC1774E8330087D013 /* CASIOHIDTransport.m in Sources */,
+				F420A8FD1774E8330087D013 /* CASHIDDeviceBrowser.m in Sources */,
+				F420A91E1774E8840087D013 /* HID_Config_Utilities.c in Sources */,
+				F420A91F1774E8840087D013 /* HID_Error_Handler.c in Sources */,
+				F420A9201774E8840087D013 /* HID_Name_Lookup.c in Sources */,
+				F420A9211774E8840087D013 /* HID_Queue_Utilities.c in Sources */,
+				F420A9221774E8840087D013 /* HID_Utilities.c in Sources */,
+				F420A9241774E8840087D013 /* ImmrHIDUtilAddOn.c in Sources */,
+				F420A9251774E8840087D013 /* IOHIDDevice_.c in Sources */,
+				F420A9261774E8840087D013 /* IOHIDElement_.c in Sources */,
+				F420A9321775B8230087D013 /* CASSHFCUSBDevice.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F420A8D51774E8220087D013 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A8D61774E8220087D013 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F420A8DB1774E8220087D013 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A8DC1774E8220087D013 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F420A8E11774E8220087D013 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A8E21774E8220087D013 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F420A8FF1774E8840087D013 /* HID_cookie_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A9001774E8840087D013 /* English */,
+			);
+			name = HID_cookie_strings.plist;
+			sourceTree = "<group>";
+		};
+		F420A9011774E8840087D013 /* HID_device_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A9021774E8840087D013 /* English */,
+			);
+			name = HID_device_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F420A9031774E8840087D013 /* HID_usage_strings.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A9041774E8840087D013 /* English */,
+			);
+			name = HID_usage_strings.plist;
+			sourceTree = "<group>";
+		};
+		F420A9051774E8840087D013 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F420A9061774E8840087D013 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F420A8E41774E8220087D013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F420A8E51774E8220087D013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F420A8E71774E8220087D013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fcusb-test/fcusb-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = "/Users/simon/Documents/Projects/CoreAstro-github/CoreAstro/**";
+				INFOPLIST_FILE = "fcusb-test/fcusb-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F420A8E81774E8220087D013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fcusb-test/fcusb-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = "/Users/simon/Documents/Projects/CoreAstro-github/CoreAstro/**";
+				INFOPLIST_FILE = "fcusb-test/fcusb-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F420A8C41774E8220087D013 /* Build configuration list for PBXProject "fcusb-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F420A8E41774E8220087D013 /* Debug */,
+				F420A8E51774E8220087D013 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F420A8E61774E8220087D013 /* Build configuration list for PBXNativeTarget "fcusb-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F420A8E71774E8220087D013 /* Debug */,
+				F420A8E81774E8220087D013 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F420A8C11774E8220087D013 /* Project object */;
+}

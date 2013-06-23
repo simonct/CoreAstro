@@ -25,6 +25,7 @@
 
 #import "CASSHDeviceFactory.h"
 #import "CASSHGPUSBDevice.h"
+#import "CASSHFCUSBDevice.h"
 
 @interface CASSHDeviceFactory ()
 @end
@@ -52,7 +53,9 @@
                 // FCUSB[2]
             case 0x9023:
             case 0x9024: {
-                NSLog(@"CASSHDeviceFactory: recognised FCUSB[2]");
+                CASSHFCUSBDevice* fcusb = [[CASSHFCUSBDevice alloc] init];
+                fcusb.device = dev;
+                result = fcusb;
             }
                 break;
                 
