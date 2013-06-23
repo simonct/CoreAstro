@@ -64,17 +64,31 @@ enum {
 @end
 
 @implementation CASSHFCUSBDevice {
+    NSUInteger _pid;
     BOOL _connected;
 }
 
 @synthesize motorSpeed = _motorSpeed;
+
+- (id)initWithPID:(NSUInteger)pid {
+    self = [super init];
+    _pid = pid;
+    return self;
+}
 
 - (CASDeviceType)type {
     return kCASDeviceTypeFocusser;
 }
 
 - (NSString*)deviceName {
-    return @"FCUSB"; // look at pid might be (2)
+    switch (_pid) {
+        case 0x9023:
+            return @"FCUSB";
+            break;
+        case 0x9024:
+            return @"FCUSB(2)";
+    }
+    return [NSString stringWithFormat:@"FCUSB(%lx)",(unsigned long)_pid];
 }
 
 - (NSString*)vendorName {

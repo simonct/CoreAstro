@@ -45,6 +45,6 @@ typedef NS_ENUM(NSUInteger, CASFocuserPMWFreq) {
 @end
 
 @interface CASSHFCUSBDevice : CASDevice<CASFocuserDevice>
-
+- (id)initWithPID:(NSUInteger)pid;
 @end
 

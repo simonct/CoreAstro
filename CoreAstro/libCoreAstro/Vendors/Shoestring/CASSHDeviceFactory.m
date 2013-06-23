@@ -53,7 +53,7 @@
                 // FCUSB[2]
             case 0x9023:
             case 0x9024: {
-                CASSHFCUSBDevice* fcusb = [[CASSHFCUSBDevice alloc] init];
+                CASSHFCUSBDevice* fcusb = [[CASSHFCUSBDevice alloc] initWithPID:[productID integerValue]];
                 fcusb.device = dev;
                 result = fcusb;
             }
