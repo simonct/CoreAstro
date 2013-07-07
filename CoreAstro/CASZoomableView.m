@@ -94,6 +94,10 @@ static const NSSize unitSize = {1.0, 1.0};
 - (IBAction)zoomImageToFit:(id)sender
 {
     const CGRect unitFrame = self.unitFrame;
+    if (unitFrame.size.width == 0 || unitFrame.size.height == 0){
+        return;
+    }
+    
     const CGRect containerFrame = self.containerView.frame;
     
     const CGFloat unitAspect = unitFrame.size.width/unitFrame.size.height;
