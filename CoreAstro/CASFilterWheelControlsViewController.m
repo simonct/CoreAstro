@@ -57,7 +57,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    NSLog(@"observeValueForKeyPath: %@ (%@)",keyPath,change);
+//    NSLog(@"observeValueForKeyPath: %@ (%@)",keyPath,change);
     
     if (context == (__bridge void *)(self)) {
         
