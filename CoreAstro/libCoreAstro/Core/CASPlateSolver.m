@@ -253,7 +253,7 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
 + (void)initialize
 {
     if (self == [CASPlateSolver class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Library/Application Support/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Documents/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
     }
 }
 
