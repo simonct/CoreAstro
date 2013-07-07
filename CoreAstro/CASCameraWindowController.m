@@ -253,18 +253,25 @@
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
     
-    // create filter wheel controls
-    self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
-    self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsConatainer addSubview:self.filterWheelControlsViewController.view];
-
-    // layout filter wheel controls
-    id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
-    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
-    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+    // listen for filter wheels
+    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    
+    if (0){
+        
+        // create filter wheel controls
+        self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
+        self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.controlsConatainer addSubview:self.filterWheelControlsViewController.view];
+        
+        // layout filter wheel controls
+        id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
+        viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
+        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+        [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+    }
 
     // todo; slot in guider controls
+    // todo; slot in focusser controls
     
     // all done, bind the exposures controller
     [self.exposuresController bind:@"contentArray" toObject:self withKeyPath:@"library.exposures" options:nil];
@@ -359,6 +366,20 @@
                 }
                 else {
                     self.selectionControl.selectedSegment = 1;
+                }
+            }
+        }
+        else if (object == [CASDeviceManager sharedManager]) {
+            
+            if ([keyPath isEqualToString:@"filterWheelControllers"]){
+                
+                switch ([change[NSKeyValueChangeKindKey] integerValue]) {
+                    case NSKeyValueChangeInsertion:
+                        [self showFilterWheelControls];
+                        break;
+                    case NSKeyValueChangeRemoval:
+                        [self hideFilterWheelControls];
+                        break;
                 }
             }
         }
@@ -654,6 +675,38 @@
 {
     self.selectionControl.selectedSegment = 1;
     [self selection:self.selectionControl]; // yuk
+}
+
+#pragma mark - Filter Wheel
+
+- (void)showFilterWheelControls
+{
+    if (self.filterWheelControlsViewController){
+        return;
+    }
+    
+    // create filter wheel controls
+    self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
+    self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.controlsConatainer addSubview:self.filterWheelControlsViewController.view];
+    
+    // layout filter wheel controls
+    id cameraControlsViewController1 = self.cameraControlsViewController.view;
+    id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
+    NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [self.controlsConatainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+}
+
+- (void)hideFilterWheelControls
+{
+    if (!self.filterWheelControlsViewController){
+        return;
+    }
+    
+    [self.controlsConatainer removeConstraints:[self.filterWheelControlsViewController.view constraints]];
+    [self.filterWheelControlsViewController.view removeFromSuperview];
+    self.filterWheelControlsViewController = nil;
 }
 
 #pragma mark - Actions
