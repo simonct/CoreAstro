@@ -338,6 +338,8 @@
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
 		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */; };
+		F4FCE71317772270000E117F /* CASSHFCUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCE71117772270000E117F /* CASSHFCUSBDevice.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1327,6 +1329,8 @@
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
 		F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelController.m; sourceTree = "<group>"; };
 		F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelController.h; sourceTree = "<group>"; };
+		F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHFCUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.h; sourceTree = SOURCE_ROOT; };
+		F4FCE71117772270000E117F /* CASSHFCUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHFCUSBDevice.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.m; sourceTree = SOURCE_ROOT; };
 		F4FEFBA015E80E4D00DB6951 /* CASCCDExposureLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureLibrary.h; sourceTree = "<group>"; };
 		F4FEFBA115E80E4D00DB6951 /* CASCCDExposureLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureLibrary.m; sourceTree = "<group>"; };
 		F4FEFBA415E8178600DB6951 /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureIO.h; sourceTree = "<group>"; };
@@ -2687,6 +2691,8 @@
 				F4EEF3091606233000547009 /* CASSHDeviceFactory.m */,
 				F4EEF321160629D800547009 /* CASSHGPUSBDevice.h */,
 				F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */,
+				F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */,
+				F4FCE71117772270000E117F /* CASSHFCUSBDevice.m */,
 				F4EEF307160622EF00547009 /* Supporting Files */,
 			);
 			name = Shoestring;
@@ -2879,6 +2885,7 @@
 				F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */,
 				F4C70E901749405B003D35CA /* CASFWDevice.h in Headers */,
 				F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */,
+				F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3319,6 +3326,7 @@
 				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
 				F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */,
 				F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */,
+				F4FCE71317772270000E117F /* CASSHFCUSBDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
