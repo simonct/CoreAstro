@@ -78,8 +78,9 @@
         }
         else if ([@"currentFilter" isEqualToString:keyPath]) {
             
-            self.filterSelectionMatrix.enabled = (self.fw.currentFilter != NSNotFound);
-            [self.filterSelectionMatrix selectCellAtRow:0 column:self.fw.currentFilter];
+            if (self.fw.currentFilter != NSNotFound && !self.fw.moving){
+                [self.filterSelectionMatrix selectCellAtRow:0 column:self.fw.currentFilter];
+            }
         }
         
     } else {
@@ -89,8 +90,7 @@
 
 - (IBAction)setCurrentFilter:(NSMatrix*)sender
 {
-    [self.fw setCurrentFilter:sender.selectedColumn];
-    self.filterSelectionMatrix.enabled = NO;
+    [self.fw setCurrentFilter:[sender.cells indexOfObject:sender.selectedCell]];
 }
 
 @end
