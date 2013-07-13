@@ -523,6 +523,7 @@
 				F420A8E81774E8220087D013 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

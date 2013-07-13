@@ -61,6 +61,7 @@ enum {
 
 @interface CASSHFCUSBDevice ()<CASIOHIDTransportDelegate>
 @property (nonatomic,assign) uint16_t state;
+@property (nonatomic,assign) BOOL pulsing;
 @end
 
 @implementation CASSHFCUSBDevice {
@@ -244,17 +245,23 @@ enum {
             }
             return;
     }
+    
+    self.pulsing = YES;
 
     // set motor speed
     const uint16_t speed = self.motorSpeed * 255;
     _state = (speed << 8) | (_state & 0x00ff);
     
-    NSLog(@"%x",_state);
+//    NSLog(@"%x",_state);
 
     [self.transport submit:[self createStateCommand] block:^(NSError* error){
         
         if (error){
             NSLog(@"pulse 1: %@",error);
+            self.pulsing = NO;
+            if (block){
+                block(error);
+            }
         }
         else {
 
@@ -270,6 +277,10 @@ enum {
                     
                     if (error){
                         NSLog(@"pulse 2: %@",error);
+                    }
+                    self.pulsing = NO;
+                    if (block){
+                        block(error);
                     }
                 }];
             });

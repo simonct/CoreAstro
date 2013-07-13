@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, CASFocuserPMWFreq) {
 @property (nonatomic,assign) BOOL ledRed;
 @property (nonatomic,assign) CGFloat motorSpeed; // 0 -> 1
 @property (nonatomic,assign) CASFocuserPMWFreq pmwFreq;
+@property (nonatomic,readonly) BOOL pulsing;
 - (void)pulse:(CASFocuserDirection)direction duration:(NSInteger)durationMS block:(void (^)(NSError*))block;
 @end
 
