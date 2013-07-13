@@ -34,6 +34,10 @@
     return kCASDeviceTypeFilterWheel;   
 }
 
+- (BOOL)moving {
+    return NO;
+}
+
 - (NSUInteger)filterCount {
     return 0;
 }

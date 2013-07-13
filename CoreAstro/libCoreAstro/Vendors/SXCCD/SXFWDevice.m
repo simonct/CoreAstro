@@ -95,6 +95,7 @@
 @end
 
 @interface SXFWDevice ()
+@property (nonatomic,assign) BOOL moving;
 @property (nonatomic,assign) NSUInteger filterCount;
 @property (nonatomic,copy) void (^completionBlock)(NSError*);
 @end
@@ -102,11 +103,13 @@
 @implementation SXFWDevice {
     BOOL _connected;
     BOOL _settingFilter;
+    BOOL _moving;
     NSUInteger _filterCount;
     NSInteger _currentFilter;
     NSMutableArray* _completionStack;
 }
 
+@synthesize moving = _moving;
 @synthesize filterCount = _filterCount;
 @synthesize currentFilter = _currentFilter;
 
@@ -173,7 +176,7 @@
         return;
     }
     
-    // need to gix up after a certain amount of time - 10s ?
+    // need to give up after a certain amount of time - 10s ?
     
     [self getFilterCount:^(NSError* error, NSInteger count, NSInteger index) {
         
@@ -186,10 +189,6 @@
         else{
             
             if (count){
-                
-                self.filterCount = count;
-                
-                [self _updateCurrentFilterIndex:index];
                 
                 [self _pollCurrentFilter];
                 
@@ -234,6 +233,8 @@
 //    NSLog(@"setCurrentFilter: %ld",currentFilter);
     
     if (_currentFilter != currentFilter){
+
+        self.moving = YES;
         
         if (_settingFilter){
             NSLog(@"Attempt to set filter index to while already setting it");
@@ -281,6 +282,9 @@
         if (error){
             block(error,0,0);
         }
+        else {
+            block(nil,self.filterCount,self.currentFilter);
+        }
     }];
 }
 
@@ -318,13 +322,30 @@
 
 #pragma mark HID Transport
 
+- (void)updateStateFromReport:(uint16_t)report {
+    
+    [self willChangeValueForKey:@"filterCount"];
+    [self willChangeValueForKey:@"currentFilter"];
+    [self willChangeValueForKey:@"moving"];
+    _filterCount = report >> 8;
+    const NSInteger index = report & 0x00ff;
+    [self _updateCurrentFilterIndex:index];
+    _moving = (index == 0);
+    [self didChangeValueForKey:@"filterCount"];
+    [self didChangeValueForKey:@"currentFilter"];
+    [self didChangeValueForKey:@"moving"];
+}
+
 - (void)receivedInputReport:(NSData*)data {
     
 //    NSLog(@"-[SXFWDevice receivedInputReport]: %@",data);
     
     uint16_t result;
     if ([data length] == sizeof(result)){
+        
         [data getBytes:&result length:sizeof(result)];
+        [self updateStateFromReport:result];
+        
         SXFWDeviceCallback* callback = [_completionStack count] ?  [_completionStack objectAtIndex:0] : nil;
         if (callback){
             [callback invokeWithResult:result error:nil];
