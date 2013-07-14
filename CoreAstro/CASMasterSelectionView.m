@@ -220,7 +220,22 @@ NSString* const kCASCCDExposureLibraryProjectUTI = @"org.coreastro.project-uuid"
                 [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     for (NSTreeNode* child in [camerasTreeNode mutableChildNodes]){
                         if (child.representedObject == obj){
+                            
+                            __block BOOL currentCameraRemoved = NO;
+                            [[self selectedRowIndexes] enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
+                                NSTreeNode* node = [self itemAtRow:idx];
+                                if (node == child){
+                                    currentCameraRemoved = YES;
+                                }
+                            }];
+                            
                             [[camerasTreeNode mutableChildNodes] removeObject:child];
+
+                            if (currentCameraRemoved){
+                                if (delegateRespondsToCameraWasSelected){
+                                    [self.masterViewDelegate cameraWasSelected:nil];
+                                }
+                            }
                         }
                     }
                 }];
