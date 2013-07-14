@@ -31,13 +31,12 @@
 
 @protocol CASDeviceBrowser <NSObject>
 
-// device added and device removed callback blocks...
-
 typedef CASDevice* (^CASDeviceBrowserCallback)(void*,NSString*,NSDictionary*);
 
+@property (nonatomic,copy) CASDeviceBrowserCallback deviceAdded;
 @property (nonatomic,copy) CASDeviceBrowserCallback deviceRemoved;
 
-- (void)scan:(CASDeviceBrowserCallback)filterBlock;
+- (void)scan;
 
 - (CASIOTransport*)createTransportWithDevice:(CASDevice*)device;
 

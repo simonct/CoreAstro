@@ -98,54 +98,66 @@
 
 - (void)scan {
     
-    for (id<CASDeviceBrowser> browser in self.pluginManager.browsers){
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
 
-        @try {
+        for (id<CASDeviceBrowser> browser in self.pluginManager.browsers){
             
-            browser.deviceRemoved = ^(void* dev,NSString* path,NSDictionary* props) {
-
-                CASDevice* device = [self deviceWithPath:path];
-                if (device){
-                    NSLog(@"Removed device %@",device);
-                    [[self mutableArrayValueForKey:@"devices"] removeObject:device];
-                }
+            @try {
                 
-                return (CASDevice*)nil;
-            };
-            
-            [browser scan:^(void* dev,NSString* path,NSDictionary* props) {
-                                
-                CASDevice* device = nil;
-                if (![self deviceWithPath:path]){
+                __weak id<CASDeviceBrowser> weakBrowser = browser;
+                
+                browser.deviceAdded = ^(void* dev,NSString* path,NSDictionary* props) {
                     
-                    if (!_devices){
-                        _devices = [[NSMutableArray alloc] initWithCapacity:10];
-                        [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
-                    }
-                    for (id<CASDeviceFactory> factory in self.pluginManager.factories){
+                    CASDevice* device = nil;
+                    if (![self deviceWithPath:path]){
                         
-                        device = [factory createDeviceWithDeviceRef:dev path:path properties:props];
-                        if (device){
+                        if (!_devices){
+                            _devices = [[NSMutableArray alloc] initWithCapacity:10];
+                            [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
+                        }
+                        for (id<CASDeviceFactory> factory in self.pluginManager.factories){
                             
-                            device.transport = [browser createTransportWithDevice:device];
-                            if (!device.transport){
-                                NSLog(@"No transport for %@, another client has grabbed it or the transport is inappropriate e.g. HID device with bulk USB transport",device);
+                            device = [factory createDeviceWithDeviceRef:dev path:path properties:props];
+                            if (device){
+                                
+                                id<CASDeviceBrowser> strongBrowser = weakBrowser;
+                                if (strongBrowser){
+                                    
+                                    device.transport = [strongBrowser createTransportWithDevice:device];
+                                    if (!device.transport){
+                                        NSLog(@"No transport for %@, another client has grabbed it or the transport is inappropriate e.g. HID device with bulk USB transport",device);
+                                    }
+                                    else {
+                                        NSLog(@"Added device %@",device);
+                                        [[self mutableArrayValueForKey:@"devices"] addObject:device];
+                                    }
+                                }
+                                break;
                             }
-                            else {
-                                NSLog(@"Added device %@",device);
-                                [[self mutableArrayValueForKey:@"devices"] addObject:device];
-                            }
-                            break;
                         }
                     }
-                }
-                return device;
-            }];
+                    return device;
+                };
+                
+                browser.deviceRemoved = ^(void* dev,NSString* path,NSDictionary* props) {
+                    
+                    CASDevice* device = [self deviceWithPath:path];
+                    if (device){
+                        NSLog(@"Removed device %@",device);
+                        [[self mutableArrayValueForKey:@"devices"] removeObject:device];
+                    }
+                    
+                    return (CASDevice*)nil;
+                };
+                
+                [browser scan];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** Exception scanning for devices: %@",exception);
+            }
         }
-        @catch (NSException *exception) {
-            NSLog(@"*** Exception scanning for devices: %@",exception);
-        }
-    }
+    });
 }
 
 - (CASGuiderController*)guiderControllerForDevice:(CASDevice*)device

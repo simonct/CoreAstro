@@ -37,13 +37,12 @@
 @property (nonatomic,assign) BOOL scanned;
 @property (nonatomic,assign) IONotificationPortRef notifyPort;
 @property (nonatomic,assign) IONotificationPortRef terminatePort;
-@property (nonatomic,copy) CASDeviceBrowserCallback callback;
 - (io_iterator_t)registerForNotifications;
 @end
 
 @implementation CASUSBDeviceBrowser
 
-@synthesize notifyPort, terminatePort, callback, deviceRemoved, scanned;
+@synthesize notifyPort, terminatePort, deviceAdded, deviceRemoved, scanned;
 
 static void DeviceAdded(void *refCon, io_iterator_t iterator) {
         
@@ -73,7 +72,7 @@ static void DeviceAdded(void *refCon, io_iterator_t iterator) {
                     err = IORegistryEntryCreateCFProperties(usbDeviceRef,&props,NULL,0);
                     if (err == kIOReturnSuccess) {
                         
-                        device = self.callback(deviceIntf,[NSString stringWithCString:path encoding:NSUTF8StringEncoding],(__bridge NSDictionary*)props);
+                        device = self.deviceAdded(deviceIntf,[NSString stringWithCString:path encoding:NSUTF8StringEncoding],(__bridge NSDictionary*)props);
                         if (props){
                             CFRelease(props);
                         }
@@ -179,13 +178,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
     }
 }
 
-- (void)scan:(CASDeviceBrowserCallback)block {
-    
-    if (!block){
-        return;
-    }
-    
-    self.callback = block;
+- (void)scan {
     
     if (!self.scanned){
         self.scanned = YES;

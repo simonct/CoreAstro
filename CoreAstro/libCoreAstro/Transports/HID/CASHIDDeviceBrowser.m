@@ -29,7 +29,6 @@
 
 @interface CASHIDDeviceBrowser ()
 @property (nonatomic,assign) BOOL scanned;
-@property (nonatomic,copy) CASDeviceBrowserCallback callback;
 - (void)deviceAdded:(IOHIDDeviceRef)device;
 - (void)deviceRemoved:(IOHIDDeviceRef)device;
 @end
@@ -40,7 +39,7 @@
     IOHIDManagerRef _hidManager;
 }
 
-@synthesize deviceRemoved;
+@synthesize deviceAdded, deviceRemoved;
 
 static void CASIOHIDDeviceRemovedCallback (void *                  context,
                                            IOReturn                result,
@@ -102,8 +101,8 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
     }
     [_devices addObject:(__bridge id)(device)];
     
-    if (self.callback){
-        [self invokeCallback:self.callback withDevice:device];
+    if (self.deviceAdded){
+        [self invokeCallback:self.deviceAdded withDevice:device];
     }
 }
 
@@ -146,13 +145,7 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
 	}
 }
 
-- (void)scan:(CASDeviceBrowserCallback)block {
-    
-    if (!block){
-        return;
-    }
-    
-    self.callback = block;
+- (void)scan {
     
     if (!self.scanned){
         self.scanned = YES;
