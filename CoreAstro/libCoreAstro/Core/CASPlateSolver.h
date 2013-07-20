@@ -47,6 +47,7 @@
 @protocol CASPlateSolver <NSObject>
 @optional
 
+@property (nonatomic,copy) void (^outputBlock)(NSString*);
 @property (nonatomic,copy) NSURL* indexDirectoryURL;
 
 - (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure;

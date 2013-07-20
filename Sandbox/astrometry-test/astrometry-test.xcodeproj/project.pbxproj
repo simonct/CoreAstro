@@ -10,7 +10,6 @@
 		F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4034B971719547A00A73F9F /* CASEQMacClient.m */; };
 		F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572BF17636F8E009CEC05 /* CASLX200Commands.m */; };
 		F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C117636F8E009CEC05 /* CASLX200IPClient.m */; };
-		F40572C617636F8E009CEC05 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C317636F8E009CEC05 /* CASSocketClient.m */; };
 		F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C9176399FB009CEC05 /* CASConfigureIPMountWindowController.m */; };
 		F40572CC176399FB009CEC05 /* CASConfigureIPMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40572CA176399FB009CEC05 /* CASConfigureIPMountWindowController.xib */; };
 		F40572D117639BF6009CEC05 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572D017639BF5009CEC05 /* CASAuxWindowController.m */; };
@@ -21,6 +20,7 @@
 		F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72A16D6D8E900C4C01D /* CASCenteringClipView.m */; };
 		F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C72D16D6D8F500C4C01D /* CASImageView.m */; };
 		F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F416C73016D6D8FE00C4C01D /* CASZoomableView.m */; };
+		F437F259179A99A600D402F3 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F437F258179A99A600D402F3 /* CASSocketClient.m */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
 		F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A386C9168887FE00E77631 /* InfoPlist.strings */; };
 		F4A386CD168887FE00E77631 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386CC168887FE00E77631 /* main.m */; };
@@ -37,8 +37,6 @@
 		F40572BF17636F8E009CEC05 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200Commands.m; sourceTree = "<group>"; };
 		F40572C017636F8E009CEC05 /* CASLX200IPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200IPClient.h; sourceTree = "<group>"; };
 		F40572C117636F8E009CEC05 /* CASLX200IPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200IPClient.m; sourceTree = "<group>"; };
-		F40572C217636F8E009CEC05 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
-		F40572C317636F8E009CEC05 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F40572C8176399FB009CEC05 /* CASConfigureIPMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASConfigureIPMountWindowController.h; sourceTree = "<group>"; };
 		F40572C9176399FB009CEC05 /* CASConfigureIPMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASConfigureIPMountWindowController.m; sourceTree = "<group>"; };
 		F40572CA176399FB009CEC05 /* CASConfigureIPMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASConfigureIPMountWindowController.xib; sourceTree = "<group>"; };
@@ -58,6 +56,8 @@
 		F416C72D16D6D8F500C4C01D /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
 		F416C72F16D6D8FE00C4C01D /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASZoomableView.h; path = ../../../CoreAstro/CASZoomableView.h; sourceTree = "<group>"; };
 		F416C73016D6D8FE00C4C01D /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASZoomableView.m; path = ../../../CoreAstro/CASZoomableView.m; sourceTree = "<group>"; };
+		F437F257179A99A600D402F3 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSocketClient.h; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.h; sourceTree = "<group>"; };
+		F437F258179A99A600D402F3 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSocketClient.m; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.m; sourceTree = "<group>"; };
 		F43E210F168A52DA00C942CF /* atktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = atktopbm; sourceTree = "<group>"; };
 		F43E2110168A52DA00C942CF /* brushtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = brushtopbm; sourceTree = "<group>"; };
 		F43E2111168A52DA00C942CF /* cistopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cistopbm; sourceTree = "<group>"; };
@@ -444,8 +444,8 @@
 				F40572BF17636F8E009CEC05 /* CASLX200Commands.m */,
 				F40572C017636F8E009CEC05 /* CASLX200IPClient.h */,
 				F40572C117636F8E009CEC05 /* CASLX200IPClient.m */,
-				F40572C217636F8E009CEC05 /* CASSocketClient.h */,
-				F40572C317636F8E009CEC05 /* CASSocketClient.m */,
+				F437F257179A99A600D402F3 /* CASSocketClient.h */,
+				F437F258179A99A600D402F3 /* CASSocketClient.m */,
 			);
 			name = Shared;
 			path = ../../Shared;
@@ -1119,13 +1119,13 @@
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
 				F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
-				F40572C617636F8E009CEC05 /* CASSocketClient.m in Sources */,
 				F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */,
 				F40572D117639BF6009CEC05 /* CASAuxWindowController.m in Sources */,
 				F40572D51763C5EE009CEC05 /* CASPlateSolver.m in Sources */,
 				F40572D81763C63B009CEC05 /* CASTaskWrapper.m in Sources */,
 				F40572E31763D051009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F40572E617649318009CEC05 /* CASPlateSolveImageView.m in Sources */,
+				F437F259179A99A600D402F3 /* CASSocketClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -236,6 +236,8 @@
 static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 
+@synthesize outputBlock;
+
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
     CASPlateSolver* result = nil;
@@ -361,8 +363,10 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
                 }
                 [self.logOutput appendString:string];
                 [self.logOutput appendString:@"\n"];
-                
-                NSLog(@"Plate solve output: %@",string);
+                                
+                if (self.outputBlock){
+                    self.outputBlock(string);
+                }
                 
             } terminationBlock:^(int terminationStatus) {
                 

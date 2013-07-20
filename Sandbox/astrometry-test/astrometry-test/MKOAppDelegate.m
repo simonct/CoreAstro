@@ -122,7 +122,14 @@
         // solve async - beware of races here since we're doing this async
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
-            // output log...
+            __weak MKOAppDelegate* weakSelf = self;
+            self.plateSolver.outputBlock = ^(NSString* string){
+                MKOAppDelegate* strongSelf = weakSelf;
+                if (strongSelf){
+                    [strongSelf.outputLogTextView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:string]];
+                    [strongSelf.outputLogTextView scrollToEndOfDocument:nil];
+                }
+            };
             
             [self.plateSolver solveImageAtPath:self.imageView.url.path completion:^(NSError *error, NSDictionary* results) {
                 
