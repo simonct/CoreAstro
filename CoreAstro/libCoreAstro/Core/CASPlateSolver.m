@@ -236,7 +236,7 @@
 static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 
-@synthesize outputBlock;
+@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees;
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
@@ -352,7 +352,20 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
             NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
-            [self.solverTask setArguments:@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"-D",self.cacheDirectory,@"-b",configPath]];
+            NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r"] mutableCopy];
+            if (self.arcsecsPerPixel > 0){
+                const float low = (self.arcsecsPerPixel-0.5); // += %age ?
+                const float high = (self.arcsecsPerPixel+0.5);
+                [args addObjectsFromArray:@[@"--scale-units",@"arcsecperpix",@"--scale-low",[@(low) description],@"--scale-high",[@(high) description]]];
+            }
+            if (self.fieldSizeDegrees.width > 0){
+                const float minw = floorf(self.fieldSizeDegrees.width);
+                const float maxw = ceilf(self.fieldSizeDegrees.width);
+                [args addObjectsFromArray:@[@"--scale-units",@"degwidth",@"--scale-low",[@(minw) description],@"--scale-high",[@(maxw) description]]];
+            }
+            [args addObjectsFromArray:@[@"-D",self.cacheDirectory,@"-b",configPath]];
+            NSLog(@"args: %@",args);
+            [self.solverTask setArguments:args];
             
             // run the solver task
             [self.solverTask launchWithOutputBlock:^(NSString* string) {

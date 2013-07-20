@@ -49,6 +49,8 @@
 
 @property (nonatomic,copy) void (^outputBlock)(NSString*);
 @property (nonatomic,copy) NSURL* indexDirectoryURL;
+@property (nonatomic,assign) float arcsecsPerPixel;
+@property (nonatomic,assign) CGSize fieldSizeDegrees;
 
 - (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure;
 
