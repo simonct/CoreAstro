@@ -157,7 +157,7 @@
         return;
     }
     if (![url startAccessingSecurityScopedResource]){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder"];
+        [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
         return;
     }
 
