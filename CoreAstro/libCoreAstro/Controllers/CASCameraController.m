@@ -56,6 +56,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.camera = camera;
         self.temperatureLock = YES;
         self.exposureType = kCASCCDExposureLightType;
+        self.autoSave = YES;
     }
     return self;
 }
@@ -299,15 +300,22 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 }
                 else{
                     
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    if (!self.autoSave){
                         
-                        [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
+                        endCapture(nil,exposure);
+                    }
+                    else{
+                        
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                             
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                endCapture(saveError,exposure);
-                            });
-                        }];
-                    });
+                            [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    endCapture(saveError,exposure);
+                                });
+                            }];
+                        });
+                    }
                 }
             }
         }
