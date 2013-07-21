@@ -33,6 +33,10 @@
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
+@property (assign) BOOL invert, equalise;
+
+@property (nonatomic,strong) CASImageDebayer* imageDebayer;
+@property (nonatomic,strong) CASImageProcessor* imageProcessor;
 
 @end
 
@@ -42,6 +46,10 @@
 {
     [super windowDidLoad];
     
+    // set up some helpers
+    self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
+    self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+
     // set up the toolbar
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
     
@@ -156,19 +164,17 @@
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return;
     }
-    if (![url startAccessingSecurityScopedResource]){
+    const BOOL saveToFile = [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !self.cameraController.continuous;
+    if (saveToFile && ![url startAccessingSecurityScopedResource]){
         [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
         return;
     }
-
-    // capture the current controller and continuous flag in the completion block
-    CASCameraController* cameraController = self.cameraController;
     
     // do not save to the library
-    cameraController.autoSave = NO;
+    self.cameraController.autoSave = NO;
     
     // issue the capture command
-    [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
+    [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
         @try {
 
@@ -179,7 +185,7 @@
             else{
                 
                 // save to the designated folder with the current settings as a fits file
-                if (exposure && [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !cameraController.continuous){
+                if (exposure && saveToFile){
                     
                     NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
                     if (!prefix){
@@ -206,10 +212,7 @@
                     }
                 }
                 
-                // check it's the still the currently displayed camera before displaying the exposure
-                if (cameraController == self.cameraController){
-                    self.currentExposure = exposure;
-                }
+                self.currentExposure = exposure;
             }
         }
         @finally {
@@ -413,9 +416,6 @@
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // get the current exposure (need an accessor for this)
-//        CASCCDExposure* parentExposure = exposure;
-        
         // prefer corrected exposure (and similarly for debayered)
         CASCCDExposure* corrected = exposure.correctedExposure;
         if (corrected){
@@ -434,22 +434,21 @@
             [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
         });
         
-//        // debayer if required
-//        if (self.imageDebayer.mode != kCASImageDebayerNone){
-//            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:self.colourAdjustments.redAdjust green:self.colourAdjustments.greenAdjust blue:self.colourAdjustments.blueAdjust all:self.colourAdjustments.allAdjust];
-//            if (debayeredExposure){
-//                exposure = debayeredExposure;
-//            }
-//        }
+        // debayer if required
+        if (self.imageDebayer.mode != kCASImageDebayerNone){
+            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
+            if (debayeredExposure){
+                exposure = debayeredExposure;
+            }
+        }
         
+        if (self.equalise){
+            exposure = [self.imageProcessor equalise:exposure];
+        }
         
-//        if (self.equalise){
-//            exposure = [self.imageProcessor equalise:exposure];
-//        }
-//        
-//        if (self.invert){
-//            exposure = [self.imageProcessor invert:exposure];
-//        }
+        if (self.invert){
+            exposure = [self.imageProcessor invert:exposure];
+        }
         
         self.exposureView.currentExposure = exposure;
         
@@ -478,6 +477,14 @@
         if (!_currentExposure){
             [self clearSelection];
         }
+    }
+}
+
+- (void)resetAndRedisplayCurrentExposure
+{
+    if (self.currentExposure){
+        [self.currentExposure reset];
+        [self displayExposure:self.currentExposure];
     }
 }
 
@@ -605,6 +612,131 @@
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
 {
     return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",@"Selection",nil];
+}
+
+#pragma mark Menu validation
+
+- (IBAction)toggleShowHistogram:(id)sender
+{
+    self.exposureView.showHistogram = !self.exposureView.showHistogram;
+}
+
+- (IBAction)toggleShowReticle:(id)sender
+{
+    self.exposureView.showReticle = !self.exposureView.showReticle;
+}
+
+- (IBAction)toggleShowStarProfile:(id)sender
+{
+    self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
+}
+
+- (IBAction)toggleShowImageStats:(id)sender
+{
+    self.exposureView.showImageStats = !self.exposureView.showImageStats;
+}
+
+- (IBAction)toggleInvertImage:(id)sender
+{
+    self.invert = !self.invert;
+    [self resetAndRedisplayCurrentExposure];
+}
+
+- (IBAction)toggleEqualiseHistogram:(id)sender
+{
+    self.equalise = !self.equalise;
+    [self resetAndRedisplayCurrentExposure];
+}
+
+- (IBAction)applyDebayer:(NSMenuItem*)sender
+{
+    switch (sender.tag) {
+        case 11000:
+            self.imageDebayer.mode = kCASImageDebayerNone;
+            break;
+        case 11001:
+            self.imageDebayer.mode = kCASImageDebayerRGGB;
+            break;
+        case 11002:
+            self.imageDebayer.mode = kCASImageDebayerGRBG;
+            break;
+        case 11003:
+            self.imageDebayer.mode = kCASImageDebayerBGGR;
+            break;
+        case 11004:
+            self.imageDebayer.mode = kCASImageDebayerGBRG;
+            break;
+    }
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem*)item
+{
+    BOOL enabled = YES;
+    
+    switch (item.tag) {
+            
+        case 10000:
+            item.state = self.exposureView.showHistogram;
+            break;
+            
+        case 10001:
+            item.state = self.invert;
+            break;
+            
+        case 10002:
+            item.state = self.equalise;
+            break;
+                        
+        case 10003:
+            item.state = self.exposureView.showReticle;
+            break;
+            
+        case 10004:
+            item.state = self.exposureView.showStarProfile;
+            break;
+            
+        case 10005:
+            item.state = self.exposureView.showImageStats;
+            break;
+            
+        case 10010:
+            item.state = self.exposureView.scaleSubframe;
+            break;
+                        
+        case 10012:
+            enabled = (self.currentExposure != nil && !self.cameraController.capturing);
+            break;
+            
+        case 10020:
+        case 10021:
+        case 10022:
+            enabled = (self.cameraController != nil && !self.cameraController.capturing);
+            break;
+            
+        case 11000:
+            item.state = self.imageDebayer.mode == kCASImageDebayerNone;
+            break;
+            
+        case 11001:
+            item.state = self.imageDebayer.mode == kCASImageDebayerRGGB;
+            break;
+            
+        case 11002:
+            item.state = self.imageDebayer.mode == kCASImageDebayerGRBG;
+            break;
+            
+        case 11003:
+            item.state = self.imageDebayer.mode == kCASImageDebayerBGGR;
+            break;
+            
+        case 11004:
+            item.state = self.imageDebayer.mode == kCASImageDebayerGBRG;
+            break;
+            
+            // todo; option to show debayerd image as luminance image
+            
+    }
+    return enabled;
 }
 
 @end
