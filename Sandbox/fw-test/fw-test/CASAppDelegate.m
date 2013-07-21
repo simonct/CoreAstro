@@ -24,7 +24,44 @@
     self.browser = [[CASHIDDeviceBrowser alloc] init];
     self.factory = [[SXCCDDeviceFactory alloc] init];
     
+    // check defaults
+    
+    NSMutableArray* names = [NSMutableArray arrayWithCapacity:7];
+    for (NSInteger i = 0; i < 7; ++i){
+        NSMutableDictionary* name = [@{@"name":[NSString stringWithFormat:@"%ld",i+1]} mutableCopy];
+        [names addObject:name];
+    }
+    self.filterNames = names;
+    
     __weak CASAppDelegate* weakSelf = self;
+    
+    self.browser.deviceAdded = ^(void *dev, NSString *path, NSDictionary *props) {
+        
+        CASAppDelegate* strongSelf = weakSelf;
+        if (strongSelf){
+            
+            SXFWDevice* fw = (SXFWDevice*)[strongSelf.factory createDeviceWithDeviceRef:dev path:path properties:props];
+            if ([fw isKindOfClass:[SXFWDevice class]]){
+                
+                fw.transport = [strongSelf.browser createTransportWithDevice:fw];
+                
+                [fw connect:^(NSError* error) {
+                    
+                    if (error){
+                        NSLog(@"connect: %@",error);
+                    }
+                    else {
+                        strongSelf.fw = fw;
+                        [strongSelf.fw addObserver:strongSelf forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(strongSelf)];
+                        [strongSelf.fw addObserver:strongSelf forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(strongSelf)];
+                    }
+                }];
+            }
+        }
+        
+        return (CASDevice*)nil;
+    };
+    
     self.browser.deviceRemoved = ^(void* dev,NSString* path,NSDictionary* props) {
         
         CASAppDelegate* strongSelf = weakSelf;
@@ -38,28 +75,7 @@
         return (CASDevice*)nil;
     };
 
-    [self.browser scan:^CASDevice *(void *dev, NSString *path, NSDictionary *props) {
-        
-        SXFWDevice* fw = (SXFWDevice*)[self.factory createDeviceWithDeviceRef:dev path:path properties:props];
-        if ([fw isKindOfClass:[SXFWDevice class]]){
-            
-            fw.transport = [self.browser createTransportWithDevice:fw];
-            
-            [fw connect:^(NSError* error) {
-                
-                if (error){
-                    NSLog(@"connect: %@",error);
-                }
-                else {
-                    self.fw = fw;
-                    [self.fw addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-                    [self.fw addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-                }
-            }];
-        }
-        
-        return NO;
-    }];
+    [self.browser scan];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -91,6 +107,20 @@
 - (IBAction)setCurrentFilter:(NSMatrix*)sender
 {
     [self.fw setCurrentFilter:[sender.cells indexOfObject:sender.selectedCell]];
+}
+
+- (void)setFilterNames:(NSMutableArray *)filterNames
+{
+    _filterNames = filterNames;
+    NSLog(@"setFilterNames");
+    // redraw radio buttons
+    
+    for (NSInteger i = 0; i < self.filterSelectionMatrix.numberOfColumns; ++i){
+        NSButtonCell* cell = [self.filterSelectionMatrix cellAtRow:0 column:i];
+        if (i < [_filterNames count]){
+            [cell setTitle:_filterNames[i][@"name"]];
+        }
+    }
 }
 
 @end

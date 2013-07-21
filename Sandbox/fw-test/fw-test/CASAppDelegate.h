@@ -12,6 +12,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 @property (weak) IBOutlet NSMatrix *filterSelectionMatrix;
+@property (nonatomic,strong) NSMutableArray* filterNames;
 
 - (IBAction)setCurrentFilter:(id)sender;
 
