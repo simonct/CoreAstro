@@ -18,6 +18,11 @@
 @implementation CASControlsContainerView
 @end
 
+@interface SXIOExposureView : CASExposureView
+@end
+@implementation SXIOExposureView
+@end
+
 @interface SXIOCameraWindowController ()<CASExposureViewDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
@@ -57,7 +62,7 @@
     self.exposureView.exposureViewDelegate = self;
 
     // drop shadow
-    [CASShadowView attachToView:self.exposureView.enclosingScrollView edge:NSMaxXEdge];
+    [CASShadowView attachToView:self.exposureView.enclosingScrollView.superview edge:NSMaxXEdge];
 
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
