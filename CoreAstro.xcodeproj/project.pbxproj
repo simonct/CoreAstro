@@ -14,6 +14,8 @@
 		F40093681699B2DB00E96DBE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093671699B2DA00E96DBE /* AVFoundation.framework */; };
 		F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093691699B2ED00E96DBE /* CoreMedia.framework */; };
 		F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572DC1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m */; };
+		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; };
+		F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
 		F412975915FCA977009C215E /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975115FCA977009C215E /* move.pdf */; };
 		F412975A15FCA977009C215E /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975215FCA977009C215E /* selection.pdf */; };
@@ -140,6 +142,8 @@
 		F49E52E915A971620018DC75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F49E52E715A971620018DC75 /* InfoPlist.strings */; };
 		F49E52EC15A971620018DC75 /* CoreAstroTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E52EB15A971620018DC75 /* CoreAstroTests.m */; };
 		F49E531215A9731C0018DC75 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E531115A9731C0018DC75 /* IOKit.framework */; };
+		F4A25843179BBC220013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25841179BBC220013D220 /* CASPHDControlsViewController.m */; };
+		F4A25844179BBC220013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A25842179BBC220013D220 /* CASPHDControlsViewController.xib */; };
 		F4A4F2A91631DDDE00A3B4E9 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2A81631DDDE00A3B4E9 /* QuickLook.framework */; };
 		F4A4F2AB1631DDDE00A3B4E9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2AA1631DDDE00A3B4E9 /* ApplicationServices.framework */; };
 		F4A4F2AD1631DDDE00A3B4E9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A4F2AC1631DDDE00A3B4E9 /* CoreServices.framework */; };
@@ -521,6 +525,8 @@
 		F40572DC1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
+		F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
+		F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
 		F41157DF1639CC7A00ABCA69 /* CASShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASShadowView.m; sourceTree = "<group>"; };
 		F4125F1115D7A7D300E04052 /* superstar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = superstar.png; sourceTree = "<group>"; };
@@ -676,6 +682,9 @@
 		F4A0E3B015C70FD4002878C9 /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
 		F4A0E3B215C71049002878C9 /* CASCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDProperties.h; sourceTree = "<group>"; };
 		F4A0E3B315C71049002878C9 /* CASCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDProperties.m; sourceTree = "<group>"; };
+		F4A25840179BBC220013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHDControlsViewController.h; sourceTree = "<group>"; };
+		F4A25841179BBC220013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHDControlsViewController.m; sourceTree = "<group>"; };
+		F4A25842179BBC220013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASPHDControlsViewController.xib; sourceTree = "<group>"; };
 		F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreAstro.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A4F2A81631DDDE00A3B4E9 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		F4A4F2AA1631DDDE00A3B4E9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -1795,6 +1804,8 @@
 				F4CA50DC169CB62F00832CFF /* CASTaskWrapper.m */,
 				F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */,
 				F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */,
+				F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */,
+				F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -1847,6 +1858,9 @@
 				F448994D1770E5F400C0F8DD /* CASFilterWheelControlsViewController.h */,
 				F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */,
 				F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */,
+				F4A25840179BBC220013D220 /* CASPHDControlsViewController.h */,
+				F4A25841179BBC220013D220 /* CASPHDControlsViewController.m */,
+				F4A25842179BBC220013D220 /* CASPHDControlsViewController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -2886,6 +2900,7 @@
 				F4C70E901749405B003D35CA /* CASFWDevice.h in Headers */,
 				F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */,
 				F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */,
+				F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3183,6 +3198,7 @@
 				F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */,
 				F4489947176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib in Resources */,
 				F44899511770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib in Resources */,
+				F4A25844179BBC220013D220 /* CASPHDControlsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3327,6 +3343,7 @@
 				F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */,
 				F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */,
 				F4FCE71317772270000E117F /* CASSHFCUSBDevice.m in Sources */,
+				F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3388,6 +3405,7 @@
 				F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */,
 				F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */,
 				F44899501770E5F400C0F8DD /* CASFilterWheelControlsViewController.m in Sources */,
+				F4A25843179BBC220013D220 /* CASPHDControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
