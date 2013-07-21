@@ -155,7 +155,14 @@
             // save to the designated folder with the current settings as a fits file
             if (exposure && [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !cameraController.continuous){
                 
-                NSURL* url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
+                NSURL* url;
+                NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kSaveFolderBookmarkDefaultsKey];
+                if (bookmark){
+                    url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+                }
+                if (!url) {
+                    url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
+                }
                 NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
                 if (!prefix){
                     prefix = @"image";
@@ -171,12 +178,18 @@
                     NSLog(@"*** Failed to create FITS exporter");
                 }
                 else {
-                    NSError* error = nil;
-                    [io writeExposure:exposure writePixels:YES error:&error];
-                    if (error){
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [NSApp presentError:error];
-                        });
+                    [url startAccessingSecurityScopedResource];
+                    @try {
+                        NSError* error = nil;
+                        [io writeExposure:exposure writePixels:YES error:&error];
+                        if (error){
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [NSApp presentError:error];
+                            });
+                        }
+                    }
+                    @finally {
+                        [url stopAccessingSecurityScopedResource];
                     }
                 }
             }

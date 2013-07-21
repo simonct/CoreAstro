@@ -64,6 +64,16 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
 - (void)setSaveFolderURL:(NSURL*)url
 {
     [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kSaveFolderURLDefaultsKey];
+    
+    NSError* error;
+    NSData* bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (bookmark){
+        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kSaveFolderBookmarkDefaultsKey];
+    }
+    else {
+        NSLog(@"error: %@",error);
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSaveFolderBookmarkDefaultsKey];
+    }
 }
 
 - (IBAction)resetSequence:(id)sender

@@ -223,6 +223,7 @@
 		F4E64255179BFFBD0044B349 /* zoom1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = zoom1.pdf; path = ../../../CoreAstro/Resources/zoom1.pdf; sourceTree = "<group>"; };
 		F4E6425E179C05C50044B349 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASShadowView.h; path = ../../../CoreAstro/CASShadowView.h; sourceTree = "<group>"; };
 		F4E6425F179C05C50044B349 /* CASShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASShadowView.m; path = ../../../CoreAstro/CASShadowView.m; sourceTree = "<group>"; };
+		F4E64262179C0ED30044B349 /* SX IO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "SX IO.entitlements"; sourceTree = "<group>"; };
 		F4FD22FF179B30D60049F5B5 /* SX IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SX IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4FD2302179B30D60049F5B5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4FD2305179B30D60049F5B5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -412,6 +413,7 @@
 		F4FD2308179B30D60049F5B5 /* SX IO */ = {
 			isa = PBXGroup;
 			children = (
+				F4E64262179C0ED30044B349 /* SX IO.entitlements */,
 				F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */,
 				F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */,
 				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
@@ -751,6 +753,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -764,6 +768,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
