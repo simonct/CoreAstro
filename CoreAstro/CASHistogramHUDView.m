@@ -8,7 +8,7 @@
 
 #import "CASHistogramHUDView.h"
 #import "CASSimpleGraphView.h"
-#import "CASImageProcessor.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASHistogramHUDView ()
 @property (nonatomic,strong) IBOutlet CASSimpleGraphView* graphView;

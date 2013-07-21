@@ -7,9 +7,9 @@
 //
 
 #import "CASStarInfoHUDView.h"
-#import "CASCCDExposure.h"
 #import "CASSimpleGraphView.h"
 #import "CASExposureView.h" // for kCASImageViewInvalidStarLocation
+#import <CoreAstro/CoreAstro.h>
 #import <Accelerate/Accelerate.h>
 
 @interface CASStarInfoHUDView ()

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Mako Technology Ltd. All rights reserved.
 //
 
-#import "CASPlateSolver.h"
+#include <CoreAstro/CoreAstro.h>
 #include <QuartzCore/QuartzCore.h>
 
 @interface CASAnnotationLayer : CALayer

@@ -7,9 +7,6 @@
 //
 
 #import "CASExposureView.h"
-#import "CASCCDImage.h"
-#import "CASCCDExposure.h"
-#import "CASImageProcessor.h"
 #import "CASExposureInfoView.h"
 #import "CASProgressHUDView.h"
 #import "CASStarInfoHUDView.h"

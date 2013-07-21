@@ -24,7 +24,7 @@
 //
 
 #import "CASGuideCommand.h"
-#import "CASGuiderController.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASGuideCommand ()
 @end

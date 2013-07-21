@@ -24,7 +24,7 @@
 //
 
 #import "CASCaptureCommand.h"
-#import "CASCameraController.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASCaptureCommand ()
 @end
