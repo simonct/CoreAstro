@@ -138,8 +138,8 @@
         }
         else{
             
-            // check it's the still the currently displayed camera before displaying the exposure
-            if (exposure){
+            // save to the designated folder with the current settings as a fits file
+            if (exposure && [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !cameraController.continuous){
                 
                 NSURL* url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
                 NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
@@ -165,15 +165,20 @@
                         });
                     }
                 }
-                
-                // save to the designated folder with the current settings as a fits file
-                
-                if (cameraController == self.cameraController){
-                    self.currentExposure = exposure;
-                }
+            }
+            
+            // check it's the still the currently displayed camera before displaying the exposure
+            if (cameraController == self.cameraController){
+                self.currentExposure = exposure;
             }
         }
     }];
+}
+
+- (IBAction)cancelCapture:(id)sender
+{
+    self.captureButton.enabled = NO;
+    [self.cameraController cancelCapture];
 }
 
 - (void)configureForCameraController

@@ -31,6 +31,7 @@
 
 @implementation SXIOSaveTargetViewController
 
+NSString* const kSaveImagesDefaultsKey = @"SaveImages";
 NSString* const kSaveFolderURLDefaultsKey = @"SaveFolderURL";
 NSString* const kSaveFolderBookmarkDefaultsKey = @"SaveFolderBookmark";
 NSString* const kSavedImagePrefixDefaultsKey = @"SavedImagePrefix";

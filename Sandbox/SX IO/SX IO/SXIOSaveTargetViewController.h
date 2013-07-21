@@ -31,6 +31,7 @@
 @interface SXIOSaveTargetViewController : NSViewController
 @end
 
+extern NSString* const kSaveImagesDefaultsKey;
 extern NSString* const kSaveFolderURLDefaultsKey;
 extern NSString* const kSaveFolderBookmarkDefaultsKey;
 extern NSString* const kSavedImagePrefixDefaultsKey;
