@@ -116,7 +116,6 @@
     }
 }
 
-
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     if (_cameraController != cameraController){
@@ -133,10 +132,35 @@
     }
 }
 
+- (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
+{
+    [[NSAlert alertWithMessageText:title
+                     defaultButton:nil
+                   alternateButton:nil
+                       otherButton:nil
+         informativeTextWithFormat:@"%@",message] runModal];
+}
+
 - (IBAction)capture:(NSButton*)sender
 {
     // check we have somewhere to save the file, a prefix and a sequence number
-    
+    __block NSURL* url;
+    NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kSaveFolderBookmarkDefaultsKey];
+    if (bookmark){
+        url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+    }
+    if (!url) {
+        url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
+    }
+    if (!url){
+        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
+        return;
+    }
+    if (![url startAccessingSecurityScopedResource]){
+        [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder"];
+        return;
+    }
+
     // capture the current controller and continuous flag in the completion block
     CASCameraController* cameraController = self.cameraController;
     
@@ -146,40 +170,32 @@
     // issue the capture command
     [cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
-        if (error){
-            // todo; run completion actions e.g. email, run processing scripts, etc
-            [NSApp presentError:error];
-        }
-        else{
-            
-            // save to the designated folder with the current settings as a fits file
-            if (exposure && [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !cameraController.continuous){
+        @try {
+
+            if (error){
+                // todo; run completion actions e.g. email, run processing scripts, etc
+                [NSApp presentError:error];
+            }
+            else{
                 
-                NSURL* url;
-                NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kSaveFolderBookmarkDefaultsKey];
-                if (bookmark){
-                    url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
-                }
-                if (!url) {
-                    url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
-                }
-                NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
-                if (!prefix){
-                    prefix = @"image";
-                }
-                const NSInteger sequence = [[NSUserDefaults standardUserDefaults] integerForKey:kSavedImageSequenceDefaultsKey];
-                prefix = [prefix stringByAppendingFormat:@"-%ld",sequence];
-                url = [url URLByAppendingPathComponent:prefix];
-                url = [url URLByAppendingPathExtension:@"fits"];
-                [[NSUserDefaults standardUserDefaults] setInteger:sequence+1 forKey:kSavedImageSequenceDefaultsKey];
-                
-                CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
-                if (!io){
-                    NSLog(@"*** Failed to create FITS exporter");
-                }
-                else {
-                    [url startAccessingSecurityScopedResource];
-                    @try {
+                // save to the designated folder with the current settings as a fits file
+                if (exposure && [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !cameraController.continuous){
+                    
+                    NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
+                    if (!prefix){
+                        prefix = @"image";
+                    }
+                    const NSInteger sequence = [[NSUserDefaults standardUserDefaults] integerForKey:kSavedImageSequenceDefaultsKey];
+                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence];
+                    url = [url URLByAppendingPathComponent:prefix];
+                    url = [url URLByAppendingPathExtension:@"fits"];
+                    [[NSUserDefaults standardUserDefaults] setInteger:sequence+1 forKey:kSavedImageSequenceDefaultsKey];
+                    
+                    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+                    if (!io){
+                        NSLog(@"*** Failed to create FITS exporter");
+                    }
+                    else {
                         NSError* error = nil;
                         [io writeExposure:exposure writePixels:YES error:&error];
                         if (error){
@@ -188,16 +204,16 @@
                             });
                         }
                     }
-                    @finally {
-                        [url stopAccessingSecurityScopedResource];
-                    }
+                }
+                
+                // check it's the still the currently displayed camera before displaying the exposure
+                if (cameraController == self.cameraController){
+                    self.currentExposure = exposure;
                 }
             }
-            
-            // check it's the still the currently displayed camera before displaying the exposure
-            if (cameraController == self.cameraController){
-                self.currentExposure = exposure;
-            }
+        }
+        @finally {
+            [url stopAccessingSecurityScopedResource];
         }
     }];
 }
