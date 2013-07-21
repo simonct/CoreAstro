@@ -1664,6 +1664,7 @@
 				F4AD8E8916E6998A00CF3083 /* Views */,
 				F4AD8E8C16E69A4900CF3083 /* View Controllers */,
 				F4AD8E8816E6998100CF3083 /* Window Controllers */,
+				F4A258B4179BC1BB0013D220 /* View Controllers */,
 				F4AD8E8D16E69A9E00CF3083 /* Model Utilities */,
 				F413F14315D7FF7B00CA105B /* Scripting */,
 				F412974F15FCA977009C215E /* Resources */,
@@ -1811,6 +1812,25 @@
 			path = ../CoreAstro/libCoreAstro/Core;
 			sourceTree = "<group>";
 		};
+		F4A258B4179BC1BB0013D220 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */,
+				F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */,
+				F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */,
+				F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */,
+				F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */,
+				F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */,
+				F448994D1770E5F400C0F8DD /* CASFilterWheelControlsViewController.h */,
+				F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */,
+				F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */,
+				F4A25840179BBC220013D220 /* CASPHDControlsViewController.h */,
+				F4A25841179BBC220013D220 /* CASPHDControlsViewController.m */,
+				F4A25842179BBC220013D220 /* CASPHDControlsViewController.xib */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
 		F4A4F2B01631DDDE00A3B4E9 /* QuickLook Plugin */ = {
 			isa = PBXGroup;
 			children = (
@@ -1849,18 +1869,6 @@
 				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
 				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
 				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
-				F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */,
-				F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */,
-				F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */,
-				F4489943176E0F4D00C0F8DD /* CASGuiderControlsViewController.h */,
-				F4489944176E0F4E00C0F8DD /* CASGuiderControlsViewController.m */,
-				F4489945176E0F4E00C0F8DD /* CASGuiderControlsViewController.xib */,
-				F448994D1770E5F400C0F8DD /* CASFilterWheelControlsViewController.h */,
-				F448994E1770E5F400C0F8DD /* CASFilterWheelControlsViewController.m */,
-				F448994F1770E5F400C0F8DD /* CASFilterWheelControlsViewController.xib */,
-				F4A25840179BBC220013D220 /* CASPHDControlsViewController.h */,
-				F4A25841179BBC220013D220 /* CASPHDControlsViewController.m */,
-				F4A25842179BBC220013D220 /* CASPHDControlsViewController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
