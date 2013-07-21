@@ -125,11 +125,13 @@
 
 - (IBAction)reverse:(NSButton*)sender {
 
+    self.fcusb.motorSpeed = 0.5;
     [self pulseInDirection:CASFocuserReverse forDuration:200];
 }
 
 - (IBAction)forward:(NSButton*)sender {
 
+    self.fcusb.motorSpeed = 0.5;
     [self pulseInDirection:CASFocuserForward forDuration:200];
 }
 
