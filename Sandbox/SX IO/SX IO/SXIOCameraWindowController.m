@@ -53,7 +53,7 @@
     
     // set up some helpers
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
-    self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    self.exposureView.imageProcessor = self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
 
     // set up the toolbar
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
