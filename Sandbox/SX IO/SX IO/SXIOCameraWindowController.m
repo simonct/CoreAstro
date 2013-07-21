@@ -10,6 +10,7 @@
 
 #import "CASExposureView.h"
 #import "CASCameraControlsViewController.h"
+#import "SXIOSaveTargetViewController.h"
 
 @interface CASControlsContainerView : NSView
 @end
@@ -17,13 +18,17 @@
 @end
 
 @interface SXIOCameraWindowController ()
+
 @property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
 @property (weak) IBOutlet CASExposureView *exposureView;
 @property (weak) IBOutlet NSTextField *progressStatusText;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
-@property (strong) CASCameraControlsViewController *cameraControlsViewController;
-@property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (weak) IBOutlet NSButton *captureButton;
+
+@property (nonatomic,strong) CASCCDExposure *currentExposure;
+@property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
+@property (strong) CASCameraControlsViewController *cameraControlsViewController;
+
 @end
 
 @implementation SXIOCameraWindowController
@@ -31,10 +36,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    
-//    CGColorRef gray = CGColorCreateGenericRGB(128/255.0, 128/255.0, 128/255.0, 1); // match to self.imageView.backgroundColor ?
-//    self.exposureView.layer.backgroundColor = gray;
-//    CGColorRelease(gray);
     
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
@@ -46,6 +47,17 @@
     NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
+    
+    // save target controls
+    self.saveTargetControlsViewController = [[SXIOSaveTargetViewController alloc] initWithNibName:@"SXIOSaveTargetViewController" bundle:nil];
+    self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.controlsContainerView addSubview:self.saveTargetControlsViewController.view];
+    
+    // save target controls
+    id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
+    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,saveTargetControlsViewController1);
+    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
     
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
@@ -129,7 +141,30 @@
             // check it's the still the currently displayed camera before displaying the exposure
             if (exposure){
                 
-                NSLog(@"exposure: %@",exposure);
+                NSURL* url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
+                NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
+                if (!prefix){
+                    prefix = @"image";
+                }
+                const NSInteger sequence = [[NSUserDefaults standardUserDefaults] integerForKey:kSavedImageSequenceDefaultsKey];
+                prefix = [prefix stringByAppendingFormat:@"-%ld",sequence];
+                url = [url URLByAppendingPathComponent:prefix];
+                url = [url URLByAppendingPathExtension:@"fits"];
+                [[NSUserDefaults standardUserDefaults] setInteger:sequence+1 forKey:kSavedImageSequenceDefaultsKey];
+                
+                CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+                if (!io){
+                    NSLog(@"*** Failed to create FITS exporter");
+                }
+                else {
+                    NSError* error = nil;
+                    [io writeExposure:exposure writePixels:YES error:&error];
+                    if (error){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [NSApp presentError:error];
+                        });
+                    }
+                }
                 
                 // save to the designated folder with the current settings as a fits file
                 
