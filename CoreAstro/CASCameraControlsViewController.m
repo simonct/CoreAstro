@@ -68,10 +68,32 @@
 
 - (void)setCameraController:(CASCameraController *)cameraController
 {
+    [self.representedObject removeObserver:self forKeyPath:@"subframe"];
     self.representedObject = cameraController;
+    [self.representedObject addObserver:self forKeyPath:@"subframe" options:0 context:nil];
     [self configureForCameraController];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == nil) {
+        
+        if ([keyPath isEqualToString:@"subframe"]){
+            
+            const CGRect subframe = self.cameraController.subframe;
+            if (CGRectIsEmpty(subframe)){
+                
+                [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+            }
+            else {
+                
+                [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
 
 - (void)configureForCameraController
 {

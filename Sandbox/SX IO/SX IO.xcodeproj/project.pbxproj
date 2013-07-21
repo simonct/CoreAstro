@@ -54,6 +54,7 @@
 		F4E6425B179BFFBD0044B349 /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64253179BFFBD0044B349 /* selection.pdf */; };
 		F4E6425C179BFFBD0044B349 /* zoomtofit.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64254179BFFBD0044B349 /* zoomtofit.pdf */; };
 		F4E6425D179BFFBD0044B349 /* zoom1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64255179BFFBD0044B349 /* zoom1.pdf */; };
+		F4E64260179C05C60044B349 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6425F179C05C50044B349 /* CASShadowView.m */; };
 		F4FD2303179B30D60049F5B5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2302179B30D60049F5B5 /* Cocoa.framework */; };
 		F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
 		F4FD230F179B30D60049F5B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
@@ -220,6 +221,8 @@
 		F4E64253179BFFBD0044B349 /* selection.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = selection.pdf; path = ../../../CoreAstro/Resources/selection.pdf; sourceTree = "<group>"; };
 		F4E64254179BFFBD0044B349 /* zoomtofit.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = zoomtofit.pdf; path = ../../../CoreAstro/Resources/zoomtofit.pdf; sourceTree = "<group>"; };
 		F4E64255179BFFBD0044B349 /* zoom1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = zoom1.pdf; path = ../../../CoreAstro/Resources/zoom1.pdf; sourceTree = "<group>"; };
+		F4E6425E179C05C50044B349 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASShadowView.h; path = ../../../CoreAstro/CASShadowView.h; sourceTree = "<group>"; };
+		F4E6425F179C05C50044B349 /* CASShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASShadowView.m; path = ../../../CoreAstro/CASShadowView.m; sourceTree = "<group>"; };
 		F4FD22FF179B30D60049F5B5 /* SX IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SX IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4FD2302179B30D60049F5B5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4FD2305179B30D60049F5B5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -254,6 +257,7 @@
 		F4A25861179BBFE30013D220 /* CoreAstro */ = {
 			isa = PBXGroup;
 			children = (
+				F4E64261179C05CA0044B349 /* Views */,
 				F4A25894179BC09F0013D220 /* HUDs */,
 				F4A25876179BC08A0013D220 /* Image View */,
 				F4A258A6179BC14A0013D220 /* Model Utilities */,
@@ -354,6 +358,15 @@
 				F4E64242179BEB580044B349 /* sxio.xcconfig */,
 			);
 			name = Config;
+			sourceTree = "<group>";
+		};
+		F4E64261179C05CA0044B349 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F4E6425E179C05C50044B349 /* CASShadowView.h */,
+				F4E6425F179C05C50044B349 /* CASShadowView.m */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		F4FD22F6179B30D60049F5B5 = {
@@ -628,6 +641,7 @@
 				F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */,
 				F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */,
 				F4E6424C179BEE540044B349 /* SXIOSaveTargetViewController.m in Sources */,
+				F4E64260179C05C60044B349 /* CASShadowView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

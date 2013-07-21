@@ -11,6 +11,7 @@
 #import "CASExposureView.h"
 #import "CASCameraControlsViewController.h"
 #import "SXIOSaveTargetViewController.h"
+#import "CASShadowView.h"
 
 @interface CASControlsContainerView : NSView
 @end
@@ -46,6 +47,9 @@
     
     // watch for selection changes
     self.exposureView.exposureViewDelegate = self;
+
+    // drop shadow
+    [CASShadowView attachToView:self.exposureView.enclosingScrollView edge:NSMaxXEdge];
 
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
@@ -460,7 +464,6 @@
         if (CGRectIsEmpty(rect)){
             
             self.cameraController.subframe = CGRectZero;
-            //[self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
         }
         else {
             
@@ -475,7 +478,6 @@
             
             CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-            //[self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             self.cameraController.subframe = subframe;
         }
     }
