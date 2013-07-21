@@ -17,13 +17,17 @@
 @implementation CASControlsContainerView
 @end
 
-@interface SXIOCameraWindowController ()
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate>
 
+@property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
 @property (weak) IBOutlet CASExposureView *exposureView;
 @property (weak) IBOutlet NSTextField *progressStatusText;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (weak) IBOutlet NSButton *captureButton;
+@property (strong) IBOutlet NSSegmentedControl *zoomControl;
+@property (strong) IBOutlet NSSegmentedControl *zoomFitControl;
+@property (strong) IBOutlet NSSegmentedControl *selectionControl;
 
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
@@ -37,6 +41,12 @@
 {
     [super windowDidLoad];
     
+    // set up the toolbar
+    self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
+    
+    // watch for selection changes
+    self.exposureView.exposureViewDelegate = self;
+
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
     self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -75,10 +85,10 @@
         else if (object == self.exposureView){
             if ([keyPath isEqualToString:@"showSelection"]){
                 if (self.exposureView.showSelection){
-//                    self.selectionControl.selectedSegment = 0;
+                    self.selectionControl.selectedSegment = 0;
                 }
                 else {
-//                    self.selectionControl.selectedSegment = 1;
+                    self.selectionControl.selectedSegment = 1;
                 }
             }
         }
@@ -179,6 +189,57 @@
 {
     self.captureButton.enabled = NO;
     [self.cameraController cancelCapture];
+}
+
+- (IBAction)zoom:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 0){
+        [self zoomIn:self];
+    }
+    else {
+        [self zoomOut:self];
+    }
+}
+
+- (IBAction)zoomFit:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 0){
+        [self.exposureView zoomImageToFit:self];
+    }
+    else {
+        [self.exposureView zoomImageToActualSize:self];
+    }
+}
+
+- (IBAction)selection:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 0 && !self.exposureView.displayingScaledSubframe){
+        self.exposureView.showSelection = YES;
+    }
+    else {
+        self.exposureView.showSelection = NO;
+        [self selectionRectChanged:self.exposureView];
+    }
+}
+
+- (IBAction)zoomIn:(id)sender
+{
+    [self.exposureView zoomIn:sender];
+}
+
+- (IBAction)zoomOut:(id)sender
+{
+    [self.exposureView zoomOut:sender];
+}
+
+- (void)zoomImageToFit:sender
+{
+    [self.exposureView zoomImageToFit:sender];
+}
+
+- (void)zoomImageToActualSize:sender
+{
+    [self.exposureView zoomImageToActualSize:sender];
 }
 
 - (void)configureForCameraController
@@ -364,8 +425,8 @@
 
 - (void)clearSelection
 {
-//    self.selectionControl.selectedSegment = 1;
-//    [self selection:self.selectionControl]; // yuk
+    self.selectionControl.selectedSegment = 1;
+    [self selection:self.selectionControl]; // yuk
 }
 
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
@@ -385,6 +446,134 @@
             [self clearSelection];
         }
     }
+}
+
+#pragma mark CASExposureView delegate
+
+- (void) selectionRectChanged: (CASExposureView*) imageView
+{
+    //    NSLog(@"selectionRectChanged: %@",NSStringFromRect(imageView.selectionRect));
+    
+    if (self.exposureView.image){
+        
+        const CGRect rect = self.exposureView.selectionRect;
+        if (CGRectIsEmpty(rect)){
+            
+            self.cameraController.subframe = CGRectZero;
+            //[self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+        }
+        else {
+            
+            CGSize size = CGSizeZero;
+            CASCCDProperties* sensor = self.cameraController.camera.sensor;
+            if (sensor){
+                size = CGSizeMake(sensor.width, sensor.height);
+            }
+            else {
+                size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
+            }
+            
+            CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
+            subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
+            //[self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+            self.cameraController.subframe = subframe;
+        }
+    }
+}
+
+#pragma mark NSToolbar delegate
+
+- (NSToolbarItem *)toolbarItemWithIdentifier:(NSString *)identifier
+                                       label:(NSString *)label
+                                 paleteLabel:(NSString *)paletteLabel
+                                     toolTip:(NSString *)toolTip
+                                      target:(id)target
+                                 itemContent:(id)imageOrView
+                                      action:(SEL)action
+                                        menu:(NSMenu *)menu
+{
+    // here we create the NSToolbarItem and setup its attributes in line with the parameters
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    
+    [item setLabel:label];
+    [item setPaletteLabel:paletteLabel];
+    [item setToolTip:toolTip];
+    [item setTarget:target];
+    [item setAction:action];
+    
+    // Set the right attribute, depending on if we were given an image or a view
+    if([imageOrView isKindOfClass:[NSImage class]]){
+        [item setImage:imageOrView];
+    } else if ([imageOrView isKindOfClass:[NSView class]]){
+        [item setView:imageOrView];
+    }else {
+        assert(!"Invalid itemContent: object");
+    }
+    
+    
+    // If this NSToolbarItem is supposed to have a menu "form representation" associated with it
+    // (for text-only mode), we set it up here.  Actually, you have to hand an NSMenuItem
+    // (not a complete NSMenu) to the toolbar item, so we create a dummy NSMenuItem that has our real
+    // menu as a submenu.
+    //
+    if (menu != nil)
+    {
+        // we actually need an NSMenuItem here, so we construct one
+        NSMenuItem *mItem = [[NSMenuItem alloc] init];
+        [mItem setSubmenu:menu];
+        [mItem setTitle:label];
+        [item setMenuFormRepresentation:mItem];
+    }
+    
+    return item;
+}
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag;
+{
+    NSToolbarItem* item = nil;
+    
+    if ([@"ZoomInOut" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Zoom"
+                                   paleteLabel:@"Zoom"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.zoomControl
+                                        action:@selector(zoom:)
+                                          menu:nil];
+    }
+    
+    if ([@"ZoomFit" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Fit"
+                                   paleteLabel:@"Fit"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.zoomFitControl
+                                        action:@selector(zoomFit:)
+                                          menu:nil];
+    }
+    
+    if ([@"Selection" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Selection"
+                                   paleteLabel:@"Selection"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.selectionControl
+                                        action:@selector(selection:)
+                                          menu:nil];
+    }
+    
+    return item;
+}
+
+- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
+{
+    return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",@"Selection",nil];
 }
 
 @end
