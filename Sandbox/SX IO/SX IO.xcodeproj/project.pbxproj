@@ -1,0 +1,728 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
+		F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
+		F4A25870179BC0100013D220 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
+		F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586B179BC0100013D220 /* CASCenteringClipView.m */; };
+		F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586D179BC0100013D220 /* CASZoomableView.m */; };
+		F4A25873179BC0100013D220 /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586F179BC0100013D220 /* CASExposureView.m */; };
+		F4A25875179BC06E0013D220 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
+		F4A25889179BC0990013D220 /* CASHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25878179BC0990013D220 /* CASHUDView.m */; };
+		F4A2588A179BC0990013D220 /* CASExposureInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2587A179BC0990013D220 /* CASExposureInfoView.m */; };
+		F4A2588B179BC0990013D220 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A2587B179BC0990013D220 /* CASExposureInfoView.xib */; };
+		F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2587D179BC0990013D220 /* CASStarInfoHUDView.m */; };
+		F4A2588D179BC0990013D220 /* CASStarInfoHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A2587E179BC0990013D220 /* CASStarInfoHUDView.xib */; };
+		F4A2588E179BC0990013D220 /* CASProgressHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25880179BC0990013D220 /* CASProgressHUDView.m */; };
+		F4A2588F179BC0990013D220 /* CASHistogramHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25882179BC0990013D220 /* CASHistogramHUDView.m */; };
+		F4A25890179BC0990013D220 /* CASHistogramHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A25883179BC0990013D220 /* CASHistogramHUDView.xib */; };
+		F4A25891179BC0990013D220 /* CASPlateSolutionHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25885179BC0990013D220 /* CASPlateSolutionHUDView.m */; };
+		F4A25892179BC0990013D220 /* CASPlateSolutionHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A25886179BC0990013D220 /* CASPlateSolutionHUDView.xib */; };
+		F4A25893179BC0990013D220 /* CASSimpleGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25888179BC0990013D220 /* CASSimpleGraphView.m */; };
+		F4A25896179BC0CF0013D220 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
+		F4A2589E179BC1460013D220 /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2589B179BC1450013D220 /* CASExposuresController.m */; };
+		F4A2589F179BC1460013D220 /* CASTemperatureTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2589D179BC1460013D220 /* CASTemperatureTransformer.m */; };
+		F4A258AF179BC1630013D220 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258A8179BC1630013D220 /* NSApplication+CASScripting.m */; };
+		F4A258B0179BC1630013D220 /* CASScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AA179BC1630013D220 /* CASScriptCommand.m */; };
+		F4A258B1179BC1630013D220 /* CASCaptureCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AC179BC1630013D220 /* CASCaptureCommand.m */; };
+		F4A258B2179BC1630013D220 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AE179BC1630013D220 /* CASGuideCommand.m */; };
+		F4A258C4179BC1D90013D220 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258B9179BC1D90013D220 /* CASCameraControlsViewController.m */; };
+		F4A258C5179BC1D90013D220 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258BA179BC1D90013D220 /* CASCameraControlsViewController.xib */; };
+		F4A258C6179BC1D90013D220 /* CASGuiderControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258BC179BC1D90013D220 /* CASGuiderControlsViewController.m */; };
+		F4A258C7179BC1D90013D220 /* CASGuiderControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258BD179BC1D90013D220 /* CASGuiderControlsViewController.xib */; };
+		F4A258C8179BC1D90013D220 /* CASFilterWheelControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258BF179BC1D90013D220 /* CASFilterWheelControlsViewController.m */; };
+		F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
+		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
+		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
+		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
+		F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
+		F4FD2303179B30D60049F5B5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2302179B30D60049F5B5 /* Cocoa.framework */; };
+		F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
+		F4FD230F179B30D60049F5B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
+		F4FD2313179B30D60049F5B5 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2311179B30D60049F5B5 /* Credits.rtf */; };
+		F4FD2316179B30D60049F5B5 /* CASAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */; };
+		F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2317179B30D60049F5B5 /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F4A2582F179B31740013D220 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F4D3CDF4179BC52800B42D04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F498A51815FE7F96006E8376;
+			remoteInfo = SXDevicesPlugin;
+		};
+		F4FD232B179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F49E52BD15A971610018DC75;
+			remoteInfo = CoreAstro;
+		};
+		F4FD232D179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F49E52DE15A971620018DC75;
+			remoteInfo = CoreAstroTests;
+		};
+		F4FD232F179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F44EDEFA15FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F4FD2331179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F44EDF0B15FCC386003B1B4C;
+			remoteInfo = "CoreAstro FrameworkTests";
+		};
+		F4FD2333179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F498A51915FE7F96006E8376;
+			remoteInfo = SXDevicesPlugin;
+		};
+		F4FD2335179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4EEF3001606226100547009;
+			remoteInfo = SHDevicesPlugin;
+		};
+		F4FD2337179B31360049F5B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4A4F2A71631DDDE00A3B4E9;
+			remoteInfo = "QuickLook Plugin";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F4A25838179B31760013D220 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4D3CE01179BC54900B42D04 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
+			dstSubfolderSpec = 10;
+			files = (
+				F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F4A25868179BC0100013D220 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
+		F4A25869179BC0100013D220 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
+		F4A2586A179BC0100013D220 /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
+		F4A2586B179BC0100013D220 /* CASCenteringClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCenteringClipView.m; path = ../../../CoreAstro/CASCenteringClipView.m; sourceTree = "<group>"; };
+		F4A2586C179BC0100013D220 /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASZoomableView.h; path = ../../../CoreAstro/CASZoomableView.h; sourceTree = "<group>"; };
+		F4A2586D179BC0100013D220 /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASZoomableView.m; path = ../../../CoreAstro/CASZoomableView.m; sourceTree = "<group>"; };
+		F4A2586E179BC0100013D220 /* CASExposureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASExposureView.h; path = ../../../CoreAstro/CASExposureView.h; sourceTree = "<group>"; };
+		F4A2586F179BC0100013D220 /* CASExposureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASExposureView.m; path = ../../../CoreAstro/CASExposureView.m; sourceTree = "<group>"; };
+		F4A25874179BC06E0013D220 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F4A25877179BC0990013D220 /* CASHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASHUDView.h; path = ../../../CoreAstro/CASHUDView.h; sourceTree = "<group>"; };
+		F4A25878179BC0990013D220 /* CASHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASHUDView.m; path = ../../../CoreAstro/CASHUDView.m; sourceTree = "<group>"; };
+		F4A25879179BC0990013D220 /* CASExposureInfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASExposureInfoView.h; path = ../../../CoreAstro/CASExposureInfoView.h; sourceTree = "<group>"; };
+		F4A2587A179BC0990013D220 /* CASExposureInfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASExposureInfoView.m; path = ../../../CoreAstro/CASExposureInfoView.m; sourceTree = "<group>"; };
+		F4A2587B179BC0990013D220 /* CASExposureInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASExposureInfoView.xib; path = ../../../CoreAstro/CASExposureInfoView.xib; sourceTree = "<group>"; };
+		F4A2587C179BC0990013D220 /* CASStarInfoHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASStarInfoHUDView.h; path = ../../../CoreAstro/CASStarInfoHUDView.h; sourceTree = "<group>"; };
+		F4A2587D179BC0990013D220 /* CASStarInfoHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASStarInfoHUDView.m; path = ../../../CoreAstro/CASStarInfoHUDView.m; sourceTree = "<group>"; };
+		F4A2587E179BC0990013D220 /* CASStarInfoHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASStarInfoHUDView.xib; path = ../../../CoreAstro/CASStarInfoHUDView.xib; sourceTree = "<group>"; };
+		F4A2587F179BC0990013D220 /* CASProgressHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASProgressHUDView.h; path = ../../../CoreAstro/CASProgressHUDView.h; sourceTree = "<group>"; };
+		F4A25880179BC0990013D220 /* CASProgressHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASProgressHUDView.m; path = ../../../CoreAstro/CASProgressHUDView.m; sourceTree = "<group>"; };
+		F4A25881179BC0990013D220 /* CASHistogramHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASHistogramHUDView.h; path = ../../../CoreAstro/CASHistogramHUDView.h; sourceTree = "<group>"; };
+		F4A25882179BC0990013D220 /* CASHistogramHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASHistogramHUDView.m; path = ../../../CoreAstro/CASHistogramHUDView.m; sourceTree = "<group>"; };
+		F4A25883179BC0990013D220 /* CASHistogramHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASHistogramHUDView.xib; path = ../../../CoreAstro/CASHistogramHUDView.xib; sourceTree = "<group>"; };
+		F4A25884179BC0990013D220 /* CASPlateSolutionHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPlateSolutionHUDView.h; path = ../../../CoreAstro/CASPlateSolutionHUDView.h; sourceTree = "<group>"; };
+		F4A25885179BC0990013D220 /* CASPlateSolutionHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPlateSolutionHUDView.m; path = ../../../CoreAstro/CASPlateSolutionHUDView.m; sourceTree = "<group>"; };
+		F4A25886179BC0990013D220 /* CASPlateSolutionHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPlateSolutionHUDView.xib; path = ../../../CoreAstro/CASPlateSolutionHUDView.xib; sourceTree = "<group>"; };
+		F4A25887179BC0990013D220 /* CASSimpleGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSimpleGraphView.h; path = ../../../CoreAstro/CASSimpleGraphView.h; sourceTree = "<group>"; };
+		F4A25888179BC0990013D220 /* CASSimpleGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSimpleGraphView.m; path = ../../../CoreAstro/CASSimpleGraphView.m; sourceTree = "<group>"; };
+		F4A25895179BC0CF0013D220 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F4A2589A179BC1450013D220 /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASExposuresController.h; path = ../../../CoreAstro/CASExposuresController.h; sourceTree = "<group>"; };
+		F4A2589B179BC1450013D220 /* CASExposuresController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASExposuresController.m; path = ../../../CoreAstro/CASExposuresController.m; sourceTree = "<group>"; };
+		F4A2589C179BC1450013D220 /* CASTemperatureTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASTemperatureTransformer.h; path = ../../../CoreAstro/CASTemperatureTransformer.h; sourceTree = "<group>"; };
+		F4A2589D179BC1460013D220 /* CASTemperatureTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASTemperatureTransformer.m; path = ../../../CoreAstro/CASTemperatureTransformer.m; sourceTree = "<group>"; };
+		F4A258A7179BC1630013D220 /* NSApplication+CASScripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSApplication+CASScripting.h"; path = "../../../CoreAstro/NSApplication+CASScripting.h"; sourceTree = "<group>"; };
+		F4A258A8179BC1630013D220 /* NSApplication+CASScripting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSApplication+CASScripting.m"; path = "../../../CoreAstro/NSApplication+CASScripting.m"; sourceTree = "<group>"; };
+		F4A258A9179BC1630013D220 /* CASScriptCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASScriptCommand.h; path = ../../../CoreAstro/CASScriptCommand.h; sourceTree = "<group>"; };
+		F4A258AA179BC1630013D220 /* CASScriptCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASScriptCommand.m; path = ../../../CoreAstro/CASScriptCommand.m; sourceTree = "<group>"; };
+		F4A258AB179BC1630013D220 /* CASCaptureCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCaptureCommand.h; path = ../../../CoreAstro/CASCaptureCommand.h; sourceTree = "<group>"; };
+		F4A258AC179BC1630013D220 /* CASCaptureCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureCommand.m; path = ../../../CoreAstro/CASCaptureCommand.m; sourceTree = "<group>"; };
+		F4A258AD179BC1630013D220 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASGuideCommand.h; path = ../../../CoreAstro/CASGuideCommand.h; sourceTree = "<group>"; };
+		F4A258AE179BC1630013D220 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASGuideCommand.m; path = ../../../CoreAstro/CASGuideCommand.m; sourceTree = "<group>"; };
+		F4A258B8179BC1D90013D220 /* CASCameraControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCameraControlsViewController.h; path = ../../../CoreAstro/CASCameraControlsViewController.h; sourceTree = "<group>"; };
+		F4A258B9179BC1D90013D220 /* CASCameraControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCameraControlsViewController.m; path = ../../../CoreAstro/CASCameraControlsViewController.m; sourceTree = "<group>"; };
+		F4A258BA179BC1D90013D220 /* CASCameraControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCameraControlsViewController.xib; path = ../../../CoreAstro/CASCameraControlsViewController.xib; sourceTree = "<group>"; };
+		F4A258BB179BC1D90013D220 /* CASGuiderControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASGuiderControlsViewController.h; path = ../../../CoreAstro/CASGuiderControlsViewController.h; sourceTree = "<group>"; };
+		F4A258BC179BC1D90013D220 /* CASGuiderControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASGuiderControlsViewController.m; path = ../../../CoreAstro/CASGuiderControlsViewController.m; sourceTree = "<group>"; };
+		F4A258BD179BC1D90013D220 /* CASGuiderControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASGuiderControlsViewController.xib; path = ../../../CoreAstro/CASGuiderControlsViewController.xib; sourceTree = "<group>"; };
+		F4A258BE179BC1D90013D220 /* CASFilterWheelControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASFilterWheelControlsViewController.h; path = ../../../CoreAstro/CASFilterWheelControlsViewController.h; sourceTree = "<group>"; };
+		F4A258BF179BC1D90013D220 /* CASFilterWheelControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASFilterWheelControlsViewController.m; path = ../../../CoreAstro/CASFilterWheelControlsViewController.m; sourceTree = "<group>"; };
+		F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASFilterWheelControlsViewController.xib; path = ../../../CoreAstro/CASFilterWheelControlsViewController.xib; sourceTree = "<group>"; };
+		F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPHDControlsViewController.h; path = ../../../CoreAstro/CASPHDControlsViewController.h; sourceTree = "<group>"; };
+		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
+		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
+		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
+		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
+		F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCameraWindowController.xib; sourceTree = "<group>"; };
+		F4FD22FF179B30D60049F5B5 /* SX IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SX IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4FD2302179B30D60049F5B5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F4FD2305179B30D60049F5B5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F4FD2306179B30D60049F5B5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F4FD2307179B30D60049F5B5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4FD230A179B30D60049F5B5 /* SX IO-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SX IO-Info.plist"; sourceTree = "<group>"; };
+		F4FD230C179B30D60049F5B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4FD230E179B30D60049F5B5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4FD2310179B30D60049F5B5 /* SX IO-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SX IO-Prefix.pch"; sourceTree = "<group>"; };
+		F4FD2312179B30D60049F5B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CASAppDelegate.h; sourceTree = "<group>"; };
+		F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CASAppDelegate.m; sourceTree = "<group>"; };
+		F4FD2318179B30D60049F5B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoreAstro.xcodeproj; path = ../../CoreAstro.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4FD22FC179B30D60049F5B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A25896179BC0CF0013D220 /* Accelerate.framework in Frameworks */,
+				F4A25875179BC06E0013D220 /* QuartzCore.framework in Frameworks */,
+				F4FD2303179B30D60049F5B5 /* Cocoa.framework in Frameworks */,
+				F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4A25861179BBFE30013D220 /* CoreAstro */ = {
+			isa = PBXGroup;
+			children = (
+				F4A25894179BC09F0013D220 /* HUDs */,
+				F4A25876179BC08A0013D220 /* Image View */,
+				F4A258A6179BC14A0013D220 /* Model Utilities */,
+				F4A258B3179BC1680013D220 /* Scripting */,
+				F4A258CC179BC1DE0013D220 /* View Controllers */,
+			);
+			name = CoreAstro;
+			sourceTree = "<group>";
+		};
+		F4A25876179BC08A0013D220 /* Image View */ = {
+			isa = PBXGroup;
+			children = (
+				F4A25868179BC0100013D220 /* CASImageView.h */,
+				F4A25869179BC0100013D220 /* CASImageView.m */,
+				F4A2586A179BC0100013D220 /* CASCenteringClipView.h */,
+				F4A2586B179BC0100013D220 /* CASCenteringClipView.m */,
+				F4A2586C179BC0100013D220 /* CASZoomableView.h */,
+				F4A2586D179BC0100013D220 /* CASZoomableView.m */,
+				F4A2586E179BC0100013D220 /* CASExposureView.h */,
+				F4A2586F179BC0100013D220 /* CASExposureView.m */,
+			);
+			name = "Image View";
+			sourceTree = "<group>";
+		};
+		F4A25894179BC09F0013D220 /* HUDs */ = {
+			isa = PBXGroup;
+			children = (
+				F4A25877179BC0990013D220 /* CASHUDView.h */,
+				F4A25878179BC0990013D220 /* CASHUDView.m */,
+				F4A25879179BC0990013D220 /* CASExposureInfoView.h */,
+				F4A2587A179BC0990013D220 /* CASExposureInfoView.m */,
+				F4A2587B179BC0990013D220 /* CASExposureInfoView.xib */,
+				F4A2587C179BC0990013D220 /* CASStarInfoHUDView.h */,
+				F4A2587D179BC0990013D220 /* CASStarInfoHUDView.m */,
+				F4A2587E179BC0990013D220 /* CASStarInfoHUDView.xib */,
+				F4A2587F179BC0990013D220 /* CASProgressHUDView.h */,
+				F4A25880179BC0990013D220 /* CASProgressHUDView.m */,
+				F4A25881179BC0990013D220 /* CASHistogramHUDView.h */,
+				F4A25882179BC0990013D220 /* CASHistogramHUDView.m */,
+				F4A25883179BC0990013D220 /* CASHistogramHUDView.xib */,
+				F4A25884179BC0990013D220 /* CASPlateSolutionHUDView.h */,
+				F4A25885179BC0990013D220 /* CASPlateSolutionHUDView.m */,
+				F4A25886179BC0990013D220 /* CASPlateSolutionHUDView.xib */,
+				F4A25887179BC0990013D220 /* CASSimpleGraphView.h */,
+				F4A25888179BC0990013D220 /* CASSimpleGraphView.m */,
+			);
+			name = HUDs;
+			sourceTree = "<group>";
+		};
+		F4A258A6179BC14A0013D220 /* Model Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F4A2589A179BC1450013D220 /* CASExposuresController.h */,
+				F4A2589B179BC1450013D220 /* CASExposuresController.m */,
+				F4A2589C179BC1450013D220 /* CASTemperatureTransformer.h */,
+				F4A2589D179BC1460013D220 /* CASTemperatureTransformer.m */,
+			);
+			name = "Model Utilities";
+			sourceTree = "<group>";
+		};
+		F4A258B3179BC1680013D220 /* Scripting */ = {
+			isa = PBXGroup;
+			children = (
+				F4A258A7179BC1630013D220 /* NSApplication+CASScripting.h */,
+				F4A258A8179BC1630013D220 /* NSApplication+CASScripting.m */,
+				F4A258A9179BC1630013D220 /* CASScriptCommand.h */,
+				F4A258AA179BC1630013D220 /* CASScriptCommand.m */,
+				F4A258AB179BC1630013D220 /* CASCaptureCommand.h */,
+				F4A258AC179BC1630013D220 /* CASCaptureCommand.m */,
+				F4A258AD179BC1630013D220 /* CASGuideCommand.h */,
+				F4A258AE179BC1630013D220 /* CASGuideCommand.m */,
+			);
+			name = Scripting;
+			sourceTree = "<group>";
+		};
+		F4A258CC179BC1DE0013D220 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F4A258B8179BC1D90013D220 /* CASCameraControlsViewController.h */,
+				F4A258B9179BC1D90013D220 /* CASCameraControlsViewController.m */,
+				F4A258BA179BC1D90013D220 /* CASCameraControlsViewController.xib */,
+				F4A258BB179BC1D90013D220 /* CASGuiderControlsViewController.h */,
+				F4A258BC179BC1D90013D220 /* CASGuiderControlsViewController.m */,
+				F4A258BD179BC1D90013D220 /* CASGuiderControlsViewController.xib */,
+				F4A258BE179BC1D90013D220 /* CASFilterWheelControlsViewController.h */,
+				F4A258BF179BC1D90013D220 /* CASFilterWheelControlsViewController.m */,
+				F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */,
+				F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */,
+				F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */,
+				F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		F4FD22F6179B30D60049F5B5 = {
+			isa = PBXGroup;
+			children = (
+				F4FD2339179B31420049F5B5 /* Dependencies */,
+				F4FD2308179B30D60049F5B5 /* SX IO */,
+				F4FD2301179B30D60049F5B5 /* Frameworks */,
+				F4FD2300179B30D60049F5B5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4FD2300179B30D60049F5B5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD22FF179B30D60049F5B5 /* SX IO.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4A25895179BC0CF0013D220 /* Accelerate.framework */,
+				F4A25874179BC06E0013D220 /* QuartzCore.framework */,
+				F4FD2302179B30D60049F5B5 /* Cocoa.framework */,
+				F4FD2304179B30D60049F5B5 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4FD2304179B30D60049F5B5 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD2305179B30D60049F5B5 /* AppKit.framework */,
+				F4FD2306179B30D60049F5B5 /* CoreData.framework */,
+				F4FD2307179B30D60049F5B5 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F4FD2308179B30D60049F5B5 /* SX IO */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */,
+				F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */,
+				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
+				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
+				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
+				F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */,
+				F4A25861179BBFE30013D220 /* CoreAstro */,
+				F4FD2309179B30D60049F5B5 /* Supporting Files */,
+			);
+			path = "SX IO";
+			sourceTree = "<group>";
+		};
+		F4FD2309179B30D60049F5B5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD230A179B30D60049F5B5 /* SX IO-Info.plist */,
+				F4FD230B179B30D60049F5B5 /* InfoPlist.strings */,
+				F4FD230E179B30D60049F5B5 /* main.m */,
+				F4FD2310179B30D60049F5B5 /* SX IO-Prefix.pch */,
+				F4FD2311179B30D60049F5B5 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4FD2322179B31360049F5B5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD232C179B31360049F5B5 /* CoreAstro.app */,
+				F4FD232E179B31360049F5B5 /* CoreAstroTests.octest */,
+				F4FD2330179B31360049F5B5 /* CoreAstro.framework */,
+				F4FD2332179B31360049F5B5 /* CoreAstro FrameworkTests.octest */,
+				F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */,
+				F4FD2336179B31360049F5B5 /* SHDevicesPlugin.casPlugin */,
+				F4FD2338179B31360049F5B5 /* CoreAstro.qlgenerator */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FD2339179B31420049F5B5 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4FD22FE179B30D60049F5B5 /* SX IO */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4FD231C179B30D60049F5B5 /* Build configuration list for PBXNativeTarget "SX IO" */;
+			buildPhases = (
+				F4FD22FB179B30D60049F5B5 /* Sources */,
+				F4FD22FC179B30D60049F5B5 /* Frameworks */,
+				F4FD22FD179B30D60049F5B5 /* Resources */,
+				F4A25838179B31760013D220 /* CopyFiles */,
+				F4D3CE01179BC54900B42D04 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4D3CDF5179BC52800B42D04 /* PBXTargetDependency */,
+				F4A25830179B31740013D220 /* PBXTargetDependency */,
+			);
+			name = "SX IO";
+			productName = "SX IO";
+			productReference = F4FD22FF179B30D60049F5B5 /* SX IO.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4FD22F7179B30D60049F5B5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CAS;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Simon Taylor";
+			};
+			buildConfigurationList = F4FD22FA179B30D60049F5B5 /* Build configuration list for PBXProject "SX IO" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F4FD22F6179B30D60049F5B5;
+			productRefGroup = F4FD2300179B30D60049F5B5 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F4FD2322179B31360049F5B5 /* Products */;
+					ProjectRef = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F4FD22FE179B30D60049F5B5 /* SX IO */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F4FD232C179B31360049F5B5 /* CoreAstro.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CoreAstro.app;
+			remoteRef = F4FD232B179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD232E179B31360049F5B5 /* CoreAstroTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CoreAstroTests.octest;
+			remoteRef = F4FD232D179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD2330179B31360049F5B5 /* CoreAstro.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CoreAstro.framework;
+			remoteRef = F4FD232F179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD2332179B31360049F5B5 /* CoreAstro FrameworkTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "CoreAstro FrameworkTests.octest";
+			remoteRef = F4FD2331179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SXDevicesPlugin.casPlugin;
+			remoteRef = F4FD2333179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD2336179B31360049F5B5 /* SHDevicesPlugin.casPlugin */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SHDevicesPlugin.casPlugin;
+			remoteRef = F4FD2335179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F4FD2338179B31360049F5B5 /* CoreAstro.qlgenerator */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CoreAstro.qlgenerator;
+			remoteRef = F4FD2337179B31360049F5B5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4FD22FD179B30D60049F5B5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */,
+				F4FD2313179B30D60049F5B5 /* Credits.rtf in Resources */,
+				F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */,
+				F4A2588B179BC0990013D220 /* CASExposureInfoView.xib in Resources */,
+				F4A2588D179BC0990013D220 /* CASStarInfoHUDView.xib in Resources */,
+				F4A25890179BC0990013D220 /* CASHistogramHUDView.xib in Resources */,
+				F4A25892179BC0990013D220 /* CASPlateSolutionHUDView.xib in Resources */,
+				F4A258C5179BC1D90013D220 /* CASCameraControlsViewController.xib in Resources */,
+				F4A258C7179BC1D90013D220 /* CASGuiderControlsViewController.xib in Resources */,
+				F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */,
+				F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */,
+				F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4FD22FB179B30D60049F5B5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
+				F4FD2316179B30D60049F5B5 /* CASAppDelegate.m in Sources */,
+				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
+				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
+				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,
+				F4A25873179BC0100013D220 /* CASExposureView.m in Sources */,
+				F4A25889179BC0990013D220 /* CASHUDView.m in Sources */,
+				F4A2588A179BC0990013D220 /* CASExposureInfoView.m in Sources */,
+				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
+				F4A2588E179BC0990013D220 /* CASProgressHUDView.m in Sources */,
+				F4A2588F179BC0990013D220 /* CASHistogramHUDView.m in Sources */,
+				F4A25891179BC0990013D220 /* CASPlateSolutionHUDView.m in Sources */,
+				F4A25893179BC0990013D220 /* CASSimpleGraphView.m in Sources */,
+				F4A2589E179BC1460013D220 /* CASExposuresController.m in Sources */,
+				F4A2589F179BC1460013D220 /* CASTemperatureTransformer.m in Sources */,
+				F4A258AF179BC1630013D220 /* NSApplication+CASScripting.m in Sources */,
+				F4A258B0179BC1630013D220 /* CASScriptCommand.m in Sources */,
+				F4A258B1179BC1630013D220 /* CASCaptureCommand.m in Sources */,
+				F4A258B2179BC1630013D220 /* CASGuideCommand.m in Sources */,
+				F4A258C4179BC1D90013D220 /* CASCameraControlsViewController.m in Sources */,
+				F4A258C6179BC1D90013D220 /* CASGuiderControlsViewController.m in Sources */,
+				F4A258C8179BC1D90013D220 /* CASFilterWheelControlsViewController.m in Sources */,
+				F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */,
+				F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4A25830179B31740013D220 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "CoreAstro Framework";
+			targetProxy = F4A2582F179B31740013D220 /* PBXContainerItemProxy */;
+		};
+		F4D3CDF5179BC52800B42D04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SXDevicesPlugin;
+			targetProxy = F4D3CDF4179BC52800B42D04 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4FD230B179B30D60049F5B5 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4FD230C179B30D60049F5B5 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4FD2311179B30D60049F5B5 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4FD2312179B30D60049F5B5 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F4FD2317179B30D60049F5B5 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4FD2318179B30D60049F5B5 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4FD231A179B30D60049F5B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F4FD231B179B30D60049F5B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4FD231D179B30D60049F5B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F4FD231E179B30D60049F5B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4FD22FA179B30D60049F5B5 /* Build configuration list for PBXProject "SX IO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FD231A179B30D60049F5B5 /* Debug */,
+				F4FD231B179B30D60049F5B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4FD231C179B30D60049F5B5 /* Build configuration list for PBXNativeTarget "SX IO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FD231D179B30D60049F5B5 /* Debug */,
+				F4FD231E179B30D60049F5B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4FD22F7179B30D60049F5B5 /* Project object */;
+}
