@@ -672,6 +672,7 @@
             self.imageDebayer.mode = kCASImageDebayerGBRG;
             break;
     }
+    [self resetAndRedisplayCurrentExposure];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
