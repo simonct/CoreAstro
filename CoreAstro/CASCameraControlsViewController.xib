@@ -411,6 +411,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<int key="NSCellFlags2">131072</int>
 							<string key="NSCellIdentifier">_NS:1099</string>
 							<reference key="NSControlView" ref="810289804"/>
+							<double key="NSMinValue">-100</double>
 							<double key="NSMaxValue">100</double>
 							<double key="NSIncrement">1</double>
 							<bool key="NSAutorepeat">YES</bool>
