@@ -11,7 +11,10 @@
 #import "CASExposureView.h"
 #import "CASCameraControlsViewController.h"
 #import "SXIOSaveTargetViewController.h"
+#import "CASProgressWindowController.h"
 #import "CASShadowView.h"
+
+#import <Quartz/Quartz.h>
 
 @interface CASControlsContainerView : NSView
 @end
@@ -38,7 +41,8 @@
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
-@property (assign) BOOL invert, equalise;
+@property (assign) BOOL equalise;
+@property (assign) BOOL invert;
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
@@ -153,6 +157,8 @@
                        otherButton:nil
          informativeTextWithFormat:@"%@",message] runModal];
 }
+
+#pragma mark - Actions
 
 - (IBAction)capture:(NSButton*)sender
 {
@@ -273,15 +279,142 @@
     [self.exposureView zoomOut:sender];
 }
 
-- (void)zoomImageToFit:sender
+- (IBAction)zoomImageToFit:sender
 {
     [self.exposureView zoomImageToFit:sender];
 }
 
-- (void)zoomImageToActualSize:sender
+- (IBAction)zoomImageToActualSize:sender
 {
     [self.exposureView zoomImageToActualSize:sender];
 }
+
+- (IBAction)saveAs:(id)sender
+{
+    if (!self.currentExposure){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.canCreateDirectories = YES;
+    
+    IKSaveOptions* options = [[IKSaveOptions alloc] initWithImageProperties:nil imageUTType:nil]; // leaks ?
+    [options addSaveOptionsAccessoryViewToSavePanel:save];
+    
+    // run the save panel and save the exposures to the selected location
+    [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
+        
+        NSData* data = [[exposure newImage] dataForUTType:options.imageUTType options:options.imageProperties];
+        if (!data){
+            NSLog(@"*** Failed to create image from exposure");
+        }
+        else {
+            
+            NSError* error;
+            [data writeToFile:save.URL.path options:NSDataWritingAtomic error:&error];
+            if (error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSApp presentError:error];
+                });
+            }
+        }
+    } completionBlock:nil];
+}
+
+- (IBAction)saveToFITS:(id)sender
+{
+    if (!self.currentExposure){
+        return;
+    }
+    
+    NSSavePanel* save = [NSSavePanel savePanel];
+    save.canCreateDirectories = YES;
+    
+    save.allowedFileTypes = @[@"fits",@"fit"];
+    
+    [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
+        
+        NSURL* url = save.URL;
+        if (![save.allowedFileTypes containsObject:url.pathExtension]){
+            url = [save.URL URLByAppendingPathExtension:@"fits"];
+        }
+        
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+        if (!io){
+            NSLog(@"*** Failed to create FITS exporter");
+        }
+        else {
+            NSError* error = nil;
+            [io writeExposure:exposure writePixels:YES error:&error];
+            if (error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSApp presentError:error];
+                });
+            }
+        }
+    } completionBlock:nil];
+}
+
+#pragma mark - Save Utilities
+
+- (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
+{
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            // wait for the open sheet to dismiss
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                // start progress hud
+                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                [progress beginSheetModalForWindow:self.window];
+                [progress configureWithRange:NSMakeRange(0, [exposures count]) label:progressLabel];
+                
+                // export the exposures - beware of races here since we're doing this async
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    
+                    for (__strong CASCCDExposure* exposure in exposures){
+                        
+                        // prefer the corrected image
+                        CASCCDExposure* corrected = exposure.correctedExposure;
+                        if (corrected){
+                            exposure = corrected;
+                        }
+                        
+                        @try {
+                            @autoreleasepool {
+                                exportBlock(exposure);
+                            }
+                        }
+                        @catch (NSException *exception) {
+                            NSLog(@"*** Exception exporting exposure: %@",exposure);
+                        }
+                        
+                        // release the pixels - need an autorelease pool-style mechanism to do this generally
+                        [exposure reset];
+                        
+                        // update progress bar
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            progress.progressBar.doubleValue++;
+                        });
+                    }
+                    
+                    // dismiss progress sheet/hud
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        if (completionBlock){
+                            completionBlock();
+                        }
+                        [progress endSheetWithCode:NSOKButton];
+                    });
+                });
+            });
+        }
+    }];
+}
+
+#pragma mark - Exposure Display
 
 - (void)configureForCameraController
 {
@@ -493,7 +626,7 @@
     }
 }
 
-#pragma mark CASExposureView delegate
+#pragma mark - CASExposureView delegate
 
 - (void) selectionRectChanged: (CASExposureView*) imageView
 {
@@ -524,7 +657,7 @@
     }
 }
 
-#pragma mark NSToolbar delegate
+#pragma mark - NSToolbar delegate
 
 - (NSToolbarItem *)toolbarItemWithIdentifier:(NSString *)identifier
                                        label:(NSString *)label
@@ -619,7 +752,7 @@
     return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",@"Selection",nil];
 }
 
-#pragma mark Menu validation
+#pragma mark - Menu validation
 
 - (IBAction)toggleShowHistogram:(id)sender
 {
@@ -679,7 +812,10 @@
 {
     BOOL enabled = YES;
     
-    switch (item.tag) {
+    if (item.action == @selector(saveAs:) || item.action == @selector(saveToFITS:)){
+        enabled = self.currentExposure != nil;
+    }
+    else switch (item.tag) {
             
         case 10000:
             item.state = self.exposureView.showHistogram;
