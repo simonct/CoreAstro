@@ -250,31 +250,31 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled: values.SaveImages</string>
+						<string key="label">enabled: saveImages</string>
 						<reference key="source" ref="769301750"/>
-						<reference key="destination" ref="21769203"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="769301750"/>
-							<reference key="NSDestination" ref="21769203"/>
-							<string key="NSLabel">enabled: values.SaveImages</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">enabled: saveImages</string>
 							<string key="NSBinding">enabled</string>
-							<string key="NSKeyPath">values.SaveImages</string>
+							<string key="NSKeyPath">saveImages</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">634</int>
+					<int key="connectionID">652</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: values.SavedImagePrefix</string>
+						<string key="label">value: saveImagesPrefix</string>
 						<reference key="source" ref="54683899"/>
-						<reference key="destination" ref="21769203"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="54683899"/>
-							<reference key="NSDestination" ref="21769203"/>
-							<string key="NSLabel">value: values.SavedImagePrefix</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: saveImagesPrefix</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">values.SavedImagePrefix</string>
+							<string key="NSKeyPath">saveImagesPrefix</string>
 							<object class="NSDictionary" key="NSOptions">
 								<string key="NS.key.0">NSContinuouslyUpdatesValue</string>
 								<boolean value="YES" key="NS.object.0"/>
@@ -282,55 +282,55 @@
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">625</int>
+					<int key="connectionID">644</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled: values.SaveImages</string>
+						<string key="label">enabled: saveImages</string>
 						<reference key="source" ref="54683899"/>
-						<reference key="destination" ref="21769203"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="54683899"/>
-							<reference key="NSDestination" ref="21769203"/>
-							<string key="NSLabel">enabled: values.SaveImages</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">enabled: saveImages</string>
 							<string key="NSBinding">enabled</string>
-							<string key="NSKeyPath">values.SaveImages</string>
+							<string key="NSKeyPath">saveImages</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">636</int>
+					<int key="connectionID">653</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled: values.SaveImages</string>
+						<string key="label">enabled: saveImages</string>
 						<reference key="source" ref="887168237"/>
-						<reference key="destination" ref="21769203"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="887168237"/>
-							<reference key="NSDestination" ref="21769203"/>
-							<string key="NSLabel">enabled: values.SaveImages</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">enabled: saveImages</string>
 							<string key="NSBinding">enabled</string>
-							<string key="NSKeyPath">values.SaveImages</string>
+							<string key="NSKeyPath">saveImages</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">638</int>
+					<int key="connectionID">654</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: values.SaveImages</string>
+						<string key="label">value: saveImages</string>
 						<reference key="source" ref="773970789"/>
-						<reference key="destination" ref="21769203"/>
+						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="773970789"/>
-							<reference key="NSDestination" ref="21769203"/>
-							<string key="NSLabel">value: values.SaveImages</string>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: saveImages</string>
 							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">values.SaveImages</string>
+							<string key="NSKeyPath">saveImages</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">633</int>
+					<int key="connectionID">640</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -773,7 +773,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">638</int>
+			<int key="maxID">654</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
