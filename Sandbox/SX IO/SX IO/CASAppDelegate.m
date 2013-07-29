@@ -41,7 +41,8 @@ static void* kvoContext;
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
          @"CASDefaultScopeAperture":@(101),
          @"CASDefaultScopeFNumber":@(5.4),
-         @"CASUpdateCheckRootURL":@"https://raw.github.com/simonct/CoreAstro/master/Updates/",
+         @"CASUpdateCheckRootURL":@"https://raw.github.com/simonct/CoreAstro/master/Updates/", // downloads and upgrade metadata in the same folder ?
+         @"CASUpdateCheckUpgradeRootURL":@"https://coreastro.org/downloads/", // github as well ?? https://github.com/blog/1547-release-your-software
          }];
     }
 }
@@ -59,7 +60,7 @@ static void* kvoContext;
         
         // check the last time we checked and gate it to once a day
         NSDate* lastCheck = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckLastCheckDate"];
-        if (/*[NSDate timeIntervalSinceReferenceDate] - [lastCheck timeIntervalSinceReferenceDate] > 24*60*60*/1){
+        if ([NSDate timeIntervalSinceReferenceDate] - [lastCheck timeIntervalSinceReferenceDate] > 24*60*60){
         
             [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"CASUpdateCheckLastCheckDate"];
             
@@ -86,9 +87,14 @@ static void* kvoContext;
                         else {
                             
                             NSString* latest = [update valueForKey:@"latest"];
-                            if (/*[latest compare:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] options:NSNumericSearch] == NSOrderedDescending*/1){
+                            if ([latest compare:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] options:NSNumericSearch] == NSOrderedDescending){
                                 
                                 NSURL* url = [NSURL URLWithString:[update valueForKey:@"url"]];
+                                if (!url){
+                                    NSString* root = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckUpgradeRootURL"];
+                                    NSString* upgradeUrl = [root stringByAppendingFormat:@"/%@.app.zip",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+                                    url = [NSURL URLWithString:upgradeUrl];
+                                }
                                 if (url){
                                     
                                     NSAlert* alert = [NSAlert alertWithMessageText:@"Update Available"
