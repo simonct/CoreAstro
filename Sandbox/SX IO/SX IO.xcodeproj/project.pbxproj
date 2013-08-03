@@ -514,6 +514,7 @@
 				F4FD22FD179B30D60049F5B5 /* Resources */,
 				F4A25838179B31760013D220 /* CopyFiles */,
 				F4D3CE01179BC54900B42D04 /* CopyFiles */,
+				F4CE97FB17AD58F2000F28C8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -643,6 +644,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F4CE97FB17AD58F2000F28C8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\nrm -rf \"${shared_support}/astrometry\"\nrm -rf \"${shared_support}/support\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F4FD22FB179B30D60049F5B5 /* Sources */ = {
