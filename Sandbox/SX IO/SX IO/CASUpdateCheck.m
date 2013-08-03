@@ -48,6 +48,9 @@
         NSString* root = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASUpdateCheckRootURL"];
         NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.plist",root,[[NSBundle mainBundle] bundleIdentifier]]];
         NSURLRequest* request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+        
+        NSLog(@"Update check: checking file at %@",url);
+
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *resp, NSData *data, NSError *error) {
             
             if (error){
@@ -82,7 +85,7 @@
                                                                  defaultButton:@"Open in Browser"
                                                                alternateButton:@"Cancel"
                                                                    otherButton:nil
-                                                     informativeTextWithFormat:@"An update to %@ is available. Click Open in Browser to download it using your default web browser.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+                                                     informativeTextWithFormat:@"An update for %@ is available. Click Open in Browser to download it using your default web browser.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
                                 if ([alert runModal] == NSOKButton){
                                     [[NSWorkspace sharedWorkspace] openURL:url];
                                 }
