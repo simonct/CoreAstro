@@ -26,6 +26,7 @@
 #import "CASAppDelegate.h"
 #import "CASTemperatureTransformer.h"
 #import "SXIOCameraWindowController.h"
+#import "CASUpdateCheck.h"
 #import <CoreAstro/CoreAstro.h>
 
 @implementation CASAppDelegate {
@@ -41,8 +42,6 @@ static void* kvoContext;
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
          @"CASDefaultScopeAperture":@(101),
          @"CASDefaultScopeFNumber":@(5.4),
-         @"CASUpdateCheckRootURL":@"https://raw.github.com/simonct/CoreAstro/master/Updates/", // downloads and upgrade metadata in the same folder ?
-         @"CASUpdateCheckUpgradeRootURL":@"https://coreastro.org/downloads/", // github as well ?? https://github.com/blog/1547-release-your-software
          }];
     }
 }
@@ -56,76 +55,8 @@ static void* kvoContext;
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         
         [[CASDeviceManager sharedManager] scan];
-        // update check
         
-        // check the last time we checked and gate it to once a day
-        NSDate* lastCheck = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckLastCheckDate"];
-        if ([NSDate timeIntervalSinceReferenceDate] - [lastCheck timeIntervalSinceReferenceDate] > 24*60*60){
-        
-            [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"CASUpdateCheckLastCheckDate"];
-            
-            NSString* root = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASUpdateCheckRootURL"];
-            NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@.plist",root,[[NSBundle mainBundle] bundleIdentifier]]];
-            NSURLRequest* request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
-            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *resp, NSData *data, NSError *error) {
-                
-                if (error){
-                    NSLog(@"Update check: error during update check: %@",error);
-                }
-                else {
-                    
-                    NSError* error;
-                    NSDictionary* update = [NSPropertyListSerialization propertyListWithData:data options:0 format:0 error:&error];
-                    if (error){
-                        NSLog(@"Update check: error parsing update check: %@",error);
-                    }
-                    else {
-                        
-                        if (![update isKindOfClass:[NSDictionary class]]){
-                            NSLog(@"Update check: downloaded update wasn't a dictionary: %@",update);
-                        }
-                        else {
-                            
-                            NSString* latest = [update valueForKey:@"latest"];
-                            if ([latest compare:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] options:NSNumericSearch] == NSOrderedDescending){
-                                
-                                NSURL* url = [NSURL URLWithString:[update valueForKey:@"url"]];
-                                if (!url){
-                                    NSString* root = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckUpgradeRootURL"];
-                                    NSString* upgradeUrl = [root stringByAppendingFormat:@"/%@.app.zip",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-                                    url = [NSURL URLWithString:upgradeUrl];
-                                }
-                                if (url){
-                                    
-                                    NSAlert* alert = [NSAlert alertWithMessageText:@"Update Available"
-                                                                     defaultButton:@"Open in Browser"
-                                                                   alternateButton:@"Cancel"
-                                                                       otherButton:nil
-                                                         informativeTextWithFormat:@"An update to %@ is available. Click Open in Browser to download it using your default web browser.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-                                    if ([alert runModal] == NSOKButton){
-                                        [[NSWorkspace sharedWorkspace] openURL:url];
-                                    }
-                                }
-                            }
-                            else {
-                                NSLog(@"Update check: running latest app");
-                            }
-                            NSString* root = [update valueForKey:@"root"];
-                            if ([root length]){
-                                
-                                NSURL* url = [NSURL URLWithString:root];
-                                if (url){
-                                    
-                                    // check host...
-                                    
-                                    [[NSUserDefaults standardUserDefaults] setObject:root forKey:@"CASUpdateCheckRootURL"];
-                                }
-                            }
-                        }
-                    }
-                }
-            }];
-        }
+        [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
     });
 }
 

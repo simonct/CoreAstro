@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A25870179BC0100013D220 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
@@ -157,6 +158,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
+		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
 		F4A25868179BC0100013D220 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
 		F4A25869179BC0100013D220 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
 		F4A2586A179BC0100013D220 /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
@@ -441,6 +444,8 @@
 				F4E64262179C0ED30044B349 /* SX IO.entitlements */,
 				F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */,
 				F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */,
+				F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */,
+				F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */,
 				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
@@ -672,6 +677,7 @@
 				F4E64260179C05C60044B349 /* CASShadowView.m in Sources */,
 				F4E64278179DC27A0044B349 /* CASProgressWindowController.m in Sources */,
 				F4E64282179DC2BF0044B349 /* CASAuxWindowController.m in Sources */,
+				F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -787,6 +793,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -802,6 +809,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
