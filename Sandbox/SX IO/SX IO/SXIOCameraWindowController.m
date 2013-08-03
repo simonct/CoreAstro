@@ -165,9 +165,13 @@
 {
     // check we have somewhere to save the file, a prefix and a sequence number
     __block NSURL* url;
+    BOOL securityScoped = NO;
     NSData* bookmark = self.saveTargetControlsViewController.saveFolderBookmark;
     if (bookmark){
         url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+        if (url){
+            securityScoped = YES;
+        }
     }
     if (!url) {
         url = self.saveTargetControlsViewController.saveFolderURL;
@@ -177,7 +181,7 @@
         return;
     }
     const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
-    if (saveToFile && ![url startAccessingSecurityScopedResource]){
+    if (saveToFile && securityScoped && ![url startAccessingSecurityScopedResource]){
         [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
         return;
     }
@@ -229,7 +233,9 @@
         }
         @finally {
             if (!self.cameraController.capturing){
-                [url stopAccessingSecurityScopedResource];
+                if (securityScoped){
+                    [url stopAccessingSecurityScopedResource];
+                }
             }
         }
     }];
