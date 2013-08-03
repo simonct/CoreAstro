@@ -30,7 +30,7 @@ NSString* CASCreateUUID()
 {
     NSString* result = nil;
     CFUUIDRef uuid = CFUUIDCreate(NULL);
-    result = (__bridge NSString *)CFUUIDCreateString(NULL, uuid);
+    result = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, uuid);
     CFRelease(uuid);
     return result;
 }
