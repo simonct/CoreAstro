@@ -15,7 +15,7 @@
     if (self == [CASUpdateCheck class]){
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
          @"CASUpdateCheckRootURL":@"https://raw.github.com/simonct/CoreAstro/master/Updates/", // downloads and upgrade metadata in the same folder ?
-         @"CASUpdateCheckUpgradeRootURL":@"https://coreastro.org/downloads/", // github as well ?? https://github.com/blog/1547-release-your-software
+         @"CASUpdateCheckUpgradeRootURL":@"https://github.com/simonct/CoreAstro/releases/download/",
          }];
     }
 }
@@ -73,11 +73,17 @@
                         NSString* latest = [update valueForKey:@"latest"];
                         if ([latest compare:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] options:NSNumericSearch] == NSOrderedDescending){
                             
+                            // look for an absolute url
                             NSURL* url = [NSURL URLWithString:[update valueForKey:@"url"]];
                             if (!url){
-                                NSString* root = [[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckUpgradeRootURL"];
-                                NSString* upgradeUrl = [root stringByAppendingFormat:@"/%@.app.zip",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-                                url = [NSURL URLWithString:upgradeUrl];
+                                
+                                // no url specified so construct the download url from the root and provided relative path
+                                NSString* path = [update valueForKey:@"path"];
+                                if ([path length]){
+                                    
+                                    // e.g. https://github.com/simonct/CoreAstro/releases/download/sx-io_v1.0.1/SX.IO.app.zip
+                                    url = [NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"CASUpdateCheckUpgradeRootURL"] stringByAppendingFormat:@"%@",path]];
+                                }
                             }
                             if (url){
                                 
