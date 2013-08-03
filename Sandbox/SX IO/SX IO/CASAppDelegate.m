@@ -52,6 +52,31 @@ static void* kvoContext;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
+        // beta warning for this version
+        NSString* const betaWarningKey = [NSString stringWithFormat:@"SXIOBetaWarningDisplayed%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:betaWarningKey]){
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"BETA SOFTWARE"
+                                             defaultButton:@"Quit"
+                                           alternateButton:@"OK"
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"Please be aware that this is Beta software. There is no guarantee it will work correctly and there's no offical support although you can send comments to feedback@coreastro.org. If you're not OK with that please click Quit.",nil];
+            
+            alert.showsSuppressionButton = YES;
+            
+            if ([alert runModal] == NSOKButton){
+                
+                [NSApp terminate:nil];
+                return;
+            }
+            else {
+                
+                if ([[alert suppressionButton] state]){
+                    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:betaWarningKey];
+                }
+            }
+        }
+        
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         
         [[CASDeviceManager sharedManager] scan];
