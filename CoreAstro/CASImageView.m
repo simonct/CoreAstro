@@ -24,8 +24,6 @@
 
 @interface CASImageView ()
 @property (nonatomic,strong) CIImage* CIImage;
-@property (nonatomic,assign) BOOL sharpen;
-@property (nonatomic,assign) BOOL invert;
 @property (nonatomic,assign) BOOL reticle;
 @property (nonatomic,strong) CALayer* overlayLayer;
 @property (nonatomic,strong) CALayer* reticleLayer;
@@ -33,6 +31,18 @@
 
 @implementation CASImageView {
     CGImageRef _cgImage;
+    BOOL _invert, _medianFilter, _contrastStretch;
+    float _stretchMin, _stretchMax;
+}
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    if (self){
+        _stretchMin = 0;
+        _stretchMax = 1;
+    }
+    return self;
 }
 
 - (void)dealloc
@@ -168,33 +178,19 @@
         image = [invert valueForKey:@"outputImage"];
     }
 
-    if (self.sharpen){
-        CIFilter* invert = [CIFilter filterWithName:@"CIUnsharpMask"];
-        [invert setDefaults];
-        [invert setValue:image forKey:@"inputImage"];
-        [invert setValue:[NSNumber numberWithInt:100] forKey:@"inputRadius"];
-        [invert setValue:[NSNumber numberWithInt:1] forKey:@"inputIntensity"];
-        image = [invert valueForKey:@"outputImage"];
+    if (self.medianFilter){
+        CIFilter* median = [CIFilter filterWithName:@"CIMedianFilter"];
+        [median setDefaults];
+        [median setValue:image forKey:@"inputImage"];
+        image = [median valueForKey:@"outputImage"];
     }
-        
+    
+    if (self.contrastStretch){
+        // load custom filter
+    }
+
     const CGRect clip = CGContextGetClipBoundingBox(context);
     [[CIContext contextWithCGContext:context options:nil] drawImage:image inRect:clip fromRect:clip];
-}
-
-- (void)setInvert:(BOOL)invert
-{
-    if (_invert != invert){
-        _invert = invert;
-        [self.layer setNeedsDisplay];
-    }
-}
-
-- (void)setSharpen:(BOOL)sharpen
-{
-    if (_sharpen != sharpen){
-        _sharpen = sharpen;
-        [self.layer setNeedsDisplay];
-    }
 }
 
 - (CAShapeLayer*)createReticleLayer
@@ -243,6 +239,75 @@
         [self.layer addSublayer:_overlayLayer];
     }
     return _overlayLayer;
+}
+
+@end
+
+@implementation CASImageView (CASImageProcessing)
+
+- (BOOL)invert
+{
+    return _invert;
+}
+
+- (void)setInvert:(BOOL)invert
+{
+    if (_invert != invert){
+        _invert = invert;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (BOOL)medianFilter
+{
+    return _medianFilter;
+}
+
+- (void)setMedianFilter:(BOOL)medianFilter
+{
+    if (medianFilter != _medianFilter){
+        _medianFilter = medianFilter;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (BOOL)contrastStretch
+{
+    return _contrastStretch;
+}
+
+- (void)setContrastStretch:(BOOL)contrastStretch
+{
+    if (contrastStretch != _contrastStretch){
+        _contrastStretch = contrastStretch;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (float)stretchMin
+{
+    return _stretchMin;
+}
+
+- (void)setStretchMin:(float)stretchMin
+{
+    if (_stretchMin != stretchMin){
+        _stretchMin = stretchMin;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (float)stretchMax
+{
+    return _stretchMax;
+}
+
+- (void)setStretchMax:(float)stretchMax
+{
+    if (_stretchMax != stretchMax){
+        _stretchMax = stretchMax;
+        [self.layer setNeedsDisplay];
+    }
 }
 
 @end

@@ -43,6 +43,7 @@
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
 @property (assign) BOOL equalise;
 @property (assign) BOOL invert;
+@property (assign) BOOL medianFilter;
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
@@ -593,12 +594,9 @@
             exposure = [self.imageProcessor equalise:exposure];
         }
         
-        if (self.invert){
-            exposure = [self.imageProcessor invert:exposure];
-        }
-        
+        self.exposureView.invert = self.invert;
+        self.exposureView.medianFilter = self.medianFilter;
         self.exposureView.currentExposure = exposure;
-        
     }
 }
 
@@ -786,7 +784,13 @@
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.invert = !self.invert;
-    [self resetAndRedisplayCurrentExposure];
+    [self displayExposure:self.currentExposure];
+}
+
+- (IBAction)toggleMedianFilter:(id)sender
+{
+    self.medianFilter = !self.medianFilter;
+    [self displayExposure:self.currentExposure];
 }
 
 - (IBAction)toggleEqualiseHistogram:(id)sender
@@ -837,7 +841,11 @@
         case 10002:
             item.state = self.equalise;
             break;
-                        
+            
+        case 10006:
+            item.state = self.medianFilter;
+            break;
+
         case 10003:
             item.state = self.exposureView.showReticle;
             break;

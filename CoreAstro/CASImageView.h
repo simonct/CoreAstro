@@ -13,3 +13,10 @@
 @property (nonatomic,assign) CGImageRef CGImage;
 @property (nonatomic,strong) NSURL* url;
 @end
+
+@interface CASImageView (CASImageAdjustment)
+@property BOOL invert;
+@property BOOL medianFilter;
+@property BOOL contrastStretch;
+@property float stretchMin, stretchMax; // contrast stretch 0->1
+@end
