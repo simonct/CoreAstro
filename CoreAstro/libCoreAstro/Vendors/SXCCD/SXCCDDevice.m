@@ -527,7 +527,8 @@
         flushCount = 1;
     }
     
-    void (^__block clearCharge)(NSError*) = ^(NSError* error){
+    void (^clearCharge)(NSError*);
+    clearCharge = ^(NSError* error){
         
         if (error){
             exposureCompleted(error,nil);

@@ -4,5 +4,7 @@
 <dict>
 	<key>latest</key>
 	<string>1.0.1</string>
+	<key>path</key>
+	<string>sx-io_v1.0.1/SX.IO.app.zip</string>
 </dict>
 </plist>

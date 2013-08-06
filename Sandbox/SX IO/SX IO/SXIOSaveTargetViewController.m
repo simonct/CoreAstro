@@ -47,38 +47,119 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
     }
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (NSString*)keyWithCameraID:(NSString*)key
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self){
+    return self.cameraController ? [key stringByAppendingString:self.cameraController.camera.uniqueID] : key;
+}
+
+- (NSString*)saveImagesKey
+{
+    return [self keyWithCameraID:kSaveImagesDefaultsKey];
+}
+
+- (NSString*)saveFolderKey
+{
+    return [self keyWithCameraID:kSaveFolderURLDefaultsKey];
+}
+
+- (NSString*)saveFolderBookmarkKey
+{
+    return [self keyWithCameraID:kSaveFolderBookmarkDefaultsKey];
+}
+
+- (NSString*)prefixKey
+{
+    return [self keyWithCameraID:kSavedImagePrefixDefaultsKey];
+}
+
+- (NSString*)sequenceKey
+{
+    return [self keyWithCameraID:kSavedImageSequenceDefaultsKey];
+}
+
++ (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString *)key
+{
+    if ([@[@"saveImages",@"saveFolderURL",@"saveImagesPrefix",@"saveImagesSequence"] containsObject:key]){
+        return [NSSet setWithObject:@"cameraController"];
     }
-    return self;
+    return [super keyPathsForValuesAffectingValueForKey:key];
+}
+
+- (BOOL)saveImages
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:[self saveImagesKey]];
+}
+
+- (void)setSaveImages:(BOOL)saveImages
+{
+    [[NSUserDefaults standardUserDefaults] setBool:saveImages forKey:[self saveImagesKey]];
 }
 
 - (NSURL*)saveFolderURL
 {
-    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey];
-    return s ? [NSURL fileURLWithPath:s] : nil;
+    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:[self saveFolderKey]];
+    if (!s){
+        s = [@"~/Pictures" stringByExpandingTildeInPath];
+    }
+    return [NSURL fileURLWithPath:s];
 }
 
 - (void)setSaveFolderURL:(NSURL*)url
 {
-    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kSaveFolderURLDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:[self saveFolderKey]];
     
     NSError* error;
     NSData* bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
     if (bookmark){
-        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kSaveFolderBookmarkDefaultsKey];
+        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:[self saveFolderBookmarkKey]];
     }
     else {
-        NSLog(@"error: %@",error);
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSaveFolderBookmarkDefaultsKey];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:[self saveFolderBookmarkKey]];
     }
+}
+
+- (NSData*) saveFolderBookmark
+{
+    return [[NSUserDefaults standardUserDefaults] dataForKey:[self saveFolderBookmarkKey]];
+}
+
+- (void)setSaveFolderBookmark:(NSData *)saveFolderBookmark
+{
+    if (saveFolderBookmark){
+        [[NSUserDefaults standardUserDefaults] setObject:saveFolderBookmark forKey:[self saveFolderBookmarkKey]];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:[self saveFolderBookmarkKey]];
+    }
+}
+
+- (NSString*)saveImagesPrefix
+{
+    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:[self prefixKey]];
+    if (!s && self.cameraController){
+        s = self.cameraController.camera.deviceName;
+    }
+    return s;
+}
+
+- (void)setSaveImagesPrefix:(NSString*)prefix
+{
+    [[NSUserDefaults standardUserDefaults] setObject:prefix forKey:[self prefixKey]];
+}
+
+- (NSInteger)saveImagesSequence
+{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:[self sequenceKey]];
+}
+
+- (void)setSaveImagesSequence:(NSInteger)saveImagesSequence
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:saveImagesSequence forKey:[self sequenceKey]];
 }
 
 - (IBAction)resetSequence:(id)sender
 {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSavedImageSequenceDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:[self sequenceKey]];
 }
 
 @end

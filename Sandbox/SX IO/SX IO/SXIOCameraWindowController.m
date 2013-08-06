@@ -92,6 +92,7 @@
     
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
+    [self.saveTargetControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -164,19 +165,23 @@
 {
     // check we have somewhere to save the file, a prefix and a sequence number
     __block NSURL* url;
-    NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kSaveFolderBookmarkDefaultsKey];
+    BOOL securityScoped = NO;
+    NSData* bookmark = self.saveTargetControlsViewController.saveFolderBookmark;
     if (bookmark){
         url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+        if (url){
+            securityScoped = YES;
+        }
     }
     if (!url) {
-        url = [NSURL fileURLWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:kSaveFolderURLDefaultsKey]];
+        url = self.saveTargetControlsViewController.saveFolderURL;
     }
     if (!url){
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return;
     }
-    const BOOL saveToFile = [[NSUserDefaults standardUserDefaults] boolForKey:kSaveImagesDefaultsKey] && !self.cameraController.continuous;
-    if (saveToFile && ![url startAccessingSecurityScopedResource]){
+    const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
+    if (saveToFile && securityScoped && ![url startAccessingSecurityScopedResource]){
         [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
         return;
     }
@@ -198,17 +203,17 @@
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
                     
-                    NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:kSavedImagePrefixDefaultsKey];
+                    NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
                     if (!prefix){
                         prefix = @"image";
                     }
-                    const NSInteger sequence = [[NSUserDefaults standardUserDefaults] integerForKey:kSavedImageSequenceDefaultsKey];
+                    const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
                     prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence];
-                    url = [url URLByAppendingPathComponent:prefix];
-                    url = [url URLByAppendingPathExtension:@"fits"];
-                    [[NSUserDefaults standardUserDefaults] setInteger:sequence+1 forKey:kSavedImageSequenceDefaultsKey];
-                    
-                    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+                    NSURL* finalUrl = [url URLByAppendingPathComponent:prefix];
+                    finalUrl = [finalUrl URLByAppendingPathExtension:@"fits"];
+                    ++self.saveTargetControlsViewController.saveImagesSequence;
+                                        
+                    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
                     if (!io){
                         NSLog(@"*** Failed to create FITS exporter");
                     }
@@ -227,7 +232,11 @@
             }
         }
         @finally {
-            [url stopAccessingSecurityScopedResource];
+            if (!self.cameraController.capturing){
+                if (securityScoped){
+                    [url stopAccessingSecurityScopedResource];
+                }
+            }
         }
     }];
 }
