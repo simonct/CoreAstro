@@ -46,10 +46,10 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 	for (iarg = 1; iarg < argc; iarg++) {
 	    if ((argv[iarg][0] == '-' && strlen (argv[iarg]) == 2) ||
 	        !strncmp(argv[iarg], "-q", 2) ||   /*  special case */
+	        !strncmp(argv[iarg], "-qz", 3) ||   /*  special case */
 	        !strncmp(argv[iarg], "-g1", 3) ||   /*  special case */
 	        !strncmp(argv[iarg], "-g2", 3) ||   /*  special case */
 	        !strncmp(argv[iarg], "-i2f", 4) ||  /*  special case */
-	        !strncmp(argv[iarg], "-fast", 5) ||  /*  special case */
 	        !strncmp(argv[iarg], "-n3ratio", 8) ||  /*  special case */
 	        !strncmp(argv[iarg], "-n3min", 6) ||  /*  special case */
 	        !strncmp(argv[iarg], "-BETAtable", 10) )  /*  special case */
@@ -138,20 +138,41 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 		    }
 		} else if (argv[iarg][1] == 'q') {
 		    /* test for modifiers following the 'q' */
-                    if (argv[iarg][2] == 't') {
-		        fpptr->dither_offset = -1;  /* dither based on tile checksum */
 
-                    } else if (isdigit(argv[iarg][2])) { /* is a number appended to q? */
-		       doffset = atoi(argv[iarg]+2);
+                    if (argv[iarg][2] == 'z') {
+		        fpptr->dither_method = 2;  /* preserve zero pixels */
 
-                       if (doffset == 0) {
-		          fpptr->no_dither = 1;  /* don't dither the quantized values */
-		       } else if (doffset > 0 && doffset <= 10000) {
-		          fpptr->dither_offset = doffset;
-		       } else {
-			  fp_msg ("Error: invalid q suffix\n");
-			  fp_usage (); exit (-1);
-		       }
+                        if (argv[iarg][3] == 't') {
+		            fpptr->dither_offset = -1;  /* dither based on tile checksum */
+
+                        } else if (isdigit(argv[iarg][3])) { /* is a number appended to q? */
+		           doffset = atoi(argv[iarg]+3);
+
+                           if (doffset == 0) {
+		              fpptr->no_dither = 1;  /* don't dither the quantized values */
+		           } else if (doffset > 0 && doffset <= 10000) {
+		              fpptr->dither_offset = doffset;
+		           } else {
+			      fp_msg ("Error: invalid q suffix\n");
+			      fp_usage (); exit (-1);
+		           }
+			}
+		    } else {
+                        if (argv[iarg][2] == 't') {
+		            fpptr->dither_offset = -1;  /* dither based on tile checksum */
+
+                        } else if (isdigit(argv[iarg][2])) { /* is a number appended to q? */
+		           doffset = atoi(argv[iarg]+2);
+
+                           if (doffset == 0) {
+		              fpptr->no_dither = 1;  /* don't dither the quantized values */
+		           } else if (doffset > 0 && doffset <= 10000) {
+		              fpptr->dither_offset = doffset;
+		           } else {
+			      fp_msg ("Error: invalid q suffix\n");
+			      fp_usage (); exit (-1);
+		           }
+			}
 		    }
 
 		    if (++iarg >= argc) {
@@ -231,9 +252,6 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 		    fpptr->do_tables = 1;
 		    fp_msg ("Caution: -BETAtable is for feasibility studies, not general use.\n");
 
-		} else if (!strcmp(argv[iarg], "-fast")) {
-		    fpptr->do_fast = 1;
-
 		} else {
 		    fp_msg ("Error: unknown command line flag `");
 		    fp_msg (argv[iarg]); fp_msg ("'\n");
@@ -263,7 +281,7 @@ int fp_get_param (int argc, char *argv[], fpstate *fpptr)
 
 	if (wholetile) {
 	    for (ndim=0; ndim < MAX_COMPRESS_DIM; ndim++)
-		fpptr->ntile[ndim] = (long) 0;
+		fpptr->ntile[ndim] = (long) -1;
 
 	} else if (gottile) {
 	    len = strlen (tile);
@@ -318,6 +336,10 @@ fp_msg ("fpack, a FITS image compression program.  Version ");
 fp_version ();
 fp_usage ();
 fp_msg ("\n");
+fp_msg ("NOTE: the compression parameters specified on the fpack command line may\n");
+fp_msg ("be over-ridden by compression directive keywords in the header of each HDU\n");
+fp_msg ("of the input file(s). See the fpack User's Guide for more details\n");
+fp_msg ("\n");
 
 fp_msg ("Flags must be separate and appear before filenames:\n");
 fp_msg (" -r          Rice compression [default], or\n");
@@ -342,8 +364,9 @@ fp_msg ("             about 8, or 10, respectively (with 1.0% or 4.1% noise incr
 fp_msg ("             The scaled quantized values are randomly dithered using a seed \n");
 fp_msg ("             value determined from the system clock at run time.\n");
 fp_msg ("             Use -q0 instead of -q to suppress random dithering.\n");
-fp_msg ("             Use -qt to compute random dithering seed from first tile checksum.\n");
-fp_msg ("             Use -qN, (N in range 1 to 10000) to use a specific dithering seed.\n");
+fp_msg ("             Use -qz instead of -q to not dither zero-valued pixels.\n");
+fp_msg ("             Use -qt or -qzt to compute random dithering seed from first tile checksum.\n");
+fp_msg ("             Use -qN or -qzN, (N in range 1 to 10000) to use a specific dithering seed.\n");
 fp_msg ("             Floating-point images can be losslessly compressed by selecting\n");
 fp_msg ("             the GZIP algorithm and specifying -q 0, but this is slower and often\n");
 fp_msg ("             produces much less compression than the default quantization method.\n");
@@ -353,7 +376,7 @@ fp_msg ("             compression method can give much better compression than t
 fp_msg ("             lossless compression methods without significant loss of information.\n");
 fp_msg ("             The -n3ratio and -n3min flags control the minimum noise thresholds;\n");
 fp_msg ("             Images below these thresholds will be losslessly compressed.\n");
-fp_msg (" -n3ratio    Minimum ratio of background noise sigma divided by q.  Default = 1.2.\n");
+fp_msg (" -n3ratio    Minimum ratio of background noise sigma divided by q.  Default = 2.0.\n");
 fp_msg (" -n3min      Minimum background noise sigma. Default = 6. The -i2f flag will be ignored\n");
 fp_msg ("             if the noise level in the image does not exceed both thresholds.\n");
 fp_msg (" -s <scale>  Scale factor for lossy Hcompress [default = 0 = lossless]\n");
@@ -363,9 +386,8 @@ fp_msg (" -v          Verbose mode; list each file as it is processed.\n");
 fp_msg (" -T          Show compression algorithm comparison test statistics; files unchanged.\n");
 fp_msg (" -R <file>   Write the comparison test report (above) to a text file.\n");
 fp_msg (" -BETAtable  Compress FITS binary tables using prototype method.\n");
-fp_msg ("             This option is ONLY for experimental use!  Do NOT use\n");
+fp_msg ("             This option is only for experimental use.  Do not use\n");
 fp_msg ("             on FITS data files that are to be publicly distributed.\n");
-fp_msg (" -fast       Used with -BETAtable to favor speed over maximum compression.\n");
 
 fp_msg ("\nkeywords shared with funpack:\n");
 
