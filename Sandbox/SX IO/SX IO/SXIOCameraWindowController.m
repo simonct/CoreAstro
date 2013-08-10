@@ -537,6 +537,14 @@
             break;
     }
     
+    if (self.progressIndicator.isIndeterminate){
+        self.progressIndicator.usesThreadedAnimation = YES;
+        [self.progressIndicator startAnimation:nil];
+    }
+    else {
+        [self.progressIndicator stopAnimation:nil];
+    }
+
     self.exposureView.progress = self.progressIndicator.doubleValue = self.cameraController.progress;
     
     if (self.cameraController.capturing){
