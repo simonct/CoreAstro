@@ -302,8 +302,6 @@
 
 - (void)flush:(void (^)(NSError*))block {
     
-    NSLog(@"flush: %@",block);
-    
     SXCCDIOFlushCommand* flush = [[SXCCDIOFlushCommand alloc] init];
     
     [self.transport submit:flush block:^(NSError* error){
