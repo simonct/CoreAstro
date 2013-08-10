@@ -302,6 +302,8 @@
 
 - (void)flush:(void (^)(NSError*))block {
     
+    NSLog(@"flush: %@",block);
+    
     SXCCDIOFlushCommand* flush = [[SXCCDIOFlushCommand alloc] init];
     
     [self.transport submit:flush block:^(NSError* error){
@@ -527,14 +529,16 @@
         flushCount = 1;
     }
     
-    void (^clearCharge)(NSError*);
+    void (^__block clearCharge)(NSError*);
+    void (^__block clearCharge2)(NSError*);
     clearCharge = ^(NSError* error){
         
         if (error){
             exposureCompleted(error,nil);
+            clearCharge2 = nil;
         }
         else if (flushCount-- > 0) {
-            [self flush:clearCharge];
+            [self flush:clearCharge2];
         }
         else {
             
@@ -548,8 +552,10 @@
                 // we're using internal timing so start exposing now
                 exposePixelsAndCompleteExposure(nil);
             }
+            clearCharge2 = nil;
         }
     };
+    clearCharge2 = clearCharge;
     
     // start off by opening the shutter if required...
     if (self.hasShutter && (type == kCASCCDExposureLightType || type == kCASCCDExposureFlatType)){
