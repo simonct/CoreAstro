@@ -13,6 +13,7 @@
 #import "SXIOSaveTargetViewController.h"
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
+#import "SMDoubleSlider.h"
 
 #import <Quartz/Quartz.h>
 
@@ -30,7 +31,6 @@
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
-@property (weak) IBOutlet CASExposureView *exposureView;
 @property (weak) IBOutlet NSTextField *progressStatusText;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (weak) IBOutlet NSButton *captureButton;
@@ -42,8 +42,6 @@
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
 @property (assign) BOOL equalise;
-@property (assign) BOOL invert;
-@property (assign) BOOL medianFilter;
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
@@ -594,8 +592,6 @@
             exposure = [self.imageProcessor equalise:exposure];
         }
         
-        self.exposureView.invert = self.invert;
-        self.exposureView.medianFilter = self.medianFilter;
         self.exposureView.currentExposure = exposure;
     }
 }
@@ -783,20 +779,23 @@
 
 - (IBAction)toggleInvertImage:(id)sender
 {
-    self.invert = !self.invert;
-    [self displayExposure:self.currentExposure];
+    self.exposureView.invert = !self.exposureView.invert;
 }
 
 - (IBAction)toggleMedianFilter:(id)sender
 {
-    self.medianFilter = !self.medianFilter;
-    [self displayExposure:self.currentExposure];
+    self.exposureView.medianFilter = !self.exposureView.medianFilter;
 }
 
 - (IBAction)toggleEqualiseHistogram:(id)sender
 {
     self.equalise = !self.equalise;
     [self resetAndRedisplayCurrentExposure];
+}
+
+- (IBAction)toggleContrastStretch:(id)sender
+{
+    self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
 }
 
 - (IBAction)applyDebayer:(NSMenuItem*)sender
@@ -835,7 +834,7 @@
             break;
             
         case 10001:
-            item.state = self.invert;
+            item.state = self.exposureView.invert;
             break;
             
         case 10002:
@@ -843,7 +842,11 @@
             break;
             
         case 10006:
-            item.state = self.medianFilter;
+            item.state = self.exposureView.medianFilter;
+            break;
+            
+        case 10030:
+            item.state = self.exposureView.contrastStretch;
             break;
 
         case 10003:

@@ -35,6 +35,15 @@
     float _stretchMin, _stretchMax;
 }
 
++ (void)initialize
+{
+    if (self == [CASImageView class]){
+
+        NSURL* url = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"ContrastStretch.plugin"];
+        [CIPlugIn loadPlugIn:url allowExecutableCode:YES];
+    }
+}
+
 - (id)initWithFrame:(NSRect)frameRect
 {
     self = [super initWithFrame:frameRect];
@@ -56,6 +65,10 @@
 {
     [super awakeFromNib];
     
+    _stretchMin = 0;
+    _stretchMax = 1;
+    _contrastStretch = 1;
+
     if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
         self.layer.drawsAsynchronously = YES;
     }
@@ -186,7 +199,12 @@
     }
     
     if (self.contrastStretch){
-        // load custom filter
+        CIFilter* stretch = [CIFilter filterWithName:@"CASContrastStretchFilter"];
+        [stretch setDefaults];
+        [stretch setValue:image forKey:@"inputImage"];
+        [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
+        [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
+        image = [stretch valueForKey:@"outputImage"];
     }
 
     const CGRect clip = CGContextGetClipBoundingBox(context);
@@ -291,6 +309,10 @@
 
 - (void)setStretchMin:(float)stretchMin
 {
+    if (stretchMin < 0 || stretchMin > 1){
+        return;
+    }
+    stretchMin = MIN(stretchMin, _stretchMax);
     if (_stretchMin != stretchMin){
         _stretchMin = stretchMin;
         [self.layer setNeedsDisplay];
@@ -304,6 +326,10 @@
 
 - (void)setStretchMax:(float)stretchMax
 {
+    if (stretchMax < 0 || stretchMax > 1){
+        return;
+    }
+    stretchMax = MAX(stretchMax, _stretchMin);
     if (_stretchMax != stretchMax){
         _stretchMax = stretchMax;
         [self.layer setNeedsDisplay];

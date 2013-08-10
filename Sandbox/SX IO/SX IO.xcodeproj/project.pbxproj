@@ -41,6 +41,9 @@
 		F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
 		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
+		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
+		F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */; };
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
 		F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
@@ -60,6 +63,18 @@
 		F4E64279179DC27A0044B349 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E64277179DC27A0044B349 /* CASProgressWindowController.xib */; };
 		F4E64282179DC2BF0044B349 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */; };
 		F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E64283179DC2D10044B349 /* Quartz.framework */; };
+		F4F9B20017B15A9A0063DD0D /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
+		F4F9B20217B15A9A0063DD0D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
+		F4F9B20317B15A9A0063DD0D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
+		F4F9B20517B15A9A0063DD0D /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */; };
+		F4F9B20B17B15A9A0063DD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B20917B15A9A0063DD0D /* InfoPlist.strings */; };
+		F4F9B20E17B15A9A0063DD0D /* ContrastStretchPlugInLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F9B20D17B15A9A0063DD0D /* ContrastStretchPlugInLoader.m */; };
+		F4F9B21117B15A9A0063DD0D /* CASContrastStretchFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F9B21017B15A9A0063DD0D /* CASContrastStretchFilter.m */; };
+		F4F9B21317B15A9A0063DD0D /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21217B15A9A0063DD0D /* index.html */; };
+		F4F9B21517B15A9A0063DD0D /* Description.plist in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21417B15A9A0063DD0D /* Description.plist */; };
+		F4F9B21817B15A9A0063DD0D /* Description.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21617B15A9A0063DD0D /* Description.strings */; };
+		F4F9B21A17B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21917B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel */; };
+		F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */; };
 		F4FD2303179B30D60049F5B5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2302179B30D60049F5B5 /* Cocoa.framework */; };
 		F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
 		F4FD230F179B30D60049F5B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
@@ -82,6 +97,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F498A51815FE7F96006E8376;
 			remoteInfo = SXDevicesPlugin;
+		};
+		F4F9B22417B15ABE0063DD0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4F9B1FD17B15A9A0063DD0D;
+			remoteInfo = ContrastStretch;
 		};
 		F4FD232B179B31360049F5B5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -155,6 +177,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4F9B22617B15AC40063DD0D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -212,6 +244,12 @@
 		F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPHDControlsViewController.h; path = ../../../CoreAstro/CASPHDControlsViewController.h; sourceTree = "<group>"; };
 		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
 		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
+		F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSliderCell.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.m"; sourceTree = "<group>"; };
+		F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSlider.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.m"; sourceTree = "<group>"; };
+		F4BDF8EC17B657AF00749F4B /* SMDoubleSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSliderCell.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.h"; sourceTree = "<group>"; };
+		F4BDF8ED17B657AF00749F4B /* SMDoubleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSlider.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.h"; sourceTree = "<group>"; };
+		F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASContrastStretchSliderView.h; sourceTree = "<group>"; };
+		F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASContrastStretchSliderView.m; sourceTree = "<group>"; };
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
 		F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCameraWindowController.xib; sourceTree = "<group>"; };
@@ -237,6 +275,21 @@
 		F4E64280179DC2BF0044B349 /* CASAuxWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAuxWindowController.h; path = ../../../CoreAstro/CASAuxWindowController.h; sourceTree = "<group>"; };
 		F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAuxWindowController.m; path = ../../../CoreAstro/CASAuxWindowController.m; sourceTree = "<group>"; };
 		F4E64283179DC2D10044B349 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContrastStretch.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		F4F9B20117B15A9A0063DD0D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		F4F9B20817B15A9A0063DD0D /* ContrastStretch-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ContrastStretch-Info.plist"; sourceTree = "<group>"; };
+		F4F9B20A17B15A9A0063DD0D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4F9B20C17B15A9A0063DD0D /* ContrastStretchPlugInLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContrastStretchPlugInLoader.h; sourceTree = "<group>"; };
+		F4F9B20D17B15A9A0063DD0D /* ContrastStretchPlugInLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContrastStretchPlugInLoader.m; sourceTree = "<group>"; };
+		F4F9B20F17B15A9A0063DD0D /* CASContrastStretchFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CASContrastStretchFilter.h; sourceTree = "<group>"; };
+		F4F9B21017B15A9A0063DD0D /* CASContrastStretchFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CASContrastStretchFilter.m; sourceTree = "<group>"; };
+		F4F9B21217B15A9A0063DD0D /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		F4F9B21417B15A9A0063DD0D /* Description.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Description.plist; sourceTree = "<group>"; };
+		F4F9B21717B15A9A0063DD0D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Description.strings; sourceTree = "<group>"; };
+		F4F9B21917B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel */ = {isa = PBXFileReference; lastKnownFileType = text; path = ContrastStretchFilterKernel.cikernel; sourceTree = "<group>"; };
+		F4F9B21B17B15A9A0063DD0D /* ContrastStretch-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContrastStretch-Prefix.pch"; sourceTree = "<group>"; };
 		F4FD22FF179B30D60049F5B5 /* SX IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SX IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4FD2302179B30D60049F5B5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4FD2305179B30D60049F5B5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -254,6 +307,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F4F9B1F917B15A9A0063DD0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F9B20017B15A9A0063DD0D /* ApplicationServices.framework in Frameworks */,
+				F4F9B20217B15A9A0063DD0D /* Foundation.framework in Frameworks */,
+				F4F9B20317B15A9A0063DD0D /* QuartzCore.framework in Frameworks */,
+				F4F9B20517B15A9A0063DD0D /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4FD22FC179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -368,6 +432,17 @@
 			name = "View Controllers";
 			sourceTree = "<group>";
 		};
+		F4BDF8E417B657A300749F4B /* SMDoubleSlider */ = {
+			isa = PBXGroup;
+			children = (
+				F4BDF8ED17B657AF00749F4B /* SMDoubleSlider.h */,
+				F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */,
+				F4BDF8EC17B657AF00749F4B /* SMDoubleSliderCell.h */,
+				F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */,
+			);
+			name = SMDoubleSlider;
+			sourceTree = "<group>";
+		};
 		F4E64243179BEB600044B349 /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -397,12 +472,39 @@
 			name = "Window Controllers";
 			sourceTree = "<group>";
 		};
+		F4F9B20617B15A9A0063DD0D /* ContrastStretch */ = {
+			isa = PBXGroup;
+			children = (
+				F4F9B20C17B15A9A0063DD0D /* ContrastStretchPlugInLoader.h */,
+				F4F9B20D17B15A9A0063DD0D /* ContrastStretchPlugInLoader.m */,
+				F4F9B20F17B15A9A0063DD0D /* CASContrastStretchFilter.h */,
+				F4F9B21017B15A9A0063DD0D /* CASContrastStretchFilter.m */,
+				F4F9B21217B15A9A0063DD0D /* index.html */,
+				F4F9B21417B15A9A0063DD0D /* Description.plist */,
+				F4F9B21617B15A9A0063DD0D /* Description.strings */,
+				F4F9B21917B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel */,
+				F4F9B20717B15A9A0063DD0D /* Supporting Files */,
+			);
+			path = ContrastStretch;
+			sourceTree = "<group>";
+		};
+		F4F9B20717B15A9A0063DD0D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4F9B20817B15A9A0063DD0D /* ContrastStretch-Info.plist */,
+				F4F9B20917B15A9A0063DD0D /* InfoPlist.strings */,
+				F4F9B21B17B15A9A0063DD0D /* ContrastStretch-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F4FD22F6179B30D60049F5B5 = {
 			isa = PBXGroup;
 			children = (
 				F4E64243179BEB600044B349 /* Config */,
 				F4FD2339179B31420049F5B5 /* Dependencies */,
 				F4FD2308179B30D60049F5B5 /* SX IO */,
+				F4F9B20617B15A9A0063DD0D /* ContrastStretch */,
 				F4FD2301179B30D60049F5B5 /* Frameworks */,
 				F4FD2300179B30D60049F5B5 /* Products */,
 			);
@@ -412,6 +514,7 @@
 			isa = PBXGroup;
 			children = (
 				F4FD22FF179B30D60049F5B5 /* SX IO.app */,
+				F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -423,6 +526,9 @@
 				F4A25895179BC0CF0013D220 /* Accelerate.framework */,
 				F4A25874179BC06E0013D220 /* QuartzCore.framework */,
 				F4FD2302179B30D60049F5B5 /* Cocoa.framework */,
+				F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */,
+				F4F9B20117B15A9A0063DD0D /* Foundation.framework */,
+				F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */,
 				F4FD2304179B30D60049F5B5 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -446,6 +552,8 @@
 				F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */,
 				F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */,
 				F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */,
+				F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */,
+				F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */,
 				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
@@ -453,6 +561,7 @@
 				F4E64249179BEE540044B349 /* SXIOSaveTargetViewController.h */,
 				F4E6424A179BEE540044B349 /* SXIOSaveTargetViewController.m */,
 				F4E6424B179BEE540044B349 /* SXIOSaveTargetViewController.xib */,
+				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
 			);
@@ -504,7 +613,36 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		F4F9B1FA17B15A9A0063DD0D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4F9B22317B15A9A0063DD0D /* Build configuration list for PBXNativeTarget "ContrastStretch" */;
+			buildPhases = (
+				F4F9B1F817B15A9A0063DD0D /* Sources */,
+				F4F9B1F917B15A9A0063DD0D /* Frameworks */,
+				F4F9B1FA17B15A9A0063DD0D /* Headers */,
+				F4F9B1FB17B15A9A0063DD0D /* Resources */,
+				F4F9B1FC17B15A9A0063DD0D /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ContrastStretch;
+			productName = ContrastStretch;
+			productReference = F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */;
+			productType = "com.apple.product-type.bundle";
+		};
 		F4FD22FE179B30D60049F5B5 /* SX IO */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F4FD231C179B30D60049F5B5 /* Build configuration list for PBXNativeTarget "SX IO" */;
@@ -514,11 +652,13 @@
 				F4FD22FD179B30D60049F5B5 /* Resources */,
 				F4A25838179B31760013D220 /* CopyFiles */,
 				F4D3CE01179BC54900B42D04 /* CopyFiles */,
+				F4F9B22617B15AC40063DD0D /* CopyFiles */,
 				F4CE97FB17AD58F2000F28C8 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F4F9B22517B15ABE0063DD0D /* PBXTargetDependency */,
 				F4D3CDF5179BC52800B42D04 /* PBXTargetDependency */,
 				F4A25830179B31740013D220 /* PBXTargetDependency */,
 			);
@@ -556,6 +696,7 @@
 			projectRoot = "";
 			targets = (
 				F4FD22FE179B30D60049F5B5 /* SX IO */,
+				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
 			);
 		};
 /* End PBXProject section */
@@ -613,6 +754,18 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F4F9B1FB17B15A9A0063DD0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F9B20B17B15A9A0063DD0D /* InfoPlist.strings in Resources */,
+				F4F9B21317B15A9A0063DD0D /* index.html in Resources */,
+				F4F9B21517B15A9A0063DD0D /* Description.plist in Resources */,
+				F4F9B21817B15A9A0063DD0D /* Description.strings in Resources */,
+				F4F9B21A17B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4FD22FD179B30D60049F5B5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -645,6 +798,16 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXRezBuildPhase section */
+		F4F9B1FC17B15A9A0063DD0D /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
 		F4CE97FB17AD58F2000F28C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -662,6 +825,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F4F9B1F817B15A9A0063DD0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F9B20E17B15A9A0063DD0D /* ContrastStretchPlugInLoader.m in Sources */,
+				F4F9B21117B15A9A0063DD0D /* CASContrastStretchFilter.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4FD22FB179B30D60049F5B5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -695,6 +867,9 @@
 				F4E64278179DC27A0044B349 /* CASProgressWindowController.m in Sources */,
 				F4E64282179DC2BF0044B349 /* CASAuxWindowController.m in Sources */,
 				F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */,
+				F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */,
+				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
+				F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -711,9 +886,30 @@
 			name = SXDevicesPlugin;
 			targetProxy = F4D3CDF4179BC52800B42D04 /* PBXContainerItemProxy */;
 		};
+		F4F9B22517B15ABE0063DD0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */;
+			targetProxy = F4F9B22417B15ABE0063DD0D /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		F4F9B20917B15A9A0063DD0D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F9B20A17B15A9A0063DD0D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4F9B21617B15A9A0063DD0D /* Description.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F9B21717B15A9A0063DD0D /* en */,
+			);
+			name = Description.strings;
+			sourceTree = "<group>";
+		};
 		F4FD230B179B30D60049F5B5 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -741,6 +937,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F4F9B21C17B15A9A0063DD0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ContrastStretch/ContrastStretch-Prefix.pch";
+				INFOPLIST_FILE = "ContrastStretch/ContrastStretch-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Debug;
+		};
+		F4F9B21D17B15A9A0063DD0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ContrastStretch/ContrastStretch-Prefix.pch";
+				INFOPLIST_FILE = "ContrastStretch/ContrastStretch-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Release;
+		};
 		F4FD231A179B30D60049F5B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -835,6 +1059,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F4F9B22317B15A9A0063DD0D /* Build configuration list for PBXNativeTarget "ContrastStretch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4F9B21C17B15A9A0063DD0D /* Debug */,
+				F4F9B21D17B15A9A0063DD0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F4FD22FA179B30D60049F5B5 /* Build configuration list for PBXProject "SX IO" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
