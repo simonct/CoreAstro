@@ -12,6 +12,7 @@
     CIImage      *inputImage;
     NSNumber     *inputMin;
     NSNumber     *inputMax;
+    NSNumber     *gamma;
 }
 
 @end

@@ -36,25 +36,34 @@ static CIKernel *_ContrastStretchFilterKernel = nil;
 - (NSDictionary *)customAttributes
 {
     return @{
-        @"inputMin":@{
-            kCIAttributeMin:@0,
-            kCIAttributeMax:@1,
-            kCIAttributeSliderMin:@0,
-            kCIAttributeSliderMax:@1,
-            kCIAttributeDefault:@0,
-            kCIAttributeIdentity:@0,
-            kCIAttributeType:kCIAttributeTypeScalar,
-        },
-        @"inputMax":@{
-            kCIAttributeMin:@0,
-            kCIAttributeMax:@1,
-            kCIAttributeSliderMin:@0,
-            kCIAttributeSliderMax:@1,
-            kCIAttributeDefault:@1,
-            kCIAttributeIdentity:@1,
-            kCIAttributeType:kCIAttributeTypeScalar,
-        },
-    };
+             @"inputMin":@{
+                     kCIAttributeMin:@0,
+                     kCIAttributeMax:@1,
+                     kCIAttributeSliderMin:@0,
+                     kCIAttributeSliderMax:@1,
+                     kCIAttributeDefault:@0,
+                     kCIAttributeIdentity:@0,
+                     kCIAttributeType:kCIAttributeTypeScalar,
+                     },
+             @"inputMax":@{
+                     kCIAttributeMin:@0,
+                     kCIAttributeMax:@1,
+                     kCIAttributeSliderMin:@0,
+                     kCIAttributeSliderMax:@1,
+                     kCIAttributeDefault:@1,
+                     kCIAttributeIdentity:@1,
+                     kCIAttributeType:kCIAttributeTypeScalar,
+                     },
+             @"gamma":@{
+                     kCIAttributeMin:@0,
+                     kCIAttributeMax:@10,
+                     kCIAttributeSliderMin:@0,
+                     kCIAttributeSliderMax:@10,
+                     kCIAttributeDefault:@1,
+                     kCIAttributeIdentity:@1,
+                     kCIAttributeType:kCIAttributeTypeScalar,
+                     },
+             };
 }
 
 // called when setting up for fragment program and also calls fragment program
@@ -63,10 +72,11 @@ static CIKernel *_ContrastStretchFilterKernel = nil;
 //    NSLog(@"inputImage: %@",inputImage);
 //    NSLog(@"inputMin: %@",inputMin);
 //    NSLog(@"inputMax: %@",inputMax);
+//    NSLog(@"gamma: %@",gamma);
 
     CISampler* src = [CISampler samplerWithImage:inputImage];
         
-    return [self apply:_ContrastStretchFilterKernel,src,inputMin,inputMax,nil];
+    return [self apply:_ContrastStretchFilterKernel,src,inputMin,inputMax,gamma,nil];
 }
 
 @end

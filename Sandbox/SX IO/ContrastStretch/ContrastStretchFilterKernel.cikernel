@@ -1,14 +1,12 @@
 
-kernel vec4 coreImageKernel(sampler image, float minval, float maxval)
+kernel vec4 coreImageKernel(sampler image, float minval, float maxval, float gamma)
 {
 	vec4 p = sample(image, samplerCoord(image));
 
 	float range = maxval - minval;
 	float scale = 1.0 / range;
 
-	p.r = (p.r - minval) * scale;
-	p.g = (p.g - minval) * scale;
-	p.b = (p.b - minval) * scale;
+	p.rgb = pow(clamp(p.rgb - minval,vec3(0),vec3(1)) * scale,vec3(gamma));
 
 	return p;
 }

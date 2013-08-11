@@ -24,14 +24,19 @@
         
         self.slider.floatLoValue = self.controller.exposureView.stretchMin;
         self.slider.floatHiValue = self.controller.exposureView.stretchMax;
-        
+        self.gammaSlider.floatValue = self.controller.exposureView.stretchGamma;
+
         self.slider.target = self;
         self.slider.action = @selector(sliderChanged:);
-        self.slider.enabled = YES;
+        self.slider.enabled = self.controller.exposureView.contrastStretch;
         
+        self.gammaSlider.target = self;
+        self.gammaSlider.action = @selector(sliderChanged:);
+        self.gammaSlider.enabled = self.controller.exposureView.contrastStretch;
+
         self.checkbox.target = self;
         self.checkbox.action = @selector(checkboxChanged:);
-        self.checkbox.enabled = YES;
+        self.checkbox.enabled = self.controller.exposureView.contrastStretch;
     }
     else {
         
@@ -42,10 +47,16 @@
         self.slider.action = nil;
         self.slider.enabled = NO;
         
+        self.gammaSlider.target = nil;
+        self.gammaSlider.action = nil;
+        self.gammaSlider.enabled = NO;
+
         self.checkbox.target = nil;
         self.checkbox.action = nil;
         self.checkbox.enabled = NO;
     }
+    
+    [self updateLabels];
 }
 
 - (void)sliderChanged:sender
@@ -53,13 +64,27 @@
     if (self.controller){
         self.controller.exposureView.stretchMin = self.slider.floatLoValue;
         self.controller.exposureView.stretchMax = self.slider.floatHiValue;
+        self.controller.exposureView.stretchGamma = self.gammaSlider.floatValue;
+        [self updateLabels];
     }
 }
 
 - (void)checkboxChanged:sender
 {
     const BOOL contrastStretch = self.checkbox.intValue != 0;
-    self.controller.exposureView.contrastStretch = self.slider.enabled = contrastStretch;
+    self.controller.exposureView.contrastStretch = self.slider.enabled = self.gammaSlider.enabled = contrastStretch;
+}
+
+- (void)updateLabels
+{
+    if (self.window && self.controller){
+        self.blackLabel.stringValue = [NSString stringWithFormat:@"%d",(int)floor(self.slider.floatLoValue * 65535)]; // actually current image max value
+        self.whiteLabel.stringValue = [NSString stringWithFormat:@"%d",(int)floor(self.slider.floatHiValue * 65535)];
+        self.gammaLabel.stringValue = [NSString stringWithFormat:@"%.2f",self.gammaSlider.floatValue];
+    }
+    else{
+        self.whiteLabel.stringValue = self.blackLabel.stringValue = self.gammaLabel.stringValue = @"";
+    }
 }
 
 @end

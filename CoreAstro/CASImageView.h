@@ -18,5 +18,5 @@
 @property BOOL invert;
 @property BOOL medianFilter;
 @property BOOL contrastStretch;
-@property float stretchMin, stretchMax; // contrast stretch 0->1
+@property float stretchMin, stretchMax, stretchGamma; // contrast stretch 0->1
 @end

@@ -32,7 +32,7 @@
 @implementation CASImageView {
     CGImageRef _cgImage;
     BOOL _invert, _medianFilter, _contrastStretch;
-    float _stretchMin, _stretchMax;
+    float _stretchMin, _stretchMax, _stretchGamma;
 }
 
 + (void)initialize
@@ -50,6 +50,7 @@
     if (self){
         _stretchMin = 0;
         _stretchMax = 1;
+        _stretchGamma = 1;
     }
     return self;
 }
@@ -67,6 +68,7 @@
     
     _stretchMin = 0;
     _stretchMax = 1;
+    _stretchGamma = 1;
     _contrastStretch = 1;
 
     if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
@@ -204,6 +206,7 @@
         [stretch setValue:image forKey:@"inputImage"];
         [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
         [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
+        [stretch setValue:@(self.stretchGamma) forKey:@"gamma"];
         image = [stretch valueForKey:@"outputImage"];
     }
 
@@ -332,6 +335,19 @@
     stretchMax = MAX(stretchMax, _stretchMin);
     if (_stretchMax != stretchMax){
         _stretchMax = stretchMax;
+        [self.layer setNeedsDisplay];
+    }
+}
+
+- (float)stretchGamma
+{
+    return _stretchGamma;
+}
+
+- (void)setStretchGamma:(float)stretchGamma
+{
+    if (_stretchGamma != stretchGamma){
+        _stretchGamma = stretchGamma;
         [self.layer setNeedsDisplay];
     }
 }

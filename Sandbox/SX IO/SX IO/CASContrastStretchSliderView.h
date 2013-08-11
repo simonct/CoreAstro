@@ -12,8 +12,14 @@
 @class SXIOCameraWindowController;
 
 @interface CASContrastStretchSliderView : NSView
+@property (weak) IBOutlet NSSlider *gammaSlider;
+@property (weak) IBOutlet NSTextField *gammaLabel;
+
 @property (nonatomic,weak) IBOutlet NSButton* checkbox;
 @property (nonatomic,weak) IBOutlet SMDoubleSlider* slider;
+@property (weak) IBOutlet NSTextField *blackLabel;
+@property (weak) IBOutlet NSTextField *whiteLabel;
+
 @property (nonatomic,unsafe_unretained) SXIOCameraWindowController* controller; // weak to NSWindowController not supported on < 10.8
 @end
 
