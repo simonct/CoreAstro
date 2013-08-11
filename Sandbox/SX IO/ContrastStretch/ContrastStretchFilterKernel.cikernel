@@ -3,9 +3,12 @@ kernel vec4 coreImageKernel(sampler image, float minval, float maxval)
 {
 	vec4 p = sample(image, samplerCoord(image));
 
-	p.r = smoothstep(minval,maxval,p.r);
-	p.g = smoothstep(minval,maxval,p.g);
-	p.b = smoothstep(minval,maxval,p.b);
+	float range = maxval - minval;
+	float scale = 1.0 / range;
+
+	p.r = (p.r - minval) * scale;
+	p.g = (p.g - minval) * scale;
+	p.b = (p.b - minval) * scale;
 
 	return p;
 }
