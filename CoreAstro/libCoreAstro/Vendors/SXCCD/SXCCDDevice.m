@@ -350,7 +350,7 @@
     expose.params = exp;
     
     // exposures over 5 seconds use external timing so that we can cancel them easily
-    expose.latchPixels = (exp.ms > 5000);
+    expose.latchPixels = NO; // (exp.ms > 5000);
 
     if (self.isInterlaced){
         expose.readPixels = NO; // always use an external timer for interlaced cameras
