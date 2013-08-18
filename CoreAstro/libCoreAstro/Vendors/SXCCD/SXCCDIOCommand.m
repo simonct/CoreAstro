@@ -530,6 +530,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOExposeCommandM25C
 
+- (BOOL)allowsUnderrun {
+    return YES; // for reasons I have yet to figure out I occasionally get 1 row less than I asked for
+}
+
 - (NSData*)toDataRepresentation {
     
     uint8_t buffer[22];
@@ -576,18 +580,74 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             
             if (pixelsPtr && rearrangedPixelsPtr){
                 
-                const unsigned long width = self.params.size.width/self.params.bin.width;
-                const unsigned long height = self.params.size.height/self.params.bin.height;
+                const size_t width = self.params.size.width/self.params.bin.width;
                 
-                unsigned long i = 0;
-                for (unsigned long y = 0; y < height; y += 2){
-                    
-                    for (unsigned long x = 0; x < width; x += 1){
-                        
+                size_t height = self.params.size.height/self.params.bin.height;
+                if ([pixels length] < width * height * sizeof(uint16_t)){
+                    height = [pixels length] / (width * sizeof(uint16_t));
+                    NSLog(@"Reset height to %ld after receiving %ld bytes",height,[pixels length]);
+                }
+                
+                size_t i = 0;
+                for (size_t y = 0; y < height; y += 2){
+                    for (size_t x = 0; x < width; x += 1){
                         rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
                         rearrangedPixelsPtr[x + ((y+1) * width)] = pixelsPtr[i++];
                     }
                 }
+                
+                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
+            }
+        }
+    }
+    
+    return pixels;
+}
+
+@end
+
+@implementation SXCCDIOExposeCommandM26C
+
+- (NSData*)toDataRepresentation {
+    
+    // probably have to limit origins and subframe dimensions to a 2 or 4 pixel grid
+    
+    return [super toDataRepresentation];
+}
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    
+    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
+        
+        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
+        if ([rearrangedPixels length]){
+            
+            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
+            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
+            
+            if (pixelsPtr && rearrangedPixelsPtr){
+                
+                const size_t width = self.params.size.width;
+                const size_t height = self.params.size.height;
+                
+                void (^reconstructField)(size_t startRow) = ^(size_t startRow){
+                                        
+                    size_t i = startRow*width*height/2; // start index into the source buffer
+                    
+                    // do we actually get a height*width image from the chip and have to rotate it e.g. run columns first ?
+
+                    for (size_t row = startRow; row < height; row += 2){
+                        const size_t rowOffset = row*width; // (height - row - 1)*width;
+                        for (size_t col = 0; col < width; col += 2){
+                            rearrangedPixelsPtr[col + rowOffset] = pixelsPtr[i++]; // red or blue, starting at column [0]
+                            rearrangedPixelsPtr[(width - col - 1) + rowOffset] = pixelsPtr[i++]; // green, starting at column [width - 1]
+                        }
+                    }
+                };
+                
+//                dispatch_apply(2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), reconstructField);
+                reconstructField(0);
+                reconstructField(1);
                 
                 memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
             }

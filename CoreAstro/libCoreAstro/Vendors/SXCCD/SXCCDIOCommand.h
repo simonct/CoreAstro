@@ -64,6 +64,10 @@
 @interface SXCCDIOExposeCommandM25C : SXCCDIOExposeCommand
 @end
 
+// specific expose command for the M26C that knows how to unpack the interleaved pixel format
+@interface SXCCDIOExposeCommandM26C : SXCCDIOExposeCommand
+@end
+
 // expose command for interlaced cameras that can de-interlace the two fields and apply an intensity correction
 @interface SXCCDIOExposeCommandInterlaced : SXCCDIOExposeCommand
 @property (nonatomic,strong) CASCCDExposure* biasExposure;
