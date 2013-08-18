@@ -350,7 +350,7 @@
     expose.params = exp;
     
     // exposures over 5 seconds use external timing so that we can cancel them easily
-    expose.latchPixels = NO; // (exp.ms > 5000);
+    expose.latchPixels = (exp.ms > 5000);
 
     if (self.isInterlaced){
         expose.readPixels = NO; // always use an external timer for interlaced cameras
@@ -506,7 +506,7 @@
             
             self.flushCommand.noWipe = YES; // clear the vertical registers in preparation for reading the pixels
             
-            [self.transport submit:self.flushCommand when:[NSDate dateWithTimeInterval:-3 sinceDate:when] block:^(NSError* error){
+            [self.transport submit:self.flushCommand when:[NSDate dateWithTimeInterval:-5 sinceDate:when] block:^(NSError* error){
                 
                 if (error) {
                     exposureCompleted(error,nil);
