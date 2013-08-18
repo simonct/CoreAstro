@@ -81,7 +81,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     if (state != _state){
         _state = state;
-        NSLog(@"Changed state to %ld",_state);
+//        NSLog(@"Changed state to %ld",_state);
     }
 }
 
