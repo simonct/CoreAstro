@@ -123,9 +123,19 @@
 
 - (void)setCIImage:(CIImage *)CIImage
 {
+    [self setCIImage:CIImage resetDisplay:YES];
+}
+
+- (void)setCIImage:(CIImage*)CIImage resetDisplay:(BOOL)resetDisplay
+{
     if (CIImage != _CIImage){
         _CIImage = CIImage;
-        [self _setupImageLayer];
+        if (resetDisplay){
+            [self _setupImageLayer];
+        }
+        else {
+            [self.layer setNeedsDisplay];
+        }
     }
 }
 
@@ -139,13 +149,18 @@
 
 - (void)setCGImage:(CGImageRef)CGImage
 {
+    [self setCGImage:CGImage resetDisplay:YES];
+}
+
+- (void)setCGImage:(CGImageRef)CGImage resetDisplay:(BOOL)resetDisplay
+{
     if (_cgImage != CGImage){
         if (_cgImage){
-           // CGImageRelease(_cgImage);
+            // CGImageRelease(_cgImage);
         }
         _cgImage = CGImage;
         if (_cgImage){
-            self.CIImage = [[CIImage alloc] initWithCGImage:_cgImage];
+            [self setCIImage:[[CIImage alloc] initWithCGImage:_cgImage] resetDisplay:resetDisplay];
         }
         else {
             self.CIImage = nil;

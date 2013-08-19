@@ -43,6 +43,7 @@ typedef enum {
 @property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
 @property (nonatomic,assign) CGRect selectionRect;
 @property (nonatomic,strong) CASPlateSolveSolution* plateSolveSolution;
+- (void)setCurrentExposure:(CASCCDExposure *)exposure resetDisplay:(BOOL)resetDisplay;
 @end
 
 extern const CGPoint kCASImageViewInvalidStarLocation;

@@ -48,7 +48,9 @@
 
 @end
 
-@implementation SXIOCameraWindowController
+@implementation SXIOCameraWindowController {
+    BOOL _displayedFirstExposure:1;
+}
 
 - (void)windowDidLoad
 {
@@ -227,7 +229,10 @@
                     }
                 }
                 
-                self.currentExposure = exposure;
+                // reset the display for the first exposure, we can leave it alone for all subsequent ones
+                // since we only have one camera per window and can assume the frame size remains the same
+                [self setCurrentExposure:exposure resetDisplay:!_displayedFirstExposure];
+                _displayedFirstExposure = YES;
             }
         }
         @finally {
@@ -562,6 +567,11 @@
 
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
+    [self displayExposure:exposure resetDisplay:YES];
+}
+
+- (void)displayExposure:(CASCCDExposure*)exposure resetDisplay:(BOOL)resetDisplay
+{
     if (!exposure){
         self.exposureView.currentExposure = nil;
         return;
@@ -600,7 +610,7 @@
             exposure = [self.imageProcessor equalise:exposure];
         }
         
-        self.exposureView.currentExposure = exposure;
+        [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
     }
 }
 
@@ -612,6 +622,11 @@
 
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
 {
+    [self setCurrentExposure:currentExposure resetDisplay:YES];
+}
+
+- (void)setCurrentExposure:(CASCCDExposure *)currentExposure resetDisplay:(BOOL)resetDisplay
+{
     if (_currentExposure != currentExposure){
         
         // unload the current exposure's pixels
@@ -620,7 +635,7 @@
         _currentExposure = currentExposure;
         
         // display the exposure
-        [self displayExposure:_currentExposure];
+        [self displayExposure:_currentExposure resetDisplay:resetDisplay];
         
         // clear selection - necessary ?
         if (!_currentExposure){

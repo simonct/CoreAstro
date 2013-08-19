@@ -12,6 +12,7 @@
 @property (nonatomic,strong,readonly) CIImage* image;
 @property (nonatomic,assign) CGImageRef CGImage;
 @property (nonatomic,strong) NSURL* url;
+- (void)setCGImage:(CGImageRef)CGImage resetDisplay:(BOOL)resetDisplay;
 @end
 
 @interface CASImageView (CASImageAdjustment)
