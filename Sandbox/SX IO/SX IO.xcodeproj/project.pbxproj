@@ -63,6 +63,8 @@
 		F4E64279179DC27A0044B349 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E64277179DC27A0044B349 /* CASProgressWindowController.xib */; };
 		F4E64282179DC2BF0044B349 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */; };
 		F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E64283179DC2D10044B349 /* Quartz.framework */; };
+		F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
+		F4EF194217C1428400B8AD23 /* SXIOFilterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */; };
 		F4F9B20017B15A9A0063DD0D /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F4F9B20217B15A9A0063DD0D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
 		F4F9B20317B15A9A0063DD0D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
@@ -275,6 +277,9 @@
 		F4E64280179DC2BF0044B349 /* CASAuxWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAuxWindowController.h; path = ../../../CoreAstro/CASAuxWindowController.h; sourceTree = "<group>"; };
 		F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAuxWindowController.m; path = ../../../CoreAstro/CASAuxWindowController.m; sourceTree = "<group>"; };
 		F4E64283179DC2D10044B349 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFilterWindowController.h; sourceTree = "<group>"; };
+		F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFilterWindowController.m; sourceTree = "<group>"; };
+		F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFilterWindowController.xib; sourceTree = "<group>"; };
 		F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContrastStretch.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		F4F9B20117B15A9A0063DD0D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -558,6 +563,9 @@
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
 				F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */,
+				F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */,
+				F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */,
+				F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */,
 				F4E64249179BEE540044B349 /* SXIOSaveTargetViewController.h */,
 				F4E6424A179BEE540044B349 /* SXIOSaveTargetViewController.m */,
 				F4E6424B179BEE540044B349 /* SXIOSaveTargetViewController.xib */,
@@ -793,6 +801,7 @@
 				F4E6425C179BFFBD0044B349 /* zoomtofit.pdf in Resources */,
 				F4E6425D179BFFBD0044B349 /* zoom1.pdf in Resources */,
 				F4E64279179DC27A0044B349 /* CASProgressWindowController.xib in Resources */,
+				F4EF194217C1428400B8AD23 /* SXIOFilterWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -870,6 +879,7 @@
 				F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */,
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
 				F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */,
+				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

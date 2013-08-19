@@ -52,6 +52,11 @@
     self.filterWheel = nil;
 }
 
+- (BOOL) moving
+{
+    return self.filterWheel.moving;
+}
+
 - (NSUInteger) filterCount
 {
     return self.filterWheel.filterCount;

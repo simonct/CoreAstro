@@ -26,6 +26,7 @@
 #import "CASAppDelegate.h"
 #import "CASTemperatureTransformer.h"
 #import "SXIOCameraWindowController.h"
+#import "SXIOFilterWindowController.h"
 #import "CASUpdateCheck.h"
 #import <CoreAstro/CoreAstro.h>
 
@@ -78,6 +79,7 @@ static void* kvoContext;
         }
         
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
+        [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         
         [[CASDeviceManager sharedManager] scan];
         
@@ -118,6 +120,20 @@ static void* kvoContext;
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
 }
 
+- (NSWindowController*)findWindowController:(id)controller
+{
+    for (id window in [_cameraWindows copy]){
+        if ([window isKindOfClass:[SXIOCameraWindowController class]] && ((SXIOCameraWindowController*)window).cameraController == controller){
+            return window;
+        }
+        if ([window isKindOfClass:[SXIOFilterWindowController class]] && ((SXIOFilterWindowController*)window).filterWheelController == controller){
+            return window;
+        }
+    }
+
+    return nil;
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
@@ -129,14 +145,27 @@ static void* kvoContext;
             case NSKeyValueChangeInsertion:{
                 [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 
-                    if ([obj isKindOfClass:[CASCameraController class]]){
+                    NSWindowController* windowController = [self findWindowController:obj];
+                    if (!windowController){
                         
-                        SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
-                        cameraWindow.cameraController = obj;
-                        cameraWindow.shouldCascadeWindows = NO;
-                        [cameraWindow.window makeKeyAndOrderFront:nil];
-                        
-                        [_cameraWindows addObject:cameraWindow];
+                        if ([obj isKindOfClass:[CASCameraController class]]){
+                            
+                            SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
+                            cameraWindow.cameraController = obj;
+                            windowController = cameraWindow;
+                        }
+                        else if ([obj isKindOfClass:[CASFilterWheelController class]]){
+                            
+                            SXIOFilterWindowController* filterWindow = [[SXIOFilterWindowController alloc] initWithWindowNibName:@"SXIOFilterWindowController"];
+                            filterWindow.filterWheelController = obj;
+                            windowController = filterWindow;
+                        }
+                    }
+                    
+                    if (windowController){
+                        [windowController.window center];
+                        [windowController.window makeKeyAndOrderFront:nil];
+                        [_cameraWindows addObject:windowController];
                     }
                 }];
             }
@@ -146,11 +175,10 @@ static void* kvoContext;
             case NSKeyValueChangeRemoval:{
                 [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     
-                    for (SXIOCameraWindowController* cameraWindow in [_cameraWindows copy]){
-                        if (cameraWindow.cameraController == obj){
-                            [cameraWindow close];
-                            [_cameraWindows removeObject:cameraWindow];
-                        }
+                    NSWindowController* window = [self findWindowController:obj];
+                    if (window){
+                        [window close];
+                        [_cameraWindows removeObject:window];
                     }
                 }];
             }
