@@ -466,7 +466,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self performSelector:@selector(_updateStarProfileImpl) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
 }
 
-- (void)displayExposure
+- (void)displayExposureWithReset:(BOOL)resetDisplay
 {
     void (^clearImage)() = ^() {
         [self setImage:nil];
@@ -523,7 +523,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             // set the image
             if (CGImage){
-                [self setImage:CGImage];
+                [self setImage:CGImage resetDisplay:resetDisplay];
                 if (CGImage != image.CGImage){
                     CFRelease(CGImage);
                 }
@@ -657,7 +657,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     if (_scaleSubframe != scaleSubframe){
         _scaleSubframe = scaleSubframe;
         self.selectionLayer.hidden = _scaleSubframe; // hide the selection in scale mode
-        [self displayExposure];
+        [self displayExposureWithReset:YES];
         [self zoomImageToFit:nil]; // todo; return to zoom level before entering scale subframe mode
     }
 }
@@ -701,6 +701,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)setImage:(CGImageRef)image
 {
+    [self setImage:image resetDisplay:YES];
+}
+
+- (void)setImage:(CGImageRef)image resetDisplay:(BOOL)resetDisplay
+{
     self.searchLayer = nil;
     self.reticleLayer = nil;
     
@@ -709,7 +714,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _annotationsLayer = nil;
     }
     
-    [super setCGImage:image];
+    [super setCGImage:image resetDisplay:resetDisplay];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
     
@@ -731,11 +736,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)setCurrentExposure:(CASCCDExposure *)exposure
 {
+    [self setCurrentExposure:exposure resetDisplay:YES];
+}
+
+- (void)setCurrentExposure:(CASCCDExposure *)exposure resetDisplay:(BOOL)resetDisplay
+{
+    // todo; we *do* need to check we're not setting the same one again
+    
     // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
     _currentExposure = exposure;
     
     // set the current image taking into account scaleSubframe mode, etc
-    [self displayExposure];
+    [self displayExposureWithReset:resetDisplay];
     
     // clip any selection rect
     if (_currentExposure && self.showSelection){
