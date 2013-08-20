@@ -431,6 +431,9 @@
 
 - (void)configureForCameraController
 {
+    // make sure we reset the display first time round with this camera
+    _displayedFirstExposure = NO;
+    
     NSString* title = self.cameraController.camera.deviceName;
     if (title){
         self.window.title = title;
@@ -439,13 +442,7 @@
         self.window.title = @"";
     }
     
-//    // show camera name
-//    self.imageBannerView.camera = self.cameraController.camera;
-    
-    // capture the current controller in the completion block
-    CASCameraController* cameraController = self.cameraController;
-    
-    if (!cameraController){
+    if (!self.cameraController){
         
         self.currentExposure = nil;
     }
@@ -483,18 +480,12 @@
                 [NSApp presentError:error];
             }
         }];
+        
+        [self zoomImageToFit:nil];
     }
-    
-    //    // reset the capture count - why am I doing this here ?
-    //    if (!self.cameraController.captureCount && !self.cameraController.continuous){
-    //        self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
-    //    }
     
     // set progress display if this camera is capturing
     [self updateExposureIndicator];
-    
-    // set the exposures controller to either nil or one that shows only exposures from this camera
-//    self.exposuresController = nil;
 }
 
 - (void)updateExposureIndicator
