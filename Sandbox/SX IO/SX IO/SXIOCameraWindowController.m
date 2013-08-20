@@ -48,9 +48,7 @@
 
 @end
 
-@implementation SXIOCameraWindowController {
-    BOOL _displayedFirstExposure:1;
-}
+@implementation SXIOCameraWindowController
 
 - (void)windowDidLoad
 {
@@ -114,20 +112,6 @@
                     self.selectionControl.selectedSegment = 1;
                 }
             }
-        }
-        else if (object == [CASDeviceManager sharedManager]) {
-            
-//            if ([keyPath isEqualToString:@"filterWheelControllers"]){
-//                
-//                switch ([change[NSKeyValueChangeKindKey] integerValue]) {
-//                    case NSKeyValueChangeInsertion:
-//                        [self showFilterWheelControls];
-//                        break;
-//                    case NSKeyValueChangeRemoval:
-//                        [self hideFilterWheelControls];
-//                        break;
-//                }
-//            }
         }
     }
     else {
@@ -201,6 +185,8 @@
             }
             else{
                 
+                // todo; async
+                
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
                     
@@ -228,11 +214,9 @@
                         }
                     }
                 }
-                
-                // reset the display for the first exposure, we can leave it alone for all subsequent ones
-                // since we only have one camera per window and can assume the frame size remains the same
-                [self setCurrentExposure:exposure resetDisplay:!_displayedFirstExposure];
-                _displayedFirstExposure = YES;
+
+                const BOOL resetDisplay = [self.exposureView shouldResetDisplayForExposure:exposure];
+                [self setCurrentExposure:exposure resetDisplay:resetDisplay];
             }
         }
         @finally {
@@ -431,9 +415,6 @@
 
 - (void)configureForCameraController
 {
-    // make sure we reset the display first time round with this camera
-    _displayedFirstExposure = NO;
-    
     NSString* title = self.cameraController.camera.deviceName;
     if (title){
         self.window.title = title;

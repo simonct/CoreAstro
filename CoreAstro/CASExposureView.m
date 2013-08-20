@@ -739,6 +739,21 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self setCurrentExposure:exposure resetDisplay:YES];
 }
 
+- (BOOL)shouldResetDisplayForExposure:(CASCCDExposure*)exposure
+{
+    // don't reset the display if the new exposure is the same size as the current exposure
+    BOOL resetDisplay = YES;
+    CASCCDExposure* currentExposure = self.currentExposure;
+    if (currentExposure && exposure){
+        CASExposeParams params = exposure.params;
+        CASExposeParams currentParams = currentExposure.params;
+        if (params.frame.width == currentParams.frame.width && params.frame.height == currentParams.frame.height){
+            resetDisplay = NO;
+        }
+    }
+    return resetDisplay;
+}
+
 - (void)setCurrentExposure:(CASCCDExposure *)exposure resetDisplay:(BOOL)resetDisplay
 {
     // todo; we *do* need to check we're not setting the same one again
