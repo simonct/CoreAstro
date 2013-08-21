@@ -48,7 +48,9 @@
 
 @end
 
-@implementation SXIOCameraWindowController
+@implementation SXIOCameraWindowController {
+    BOOL _capturedFirstImage:1;
+}
 
 - (void)windowDidLoad
 {
@@ -215,8 +217,9 @@
                     }
                 }
 
-                const BOOL resetDisplay = [self.exposureView shouldResetDisplayForExposure:exposure];
+                const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
                 [self setCurrentExposure:exposure resetDisplay:resetDisplay];
+                _capturedFirstImage = YES;
             }
         }
         @finally {

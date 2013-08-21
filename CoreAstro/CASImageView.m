@@ -27,20 +27,29 @@
 @property (nonatomic,assign) BOOL reticle;
 @property (nonatomic,strong) CALayer* overlayLayer;
 @property (nonatomic,strong) CALayer* reticleLayer;
+// atomic map of filters
 @end
 
 @implementation CASImageView {
     CGImageRef _cgImage;
-    BOOL _invert, _medianFilter, _contrastStretch;
+    BOOL _invert, _medianFilter, _contrastStretch, _debayer;
     float _stretchMin, _stretchMax;
+    CGVector _debayerOffset;
+    CIImage* _filteredCIImage;
+    NSMutableDictionary* _filterCache;
+    CGRect _extent;
+}
+
++ (void)loadCIPluginWithName:(NSString*)name
+{
+    [CIPlugIn loadPlugIn:[[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:name] allowExecutableCode:YES];
 }
 
 + (void)initialize
 {
     if (self == [CASImageView class]){
-
-        NSURL* url = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"ContrastStretch.plugin"];
-        [CIPlugIn loadPlugIn:url allowExecutableCode:YES];
+        [self loadCIPluginWithName:@"Debayer.plugin"];
+        [self loadCIPluginWithName:@"ContrastStretch.plugin"];
     }
 }
 
@@ -50,6 +59,7 @@
     if (self){
         _stretchMin = 0;
         _stretchMax = 1;
+        _extent = CGRectNull;
     }
     return self;
 }
@@ -68,6 +78,7 @@
     _stretchMin = 0;
     _stretchMax = 1;
     _contrastStretch = 1;
+    _extent = CGRectNull;
 
     if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
         self.layer.drawsAsynchronously = YES;
@@ -104,7 +115,77 @@
     return self.CIImage;
 }
 
-- (void)_setupImageLayer
+- (CIFilter*)filterWithName:(NSString*)name
+{
+    CIFilter* result; // arc nils it
+    @synchronized(self){
+        if (!_filterCache){
+            _filterCache = [NSMutableDictionary dictionaryWithCapacity:5];
+        }
+        result = _filterCache[name];
+        if (!result){
+            result = [CIFilter filterWithName:name];
+            if (result){
+                _filterCache[name] = result;
+            }
+        }
+    }
+    return result;
+}
+
+- (CIImage*)filterImage:(CIImage*)image // note; this is called from -drawLayer:inContext
+{
+    if (!image){
+        return nil;
+    }
+    
+    if (!CGRectIsNull(_extent)){
+        // set roi on filters - does this mean I have to sublcass all the filters ?
+        // or at least have a wrapper than composites with the underlying filter ?
+    }
+    
+    // todo; allow filter order to be set externally ?
+    // todo; set roi to the area of the subframe using CIFilterShape
+    
+    if (self.debayer){
+        CIFilter* debayer = [self filterWithName:@"CASDebayerFilter"];
+        if (debayer){
+            [debayer setDefaults];
+            [debayer setValue:image forKey:@"inputImage"];
+            [debayer setValue:[CIVector vectorWithX:self.debayerOffset.dx Y:self.debayerOffset.dy] forKey:@"inputOffset"];
+            image = [debayer valueForKey:@"outputImage"];
+        }
+    }
+    
+    if (self.medianFilter){
+        CIFilter* median = [self filterWithName:@"CIMedianFilter"];
+        [median setDefaults];
+        [median setValue:image forKey:@"inputImage"];
+        image = [median valueForKey:@"outputImage"];
+    }
+    
+    if (self.contrastStretch){
+        CIFilter* stretch = [self filterWithName:@"CASContrastStretchFilter"];
+        if (stretch){
+            [stretch setDefaults];
+            [stretch setValue:image forKey:@"inputImage"];
+            [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
+            [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
+            image = [stretch valueForKey:@"outputImage"];
+        }
+    }
+    
+    if (self.invert){
+        CIFilter* invert = [self filterWithName:@"CIColorInvert"];
+        [invert setDefaults];
+        [invert setValue:image forKey:@"inputImage"];
+        image = [invert valueForKey:@"outputImage"];
+    }
+    
+    return image;
+}
+
+- (void)setupImageLayer
 {
     if (self.CIImage){
         
@@ -118,7 +199,7 @@
     
     self.layer.delegate = self;
     [self.layer setNeedsDisplay];
-    [self setNeedsDisplay:YES];
+//    [self setNeedsDisplay:YES];
 }
 
 - (void)setCIImage:(CIImage *)CIImage
@@ -130,12 +211,15 @@
 {
     if (CIImage != _CIImage){
         _CIImage = CIImage;
+        _filteredCIImage = nil;
         if (resetDisplay){
-            [self _setupImageLayer];
+            [self setupImageLayer];
         }
         else {
             [self.layer setNeedsDisplay];
         }
+        
+        // todo: setNeedsDisplayInRect: with subframe
     }
 }
 
@@ -160,7 +244,7 @@
         }
         _cgImage = CGImage;
         if (_cgImage){
-            [self setCIImage:[[CIImage alloc] initWithCGImage:_cgImage] resetDisplay:resetDisplay];
+            [self setCIImage:[CIImage imageWithCGImage:_cgImage options:@{kCIImageColorSpace:[NSNull null]}] resetDisplay:resetDisplay];
         }
         else {
             self.CIImage = nil;
@@ -176,54 +260,23 @@
         
         CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)url,nil);
         if (source){
-            self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil)];
+            self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil) options:@{kCIImageColorSpace:[NSNull null]}];
             CFRelease(source);
         }
         
-        [self _setupImageLayer];
+        [self setupImageLayer];
     }
 }
 
-//- (void)drawRect:(NSRect)dirtyRect
-//{
-//    [[NSColor redColor] set];
-//    NSRectFill(dirtyRect);
-//}
-
-// draws concurrently mode
-
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context
 {
-    CIImage* image = self.CIImage;
-    if (!image){
-        return;
+    if (!_filteredCIImage){
+        _filteredCIImage = [self filterImage:self.CIImage];
     }
-        
-    if (self.invert){
-        CIFilter* invert = [CIFilter filterWithName:@"CIColorInvert"];
-        [invert setDefaults];
-        [invert setValue:image forKey:@"inputImage"];
-        image = [invert valueForKey:@"outputImage"];
+    if (_filteredCIImage){
+        const CGRect clip = CGContextGetClipBoundingBox(context);
+        [[CIContext contextWithCGContext:context options:nil] drawImage:_filteredCIImage inRect:clip fromRect:clip];
     }
-
-    if (self.medianFilter){
-        CIFilter* median = [CIFilter filterWithName:@"CIMedianFilter"];
-        [median setDefaults];
-        [median setValue:image forKey:@"inputImage"];
-        image = [median valueForKey:@"outputImage"];
-    }
-    
-    if (self.contrastStretch){
-        CIFilter* stretch = [CIFilter filterWithName:@"CASContrastStretchFilter"];
-        [stretch setDefaults];
-        [stretch setValue:image forKey:@"inputImage"];
-        [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
-        [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
-        image = [stretch valueForKey:@"outputImage"];
-    }
-
-    const CGRect clip = CGContextGetClipBoundingBox(context);
-    [[CIContext contextWithCGContext:context options:nil] drawImage:image inRect:clip fromRect:clip];
 }
 
 - (CAShapeLayer*)createReticleLayer
@@ -278,6 +331,12 @@
 
 @implementation CASImageView (CASImageProcessing)
 
+- (void)resetFilteredImage
+{
+    _filteredCIImage = nil; // crude, we should be able to update filters in the chain
+    [self.layer setNeedsDisplay];
+}
+
 - (BOOL)invert
 {
     return _invert;
@@ -287,7 +346,7 @@
 {
     if (_invert != invert){
         _invert = invert;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
     }
 }
 
@@ -300,7 +359,7 @@
 {
     if (medianFilter != _medianFilter){
         _medianFilter = medianFilter;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
     }
 }
 
@@ -313,7 +372,7 @@
 {
     if (contrastStretch != _contrastStretch){
         _contrastStretch = contrastStretch;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
     }
 }
 
@@ -330,7 +389,7 @@
     stretchMin = MIN(stretchMin, _stretchMax);
     if (_stretchMin != stretchMin){
         _stretchMin = stretchMin;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
     }
 }
 
@@ -347,7 +406,50 @@
     stretchMax = MAX(stretchMax, _stretchMin);
     if (_stretchMax != stretchMax){
         _stretchMax = stretchMax;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
+    }
+}
+
+- (BOOL)debayer
+{
+    return _debayer;
+}
+
+- (void)setDebayer:(BOOL)debayer
+{
+    if (debayer != _debayer){
+        _debayer = debayer;
+        [self resetFilteredImage];
+    }
+}
+
+- (CGVector)debayerOffset
+{
+    return _debayerOffset;
+}
+
+- (void)setDebayerOffset:(CGVector)debayerOffset
+{
+    debayerOffset.dx = round(fmin(fmax(debayerOffset.dx, 0), 1));
+    debayerOffset.dy = round(fmin(fmax(debayerOffset.dy, 0), 1));
+    if (debayerOffset.dx != _debayerOffset.dx || debayerOffset.dy != _debayerOffset.dy){
+        _debayerOffset = debayerOffset;
+        if (self.debayer){
+            [self resetFilteredImage];
+        }
+    }
+}
+
+- (CGRect)extent
+{
+    return _extent;
+}
+
+- (void)setExtent:(CGRect)extent
+{
+    if (!CGRectEqualToRect(_extent, extent)){
+        _extent = extent;
+        [self resetFilteredImage];
     }
 }
 

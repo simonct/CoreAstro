@@ -8,6 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
+		F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
+		F48F464217C40971008FCEBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
+		F48F464317C40971008FCEBE /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
+		F48F464417C40971008FCEBE /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */; };
+		F48F466617C409E6008FCEBE /* Debayer-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F48F465917C409E6008FCEBE /* Debayer-Prefix.pch */; };
+		F48F466717C409E6008FCEBE /* CASDebayerFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = F48F465A17C409E6008FCEBE /* CASDebayerFilter.h */; };
+		F48F466817C409E6008FCEBE /* CASDebayerFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F465B17C409E6008FCEBE /* CASDebayerFilter.m */; };
+		F48F466917C409E6008FCEBE /* CADebayerFilterKernel.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = F48F465C17C409E6008FCEBE /* CADebayerFilterKernel.cikernel */; };
+		F48F466A17C409E6008FCEBE /* CASDebayerPlugInLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = F48F465D17C409E6008FCEBE /* CASDebayerPlugInLoader.h */; };
+		F48F466B17C409E6008FCEBE /* CASDebayerPlugInLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F465E17C409E6008FCEBE /* CASDebayerPlugInLoader.m */; };
+		F48F466C17C409E6008FCEBE /* Description.plist in Resources */ = {isa = PBXBuildFile; fileRef = F48F465F17C409E6008FCEBE /* Description.plist */; };
+		F48F466D17C409E6008FCEBE /* Description.strings in Resources */ = {isa = PBXBuildFile; fileRef = F48F466017C409E6008FCEBE /* Description.strings */; };
+		F48F466E17C409E6008FCEBE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F48F466217C409E6008FCEBE /* InfoPlist.strings */; };
+		F48F466F17C409E6008FCEBE /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F48F466417C409E6008FCEBE /* index.html */; };
+		F48F467317C40B37008FCEBE /* Debayer-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F48F467217C40B37008FCEBE /* Debayer-Info.plist */; };
+		F48F467717C40C6E008FCEBE /* Debayer.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F48F465017C40971008FCEBE /* Debayer.plugin */; };
 		F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A25870179BC0100013D220 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
@@ -86,6 +102,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F48F467017C40AB5008FCEBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F48F463C17C40971008FCEBE;
+			remoteInfo = Debayer;
+		};
 		F4A2582F179B31740013D220 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
@@ -185,6 +208,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				F48F467717C40C6E008FCEBE /* Debayer.plugin in CopyFiles */,
 				F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,6 +218,18 @@
 /* Begin PBXFileReference section */
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
+		F48F465017C40971008FCEBE /* Debayer.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Debayer.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		F48F465917C409E6008FCEBE /* Debayer-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Debayer-Prefix.pch"; sourceTree = "<group>"; };
+		F48F465A17C409E6008FCEBE /* CASDebayerFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDebayerFilter.h; sourceTree = "<group>"; };
+		F48F465B17C409E6008FCEBE /* CASDebayerFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDebayerFilter.m; sourceTree = "<group>"; };
+		F48F465C17C409E6008FCEBE /* CADebayerFilterKernel.cikernel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CADebayerFilterKernel.cikernel; sourceTree = "<group>"; };
+		F48F465D17C409E6008FCEBE /* CASDebayerPlugInLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDebayerPlugInLoader.h; sourceTree = "<group>"; };
+		F48F465E17C409E6008FCEBE /* CASDebayerPlugInLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDebayerPlugInLoader.m; sourceTree = "<group>"; };
+		F48F465F17C409E6008FCEBE /* Description.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Description.plist; sourceTree = "<group>"; };
+		F48F466117C409E6008FCEBE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Description.strings; sourceTree = "<group>"; };
+		F48F466317C409E6008FCEBE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F48F466417C409E6008FCEBE /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		F48F467217C40B37008FCEBE /* Debayer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debayer-Info.plist"; sourceTree = "<group>"; };
 		F4A25868179BC0100013D220 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
 		F4A25869179BC0100013D220 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
 		F4A2586A179BC0100013D220 /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
@@ -312,6 +348,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F48F464017C40971008FCEBE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */,
+				F48F464217C40971008FCEBE /* Foundation.framework in Frameworks */,
+				F48F464317C40971008FCEBE /* QuartzCore.framework in Frameworks */,
+				F48F464417C40971008FCEBE /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4F9B1F917B15A9A0063DD0D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -338,6 +385,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F48F465717C409E6008FCEBE /* Debayer */ = {
+			isa = PBXGroup;
+			children = (
+				F48F465917C409E6008FCEBE /* Debayer-Prefix.pch */,
+				F48F465A17C409E6008FCEBE /* CASDebayerFilter.h */,
+				F48F465B17C409E6008FCEBE /* CASDebayerFilter.m */,
+				F48F465C17C409E6008FCEBE /* CADebayerFilterKernel.cikernel */,
+				F48F465D17C409E6008FCEBE /* CASDebayerPlugInLoader.h */,
+				F48F465E17C409E6008FCEBE /* CASDebayerPlugInLoader.m */,
+				F48F465F17C409E6008FCEBE /* Description.plist */,
+				F48F466017C409E6008FCEBE /* Description.strings */,
+				F48F466217C409E6008FCEBE /* InfoPlist.strings */,
+				F48F466417C409E6008FCEBE /* index.html */,
+				F48F467217C40B37008FCEBE /* Debayer-Info.plist */,
+			);
+			path = Debayer;
+			sourceTree = "<group>";
+		};
 		F4A25861179BBFE30013D220 /* CoreAstro */ = {
 			isa = PBXGroup;
 			children = (
@@ -510,6 +575,7 @@
 				F4FD2339179B31420049F5B5 /* Dependencies */,
 				F4FD2308179B30D60049F5B5 /* SX IO */,
 				F4F9B20617B15A9A0063DD0D /* ContrastStretch */,
+				F48F465717C409E6008FCEBE /* Debayer */,
 				F4FD2301179B30D60049F5B5 /* Frameworks */,
 				F4FD2300179B30D60049F5B5 /* Products */,
 			);
@@ -520,6 +586,7 @@
 			children = (
 				F4FD22FF179B30D60049F5B5 /* SX IO.app */,
 				F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */,
+				F48F465017C40971008FCEBE /* Debayer.plugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -622,6 +689,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		F48F464517C40971008FCEBE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F48F466617C409E6008FCEBE /* Debayer-Prefix.pch in Headers */,
+				F48F466717C409E6008FCEBE /* CASDebayerFilter.h in Headers */,
+				F48F466A17C409E6008FCEBE /* CASDebayerPlugInLoader.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4F9B1FA17B15A9A0063DD0D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -632,6 +709,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		F48F463C17C40971008FCEBE /* Debayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F48F464D17C40971008FCEBE /* Build configuration list for PBXNativeTarget "Debayer" */;
+			buildPhases = (
+				F48F463D17C40971008FCEBE /* Sources */,
+				F48F464017C40971008FCEBE /* Frameworks */,
+				F48F464517C40971008FCEBE /* Headers */,
+				F48F464617C40971008FCEBE /* Resources */,
+				F48F464C17C40971008FCEBE /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Debayer;
+			productName = ContrastStretch;
+			productReference = F48F465017C40971008FCEBE /* Debayer.plugin */;
+			productType = "com.apple.product-type.bundle";
+		};
 		F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F4F9B22317B15A9A0063DD0D /* Build configuration list for PBXNativeTarget "ContrastStretch" */;
@@ -666,6 +762,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F48F467117C40AB5008FCEBE /* PBXTargetDependency */,
 				F4F9B22517B15ABE0063DD0D /* PBXTargetDependency */,
 				F4D3CDF5179BC52800B42D04 /* PBXTargetDependency */,
 				F4A25830179B31740013D220 /* PBXTargetDependency */,
@@ -704,6 +801,7 @@
 			projectRoot = "";
 			targets = (
 				F4FD22FE179B30D60049F5B5 /* SX IO */,
+				F48F463C17C40971008FCEBE /* Debayer */,
 				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
 			);
 		};
@@ -762,6 +860,19 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F48F464617C40971008FCEBE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F48F466F17C409E6008FCEBE /* index.html in Resources */,
+				F48F467317C40B37008FCEBE /* Debayer-Info.plist in Resources */,
+				F48F466D17C409E6008FCEBE /* Description.strings in Resources */,
+				F48F466917C409E6008FCEBE /* CADebayerFilterKernel.cikernel in Resources */,
+				F48F466C17C409E6008FCEBE /* Description.plist in Resources */,
+				F48F466E17C409E6008FCEBE /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4F9B1FB17B15A9A0063DD0D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -808,6 +919,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXRezBuildPhase section */
+		F48F464C17C40971008FCEBE /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4F9B1FC17B15A9A0063DD0D /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -834,6 +952,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F48F463D17C40971008FCEBE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F48F466B17C409E6008FCEBE /* CASDebayerPlugInLoader.m in Sources */,
+				F48F466817C409E6008FCEBE /* CASDebayerFilter.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4F9B1F817B15A9A0063DD0D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -886,6 +1013,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F48F467117C40AB5008FCEBE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F48F463C17C40971008FCEBE /* Debayer */;
+			targetProxy = F48F467017C40AB5008FCEBE /* PBXContainerItemProxy */;
+		};
 		F4A25830179B31740013D220 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "CoreAstro Framework";
@@ -904,6 +1036,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		F48F466017C409E6008FCEBE /* Description.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F48F466117C409E6008FCEBE /* en */,
+			);
+			name = Description.strings;
+			sourceTree = "<group>";
+		};
+		F48F466217C409E6008FCEBE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F48F466317C409E6008FCEBE /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		F4F9B20917B15A9A0063DD0D /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -947,6 +1095,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F48F464E17C40971008FCEBE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Debayer/Debayer-Prefix.pch";
+				INFOPLIST_FILE = "Debayer/Debayer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_NAME = Debayer;
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Debug;
+		};
+		F48F464F17C40971008FCEBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Debayer/Debayer-Prefix.pch";
+				INFOPLIST_FILE = "Debayer/Debayer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_NAME = Debayer;
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Release;
+		};
 		F4F9B21C17B15A9A0063DD0D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1039,7 +1215,7 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -1055,7 +1231,7 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -1069,6 +1245,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F48F464D17C40971008FCEBE /* Build configuration list for PBXNativeTarget "Debayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F48F464E17C40971008FCEBE /* Debug */,
+				F48F464F17C40971008FCEBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F4F9B22317B15A9A0063DD0D /* Build configuration list for PBXNativeTarget "ContrastStretch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

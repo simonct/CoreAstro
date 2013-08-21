@@ -16,8 +16,11 @@
 @end
 
 @interface CASImageView (CASImageAdjustment)
-@property BOOL invert;
-@property BOOL medianFilter;
-@property BOOL contrastStretch;
-@property float stretchMin, stretchMax; // contrast stretch 0->1
+@property (nonatomic) BOOL invert;
+@property (nonatomic) BOOL medianFilter;
+@property (nonatomic) BOOL contrastStretch;
+@property (nonatomic) float stretchMin, stretchMax; // contrast stretch 0->1
+@property (nonatomic) BOOL debayer;
+@property (nonatomic) CGVector debayerOffset;
+@property (nonatomic) CGRect extent;
 @end

@@ -1,0 +1,104 @@
+vec3 debayerGreen1 (vec3 color, sampler image);
+vec3 debayerGreen2 (vec3 color, sampler image);
+vec3 debayerRed    (vec3 color, sampler image);
+vec3 debayerBlue   (vec3 color, sampler image);
+
+kernel vec4 debayer (sampler image, vec2 offset)
+{
+   vec4 color = sample(image, samplerCoord(image));
+   vec2 point = destCoord() + offset;
+   
+   color.rgb = mod(point.y, 2.0) > 1.0 ?
+      (mod(point.x, 2.0) > 1.0 ?
+         debayerRed(color.rgb, image) :
+         debayerGreen1(color.rgb, image)) :
+      (mod(point.x, 2.0) > 1.0 ?
+         debayerGreen2(color.rgb, image) :
+         debayerBlue(color.rgb, image));
+   
+   return color;
+}
+
+vec3 debayerGreen1 (vec3 color, sampler image)
+{
+   vec4 red1 = sample(image, samplerCoord(image) + vec2(-1.0, 0.0));
+   vec4 red2 = sample(image, samplerCoord(image) + vec2(+1.0, 0.0));
+   color.r = (red1.r + red2.r) / 2.0;
+   
+   vec4 blue1 = sample(image, samplerCoord(image) + vec2(0.0, -1.0));
+   vec4 blue2 = sample(image, samplerCoord(image) + vec2(0.0, +1.0));
+   color.b = (blue1.b + blue2.b) / 2.0;
+   
+   return color;
+}
+
+vec3 debayerGreen2 (vec3 color, sampler image)
+{
+   float red1 = sample(image, samplerCoord(image) + vec2(0.0, -1.0)).r;
+   float red2 = sample(image, samplerCoord(image) + vec2(0.0, +1.0)).r;
+   color.r = (red1 + red2) / 2.0;
+   
+   float blue1 = sample(image, samplerCoord(image) + vec2(-1.0, 0.0)).b;
+   float blue2 = sample(image, samplerCoord(image) + vec2(+1.0, 0.0)).b;
+   color.b = (blue1 + blue2) / 2.0;
+   
+   return color;
+}
+
+vec3 debayerRed (vec3 color, sampler image)
+{
+   float red1 = sample(image, samplerCoord(image) + vec2( 0.0, -2.0)).r;
+   float red2 = sample(image, samplerCoord(image) + vec2(+2.0,  0.0)).r;
+   float red3 = sample(image, samplerCoord(image) + vec2( 0.0, +2.0)).r;
+   float red4 = sample(image, samplerCoord(image) + vec2(-2.0,  0.0)).r;
+   
+   float redY = abs(red1 - red3);
+   float redX = abs(red2 - red4);
+   
+   float green1 = sample(image, samplerCoord(image) + vec2( 0.0, -1.0)).g;
+   float green2 = sample(image, samplerCoord(image) + vec2(+1.0,  0.0)).g;
+   float green3 = sample(image, samplerCoord(image) + vec2( 0.0, +1.0)).g;
+   float green4 = sample(image, samplerCoord(image) + vec2(-1.0,  0.0)).g;
+   
+   color.g = redX == redY ?
+      (green1 + green2 + green3 + green4) / 4.0 :
+      (redY < redX ? (green1 + green3) / 2.0 : (green2 + green4) / 2.0);
+   
+   float blue1 = sample(image, samplerCoord(image) + vec2(-1.0, -1.0)).b;
+   float blue2 = sample(image, samplerCoord(image) + vec2(+1.0, -1.0)).b;
+   float blue3 = sample(image, samplerCoord(image) + vec2(+1.0, +1.0)).b;
+   float blue4 = sample(image, samplerCoord(image) + vec2(-1.0, +1.0)).b;
+   
+   color.b = (blue1 + blue2 + blue3 + blue4) / 4.0;
+   
+   return color;
+}
+
+vec3 debayerBlue (vec3 color, sampler image)
+{
+   float blue1 = sample(image, samplerCoord(image) + vec2( 0.0, -2.0)).b;
+   float blue2 = sample(image, samplerCoord(image) + vec2(+2.0,  0.0)).b;
+   float blue3 = sample(image, samplerCoord(image) + vec2( 0.0, +2.0)).b;
+   float blue4 = sample(image, samplerCoord(image) + vec2(-2.0,  0.0)).b;
+   
+   float blueY = abs(blue1 - blue3);
+   float blueX = abs(blue2 - blue4);
+   
+   float green1 = sample(image, samplerCoord(image) + vec2( 0.0, -1.0)).g;
+   float green2 = sample(image, samplerCoord(image) + vec2(+1.0,  0.0)).g;
+   float green3 = sample(image, samplerCoord(image) + vec2( 0.0, +1.0)).g;
+   float green4 = sample(image, samplerCoord(image) + vec2(-1.0,  0.0)).g;
+   
+   color.g = blueX == blueY ?
+      (green1 + green2 + green3 + green4) / 4.0 :
+      (blueY < blueX ? (green1 + green3) / 2.0 : (green2 + green4) / 2.0);
+   
+   float red1 = sample(image, samplerCoord(image) + vec2(-1.0, -1.0)).r;
+   float red2 = sample(image, samplerCoord(image) + vec2(+1.0, -1.0)).r;
+   float red3 = sample(image, samplerCoord(image) + vec2(+1.0, +1.0)).r;
+   float red4 = sample(image, samplerCoord(image) + vec2(-1.0, +1.0)).r;
+   
+   color.r = (red1 + red2 + red3 + red4) / 4.0;
+   
+   return color;
+}
