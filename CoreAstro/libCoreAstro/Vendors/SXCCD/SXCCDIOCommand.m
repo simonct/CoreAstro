@@ -420,6 +420,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize params = _params;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: params=%@>",NSStringFromClass([self class]),self.params];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxGetCameraParamsWriteData(SXUSB_MAIN_CAMERA_INDEX,buffer);
@@ -466,6 +470,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOFlushCommand
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: noWipe=%d>",NSStringFromClass([self class]),self.noWipe];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     USHORT flags = 0;
@@ -485,11 +493,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize ms, params, readPixels, pixels = _pixels;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: readPixels=%d, latchPixels=%d, ms=%ld, params=%@>",
+            NSStringFromClass([self class]),self.readPixels,self.latchPixels,(long)self.ms,NSStringFromCASExposeParams(self.params)];
+}
+
 - (NSData*)toDataRepresentation {
     
     if (self.latchPixels){
-        
-        NSLog(@"SXCCDIOExposeCommand latching");
         
         uint8_t buffer[18];
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
@@ -497,8 +508,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     else {
         
-        NSLog(@"SXCCDIOExposeCommand exposing");
-
         uint8_t buffer[22];
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
@@ -511,10 +520,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // only currently handling 16-bit bit might have to round so that 14 => 2
 }
-
-//- (BOOL) allowsUnderrun {
-//    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
-//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = [self postProcessPixels:data];
@@ -750,13 +755,13 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize params, pixels = _pixels;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: params=%@>",NSStringFromClass([self class]),NSStringFromCASExposeParams(self.params)];
+}
+
 - (NSInteger) readSize {
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // round so that 14 => 2
 }
-
-//- (BOOL) allowsUnderrun {
-//    return YES;
-//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = data;
@@ -826,6 +831,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize centigrade, on;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: on=%d, centigrade=%f>",NSStringFromClass([self class]),self.on,self.centigrade];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxCoolerWriteData(buffer,self.centigrade,self.on);
@@ -855,6 +864,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOGuideCommand
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: direction=%d>",NSStringFromClass([self class]),self.direction];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxSetSTAR2000WriteData(self.direction,buffer);
@@ -864,6 +877,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 @end
 
 @implementation SXCCDIOShutterCommand
+
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: open=%d>",NSStringFromClass([self class]),self.open];
+}
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
