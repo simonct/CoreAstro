@@ -558,15 +558,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originY = self.params.origin.y / 2;
 
     if (self.latchPixels){
-        
-        NSLog(@"SXCCDIOExposeCommandM25C latching");
-
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
     }
     else {
-        
-        NSLog(@"SXCCDIOExposeCommandM25C exposing");
-
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     }
     
