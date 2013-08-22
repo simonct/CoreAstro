@@ -36,6 +36,7 @@
 @property (nonatomic,assign) BOOL shutterOpen;
 @property (nonatomic,strong) SXCCDProperties* sensor;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
+@property (nonatomic,strong) NSDate* exposureCompletionDate;
 @property (nonatomic,strong) NSDate* lastCompletionDate;
 @property (nonatomic,copy) void (^exposureCompletion)(NSError*,CASCCDExposure*image);
 @property (nonatomic,strong) SXCCDIOFlushCommand* flushCommand;
@@ -228,9 +229,19 @@
         return;
     }
     
+    // this is a bit rubbish but I think one of these slips in between the flush and read commands at the end of
+    // an externally timed exposure and really messes things up.
+    if (self.exposureCompletionDate){
+        if ([self.exposureCompletionDate timeIntervalSinceReferenceDate] - [NSDate timeIntervalSinceReferenceDate] < 10){
+            NSLog(@"Ignoring fetch temp command as we're close to exposure completion");
+            [self performSelector:_cmd withObject:nil afterDelay:self.temperatureFrequency inModes:@[NSRunLoopCommonModes]];
+            return;
+        }
+    }
+    
     SXCCDIOCoolerCommand* cooler = [[SXCCDIOCoolerCommand alloc] init];
     
-    cooler.on = self.temperature > self.targetTemperature;
+    cooler.on = self.temperature >= self.targetTemperature - 1;
     cooler.centigrade = self.targetTemperature;
     
     __weak SXCCDDevice* weakDevice = self;
@@ -396,6 +407,9 @@
         // record the approximate end time of the last exposure
         self.lastCompletionDate = [NSDate date];
         
+        // allow fetch temperature commands to run again
+        self.exposureCompletionDate = nil;
+        
         // close the shutter
         if (self.shutterOpen){
             [self openShutter:NO block:nil];
@@ -417,6 +431,10 @@
     
     // helper block to issue the expose/latch and read pixels commands
     void (^exposePixelsAndCompleteExposure)(NSDate* when) = ^(NSDate* when){
+        
+        // record the completion time - we use this in -fetchTemperature to prevent any
+        // temp commands with interfering with the flush-read sequence (not 100%, need something better)
+        self.exposureCompletionDate = when;
         
         void (^completeExposure)() = ^(){
             
@@ -500,13 +518,13 @@
         }
         else {
             
-            // if we're externally timed schedule a flush command for shortly before the exposure completes to
-            // clear the vertical registers before latching and reading the pixels
+            // if we're externally timed schedule a flush command for shortly before the exposure
+            // completes to clear the vertical registers before reading the pixels (currently at T-2)
             self.flushCommand = [[SXCCDIOFlushCommand alloc] init];
             
             self.flushCommand.noWipe = YES; // clear the vertical registers in preparation for reading the pixels
             
-            [self.transport submit:self.flushCommand when:[NSDate dateWithTimeInterval:-5 sinceDate:when] block:^(NSError* error){
+            [self.transport submit:self.flushCommand when:[NSDate dateWithTimeInterval:-2 sinceDate:when] block:^(NSError* error){
                 
                 if (error) {
                     exposureCompleted(error,nil);
