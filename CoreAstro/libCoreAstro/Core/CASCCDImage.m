@@ -162,9 +162,12 @@
                     else {
                         result = (__bridge NSData *)(output);
                     }
-                    CGImageRelease(image);
                     CFRelease(dest);
                 }
+                if (output){
+                    CFRelease(output);
+                }
+                CGImageRelease(image);
             }
             CGContextRelease(rgb);
         }
