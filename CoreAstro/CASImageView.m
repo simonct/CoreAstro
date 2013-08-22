@@ -36,6 +36,7 @@
     float _stretchMin, _stretchMax;
     CGVector _debayerOffset;
     CIImage* _filteredCIImage;
+    CIContext* _drawingContext;
     NSMutableDictionary* _filterCache;
     CGRect _extent;
 }
@@ -260,7 +261,11 @@
         
         CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)url,nil);
         if (source){
-            self.CIImage = [CIImage imageWithCGImage:CGImageSourceCreateImageAtIndex(source,0,nil) options:@{kCIImageColorSpace:[NSNull null]}];
+            CGImageRef cgImage = CGImageSourceCreateImageAtIndex(source,0,nil);
+            if (cgImage){
+                self.CIImage = [CIImage imageWithCGImage:cgImage options:@{kCIImageColorSpace:[NSNull null]}];
+                CFRelease(cgImage);
+            }
             CFRelease(source);
         }
         
@@ -270,12 +275,17 @@
 
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context
 {
-    if (!_filteredCIImage){
-        _filteredCIImage = [self filterImage:self.CIImage];
+    @synchronized(self){
+        if (!_filteredCIImage){
+            _filteredCIImage = [self filterImage:self.CIImage];
+        }
+        if (!_drawingContext){
+            _drawingContext = [CIContext contextWithCGContext:context options:nil]; // colour management options ?
+        }
     }
-    if (_filteredCIImage){
+    if (_filteredCIImage && _drawingContext){
         const CGRect clip = CGContextGetClipBoundingBox(context);
-        [[CIContext contextWithCGContext:context options:nil] drawImage:_filteredCIImage inRect:clip fromRect:clip];
+        [_drawingContext drawImage:_filteredCIImage inRect:clip fromRect:clip];
     }
 }
 
@@ -292,10 +302,15 @@
 //    CGPathAddRect(path, nil, CGRectMake(0,0,self.CIImage.extent.size.width,self.CIImage.extent.size.height));
     CGPathAddEllipseInRect(path, nil, CGRectMake(self.CIImage.extent.size.width/2.0 - 50,self.CIImage.extent.size.height/2.0 - 50,100,100));
     
+    CGColorRef red = CGColorCreateGenericRGB(1,0,0,1);
+    
     reticleLayer.path = path;
-    reticleLayer.strokeColor = CGColorCreateGenericRGB(1,0,0,1);
+    reticleLayer.strokeColor = red;
     reticleLayer.fillColor = CGColorGetConstantColor(kCGColorClear);
     reticleLayer.borderWidth = width;
+    
+    CFRelease(red);
+    CFRelease(path);
     
     return reticleLayer;
 }
