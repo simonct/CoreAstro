@@ -34,9 +34,8 @@
     CGImageRef _cgImage;
     BOOL _invert, _medianFilter, _contrastStretch, _debayer;
     float _stretchMin, _stretchMax;
-    CGVector _debayerOffset;
+    CASVector _debayerOffset;
     CIImage* _filteredCIImage;
-    CIContext* _drawingContext;
     NSMutableDictionary* _filterCache;
     CGRect _extent;
 }
@@ -153,7 +152,7 @@
         if (debayer){
             [debayer setDefaults];
             [debayer setValue:image forKey:@"inputImage"];
-            [debayer setValue:[CIVector vectorWithX:self.debayerOffset.dx Y:self.debayerOffset.dy] forKey:@"inputOffset"];
+            [debayer setValue:[CIVector vectorWithX:self.debayerOffset.x Y:self.debayerOffset.y] forKey:@"inputOffset"];
             image = [debayer valueForKey:@"outputImage"];
         }
     }
@@ -279,13 +278,10 @@
         if (!_filteredCIImage){
             _filteredCIImage = [self filterImage:self.CIImage];
         }
-        if (!_drawingContext){
-            _drawingContext = [CIContext contextWithCGContext:context options:nil]; // colour management options ?
-        }
     }
-    if (_filteredCIImage && _drawingContext){
+    if (_filteredCIImage){
         const CGRect clip = CGContextGetClipBoundingBox(context);
-        [_drawingContext drawImage:_filteredCIImage inRect:clip fromRect:clip];
+        [[CIContext contextWithCGContext:context options:nil] drawImage:_filteredCIImage inRect:clip fromRect:clip];
     }
 }
 
@@ -438,16 +434,16 @@
     }
 }
 
-- (CGVector)debayerOffset
+- (CASVector)debayerOffset
 {
     return _debayerOffset;
 }
 
-- (void)setDebayerOffset:(CGVector)debayerOffset
+- (void)setDebayerOffset:(CASVector)debayerOffset
 {
-    debayerOffset.dx = round(fmin(fmax(debayerOffset.dx, 0), 1));
-    debayerOffset.dy = round(fmin(fmax(debayerOffset.dy, 0), 1));
-    if (debayerOffset.dx != _debayerOffset.dx || debayerOffset.dy != _debayerOffset.dy){
+    debayerOffset.x = round(fmin(fmax(debayerOffset.x, 0), 1));
+    debayerOffset.y = round(fmin(fmax(debayerOffset.y, 0), 1));
+    if (debayerOffset.x != _debayerOffset.x || debayerOffset.y != _debayerOffset.y){
         _debayerOffset = debayerOffset;
         if (self.debayer){
             [self resetFilteredImage];
