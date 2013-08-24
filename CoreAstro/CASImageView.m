@@ -211,7 +211,9 @@
 {
     if (CIImage != _CIImage){
         _CIImage = CIImage;
-        _filteredCIImage = nil;
+        @synchronized(self){
+            _filteredCIImage = nil;
+        }
         if (resetDisplay){
             [self setupImageLayer];
         }
@@ -344,7 +346,9 @@
 
 - (void)resetFilteredImage
 {
-    _filteredCIImage = nil; // crude, we should be able to update filters in the chain
+    @synchronized(self){
+        _filteredCIImage = nil; // crude, we should be able to update filters in the chain
+    }
     [self.layer setNeedsDisplay];
 }
 
