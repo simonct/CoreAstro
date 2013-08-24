@@ -15,12 +15,16 @@
 - (void)setCGImage:(CGImageRef)CGImage resetDisplay:(BOOL)resetDisplay;
 @end
 
+typedef struct CASVector {
+    CGFloat x, y;
+} CASVector;
+
 @interface CASImageView (CASImageAdjustment)
 @property (nonatomic) BOOL invert;
 @property (nonatomic) BOOL medianFilter;
 @property (nonatomic) BOOL contrastStretch;
 @property (nonatomic) float stretchMin, stretchMax; // contrast stretch 0->1
 @property (nonatomic) BOOL debayer;
-@property (nonatomic) CGVector debayerOffset;
+@property (nonatomic) CASVector debayerOffset;
 @property (nonatomic) CGRect extent;
 @end
