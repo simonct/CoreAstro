@@ -345,7 +345,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     void (^setStarInfoExposure)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
         self.starInfoView.hidden = (exposure == nil);
         if (!self.starInfoView.isHidden){
-            [self.starInfoView setExposure:exposure starPosition:*p];
+            if (p){
+                [self.starInfoView setExposure:exposure starPosition:*p];
+            }
         }
         else {
             self.starInfoView.showSpinner = NO;
@@ -487,6 +489,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         else {
             
+            // todo; this is madly inefficient :)
+            
+            CGImageRef CGImage2 = NULL; // this is just to silence analyser warnings as it doesn't see the reassignment to CGImage below
             CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor todo; image.CIImage
             if (CGImage){
                 
@@ -515,7 +520,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                             CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
                             CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
                         }
-                        CGImage = CGBitmapContextCreateImage(bitmap);
+                        CGImage2 = CGImage = CGBitmapContextCreateImage(bitmap);
                         CGContextRelease(bitmap);
                     }
                 }
@@ -524,13 +529,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             // set the image
             if (CGImage){
                 [self setImage:CGImage resetDisplay:resetDisplay];
-                if (CGImage != image.CGImage){
-                    CFRelease(CGImage);
-                }
             }
             else {
                 clearImage();
             }
+            
+            CGImageRelease(CGImage2);
         }
     }
 }
