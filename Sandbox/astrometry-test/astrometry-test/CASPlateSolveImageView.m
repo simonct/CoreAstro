@@ -94,6 +94,7 @@
 {
     [super setUrl:url];
     self.annotations = nil;
+    [self zoomImageToFit:nil];
 }
 
 - (void)setAnnotations:(NSArray *)annotations
