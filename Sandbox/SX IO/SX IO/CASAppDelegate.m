@@ -163,7 +163,6 @@ static void* kvoContext;
                     }
                     
                     if (windowController){
-                        [windowController.window center];
                         [windowController.window makeKeyAndOrderFront:nil];
                         [_cameraWindows addObject:windowController];
                     }
