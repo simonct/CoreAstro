@@ -202,12 +202,14 @@
     
     if (self.contrastStretch){
         CIFilter* stretch = [CIFilter filterWithName:@"CASContrastStretchFilter"];
-        [stretch setDefaults];
-        [stretch setValue:image forKey:@"inputImage"];
-        [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
-        [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
-        [stretch setValue:@(self.stretchGamma) forKey:@"gamma"];
-        image = [stretch valueForKey:@"outputImage"];
+        if (stretch){
+            [stretch setDefaults];
+            [stretch setValue:image forKey:@"inputImage"];
+            [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
+            [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
+            [stretch setValue:@(self.stretchGamma) forKey:@"gamma"];
+            image = [stretch valueForKey:@"outputImage"];
+        }
     }
 
     const CGRect clip = CGContextGetClipBoundingBox(context);
