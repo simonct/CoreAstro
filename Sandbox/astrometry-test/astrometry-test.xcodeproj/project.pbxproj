@@ -58,39 +58,273 @@
 		F416C73016D6D8FE00C4C01D /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASZoomableView.m; path = ../../../CoreAstro/CASZoomableView.m; sourceTree = "<group>"; };
 		F437F257179A99A600D402F3 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSocketClient.h; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.h; sourceTree = "<group>"; };
 		F437F258179A99A600D402F3 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSocketClient.m; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.m; sourceTree = "<group>"; };
-		F43E210F168A52DA00C942CF /* atktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = atktopbm; sourceTree = "<group>"; };
-		F43E2110168A52DA00C942CF /* brushtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = brushtopbm; sourceTree = "<group>"; };
-		F43E2111168A52DA00C942CF /* cistopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cistopbm; sourceTree = "<group>"; };
-		F43E2112168A52DA00C942CF /* cmuwmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cmuwmtopbm; sourceTree = "<group>"; };
-		F43E2113168A52DA00C942CF /* ddbugtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ddbugtopbm; sourceTree = "<group>"; };
-		F43E2114168A52DA00C942CF /* escp2topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = escp2topbm; sourceTree = "<group>"; };
-		F43E2115168A52DA00C942CF /* g3topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = g3topbm; sourceTree = "<group>"; };
-		F43E2116168A52DA00C942CF /* gemtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gemtopbm; sourceTree = "<group>"; };
-		F43E2117168A52DA00C942CF /* icontopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = icontopbm; sourceTree = "<group>"; };
-		F43E2118168A52DA00C942CF /* jbgtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = jbgtopbm; sourceTree = "<group>"; };
-		F43E2119168A52DA00C942CF /* macptopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = macptopbm; sourceTree = "<group>"; };
-		F43E211A168A52DA00C942CF /* mdatopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mdatopbm; sourceTree = "<group>"; };
-		F43E211B168A52DA00C942CF /* mgrtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mgrtopbm; sourceTree = "<group>"; };
-		F43E211C168A52DA00C942CF /* mrftopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mrftopbm; sourceTree = "<group>"; };
-		F43E211D168A52DA00C942CF /* pgmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pgmtopbm; sourceTree = "<group>"; };
-		F43E211E168A52DA00C942CF /* pi3topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pi3topbm; sourceTree = "<group>"; };
-		F43E211F168A52DA00C942CF /* pktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pktopbm; sourceTree = "<group>"; };
-		F43E2120168A52DA00C942CF /* thinkjettopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = thinkjettopbm; sourceTree = "<group>"; };
-		F43E2121168A52DA00C942CF /* wbmptopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = wbmptopbm; sourceTree = "<group>"; };
-		F43E2122168A52DA00C942CF /* xbmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xbmtopbm; sourceTree = "<group>"; };
-		F43E2123168A52DA00C942CF /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
-		F43E213A168A596B00C942CF /* libcairo-gobject.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-gobject.2.dylib"; sourceTree = "<group>"; };
-		F43E213B168A596B00C942CF /* libcairo-gobject.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libcairo-gobject.a"; sourceTree = "<group>"; };
-		F43E213C168A596B00C942CF /* libcairo-gobject.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-gobject.dylib"; sourceTree = "<group>"; };
-		F43E213D168A596B00C942CF /* libcairo-gobject.la */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "libcairo-gobject.la"; sourceTree = "<group>"; };
-		F43E213E168A596B00C942CF /* libcairo-script-interpreter.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-script-interpreter.2.dylib"; sourceTree = "<group>"; };
-		F43E213F168A596B00C942CF /* libcairo-script-interpreter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libcairo-script-interpreter.a"; sourceTree = "<group>"; };
-		F43E2140168A596B00C942CF /* libcairo-script-interpreter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-script-interpreter.dylib"; sourceTree = "<group>"; };
-		F43E2141168A596B00C942CF /* libcairo-script-interpreter.la */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "libcairo-script-interpreter.la"; sourceTree = "<group>"; };
-		F43E2142168A596B00C942CF /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.2.dylib; sourceTree = "<group>"; };
-		F43E2143168A596B00C942CF /* libcairo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcairo.a; sourceTree = "<group>"; };
-		F43E2144168A596B00C942CF /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.dylib; sourceTree = "<group>"; };
-		F43E2145168A596B00C942CF /* libcairo.la */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = libcairo.la; sourceTree = "<group>"; };
+		F470AB1A17C8CC1E007277F0 /* anytopnm */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = anytopnm; sourceTree = "<group>"; };
+		F470AB1B17C8CC1E007277F0 /* asciitopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = asciitopgm; sourceTree = "<group>"; };
+		F470AB1C17C8CC1E007277F0 /* atktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = atktopbm; sourceTree = "<group>"; };
+		F470AB1D17C8CC1E007277F0 /* bioradtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = bioradtopgm; sourceTree = "<group>"; };
+		F470AB1E17C8CC1E007277F0 /* bmptopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = bmptopnm; sourceTree = "<group>"; };
+		F470AB1F17C8CC1E007277F0 /* brushtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = brushtopbm; sourceTree = "<group>"; };
+		F470AB2017C8CC1E007277F0 /* cistopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cistopbm; sourceTree = "<group>"; };
+		F470AB2117C8CC1E007277F0 /* cmuwmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cmuwmtopbm; sourceTree = "<group>"; };
+		F470AB2217C8CC1E007277F0 /* ddbugtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ddbugtopbm; sourceTree = "<group>"; };
+		F470AB2317C8CC1E007277F0 /* escp2topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = escp2topbm; sourceTree = "<group>"; };
+		F470AB2417C8CC1E007277F0 /* fiascotopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = fiascotopnm; sourceTree = "<group>"; };
+		F470AB2517C8CC1E007277F0 /* fitstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = fitstopnm; sourceTree = "<group>"; };
+		F470AB2617C8CC1E007277F0 /* fstopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = fstopgm; sourceTree = "<group>"; };
+		F470AB2717C8CC1E007277F0 /* g3topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = g3topbm; sourceTree = "<group>"; };
+		F470AB2817C8CC1E007277F0 /* gemtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gemtopbm; sourceTree = "<group>"; };
+		F470AB2917C8CC1E007277F0 /* gemtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gemtopnm; sourceTree = "<group>"; };
+		F470AB2A17C8CC1E007277F0 /* giftopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = giftopnm; sourceTree = "<group>"; };
+		F470AB2B17C8CC1E007277F0 /* hipstopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = hipstopgm; sourceTree = "<group>"; };
+		F470AB2C17C8CC1E007277F0 /* icontopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = icontopbm; sourceTree = "<group>"; };
+		F470AB2D17C8CC1E007277F0 /* jbgtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = jbgtopbm; sourceTree = "<group>"; };
+		F470AB2E17C8CC1E007277F0 /* jbigtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = jbigtopnm; sourceTree = "<group>"; };
+		F470AB2F17C8CC1E007277F0 /* jpegtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = jpegtopnm; sourceTree = "<group>"; };
+		F470AB3017C8CC1E007277F0 /* libcairo-gobject.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-gobject.2.dylib"; sourceTree = "<group>"; };
+		F470AB3117C8CC1E007277F0 /* libcairo-gobject.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libcairo-gobject.a"; sourceTree = "<group>"; };
+		F470AB3217C8CC1E007277F0 /* libcairo-gobject.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-gobject.dylib"; sourceTree = "<group>"; };
+		F470AB3317C8CC1E007277F0 /* libcairo-gobject.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libcairo-gobject.la"; sourceTree = "<group>"; };
+		F470AB3417C8CC1E007277F0 /* libcairo-script-interpreter.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-script-interpreter.2.dylib"; sourceTree = "<group>"; };
+		F470AB3517C8CC1E007277F0 /* libcairo-script-interpreter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libcairo-script-interpreter.a"; sourceTree = "<group>"; };
+		F470AB3617C8CC1E007277F0 /* libcairo-script-interpreter.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libcairo-script-interpreter.dylib"; sourceTree = "<group>"; };
+		F470AB3717C8CC1E007277F0 /* libcairo-script-interpreter.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libcairo-script-interpreter.la"; sourceTree = "<group>"; };
+		F470AB3817C8CC1E007277F0 /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.2.dylib; sourceTree = "<group>"; };
+		F470AB3917C8CC1E007277F0 /* libcairo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcairo.a; sourceTree = "<group>"; };
+		F470AB3A17C8CC1E007277F0 /* libcairo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcairo.dylib; sourceTree = "<group>"; };
+		F470AB3B17C8CC1E007277F0 /* libcairo.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libcairo.la; sourceTree = "<group>"; };
+		F470AB3C17C8CC1E007277F0 /* libexpat.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libexpat.1.dylib; sourceTree = "<group>"; };
+		F470AB3D17C8CC1E007277F0 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libexpat.a; sourceTree = "<group>"; };
+		F470AB3E17C8CC1E007277F0 /* libexpat.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libexpat.dylib; sourceTree = "<group>"; };
+		F470AB3F17C8CC1E007277F0 /* libexpat.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libexpat.la; sourceTree = "<group>"; };
+		F470AB4017C8CC1E007277F0 /* libfontconfig.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfontconfig.1.dylib; sourceTree = "<group>"; };
+		F470AB4117C8CC1E007277F0 /* libfontconfig.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfontconfig.a; sourceTree = "<group>"; };
+		F470AB4217C8CC1E007277F0 /* libfontconfig.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfontconfig.dylib; sourceTree = "<group>"; };
+		F470AB4317C8CC1E007277F0 /* libfontconfig.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libfontconfig.la; sourceTree = "<group>"; };
+		F470AB4417C8CC1E007277F0 /* libfreetype.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfreetype.6.dylib; sourceTree = "<group>"; };
+		F470AB4517C8CC1E007277F0 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfreetype.a; sourceTree = "<group>"; };
+		F470AB4617C8CC1E007277F0 /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfreetype.dylib; sourceTree = "<group>"; };
+		F470AB4717C8CC1E007277F0 /* libfreetype.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libfreetype.la; sourceTree = "<group>"; };
+		F470AB4817C8CC1E007277F0 /* libjbig.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjbig.2.dylib; sourceTree = "<group>"; };
+		F470AB4917C8CC1E007277F0 /* libjpeg.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjpeg.8.dylib; sourceTree = "<group>"; };
+		F470AB4A17C8CC1E007277F0 /* libnetpbm.11.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnetpbm.11.dylib; sourceTree = "<group>"; };
+		F470AB4B17C8CC1E007277F0 /* libpixman-1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libpixman-1.0.dylib"; sourceTree = "<group>"; };
+		F470AB4C17C8CC1E007277F0 /* libpixman-1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libpixman-1.a"; sourceTree = "<group>"; };
+		F470AB4D17C8CC1E007277F0 /* libpixman-1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libpixman-1.dylib"; sourceTree = "<group>"; };
+		F470AB4E17C8CC1E007277F0 /* libpixman-1.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libpixman-1.la"; sourceTree = "<group>"; };
+		F470AB4F17C8CC1E007277F0 /* libpng15.15.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libpng15.15.dylib; sourceTree = "<group>"; };
+		F470AB5017C8CC1E007277F0 /* libtiff.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtiff.3.dylib; sourceTree = "<group>"; };
+		F470AB5117C8CC1E007277F0 /* libX11-xcb.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libX11-xcb.1.dylib"; sourceTree = "<group>"; };
+		F470AB5217C8CC1E007277F0 /* libX11-xcb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libX11-xcb.a"; sourceTree = "<group>"; };
+		F470AB5317C8CC1E007277F0 /* libX11-xcb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libX11-xcb.dylib"; sourceTree = "<group>"; };
+		F470AB5417C8CC1E007277F0 /* libX11-xcb.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libX11-xcb.la"; sourceTree = "<group>"; };
+		F470AB5517C8CC1E007277F0 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libX11.6.dylib; sourceTree = "<group>"; };
+		F470AB5617C8CC1E007277F0 /* libX11.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libX11.a; sourceTree = "<group>"; };
+		F470AB5717C8CC1E007277F0 /* libX11.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libX11.dylib; sourceTree = "<group>"; };
+		F470AB5817C8CC1E007277F0 /* libX11.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libX11.la; sourceTree = "<group>"; };
+		F470AB5917C8CC1E007277F0 /* libXau.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXau.6.dylib; sourceTree = "<group>"; };
+		F470AB5A17C8CC1E007277F0 /* libXau.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXau.a; sourceTree = "<group>"; };
+		F470AB5B17C8CC1E007277F0 /* libXau.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXau.dylib; sourceTree = "<group>"; };
+		F470AB5C17C8CC1E007277F0 /* libXau.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXau.la; sourceTree = "<group>"; };
+		F470AB5D17C8CC1E007277F0 /* libxcb-composite.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-composite.0.dylib"; sourceTree = "<group>"; };
+		F470AB5E17C8CC1E007277F0 /* libxcb-composite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-composite.a"; sourceTree = "<group>"; };
+		F470AB5F17C8CC1E007277F0 /* libxcb-composite.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-composite.dylib"; sourceTree = "<group>"; };
+		F470AB6017C8CC1E007277F0 /* libxcb-composite.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-composite.la"; sourceTree = "<group>"; };
+		F470AB6117C8CC1E007277F0 /* libxcb-damage.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-damage.0.dylib"; sourceTree = "<group>"; };
+		F470AB6217C8CC1E007277F0 /* libxcb-damage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-damage.a"; sourceTree = "<group>"; };
+		F470AB6317C8CC1E007277F0 /* libxcb-damage.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-damage.dylib"; sourceTree = "<group>"; };
+		F470AB6417C8CC1E007277F0 /* libxcb-damage.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-damage.la"; sourceTree = "<group>"; };
+		F470AB6517C8CC1E007277F0 /* libxcb-dpms.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-dpms.0.dylib"; sourceTree = "<group>"; };
+		F470AB6617C8CC1E007277F0 /* libxcb-dpms.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-dpms.a"; sourceTree = "<group>"; };
+		F470AB6717C8CC1E007277F0 /* libxcb-dpms.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-dpms.dylib"; sourceTree = "<group>"; };
+		F470AB6817C8CC1E007277F0 /* libxcb-dpms.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-dpms.la"; sourceTree = "<group>"; };
+		F470AB6917C8CC1E007277F0 /* libxcb-dri2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-dri2.0.dylib"; sourceTree = "<group>"; };
+		F470AB6A17C8CC1E007277F0 /* libxcb-dri2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-dri2.a"; sourceTree = "<group>"; };
+		F470AB6B17C8CC1E007277F0 /* libxcb-dri2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-dri2.dylib"; sourceTree = "<group>"; };
+		F470AB6C17C8CC1E007277F0 /* libxcb-dri2.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-dri2.la"; sourceTree = "<group>"; };
+		F470AB6D17C8CC1E007277F0 /* libxcb-glx.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-glx.0.dylib"; sourceTree = "<group>"; };
+		F470AB6E17C8CC1E007277F0 /* libxcb-glx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-glx.a"; sourceTree = "<group>"; };
+		F470AB6F17C8CC1E007277F0 /* libxcb-glx.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-glx.dylib"; sourceTree = "<group>"; };
+		F470AB7017C8CC1E007277F0 /* libxcb-glx.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-glx.la"; sourceTree = "<group>"; };
+		F470AB7117C8CC1E007277F0 /* libxcb-randr.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-randr.0.dylib"; sourceTree = "<group>"; };
+		F470AB7217C8CC1E007277F0 /* libxcb-randr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-randr.a"; sourceTree = "<group>"; };
+		F470AB7317C8CC1E007277F0 /* libxcb-randr.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-randr.dylib"; sourceTree = "<group>"; };
+		F470AB7417C8CC1E007277F0 /* libxcb-randr.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-randr.la"; sourceTree = "<group>"; };
+		F470AB7517C8CC1E007277F0 /* libxcb-record.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-record.0.dylib"; sourceTree = "<group>"; };
+		F470AB7617C8CC1E007277F0 /* libxcb-record.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-record.a"; sourceTree = "<group>"; };
+		F470AB7717C8CC1E007277F0 /* libxcb-record.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-record.dylib"; sourceTree = "<group>"; };
+		F470AB7817C8CC1E007277F0 /* libxcb-record.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-record.la"; sourceTree = "<group>"; };
+		F470AB7917C8CC1E007277F0 /* libxcb-render.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-render.0.dylib"; sourceTree = "<group>"; };
+		F470AB7A17C8CC1E007277F0 /* libxcb-render.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-render.a"; sourceTree = "<group>"; };
+		F470AB7B17C8CC1E007277F0 /* libxcb-render.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-render.dylib"; sourceTree = "<group>"; };
+		F470AB7C17C8CC1E007277F0 /* libxcb-render.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-render.la"; sourceTree = "<group>"; };
+		F470AB7D17C8CC1E007277F0 /* libxcb-res.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-res.0.dylib"; sourceTree = "<group>"; };
+		F470AB7E17C8CC1E007277F0 /* libxcb-res.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-res.a"; sourceTree = "<group>"; };
+		F470AB7F17C8CC1E007277F0 /* libxcb-res.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-res.dylib"; sourceTree = "<group>"; };
+		F470AB8017C8CC1E007277F0 /* libxcb-res.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-res.la"; sourceTree = "<group>"; };
+		F470AB8117C8CC1E007277F0 /* libxcb-screensaver.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-screensaver.0.dylib"; sourceTree = "<group>"; };
+		F470AB8217C8CC1E007277F0 /* libxcb-screensaver.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-screensaver.a"; sourceTree = "<group>"; };
+		F470AB8317C8CC1E007277F0 /* libxcb-screensaver.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-screensaver.dylib"; sourceTree = "<group>"; };
+		F470AB8417C8CC1E007277F0 /* libxcb-screensaver.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-screensaver.la"; sourceTree = "<group>"; };
+		F470AB8517C8CC1E007277F0 /* libxcb-shape.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-shape.0.dylib"; sourceTree = "<group>"; };
+		F470AB8617C8CC1E007277F0 /* libxcb-shape.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-shape.a"; sourceTree = "<group>"; };
+		F470AB8717C8CC1E007277F0 /* libxcb-shape.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-shape.dylib"; sourceTree = "<group>"; };
+		F470AB8817C8CC1E007277F0 /* libxcb-shape.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-shape.la"; sourceTree = "<group>"; };
+		F470AB8917C8CC1E007277F0 /* libxcb-shm.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-shm.0.dylib"; sourceTree = "<group>"; };
+		F470AB8A17C8CC1E007277F0 /* libxcb-shm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-shm.a"; sourceTree = "<group>"; };
+		F470AB8B17C8CC1E007277F0 /* libxcb-shm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-shm.dylib"; sourceTree = "<group>"; };
+		F470AB8C17C8CC1E007277F0 /* libxcb-shm.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-shm.la"; sourceTree = "<group>"; };
+		F470AB8D17C8CC1E007277F0 /* libxcb-sync.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-sync.0.dylib"; sourceTree = "<group>"; };
+		F470AB8E17C8CC1E007277F0 /* libxcb-sync.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-sync.a"; sourceTree = "<group>"; };
+		F470AB8F17C8CC1E007277F0 /* libxcb-sync.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-sync.dylib"; sourceTree = "<group>"; };
+		F470AB9017C8CC1E007277F0 /* libxcb-sync.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-sync.la"; sourceTree = "<group>"; };
+		F470AB9117C8CC1E007277F0 /* libxcb-util.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-util.1.dylib"; sourceTree = "<group>"; };
+		F470AB9217C8CC1E007277F0 /* libxcb-util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-util.a"; sourceTree = "<group>"; };
+		F470AB9317C8CC1E007277F0 /* libxcb-util.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-util.dylib"; sourceTree = "<group>"; };
+		F470AB9417C8CC1E007277F0 /* libxcb-util.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-util.la"; sourceTree = "<group>"; };
+		F470AB9517C8CC1E007277F0 /* libxcb-xevie.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xevie.0.dylib"; sourceTree = "<group>"; };
+		F470AB9617C8CC1E007277F0 /* libxcb-xevie.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xevie.a"; sourceTree = "<group>"; };
+		F470AB9717C8CC1E007277F0 /* libxcb-xevie.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xevie.dylib"; sourceTree = "<group>"; };
+		F470AB9817C8CC1E007277F0 /* libxcb-xevie.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xevie.la"; sourceTree = "<group>"; };
+		F470AB9917C8CC1E007277F0 /* libxcb-xf86dri.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xf86dri.0.dylib"; sourceTree = "<group>"; };
+		F470AB9A17C8CC1E007277F0 /* libxcb-xf86dri.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xf86dri.a"; sourceTree = "<group>"; };
+		F470AB9B17C8CC1E007277F0 /* libxcb-xf86dri.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xf86dri.dylib"; sourceTree = "<group>"; };
+		F470AB9C17C8CC1E007277F0 /* libxcb-xf86dri.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xf86dri.la"; sourceTree = "<group>"; };
+		F470AB9D17C8CC1E007277F0 /* libxcb-xfixes.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xfixes.0.dylib"; sourceTree = "<group>"; };
+		F470AB9E17C8CC1E007277F0 /* libxcb-xfixes.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xfixes.a"; sourceTree = "<group>"; };
+		F470AB9F17C8CC1E007277F0 /* libxcb-xfixes.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xfixes.dylib"; sourceTree = "<group>"; };
+		F470ABA017C8CC1E007277F0 /* libxcb-xfixes.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xfixes.la"; sourceTree = "<group>"; };
+		F470ABA117C8CC1E007277F0 /* libxcb-xinerama.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xinerama.0.dylib"; sourceTree = "<group>"; };
+		F470ABA217C8CC1E007277F0 /* libxcb-xinerama.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xinerama.a"; sourceTree = "<group>"; };
+		F470ABA317C8CC1E007277F0 /* libxcb-xinerama.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xinerama.dylib"; sourceTree = "<group>"; };
+		F470ABA417C8CC1E007277F0 /* libxcb-xinerama.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xinerama.la"; sourceTree = "<group>"; };
+		F470ABA517C8CC1E007277F0 /* libxcb-xprint.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xprint.0.dylib"; sourceTree = "<group>"; };
+		F470ABA617C8CC1E007277F0 /* libxcb-xprint.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xprint.a"; sourceTree = "<group>"; };
+		F470ABA717C8CC1E007277F0 /* libxcb-xprint.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xprint.dylib"; sourceTree = "<group>"; };
+		F470ABA817C8CC1E007277F0 /* libxcb-xprint.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xprint.la"; sourceTree = "<group>"; };
+		F470ABA917C8CC1E007277F0 /* libxcb-xtest.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xtest.0.dylib"; sourceTree = "<group>"; };
+		F470ABAA17C8CC1E007277F0 /* libxcb-xtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xtest.a"; sourceTree = "<group>"; };
+		F470ABAB17C8CC1E007277F0 /* libxcb-xtest.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xtest.dylib"; sourceTree = "<group>"; };
+		F470ABAC17C8CC1E007277F0 /* libxcb-xtest.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xtest.la"; sourceTree = "<group>"; };
+		F470ABAD17C8CC1E007277F0 /* libxcb-xv.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xv.0.dylib"; sourceTree = "<group>"; };
+		F470ABAE17C8CC1E007277F0 /* libxcb-xv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xv.a"; sourceTree = "<group>"; };
+		F470ABAF17C8CC1E007277F0 /* libxcb-xv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xv.dylib"; sourceTree = "<group>"; };
+		F470ABB017C8CC1E007277F0 /* libxcb-xv.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xv.la"; sourceTree = "<group>"; };
+		F470ABB117C8CC1E007277F0 /* libxcb-xvmc.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xvmc.0.dylib"; sourceTree = "<group>"; };
+		F470ABB217C8CC1E007277F0 /* libxcb-xvmc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libxcb-xvmc.a"; sourceTree = "<group>"; };
+		F470ABB317C8CC1E007277F0 /* libxcb-xvmc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libxcb-xvmc.dylib"; sourceTree = "<group>"; };
+		F470ABB417C8CC1E007277F0 /* libxcb-xvmc.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libxcb-xvmc.la"; sourceTree = "<group>"; };
+		F470ABB517C8CC1E007277F0 /* libxcb.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libxcb.1.dylib; sourceTree = "<group>"; };
+		F470ABB617C8CC1E007277F0 /* libxcb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libxcb.a; sourceTree = "<group>"; };
+		F470ABB717C8CC1E007277F0 /* libxcb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libxcb.dylib; sourceTree = "<group>"; };
+		F470ABB817C8CC1E007277F0 /* libxcb.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libxcb.la; sourceTree = "<group>"; };
+		F470ABB917C8CC1E007277F0 /* libXdmcp.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXdmcp.6.dylib; sourceTree = "<group>"; };
+		F470ABBA17C8CC1E007277F0 /* libXdmcp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXdmcp.a; sourceTree = "<group>"; };
+		F470ABBB17C8CC1E007277F0 /* libXdmcp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXdmcp.dylib; sourceTree = "<group>"; };
+		F470ABBC17C8CC1E007277F0 /* libXdmcp.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXdmcp.la; sourceTree = "<group>"; };
+		F470ABBD17C8CC1E007277F0 /* libXext.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXext.6.dylib; sourceTree = "<group>"; };
+		F470ABBE17C8CC1E007277F0 /* libXext.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXext.a; sourceTree = "<group>"; };
+		F470ABBF17C8CC1E007277F0 /* libXext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXext.dylib; sourceTree = "<group>"; };
+		F470ABC017C8CC1E007277F0 /* libXext.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXext.la; sourceTree = "<group>"; };
+		F470ABC117C8CC1E007277F0 /* libXpm.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXpm.4.dylib; sourceTree = "<group>"; };
+		F470ABC217C8CC1E007277F0 /* libXpm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXpm.a; sourceTree = "<group>"; };
+		F470ABC317C8CC1E007277F0 /* libXpm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXpm.dylib; sourceTree = "<group>"; };
+		F470ABC417C8CC1E007277F0 /* libXpm.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXpm.la; sourceTree = "<group>"; };
+		F470ABC517C8CC1E007277F0 /* libXrender.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXrender.1.dylib; sourceTree = "<group>"; };
+		F470ABC617C8CC1E007277F0 /* libXrender.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXrender.a; sourceTree = "<group>"; };
+		F470ABC717C8CC1E007277F0 /* libXrender.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXrender.dylib; sourceTree = "<group>"; };
+		F470ABC817C8CC1E007277F0 /* libXrender.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXrender.la; sourceTree = "<group>"; };
+		F470ABC917C8CC1E007277F0 /* libXt.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXt.6.dylib; sourceTree = "<group>"; };
+		F470ABCA17C8CC1E007277F0 /* libXt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libXt.a; sourceTree = "<group>"; };
+		F470ABCB17C8CC1E007277F0 /* libXt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libXt.dylib; sourceTree = "<group>"; };
+		F470ABCC17C8CC1E007277F0 /* libXt.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libXt.la; sourceTree = "<group>"; };
+		F470ABCD17C8CC1E007277F0 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libz.1.dylib; sourceTree = "<group>"; };
+		F470ABCE17C8CC1E007277F0 /* lispmtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = lispmtopgm; sourceTree = "<group>"; };
+		F470ABCF17C8CC1E007277F0 /* macptopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = macptopbm; sourceTree = "<group>"; };
+		F470ABD017C8CC1E007277F0 /* mdatopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mdatopbm; sourceTree = "<group>"; };
+		F470ABD117C8CC1E007277F0 /* mgrtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mgrtopbm; sourceTree = "<group>"; };
+		F470ABD217C8CC1E007277F0 /* mrftopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = mrftopbm; sourceTree = "<group>"; };
+		F470ABD317C8CC1E007277F0 /* palmtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = palmtopnm; sourceTree = "<group>"; };
+		F470ABD417C8CC1E007277F0 /* pamtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pamtopnm; sourceTree = "<group>"; };
+		F470ABD517C8CC1E007277F0 /* pbmtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pbmtopgm; sourceTree = "<group>"; };
+		F470ABD617C8CC1E007277F0 /* pgmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pgmtopbm; sourceTree = "<group>"; };
+		F470ABD717C8CC1E007277F0 /* pgmtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pgmtopgm; sourceTree = "<group>"; };
+		F470ABD817C8CC1E007277F0 /* pi3topbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pi3topbm; sourceTree = "<group>"; };
+		F470ABD917C8CC1E007277F0 /* pktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pktopbm; sourceTree = "<group>"; };
+		F470ABDA17C8CC1E007277F0 /* pngtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pngtopnm; sourceTree = "<group>"; };
+		F470ABDB17C8CC1E007277F0 /* pnmalias */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmalias; sourceTree = "<group>"; };
+		F470ABDC17C8CC1E007277F0 /* pnmarith */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmarith; sourceTree = "<group>"; };
+		F470ABDD17C8CC1E007277F0 /* pnmcat */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmcat; sourceTree = "<group>"; };
+		F470ABDE17C8CC1E007277F0 /* pnmcolormap */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmcolormap; sourceTree = "<group>"; };
+		F470ABDF17C8CC1E007277F0 /* pnmcomp */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmcomp; sourceTree = "<group>"; };
+		F470ABE017C8CC1E007277F0 /* pnmconvol */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmconvol; sourceTree = "<group>"; };
+		F470ABE117C8CC1E007277F0 /* pnmcrop */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmcrop; sourceTree = "<group>"; };
+		F470ABE217C8CC1E007277F0 /* pnmcut */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmcut; sourceTree = "<group>"; };
+		F470ABE317C8CC1E007277F0 /* pnmdepth */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmdepth; sourceTree = "<group>"; };
+		F470ABE417C8CC1E007277F0 /* pnmenlarge */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmenlarge; sourceTree = "<group>"; };
+		F470ABE517C8CC1E007277F0 /* pnmfile */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmfile; sourceTree = "<group>"; };
+		F470ABE617C8CC1E007277F0 /* pnmflip */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = pnmflip; sourceTree = "<group>"; };
+		F470ABE717C8CC1E007277F0 /* pnmgamma */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmgamma; sourceTree = "<group>"; };
+		F470ABE817C8CC1E007277F0 /* pnmhisteq */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmhisteq; sourceTree = "<group>"; };
+		F470ABE917C8CC1E007277F0 /* pnmhistmap */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmhistmap; sourceTree = "<group>"; };
+		F470ABEA17C8CC1E007277F0 /* pnmindex */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmindex; sourceTree = "<group>"; };
+		F470ABEB17C8CC1E007277F0 /* pnminterp */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnminterp; sourceTree = "<group>"; };
+		F470ABEC17C8CC1E007277F0 /* pnminvert */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnminvert; sourceTree = "<group>"; };
+		F470ABED17C8CC1E007277F0 /* pnmmargin */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = pnmmargin; sourceTree = "<group>"; };
+		F470ABEE17C8CC1E007277F0 /* pnmmercator */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmmercator; sourceTree = "<group>"; };
+		F470ABEF17C8CC1E007277F0 /* pnmmontage */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmmontage; sourceTree = "<group>"; };
+		F470ABF017C8CC1E007277F0 /* pnmnlfilt */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmnlfilt; sourceTree = "<group>"; };
+		F470ABF117C8CC1E007277F0 /* pnmnoraw */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = pnmnoraw; sourceTree = "<group>"; };
+		F470ABF217C8CC1E007277F0 /* pnmnorm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmnorm; sourceTree = "<group>"; };
+		F470ABF317C8CC1E007277F0 /* pnmpad */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmpad; sourceTree = "<group>"; };
+		F470ABF417C8CC1E007277F0 /* pnmpaste */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmpaste; sourceTree = "<group>"; };
+		F470ABF517C8CC1E007277F0 /* pnmpsnr */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmpsnr; sourceTree = "<group>"; };
+		F470ABF617C8CC1E007277F0 /* pnmquant */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = pnmquant; sourceTree = "<group>"; };
+		F470ABF717C8CC1E007277F0 /* pnmquantall */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = pnmquantall; sourceTree = "<group>"; };
+		F470ABF817C8CC1E007277F0 /* pnmremap */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmremap; sourceTree = "<group>"; };
+		F470ABF917C8CC1E007277F0 /* pnmrotate */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmrotate; sourceTree = "<group>"; };
+		F470ABFA17C8CC1E007277F0 /* pnmscale */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmscale; sourceTree = "<group>"; };
+		F470ABFB17C8CC1E007277F0 /* pnmscalefixed */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmscalefixed; sourceTree = "<group>"; };
+		F470ABFC17C8CC1E007277F0 /* pnmshear */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmshear; sourceTree = "<group>"; };
+		F470ABFD17C8CC1E007277F0 /* pnmsmooth */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmsmooth; sourceTree = "<group>"; };
+		F470ABFE17C8CC1E007277F0 /* pnmsplit */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmsplit; sourceTree = "<group>"; };
+		F470ABFF17C8CC1E007277F0 /* pnmstitch */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmstitch; sourceTree = "<group>"; };
+		F470AC0017C8CC1E007277F0 /* pnmtile */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtile; sourceTree = "<group>"; };
+		F470AC0117C8CC1E007277F0 /* pnmtoddif */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtoddif; sourceTree = "<group>"; };
+		F470AC0217C8CC1E007277F0 /* pnmtofiasco */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtofiasco; sourceTree = "<group>"; };
+		F470AC0317C8CC1E007277F0 /* pnmtofits */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtofits; sourceTree = "<group>"; };
+		F470AC0417C8CC1E007277F0 /* pnmtojbig */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtojbig; sourceTree = "<group>"; };
+		F470AC0517C8CC1E007277F0 /* pnmtojpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtojpeg; sourceTree = "<group>"; };
+		F470AC0617C8CC1E007277F0 /* pnmtopalm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtopalm; sourceTree = "<group>"; };
+		F470AC0717C8CC1E007277F0 /* pnmtopclxl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtopclxl; sourceTree = "<group>"; };
+		F470AC0817C8CC1E007277F0 /* pnmtoplainpnm */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = pnmtoplainpnm; sourceTree = "<group>"; };
+		F470AC0917C8CC1E007277F0 /* pnmtopng */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtopng; sourceTree = "<group>"; };
+		F470AC0A17C8CC1E007277F0 /* pnmtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtopnm; sourceTree = "<group>"; };
+		F470AC0B17C8CC1E007277F0 /* pnmtops */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtops; sourceTree = "<group>"; };
+		F470AC0C17C8CC1E007277F0 /* pnmtorast */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtorast; sourceTree = "<group>"; };
+		F470AC0D17C8CC1E007277F0 /* pnmtorle */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtorle; sourceTree = "<group>"; };
+		F470AC0E17C8CC1E007277F0 /* pnmtosgi */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtosgi; sourceTree = "<group>"; };
+		F470AC0F17C8CC1E007277F0 /* pnmtosir */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtosir; sourceTree = "<group>"; };
+		F470AC1017C8CC1E007277F0 /* pnmtotiff */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtotiff; sourceTree = "<group>"; };
+		F470AC1117C8CC1F007277F0 /* pnmtotiffcmyk */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtotiffcmyk; sourceTree = "<group>"; };
+		F470AC1217C8CC1F007277F0 /* pnmtoxwd */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pnmtoxwd; sourceTree = "<group>"; };
+		F470AC1317C8CC1F007277F0 /* ppmtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ppmtopgm; sourceTree = "<group>"; };
+		F470AC1417C8CC1F007277F0 /* psidtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = psidtopgm; sourceTree = "<group>"; };
+		F470AC1517C8CC1F007277F0 /* pstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pstopnm; sourceTree = "<group>"; };
+		F470AC1617C8CC1F007277F0 /* rasttopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rasttopnm; sourceTree = "<group>"; };
+		F470AC1717C8CC1F007277F0 /* rawtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rawtopgm; sourceTree = "<group>"; };
+		F470AC1817C8CC1F007277F0 /* rletopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rletopnm; sourceTree = "<group>"; };
+		F470AC1917C8CC1F007277F0 /* sbigtopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = sbigtopgm; sourceTree = "<group>"; };
+		F470AC1A17C8CC1F007277F0 /* sgitopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = sgitopnm; sourceTree = "<group>"; };
+		F470AC1B17C8CC1F007277F0 /* sirtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = sirtopnm; sourceTree = "<group>"; };
+		F470AC1C17C8CC1F007277F0 /* spottopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = spottopgm; sourceTree = "<group>"; };
+		F470AC1D17C8CC1F007277F0 /* sunicontopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = sunicontopnm; sourceTree = "<group>"; };
+		F470AC1E17C8CC1F007277F0 /* thinkjettopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = thinkjettopbm; sourceTree = "<group>"; };
+		F470AC1F17C8CC1F007277F0 /* tifftopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = tifftopnm; sourceTree = "<group>"; };
+		F470AC2017C8CC1F007277F0 /* wbmptopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = wbmptopbm; sourceTree = "<group>"; };
+		F470AC2117C8CC1F007277F0 /* xbmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xbmtopbm; sourceTree = "<group>"; };
+		F470AC2217C8CC1F007277F0 /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
+		F470AC2317C8CC1F007277F0 /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
+		F470AC2417C8CC1F007277F0 /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
 		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4A386C3168887FE00E77631 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -479,61 +713,286 @@
 			name = CoreAstro;
 			sourceTree = "<group>";
 		};
-		F43E210E168A52DA00C942CF /* netpbm */ = {
+		F470AB1917C8CC1E007277F0 /* support */ = {
 			isa = PBXGroup;
 			children = (
-				F43E210F168A52DA00C942CF /* atktopbm */,
-				F43E2110168A52DA00C942CF /* brushtopbm */,
-				F43E2111168A52DA00C942CF /* cistopbm */,
-				F43E2112168A52DA00C942CF /* cmuwmtopbm */,
-				F43E2113168A52DA00C942CF /* ddbugtopbm */,
-				F43E2114168A52DA00C942CF /* escp2topbm */,
-				F43E2115168A52DA00C942CF /* g3topbm */,
-				F43E2116168A52DA00C942CF /* gemtopbm */,
-				F43E2117168A52DA00C942CF /* icontopbm */,
-				F43E2118168A52DA00C942CF /* jbgtopbm */,
-				F43E2119168A52DA00C942CF /* macptopbm */,
-				F43E211A168A52DA00C942CF /* mdatopbm */,
-				F43E211B168A52DA00C942CF /* mgrtopbm */,
-				F43E211C168A52DA00C942CF /* mrftopbm */,
-				F43E211D168A52DA00C942CF /* pgmtopbm */,
-				F43E211E168A52DA00C942CF /* pi3topbm */,
-				F43E211F168A52DA00C942CF /* pktopbm */,
-				F43E2120168A52DA00C942CF /* thinkjettopbm */,
-				F43E2121168A52DA00C942CF /* wbmptopbm */,
-				F43E2122168A52DA00C942CF /* xbmtopbm */,
-				F43E2123168A52DA00C942CF /* ybmtopbm */,
+				F470AB1A17C8CC1E007277F0 /* anytopnm */,
+				F470AB1B17C8CC1E007277F0 /* asciitopgm */,
+				F470AB1C17C8CC1E007277F0 /* atktopbm */,
+				F470AB1D17C8CC1E007277F0 /* bioradtopgm */,
+				F470AB1E17C8CC1E007277F0 /* bmptopnm */,
+				F470AB1F17C8CC1E007277F0 /* brushtopbm */,
+				F470AB2017C8CC1E007277F0 /* cistopbm */,
+				F470AB2117C8CC1E007277F0 /* cmuwmtopbm */,
+				F470AB2217C8CC1E007277F0 /* ddbugtopbm */,
+				F470AB2317C8CC1E007277F0 /* escp2topbm */,
+				F470AB2417C8CC1E007277F0 /* fiascotopnm */,
+				F470AB2517C8CC1E007277F0 /* fitstopnm */,
+				F470AB2617C8CC1E007277F0 /* fstopgm */,
+				F470AB2717C8CC1E007277F0 /* g3topbm */,
+				F470AB2817C8CC1E007277F0 /* gemtopbm */,
+				F470AB2917C8CC1E007277F0 /* gemtopnm */,
+				F470AB2A17C8CC1E007277F0 /* giftopnm */,
+				F470AB2B17C8CC1E007277F0 /* hipstopgm */,
+				F470AB2C17C8CC1E007277F0 /* icontopbm */,
+				F470AB2D17C8CC1E007277F0 /* jbgtopbm */,
+				F470AB2E17C8CC1E007277F0 /* jbigtopnm */,
+				F470AB2F17C8CC1E007277F0 /* jpegtopnm */,
+				F470AB3017C8CC1E007277F0 /* libcairo-gobject.2.dylib */,
+				F470AB3117C8CC1E007277F0 /* libcairo-gobject.a */,
+				F470AB3217C8CC1E007277F0 /* libcairo-gobject.dylib */,
+				F470AB3317C8CC1E007277F0 /* libcairo-gobject.la */,
+				F470AB3417C8CC1E007277F0 /* libcairo-script-interpreter.2.dylib */,
+				F470AB3517C8CC1E007277F0 /* libcairo-script-interpreter.a */,
+				F470AB3617C8CC1E007277F0 /* libcairo-script-interpreter.dylib */,
+				F470AB3717C8CC1E007277F0 /* libcairo-script-interpreter.la */,
+				F470AB3817C8CC1E007277F0 /* libcairo.2.dylib */,
+				F470AB3917C8CC1E007277F0 /* libcairo.a */,
+				F470AB3A17C8CC1E007277F0 /* libcairo.dylib */,
+				F470AB3B17C8CC1E007277F0 /* libcairo.la */,
+				F470AB3C17C8CC1E007277F0 /* libexpat.1.dylib */,
+				F470AB3D17C8CC1E007277F0 /* libexpat.a */,
+				F470AB3E17C8CC1E007277F0 /* libexpat.dylib */,
+				F470AB3F17C8CC1E007277F0 /* libexpat.la */,
+				F470AB4017C8CC1E007277F0 /* libfontconfig.1.dylib */,
+				F470AB4117C8CC1E007277F0 /* libfontconfig.a */,
+				F470AB4217C8CC1E007277F0 /* libfontconfig.dylib */,
+				F470AB4317C8CC1E007277F0 /* libfontconfig.la */,
+				F470AB4417C8CC1E007277F0 /* libfreetype.6.dylib */,
+				F470AB4517C8CC1E007277F0 /* libfreetype.a */,
+				F470AB4617C8CC1E007277F0 /* libfreetype.dylib */,
+				F470AB4717C8CC1E007277F0 /* libfreetype.la */,
+				F470AB4817C8CC1E007277F0 /* libjbig.2.dylib */,
+				F470AB4917C8CC1E007277F0 /* libjpeg.8.dylib */,
+				F470AB4A17C8CC1E007277F0 /* libnetpbm.11.dylib */,
+				F470AB4B17C8CC1E007277F0 /* libpixman-1.0.dylib */,
+				F470AB4C17C8CC1E007277F0 /* libpixman-1.a */,
+				F470AB4D17C8CC1E007277F0 /* libpixman-1.dylib */,
+				F470AB4E17C8CC1E007277F0 /* libpixman-1.la */,
+				F470AB4F17C8CC1E007277F0 /* libpng15.15.dylib */,
+				F470AB5017C8CC1E007277F0 /* libtiff.3.dylib */,
+				F470AB5117C8CC1E007277F0 /* libX11-xcb.1.dylib */,
+				F470AB5217C8CC1E007277F0 /* libX11-xcb.a */,
+				F470AB5317C8CC1E007277F0 /* libX11-xcb.dylib */,
+				F470AB5417C8CC1E007277F0 /* libX11-xcb.la */,
+				F470AB5517C8CC1E007277F0 /* libX11.6.dylib */,
+				F470AB5617C8CC1E007277F0 /* libX11.a */,
+				F470AB5717C8CC1E007277F0 /* libX11.dylib */,
+				F470AB5817C8CC1E007277F0 /* libX11.la */,
+				F470AB5917C8CC1E007277F0 /* libXau.6.dylib */,
+				F470AB5A17C8CC1E007277F0 /* libXau.a */,
+				F470AB5B17C8CC1E007277F0 /* libXau.dylib */,
+				F470AB5C17C8CC1E007277F0 /* libXau.la */,
+				F470AB5D17C8CC1E007277F0 /* libxcb-composite.0.dylib */,
+				F470AB5E17C8CC1E007277F0 /* libxcb-composite.a */,
+				F470AB5F17C8CC1E007277F0 /* libxcb-composite.dylib */,
+				F470AB6017C8CC1E007277F0 /* libxcb-composite.la */,
+				F470AB6117C8CC1E007277F0 /* libxcb-damage.0.dylib */,
+				F470AB6217C8CC1E007277F0 /* libxcb-damage.a */,
+				F470AB6317C8CC1E007277F0 /* libxcb-damage.dylib */,
+				F470AB6417C8CC1E007277F0 /* libxcb-damage.la */,
+				F470AB6517C8CC1E007277F0 /* libxcb-dpms.0.dylib */,
+				F470AB6617C8CC1E007277F0 /* libxcb-dpms.a */,
+				F470AB6717C8CC1E007277F0 /* libxcb-dpms.dylib */,
+				F470AB6817C8CC1E007277F0 /* libxcb-dpms.la */,
+				F470AB6917C8CC1E007277F0 /* libxcb-dri2.0.dylib */,
+				F470AB6A17C8CC1E007277F0 /* libxcb-dri2.a */,
+				F470AB6B17C8CC1E007277F0 /* libxcb-dri2.dylib */,
+				F470AB6C17C8CC1E007277F0 /* libxcb-dri2.la */,
+				F470AB6D17C8CC1E007277F0 /* libxcb-glx.0.dylib */,
+				F470AB6E17C8CC1E007277F0 /* libxcb-glx.a */,
+				F470AB6F17C8CC1E007277F0 /* libxcb-glx.dylib */,
+				F470AB7017C8CC1E007277F0 /* libxcb-glx.la */,
+				F470AB7117C8CC1E007277F0 /* libxcb-randr.0.dylib */,
+				F470AB7217C8CC1E007277F0 /* libxcb-randr.a */,
+				F470AB7317C8CC1E007277F0 /* libxcb-randr.dylib */,
+				F470AB7417C8CC1E007277F0 /* libxcb-randr.la */,
+				F470AB7517C8CC1E007277F0 /* libxcb-record.0.dylib */,
+				F470AB7617C8CC1E007277F0 /* libxcb-record.a */,
+				F470AB7717C8CC1E007277F0 /* libxcb-record.dylib */,
+				F470AB7817C8CC1E007277F0 /* libxcb-record.la */,
+				F470AB7917C8CC1E007277F0 /* libxcb-render.0.dylib */,
+				F470AB7A17C8CC1E007277F0 /* libxcb-render.a */,
+				F470AB7B17C8CC1E007277F0 /* libxcb-render.dylib */,
+				F470AB7C17C8CC1E007277F0 /* libxcb-render.la */,
+				F470AB7D17C8CC1E007277F0 /* libxcb-res.0.dylib */,
+				F470AB7E17C8CC1E007277F0 /* libxcb-res.a */,
+				F470AB7F17C8CC1E007277F0 /* libxcb-res.dylib */,
+				F470AB8017C8CC1E007277F0 /* libxcb-res.la */,
+				F470AB8117C8CC1E007277F0 /* libxcb-screensaver.0.dylib */,
+				F470AB8217C8CC1E007277F0 /* libxcb-screensaver.a */,
+				F470AB8317C8CC1E007277F0 /* libxcb-screensaver.dylib */,
+				F470AB8417C8CC1E007277F0 /* libxcb-screensaver.la */,
+				F470AB8517C8CC1E007277F0 /* libxcb-shape.0.dylib */,
+				F470AB8617C8CC1E007277F0 /* libxcb-shape.a */,
+				F470AB8717C8CC1E007277F0 /* libxcb-shape.dylib */,
+				F470AB8817C8CC1E007277F0 /* libxcb-shape.la */,
+				F470AB8917C8CC1E007277F0 /* libxcb-shm.0.dylib */,
+				F470AB8A17C8CC1E007277F0 /* libxcb-shm.a */,
+				F470AB8B17C8CC1E007277F0 /* libxcb-shm.dylib */,
+				F470AB8C17C8CC1E007277F0 /* libxcb-shm.la */,
+				F470AB8D17C8CC1E007277F0 /* libxcb-sync.0.dylib */,
+				F470AB8E17C8CC1E007277F0 /* libxcb-sync.a */,
+				F470AB8F17C8CC1E007277F0 /* libxcb-sync.dylib */,
+				F470AB9017C8CC1E007277F0 /* libxcb-sync.la */,
+				F470AB9117C8CC1E007277F0 /* libxcb-util.1.dylib */,
+				F470AB9217C8CC1E007277F0 /* libxcb-util.a */,
+				F470AB9317C8CC1E007277F0 /* libxcb-util.dylib */,
+				F470AB9417C8CC1E007277F0 /* libxcb-util.la */,
+				F470AB9517C8CC1E007277F0 /* libxcb-xevie.0.dylib */,
+				F470AB9617C8CC1E007277F0 /* libxcb-xevie.a */,
+				F470AB9717C8CC1E007277F0 /* libxcb-xevie.dylib */,
+				F470AB9817C8CC1E007277F0 /* libxcb-xevie.la */,
+				F470AB9917C8CC1E007277F0 /* libxcb-xf86dri.0.dylib */,
+				F470AB9A17C8CC1E007277F0 /* libxcb-xf86dri.a */,
+				F470AB9B17C8CC1E007277F0 /* libxcb-xf86dri.dylib */,
+				F470AB9C17C8CC1E007277F0 /* libxcb-xf86dri.la */,
+				F470AB9D17C8CC1E007277F0 /* libxcb-xfixes.0.dylib */,
+				F470AB9E17C8CC1E007277F0 /* libxcb-xfixes.a */,
+				F470AB9F17C8CC1E007277F0 /* libxcb-xfixes.dylib */,
+				F470ABA017C8CC1E007277F0 /* libxcb-xfixes.la */,
+				F470ABA117C8CC1E007277F0 /* libxcb-xinerama.0.dylib */,
+				F470ABA217C8CC1E007277F0 /* libxcb-xinerama.a */,
+				F470ABA317C8CC1E007277F0 /* libxcb-xinerama.dylib */,
+				F470ABA417C8CC1E007277F0 /* libxcb-xinerama.la */,
+				F470ABA517C8CC1E007277F0 /* libxcb-xprint.0.dylib */,
+				F470ABA617C8CC1E007277F0 /* libxcb-xprint.a */,
+				F470ABA717C8CC1E007277F0 /* libxcb-xprint.dylib */,
+				F470ABA817C8CC1E007277F0 /* libxcb-xprint.la */,
+				F470ABA917C8CC1E007277F0 /* libxcb-xtest.0.dylib */,
+				F470ABAA17C8CC1E007277F0 /* libxcb-xtest.a */,
+				F470ABAB17C8CC1E007277F0 /* libxcb-xtest.dylib */,
+				F470ABAC17C8CC1E007277F0 /* libxcb-xtest.la */,
+				F470ABAD17C8CC1E007277F0 /* libxcb-xv.0.dylib */,
+				F470ABAE17C8CC1E007277F0 /* libxcb-xv.a */,
+				F470ABAF17C8CC1E007277F0 /* libxcb-xv.dylib */,
+				F470ABB017C8CC1E007277F0 /* libxcb-xv.la */,
+				F470ABB117C8CC1E007277F0 /* libxcb-xvmc.0.dylib */,
+				F470ABB217C8CC1E007277F0 /* libxcb-xvmc.a */,
+				F470ABB317C8CC1E007277F0 /* libxcb-xvmc.dylib */,
+				F470ABB417C8CC1E007277F0 /* libxcb-xvmc.la */,
+				F470ABB517C8CC1E007277F0 /* libxcb.1.dylib */,
+				F470ABB617C8CC1E007277F0 /* libxcb.a */,
+				F470ABB717C8CC1E007277F0 /* libxcb.dylib */,
+				F470ABB817C8CC1E007277F0 /* libxcb.la */,
+				F470ABB917C8CC1E007277F0 /* libXdmcp.6.dylib */,
+				F470ABBA17C8CC1E007277F0 /* libXdmcp.a */,
+				F470ABBB17C8CC1E007277F0 /* libXdmcp.dylib */,
+				F470ABBC17C8CC1E007277F0 /* libXdmcp.la */,
+				F470ABBD17C8CC1E007277F0 /* libXext.6.dylib */,
+				F470ABBE17C8CC1E007277F0 /* libXext.a */,
+				F470ABBF17C8CC1E007277F0 /* libXext.dylib */,
+				F470ABC017C8CC1E007277F0 /* libXext.la */,
+				F470ABC117C8CC1E007277F0 /* libXpm.4.dylib */,
+				F470ABC217C8CC1E007277F0 /* libXpm.a */,
+				F470ABC317C8CC1E007277F0 /* libXpm.dylib */,
+				F470ABC417C8CC1E007277F0 /* libXpm.la */,
+				F470ABC517C8CC1E007277F0 /* libXrender.1.dylib */,
+				F470ABC617C8CC1E007277F0 /* libXrender.a */,
+				F470ABC717C8CC1E007277F0 /* libXrender.dylib */,
+				F470ABC817C8CC1E007277F0 /* libXrender.la */,
+				F470ABC917C8CC1E007277F0 /* libXt.6.dylib */,
+				F470ABCA17C8CC1E007277F0 /* libXt.a */,
+				F470ABCB17C8CC1E007277F0 /* libXt.dylib */,
+				F470ABCC17C8CC1E007277F0 /* libXt.la */,
+				F470ABCD17C8CC1E007277F0 /* libz.1.dylib */,
+				F470ABCE17C8CC1E007277F0 /* lispmtopgm */,
+				F470ABCF17C8CC1E007277F0 /* macptopbm */,
+				F470ABD017C8CC1E007277F0 /* mdatopbm */,
+				F470ABD117C8CC1E007277F0 /* mgrtopbm */,
+				F470ABD217C8CC1E007277F0 /* mrftopbm */,
+				F470ABD317C8CC1E007277F0 /* palmtopnm */,
+				F470ABD417C8CC1E007277F0 /* pamtopnm */,
+				F470ABD517C8CC1E007277F0 /* pbmtopgm */,
+				F470ABD617C8CC1E007277F0 /* pgmtopbm */,
+				F470ABD717C8CC1E007277F0 /* pgmtopgm */,
+				F470ABD817C8CC1E007277F0 /* pi3topbm */,
+				F470ABD917C8CC1E007277F0 /* pktopbm */,
+				F470ABDA17C8CC1E007277F0 /* pngtopnm */,
+				F470ABDB17C8CC1E007277F0 /* pnmalias */,
+				F470ABDC17C8CC1E007277F0 /* pnmarith */,
+				F470ABDD17C8CC1E007277F0 /* pnmcat */,
+				F470ABDE17C8CC1E007277F0 /* pnmcolormap */,
+				F470ABDF17C8CC1E007277F0 /* pnmcomp */,
+				F470ABE017C8CC1E007277F0 /* pnmconvol */,
+				F470ABE117C8CC1E007277F0 /* pnmcrop */,
+				F470ABE217C8CC1E007277F0 /* pnmcut */,
+				F470ABE317C8CC1E007277F0 /* pnmdepth */,
+				F470ABE417C8CC1E007277F0 /* pnmenlarge */,
+				F470ABE517C8CC1E007277F0 /* pnmfile */,
+				F470ABE617C8CC1E007277F0 /* pnmflip */,
+				F470ABE717C8CC1E007277F0 /* pnmgamma */,
+				F470ABE817C8CC1E007277F0 /* pnmhisteq */,
+				F470ABE917C8CC1E007277F0 /* pnmhistmap */,
+				F470ABEA17C8CC1E007277F0 /* pnmindex */,
+				F470ABEB17C8CC1E007277F0 /* pnminterp */,
+				F470ABEC17C8CC1E007277F0 /* pnminvert */,
+				F470ABED17C8CC1E007277F0 /* pnmmargin */,
+				F470ABEE17C8CC1E007277F0 /* pnmmercator */,
+				F470ABEF17C8CC1E007277F0 /* pnmmontage */,
+				F470ABF017C8CC1E007277F0 /* pnmnlfilt */,
+				F470ABF117C8CC1E007277F0 /* pnmnoraw */,
+				F470ABF217C8CC1E007277F0 /* pnmnorm */,
+				F470ABF317C8CC1E007277F0 /* pnmpad */,
+				F470ABF417C8CC1E007277F0 /* pnmpaste */,
+				F470ABF517C8CC1E007277F0 /* pnmpsnr */,
+				F470ABF617C8CC1E007277F0 /* pnmquant */,
+				F470ABF717C8CC1E007277F0 /* pnmquantall */,
+				F470ABF817C8CC1E007277F0 /* pnmremap */,
+				F470ABF917C8CC1E007277F0 /* pnmrotate */,
+				F470ABFA17C8CC1E007277F0 /* pnmscale */,
+				F470ABFB17C8CC1E007277F0 /* pnmscalefixed */,
+				F470ABFC17C8CC1E007277F0 /* pnmshear */,
+				F470ABFD17C8CC1E007277F0 /* pnmsmooth */,
+				F470ABFE17C8CC1E007277F0 /* pnmsplit */,
+				F470ABFF17C8CC1E007277F0 /* pnmstitch */,
+				F470AC0017C8CC1E007277F0 /* pnmtile */,
+				F470AC0117C8CC1E007277F0 /* pnmtoddif */,
+				F470AC0217C8CC1E007277F0 /* pnmtofiasco */,
+				F470AC0317C8CC1E007277F0 /* pnmtofits */,
+				F470AC0417C8CC1E007277F0 /* pnmtojbig */,
+				F470AC0517C8CC1E007277F0 /* pnmtojpeg */,
+				F470AC0617C8CC1E007277F0 /* pnmtopalm */,
+				F470AC0717C8CC1E007277F0 /* pnmtopclxl */,
+				F470AC0817C8CC1E007277F0 /* pnmtoplainpnm */,
+				F470AC0917C8CC1E007277F0 /* pnmtopng */,
+				F470AC0A17C8CC1E007277F0 /* pnmtopnm */,
+				F470AC0B17C8CC1E007277F0 /* pnmtops */,
+				F470AC0C17C8CC1E007277F0 /* pnmtorast */,
+				F470AC0D17C8CC1E007277F0 /* pnmtorle */,
+				F470AC0E17C8CC1E007277F0 /* pnmtosgi */,
+				F470AC0F17C8CC1E007277F0 /* pnmtosir */,
+				F470AC1017C8CC1E007277F0 /* pnmtotiff */,
+				F470AC1117C8CC1F007277F0 /* pnmtotiffcmyk */,
+				F470AC1217C8CC1F007277F0 /* pnmtoxwd */,
+				F470AC1317C8CC1F007277F0 /* ppmtopgm */,
+				F470AC1417C8CC1F007277F0 /* psidtopgm */,
+				F470AC1517C8CC1F007277F0 /* pstopnm */,
+				F470AC1617C8CC1F007277F0 /* rasttopnm */,
+				F470AC1717C8CC1F007277F0 /* rawtopgm */,
+				F470AC1817C8CC1F007277F0 /* rletopnm */,
+				F470AC1917C8CC1F007277F0 /* sbigtopgm */,
+				F470AC1A17C8CC1F007277F0 /* sgitopnm */,
+				F470AC1B17C8CC1F007277F0 /* sirtopnm */,
+				F470AC1C17C8CC1F007277F0 /* spottopgm */,
+				F470AC1D17C8CC1F007277F0 /* sunicontopnm */,
+				F470AC1E17C8CC1F007277F0 /* thinkjettopbm */,
+				F470AC1F17C8CC1F007277F0 /* tifftopnm */,
+				F470AC2017C8CC1F007277F0 /* wbmptopbm */,
+				F470AC2117C8CC1F007277F0 /* xbmtopbm */,
+				F470AC2217C8CC1F007277F0 /* xwdtopnm */,
+				F470AC2317C8CC1F007277F0 /* ybmtopbm */,
+				F470AC2417C8CC1F007277F0 /* zeisstopnm */,
 			);
-			name = netpbm;
-			path = "astrometry-test/netpbm";
-			sourceTree = "<group>";
-		};
-		F43E2139168A596B00C942CF /* cairo */ = {
-			isa = PBXGroup;
-			children = (
-				F43E213A168A596B00C942CF /* libcairo-gobject.2.dylib */,
-				F43E213B168A596B00C942CF /* libcairo-gobject.a */,
-				F43E213C168A596B00C942CF /* libcairo-gobject.dylib */,
-				F43E213D168A596B00C942CF /* libcairo-gobject.la */,
-				F43E213E168A596B00C942CF /* libcairo-script-interpreter.2.dylib */,
-				F43E213F168A596B00C942CF /* libcairo-script-interpreter.a */,
-				F43E2140168A596B00C942CF /* libcairo-script-interpreter.dylib */,
-				F43E2141168A596B00C942CF /* libcairo-script-interpreter.la */,
-				F43E2142168A596B00C942CF /* libcairo.2.dylib */,
-				F43E2143168A596B00C942CF /* libcairo.a */,
-				F43E2144168A596B00C942CF /* libcairo.dylib */,
-				F43E2145168A596B00C942CF /* libcairo.la */,
-			);
-			name = cairo;
-			path = "astrometry-test/cairo";
+			name = support;
+			path = ../../External/astrometry.net/support;
 			sourceTree = "<group>";
 		};
 		F4A386B4168887FE00E77631 = {
 			isa = PBXGroup;
 			children = (
-				F43E2139168A596B00C942CF /* cairo */,
-				F43E210E168A52DA00C942CF /* netpbm */,
 				F4A388D516889B4E00E77631 /* astrometry */,
+				F470AB1917C8CC1E007277F0 /* support */,
 				F4A386C6168887FE00E77631 /* astrometry-test */,
 				F4A386BF168887FE00E77631 /* Frameworks */,
 				F4A386BE168887FE00E77631 /* Products */,
@@ -614,7 +1073,7 @@
 				F4A38A1616889B4E00E77631 /* ups */,
 			);
 			name = astrometry;
-			path = "astrometry-test/astrometry";
+			path = ../../External/astrometry.net/astrometry;
 			sourceTree = "<group>";
 		};
 		F4A388D616889B4E00E77631 /* bin */ = {
@@ -1102,7 +1561,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "ditto -V \"$SRCROOT/astrometry-test/astrometry\" \"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH/astrometry\"\nditto -V \"$SRCROOT/astrometry-test/support\" \"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH/support\"\n";
+			shellScript = "ditto -V \"$SRCROOT/../../External/astrometry.net/astrometry\" \"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH/astrometry\"\nditto -V \"$SRCROOT/../../External/astrometry.net/support\" \"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH/support\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
