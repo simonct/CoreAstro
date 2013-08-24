@@ -36,7 +36,6 @@
     float _stretchMin, _stretchMax;
     CASVector _debayerOffset;
     CIImage* _filteredCIImage;
-    CIContext* _drawingContext;
     NSMutableDictionary* _filterCache;
     CGRect _extent;
 }
@@ -279,13 +278,10 @@
         if (!_filteredCIImage){
             _filteredCIImage = [self filterImage:self.CIImage];
         }
-        if (!_drawingContext){
-            _drawingContext = [CIContext contextWithCGContext:context options:nil]; // colour management options ?
-        }
     }
-    if (_filteredCIImage && _drawingContext){
+    if (_filteredCIImage){
         const CGRect clip = CGContextGetClipBoundingBox(context);
-        [_drawingContext drawImage:_filteredCIImage inRect:clip fromRect:clip];
+        [[CIContext contextWithCGContext:context options:nil] drawImage:_filteredCIImage inRect:clip fromRect:clip];
     }
 }
 
