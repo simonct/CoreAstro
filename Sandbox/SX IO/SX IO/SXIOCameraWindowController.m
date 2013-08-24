@@ -197,7 +197,7 @@
                         prefix = @"image";
                     }
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence];
+                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence+1];
                     NSURL* finalUrl = [url URLByAppendingPathComponent:prefix];
                     finalUrl = [finalUrl URLByAppendingPathExtension:@"fits"];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
