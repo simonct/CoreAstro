@@ -18,6 +18,7 @@
 		F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; };
 		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
 		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
+		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F48F464217C40971008FCEBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
@@ -394,6 +395,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */,
+				F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */,
 				F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */,
 				F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */,
 				F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */,
