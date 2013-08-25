@@ -174,6 +174,13 @@ const float kMaxPixelValue = 65535.0;
                 }
             }
             
+            if (lower == -1){
+                lower = 0;
+            }
+            if (upper == -1){
+                upper = kMaxPixelValue;
+            }
+                        
 //            NSLog(@"CASFITSPreviewer: lower %ld, upper %ld, pixelsPerBin: %ld",(unsigned long)lower,(unsigned long)upper,pixelsPerBin);
             
             const float scaler = kMaxPixelValue/(upper - lower);
