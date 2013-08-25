@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53517C95B7C001C42F1 /* QuickLook.framework */; };
+		F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
+		F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53817C95B7C001C42F1 /* CoreServices.framework */; };
+		F415C53A17C95B7C001C42F1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */; };
+		F415C54017C95B7D001C42F1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F415C53E17C95B7C001C42F1 /* InfoPlist.strings */; };
+		F415C54217C95B7D001C42F1 /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54117C95B7D001C42F1 /* GenerateThumbnailForURL.m */; };
+		F415C54417C95B7D001C42F1 /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54317C95B7D001C42F1 /* GeneratePreviewForURL.m */; };
+		F415C54617C95B7D001C42F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54517C95B7D001C42F1 /* main.m */; };
+		F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; };
+		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
+		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F48F464217C40971008FCEBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
@@ -60,6 +71,7 @@
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
 		F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */; };
+		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
 		F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
@@ -102,6 +114,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F415C54B17C95BD3001C42F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F415C53317C95B7C001C42F1;
+			remoteInfo = QuickFITS;
+		};
 		F48F467017C40AB5008FCEBE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
@@ -182,6 +201,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F415C54D17C95BDF001C42F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/QuickLook;
+			dstSubfolderSpec = 1;
+			files = (
+				F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4A25838179B31760013D220 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -216,6 +245,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickFITS.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		F415C53517C95B7C001C42F1 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		F415C53817C95B7C001C42F1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		F415C53D17C95B7C001C42F1 /* QuickFITS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "QuickFITS-Info.plist"; sourceTree = "<group>"; };
+		F415C53F17C95B7C001C42F1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F415C54117C95B7D001C42F1 /* GenerateThumbnailForURL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerateThumbnailForURL.m; sourceTree = "<group>"; };
+		F415C54317C95B7D001C42F1 /* GeneratePreviewForURL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneratePreviewForURL.m; sourceTree = "<group>"; };
+		F415C54517C95B7D001C42F1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F415C54717C95B7D001C42F1 /* QuickFITS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickFITS-Prefix.pch"; sourceTree = "<group>"; };
+		F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSPreviewer.m; sourceTree = "<group>"; };
+		F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSPreviewer.h; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
 		F48F465017C40971008FCEBE /* Debayer.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Debayer.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -288,6 +328,7 @@
 		F4BDF8ED17B657AF00749F4B /* SMDoubleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSlider.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.h"; sourceTree = "<group>"; };
 		F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASContrastStretchSliderView.h; sourceTree = "<group>"; };
 		F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASContrastStretchSliderView.m; sourceTree = "<group>"; };
+		F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcfitsio.dylib; path = ../../External/cfitsio/build/Release/libcfitsio.dylib; sourceTree = "<group>"; };
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
 		F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCameraWindowController.xib; sourceTree = "<group>"; };
@@ -348,6 +389,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F415C52F17C95B7C001C42F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */,
+				F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */,
+				F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */,
+				F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */,
+				F415C53A17C95B7C001C42F1 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F48F464017C40971008FCEBE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -385,6 +438,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F415C53B17C95B7C001C42F1 /* QuickFITS */ = {
+			isa = PBXGroup;
+			children = (
+				F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */,
+				F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */,
+				F415C54117C95B7D001C42F1 /* GenerateThumbnailForURL.m */,
+				F415C54317C95B7D001C42F1 /* GeneratePreviewForURL.m */,
+				F415C54517C95B7D001C42F1 /* main.m */,
+				F415C53C17C95B7C001C42F1 /* Supporting Files */,
+			);
+			path = QuickFITS;
+			sourceTree = "<group>";
+		};
+		F415C53C17C95B7C001C42F1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F415C53D17C95B7C001C42F1 /* QuickFITS-Info.plist */,
+				F415C53E17C95B7C001C42F1 /* InfoPlist.strings */,
+				F415C54717C95B7D001C42F1 /* QuickFITS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F48F465717C409E6008FCEBE /* Debayer */ = {
 			isa = PBXGroup;
 			children = (
@@ -576,6 +652,7 @@
 				F4FD2308179B30D60049F5B5 /* SX IO */,
 				F4F9B20617B15A9A0063DD0D /* ContrastStretch */,
 				F48F465717C409E6008FCEBE /* Debayer */,
+				F415C53B17C95B7C001C42F1 /* QuickFITS */,
 				F4FD2301179B30D60049F5B5 /* Frameworks */,
 				F4FD2300179B30D60049F5B5 /* Products */,
 			);
@@ -587,6 +664,7 @@
 				F4FD22FF179B30D60049F5B5 /* SX IO.app */,
 				F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */,
 				F48F465017C40971008FCEBE /* Debayer.plugin */,
+				F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -594,6 +672,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */,
 				F4E64283179DC2D10044B349 /* Quartz.framework */,
 				F4A25895179BC0CF0013D220 /* Accelerate.framework */,
 				F4A25874179BC06E0013D220 /* QuartzCore.framework */,
@@ -601,6 +680,8 @@
 				F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */,
 				F4F9B20117B15A9A0063DD0D /* Foundation.framework */,
 				F4F9B20417B15A9A0063DD0D /* CoreFoundation.framework */,
+				F415C53517C95B7C001C42F1 /* QuickLook.framework */,
+				F415C53817C95B7C001C42F1 /* CoreServices.framework */,
 				F4FD2304179B30D60049F5B5 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -689,6 +770,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		F415C53017C95B7C001C42F1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F48F464517C40971008FCEBE /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -709,6 +798,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		F415C53317C95B7C001C42F1 /* QuickFITS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */;
+			buildPhases = (
+				F415C52E17C95B7C001C42F1 /* Sources */,
+				F415C52F17C95B7C001C42F1 /* Frameworks */,
+				F415C53017C95B7C001C42F1 /* Headers */,
+				F415C53117C95B7C001C42F1 /* Resources */,
+				F415C53217C95B7C001C42F1 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuickFITS;
+			productName = QuickFITS;
+			productReference = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */;
+			productType = "com.apple.product-type.bundle";
+		};
 		F48F463C17C40971008FCEBE /* Debayer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F48F464D17C40971008FCEBE /* Build configuration list for PBXNativeTarget "Debayer" */;
@@ -757,11 +865,13 @@
 				F4A25838179B31760013D220 /* CopyFiles */,
 				F4D3CE01179BC54900B42D04 /* CopyFiles */,
 				F4F9B22617B15AC40063DD0D /* CopyFiles */,
+				F415C54D17C95BDF001C42F1 /* CopyFiles */,
 				F4CE97FB17AD58F2000F28C8 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F415C54C17C95BD3001C42F1 /* PBXTargetDependency */,
 				F48F467117C40AB5008FCEBE /* PBXTargetDependency */,
 				F4F9B22517B15ABE0063DD0D /* PBXTargetDependency */,
 				F4D3CDF5179BC52800B42D04 /* PBXTargetDependency */,
@@ -803,6 +913,7 @@
 				F4FD22FE179B30D60049F5B5 /* SX IO */,
 				F48F463C17C40971008FCEBE /* Debayer */,
 				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
+				F415C53317C95B7C001C42F1 /* QuickFITS */,
 			);
 		};
 /* End PBXProject section */
@@ -860,6 +971,14 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F415C53117C95B7C001C42F1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F415C54017C95B7D001C42F1 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F48F464617C40971008FCEBE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -919,6 +1038,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXRezBuildPhase section */
+		F415C53217C95B7C001C42F1 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F48F464C17C40971008FCEBE /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -952,6 +1078,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F415C52E17C95B7C001C42F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F415C54217C95B7D001C42F1 /* GenerateThumbnailForURL.m in Sources */,
+				F415C54417C95B7D001C42F1 /* GeneratePreviewForURL.m in Sources */,
+				F415C54617C95B7D001C42F1 /* main.m in Sources */,
+				F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F48F463D17C40971008FCEBE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1013,6 +1150,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F415C54C17C95BD3001C42F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F415C53317C95B7C001C42F1 /* QuickFITS */;
+			targetProxy = F415C54B17C95BD3001C42F1 /* PBXContainerItemProxy */;
+		};
 		F48F467117C40AB5008FCEBE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F48F463C17C40971008FCEBE /* Debayer */;
@@ -1036,6 +1178,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		F415C53E17C95B7C001C42F1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F415C53F17C95B7C001C42F1 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		F48F466017C409E6008FCEBE /* Description.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1095,6 +1245,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F415C54917C95B7D001C42F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "QuickFITS/QuickFITS-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
+				INFOPLIST_FILE = "QuickFITS/QuickFITS-Info.plist";
+				INSTALL_PATH = /Library/QuickLook;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Debug;
+		};
+		F415C54A17C95B7D001C42F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "QuickFITS/QuickFITS-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
+				INFOPLIST_FILE = "QuickFITS/QuickFITS-Info.plist";
+				INSTALL_PATH = /Library/QuickLook;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Release;
+		};
 		F48F464E17C40971008FCEBE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1221,6 +1403,7 @@
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1237,6 +1420,7 @@
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1245,6 +1429,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F415C54917C95B7D001C42F1 /* Debug */,
+				F415C54A17C95B7D001C42F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F48F464D17C40971008FCEBE /* Build configuration list for PBXNativeTarget "Debayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
