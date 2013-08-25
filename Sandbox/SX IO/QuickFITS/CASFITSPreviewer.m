@@ -72,7 +72,7 @@ const float kMaxPixelValue = 65535.0;
                 }
                 
                 // scale the pixels to 0->1 (use vDSP ?)
-                [self contrastStretchPixels:context count:naxes[0] * naxes[1]];
+                [self contrastStretchPixels:context];
                 
                 // create the image
                 result = CGBitmapContextCreateImage(context);
@@ -91,90 +91,116 @@ const float kMaxPixelValue = 65535.0;
     return result;
 }
 
-- (void)contrastStretchPixels:(CGContextRef)context count:(NSInteger)count
+- (void)contrastStretchPixels:(CGContextRef)context
 {
-    float* pix = CGBitmapContextGetData(context);
-    
-    float average = 0, min = kMaxPixelValue, max = 0;
-    for (NSInteger i = 0; i < count; i++) {
-        average += pix[i];
-        min = MIN(min, pix[i]);
-        max = MAX(max, pix[i]);
+    if (!context){
+        return;
     }
-    average /= count;
+    
+    float* pix = CGBitmapContextGetData(context);
+    if (!pix){
+        return;
+    }
 
-    NSLog(@"CASFITSPreviewer (before stretch): average: %f, min: %f, max: %f",average,min,max);
+    const size_t width = CGBitmapContextGetWidth(context);
+    const size_t height = CGBitmapContextGetHeight(context);
+    const size_t stride = CGBitmapContextGetBytesPerRow(context)/sizeof(float);
+    const size_t pixelCount = width*height;
+    
+//    NSLog(@"width: %ld height: %ld stride: %ld count: %ld",width,height,stride,pixelCount);
+
+    __block float average, min, max;
+
+    void (^calcPixelStats)() = ^(){
+        
+        average = 0, min = kMaxPixelValue, max = 0;
+        
+        float* p = pix;
+        for (int y = 0; y < height; ++y){
+            for (int x = 0; x < width; ++x){
+                const float pv = p[x];
+                average += pv;
+                min = MIN(min, pv);
+                max = MAX(max, pv);
+            }
+            p += stride;
+        }
+        average /= pixelCount;
+    };
+    
+    calcPixelStats();
+//    NSLog(@"CASFITSPreviewer (before stretch): average: %f, min: %f, max: %f",average,min,max);
 
     if (0){
         
         const float scaler = kMaxPixelValue/(max - min);
-        for (int i = 0; i < count; ++i){
+        for (int i = 0; i < pixelCount; ++i){
             pix[i] = (pix[i] - min) * scaler;
         }
     }
     else {
         
         vImage_Buffer buffer = {
-            (void*)CGBitmapContextGetData(context),
+            pix,
             CGBitmapContextGetHeight(context),
             CGBitmapContextGetWidth(context),
             CGBitmapContextGetBytesPerRow(context)
         };
-        
-        const NSInteger count = 256;
-        vImagePixelCount histogram[count];
-        vImageHistogramCalculation_PlanarF(&buffer,histogram,count,0,kMaxPixelValue,kvImageNoFlags);
-        
-        const NSUInteger pixelCount = buffer.width * buffer.height;
-        const NSInteger pixelsPerBin = round(kMaxPixelValue / (float)count);
-        const float lowerThreshold = pixelCount * 0.05;
-        const float upperThreshold = pixelCount * 0.95;
-        
-        NSUInteger total = 0;
-        NSUInteger lower = -1;
-        NSUInteger upper = -1;
-        for (NSInteger bin = 0; bin < count; ++bin){
-            
-            total += histogram[bin];
-            if (lower == -1 && total >= lowerThreshold){
-                lower = bin * pixelsPerBin;
-            }
-            if (upper == -1 && total >= upperThreshold){
-                upper = bin * pixelsPerBin;
-            }
+
+        const NSInteger binCount = 4096;
+        vImagePixelCount* histogram = malloc(sizeof(vImagePixelCount) * binCount);
+        if (!histogram){
+            NSLog(@"CASFITSPreviewer: out of memory");
         }
+        else{
         
-        NSLog(@"CASFITSPreviewer: lower %ld, upper %ld, pixelsPerBin: %ld",(unsigned long)lower,(unsigned long)upper,pixelsPerBin);
-        
-        float* pix = CGBitmapContextGetData(context);
-        const float scaler = kMaxPixelValue/(upper - lower);
-        for (int i = 0; i < count; ++i){
-            const float p = pix[i];
-            if (p < lower){
-                pix[i] = 0;
+            vImageHistogramCalculation_PlanarF(&buffer,histogram,binCount,0,kMaxPixelValue,kvImageNoFlags);
+            
+            const float lowerThreshold = pixelCount * 0.005;
+            const float upperThreshold = pixelCount * 0.995;
+            const NSInteger pixelsPerBin = round(kMaxPixelValue / (float)binCount);
+            
+            NSUInteger total = 0;
+            NSUInteger lower = -1;
+            NSUInteger upper = -1;
+            for (NSInteger bin = 0; bin < binCount; ++bin){
+                
+                total += histogram[bin];
+                if (lower == -1 && total >= lowerThreshold){
+                    lower = bin * pixelsPerBin;
+                }
+                if (upper == -1 && total >= upperThreshold){
+                    upper = bin * pixelsPerBin;
+                }
             }
-            else if (p > upper){
-                pix[i] = kMaxPixelValue;
+            
+//            NSLog(@"CASFITSPreviewer: lower %ld, upper %ld, pixelsPerBin: %ld",(unsigned long)lower,(unsigned long)upper,pixelsPerBin);
+            
+            const float scaler = kMaxPixelValue/(upper - lower);
+            for (int i = 0; i < pixelCount; ++i){
+                const float p = pix[i];
+                if (p < lower){
+                    pix[i] = 0;
+                }
+                else if (p > upper){
+                    pix[i] = kMaxPixelValue;
+                }
+                else {
+                    pix[i] = (p - lower)*scaler;
+                }
             }
-            else {
-                pix[i] = (pix[i] - min)*scaler;
-            }
+            
+            free(histogram);
         }
     }
 
-    for (int i = 0; i < count; ++i){
+    // scale to 0->1
+    for (int i = 0; i < pixelCount; ++i){
         pix[i] /= kMaxPixelValue;
     }
 
-    average = max = 0, min = kMaxPixelValue;
-    for (int i = 0; i < count; ++i){
-        average += pix[i];
-        min = MIN(min, pix[i]);
-        max = MAX(max, pix[i]);
-    }
-    average /= count;
-    
-    NSLog(@"CASFITSPreviewer (after stretch): average: %f, min: %f, max: %f",average,min,max);
+//    calcPixelStats();
+//    NSLog(@"CASFITSPreviewer (after stretch): average: %f, min: %f, max: %f",average,min,max);
 }
 
 @end
