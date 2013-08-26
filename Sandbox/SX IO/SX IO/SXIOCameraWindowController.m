@@ -239,6 +239,9 @@
     // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
     
+    // ensure this is recorded as a light frame
+    self.cameraController.exposureType = kCASCCDExposureLightType;
+
     // issue the capture command
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
