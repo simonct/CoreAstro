@@ -57,6 +57,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.temperatureLock = YES;
         self.exposureType = kCASCCDExposureLightType;
         self.autoSave = YES;
+        self.captureCount = 1;
     }
     return self;
 }
@@ -195,9 +196,16 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             self.capturing = NO;
             self.state = CASCameraControllerStateNone;
 
-            if ([NSUserNotification class]){
+            if ([NSUserNotification class] && !_cancel){
                 NSUserNotification* note = [[NSUserNotification alloc] init];
                 note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                NSString* exposureUnits = (self.exposureUnits == 0) ? @"s" : @"ms";
+                if (self.captureCount == 1){
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.captureCount,self.exposure,exposureUnits];
+                }
+                else {
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.captureCount,self.exposure,exposureUnits];
+                }
                 note.soundName = NSUserNotificationDefaultSoundName;
                 [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
             }
