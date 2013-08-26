@@ -81,7 +81,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     if (state != _state){
         _state = state;
-        NSLog(@"Changed state to %ld",_state);
+//        NSLog(@"Changed state to %ld",_state);
     }
 }
 
@@ -107,7 +107,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 //        NSLog(@"Waiting progress: %f",self.progress);
     }
 
-    [self performSelector:_cmd withObject:nil afterDelay:0.1];
+    const NSTimeInterval updateInterval = MAX(0.25,_expParams.ms/1000.0/100.0); // reduce further on battery ?
+    [self performSelector:_cmd withObject:nil afterDelay:updateInterval];
 }
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block

@@ -12,11 +12,19 @@
 @property (nonatomic,strong,readonly) CIImage* image;
 @property (nonatomic,assign) CGImageRef CGImage;
 @property (nonatomic,strong) NSURL* url;
+- (void)setCGImage:(CGImageRef)CGImage resetDisplay:(BOOL)resetDisplay;
 @end
 
+typedef struct CASVector {
+    CGFloat x, y;
+} CASVector;
+
 @interface CASImageView (CASImageAdjustment)
-@property BOOL invert;
-@property BOOL medianFilter;
-@property BOOL contrastStretch;
-@property float stretchMin, stretchMax, stretchGamma; // contrast stretch 0->1
+@property (nonatomic) BOOL invert;
+@property (nonatomic) BOOL medianFilter;
+@property (nonatomic) BOOL contrastStretch;
+@property (nonatomic) float stretchMin, stretchMax, stretchGamma; // contrast stretch 0->1
+@property (nonatomic) BOOL debayer;
+@property (nonatomic) CASVector debayerOffset;
+@property (nonatomic) CGRect extent;
 @end

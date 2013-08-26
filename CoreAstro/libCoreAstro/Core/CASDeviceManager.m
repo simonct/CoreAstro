@@ -39,6 +39,7 @@
 
 @implementation CASDeviceManager {
     NSMutableArray* _devices;
+    NSMutableSet* _pendingDevices;
     NSMutableArray* _cameraControllers;
     NSMutableArray* _guiderControllers;
     NSMutableArray* _filterWheelControllers;
@@ -64,6 +65,7 @@
     self = [super init];
     if (self) {
         self.pluginManager = [[CASPluginManager alloc] init];
+        _pendingDevices = [NSMutableSet setWithCapacity:10];
         _cameraControllers = [NSMutableArray arrayWithCapacity:10];
         _guiderControllers = [NSMutableArray arrayWithCapacity:10];
         _filterWheelControllers = [NSMutableArray arrayWithCapacity:10];
@@ -208,7 +210,7 @@
 - (void)recogniseGuider:(CASDevice*)device
 {
     id<CASGuider> guider = (id<CASGuider>)device;
-    if ([guider conformsToProtocol:@protocol(CASGuider)]){
+    if ([guider conformsToProtocol:@protocol(CASGuider)] && ![self guiderControllerForDevice:device]){
         if (![self guiderControllerForDevice:guider]){
             [self.mutableGuiderControllers addObject:[[CASGuiderController alloc] initWithGuider:guider]];
         }
@@ -218,15 +220,21 @@
 - (void)recogniseCamera:(CASDevice*)device
 {
     CASCCDDevice* ccd = (CASCCDDevice*)device;
-    if (ccd.type == kCASDeviceTypeCamera){
+    if (ccd.type == kCASDeviceTypeCamera && ![_pendingDevices containsObject:device] && ![self cameraControllerForDevice:device]){
+        
+        // guard against multiple calls to this while the device is connecting
+        // (probably better solved just by connecting lazily ?)
+        [_pendingDevices addObject:device];
         
         // todo; defer this until the device is actually clicked on in the master selection view ?
         [ccd connect:^(NSError* error) {
             
+            [_pendingDevices removeObject:device];
+
             if (error){
                 NSLog(@"Error connecting to camera: %@",error);
             }
-            else {
+            else if (![self cameraControllerForDevice:device]) {
                 
                 CASCameraController* cameraController = [[CASCameraController alloc] initWithCamera:ccd];
                 if (cameraController){
@@ -248,15 +256,21 @@
 - (void)recogniseFilterWheel:(CASDevice*)device
 {
     CASFWDevice* fw = (CASFWDevice*)device;
-    if (fw.type == kCASDeviceTypeFilterWheel){
+    if (fw.type == kCASDeviceTypeFilterWheel && ![_pendingDevices containsObject:device] && ![self filterWheelControllerForDevice:device]){
         
+        // guard against multiple calls to this while the device is connecting
+        // (probably better solved just by connecting lazily ?)
+        [_pendingDevices addObject:device];
+
         // todo; defer this until the device is actually clicked on in the master selection view ?
         [fw connect:^(NSError* error) {
            
+            [_pendingDevices removeObject:device];
+
             if (error){
                 NSLog(@"Error connecting to filter wheel: %@",error);
             }
-            else {
+            else if (![self filterWheelControllerForDevice:device]) {
                 
                 CASFilterWheelController* filterWheelController = [[CASFilterWheelController alloc] initWithFilterWheel:fw];
                 if (filterWheelController){

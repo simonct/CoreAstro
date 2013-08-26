@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		F41E31D5164FA92000E8BE7F /* CASScriptableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */; };
 		F41E3228164FBB5000E8BE7F /* debayer-cifilter.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F41E3225164FBB4000E8BE7F /* debayer-cifilter.plugin */; };
+		F48F463117C40738008FCEBE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F48F463017C40738008FCEBE /* Accelerate.framework */; };
+		F48F463717C4076B008FCEBE /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F463617C4076B008FCEBE /* CASUtilities.m */; };
 		F49C48DD164FBEEE00EC8572 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49C48DC164FBEEE00EC8572 /* QuartzCore.framework */; };
 		F4D1D32D15F60D9400D3468B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D1D32C15F60D9400D3468B /* Cocoa.framework */; };
 		F4D1D33715F60D9400D3468B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4D1D33515F60D9400D3468B /* InfoPlist.strings */; };
@@ -66,6 +68,9 @@
 		F41E31D3164FA92000E8BE7F /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASScriptableObject.h; path = ../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.h; sourceTree = "<group>"; };
 		F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASScriptableObject.m; path = ../../../CoreAstro/libCoreAstro/Core/CASScriptableObject.m; sourceTree = "<group>"; };
 		F41E321D164FBB4000E8BE7F /* debayer-cifilter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "debayer-cifilter.xcodeproj"; path = "../debayer-cifilter/debayer-cifilter.xcodeproj"; sourceTree = "<group>"; };
+		F48F463017C40738008FCEBE /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F48F463517C4076B008FCEBE /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASUtilities.h; path = ../../../CoreAstro/libCoreAstro/Core/CASUtilities.h; sourceTree = "<group>"; };
+		F48F463617C4076B008FCEBE /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASUtilities.m; path = ../../../CoreAstro/libCoreAstro/Core/CASUtilities.m; sourceTree = "<group>"; };
 		F49C48DC164FBEEE00EC8572 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F4D1D32815F60D9400D3468B /* debayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = debayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4D1D32C15F60D9400D3468B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -99,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F48F463117C40738008FCEBE /* Accelerate.framework in Frameworks */,
 				F49C48DD164FBEEE00EC8572 /* QuartzCore.framework in Frameworks */,
 				F4D1D32D15F60D9400D3468B /* Cocoa.framework in Frameworks */,
 			);
@@ -147,6 +153,7 @@
 		F4D1D32B15F60D9400D3468B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F48F463017C40738008FCEBE /* Accelerate.framework */,
 				F49C48DC164FBEEE00EC8572 /* QuartzCore.framework */,
 				F4D1D32C15F60D9400D3468B /* Cocoa.framework */,
 				F4D1D34A15F60D9400D3468B /* SenTestingKit.framework */,
@@ -179,6 +186,8 @@
 				F4D1D36315F60DB900D3468B /* CASCCDExposureIO.m */,
 				F41E31D3164FA92000E8BE7F /* CASScriptableObject.h */,
 				F41E31D4164FA92000E8BE7F /* CASScriptableObject.m */,
+				F48F463517C4076B008FCEBE /* CASUtilities.h */,
+				F48F463617C4076B008FCEBE /* CASUtilities.m */,
 				F4D1D33315F60D9400D3468B /* Supporting Files */,
 			);
 			path = debayer;
@@ -341,6 +350,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F48F463717C4076B008FCEBE /* CASUtilities.m in Sources */,
 				F4D1D33915F60D9400D3468B /* main.m in Sources */,
 				F4D1D34015F60D9400D3468B /* AppDelegate.m in Sources */,
 				F4D1D36415F60DB900D3468B /* CASCCDExposure.m in Sources */,

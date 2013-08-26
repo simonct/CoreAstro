@@ -325,7 +325,10 @@
     if (rect.size.width < 1 || rect.size.height < 1){
         return nil;
     }
-
+    if (self.params.bin.width < 1 || self.params.bin.height < 1){
+        return nil;
+    }
+    
     const NSInteger pixelSize = self.pixelSize;
 
     NSData* subframePixels = [NSMutableData dataWithLength:rect.size.width*rect.size.height*pixelSize]; // bin size
@@ -357,10 +360,14 @@
 
     // todo; revist need for this as actualSize already accounts for binning...
     CASRect scaledRect = rect;
-    scaledRect.size.width /= self.params.bin.width;
-    scaledRect.size.height /= self.params.bin.height;
-    scaledRect.origin.x /= self.params.bin.width;
-    scaledRect.origin.y /= self.params.bin.height;
+    if (self.params.bin.width != 0){
+        scaledRect.size.width /= self.params.bin.width;
+        scaledRect.origin.x /= self.params.bin.width;
+    }
+    if (self.params.bin.height != 0){
+        scaledRect.size.height /= self.params.bin.height;
+        scaledRect.origin.y /= self.params.bin.height;
+    }
 
     uint8_t* floatPixels = (scaledRect.origin.x  * pixelSize) + (scaledRect.origin.y * actualSize.width /* todo; scaledRect.size.width ? */  * pixelSize) + (uint8_t*)[self.floatPixels bytes];
     uint8_t* subframeFloatPixels = (uint8_t*)[subframePixels bytes];
@@ -539,7 +546,9 @@
     CIFilter* filter = [CIFilter filterWithName:@"CIGaussianBlur"];
     [filter setDefaults];
     
-    CIImage* inputImage = [CIImage imageWithCGImage:CGBitmapContextCreateImage(context)];
+    CGImageRef bitmapImage = CGBitmapContextCreateImage(context);
+    CIImage* inputImage = [CIImage imageWithCGImage:bitmapImage];
+    CGImageRelease(bitmapImage);
     [filter setValue:inputImage forKey:@"inputImage"];
     [filter setValue:[NSNumber numberWithFloat:radius] forKey:@"inputRadius"];
     
@@ -549,7 +558,11 @@
     
     // build an exposure
     NSData* pixels = [NSData dataWithBytesNoCopy:CGBitmapContextGetData(context) length:size.width * size.height * 4 freeWhenDone:NO];
-    return [CASCCDExposure exposureWithFloatPixels:pixels camera:nil params:expParams time:[NSDate date]];
+    CASCCDExposure* exposure = [CASCCDExposure exposureWithFloatPixels:pixels camera:nil params:expParams time:[NSDate date]];
+    
+    CGContextRelease(context);
+    
+    return exposure;
 }
 
 @end

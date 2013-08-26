@@ -65,7 +65,7 @@
                 NSLog(@"Failed to read image");
             }
             else {
-                self.image = [self.exposure createImage];
+                self.image = [self.exposure newImage];
             }
         }
     }];

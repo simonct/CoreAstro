@@ -34,7 +34,10 @@
 typedef float cas_pixel_t;
 typedef struct { float r,g,b,a; } cas_fpixel_t;
 
-@implementation CASImageProcessor
+@implementation CASImageProcessor {
+    void* _equalisationBuffer;
+    size_t _equalisationBufferSize;
+}
 
 + (id<CASImageProcessor>)imageProcessorWithIdentifier:(NSString*)ident
 {
@@ -48,6 +51,13 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     }
     
     return result;
+}
+
+- (void)dealloc
+{
+    if (_equalisationBuffer){
+        free(_equalisationBuffer);
+    }
 }
 
 - (BOOL)preflightA:(CASCCDExposure*)expA b:(CASCCDExposure*)expB
@@ -79,6 +89,23 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return buffer;
 }
 
+- (void)allocateEqualisationBufferWithSize:(size_t)size
+{
+    if (!_equalisationBuffer || _equalisationBufferSize != size){
+        if (!_equalisationBuffer){
+            _equalisationBuffer = malloc(size);
+        }
+        else {
+            _equalisationBuffer = realloc(_equalisationBuffer, size);
+        }
+        if (_equalisationBuffer){
+            _equalisationBufferSize = size;
+        }
+        else {
+            _equalisationBufferSize = 0;
+        }
+    }
+}
 
 - (CASCCDExposure*)equalise:(CASCCDExposure*)exposure_
 {
@@ -98,13 +125,33 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             
             vImage_Error error = kvImageNoError;
             if (result.rgba){
-                error = vImageEqualization_ARGBFFFF(&buffer,&buffer,nil,numberOfBins,0,1,kvImageNoFlags); // docs state that this still works even though the source data is RGBA not ARGB
+                
+                error = vImageEqualization_ARGBFFFF(&buffer,&buffer,nil,numberOfBins,0,1,kvImageGetTempBufferSize); // docs state that this still works even though the source data is RGBA not ARGB
+                if (error > 0){
+                    [self allocateEqualisationBufferWithSize:error];
+                    if (!_equalisationBuffer){
+                        error = memFullErr;
+                    }
+                    else {
+                        error = vImageEqualization_ARGBFFFF(&buffer,&buffer,_equalisationBuffer,numberOfBins,0,1,kvImageNoFlags);
+                    }
+                }
                 if (error != kvImageNoError){
                     NSLog(@"vImageEqualization_ARGBFFFF: %ld",error);
                 }
             }
             else {
-                error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,numberOfBins,0,1,kvImageNoFlags);
+                
+                error = vImageEqualization_PlanarF(&buffer,&buffer,NULL,numberOfBins,0,1,kvImageGetTempBufferSize);
+                if (error > 0){
+                    [self allocateEqualisationBufferWithSize:error];
+                    if (!_equalisationBuffer){
+                        error = memFullErr;
+                    }
+                    else {
+                        error = vImageEqualization_PlanarF(&buffer,&buffer,_equalisationBuffer,numberOfBins,0,1,kvImageNoFlags);
+                    }
+                }
                 if (error != kvImageNoError){
                     NSLog(@"vImageEqualization_PlanarF: %ld",error);
                 }

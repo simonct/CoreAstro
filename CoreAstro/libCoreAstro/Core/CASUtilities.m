@@ -46,6 +46,21 @@ NSTimeInterval CASTimeBlock(void(^block)(void))
     return result;
 }
 
+void CASWithSuddenTerminationDisabled(void(^block)(void))
+{
+    if (block){
+        [[NSProcessInfo processInfo] disableSuddenTermination];
+        // disableAutomaticTermination ?
+        @try {
+            block();
+        }
+        @finally {
+            [[NSProcessInfo processInfo] enableSuddenTermination];
+            // enableAutomaticTermination ?
+        }
+    }
+}
+
 void CASThrowException(Class klass,NSString* message)
 {
     @throw [NSException exceptionWithName:NSStringFromClass(klass) reason:message userInfo:nil];

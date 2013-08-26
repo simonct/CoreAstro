@@ -420,6 +420,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize params = _params;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: params=%@>",NSStringFromClass([self class]),self.params];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxGetCameraParamsWriteData(SXUSB_MAIN_CAMERA_INDEX,buffer);
@@ -466,6 +470,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOFlushCommand
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: noWipe=%d>",NSStringFromClass([self class]),self.noWipe];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     USHORT flags = 0;
@@ -485,11 +493,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize ms, params, readPixels, pixels = _pixels;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: readPixels=%d, latchPixels=%d, ms=%ld, params=%@>",
+            NSStringFromClass([self class]),self.readPixels,self.latchPixels,(long)self.ms,NSStringFromCASExposeParams(self.params)];
+}
+
 - (NSData*)toDataRepresentation {
     
     if (self.latchPixels){
-        
-        NSLog(@"SXCCDIOExposeCommand latching");
         
         uint8_t buffer[18];
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
@@ -497,8 +508,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     else {
         
-        NSLog(@"SXCCDIOExposeCommand exposing");
-
         uint8_t buffer[22];
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
@@ -511,10 +520,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // only currently handling 16-bit bit might have to round so that 14 => 2
 }
-
-//- (BOOL) allowsUnderrun {
-//    return self.readPixels; // as I seem to be reading 2 bytes less than requested, probably an arithmatic problem somewhere (check this is still the case)
-//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = [self postProcessPixels:data];
@@ -529,6 +534,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 @end
 
 @implementation SXCCDIOExposeCommandM25C
+
+- (BOOL)allowsUnderrun {
+    return YES; // for reasons I have yet to figure out I occasionally get 1 row less than I asked for
+}
 
 - (NSData*)toDataRepresentation {
     
@@ -549,15 +558,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originY = self.params.origin.y / 2;
 
     if (self.latchPixels){
-        
-        NSLog(@"SXCCDIOExposeCommandM25C latching");
-
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
     }
     else {
-        
-        NSLog(@"SXCCDIOExposeCommandM25C exposing");
-
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
     }
     
@@ -576,18 +579,74 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             
             if (pixelsPtr && rearrangedPixelsPtr){
                 
-                const unsigned long width = self.params.size.width/self.params.bin.width;
-                const unsigned long height = self.params.size.height/self.params.bin.height;
+                const size_t width = self.params.size.width/self.params.bin.width;
                 
-                unsigned long i = 0;
-                for (unsigned long y = 0; y < height; y += 2){
-                    
-                    for (unsigned long x = 0; x < width; x += 1){
-                        
+                size_t height = self.params.size.height/self.params.bin.height;
+                if ([pixels length] < width * height * sizeof(uint16_t)){
+                    height = [pixels length] / (width * sizeof(uint16_t));
+                    NSLog(@"Reset height to %ld after receiving %ld bytes",height,[pixels length]);
+                }
+                
+                size_t i = 0;
+                for (size_t y = 0; y < height; y += 2){
+                    for (size_t x = 0; x < width; x += 1){
                         rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
                         rearrangedPixelsPtr[x + ((y+1) * width)] = pixelsPtr[i++];
                     }
                 }
+                
+                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
+            }
+        }
+    }
+    
+    return pixels;
+}
+
+@end
+
+@implementation SXCCDIOExposeCommandM26C
+
+- (NSData*)toDataRepresentation {
+    
+    // probably have to limit origins and subframe dimensions to a 2 or 4 pixel grid
+    
+    return [super toDataRepresentation];
+}
+
+- (NSData*)postProcessPixels:(NSData*)pixels {
+    
+    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
+        
+        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
+        if ([rearrangedPixels length]){
+            
+            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
+            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
+            
+            if (pixelsPtr && rearrangedPixelsPtr){
+                
+                const size_t width = self.params.size.width;
+                const size_t height = self.params.size.height;
+                
+                void (^reconstructField)(size_t startRow) = ^(size_t startRow){
+                                        
+                    size_t i = startRow*width*height/2; // start index into the source buffer
+                    
+                    // do we actually get a height*width image from the chip and have to rotate it e.g. run columns first ?
+
+                    for (size_t row = startRow; row < height; row += 2){
+                        const size_t rowOffset = row*width; // (height - row - 1)*width;
+                        for (size_t col = 0; col < width; col += 2){
+                            rearrangedPixelsPtr[col + rowOffset] = pixelsPtr[i++]; // red or blue, starting at column [0]
+                            rearrangedPixelsPtr[(width - col - 1) + rowOffset] = pixelsPtr[i++]; // green, starting at column [width - 1]
+                        }
+                    }
+                };
+                
+//                dispatch_apply(2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), reconstructField);
+                reconstructField(0);
+                reconstructField(1);
                 
                 memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
             }
@@ -690,13 +749,13 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize params, pixels = _pixels;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: params=%@>",NSStringFromClass([self class]),NSStringFromCASExposeParams(self.params)];
+}
+
 - (NSInteger) readSize {
     return (self.params.size.width / self.params.bin.width) * (self.params.size.height / self.params.bin.height) * (self.params.bps/8); // round so that 14 => 2
 }
-
-//- (BOOL) allowsUnderrun {
-//    return YES;
-//}
 
 - (NSError*)fromDataRepresentation:(NSData*)data {
     _pixels = data;
@@ -766,6 +825,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @synthesize centigrade, on;
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: on=%d, centigrade=%f>",NSStringFromClass([self class]),self.on,self.centigrade];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxCoolerWriteData(buffer,self.centigrade,self.on);
@@ -795,6 +858,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOGuideCommand
 
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: direction=%d>",NSStringFromClass([self class]),self.direction];
+}
+
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];
     sxSetSTAR2000WriteData(self.direction,buffer);
@@ -804,6 +871,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 @end
 
 @implementation SXCCDIOShutterCommand
+
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: open=%d>",NSStringFromClass([self class]),self.open];
+}
 
 - (NSData*)toDataRepresentation {
     uint8_t buffer[8];

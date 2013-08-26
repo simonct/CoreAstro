@@ -345,7 +345,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     void (^setStarInfoExposure)(CASCCDExposure*,const NSPoint*) = ^(CASCCDExposure* exposure,const NSPoint* p){
         self.starInfoView.hidden = (exposure == nil);
         if (!self.starInfoView.isHidden){
-            [self.starInfoView setExposure:exposure starPosition:*p];
+            if (p){
+                [self.starInfoView setExposure:exposure starPosition:*p];
+            }
         }
         else {
             self.starInfoView.showSpinner = NO;
@@ -466,7 +468,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self performSelector:@selector(_updateStarProfileImpl) withObject:nil afterDelay:0.1 inModes:@[NSRunLoopCommonModes]];
 }
 
-- (void)displayExposure
+- (void)displayExposureWithReset:(BOOL)resetDisplay
 {
     void (^clearImage)() = ^() {
         [self setImage:nil];
@@ -487,6 +489,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         }
         else {
             
+            // todo; this is madly inefficient :)
+            
+            CGImageRef CGImage2 = NULL; // this is just to silence analyser warnings as it doesn't see the reassignment to CGImage below
             CGImageRef CGImage = image.CGImage; // the dimensions of this are divided by the binning factor todo; image.CIImage
             if (CGImage){
                 
@@ -515,7 +520,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                             CGContextFillRect(bitmap,CGRectMake(0, 0, params.frame.width, params.frame.height));
                             CGContextDrawImage(bitmap,CGRectMake(subframe.origin.x, params.frame.height - (subframe.origin.y + subframe.size.height), subframe.size.width, subframe.size.height),CGImage);
                         }
-                        CGImage = CGBitmapContextCreateImage(bitmap);
+                        CGImage2 = CGImage = CGBitmapContextCreateImage(bitmap);
                         CGContextRelease(bitmap);
                     }
                 }
@@ -523,14 +528,13 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             // set the image
             if (CGImage){
-                [self setImage:CGImage];
-                if (CGImage != image.CGImage){
-                    CFRelease(CGImage);
-                }
+                [self setImage:CGImage resetDisplay:resetDisplay];
             }
             else {
                 clearImage();
             }
+            
+            CGImageRelease(CGImage2);
         }
     }
 }
@@ -657,7 +661,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     if (_scaleSubframe != scaleSubframe){
         _scaleSubframe = scaleSubframe;
         self.selectionLayer.hidden = _scaleSubframe; // hide the selection in scale mode
-        [self displayExposure];
+        [self displayExposureWithReset:YES];
         [self zoomImageToFit:nil]; // todo; return to zoom level before entering scale subframe mode
     }
 }
@@ -701,6 +705,11 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)setImage:(CGImageRef)image
 {
+    [self setImage:image resetDisplay:YES];
+}
+
+- (void)setImage:(CGImageRef)image resetDisplay:(BOOL)resetDisplay
+{
     self.searchLayer = nil;
     self.reticleLayer = nil;
     
@@ -709,7 +718,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         _annotationsLayer = nil;
     }
     
-    [super setCGImage:image];
+    [super setCGImage:image resetDisplay:resetDisplay];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
     
@@ -731,11 +740,33 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (void)setCurrentExposure:(CASCCDExposure *)exposure
 {
+    [self setCurrentExposure:exposure resetDisplay:YES];
+}
+
+- (BOOL)shouldResetDisplayForExposure:(CASCCDExposure*)exposure
+{
+    // don't reset the display if the new exposure is the same size as the current exposure
+    BOOL resetDisplay = YES;
+    CASCCDExposure* currentExposure = self.currentExposure;
+    if (currentExposure && exposure){
+        CASExposeParams params = exposure.params;
+        CASExposeParams currentParams = currentExposure.params;
+        if (params.frame.width == currentParams.frame.width && params.frame.height == currentParams.frame.height){
+            resetDisplay = NO;
+        }
+    }
+    return resetDisplay;
+}
+
+- (void)setCurrentExposure:(CASCCDExposure *)exposure resetDisplay:(BOOL)resetDisplay
+{
+    // todo; we *do* need to check we're not setting the same one again
+    
     // don't check for setting to the same exposure as we use this to force a refresh if external settings have changed
     _currentExposure = exposure;
     
     // set the current image taking into account scaleSubframe mode, etc
-    [self displayExposure];
+    [self displayExposureWithReset:resetDisplay];
     
     // clip any selection rect
     if (_currentExposure && self.showSelection){

@@ -48,7 +48,9 @@
 
 @end
 
-@implementation SXIOCameraWindowController
+@implementation SXIOCameraWindowController {
+    BOOL _capturedFirstImage:1;
+}
 
 - (void)windowDidLoad
 {
@@ -112,20 +114,6 @@
                     self.selectionControl.selectedSegment = 1;
                 }
             }
-        }
-        else if (object == [CASDeviceManager sharedManager]) {
-            
-//            if ([keyPath isEqualToString:@"filterWheelControllers"]){
-//                
-//                switch ([change[NSKeyValueChangeKindKey] integerValue]) {
-//                    case NSKeyValueChangeInsertion:
-//                        [self showFilterWheelControls];
-//                        break;
-//                    case NSKeyValueChangeRemoval:
-//                        [self hideFilterWheelControls];
-//                        break;
-//                }
-//            }
         }
     }
     else {
@@ -199,6 +187,8 @@
             }
             else{
                 
+                // todo; async
+                
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
                     
@@ -207,7 +197,7 @@
                         prefix = @"image";
                     }
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence];
+                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence+1];
                     NSURL* finalUrl = [url URLByAppendingPathComponent:prefix];
                     finalUrl = [finalUrl URLByAppendingPathExtension:@"fits"];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
@@ -226,8 +216,10 @@
                         }
                     }
                 }
-                
-                self.currentExposure = exposure;
+
+                const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
+                [self setCurrentExposure:exposure resetDisplay:resetDisplay];
+                _capturedFirstImage = YES;
             }
         }
         @finally {
@@ -434,13 +426,7 @@
         self.window.title = @"";
     }
     
-//    // show camera name
-//    self.imageBannerView.camera = self.cameraController.camera;
-    
-    // capture the current controller in the completion block
-    CASCameraController* cameraController = self.cameraController;
-    
-    if (!cameraController){
+    if (!self.cameraController){
         
         self.currentExposure = nil;
     }
@@ -478,18 +464,12 @@
                 [NSApp presentError:error];
             }
         }];
+        
+        [self zoomImageToFit:nil];
     }
-    
-    //    // reset the capture count - why am I doing this here ?
-    //    if (!self.cameraController.captureCount && !self.cameraController.continuous){
-    //        self.cameraController.captureCount = 1; // no, reset to the number of exposures selected in the UI...
-    //    }
     
     // set progress display if this camera is capturing
     [self updateExposureIndicator];
-    
-    // set the exposures controller to either nil or one that shows only exposures from this camera
-//    self.exposuresController = nil;
 }
 
 - (void)updateExposureIndicator
@@ -562,6 +542,11 @@
 
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
+    [self displayExposure:exposure resetDisplay:YES];
+}
+
+- (void)displayExposure:(CASCCDExposure*)exposure resetDisplay:(BOOL)resetDisplay
+{
     if (!exposure){
         self.exposureView.currentExposure = nil;
         return;
@@ -600,7 +585,7 @@
             exposure = [self.imageProcessor equalise:exposure];
         }
         
-        self.exposureView.currentExposure = exposure;
+        [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
     }
 }
 
@@ -612,6 +597,11 @@
 
 - (void)setCurrentExposure:(CASCCDExposure *)currentExposure
 {
+    [self setCurrentExposure:currentExposure resetDisplay:YES];
+}
+
+- (void)setCurrentExposure:(CASCCDExposure *)currentExposure resetDisplay:(BOOL)resetDisplay
+{
     if (_currentExposure != currentExposure){
         
         // unload the current exposure's pixels
@@ -620,7 +610,7 @@
         _currentExposure = currentExposure;
         
         // display the exposure
-        [self displayExposure:_currentExposure];
+        [self displayExposure:_currentExposure resetDisplay:resetDisplay];
         
         // clear selection - necessary ?
         if (!_currentExposure){

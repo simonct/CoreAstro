@@ -26,8 +26,14 @@
 #import "CASIOTransport.h"
 #import "CASIOCommand.h"
 
+@interface CASBlockOperation : NSBlockOperation
+@property (weak) CASIOCommand* command;
+@end
+@implementation CASBlockOperation
+@end
+
 @interface CASIOpendingCommand : NSObject
-@property (nonatomic,strong) NSBlockOperation* commandOp;
+@property (nonatomic,strong) CASBlockOperation* commandOp;
 @property (nonatomic,strong) CASIOCommand* command;
 @property (nonatomic,strong) NSDate* when;
 @property (nonatomic,strong) NSTimer* timer;
@@ -39,7 +45,7 @@
 
 @interface CASIOTransport ()
 @property (nonatomic,readonly) NSOperationQueue* ioq;
-@property (nonatomic,strong) NSMutableArray* pending;
+@property (nonatomic,strong) NSMutableOrderedSet* pending;
 @end
 
 @implementation CASIOTransport
@@ -83,7 +89,7 @@
 }
 
 - (NSInteger)pendingThreshold {
-    return 3;
+    return 10;
 }
 
 - (void)submit:(CASIOCommand*)command block:(void (^)(NSError*))block {
@@ -96,9 +102,8 @@
     NSParameterAssert(block);
     NSParameterAssert(command);
 
-    __weak NSBlockOperation* commandOp = nil;
-    
-    commandOp = [NSBlockOperation blockOperationWithBlock:^{
+    __weak CASBlockOperation* commandOp = nil;
+    commandOp = [CASBlockOperation blockOperationWithBlock:^{
         
         if (![commandOp isCancelled]){
             
@@ -111,6 +116,7 @@
             }
         }
     }];
+    commandOp.command = command;
     
     if (when == [[NSDate date] laterDate:when]){
         
@@ -134,7 +140,7 @@
         for (CASIOpendingCommand* pending in self.pending){
             if ([pending.when timeIntervalSinceDate:now] < self.pendingThreshold){
                 [commandOp addDependency:pending.commandOp];
-                NSLog(@"Making command %@ dependent on %@",commandOp,pending.commandOp);
+                NSLog(@"Making command %@ dependent on %@",commandOp.command,pending.commandOp.command);
             }
         }
         
