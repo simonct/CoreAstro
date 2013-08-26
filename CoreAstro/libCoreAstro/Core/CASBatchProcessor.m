@@ -133,12 +133,15 @@
     result.meta = [mutableMeta copy];
     result.format = kCASCCDExposureFormatFloat;
 
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
-        
-        NSLog(@"Added combined exposure at %@",url);
-        
-        block(error,result);
-    }];
+    if (!self.autoSave){
+        block(nil,result);
+    }
+    else{
+        [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
+            NSLog(@"Added combined exposure at %@",url);
+            block(error,result);
+        }];
+    }
 }
 
 - (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
@@ -175,9 +178,9 @@
 {
     [super start];
     
-    self.flat = self.project.masterFlat;
-    self.dark = self.project.masterDark;
-    self.bias = self.project.masterBias;
+    if (!self.flat) self.flat = self.project.masterFlat;
+    if (!self.dark) self.dark = self.project.masterDark;
+    if (!self.bias) self.bias = self.project.masterBias;
     
     // todo; flat darks and bias frames
 
@@ -202,8 +205,6 @@
         NSLog(@"%@: Ignoring RGBA exposure",NSStringFromSelector(_cmd));
         return;
     }
-
-    NSAssert(exposure.io, @"Exposure has no IO");
     
     if (!self.first){
         self.first = exposure;
@@ -250,7 +251,7 @@
         self.result.meta = [mutableMeta copy];
     }
 
-    if (self.result){
+    if (self.result && exposure.io){
         
         // cache the corrected exposure in the derived data folder of the original exposure
         NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureCorrectedKey] path] stringByAppendingPathExtension:@"caExposure"];
@@ -525,12 +526,15 @@
     
     result.format = self.first.rgba ? kCASCCDExposureFormatFloatRGBA : kCASCCDExposureFormatFloat;
 
-    [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
-        
-        NSLog(@"Added stacked exposure at %@",url);
-        
-        block(error,result);
-    }];
+    if (!self.autoSave){
+        block(nil,result);
+    }
+    else{
+        [[CASCCDExposureLibrary sharedLibrary] addExposure:result toProject:self.project save:YES block:^(NSError *error, NSURL *url) {
+            NSLog(@"Added stacked exposure at %@",url);
+            block(error,result);
+        }];
+    }
 }
 
 - (NSDictionary*)historyWithExposure:(CASCCDExposure*)exposure
@@ -688,6 +692,15 @@
 @end
 
 @implementation CASBatchProcessor
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.autoSave = YES;
+    }
+    return self;
+}
 
 - (void)start
 {

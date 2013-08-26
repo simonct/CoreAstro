@@ -159,7 +159,7 @@
 		F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AD8E8316E6973C00CF3083 /* CASTemperatureTransformer.m */; };
 		F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AEDF171614DC16007641A2 /* CASGuiderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
-		F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B08B631673AF1A00771948 /* CASBatchProcessor.h */; };
+		F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B08B631673AF1A00771948 /* CASBatchProcessor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B08B641673AF1A00771948 /* CASBatchProcessor.m */; };
 		F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */; };

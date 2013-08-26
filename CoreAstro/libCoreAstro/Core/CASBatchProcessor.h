@@ -31,6 +31,7 @@
 
 @interface CASBatchProcessor : NSObject
 
+@property (nonatomic) BOOL autoSave;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASCCDExposureLibraryProject* project;
 

@@ -24,12 +24,9 @@
 //
 
 #import "CASCaptureWindowController.h"
-#import "CASCameraController.h"
-#import "CASImageProcessor.h"
-#import "CASCCDExposureLibrary.h"
-#import "CASBatchProcessor.h"
-#import "CASCCDDevice.h"
 #import "CASExposuresController.h"
+
+#import <CoreAstro/CoreAstro.h>
 
 @implementation CASCaptureModel
 
@@ -76,7 +73,7 @@
 
 @implementation CASCaptureController
 
-- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error))completion
+- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error,CASCCDExposure* result))completion
 {
     BOOL temperatureLock = NO;
     CASCCDExposureType exposureType;
@@ -127,7 +124,7 @@
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
             if (error){
-                if (completion) completion(error);
+                if (completion) completion(error,nil);
             }
             else{
                 
@@ -156,7 +153,7 @@
                 
                 if (!saveExposure) {
                     [self.exposuresController removeObjects:@[exposure]]; // cameraController will have saved it to the library so we need to remove it again
-                    capture();
+                    dispatch_async(dispatch_get_current_queue(), capture);
                 }
                 else{
                 
@@ -167,7 +164,7 @@
                     if ([exposures count] < self.model.captureCount){
                         
                         if (progress) progress(exposure,NO);
-                        capture();
+                        dispatch_async(dispatch_get_current_queue(), capture);
                     }
                     else {
                         
@@ -178,6 +175,9 @@
                         if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
                             
                             CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
+                            
+                            // match autosave flags
+                            processor.autoSave = self.cameraController.autoSave;
                             
                             // run the processor in the background
                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -215,13 +215,13 @@
                                                 [self.exposuresController removeObjects:exposures];
                                             }
                                         }
-                                        if (completion) completion(error);
+                                        if (completion) completion(error,result);
                                     });
                                 }];
                             });
                         }
                         else {
-                            if (completion) completion(nil);
+                            if (completion) completion(nil,nil);
                         }
                     }
                 }

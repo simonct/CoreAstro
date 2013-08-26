@@ -13,7 +13,7 @@
 #import "SXIOSaveTargetViewController.h"
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
-#import "SMDoubleSlider.h"
+#import "CASCaptureWindowController.h"
 
 #import <Quartz/Quartz.h>
 
@@ -45,6 +45,10 @@
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+
+@property (assign) BOOL calibrate;
+@property (nonatomic,strong) CASCaptureController* captureController;
+@property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 
 @end
 
@@ -146,6 +150,65 @@
          informativeTextWithFormat:@"%@",message] runModal];
 }
 
+- (NSString*)currentDeviceAppSupportPath
+{
+    NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    NSString* deviceName = self.cameraController.camera.deviceName;
+    if (deviceName){
+        NSString* path = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,NSUserDomainMask,YES) lastObject] stringByAppendingPathComponent:appName] stringByAppendingPathComponent:deviceName];
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path]){
+            return path;
+        }
+    }
+    return nil;
+}
+
+- (NSString*)currentDeviceExposurePathWithName:(NSString*)name
+{
+    return name ? [[[self currentDeviceAppSupportPath] stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"caExposure"] : nil;
+}
+
+- (void)saveExposure:(CASCCDExposure*)exposure withName:(NSString*)name
+{
+    if (exposure && name){
+        
+        // todo; better write and swap
+        
+        NSString* path = [self currentDeviceExposurePathWithName:name];
+        NSLog(@"Saving %@ to %@",name,path);
+        
+        // remove existing one
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+        
+        // save new one
+        NSError* error;
+        [[CASCCDExposureIO exposureIOWithPath:path] writeExposure:exposure writePixels:YES error:&error];
+        if (error){
+            [NSApp presentError:error];
+        }
+    }
+}
+
+- (CASCCDExposure*)exposureWithName:(NSString*)name
+{
+    if (!name){
+        return nil;
+    }
+    CASCCDExposure* exp = [[CASCCDExposure alloc] init];
+    NSString* path = [self currentDeviceExposurePathWithName:name];
+    return [[CASCCDExposureIO exposureIOWithPath:path] readExposure:exp readPixels:YES error:nil] ? exp : nil;
+}
+
+- (void)removeExposureWithName:(NSString*)name
+{
+    if (!name){
+        return;
+    }
+    NSString* path = [self currentDeviceExposurePathWithName:name];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+}
+
 #pragma mark - Actions
 
 - (IBAction)capture:(NSButton*)sender
@@ -173,7 +236,7 @@
         return;
     }
     
-    // do not save to the library
+    // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
     
     // issue the capture command
@@ -188,6 +251,9 @@
             else{
                 
                 // todo; async
+                
+                // save to 'latest' - do we really want to do this with large files ?
+                // [self saveExposure:exposure withName:@"latest"];
                 
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
@@ -355,6 +421,114 @@
     } completionBlock:nil];
 }
 
+- (void)presentCaptureControllerWithMode:(NSInteger)mode
+{
+    if (!self.cameraController || self.cameraController.capturing){
+        return;
+    }
+    
+    // do not save to the library todo; replace with an exposure sink interface
+    self.cameraController.autoSave = NO;
+
+    self.captureWindowController = [CASCaptureWindowController createWindowController];
+    self.captureWindowController.model.captureCount = 25;
+    self.captureWindowController.model.captureMode = mode;
+    self.captureWindowController.model.combineMode = kCASCaptureModelCombineAverage;
+    
+    [self.captureWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSOKButton){
+            
+            self.captureController = [CASCaptureController captureControllerWithWindowController:self.captureWindowController];
+            self.captureWindowController = nil;
+            if (self.captureController){
+                
+                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                [progress beginSheetModalForWindow:self.window];
+                [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
+                
+                self.captureController.imageProcessor = self.imageProcessor;
+                self.captureController.cameraController = self.cameraController;
+                
+                // self.cameraController pushExposureSettings
+                
+                __block BOOL inPostProcessing = NO;
+                
+                [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        if (postProcessing && !inPostProcessing){
+                            inPostProcessing = YES;
+                            [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Combining...", @"Progress sheet label")];
+                        }
+                        progress.progressBar.doubleValue++;
+                    });
+                    
+                } completion:^(NSError *error,CASCCDExposure* result) {
+                    
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                    else {
+                        
+                        // todo; iCloud support to share calibration frames (and exposures ?) between devices
+                        
+                        NSString* name = nil;
+                        switch (mode) {
+                            case kCASCaptureModelModeDark:
+                                name = @"dark";
+                                break;
+                            case kCASCaptureModelModeBias:
+                                name = @"bias";
+                                break;
+                            case kCASCaptureModelModeFlat:
+                                name = @"flat";
+                                break;
+                        }
+                        
+                        [self saveExposure:result withName:name];
+                    }
+                    
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    // self.cameraController popExposureSettings
+                }];
+            }
+        }
+    }];
+}
+
+- (IBAction)captureDarks:(id)sender
+{
+    [self presentCaptureControllerWithMode:kCASCaptureModelModeDark];
+}
+
+- (IBAction)deleteDarks:(id)sender
+{
+    [self removeExposureWithName:@"dark"];
+}
+
+- (IBAction)captureBias:(id)sender
+{
+    [self presentCaptureControllerWithMode:kCASCaptureModelModeBias];
+}
+
+- (IBAction)deleteBias:(id)sender
+{
+    [self removeExposureWithName:@"bias"];
+}
+
+- (IBAction)captureFlats:(id)sender
+{
+    [self presentCaptureControllerWithMode:kCASCaptureModelModeFlat];
+}
+
+- (IBAction)deleteFlats:(id)sender
+{
+    [self removeExposureWithName:@"flat"];
+}
+
 #pragma mark - Save Utilities
 
 - (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
@@ -438,7 +612,7 @@
             self.currentExposure = self.cameraController.lastExposure;
         }
         else{
-            self.currentExposure = nil;
+            self.currentExposure = nil; // [self exposureWithName:@"latest"];
         }
         
         // if there's no exposure, create a placeholder image
@@ -581,6 +755,31 @@
             }
         }
         
+        // optionally calibrate using saved bias and flat frames
+        if (self.calibrate){
+            __block BOOL called = NO;
+            __block CASCCDExposure* corrected = exposure;
+            CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
+            corrector.dark = [self exposureWithName:@"dark"];
+            corrector.bias = [self exposureWithName:@"bias"];
+            corrector.flat = [self exposureWithName:@"flat"];
+            [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+                if (!called){
+                    *exposurePtr = exposure;
+                }
+                else {
+                    *exposurePtr = nil;
+                }
+                called = YES;
+            } completion:^(NSError *error, CASCCDExposure *result) {
+                if (!error){
+                    corrected = result;
+                }
+            }];
+            exposure = corrected;
+        }
+        
+        // optionally equalise
         if (self.equalise){
             exposure = [self.imageProcessor equalise:exposure];
         }
@@ -796,6 +995,12 @@
     self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
 }
 
+- (IBAction)toggleCalibrate:(id)sender
+{
+    self.calibrate = !self.calibrate;
+    [self resetAndRedisplayCurrentExposure];
+}
+
 - (IBAction)applyDebayer:(NSMenuItem*)sender
 {
     switch (sender.tag) {
@@ -894,6 +1099,10 @@
             break;
             
             // todo; option to show debayerd image as luminance image
+            
+        case 11100:
+            item.state = self.calibrate;
+            break;
             
     }
     return enabled;

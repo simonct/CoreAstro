@@ -1198,7 +1198,7 @@
                         progress.progressBar.doubleValue++;
                     });
                     
-                } completion:^(NSError *error) {
+                } completion:^(NSError *error,CASCCDExposure* result) {
                    
                     if (error){
                         [NSApp presentError:error];

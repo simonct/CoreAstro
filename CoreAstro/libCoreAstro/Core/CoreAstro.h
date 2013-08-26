@@ -49,3 +49,4 @@
 #import <CoreAstro/CASUtilities.h>
 #import <CoreAstro/CASMovieExporter.h>
 #import <CoreAstro/CASPlateSolver.h>
+#import <CoreAstro/CASBatchProcessor.h>
