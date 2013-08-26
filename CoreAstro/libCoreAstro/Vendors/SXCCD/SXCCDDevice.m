@@ -610,6 +610,9 @@
             self.exposureCompletion = nil;
         }
     }
+    
+    // re-enable cooler commands
+    self.exposureCompletionDate = nil;
 }
 
 #pragma mark - Guider protocol
