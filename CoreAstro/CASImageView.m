@@ -173,6 +173,7 @@
             [stretch setValue:image forKey:@"inputImage"];
             [stretch setValue:@(self.stretchMin) forKey:@"inputMin"];
             [stretch setValue:@(self.stretchMax) forKey:@"inputMax"];
+            [stretch setValue:@(self.stretchGamma) forKey:@"inputGamma"];
             image = [stretch valueForKey:@"outputImage"];
         }
     }

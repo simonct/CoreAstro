@@ -54,7 +54,7 @@ static CIKernel *_ContrastStretchFilterKernel = nil;
                      kCIAttributeIdentity:@1,
                      kCIAttributeType:kCIAttributeTypeScalar,
                      },
-             @"gamma":@{
+             @"inputGamma":@{
                      kCIAttributeMin:@0,
                      kCIAttributeMax:@10,
                      kCIAttributeSliderMin:@0,
@@ -72,11 +72,11 @@ static CIKernel *_ContrastStretchFilterKernel = nil;
 //    NSLog(@"inputImage: %@",inputImage);
 //    NSLog(@"inputMin: %@",inputMin);
 //    NSLog(@"inputMax: %@",inputMax);
-//    NSLog(@"gamma: %@",gamma);
+//    NSLog(@"inputGamma: %@",inputGamma);
 
     CISampler* src = [CISampler samplerWithImage:inputImage];
         
-    return [self apply:_ContrastStretchFilterKernel,src,inputMin,inputMax,gamma,nil];
+    return [self apply:_ContrastStretchFilterKernel,src,inputMin,inputMax,inputGamma,nil];
 }
 
 @end
