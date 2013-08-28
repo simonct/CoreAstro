@@ -445,6 +445,11 @@
                         }
                     }
                     
+                    const char* version = [[NSString stringWithFormat:@"CoreAstro %@",[[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"]] UTF8String];
+                    if ( fits_update_key(fptr, TSTRING, "CREATOR", (void*)version, "CoreAstro version", &status) ) {
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+
                     /*
                     NSString* notes = exposure.note;
                     if ([notes length]){
@@ -456,6 +461,22 @@
                         }
                     }
                     */
+                    
+                    // add another data unit with the plist
+                    char* form[] = {"PA"};
+                    char* type[] = {"CAS_EXPROPS"};
+                    if ( fits_create_tbl( fptr, BINARY_TBL, 0, 1, type, form, NULL, NULL, &status) ){
+                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    }
+                    
+                    NSData* metaData = [NSJSONSerialization dataWithJSONObject:exposure.meta options:0 error:&error];
+                    if (!error){
+                        const char* metaDataStr = [metaData bytes];
+                        const char* metaDataStrArg[] = {metaDataStr};
+                        if (fits_write_col(fptr, TSTRING, 1, 1, 1, 1, metaDataStrArg, &status)){
+                            error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                        }
+                    }
                 }
             }
             fits_close_file(fptr, &status);
