@@ -338,6 +338,7 @@
     [s replaceOccurrencesOfString:@"(" withString:@"{" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
     [s replaceOccurrencesOfString:@")" withString:@"}" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
     [s replaceOccurrencesOfString:@" " withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
+    [s replaceOccurrencesOfString:@"-" withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
 
     NSString* directory = [s stringByDeletingLastPathComponent];
     if (![[NSFileManager defaultManager] createDirectoryAtURL:[NSURL fileURLWithPath:directory] withIntermediateDirectories:YES attributes:nil error:&error]){
@@ -385,17 +386,12 @@
             }
             else {
                 
-                if (scale != 1){
-                    if ( fits_update_key(fptr, TFLOAT, "BSCALE", (void*)&scale, "pixel scaling factor", &status) ) {
-                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                    }
-                    float zero = 0;
-                    if ( fits_update_key(fptr, TFLOAT, "BZERO", (void*)&zero, "pixel zero value", &status) ) {
-                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                    }
-//                    if (fits_set_bscale(fptr,scale,0,&status)){
-//                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS scaling value %d",status]);
-//                    }
+                if ( fits_update_key(fptr, TFLOAT, "BSCALE", (void*)&scale, "pixel scaling factor", &status) ) {
+                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                }
+                float zero = 0;
+                if ( fits_update_key(fptr, TFLOAT, "BZERO", (void*)&zero, "pixel zero value", &status) ) {
+                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                 }
 
                 if ( fits_write_img(fptr, datatype, 1, pixelCount, (void*)[pixelData bytes], &status) ){
@@ -445,11 +441,19 @@
                         }
                     }
                     
+                    // leave this as the host app version and have a new key to identify CAS ?
+                    // SWCREATE ?
                     const char* version = [[NSString stringWithFormat:@"CoreAstro %@",[[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"]] UTF8String];
                     if ( fits_update_key(fptr, TSTRING, "CREATOR", (void*)version, "CoreAstro version", &status) ) {
                         error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                     }
 
+                    // YBINNING, XBINNING (SBIG)
+                    // CCD-TEMP
+                    // PICTYPE
+                    // COLORCCD
+                    // BITPIX ?
+                    
                     /*
                     NSString* notes = exposure.note;
                     if ([notes length]){
