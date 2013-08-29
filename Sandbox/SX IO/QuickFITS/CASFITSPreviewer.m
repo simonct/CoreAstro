@@ -40,12 +40,24 @@ const float kMaxPixelValue = 65535.0;
         fits_get_img_dim(fptr, &naxis, &status);
         fits_get_img_size(fptr, 2, naxes, &status);
         
-        if (status || naxis != 2) {
-            NSLog(@"CASFITSPreviewer: only 2D images supported %@",path);
+        // get the pixel format
+        int type;
+        fits_get_img_type(fptr,&type,&status);
+        NSLog(@"CASFITSPreviewer: fits_get_img_type: %d",type);
+
+        if (status || naxis != 2 || (type != FLOAT_IMG && type != USHORT_IMG && type != SHORT_IMG)) {
+            NSLog(@"CASFITSPreviewer: only 16-bit in or floating point 2D images supported %@",path);
         }
         else {
             
-            // create a floating point image
+            // get the zero and scaling values
+            float zero = 0;
+            float scale = 1;
+            fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status);
+            fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status);
+            NSLog(@"CASFITSPreviewer: BSCALE: %f, BZERO: %f",scale,zero);
+
+            // create a floating point bitmap context
             CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
             CGContextRef context = CGBitmapContextCreate(nil, naxes[0], naxes[1], 32, naxes[0] * sizeof(float), space, kCGImageAlphaNone|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
             CFRelease(space);
@@ -65,6 +77,11 @@ const float kMaxPixelValue = 65535.0;
                     if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,pix,0,&status)){
                         NSLog(@"CASFITSPreviewer: failed to read a row %d: %@",status,path);
                         break;
+                    }
+                    
+                    // handle scale and offset as the contrast stretch code assumes a max value of 65535
+                    if (zero != 0 || scale != 1){
+                        vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
                     }
                     
                     // advance the pixel pointer a row
