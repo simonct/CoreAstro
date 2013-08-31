@@ -485,6 +485,7 @@
                 CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
                 [progress beginSheetModalForWindow:self.window];
                 [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
+                progress.canCancel = YES;
                 
                 self.captureController.imageProcessor = self.imageProcessor;
                 self.captureController.cameraController = self.cameraController;
@@ -496,6 +497,11 @@
                 [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        // check the cancelled flag as set in the progress window controller
+                        if (progress.cancelled){
+                            [self.captureController cancelCapture];
+                        }
                         
                         if (postProcessing && !inPostProcessing){
                             inPostProcessing = YES;
@@ -511,32 +517,35 @@
                     }
                     else {
                         
-                        NSString* name = nil;
-                        switch (mode) {
-                            case kCASCaptureModelModeDark:
-                                name = @"dark";
-                                break;
-                            case kCASCaptureModelModeBias:
-                                name = @"bias";
-                                break;
-                            case kCASCaptureModelModeFlat:
-                                name = @"flat";
-                                break;
+                        if (!self.captureController.cancelled){
+                            
+                            NSString* name = nil;
+                            switch (mode) {
+                                case kCASCaptureModelModeDark:
+                                    name = @"dark";
+                                    break;
+                                case kCASCaptureModelModeBias:
+                                    name = @"bias";
+                                    break;
+                                case kCASCaptureModelModeFlat:
+                                    name = @"flat";
+                                    break;
+                            }
+                            
+                            NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
+                            
+                            // remove existing one
+                            [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
+                            
+                            // save new one
+                            NSError* error;
+                            [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:result writePixels:YES error:&error];
+                            if (error){
+                                [NSApp presentError:error];
+                            }
+                            
+                            self.currentExposure = result;
                         }
-                        
-                        NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
-                        
-                        // remove existing one
-                        [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
-                        
-                        // save new one
-                        NSError* error;
-                        [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:result writePixels:YES error:&error];
-                        if (error){
-                            [NSApp presentError:error];
-                        }
-
-                        self.currentExposure = result;
                     }
                     
                     [progress endSheetWithCode:NSOKButton];
