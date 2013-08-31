@@ -211,7 +211,7 @@
 
 #pragma mark - Actions
 
-- (IBAction)capture:(NSButton*)sender
+- (NSURL*)beginAccessToSaveTargetWithSaving:(BOOL)saving
 {
     // check we have somewhere to save the file, a prefix and a sequence number
     __block NSURL* url;
@@ -228,13 +228,33 @@
     }
     if (!url){
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
-        return;
+        return nil;
     }
-    const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
-    if (saveToFile && securityScoped && ![url startAccessingSecurityScopedResource]){
+    if (saving && securityScoped && ![url startAccessingSecurityScopedResource]){
         [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
-        return;
+        return nil;
     }
+    
+    return url;
+}
+
+- (NSString*)exposureSaveNameWithSuffix:(NSString*)suffix
+{
+    NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
+    if (!prefix){
+        prefix = @"image";
+    }
+    if (suffix){
+        prefix = [prefix stringByAppendingFormat:@"_%@",suffix];
+    }
+    return [prefix stringByAppendingPathExtension:@"fits"];
+}
+
+- (IBAction)capture:(NSButton*)sender
+{
+    // check we have somewhere to save the file, a prefix and a sequence number
+    const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
+    __block NSURL* url = [self beginAccessToSaveTargetWithSaving:saveToFile];
     
     // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
@@ -261,14 +281,8 @@
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
                     
-                    NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
-                    if (!prefix){
-                        prefix = @"image";
-                    }
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    prefix = [prefix stringByAppendingFormat:@"-%03ld",sequence+1];
-                    NSURL* finalUrl = [url URLByAppendingPathComponent:prefix];
-                    finalUrl = [finalUrl URLByAppendingPathExtension:@"fits"];
+                    NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"_%03ld",sequence+1]]];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
                                         
                     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
@@ -292,10 +306,26 @@
             }
         }
         @finally {
+            
             if (!self.cameraController.capturing){
-                if (securityScoped){
-                    [url stopAccessingSecurityScopedResource];
+                
+                if (!self.cameraController.cancelled){
+                    
+                    NSUserNotification* note = [[NSUserNotification alloc] init];
+                    note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                    NSString* exposureUnits = (self.cameraController.exposureUnits == 0) ? @"s" : @"ms";
+                    if (self.cameraController.captureCount == 1){
+                        note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
+                    }
+                    else {
+                        note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
+                    }
+                    note.soundName = NSUserNotificationDefaultSoundName;
+                    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+
                 }
+
+                [url stopAccessingSecurityScopedResource];
             }
         }
     }];
@@ -430,6 +460,12 @@
         return;
     }
     
+    NSURL* url = [self beginAccessToSaveTargetWithSaving:YES];
+    if (!url){
+        // alert
+        return;
+    }
+    
     // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
 
@@ -475,8 +511,6 @@
                     }
                     else {
                         
-                        // todo; iCloud support to share calibration frames (and exposures ?) between devices
-                        
                         NSString* name = nil;
                         switch (mode) {
                             case kCASCaptureModelModeDark:
@@ -490,7 +524,19 @@
                                 break;
                         }
                         
-                        [self saveExposure:result withName:name];
+                        NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
+                        
+                        // remove existing one
+                        [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
+                        
+                        // save new one
+                        NSError* error;
+                        [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:result writePixels:YES error:&error];
+                        if (error){
+                            [NSApp presentError:error];
+                        }
+
+                        self.currentExposure = result;
                     }
                     
                     [progress endSheetWithCode:NSOKButton];
@@ -498,6 +544,8 @@
                     // self.cameraController popExposureSettings
                 }];
             }
+            
+            [url stopAccessingSecurityScopedResource];
         }
     }];
 }

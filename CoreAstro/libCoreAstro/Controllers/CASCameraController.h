@@ -72,6 +72,8 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 
 @property (nonatomic,strong) CASMovieExporter* movieExporter;
 
+@property (nonatomic,readonly) BOOL cancelled;
+
 - (id)initWithCamera:(CASCCDDevice*)camera;
 
 - (void)connect:(void(^)(NSError*))block;

@@ -42,7 +42,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @end
 
 @implementation CASCameraController {
-    BOOL _cancel:1;
+    BOOL _cancelled:1;
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
 }
@@ -126,7 +126,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.lastExposure = exp;
         
         // figure out if we need to go round again
-        if (!error && !_cancel && (self.continuous || ++self.currentCaptureIndex < self.captureCount) ){
+        if (!error && !_cancelled && (self.continuous || ++self.currentCaptureIndex < self.captureCount) ){
             
             self.state = CASCameraControllerStateWaitingForNextExposure;
 
@@ -195,20 +195,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             self.capturing = NO;
             self.state = CASCameraControllerStateNone;
-
-            if ([NSUserNotification class] && !_cancel){
-                NSUserNotification* note = [[NSUserNotification alloc] init];
-                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
-                NSString* exposureUnits = (self.exposureUnits == 0) ? @"s" : @"ms";
-                if (self.captureCount == 1){
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.captureCount,self.exposure,exposureUnits];
-                }
-                else {
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.captureCount,self.exposure,exposureUnits];
-                }
-                note.soundName = NSUserNotificationDefaultSoundName;
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
-            }
         }
         self.exposureStart = nil;
 
@@ -218,7 +204,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     };
     
     // check cancel flag
-    if (_cancel){
+    if (_cancelled){
         return;
     }
     
@@ -304,7 +290,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 
                 exposure.type = self.exposureType;
                 
-                if (!saveExposure && !_cancel){
+                if (!saveExposure && !_cancelled){
                     endCapture(error,exposure);
                 }
                 else{
@@ -340,7 +326,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         return;
     }
     
-    _cancel = NO;
+    _cancelled = NO;
 
     self.currentCaptureIndex = 0;
     
@@ -349,7 +335,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)cancelCapture
 {
-    _cancel = YES;
+    _cancelled = YES;
     self.continuous = NO;
     
     [self.camera cancelExposure];
@@ -368,6 +354,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         [self.movieExporter complete];
         self.movieExporter = nil;
     }
+}
+
+- (BOOL) cancelled
+{
+    return _cancelled;
 }
 
 - (BOOL)waitingForNextCapture
