@@ -44,8 +44,8 @@ enum {
     kCASCaptureModelCombineAverage
 };
 @property (nonatomic,assign) NSInteger combineMode;
-@property (nonatomic,assign) BOOL keepOriginals;
-@property (nonatomic,assign) BOOL matchHistograms;
+@property (nonatomic,assign) BOOL keepOriginals, showKeepOriginals;
+@property (nonatomic,assign) BOOL matchHistograms, showMatchHistograms;
 @end
 
 @interface CASCaptureWindowController : CASAuxWindowController

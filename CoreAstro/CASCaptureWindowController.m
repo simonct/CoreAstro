@@ -45,6 +45,8 @@
 @interface CASCaptureWindowController ()
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
+@property (weak) IBOutlet NSButton *keepOriginalsCheckbox;
+@property (weak) IBOutlet NSButton *matchHistogramsCheckbox;
 @end
 
 @implementation CASCaptureWindowController
@@ -57,6 +59,13 @@
     }
     
     return self;
+}
+
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    [self.keepOriginalsCheckbox setHidden:!self.model.showKeepOriginals];
+    [self.matchHistogramsCheckbox setHidden:!self.model.showMatchHistograms];
 }
 
 - (IBAction)ok:(id)sender
