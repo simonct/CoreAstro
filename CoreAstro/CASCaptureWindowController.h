@@ -57,6 +57,8 @@ enum {
 @property (nonatomic,strong) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASExposuresController* exposuresController;
+@property (nonatomic,readonly) BOOL cancelled;
+- (void)cancelCapture;
 - (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error,CASCCDExposure* result))completion;
 + (CASCaptureController*)captureControllerWithWindowController:(CASCaptureWindowController*)cwc;
 @end

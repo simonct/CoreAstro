@@ -71,7 +71,15 @@
 
 @end
 
-@implementation CASCaptureController
+@implementation CASCaptureController {
+    BOOL _cancelled:1;
+}
+
+- (void)cancelCapture
+{
+    _cancelled = YES;
+    [self.cameraController cancelCapture];
+}
 
 - (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error,CASCCDExposure* result))completion
 {
@@ -111,6 +119,11 @@
     
     void (^__block capture)(void) = ^(void) {
       
+        if (_cancelled){
+            if (completion) completion(nil,nil);
+            return;
+        }
+        
         self.cameraController.continuous = NO;
         self.cameraController.captureCount = 1;
         self.cameraController.exposure = exposureTime;

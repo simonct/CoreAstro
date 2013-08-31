@@ -335,6 +335,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)cancelCapture
 {
+    if (_cancelled){
+        return;
+    }
+    
     _cancelled = YES;
     self.continuous = NO;
     

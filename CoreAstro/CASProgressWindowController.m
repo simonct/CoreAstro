@@ -28,7 +28,9 @@
 @interface CASProgressWindowController ()
 @end
 
-@implementation CASProgressWindowController
+@implementation CASProgressWindowController {
+    BOOL _cancelled;
+}
 
 - (void)windowDidLoad
 {
@@ -38,6 +40,7 @@
     self.progressBar.indeterminate = YES;
     self.progressBar.usesThreadedAnimation = YES;
     [self.progressBar startAnimation:nil];
+    self.canCancel = NO;
 }
 
 - (void)beginSheetModalForWindow:(NSWindow*)window
@@ -54,6 +57,20 @@
     self.progressBar.minValue = range.location;
     self.progressBar.maxValue = range.length;
     self.progressBar.indeterminate = NO;
+}
+
+- (IBAction)cancel:(id)sender {
+    _cancelled = YES;
+}
+
+- (BOOL)canCancel
+{
+    return self.cancelButton.isEnabled;
+}
+
+- (void)setCanCancel:(BOOL)canCancel
+{
+    [self.cancelButton setEnabled:canCancel];
 }
 
 @end
