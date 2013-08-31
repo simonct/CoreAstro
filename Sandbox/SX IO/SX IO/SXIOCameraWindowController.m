@@ -282,7 +282,7 @@
                 if (exposure && saveToFile){
                     
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"_%03ld",sequence+1]]];
+                    NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]]];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
                                         
                     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
