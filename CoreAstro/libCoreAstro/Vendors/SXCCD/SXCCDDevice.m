@@ -29,7 +29,6 @@
 #import "SXCCDDeviceFactory.h"
 #import "CASCCDExposure.h"
 #import "CASAutoGuider.h"
-#import "CASClassDefaults.h"
 
 @interface SXCCDDevice ()
 @property (nonatomic,assign) BOOL connected;
@@ -50,26 +49,9 @@
 
 #pragma mark - Properties
 
-+ (void)initialize
-{
-    if (self == [SXCCDDevice class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"SXCCDDevice_targetTemperature": [NSNumber numberWithInteger:-10]}];
-    }
-}
-
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        [[CASClassDefaults defaultsForClassname:@"SXCCDDevice"] registerKeys:@[@"targetTemperature"] ofInstance:self];
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     [self disconnect];
-    [[CASClassDefaults defaultsForClassname:@"SXCCDDevice"] unregisterKeys:@[@"targetTemperature"] ofInstance:self];
 }
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol
@@ -298,12 +280,19 @@
     
     [self.transport submit:getParams block:^(NSError* error){
         
-        if (self.isInterlaced){
-            getParams.params.height = getParams.params.height * 2;
-            getParams.params.pixelHeight = getParams.params.pixelHeight / 2;
+        if (!error){
+            
+            if (self.isInterlaced){
+                getParams.params.height = getParams.params.height * 2;
+                getParams.params.pixelHeight = getParams.params.pixelHeight / 2;
+            }
+            
+//            if (self.productID == 806){ // M26C
+//                getParams.params.height *= 2;
+//            }
+            
+            self.sensor = getParams.params;
         }
-
-        self.sensor = getParams.params;
         
         if (block){
             block(error,getParams.params);
@@ -351,7 +340,9 @@
         case 805:
             expose = [[SXCCDIOExposeCommandM25C alloc] init]; // special command to handle the dual output registers
             break;
-                        
+//        case 806:
+//            expose = [[SXCCDIOExposeCommandM26C alloc] init]; // special command to handle the rotated/interleaved pixel structure
+//            break;
         default:
             expose = [[SXCCDIOExposeCommand alloc] init]; // regular progressive camera
             break;

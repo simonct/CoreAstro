@@ -29,6 +29,7 @@
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
 #import "CASMovieExporter.h"
+#import "CASClassDefaults.h"
 
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
@@ -58,8 +59,35 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.exposureType = kCASCCDExposureLightType;
         self.autoSave = YES;
         self.captureCount = 1;
+        [self registerDeviceDefaults];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self unregisterDeviceDefaults];
+}
+
+- (NSArray*)deviceDefaultsKeys
+{
+    return @[@"targetTemperature",@"continuous",@"binningIndex",@"exposure",@"exposureUnits",@"exposureInterval"];
+}
+
+- (void)registerDeviceDefaults
+{
+    NSString* deviceName = self.camera.deviceName;
+    if (deviceName){
+        [[CASClassDefaults defaultsForClassname:deviceName] registerKeys:self.deviceDefaultsKeys ofInstance:self];
+    }
+}
+
+- (void)unregisterDeviceDefaults
+{
+    NSString* deviceName = self.camera.deviceName;
+    if (deviceName){
+        [[CASClassDefaults defaultsForClassname:deviceName] unregisterKeys:self.deviceDefaultsKeys ofInstance:self];
+    }
 }
 
 - (void)connect:(void(^)(NSError*))block
@@ -373,6 +401,16 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)setGuider:(CASGuiderController*)guider
 {
     _guider = guider;
+}
+
+- (CGFloat)targetTemperature
+{
+    return self.camera.targetTemperature;
+}
+
+- (void)setTargetTemperature:(CGFloat)targetTemperature
+{
+    self.camera.targetTemperature = targetTemperature;
 }
 
 - (void)setNilValueForKey:(NSString *)key

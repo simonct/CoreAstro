@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,assign) NSInteger exposureInterval;
 @property (nonatomic,assign) CGRect subframe;
 @property (nonatomic,assign) CASCCDExposureType exposureType;
+@property (nonatomic,assign) CGFloat targetTemperature;
 @property (nonatomic,strong) NSDate* exposureStart;
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
