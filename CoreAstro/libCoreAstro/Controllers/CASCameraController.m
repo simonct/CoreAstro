@@ -78,7 +78,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     NSString* deviceName = self.camera.deviceName;
     if (deviceName){
-        [[CASClassDefaults defaultsForClassname:deviceName] registerKeys:self.deviceDefaultsKeys ofInstance:self];
+        [[CASDeviceDefaults defaultsForClassname:deviceName] registerKeys:self.deviceDefaultsKeys ofInstance:self];
     }
 }
 
@@ -86,7 +86,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     NSString* deviceName = self.camera.deviceName;
     if (deviceName){
-        [[CASClassDefaults defaultsForClassname:deviceName] unregisterKeys:self.deviceDefaultsKeys ofInstance:self];
+        [[CASDeviceDefaults defaultsForClassname:deviceName] unregisterKeys:self.deviceDefaultsKeys ofInstance:self];
     }
 }
 

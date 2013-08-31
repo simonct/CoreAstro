@@ -33,3 +33,6 @@
 - (void)unregisterKeys:(NSArray*)keys ofInstance:(id)instance;
 + (CASClassDefaults*)defaultsForClassname:(NSString*)name;
 @end
+
+@interface CASDeviceDefaults : CASClassDefaults
+@end

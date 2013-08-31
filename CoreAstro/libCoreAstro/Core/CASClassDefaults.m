@@ -107,13 +107,22 @@
         }
         result = defaults[name];
         if (!result){
-            result = [[CASClassDefaults alloc] init];
+            result = [[[self class] alloc] init];
             result.name = name;
             defaults[name] = result;
         }
     }
     
     return result;
+}
+
+@end
+
+@implementation CASDeviceDefaults
+
+- (NSString*)domainName
+{
+    return [NSString stringWithFormat:@"org.coreastro.device.%@",self.name];
 }
 
 @end
