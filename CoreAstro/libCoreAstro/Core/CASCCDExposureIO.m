@@ -401,25 +401,19 @@
                     
                     // add basic keywords (from http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
                     
-                    if ( fits_write_date(fptr, &status) ) {
-                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                    }
-
+                    fits_write_date(fptr, &status);
+                    
                     NSString* deviceID = exposure.deviceID;
                     if ([deviceID length]){
                         const char* s = [deviceID cStringUsingEncoding:NSASCIIStringEncoding];
                         if (s){
-                            if ( fits_update_key(fptr, TSTRING, "INSTRUME", (void*)s, "acquisition instrument", &status) ) {
-                                error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                            }
+                            fits_update_key(fptr, TSTRING, "INSTRUME", (void*)s, "acquisition instrument", &status);
                         }
                     }
                     
                     const float exposureMS = exposure.params.ms;
-                    if ( fits_update_key(fptr, TFLOAT, "EXPTIME", (void*)&exposureMS, "exposure time in milliseconds", &status) ) {
-                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                    }
-
+                    fits_update_key(fptr, TFLOAT, "EXPTIME", (void*)&exposureMS, "exposure time in milliseconds", &status);
+                    
                     NSDate* date = exposure.date;
                     if (date){
                         // yyyy.mm.ddThh:mm:ss[.sss]
@@ -434,25 +428,41 @@
                         if ([dateStr length]){
                             const char* s = [dateStr cStringUsingEncoding:NSASCIIStringEncoding];
                             if (s){
-                                if ( fits_update_key(fptr, TSTRING, "DATE-OBS", (void*)s, "acquisition date (UTC)", &status) ) {
-                                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
-                                }
-                            }
+                                fits_update_key(fptr, TSTRING, "DATE-OBS", (void*)s, "acquisition date (UTC)", &status);                            }
                         }
                     }
                     
                     // leave this as the host app version and have a new key to identify CAS ?
                     // SWCREATE ?
                     const char* version = [[NSString stringWithFormat:@"CoreAstro %@",[[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"]] UTF8String];
-                    if ( fits_update_key(fptr, TSTRING, "CREATOR", (void*)version, "CoreAstro version", &status) ) {
-                        error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
+                    fits_update_key(fptr, TSTRING, "CREATOR", (void*)version, "CoreAstro version", &status);
+
+                    unsigned short xbin = exposure.params.bin.width;
+                    fits_update_key(fptr, TUSHORT, "XBINNING", (void*)&xbin, "X Binning", &status);
+                    unsigned short ybin = exposure.params.bin.height;
+                    fits_update_key(fptr, TUSHORT, "YBINNING", (void*)&ybin, "Y Binning", &status);
+
+                    char* imageType = nil;
+                    switch ([exposure.meta[@"type"] intValue]) {
+                        case kCASCCDExposureLightType:
+                            imageType = "Light Frame";
+                            break;
+                        case kCASCCDExposureDarkType:
+                            imageType = "Dark Frame";
+                            break;
+                        case kCASCCDExposureBiasType:
+                            imageType = "Bias Frame";
+                            break;
+                        case kCASCCDExposureFlatType:
+                            imageType = "Flat Frame";
+                            break;
+                    }
+                    if (imageType){
+                        fits_update_key(fptr, TSTRING, "IMAGETYP", (void*)imageType, "Image type", &status);
                     }
 
-                    // YBINNING, XBINNING (SBIG)
                     // CCD-TEMP
-                    // PICTYPE
                     // COLORCCD
-                    // BITPIX ?
                     
                     /*
                     NSString* notes = exposure.note;
