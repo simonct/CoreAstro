@@ -28,10 +28,12 @@
 #import "SXIOCameraWindowController.h"
 #import "SXIOFilterWindowController.h"
 #import "CASUpdateCheck.h"
+#import "SXIOCalibrationWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
 @implementation CASAppDelegate {
     NSMutableArray* _cameraWindows;
+    SXIOCalibrationWindowController* _calibrationWindow;
 }
 
 static void* kvoContext;
@@ -202,6 +204,14 @@ static void* kvoContext;
                            otherButton:nil
              informativeTextWithFormat:[NSString stringWithFormat:@"You don't appear to have a configured email account on this Mac. You can send feedback to %@",feedback],nil] runModal];
     }
+}
+
+- (IBAction)calibrate:(id)sender // todo; this will acutually have to be on the app delegate otherwise you'd need a camera to be connected to calibrate captured images
+{
+    if (!_calibrationWindow){
+        _calibrationWindow = [[SXIOCalibrationWindowController alloc] initWithWindowNibName:@"SXIOCalibrationWindowController"];
+    }
+    [_calibrationWindow showWindow:nil];
 }
 
 @end

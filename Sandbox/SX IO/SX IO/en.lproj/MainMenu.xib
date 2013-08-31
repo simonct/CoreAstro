@@ -1519,12 +1519,12 @@
 								</object>
 								<object class="NSMenuItem" id="870119811">
 									<reference key="NSMenu" ref="43874950"/>
-									<string key="NSTitle">Calibrate</string>
+									<string key="NSTitle">Calibrate...</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
-									<int key="NSTag">11100</int>
+									<int key="NSTag">11101</int>
 								</object>
 							</array>
 						</object>
@@ -2616,14 +2616,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">toggleCalibrate:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="870119811"/>
-					</object>
-					<int key="connectionID">804</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">deleteFlats:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="101149719"/>
@@ -2637,6 +2629,14 @@
 						<reference key="destination" ref="351274833"/>
 					</object>
 					<int key="connectionID">808</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">calibrate:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="870119811"/>
+					</object>
+					<int key="connectionID">810</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -4898,7 +4898,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">809</int>
+			<int key="maxID">810</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
