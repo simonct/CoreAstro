@@ -7,6 +7,8 @@
 //
 
 #import "SXIOCalibrationWindowController.h"
+#import "CASProgressWindowController.h"
+
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
@@ -22,6 +24,12 @@
         [[NSColor selectedControlColor] set];
         NSRectFill(self.bounds);
     }
+}
+
+- (NSMenu*)menuForEvent:(NSEvent*)event
+{
+    NSLog(@"menuForEvent");
+    return nil;
 }
 
 @end
@@ -47,6 +55,7 @@
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,strong) NSImage* image;
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic) BOOL hasCalibratedFrame;
 @end
 
 @implementation SXIOCalibrationModel
@@ -67,6 +76,9 @@
             else{
                 NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(CGImageGetWidth(cgImage),CGImageGetHeight(cgImage))];
                 if (nsImage){
+                    if (self.hasCalibratedFrame){
+                        // draw tick badge on it
+                    }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.image = nsImage;
                     });
@@ -84,13 +96,13 @@
 @property (weak) IBOutlet NSCollectionView *collectionView;
 @property (strong) IBOutlet NSArrayController *arrayController;
 @property (weak) IBOutlet NSButton *calibrateButton;
+@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
+@property (readonly) BOOL calibrationButtonEnabled;
 @end
 
 @implementation SXIOCalibrationWindowController {
     FSEventStreamRef _eventsRef;
 }
-
-static void* kvoContext;
 
 - (id)initWithWindow:(NSWindow *)window
 {
@@ -104,7 +116,6 @@ static void* kvoContext;
 
 - (void)dealloc
 {
-    [self.collectionView removeObserver:self forKeyPath:@"selectionIndexes" context:&kvoContext];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SXIOCalibrationWindowControllerFSUpdate" object:nil];
 }
 
@@ -112,21 +123,11 @@ static void* kvoContext;
 {
     [super windowDidLoad];
     
-    [self.collectionView addObserver:self forKeyPath:@"selectionIndexes" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processFSUpdate:) name:@"SXIOCalibrationWindowControllerFSUpdate" object:nil];
     
     [self.arrayController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
     
-    self.url = [NSURL fileURLWithPath:@"/Users/simon/Desktop/"];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == &kvoContext) {
-        [self.calibrateButton setEnabled:[self.collectionView.selectionIndexes count] > 0]; // todo; and suitable calibration frames exist
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
+//    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio-test/SX_IO/Eastern_Veil_{SXVR-M25C}"];
 }
 
 static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clientCallBackInfo, size_t numEvents, void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
@@ -169,17 +170,44 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 {
     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
     if (io){
-        NSError* error;
-        CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
-        if (![io readExposure:exposure readPixels:NO error:&error]){
-            NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
+        
+        // has it been calibrated ? in which case don't show it
+        NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
+        if ([filename hasSuffix:@"_calibrated"]){
+            NSLog(@"Ignoring calibrated frame at %@",path);
         }
-        else{
-            SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
-            model.url = [NSURL fileURLWithPath:path];
-            model.exposure = exposure;
-            [[self mutableArrayValueForKey:@"images"] addObject:model]; // inefficient if we're adding a lot of images
-            // check to see if it's a calibration frame and add that to the list
+        else {
+            
+            NSError* error;
+            CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
+            if (![io readExposure:exposure readPixels:NO error:&error]){
+                NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
+            }
+            else{
+                
+                SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
+                model.url = [NSURL fileURLWithPath:path];
+                model.exposure = exposure;
+                
+                // check to see if it's a calibration frame
+                switch (exposure.type) {
+                    case kCASCCDExposureBiasType:
+                        self.biasModel = model;
+                        break;
+                    case kCASCCDExposureFlatType:
+                        self.flatModel = model;
+                        break;
+                    default:
+                        break;
+                }
+                
+                // does it have a matching calibrated frame ?
+                NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
+                model.hasCalibratedFrame = [[NSFileManager defaultManager] fileExistsAtPath:[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename]];
+                
+                // add the image model (inefficient if we're adding a lot of images)
+                [[self mutableArrayValueForKey:@"images"] addObject:model];
+            }
         }
     }
 }
@@ -204,6 +232,12 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
     for (SXIOCalibrationModel* model in [self.images copy]){
         if ([removed containsObject:[model.url path]]){
+            if (model == self.biasModel){
+                self.biasModel = nil;
+            }
+            if (model == self.flatModel){
+                self.flatModel = nil;
+            }
             [[self mutableArrayValueForKey:@"images"] removeObject:model];
         }
     }
@@ -216,8 +250,6 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
             [self addImageAtPath:path];
         }
     }
-    
-    // check to see if calibration frames have appeared/disappeared
 }
 
 - (void)registerForFSEvents
@@ -242,21 +274,29 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (void)refreshContents
 {
-    [self registerForFSEvents];
+    CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+    progress.canCancel = NO;
+    [progress beginSheetModalForWindow:self.window];
 
-    [[self mutableArrayValueForKey:@"images"] removeAllObjects];
+    @try {
         
-    NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:self.url
-                                                    includingPropertiesForKeys:nil
-                                                                       options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
-                                                                  errorHandler:nil];
-    
-    NSURL* imageURL;
-    while ((imageURL = [e nextObject]) != nil) {
-        [self addImageAtPath:[imageURL path]];
+        [self registerForFSEvents];
+        
+        [[self mutableArrayValueForKey:@"images"] removeAllObjects];
+        
+        NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:self.url
+                                                        includingPropertiesForKeys:nil
+                                                                           options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                      errorHandler:nil];
+        
+        NSURL* imageURL;
+        while ((imageURL = [e nextObject]) != nil) {
+            [self addImageAtPath:[imageURL path]];
+        }
     }
-        
-    // look for calibration frames
+    @finally {
+        [progress endSheetWithCode:NSOKButton];
+    }
 }
 
 - (void)setUrl:(NSURL *)url
@@ -267,8 +307,34 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }
 }
 
-- (IBAction)choose:(id)sender {
-    
+- (void)setBiasModel:(SXIOCalibrationModel *)biasModel
+{
+    if (biasModel != _biasModel){
+        _biasModel = biasModel;
+        NSLog(@"Set bias to %@",biasModel);
+    }
+}
+
+- (void)setFlatModel:(SXIOCalibrationModel *)flatModel
+{
+    if (flatModel != _flatModel){
+        _flatModel = flatModel;
+        NSLog(@"Set flat to %@",flatModel);
+    }
+}
+
+- (BOOL)calibrationButtonEnabled
+{
+    return [self.collectionView.selectionIndexes count] > 0 && (self.flatModel != nil || self.biasModel != nil);
+}
+
++ (NSSet*)keyPathsForValuesAffectingCalibrationButtonEnabled
+{
+    return [NSSet setWithArray:@[@"collectionView.selectionIndexes",@"flatModel",@"biasModel"]];
+}
+
+- (IBAction)choose:(id)sender
+{
     NSOpenPanel* open = [NSOpenPanel openPanel];
     
     open.canChooseDirectories = YES;
@@ -283,7 +349,8 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }];
 }
 
-- (IBAction)calibrate:(id)sender {
+- (IBAction)calibrate:(id)sender
+{
     NSLog(@"calibrate");
 }
 
