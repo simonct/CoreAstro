@@ -246,12 +246,25 @@
         NSMutableDictionary* mutableMeta = [NSMutableDictionary dictionaryWithDictionary:self.first.meta];
         [mutableMeta setObject:@[@{@"flat-correction":@{@"flat":self.flat.uuid,@"light":self.result.uuid}}] forKey:@"history"];
         [mutableMeta setObject:@"Flat Corrected" forKey:@"displayName"];
-        [mutableMeta setObject:[self.first.meta objectForKey:@"device"] forKey:@"device"];
-        [mutableMeta setObject:self.first.meta[@"time"] forKey:@"time"];
+        id device = [self.first.meta objectForKey:@"device"];
+        if (device){
+            [mutableMeta setObject:device forKey:@"device"];
+        }
+        id time = self.first.meta[@"time"];
+        if (time){
+            [mutableMeta setObject:time forKey:@"time"];
+        }
         self.result.meta = [mutableMeta copy];
     }
 
-    if (self.result && exposure.io){
+    [self writeResult:self.result fromExposure:exposure];
+}
+
+- (void)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure
+{
+    if (result && exposure.io){
+        
+        // factor this out so it can be re-implemented by a subclass
         
         // cache the corrected exposure in the derived data folder of the original exposure
         NSString* path = [[[exposure.io derivedDataURLForName:kCASCCDExposureCorrectedKey] path] stringByAppendingPathExtension:@"caExposure"];
@@ -266,9 +279,9 @@
             
             // write the corrected exposure out
             NSError* error = nil;
-            self.result.io = io;
-            self.result.format = kCASCCDExposureFormatFloat;
-            if ([io writeExposure:self.result writePixels:YES error:&error]){
+            result.io = io;
+            result.format = kCASCCDExposureFormatFloat;
+            if ([io writeExposure:result writePixels:YES error:&error]){
                 NSLog(@"Wrote corrected exposure to %@",path);
             }
             else {

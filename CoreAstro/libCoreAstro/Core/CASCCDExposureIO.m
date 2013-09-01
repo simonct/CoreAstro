@@ -429,7 +429,8 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         if ([dateStr length]){
                             const char* s = [dateStr cStringUsingEncoding:NSASCIIStringEncoding];
                             if (s){
-                                fits_update_key(fptr, TSTRING, "DATE-OBS", (void*)s, "acquisition date (UTC)", &status);                            }
+                                fits_update_key(fptr, TSTRING, "DATE-OBS", (void*)s, "acquisition date (UTC)", &status);
+                            }
                         }
                     }
                     
@@ -443,6 +444,13 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     unsigned short ybin = exposure.params.bin.height;
                     fits_update_key(fptr, TUSHORT, "YBINNING", (void*)&ybin, "Y Binning", &status);
 
+//                    if (exposure.params.origin.x != 0 || exposure.params.origin.y != 0){
+//                        long orx = exposure.params.origin.x;
+//                        fits_update_key(fptr, TLONG, "XORGSUBF", (void*)&orx, "X origin of subframe", &status);
+//                        long ory = exposure.params.origin.y;
+//                        fits_update_key(fptr, TLONG, "YORGSUBF", (void*)&ory, "Y origin of subframe", &status);
+//                    }
+                    
                     char* imageType = nil;
                     switch ([exposure.meta[@"type"] intValue]) {
                         case kCASCCDExposureLightType:
@@ -462,6 +470,11 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         fits_update_key(fptr, TSTRING, "IMAGETYP", (void*)imageType, "Image type", &status);
                     }
 
+                    if (exposure.uuid){
+                        const char* uuid = [exposure.uuid UTF8String];
+                        fits_update_key(fptr, TSTRING, "CAS_UUID", (void*)uuid, "CoreAstro exposure UUID", &status);
+                    }
+                    
                     // CCD-TEMP
                     // COLORCCD
                     
@@ -576,9 +589,9 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
         }
     }
     
-    if (status){
-        NSLog(@"Status %d reading exposure metadata",status);
-    }
+//    if (status){
+//        NSLog(@"Status %d reading exposure metadata",status);
+//    }
     
     return result;
 }
@@ -651,11 +664,23 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                             
                             // handle scale and offset as the contrast stretch code assumes a max value of 65535
                             if (zero != 0 || scale != 1){
-                                vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                                
+                                if (zero == 32768 && scale == 1){
+                                    // frames from before setting the scale and zero keys for every exposure
+                                    zero = 0;
+                                    scale = 1.0/65535.0;
+                                    vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                                }
+                                else if (zero == 0 && scale == 65535){
+                                    // nothing, already in the 0-1 scale
+                                }
+                                else {
+                                    vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                                }
                             }
                             
                             // advance the pixel pointer a row
-                            pix += (naxes[0]/sizeof(float));
+                            pix += naxes[0];
                         }
                     }
                 }
@@ -663,16 +688,95 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 // metadata
                 NSDictionary* metadata = [self readExposureMetadata:fptr];
                 if (!metadata){
-                    // todo; construct as much metadata from the keys in the image header
-                    NSLog(@"CASCCDExposureFITS: no embedded CoreAstro exposure metadata");
-                }
-                else{
-                    if (pixels){
-                        exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                                        
+                    NSMutableDictionary* mmetadata = [NSMutableDictionary dictionaryWithCapacity:5];
+                    mmetadata[@"format"] = @(kCASCCDExposureFormatFloat);
+                    
+                    NSMutableDictionary* deviceParams = [NSMutableDictionary dictionaryWithCapacity:5];
+                    
+                    int naxis;
+                    long naxes[2];
+                    fits_get_img_dim(fptr, &naxis, &status);
+                    fits_get_img_size(fptr, 2, naxes, &status);
+                    if (naxis == 2){
+                        
+                        deviceParams[@"width"] = @(naxes[0]);
+                        deviceParams[@"height"] = @(naxes[1]);
+                        
+                        int bps;
+                        if (!fits_read_key(fptr,TINT,"BITPIX",(void*)&bps,NULL,&status)){
+                            deviceParams[@"bitsPerPixel"] = @(bps);
+                        }
+                        
+                        NSMutableDictionary* device = [NSMutableDictionary dictionaryWithCapacity:5];
+                        
+                        char name[128];
+                        if (!fits_read_key(fptr,TSTRING,"INSTRUME",(void*)name,NULL,&status)){
+                            device[@"name"] = [NSString stringWithUTF8String:name];
+                        }
+                        device[@"params"] = deviceParams;
+                        
+                        CASExposeParams params;
+                        bzero(&params, sizeof(params));
+                        
+                        params.size = params.frame = CASSizeMake(naxes[0], naxes[1]);
+                        params.bps = bps;
+
+//                        long orx = 0;
+//                        fits_update_key(fptr, TLONG, "XORGSUBF", (void*)&orx, "X origin of subframe", &status);
+//                        long ory = 0;
+//                        fits_update_key(fptr, TLONG, "YORGSUBF", (void*)&ory, "Y origin of subframe", &status);
+
+                        int xbin, ybin;
+                        if (!fits_read_key(fptr,TINT,"XBINNING",(void*)&xbin,NULL,&status) && !fits_read_key(fptr,TINT,"YBINNING",(void*)&ybin,NULL,&status)){
+                            params.bin = CASSizeMake(xbin, ybin);
+                        }
+                        else {
+                            params.bin = CASSizeMake(1, 1);
+                        }
+
+                        float ms;
+                        if (!fits_read_key(fptr,TFLOAT,"EXPTIME",(void*)&ms,NULL,&status)){
+                            params.ms = round(ms);
+                        }
+                        
+                        char type[128];
+                        if (!fits_read_key(fptr,TSTRING,"IMAGETYP",(void*)type,NULL,&status)){
+                            NSString* nstype = [[NSString stringWithUTF8String:type] lowercaseString];
+                            if ([nstype hasPrefix:@"light"]){
+                                mmetadata[@"type"] = @(kCASCCDExposureLightType);
+                            }
+                            else if ([nstype hasPrefix:@"dark"]){
+                                mmetadata[@"type"] = @(kCASCCDExposureDarkType);
+                            }
+                            else if ([nstype hasPrefix:@"bias"]){
+                                mmetadata[@"type"] = @(kCASCCDExposureBiasType);
+                            }
+                            else if ([nstype hasPrefix:@"flat"]){
+                                mmetadata[@"type"] = @(kCASCCDExposureFlatType);
+                            }
+                        }
+                        device[@"params"] = deviceParams;
+
+                        char uuid[128];
+                        if (!fits_read_key(fptr,TSTRING,"CAS_UUID",(void*)uuid,NULL,&status)){
+                            mmetadata[@"uuid"] = [NSString stringWithUTF8String:uuid];
+                        }
+                        
+                        // date-obs
+
+                        mmetadata[@"device"] = device;
+                        mmetadata[@"exposure"] = NSStringFromCASExposeParams(params);
+
+                        metadata = [mmetadata copy];
                     }
-                    exposure.meta = metadata;
-                    exposure.params = CASExposeParamsFromNSString([metadata objectForKey:@"exposure"]);
                 }
+                
+                if (pixels){
+                    exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                }
+                exposure.meta = metadata;
+                exposure.params = CASExposeParamsFromNSString([metadata objectForKey:@"exposure"]);
             }
         }
         fits_close_file(fptr, &status);

@@ -56,6 +56,8 @@
 @property (nonatomic,strong) NSImage* image;
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic) BOOL hasCalibratedFrame;
++ (BOOL)pathIsCalibrated:(NSString*)path;
++ (NSString*)calibratedPathForExposurePath:(NSString*)path;
 @end
 
 @implementation SXIOCalibrationModel
@@ -89,9 +91,66 @@
     return _image;
 }
 
++ (BOOL)pathIsCalibrated:(NSString*)path
+{
+    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
+    return [filename hasSuffix:@"_calibrated"];
+}
+
++ (NSString*)calibratedPathForExposurePath:(NSString*)path
+{
+    if (!path){
+        return nil;
+    }
+    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
+    NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
+    return [[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename] stringByAppendingPathExtension:[path pathExtension]];
+}
+
+@end
+
+@interface SXIOCalibrationProcessor : CASCCDCorrectionProcessor
+@property (nonatomic,weak) NSArray* images;
+@end
+
+@implementation SXIOCalibrationProcessor
+
+- (void)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure
+{
+    if (!result){
+        return;
+    }
+    
+    SXIOCalibrationModel* model = nil;
+    for (model in self.images){
+        if (model.exposure == exposure){
+            break;
+        }
+    }
+    
+    if (model){
+        
+        NSString* path = [SXIOCalibrationModel calibratedPathForExposurePath:[model.url path]];
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+        if (io){
+            
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+            
+            NSError* error;
+            if (![io writeExposure:exposure writePixels:YES error:&error]){
+                NSLog(@"Did not write exposure");
+            }
+            if (error){
+                NSLog(@"error: %@",error);
+            }
+        }
+    }
+}
+
 @end
 
 @interface SXIOCalibrationWindowController ()
+@property (weak) IBOutlet NSImageView *tmpImageView;
 @property (nonatomic,strong) NSMutableArray* images;
 @property (weak) IBOutlet NSCollectionView *collectionView;
 @property (strong) IBOutlet NSArrayController *arrayController;
@@ -127,7 +186,7 @@
     
     [self.arrayController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
     
-//    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio-test/SX_IO/Eastern_Veil_{SXVR-M25C}"];
+//    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio_test/SX_IO/Eastern_Veil_SXVR_M25C"];
 }
 
 static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clientCallBackInfo, size_t numEvents, void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
@@ -172,8 +231,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     if (io){
         
         // has it been calibrated ? in which case don't show it
-        NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
-        if ([filename hasSuffix:@"_calibrated"]){
+        if ([SXIOCalibrationModel pathIsCalibrated:path]){
             NSLog(@"Ignoring calibrated frame at %@",path);
         }
         else {
@@ -184,6 +242,8 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                 NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
             }
             else{
+                
+                exposure.io = io; // -readExposure:readPixels:error: should do this
                 
                 SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
                 model.url = [NSURL fileURLWithPath:path];
@@ -202,8 +262,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                 }
                 
                 // does it have a matching calibrated frame ?
-                NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
-                model.hasCalibratedFrame = [[NSFileManager defaultManager] fileExistsAtPath:[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename]];
+                model.hasCalibratedFrame = [[NSFileManager defaultManager] fileExistsAtPath:[SXIOCalibrationModel calibratedPathForExposurePath:path]];
                 
                 // add the image model (inefficient if we're adding a lot of images)
                 [[self mutableArrayValueForKey:@"images"] addObject:model];
@@ -214,6 +273,8 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (void)processFSUpdate:(NSNotification*)note
 {
+    // todo; check for rescan and then refresh contents
+    
     NSMutableSet* added = note.userInfo[@"added"];
     NSMutableSet* removed = note.userInfo[@"removed"];
     NSMutableSet* modified = note.userInfo[@"modified"];
@@ -253,22 +314,22 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 }
 
 - (void)registerForFSEvents
-{
-    if (!_url){
-        return;
-    }
-    
+{    
     if (_eventsRef){
         FSEventStreamStop(_eventsRef);
         FSEventStreamInvalidate(_eventsRef);
         FSEventStreamRelease(_eventsRef);
+        _eventsRef = NULL;
     }
     
-    _eventsRef = FSEventStreamCreate(NULL, CASFSEventStreamCallback, nil, (__bridge CFArrayRef)@[[self.url path]], kFSEventStreamEventIdSinceNow, 1, kFSEventStreamCreateFlagFileEvents|kFSEventStreamCreateFlagUseCFTypes);
-
-    if (_eventsRef){
-        FSEventStreamScheduleWithRunLoop(_eventsRef,CFRunLoopGetMain(),kCFRunLoopCommonModes);
-        FSEventStreamStart(_eventsRef);
+    if (self.url){
+        
+        _eventsRef = FSEventStreamCreate(NULL, CASFSEventStreamCallback, nil, (__bridge CFArrayRef)@[[self.url path]], kFSEventStreamEventIdSinceNow, 1, kFSEventStreamCreateFlagFileEvents|kFSEventStreamCreateFlagUseCFTypes);
+        
+        if (_eventsRef){
+            FSEventStreamScheduleWithRunLoop(_eventsRef,CFRunLoopGetMain(),kCFRunLoopCommonModes);
+            FSEventStreamStart(_eventsRef);
+        }
     }
 }
 
@@ -303,23 +364,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 {
     if (_url != url){
         _url = url;
-        [self refreshContents];
-    }
-}
-
-- (void)setBiasModel:(SXIOCalibrationModel *)biasModel
-{
-    if (biasModel != _biasModel){
-        _biasModel = biasModel;
-        NSLog(@"Set bias to %@",biasModel);
-    }
-}
-
-- (void)setFlatModel:(SXIOCalibrationModel *)flatModel
-{
-    if (flatModel != _flatModel){
-        _flatModel = flatModel;
-        NSLog(@"Set flat to %@",flatModel);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshContents];
+        });
     }
 }
 
@@ -342,16 +389,30 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.url = open.URL;
-            });
+            self.url = open.URL;
         }
     }];
 }
 
 - (IBAction)calibrate:(id)sender
 {
-    NSLog(@"calibrate");
+    SXIOCalibrationProcessor* corrector = [[SXIOCalibrationProcessor alloc] init];
+    corrector.images = self.images;
+    corrector.bias = self.biasModel.exposure;
+    corrector.flat = self.flatModel.exposure;
+    
+    NSArray* exposures = [self.arrayController.arrangedObjects objectsAtIndexes:self.collectionView.selectionIndexes];
+    // filter out any calibration frames in the selection
+    NSEnumerator* e = [exposures objectEnumerator];
+
+    [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+        SXIOCalibrationModel* model = [e nextObject];
+        *exposurePtr = model.exposure;
+    } completion:^(NSError *error, CASCCDExposure *result) {
+        if (error){
+            NSLog(@"cal error: %@",error);
+        }
+    }];
 }
 
 @end
