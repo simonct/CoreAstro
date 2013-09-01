@@ -34,6 +34,7 @@
 - (void)setSelected:(BOOL)selected
 {
     [super setSelected:selected];
+    
     SXIOCalibrationView* view = (SXIOCalibrationView*)self.view;
     [view setSelected:self.selected];
     [view setNeedsDisplay:YES];
@@ -148,6 +149,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         }
         ++i;
     }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"SXIOCalibrationWindowControllerFSUpdate" object:nil userInfo:@{
      @"added":added,
      @"removed":removed,
@@ -243,9 +245,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     [self registerForFSEvents];
 
     [[self mutableArrayValueForKey:@"images"] removeAllObjects];
-    
-    NSMutableArray* images = [NSMutableArray arrayWithCapacity:10];
-    
+        
     NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:self.url
                                                     includingPropertiesForKeys:nil
                                                                        options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
@@ -255,11 +255,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     while ((imageURL = [e nextObject]) != nil) {
         [self addImageAtPath:[imageURL path]];
     }
-    
-    if ([images count]){
-        [[self mutableArrayValueForKey:@"images"] addObjectsFromArray:images];
-    }
-    
+        
     // look for calibration frames
 }
 
