@@ -520,6 +520,10 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     fits_get_num_hdus(fptr,&numhdu,&status);
     if (numhdu > 0){
         
+        // get current hdu
+        int curhdu = 0;
+        fits_get_hdu_num(fptr,&curhdu);
+        
         while(!result && !fits_movrel_hdu(fptr,1,&hdutype,&status)){
             
             if (hdutype == BINARY_TBL){
@@ -565,6 +569,11 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 }
             }
         }
+        
+        // restore current hdu
+        if (curhdu > 0){
+            fits_movabs_hdu(fptr,curhdu,&hdutype,&status);
+        }
     }
     
     if (status){
@@ -590,7 +599,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     else {
         
         if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
-            NSLog(@"CASCCDExposureFITS: FITS file isn't an image %@",path);
+            error = createFITSError(unimpErr,[NSString stringWithFormat:@"FITS file isn't an image %@",path]);
         }
         else {
             
@@ -603,10 +612,10 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
             // get the pixel format
             int type;
             fits_get_img_type(fptr,&type,&status);
-            NSLog(@"CASCCDExposureFITS: fits_get_img_type: %d",type);
+            //NSLog(@"CASCCDExposureFITS: fits_get_img_type: %d",type);
             
             if (status || naxis != 2 || (type != FLOAT_IMG && type != USHORT_IMG && type != SHORT_IMG)) {
-                NSLog(@"CASCCDExposureFITS: only 16-bit in or floating point 2D images supported %@",path);
+                error = createFITSError(unimpErr,[NSString stringWithFormat:@"Only 16-bit in t or floating point 2D images supported %@",path]);
             }
             else {
                 
@@ -615,46 +624,52 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 float scale = 1;
                 fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status);
                 fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status);
-                NSLog(@"CASCCDExposureFITS: BSCALE: %f, BZERO: %f",scale,zero);
-                
-                // create a buffer todo; round to 16 bytes ?
-                float* pixels = calloc(naxes[0] * naxes[1],sizeof(float));
-                
-                if (!pixels){
-                    NSLog(@"CASCCDExposureFITS: out of memory");
-                    status = memFullErr;
-                }
-                else {
+                //NSLog(@"CASCCDExposureFITS: BSCALE: %f, BZERO: %f",scale,zero);
+                                
+                // pixels
+                float* pixels = nil;
+                if (readPixels){
                     
-                    long fpixel[2] = {1,0};
-                    float* pix = pixels;
+                    // create a buffer todo; round to 4 or 16 bytes ?
+                    pixels = calloc(naxes[0] * naxes[1],sizeof(float));
                     
-                    for (fpixel[1] = 1; fpixel[1] <= naxes[1]; fpixel[1]++) {
+                    if (!pixels){
+                        error = createFITSError(memFullErr,@"Out of memory");
+                    }
+                    else {
                         
-                        // read a row of pixels into the bitmap
-                        if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,pix,0,&status)){
-                            NSLog(@"CASCCDExposureFITS: failed to read a row %d: %@",status,path);
-                            break;
+                        long fpixel[2] = {1,0};
+                        float* pix = pixels;
+                        
+                        for (fpixel[1] = 1; fpixel[1] <= naxes[1]; fpixel[1]++) {
+                            
+                            // read a row of pixels into the bitmap
+                            if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,pix,0,&status)){
+                                error = createFITSError(status,[NSString stringWithFormat:@"Failed to read a row %d: %@",status,path]);
+                                break;
+                            }
+                            
+                            // handle scale and offset as the contrast stretch code assumes a max value of 65535
+                            if (zero != 0 || scale != 1){
+                                vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                            }
+                            
+                            // advance the pixel pointer a row
+                            pix += (naxes[0]/sizeof(float));
                         }
-                        
-                        // handle scale and offset as the contrast stretch code assumes a max value of 65535
-                        if (zero != 0 || scale != 1){
-                            vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
-                        }
-                        
-                        // advance the pixel pointer a row
-                        pix += (naxes[0]/sizeof(float));
                     }
                 }
                 
                 // metadata
                 NSDictionary* metadata = [self readExposureMetadata:fptr];
                 if (!metadata){
-                    // todo; construct as much metadata from the keys in the image header (remember, -readExposureMetadata: has moved the hdu pointer)
+                    // todo; construct as much metadata from the keys in the image header
                     NSLog(@"CASCCDExposureFITS: no embedded CoreAstro exposure metadata");
                 }
                 else{
-                    exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                    if (pixels){
+                        exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                    }
                     exposure.meta = metadata;
                     exposure.params = CASExposeParamsFromNSString([metadata objectForKey:@"exposure"]);
                 }
