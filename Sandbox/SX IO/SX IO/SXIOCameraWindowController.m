@@ -53,6 +53,7 @@
 @end
 
 @implementation SXIOCameraWindowController {
+    NSURL* _targetFolder;
     BOOL _capturedFirstImage:1;
 }
 
@@ -150,68 +151,30 @@
          informativeTextWithFormat:@"%@",message] runModal];
 }
 
-- (NSString*)currentDeviceAppSupportPath
-{
-    NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-    NSString* deviceName = self.cameraController.camera.deviceName;
-    if (deviceName){
-        NSString* path = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,NSUserDomainMask,YES) lastObject] stringByAppendingPathComponent:appName] stringByAppendingPathComponent:deviceName];
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:path]){
-            return path;
-        }
-    }
-    return nil;
-}
-
 - (NSString*)currentDeviceExposurePathWithName:(NSString*)name
 {
-    return name ? [[[self currentDeviceAppSupportPath] stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"caExposure"] : nil;
+    NSString* path = [_targetFolder path];
+    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"] : nil;
 }
 
-- (void)saveExposure:(CASCCDExposure*)exposure withName:(NSString*)name
+- (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
 {
-    if (exposure && name){
-        
-        // todo; better write and swap
-        
-        NSString* path = [self currentDeviceExposurePathWithName:name];
-        NSLog(@"Saving %@ to %@",name,path);
-        
-        // remove existing one
-        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
-        
-        // save new one
-        NSError* error;
-        [[CASCCDExposureIO exposureIOWithPath:path] writeExposure:exposure writePixels:YES error:&error];
-        if (error){
-            [NSApp presentError:error];
-        }
-    }
-}
-
-- (CASCCDExposure*)exposureWithName:(NSString*)name
-{
-    if (!name){
+    if (!suffix || !_targetFolder){
         return nil;
     }
+    NSString* filename = [self exposureSaveNameWithSuffix:suffix];
+    NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
     CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-    NSString* path = [self currentDeviceExposurePathWithName:name];
-    return [[CASCCDExposureIO exposureIOWithPath:path] readExposure:exp readPixels:YES error:nil] ? exp : nil;
-}
-
-- (void)removeExposureWithName:(NSString*)name
-{
-    if (!name){
-        return;
+    if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:exp readPixels:YES error:nil]){
+        return nil;
     }
-    NSString* path = [self currentDeviceExposurePathWithName:name];
-    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+    // check binning and dimenions match
+    return exposure;
 }
 
 #pragma mark - Actions
 
-- (NSURL*)beginAccessToSaveTargetWithSaving:(BOOL)saving
+- (NSURL*)beginAccessToSaveTarget
 {
     // check we have somewhere to save the file, a prefix and a sequence number
     __block NSURL* url;
@@ -230,10 +193,12 @@
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return nil;
     }
-    if (saving && securityScoped && ![url startAccessingSecurityScopedResource]){
+    if (securityScoped && ![url startAccessingSecurityScopedResource]){
         [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
         return nil;
     }
+    
+    _targetFolder = url;
     
     return url;
 }
@@ -254,7 +219,7 @@
 {
     // check we have somewhere to save the file, a prefix and a sequence number
     const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
-    __block NSURL* url = [self beginAccessToSaveTargetWithSaving:saveToFile];
+    __block NSURL* url = [self beginAccessToSaveTarget];
     
     // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
@@ -460,7 +425,7 @@
         return;
     }
     
-    NSURL* url = [self beginAccessToSaveTargetWithSaving:YES];
+    NSURL* url = [self beginAccessToSaveTarget];
     if (!url){
         // alert
         return;
@@ -566,7 +531,7 @@
 
 - (IBAction)deleteDarks:(id)sender
 {
-    [self removeExposureWithName:@"dark"];
+//    [self removeExposureWithName:@"dark"];
 }
 
 - (IBAction)captureBias:(id)sender
@@ -576,7 +541,7 @@
 
 - (IBAction)deleteBias:(id)sender
 {
-    [self removeExposureWithName:@"bias"];
+//    [self removeExposureWithName:@"bias"];
 }
 
 - (IBAction)captureFlats:(id)sender
@@ -586,7 +551,7 @@
 
 - (IBAction)deleteFlats:(id)sender
 {
-    [self removeExposureWithName:@"flat"];
+//    [self removeExposureWithName:@"flat"];
 }
 
 #pragma mark - Save Utilities
@@ -815,28 +780,35 @@
             }
         }
         
-        // optionally calibrate using saved bias and flat frames
-        if (self.calibrate){
-            __block BOOL called = NO;
-            __block CASCCDExposure* corrected = exposure;
-            CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
-            corrector.dark = [self exposureWithName:@"dark"];
-            corrector.bias = [self exposureWithName:@"bias"];
-            corrector.flat = [self exposureWithName:@"flat"];
-            [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-                if (!called){
-                    *exposurePtr = exposure;
-                }
-                else {
-                    *exposurePtr = nil;
-                }
-                called = YES;
-            } completion:^(NSError *error, CASCCDExposure *result) {
-                if (!error){
-                    corrected = result;
-                }
-            }];
-            exposure = corrected;
+        // optionally live calibrate using saved bias and flat frames
+        if (/*self.calibrate*/1){
+            
+            NSURL* url = [self beginAccessToSaveTarget];
+            if (url){
+                
+                __block BOOL called = NO;
+                __block CASCCDExposure* corrected = exposure;
+                CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
+                corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
+                corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
+                corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
+                [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+                    if (!called){
+                        *exposurePtr = exposure;
+                    }
+                    else {
+                        *exposurePtr = nil;
+                    }
+                    called = YES;
+                } completion:^(NSError *error, CASCCDExposure *result) {
+                    if (!error){
+                        corrected = result;
+                    }
+                }];
+                exposure = corrected;
+                
+                [url stopAccessingSecurityScopedResource];
+            }
         }
         
         // optionally equalise
@@ -1163,7 +1135,9 @@
         case 11100:
             item.state = self.calibrate;
             break;
-            
+        case 11101:
+            break;
+
     }
     return enabled;
 }

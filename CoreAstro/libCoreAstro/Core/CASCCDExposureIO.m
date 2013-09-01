@@ -24,6 +24,7 @@
 //
 
 #import "CASCCDExposureIO.h"
+#import <Accelerate/Accelerate.h>
 
 #if CAS_ENABLE_FITS
 #import "fitsio.h"
@@ -320,18 +321,18 @@
     return @"samples.data";
 }
 
+static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSString* msg){
+    if (status && !msg){
+        msg = [NSString stringWithFormat:@"FITS error: %ld",status];
+    }
+    return [NSError errorWithDomain:@"CASCCDExposureFITS"
+                               code:status
+                           userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
+};
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
     NSError* error = nil;
-    
-    NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSString* msg){
-        if (status && !msg){
-            msg = [NSString stringWithFormat:@"FITS error: %ld",status];
-        }
-        return [NSError errorWithDomain:@"CASCCDExposureFITS"
-                                   code:status
-                               userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
-    };
     
      // '(' & ')' are special characters so replace them with {}
     NSMutableString* s = [NSMutableString stringWithString:[self.url path]];
@@ -483,7 +484,7 @@
                         error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                     }
                     
-                    NSData* metaData = [NSJSONSerialization dataWithJSONObject:exposure.meta options:0 error:&error];
+                    NSData* metaData = [NSJSONSerialization dataWithJSONObject:exposure.meta options:0 error:&error]; // null terminated ???
                     if (!error){
                         const char* metaDataStr = [metaData bytes];
                         const char* metaDataStrArg[] = {metaDataStr};
@@ -508,14 +509,164 @@
     return (error == nil);
 }
 
+- (NSDictionary*)readExposureMetadata:(fitsfile*)fptr
+{
+    NSDictionary* result = nil;
+    
+    int status = 0;
+    int numhdu = 0;
+    int hdutype = 0;
+    
+    fits_get_num_hdus(fptr,&numhdu,&status);
+    if (numhdu > 0){
+        
+        while(!result && !fits_movrel_hdu(fptr,1,&hdutype,&status)){
+            
+            if (hdutype == BINARY_TBL){
+                
+                int colnum = 1;
+                char colname[68+1];
+                if (fits_get_colname(fptr,0,"CAS_EXPROPS",colname,&colnum,&status)){
+                    status = 0;
+                    continue;
+                }
+                else{
+                
+                    long rowsize = 0;
+                    if (!fits_get_rowsize(fptr,&rowsize,&status)){
+                        
+                        char* data = calloc(rowsize, 1);
+                        if (data){
+                            
+                            const char* dataArg[] = {data};
+                            if (!fits_read_col(fptr,TSTRING,1,1,1,1,NULL,dataArg,NULL,&status)){
+                                
+                                char* end = data;
+                                while(*end && end < data + rowsize)
+                                    ++end;
+                                
+                                @try {
+                                    NSError* error;
+                                    NSDictionary* params = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytesNoCopy:data length:(end - data) freeWhenDone:NO] options:NSJSONReadingAllowFragments error:&error];
+                                    if ([params isKindOfClass:[NSDictionary class]]){
+                                        result = params;
+                                    }
+                                    else if (params) {
+                                        NSLog(@"Expecting exposure metadata to be a NSDictionary but it's a %@",NSStringFromClass([params class]));
+                                    }
+                                }
+                                @catch (NSException *exception) {
+                                    NSLog(@"Exception reading JSON: %@",exception);
+                                }
+                            }
+                            free(data);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if (status){
+        NSLog(@"Status %d reading exposure metadata",status);
+    }
+    
+    return result;
+}
+
 - (BOOL)readExposure:(CASCCDExposure*)exposure readPixels:(BOOL)readPixels error:(NSError**)errorPtr
 {
     NSError* error = nil;
     
-    error = [NSError errorWithDomain:@"CASCCDExposureFITS"
-                                code:unimpErr
-                            userInfo:[NSDictionary dictionaryWithObject:@"Reading FITS files is not currently supported" forKey:NSLocalizedFailureReasonErrorKey]];
+    NSString* path = [self.url path];
     
+    int status = 0;
+    fitsfile *fptr;
+    int hdutype;
+    
+    if (fits_open_image(&fptr, [[self.url path] UTF8String], READONLY, &status)){
+        error = createFITSError(status,[NSString stringWithFormat:@"Failed to open FITS file %d",status]);
+    }
+    else {
+        
+        if (fits_get_hdu_type(fptr, &hdutype, &status) || hdutype != IMAGE_HDU) {
+            NSLog(@"CASCCDExposureFITS: FITS file isn't an image %@",path);
+        }
+        else {
+            
+            // get the image dimensions
+            int naxis;
+            long naxes[2];
+            fits_get_img_dim(fptr, &naxis, &status);
+            fits_get_img_size(fptr, 2, naxes, &status);
+            
+            // get the pixel format
+            int type;
+            fits_get_img_type(fptr,&type,&status);
+            NSLog(@"CASCCDExposureFITS: fits_get_img_type: %d",type);
+            
+            if (status || naxis != 2 || (type != FLOAT_IMG && type != USHORT_IMG && type != SHORT_IMG)) {
+                NSLog(@"CASCCDExposureFITS: only 16-bit in or floating point 2D images supported %@",path);
+            }
+            else {
+                
+                // get the zero and scaling values
+                float zero = 0;
+                float scale = 1;
+                fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status);
+                fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status);
+                NSLog(@"CASCCDExposureFITS: BSCALE: %f, BZERO: %f",scale,zero);
+                
+                // create a buffer todo; round to 16 bytes ?
+                float* pixels = calloc(naxes[0] * naxes[1],sizeof(float));
+                
+                if (!pixels){
+                    NSLog(@"CASCCDExposureFITS: out of memory");
+                    status = memFullErr;
+                }
+                else {
+                    
+                    long fpixel[2] = {1,0};
+                    float* pix = pixels;
+                    
+                    for (fpixel[1] = 1; fpixel[1] <= naxes[1]; fpixel[1]++) {
+                        
+                        // read a row of pixels into the bitmap
+                        if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,pix,0,&status)){
+                            NSLog(@"CASCCDExposureFITS: failed to read a row %d: %@",status,path);
+                            break;
+                        }
+                        
+                        // handle scale and offset as the contrast stretch code assumes a max value of 65535
+                        if (zero != 0 || scale != 1){
+                            vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                        }
+                        
+                        // advance the pixel pointer a row
+                        pix += (naxes[0]/sizeof(float));
+                    }
+                }
+                
+                // metadata
+                NSDictionary* metadata = [self readExposureMetadata:fptr];
+                if (!metadata){
+                    // todo; construct as much metadata from the keys in the image header (remember, -readExposureMetadata: has moved the hdu pointer)
+                    NSLog(@"CASCCDExposureFITS: no embedded CoreAstro exposure metadata");
+                }
+                else{
+                    exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                    exposure.meta = metadata;
+                    exposure.params = CASExposeParamsFromNSString([metadata objectForKey:@"exposure"]);
+                }
+            }
+        }
+        fits_close_file(fptr, &status);
+    }
+    
+    if (errorPtr){
+        *errorPtr = error;
+    }
+
     return (error == nil);
 }
 

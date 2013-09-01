@@ -45,6 +45,7 @@
 @property (nonatomic,copy) NSURL* url;
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,strong) NSImage* image;
+@property (nonatomic,strong) CASCCDExposure* exposure;
 @end
 
 @implementation SXIOCalibrationModel
@@ -59,7 +60,10 @@
     if (!_image && self.url){
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)(self.url),CGSizeMake(512, 512), (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
-            if (cgImage){
+            if (!cgImage){
+                NSLog(@"No QL thumbnail for %@",self.url);
+            }
+            else{
                 NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(CGImageGetWidth(cgImage),CGImageGetHeight(cgImage))];
                 if (nsImage){
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -159,6 +163,25 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }]];
 }
 
+- (void)addImageAtPath:(NSString*)path
+{
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    if (io){
+        NSError* error;
+        CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
+        if (![io readExposure:exposure readPixels:NO error:&error]){
+            NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
+        }
+        else{
+            SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
+            model.url = [NSURL fileURLWithPath:path];
+            model.exposure = exposure;
+            [[self mutableArrayValueForKey:@"images"] addObject:model]; // inefficient if we're adding a lot of images
+            // check to see if it's a calibration frame and add that to the list
+        }
+    }
+}
+
 - (void)processFSUpdate:(NSNotification*)note
 {
     NSMutableSet* added = note.userInfo[@"added"];
@@ -186,13 +209,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     for (NSString* path in added){
         if ([[self modelWithPath:path] count]){
             NSLog(@"%@ already exists",path);
-        }else{
-            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-            if (io){
-                SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
-                model.url = [NSURL fileURLWithPath:path];
-                [[self mutableArrayValueForKey:@"images"] addObject:model];
-            }
+        }
+        else{
+            [self addImageAtPath:path];
         }
     }
     
@@ -234,12 +253,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     
     NSURL* imageURL;
     while ((imageURL = [e nextObject]) != nil) {
-        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[imageURL path]];
-        if (io){
-            SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
-            model.url = [NSURL fileURLWithPath:[imageURL path]];
-            [images addObject:model];
-        }
+        [self addImageAtPath:[imageURL path]];
     }
     
     if ([images count]){
@@ -266,7 +280,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            self.url = open.URL;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.url = open.URL;
+            });
         }
     }];
 }
