@@ -12,6 +12,11 @@
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
+@interface SXIOCalibrationControlsBackgroundView : NSView
+@end
+@implementation SXIOCalibrationControlsBackgroundView
+@end
+
 @interface SXIOCalibrationView : NSView
 @property (nonatomic) BOOL selected;
 @end
@@ -157,9 +162,11 @@
 @property (weak) IBOutlet NSButton *calibrateButton;
 @property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
 @property (readonly) BOOL calibrationButtonEnabled;
+@property (nonatomic) float scale;
 @end
 
 @implementation SXIOCalibrationWindowController {
+    CGSize _unitSize;
     FSEventStreamRef _eventsRef;
 }
 
@@ -167,6 +174,7 @@
 {
     self = [super initWithWindow:window];
     if (self) {
+        self.scale = 1;
         self.images = [NSMutableArray arrayWithCapacity:10];
     }
     
@@ -185,7 +193,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processFSUpdate:) name:@"SXIOCalibrationWindowControllerFSUpdate" object:nil];
     
     [self.arrayController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
-    
+
+    _unitSize = self.collectionView.minItemSize;
+        
 //    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio_test/SX_IO/Eastern_Veil_SXVR_M25C"];
 }
 
@@ -367,6 +377,14 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         dispatch_async(dispatch_get_main_queue(), ^{
             [self refreshContents];
         });
+    }
+}
+
+- (void)setScale:(float)scale
+{
+    if (scale != _scale){
+        _scale = scale;
+        self.collectionView.minItemSize = self.collectionView.maxItemSize = CGSizeMake(_unitSize.width * _scale, _unitSize.height * _scale);
     }
 }
 
