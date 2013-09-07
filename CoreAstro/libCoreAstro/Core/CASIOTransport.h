@@ -44,6 +44,7 @@ typedef enum {
 @end
 
 @interface CASIOTransport : NSObject<CASIOTransport>
+@property (nonatomic,readonly) NSString* location;
 @property (nonatomic,readonly) CASIOTransportType type;
 - (void)submit:(CASIOCommand*)command block:(void (^)(NSError*))block;
 - (void)submit:(CASIOCommand*)command when:(NSDate*)when block:(void (^)(NSError*))block;

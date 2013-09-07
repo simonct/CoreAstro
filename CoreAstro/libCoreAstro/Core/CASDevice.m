@@ -54,6 +54,13 @@
 }
 
 - (NSString*)deviceLocation {
+    NSString* result = nil;
+    if (self.transport){
+        result = self.transport.location;
+    }
+    if (result){
+        return  result;
+    }
     switch (self.transport.type) {
         case kCASTransportTypeUSB:
             return @"USB";

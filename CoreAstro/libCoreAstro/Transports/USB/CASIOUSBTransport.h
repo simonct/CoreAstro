@@ -29,6 +29,8 @@
 
 @interface CASIOUSBTransport : CASIOTransport
 
+@property (nonatomic) NSInteger bus, address;
+
 - (id)initWithPluginInterface:(IOCFPlugInInterface**)interface;
 
 @end

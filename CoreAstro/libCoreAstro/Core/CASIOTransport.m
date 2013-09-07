@@ -65,6 +65,10 @@
     [self disconnect];
 }
 
+- (NSString*) location {
+    return nil;
+}
+
 - (CASIOTransportType)type {
     return kCASTransportTypeNone;   
 }

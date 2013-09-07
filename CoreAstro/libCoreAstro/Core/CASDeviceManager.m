@@ -131,7 +131,7 @@
                                         NSLog(@"No transport for %@, another client has grabbed it or the transport is inappropriate e.g. HID device with bulk USB transport",device);
                                     }
                                     else {
-                                        NSLog(@"Added device %@",device);
+                                        NSLog(@"Added device %@@%@",device.deviceName,device.deviceLocation);
                                         [[self mutableArrayValueForKey:@"devices"] addObject:device];
                                     }
                                 }

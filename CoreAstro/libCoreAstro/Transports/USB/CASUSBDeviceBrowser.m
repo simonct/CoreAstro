@@ -223,6 +223,15 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
         
         IOObjectRelease(iterator);
     }
+    
+    if (result){
+        USBDeviceAddress address = 0;
+        GetDeviceAddress(deviceRef, &address);
+        UInt32 locationID = 0;
+        GetDeviceLocationID(deviceRef, &locationID);
+        result.bus = locationID >> 24;
+        result.address = address;
+    }
 
     return result;
 }

@@ -83,6 +83,10 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
     }
 }
 
+- (NSString*) location {
+    return [NSString stringWithFormat:@"USB[0x%lx:%ld]",(long)self.bus,self.address];
+}
+
 - (void)clearPipeStall:(UInt8)pipe {
     const IOReturn result = (*self->interface)->ClearPipeStallBothEnds(self->interface,pipe);
     if (result != kIOReturnSuccess){
