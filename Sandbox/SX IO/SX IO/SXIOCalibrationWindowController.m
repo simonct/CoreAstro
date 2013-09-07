@@ -59,8 +59,9 @@
 @property (nonatomic,copy) NSURL* url;
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,strong) NSImage* image;
+@property (nonatomic,readonly) NSImage* tickImage;
 @property (nonatomic,strong) CASCCDExposure* exposure;
-@property (nonatomic) BOOL hasCalibratedFrame;
+@property (nonatomic,readonly) BOOL hasCalibratedFrame;
 + (BOOL)pathIsCalibrated:(NSString*)path;
 + (NSString*)calibratedPathForExposurePath:(NSString*)path;
 @end
@@ -75,17 +76,18 @@
 - (NSImage*)image
 {
     if (!_image && self.url){
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)(self.url),CGSizeMake(512, 512), (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
+            
+            NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
+            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,CGSizeMake(512, 512), (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
             if (!cgImage){
                 NSLog(@"No QL thumbnail for %@",self.url);
             }
             else{
+                
                 NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(CGImageGetWidth(cgImage),CGImageGetHeight(cgImage))];
                 if (nsImage){
-                    if (self.hasCalibratedFrame){
-                        // draw tick badge on it
-                    }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.image = nsImage;
                     });
@@ -94,6 +96,25 @@
         });
     }
     return _image;
+}
+
+- (NSImage*)tickImage
+{
+    return self.hasCalibratedFrame ? [NSImage imageNamed:NSImageNameStatusAvailable] : nil;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTickImage
+{
+    return [NSSet setWithObjects:@"image",@"url",nil];
+}
+
+- (BOOL)hasCalibratedFrame
+{
+    if (!self.url){
+        return NO;
+    }
+    NSString* calpath = [SXIOCalibrationModel calibratedPathForExposurePath:[self.url path]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:calpath];
 }
 
 + (BOOL)pathIsCalibrated:(NSString*)path
@@ -148,6 +169,10 @@
             if (error){
                 NSLog(@"error: %@",error);
             }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                model.image = nil;
+            });
         }
     }
 }
@@ -155,7 +180,6 @@
 @end
 
 @interface SXIOCalibrationWindowController ()
-@property (weak) IBOutlet NSImageView *tmpImageView;
 @property (nonatomic,strong) NSMutableArray* images;
 @property (weak) IBOutlet NSCollectionView *collectionView;
 @property (strong) IBOutlet NSArrayController *arrayController;
@@ -242,7 +266,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         
         // has it been calibrated ? in which case don't show it
         if ([SXIOCalibrationModel pathIsCalibrated:path]){
-            NSLog(@"Ignoring calibrated frame at %@",path);
+            // NSLog(@"Ignoring calibrated frame at %@",path);
         }
         else {
             
@@ -270,9 +294,6 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                     default:
                         break;
                 }
-                
-                // does it have a matching calibrated frame ?
-                model.hasCalibratedFrame = [[NSFileManager defaultManager] fileExistsAtPath:[SXIOCalibrationModel calibratedPathForExposurePath:path]];
                 
                 // add the image model (inefficient if we're adding a lot of images)
                 [[self mutableArrayValueForKey:@"images"] addObject:model];
@@ -414,23 +435,40 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (IBAction)calibrate:(id)sender
 {
-    SXIOCalibrationProcessor* corrector = [[SXIOCalibrationProcessor alloc] init];
-    corrector.images = self.images;
-    corrector.bias = self.biasModel.exposure;
-    corrector.flat = self.flatModel.exposure;
-    
-    NSArray* exposures = [self.arrayController.arrangedObjects objectsAtIndexes:self.collectionView.selectionIndexes];
-    // filter out any calibration frames in the selection
-    NSEnumerator* e = [exposures objectEnumerator];
+    CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+    progress.canCancel = NO;
+    [progress beginSheetModalForWindow:self.window];
 
-    [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-        SXIOCalibrationModel* model = [e nextObject];
-        *exposurePtr = model.exposure;
-    } completion:^(NSError *error, CASCCDExposure *result) {
-        if (error){
-            NSLog(@"cal error: %@",error);
-        }
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        SXIOCalibrationProcessor* corrector = [[SXIOCalibrationProcessor alloc] init];
+        corrector.images = self.images;
+        corrector.bias = self.biasModel.exposure;
+        corrector.flat = self.flatModel.exposure;
+        
+        NSArray* exposures = [[self.arrayController.arrangedObjects objectsAtIndexes:self.collectionView.selectionIndexes] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            SXIOCalibrationModel* model = evaluatedObject;
+            return (model.exposure.type == kCASCCDExposureLightType);
+        }]];
+        
+        [progress configureWithRange:NSMakeRange(0, [exposures count]) label:@"Calibrating..."];
+        
+        NSEnumerator* e = [exposures objectEnumerator];
+        [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+            SXIOCalibrationModel* model = [e nextObject];
+            *exposurePtr = model.exposure;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                progress.progressBar.doubleValue++;
+            });
+        } completion:^(NSError *error, CASCCDExposure *result) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error){
+                    [NSApp presentError:error];
+                }
+                [progress endSheetWithCode:NSOKButton];
+            });
+        }];
+    });
 }
 
 @end
