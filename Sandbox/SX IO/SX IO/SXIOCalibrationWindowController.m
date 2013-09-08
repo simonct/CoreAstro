@@ -465,7 +465,6 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 - (void)refreshContents
 {
     CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-    progress.canCancel = NO;
     [progress beginSheetModalForWindow:self.window];
 
     @try {
@@ -544,11 +543,79 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }];
 }
 
+- (NSArray*)selectedLightFrames
+{
+    return [[self.arrayController.arrangedObjects objectsAtIndexes:self.collectionView.selectionIndexes] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        SXIOCalibrationModel* model = evaluatedObject;
+        return (model.exposure.type == kCASCCDExposureLightType);
+    }]];
+}
+
+- (IBAction)clear:(id)sender
+{
+    NSArray* exposures = [self selectedLightFrames];
+    if (![exposures count]){
+        return;
+    }
+    
+    NSAlert* confirm = [NSAlert alertWithMessageText:@"Clear Calibration"
+                                       defaultButton:@"OK"
+                                     alternateButton:@"Cancel"
+                                         otherButton:nil
+                           informativeTextWithFormat:@"Are you sure you want to permanently delete the calibrated frames ? This cannot be undone."];
+
+    [confirm beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(confirmClearDidEnd:returnCode:contextInfo:) contextInfo:nil];
+}
+
+- (void)confirmClearDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if (returnCode != NSOKButton){
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        NSArray* exposures = [self selectedLightFrames];
+        if (![exposures count]){
+            return;
+        }
+        
+        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+        [progress beginSheetModalForWindow:self.window];
+        progress.canCancel = YES;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            [progress configureWithRange:NSMakeRange(0, [exposures count]) label:@"Calibrating..."];
+            
+            for (SXIOCalibrationModel* model in exposures){
+                if (progress.cancelled){
+                    break;
+                }
+                [[NSFileManager defaultManager] removeItemAtPath:[SXIOCalibrationModel calibratedPathForExposurePath:[model.url path]] error:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    model.image = nil;
+                    progress.progressBar.doubleValue++;
+                });
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [progress endSheetWithCode:NSOKButton];
+            });
+        });
+    });
+}
+
 - (IBAction)calibrate:(id)sender
 {
+    NSArray* exposures = [self selectedLightFrames];
+    if (![exposures count]){
+        return;
+    }
+    
     CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-    progress.canCancel = NO;
     [progress beginSheetModalForWindow:self.window];
+    progress.canCancel = YES;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
@@ -556,18 +623,18 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         corrector.images = self.images;
         corrector.bias = self.biasModel.exposure;
         corrector.flat = self.flatModel.exposure;
-        
-        NSArray* exposures = [[self.arrayController.arrangedObjects objectsAtIndexes:self.collectionView.selectionIndexes] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-            SXIOCalibrationModel* model = evaluatedObject;
-            return (model.exposure.type == kCASCCDExposureLightType);
-        }]];
-        
+                
         [progress configureWithRange:NSMakeRange(0, [exposures count]) label:@"Calibrating..."];
         
         NSEnumerator* e = [exposures objectEnumerator];
         [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-            SXIOCalibrationModel* model = [e nextObject];
-            *exposurePtr = model.exposure;
+            if (progress.cancelled){
+                *exposurePtr = nil;
+            }
+            else{
+                SXIOCalibrationModel* model = [e nextObject];
+                *exposurePtr = model.exposure;
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
                 progress.progressBar.doubleValue++;
             });

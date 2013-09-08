@@ -29,7 +29,7 @@
 @property (weak) IBOutlet NSTextField *label;
 @property (weak) IBOutlet NSProgressIndicator *progressBar;
 @property (weak) IBOutlet NSButton *cancelButton;
-@property (nonatomic) BOOL canCancel;
+@property (nonatomic) BOOL canCancel; // default is NO
 @property (readonly) BOOL cancelled;
 - (void)beginSheetModalForWindow:(NSWindow*)window;
 - (void)configureWithRange:(NSRange)range label:(NSString*)label;

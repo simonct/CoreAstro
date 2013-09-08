@@ -52,6 +52,7 @@
 
 - (void)configureWithRange:(NSRange)range label:(NSString*)label
 {
+    NSAssert(self.label, @"-configureWithRange:label: called before the window's loaded");
     self.label.stringValue = label;
     self.progressBar.doubleValue = 0;
     self.progressBar.minValue = range.location;
@@ -70,6 +71,7 @@
 
 - (void)setCanCancel:(BOOL)canCancel
 {
+    NSAssert(self.cancelButton, @"-setCanCancel: called before the window's loaded");
     [self.cancelButton setEnabled:canCancel];
 }
 
