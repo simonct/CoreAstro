@@ -276,7 +276,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">256</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="NSProgressIndicator" id="770644559">
+					<object class="NSProgressIndicator" id="139989498">
 						<reference key="NSNextResponder" ref="891603835"/>
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{72, 60}, {16, 16}}</string>
@@ -301,7 +301,7 @@
 						<string key="NSFrame">{{0, 20}, {160, 96}}</string>
 						<reference key="NSSuperview" ref="891603835"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="770644559"/>
+						<reference key="NSNextKeyView" ref="139989498"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSImageCell" key="NSCell" id="240083456">
@@ -456,7 +456,7 @@
 						<string key="label">content: arrangedObjects</string>
 						<reference key="source" ref="902421114"/>
 						<reference key="destination" ref="189641380"/>
-						<object class="NSNibBindingConnector" key="connector">
+						<object class="NSNibBindingConnector" key="connector" id="588728288">
 							<reference key="NSSource" ref="902421114"/>
 							<reference key="NSDestination" ref="189641380"/>
 							<string key="NSLabel">content: arrangedObjects</string>
@@ -466,6 +466,23 @@
 						</object>
 					</object>
 					<int key="connectionID">54</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectionIndexes: selectionIndexes</string>
+						<reference key="source" ref="902421114"/>
+						<reference key="destination" ref="189641380"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="902421114"/>
+							<reference key="NSDestination" ref="189641380"/>
+							<string key="NSLabel">selectionIndexes: selectionIndexes</string>
+							<string key="NSBinding">selectionIndexes</string>
+							<string key="NSKeyPath">selectionIndexes</string>
+							<reference key="NSPreviousConnector" ref="588728288"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">278</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -590,10 +607,10 @@
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">hidden: representedObject.loading</string>
-						<reference key="source" ref="770644559"/>
+						<reference key="source" ref="139989498"/>
 						<reference key="destination" ref="765064715"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="770644559"/>
+							<reference key="NSSource" ref="139989498"/>
 							<reference key="NSDestination" ref="765064715"/>
 							<string key="NSLabel">hidden: representedObject.loading</string>
 							<string key="NSBinding">hidden</string>
@@ -610,10 +627,10 @@
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">animate: representedObject.loading</string>
-						<reference key="source" ref="770644559"/>
+						<reference key="source" ref="139989498"/>
 						<reference key="destination" ref="765064715"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="770644559"/>
+							<reference key="NSSource" ref="139989498"/>
 							<reference key="NSDestination" ref="765064715"/>
 							<string key="NSLabel">animate: representedObject.loading</string>
 							<string key="NSBinding">animate</string>
@@ -910,8 +927,8 @@
 								<float key="scoringTypeFloat">9</float>
 								<int key="contentType">3</int>
 							</object>
-							<object class="IBNSLayoutConstraint" id="845978590">
-								<reference key="firstItem" ref="770644559"/>
+							<object class="IBNSLayoutConstraint" id="424746867">
+								<reference key="firstItem" ref="139989498"/>
 								<int key="firstAttribute">10</int>
 								<int key="relation">0</int>
 								<reference key="secondItem" ref="792045218"/>
@@ -926,8 +943,8 @@
 								<float key="scoringTypeFloat">24</float>
 								<int key="contentType">2</int>
 							</object>
-							<object class="IBNSLayoutConstraint" id="84247966">
-								<reference key="firstItem" ref="770644559"/>
+							<object class="IBNSLayoutConstraint" id="573385911">
+								<reference key="firstItem" ref="139989498"/>
 								<int key="firstAttribute">9</int>
 								<int key="relation">0</int>
 								<reference key="secondItem" ref="204080939"/>
@@ -1008,7 +1025,7 @@
 							</object>
 							<reference ref="204080939"/>
 							<reference ref="26653320"/>
-							<reference ref="770644559"/>
+							<reference ref="139989498"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1476,7 +1493,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">256</int>
-						<reference key="object" ref="770644559"/>
+						<reference key="object" ref="139989498"/>
 						<reference key="parent" ref="891603835"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -1491,12 +1508,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">276</int>
-						<reference key="object" ref="84247966"/>
+						<reference key="object" ref="573385911"/>
 						<reference key="parent" ref="891603835"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">277</int>
-						<reference key="object" ref="845978590"/>
+						<reference key="object" ref="424746867"/>
 						<reference key="parent" ref="891603835"/>
 					</object>
 				</array>
@@ -1514,8 +1531,8 @@
 					<reference ref="890751718"/>
 					<reference ref="612680962"/>
 					<reference ref="920722385"/>
-					<reference ref="84247966"/>
-					<reference ref="845978590"/>
+					<reference ref="573385911"/>
+					<reference ref="424746867"/>
 					<reference ref="773054577"/>
 					<reference ref="675207888"/>
 					<reference ref="460363333"/>
@@ -1625,7 +1642,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">277</int>
+			<int key="maxID">278</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1661,6 +1678,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOCalibrationCollectionView</string>
 					<string key="superclassName">NSCollectionView</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">togglePreviewPanel:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">togglePreviewPanel:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">togglePreviewPanel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/SXIOCalibrationCollectionView.h</string>
@@ -1685,6 +1713,20 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOCalibrationWindowController</string>
 					<string key="superclassName">NSWindowController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="calibrate:">id</string>
+						<string key="choose:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="calibrate:">
+							<string key="name">calibrate:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="choose:">
+							<string key="name">choose:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="arrayController">NSArrayController</string>
 						<string key="calibrateButton">NSButton</string>

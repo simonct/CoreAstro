@@ -254,7 +254,7 @@
 
 @interface SXIOCalibrationWindowController ()
 @property (nonatomic,strong) NSMutableArray* images;
-@property (weak) IBOutlet NSCollectionView *collectionView;
+@property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
 @property (strong) IBOutlet NSArrayController *arrayController;
 @property (weak) IBOutlet NSButton *calibrateButton;
 @property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
@@ -266,6 +266,8 @@
     CGSize _unitSize;
     FSEventStreamRef _eventsRef;
 }
+
+static void* kvoContext;
 
 - (id)initWithWindow:(NSWindow *)window
 {
@@ -281,6 +283,7 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SXIOCalibrationWindowControllerFSUpdate" object:nil];
+    [self.arrayController removeObserver:self forKeyPath:@"selectedObjects" context:&kvoContext];
 }
 
 - (void)windowDidLoad
@@ -290,10 +293,20 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processFSUpdate:) name:@"SXIOCalibrationWindowControllerFSUpdate" object:nil];
     
     [self.arrayController setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
-
+    [self.arrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    
     _unitSize = self.collectionView.minItemSize;
         
 //    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio_test/SX_IO/Eastern_Veil_SXVR_M25C"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        [self.collectionView.previewPanel reloadData];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clientCallBackInfo, size_t numEvents, void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
