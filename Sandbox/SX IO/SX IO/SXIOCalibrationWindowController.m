@@ -9,6 +9,7 @@
 #import "SXIOCalibrationWindowController.h"
 #import "CASProgressWindowController.h"
 
+#import <Quartz/Quartz.h>
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
@@ -18,10 +19,58 @@
 @implementation SXIOCalibrationControlsBackgroundView
 @end
 
-@interface SXIOCalibrationCollectionView : NSCollectionView
+@interface SXIOCalibrationCollectionView : NSCollectionView <QLPreviewPanelDelegate,QLPreviewPanelDataSource>
+@property (nonatomic,strong) QLPreviewPanel* previewPanel;
 @end
 
 @implementation SXIOCalibrationCollectionView
+
+- (IBAction)togglePreviewPanel:(id)previewPanel
+{
+    if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible]) {
+        [[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
+    } else {
+        [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
+    }
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    NSString* key = [theEvent charactersIgnoringModifiers];
+    if([key isEqual:@" "]) {
+        [self togglePreviewPanel:self];
+    } else {
+        [super keyDown:theEvent];
+    }
+}
+
+- (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    return YES;
+}
+
+- (void)beginPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    self.previewPanel = panel;
+    self.previewPanel.delegate = self;
+    self.previewPanel.dataSource = self;
+}
+
+- (void)endPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    self.previewPanel = nil;
+}
+
+- (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel
+{
+    return [self.selectionIndexes count];
+}
+
+- (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
+{
+    return [[self.content objectsAtIndexes:self.selectionIndexes] objectAtIndex:index];
+}
+
 @end
 
 @interface SXIOCalibrationItemView : NSView
@@ -62,7 +111,7 @@
 
 @end
 
-@interface SXIOCalibrationModel : NSObject
+@interface SXIOCalibrationModel : NSObject <QLPreviewItem>
 @property (nonatomic,copy) NSURL* url;
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,strong) NSImage* image;
@@ -115,6 +164,16 @@
 - (NSImage*)tickImage
 {
     return self.hasCalibratedFrame ? [NSImage imageNamed:NSImageNameStatusAvailable] : nil;
+}
+
+- (NSURL*)previewItemURL
+{
+    return self.url;
+}
+
+- (NSString*)previewItemTitle
+{
+    return self.name;
 }
 
 + (NSSet*)keyPathsForValuesAffectingTickImage
