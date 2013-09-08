@@ -257,11 +257,13 @@
         self.result.meta = [mutableMeta copy];
     }
 
-    [self writeResult:self.result fromExposure:exposure];
+    [self writeResult:self.result fromExposure:exposure error:nil];
 }
 
-- (void)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure
+- (BOOL)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
 {
+    NSError* error = nil;
+
     if (result && exposure.io){
         
         // factor this out so it can be re-implemented by a subclass
@@ -278,7 +280,6 @@
             [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             
             // write the corrected exposure out
-            NSError* error = nil;
             result.io = io;
             result.format = kCASCCDExposureFormatFloat;
             if ([io writeExposure:result writePixels:YES error:&error]){
@@ -289,6 +290,12 @@
             }
         }
     }
+    
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
 }
 
 - (void)completeWithBlock:(void(^)(NSError* error,CASCCDExposure*))block

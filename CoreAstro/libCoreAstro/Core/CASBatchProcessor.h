@@ -57,7 +57,7 @@ enum {
 @property (nonatomic,strong) CASCCDExposure* bias;
 @property (nonatomic,strong) CASCCDExposure* dark;
 @property (nonatomic,strong) CASCCDExposure* flat;
-- (void)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure; // for subclasses
+- (BOOL)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure error:(NSError**)error; // for subclasses
 @end
 
 @interface CASCCDStackingProcessor : CASBatchProcessor

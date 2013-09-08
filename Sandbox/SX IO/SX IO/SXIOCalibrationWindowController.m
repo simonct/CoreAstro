@@ -215,10 +215,10 @@
 
 @implementation SXIOCalibrationProcessor
 
-- (void)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure
+- (BOOL)writeResult:(CASCCDExposure*)result fromExposure:(CASCCDExposure*)exposure error:(NSError**)errorPtr
 {
     if (!result){
-        return;
+        return NO;
     }
     
     SXIOCalibrationModel* model = nil;
@@ -228,6 +228,8 @@
         }
     }
     
+    NSError* error = nil;
+    
     if (model){
         
         NSString* path = [SXIOCalibrationModel calibratedPathForExposurePath:[model.url path]];
@@ -236,19 +238,19 @@
             
             [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             
-            NSError* error;
-            if (![io writeExposure:exposure writePixels:YES error:&error]){
-                NSLog(@"Did not write exposure");
-            }
-            if (error){
-                NSLog(@"error: %@",error);
-            }
+            [io writeExposure:result writePixels:YES error:&error];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 model.image = nil;
             });
         }
     }
+    
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
 }
 
 @end
