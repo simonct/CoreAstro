@@ -140,7 +140,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
-            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
+            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, nil);
             if (!cgImage){
                 NSLog(@"No QL thumbnail for %@",self.url);
             }
@@ -573,6 +573,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         return;
     }
     
+    // let the confirm alert fully dismiss before showing the progress sheet
     dispatch_async(dispatch_get_main_queue(), ^{
         
         NSArray* exposures = [self selectedLightFrames];
