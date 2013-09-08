@@ -114,7 +114,7 @@
 		F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
 		F4FD230F179B30D60049F5B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
 		F4FD2313179B30D60049F5B5 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2311179B30D60049F5B5 /* Credits.rtf */; };
-		F4FD2316179B30D60049F5B5 /* CASAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */; };
+		F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */; };
 		F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2317179B30D60049F5B5 /* MainMenu.xib */; };
 /* End PBXBuildFile section */
 
@@ -393,8 +393,8 @@
 		F4FD230E179B30D60049F5B5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F4FD2310179B30D60049F5B5 /* SX IO-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SX IO-Prefix.pch"; sourceTree = "<group>"; };
 		F4FD2312179B30D60049F5B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CASAppDelegate.h; sourceTree = "<group>"; };
-		F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CASAppDelegate.m; sourceTree = "<group>"; };
+		F4FD2314179B30D60049F5B5 /* SXIOAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SXIOAppDelegate.h; sourceTree = "<group>"; };
+		F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SXIOAppDelegate.m; sourceTree = "<group>"; };
 		F4FD2318179B30D60049F5B5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoreAstro.xcodeproj; path = ../../CoreAstro.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -716,8 +716,8 @@
 			isa = PBXGroup;
 			children = (
 				F4E64262179C0ED30044B349 /* SX IO.entitlements */,
-				F4FD2314179B30D60049F5B5 /* CASAppDelegate.h */,
-				F4FD2315179B30D60049F5B5 /* CASAppDelegate.m */,
+				F4FD2314179B30D60049F5B5 /* SXIOAppDelegate.h */,
+				F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */,
 				F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */,
 				F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */,
 				F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */,
@@ -1132,7 +1132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
-				F4FD2316179B30D60049F5B5 /* CASAppDelegate.m in Sources */,
+				F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */,
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
 				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
 				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,

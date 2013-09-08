@@ -1,5 +1,5 @@
 //
-//  CASAppDelegate.m
+//  SXIOAppDelegate.m
 //  SX IO
 //
 //  Copyright (c) 2013, Simon Taylor
@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASAppDelegate.h"
+#import "SXIOAppDelegate.h"
 #import "CASTemperatureTransformer.h"
 #import "SXIOCameraWindowController.h"
 #import "SXIOFilterWindowController.h"
@@ -31,7 +31,7 @@
 #import "SXIOCalibrationWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
-@implementation CASAppDelegate {
+@implementation SXIOAppDelegate {
     NSMutableArray* _cameraWindows;
     SXIOCalibrationWindowController* _calibrationWindow;
 }
@@ -40,7 +40,7 @@ static void* kvoContext;
 
 + (void)initialize
 {
-    if (self == [CASAppDelegate class]){
+    if (self == [SXIOAppDelegate class]){
         [NSValueTransformer setValueTransformer:[[CASTemperatureTransformer alloc] init] forName:@"CASTemperatureTransformer"];
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
          @"CASDefaultScopeAperture":@(101),

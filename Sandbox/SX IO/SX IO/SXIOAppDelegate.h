@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface CASAppDelegate : NSObject <NSApplicationDelegate>
+@interface SXIOAppDelegate : NSObject <NSApplicationDelegate>
 
 @end
