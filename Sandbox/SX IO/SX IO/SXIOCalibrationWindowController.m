@@ -273,11 +273,17 @@
 
 static void* kvoContext;
 
++ (void)initialize
+{
+    if (self == [SXIOCalibrationWindowController class]){
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"SXIOCalibrateDisplayScale":@(1)}];
+    }
+}
+
 - (id)initWithWindow:(NSWindow *)window
 {
     self = [super initWithWindow:window];
     if (self) {
-        self.scale = 1;
         self.images = [NSMutableArray arrayWithCapacity:10];
     }
     
@@ -300,6 +306,7 @@ static void* kvoContext;
     [self.arrayController addObserver:self forKeyPath:@"selectedObjects" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     
     _unitSize = self.collectionView.minItemSize;
+    self.scale = self.scale;
         
 //    self.url = [NSURL fileURLWithPath:@"/Volumes/Media1TB/sxio_test/SX_IO/Eastern_Veil_SXVR_M25C"];
 }
@@ -502,12 +509,15 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     return 5;
 }
 
+- (float)scale
+{
+    return [[NSUserDefaults standardUserDefaults] floatForKey:@"SXIOCalibrateDisplayScale"];
+}
+
 - (void)setScale:(float)scale
 {
-    if (scale != _scale){
-        _scale = scale;
-        self.collectionView.minItemSize = self.collectionView.maxItemSize = CGSizeMake(_unitSize.width * _scale, _unitSize.height * _scale);
-    }
+    self.collectionView.minItemSize = self.collectionView.maxItemSize = CGSizeMake(_unitSize.width * scale, _unitSize.height * scale);
+    [[NSUserDefaults standardUserDefaults] setFloat:scale forKey:@"SXIOCalibrateDisplayScale"];
 }
 
 - (BOOL)calibrationButtonEnabled
