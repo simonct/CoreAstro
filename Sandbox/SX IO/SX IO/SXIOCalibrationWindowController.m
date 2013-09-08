@@ -117,6 +117,7 @@
 @property (nonatomic,strong) NSImage* image;
 @property (nonatomic,readonly) NSImage* tickImage;
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic) CGSize previewSize;
 @property (nonatomic) BOOL loading;
 @property (nonatomic,readonly) BOOL hasCalibratedFrame;
 + (BOOL)pathIsCalibrated:(NSString*)path;
@@ -139,7 +140,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
-            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,CGSizeMake(512, 512), (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
+            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
             if (!cgImage){
                 NSLog(@"No QL thumbnail for %@",self.url);
             }
@@ -259,6 +260,7 @@
 @property (weak) IBOutlet NSButton *calibrateButton;
 @property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
 @property (readonly) BOOL calibrationButtonEnabled;
+@property (nonatomic,readonly) float minScale, maxScale;
 @property (nonatomic) float scale;
 @end
 
@@ -368,6 +370,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                 SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
                 model.url = [NSURL fileURLWithPath:path];
                 model.exposure = exposure;
+                model.previewSize = CGSizeMake(_unitSize.width * self.maxScale, _unitSize.height * self.maxScale);
                 
                 // check to see if it's a calibration frame
                 switch (exposure.type) {
@@ -485,6 +488,16 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
             [self refreshContents];
         });
     }
+}
+
+- (float)minScale
+{
+    return 1;
+}
+
+- (float)maxScale
+{
+    return 5;
 }
 
 - (void)setScale:(float)scale
