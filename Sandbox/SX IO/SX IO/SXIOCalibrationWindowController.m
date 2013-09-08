@@ -14,14 +14,21 @@
 
 @interface SXIOCalibrationControlsBackgroundView : NSView
 @end
+
 @implementation SXIOCalibrationControlsBackgroundView
 @end
 
-@interface SXIOCalibrationView : NSView
+@interface SXIOCalibrationCollectionView : NSCollectionView
+@end
+
+@implementation SXIOCalibrationCollectionView
+@end
+
+@interface SXIOCalibrationItemView : NSView
 @property (nonatomic) BOOL selected;
 @end
 
-@implementation SXIOCalibrationView
+@implementation SXIOCalibrationItemView
 
 - (void)drawRect:(NSRect)dirtyRect
 {
@@ -48,7 +55,7 @@
 {
     [super setSelected:selected];
     
-    SXIOCalibrationView* view = (SXIOCalibrationView*)self.view;
+    SXIOCalibrationItemView* view = (SXIOCalibrationItemView*)self.view;
     [view setSelected:self.selected];
     [view setNeedsDisplay:YES];
 }
@@ -61,6 +68,7 @@
 @property (nonatomic,strong) NSImage* image;
 @property (nonatomic,readonly) NSImage* tickImage;
 @property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic) BOOL loading;
 @property (nonatomic,readonly) BOOL hasCalibratedFrame;
 + (BOOL)pathIsCalibrated:(NSString*)path;
 + (NSString*)calibratedPathForExposurePath:(NSString*)path;
@@ -77,7 +85,9 @@
 {
     if (!_image && self.url){
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        self.loading = YES;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
             NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
             CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,CGSizeMake(512, 512), (__bridge CFDictionaryRef)(@{(id)kQLThumbnailOptionIconModeKey:@YES}));
@@ -93,6 +103,10 @@
                     });
                 }
             }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.loading = NO;
+            });
         });
     }
     return _image;
