@@ -551,6 +551,11 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }]];
 }
 
+- (IBAction)stack:(id)sender
+{
+    NSLog(@"stack");
+}
+
 - (IBAction)clear:(id)sender
 {
     NSArray* exposures = [self selectedLightFrames];
