@@ -165,6 +165,7 @@ static void* kvoContext;
                     }
                     
                     if (windowController){
+                        [windowController setShouldCascadeWindows:YES];
                         [windowController.window makeKeyAndOrderFront:nil];
                         [_cameraWindows addObject:windowController];
                     }

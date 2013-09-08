@@ -40,7 +40,7 @@
 			<object class="NSWindowTemplate" id="1005">
 				<int key="NSWindowStyleMask">5</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{20, 1280}, {246, 255}}</string>
+				<string key="NSWindowRect">{{20, 1120}, {246, 255}}</string>
 				<int key="NSWTFlags">539492352</int>
 				<string key="NSWindowTitle">Filter Wheel</string>
 				<string key="NSWindowClass">NSWindow</string>
@@ -387,6 +387,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<string key="NSFrame">{{63, 20}, {163, 22}}</string>
 							<reference key="NSSuperview" ref="1006"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<int key="NSTag">7</int>
 							<bool key="NSEnabled">YES</bool>
@@ -563,7 +564,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">2</int>
 						<reference key="object" ref="1006"/>
 						<array class="NSMutableArray" key="children">
-							<object class="IBNSLayoutConstraint" id="566390033">
+							<object class="IBNSLayoutConstraint" id="884750788">
 								<reference key="firstItem" ref="1006"/>
 								<int key="firstAttribute">4</int>
 								<int key="relation">0</int>
@@ -1200,7 +1201,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">165</int>
-						<reference key="object" ref="566390033"/>
+						<reference key="object" ref="884750788"/>
 						<reference key="parent" ref="1006"/>
 					</object>
 				</array>
@@ -1280,7 +1281,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<reference ref="759888373"/>
 					<reference ref="131336494"/>
 					<reference ref="1018742676"/>
-					<reference ref="566390033"/>
+					<reference ref="884750788"/>
 				</array>
 				<string key="2.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="NO" key="34.IBNSViewMetadataTranslatesAutoresizingMaskIntoConstraints"/>
@@ -1314,20 +1315,17 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOFilterWindowController</string>
 					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="setCurrentFilter:">NSMatrix</string>
-						<string key="setFilterName:">NSTextField</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="setCurrentFilter:">
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">setCurrentFilter:</string>
+						<string key="NS.object.0">NSMatrix</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">setCurrentFilter:</string>
+						<object class="IBActionInfo" key="NS.object.0">
 							<string key="name">setCurrentFilter:</string>
 							<string key="candidateClassName">NSMatrix</string>
 						</object>
-						<object class="IBActionInfo" key="setFilterName:">
-							<string key="name">setFilterName:</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-					</dictionary>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">filterSelectionMatrix</string>
 						<string key="NS.object.0">NSMatrix</string>

@@ -74,7 +74,7 @@ static void* kvoContext;
                 const CGFloat height = 40 + (22+12)*self.filterWheelController.filterCount;
                 frame.origin.y += frame.size.height - height;
                 frame.size.height = height;
-                [self.window setFrame:frame display:NO];
+                [self.window setFrame:frame display:NO animate:YES];
             }
         }
         else if ([@"currentFilter" isEqualToString:keyPath]) {
