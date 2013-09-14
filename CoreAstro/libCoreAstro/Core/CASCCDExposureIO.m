@@ -816,7 +816,10 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
 {
     CASCCDExposureIO* exp = nil;
     
-    NSString* const pathExtension = [path pathExtension];
+    NSString* pathExtension = [path pathExtension];
+    if (![pathExtension length]){
+        pathExtension = path;
+    }
     
     if ([pathExtension isEqualToString:@"rawPixels"]){
         exp = [[CASCCDExposureIOv1 alloc] init];
