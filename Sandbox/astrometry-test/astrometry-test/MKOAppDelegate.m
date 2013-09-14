@@ -19,13 +19,22 @@
 @property (nonatomic,strong) CASLX200IPClient* ipMountClient;
 @property (nonatomic,strong) CASConfigureIPMountWindowController* configureIPController;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
+@property (nonatomic,assign) float arcsecsPerPixel;
+@property (nonatomic,assign) CGSize fieldSizeDegrees;
+@property (nonatomic,copy) NSString* fieldSizeDisplay;
 @end
 
 @implementation MKOAppDelegate
 
 + (void)initialize
 {
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASIPMountHost":@"localhost",@"CASIPMountPort":@(4030)}];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+     @"CASIPMountHost":@"localhost",
+     @"CASIPMountPort":@(4030),
+     @"CASPixelSizeMicrometer":@(9),
+     @"CASFocalLengthMillemeter":@(540),
+     @"CASBinningFactor":@(1)
+     }];
 }
 
 - (void)awakeFromNib
@@ -43,6 +52,13 @@
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.objects" options:nil];
     
     [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
+    
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPixelSizeMicrometer" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASFocalLengthMillemeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASBinningFactor" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorWidthMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -54,11 +70,17 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == (__bridge void *)(self)) {
+        
         if (object == self.imageView){
             self.solution = nil;
             NSString* title = [[NSFileManager defaultManager] displayNameAtPath:self.imageView.url.path];
             self.window.title = title ? title : @"";
         }
+        else if (object == [NSUserDefaultsController sharedUserDefaultsController]){
+            [self calculateImageScale];
+            [self calculateFieldSize];
+        }
+        
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -73,6 +95,48 @@
 - (void)setIndexDirectoryURL:(NSURL*)url
 {
     [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
+}
+
+- (void)setFieldSizeDegrees:(CGSize)fieldSizeDegrees
+{
+    _fieldSizeDegrees = fieldSizeDegrees;
+    if (_fieldSizeDegrees.width == 0 && _fieldSizeDegrees.height == 0){
+        self.fieldSizeDisplay = nil;
+    }
+    else {
+        self.fieldSizeDisplay = [NSString stringWithFormat:@"%.2f\u2032x%.2f\u2032",_fieldSizeDegrees.width,_fieldSizeDegrees.height];
+    }
+}
+
+- (void)calculateImageScale
+{
+    const float pixelSize = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASPixelSizeMicrometer"];
+    const float focalLength = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASFocalLengthMillemeter"];
+    const float binningFactor = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASBinningFactor"];
+    
+    if (focalLength == 0){
+        self.arcsecsPerPixel = 0;
+    }
+    else {
+        self.arcsecsPerPixel = binningFactor*(206.3*pixelSize/focalLength);
+    }
+}
+
+- (void)calculateFieldSize
+{
+    const float focalLength = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASFocalLengthMillemeter"];
+    const float ccdWidth = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASSensorWidthMillimeter"];
+    const float ccdHeight = [[[NSUserDefaultsController sharedUserDefaultsController] defaults] floatForKey:@"CASSensorHeightMillimeter"];
+
+    CGSize fieldSize;
+    if (focalLength == 0){
+        fieldSize.width = fieldSize.height = 0;
+    }
+    else {
+        fieldSize.width = 3438*ccdWidth/focalLength/60.0;
+        fieldSize.height = 3438*ccdHeight/focalLength/60.0;
+    }
+    self.fieldSizeDegrees = fieldSize;
 }
 
 - (void)presentAlertWithMessage:(NSString*)message
@@ -130,6 +194,13 @@
                     [strongSelf.outputLogTextView scrollToEndOfDocument:nil];
                 }
             };
+            
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASUsePlateSolvePixelScale"]){
+                self.plateSolver.arcsecsPerPixel = self.arcsecsPerPixel;
+            }
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASUsePlateSolveFieldSize"]){
+                self.plateSolver.fieldSizeDegrees = self.fieldSizeDegrees;
+            }
             
             [self.plateSolver solveImageAtPath:self.imageView.url.path completion:^(NSError *error, NSDictionary* results) {
                 
@@ -393,6 +464,10 @@
     }
     
     [self.configureIPController beginSheetModalForWindow:self.window completionHandler:nil];
+}
+
+- (IBAction)showPreferences:(id)sender {
+    NSLog(@"showPreferences");
 }
 
 @end
