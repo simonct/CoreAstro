@@ -29,7 +29,9 @@
 @interface SXIOSaveTargetViewController ()
 @end
 
-@implementation SXIOSaveTargetViewController
+@implementation SXIOSaveTargetViewController {
+    CASCCDExposureIO* _io;
+}
 
 NSString* const kSaveImagesDefaultsKey = @"SaveImages";
 NSString* const kSaveFolderURLDefaultsKey = @"SaveFolderURL";
@@ -106,6 +108,8 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
 
 - (void)setSaveFolderURL:(NSURL*)url
 {
+    // todo; create a test fits file to confirm this path works with the cfitsio library
+    
     [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:[self saveFolderKey]];
     
     NSError* error;
@@ -139,7 +143,7 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
     if (!s && self.cameraController){
         s = self.cameraController.camera.deviceName;
     }
-    return s;
+    return s ? [self sanitizePrefix:s] : nil;
 }
 
 - (void)setSaveImagesPrefix:(NSString*)prefix
@@ -160,6 +164,29 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
 - (IBAction)resetSequence:(id)sender
 {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:[self sequenceKey]];
+}
+
+- (NSString*)sanitizePrefix:(NSString*)prefix
+{
+    NSString* sanitized = prefix;
+    if (!_io){
+        _io = [CASCCDExposureIO exposureIOWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
+        NSAssert(_io, @"No IO class for current value of SXIODefaultExposureFileType default");
+    }
+    if (_io){
+        sanitized = [[_io class] sanitizeExposurePath:prefix];
+    }
+    return sanitized;
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj
+{
+    NSTextField* textField = [obj object];
+    NSString* stringValue = textField.stringValue;
+    NSString* sanitized = [self sanitizePrefix:textField.stringValue];
+    if (![sanitized isEqualToString:stringValue]){
+        textField.stringValue = sanitized;
+    }
 }
 
 @end
