@@ -330,17 +330,22 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                            userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
 };
 
-- (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
++ (NSString*)sanitizeExposurePath:(NSString*)path
 {
-    NSError* error = nil;
-    
-     // '(' & ')' are special characters so replace them with {}
-    NSMutableString* s = [NSMutableString stringWithString:[self.url path]];
+    NSMutableString* s = [NSMutableString stringWithString:path];
     [s replaceOccurrencesOfString:@"(" withString:@"{" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
     [s replaceOccurrencesOfString:@")" withString:@"}" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
     [s replaceOccurrencesOfString:@" " withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
     [s replaceOccurrencesOfString:@"-" withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
+    return [s copy];
+}
 
+- (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
+{
+    NSError* error = nil;
+    
+    NSString* s = [[self class] sanitizeExposurePath:[self.url path]];
+    
     NSString* directory = [s stringByDeletingLastPathComponent];
     if (![[NSFileManager defaultManager] createDirectoryAtURL:[NSURL fileURLWithPath:directory] withIntermediateDirectories:YES attributes:nil error:&error]){
         NSLog(@"Failed to create directory for fits file at %@",directory);
@@ -801,6 +806,11 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
 @implementation CASCCDExposureIO
 
 @synthesize url;
+
++ (NSString*)sanitizeExposurePath:(NSString*)path
+{
+    return path;
+}
 
 + (CASCCDExposureIO*)exposureIOWithPath:(NSString*)path
 {

@@ -33,6 +33,8 @@
 
 + (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure;
 
++ (NSString*)sanitizeExposurePath:(NSString*)path;
+
 @property (nonatomic,readonly) NSImage* thumbnail;
 
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)error;
