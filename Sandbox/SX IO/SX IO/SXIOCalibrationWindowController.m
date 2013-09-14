@@ -13,10 +13,17 @@
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
-@interface SXIOCalibrationControlsBackgroundView : NSView
-@end
+@class SXIOCalibrationCollectionView, SXIOCalibrationModel;
 
-@implementation SXIOCalibrationControlsBackgroundView
+@interface SXIOCalibrationWindowController ()
+@property (nonatomic,strong) NSMutableArray* images;
+@property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
+@property (strong) IBOutlet NSArrayController *arrayController;
+@property (weak) IBOutlet NSButton *chooseButton;
+@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
+@property (readonly) BOOL calibrationButtonEnabled;
+@property (nonatomic,readonly) float minScale, maxScale;
+@property (nonatomic) float scale;
 @end
 
 @interface SXIOCalibrationCollectionView : NSCollectionView <QLPreviewPanelDelegate,QLPreviewPanelDataSource>
@@ -29,7 +36,8 @@
 {
     if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible]) {
         [[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
-    } else {
+    }
+    else {
         [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
     }
 }
@@ -39,7 +47,12 @@
     NSString* key = [theEvent charactersIgnoringModifiers];
     if([key isEqual:@" "]) {
         [self togglePreviewPanel:self];
-    } else {
+    }
+    else if ([key isEqual:@"\r"]){
+        SXIOCalibrationWindowController* wc = self.window.windowController;
+        [wc.chooseButton performKeyEquivalent:theEvent];
+    }
+    else {
         [super keyDown:theEvent];
     }
 }
@@ -167,6 +180,11 @@
     return self.hasCalibratedFrame ? [NSImage imageNamed:NSImageNameStatusAvailable] : nil;
 }
 
++ (NSSet*)keyPathsForValuesAffectingTickImage
+{
+    return [NSSet setWithObjects:@"image",@"url",nil];
+}
+
 - (NSURL*)previewItemURL
 {
     return self.url;
@@ -175,11 +193,6 @@
 - (NSString*)previewItemTitle
 {
     return self.name;
-}
-
-+ (NSSet*)keyPathsForValuesAffectingTickImage
-{
-    return [NSSet setWithObjects:@"image",@"url",nil];
 }
 
 - (BOOL)hasCalibratedFrame
@@ -253,17 +266,6 @@
     return (error == nil);
 }
 
-@end
-
-@interface SXIOCalibrationWindowController ()
-@property (nonatomic,strong) NSMutableArray* images;
-@property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
-@property (strong) IBOutlet NSArrayController *arrayController;
-@property (weak) IBOutlet NSButton *calibrateButton;
-@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
-@property (readonly) BOOL calibrationButtonEnabled;
-@property (nonatomic,readonly) float minScale, maxScale;
-@property (nonatomic) float scale;
 @end
 
 @implementation SXIOCalibrationWindowController {
@@ -379,7 +381,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                 SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
                 model.url = [NSURL fileURLWithPath:path];
                 model.exposure = exposure;
-                model.previewSize = CGSizeMake(_unitSize.width * self.maxScale, _unitSize.height * self.maxScale);
+                model.previewSize = CGSizeMake(((int)(_unitSize.width * self.maxScale)/125)*125, ((int)(_unitSize.height * self.maxScale)/125)*125);
                 
                 // check to see if it's a calibration frame
                 switch (exposure.type) {
@@ -403,6 +405,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 - (void)processFSUpdate:(NSNotification*)note
 {
     // todo; check for rescan and then refresh contents
+    // todo; move this logic into the fsevents callback
     
     NSMutableSet* added = note.userInfo[@"added"];
     NSMutableSet* removed = note.userInfo[@"removed"];
