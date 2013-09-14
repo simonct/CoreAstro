@@ -154,7 +154,7 @@
 - (NSString*)currentDeviceExposurePathWithName:(NSString*)name
 {
     NSString* path = [_targetFolder path];
-    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"fits"] : nil;
+    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]] : nil;
 }
 
 - (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
@@ -212,7 +212,7 @@
     if (suffix){
         prefix = [prefix stringByAppendingFormat:@"_%@",suffix];
     }
-    return [prefix stringByAppendingPathExtension:@"fits"];
+    return [prefix stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
 }
 
 - (IBAction)capture:(NSButton*)sender
@@ -394,13 +394,13 @@
     NSSavePanel* save = [NSSavePanel savePanel];
     save.canCreateDirectories = YES;
     
-    save.allowedFileTypes = @[@"fits",@"fit"];
+    save.allowedFileTypes = [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIODefaultExposureFileTypes"];
     
     [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
         
         NSURL* url = save.URL;
         if (![save.allowedFileTypes containsObject:url.pathExtension]){
-            url = [save.URL URLByAppendingPathExtension:@"fits"];
+            url = [save.URL URLByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
         }
         
         CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];

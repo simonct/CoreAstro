@@ -45,6 +45,8 @@ static void* kvoContext;
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
          @"CASDefaultScopeAperture":@(101),
          @"CASDefaultScopeFNumber":@(5.4),
+         @"SXIODefaultExposureFileType":@"fits",
+         @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"]
          }];
     }
 }
