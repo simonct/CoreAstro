@@ -143,15 +143,7 @@ static void* kvoContext;
 
 - (void)controlTextDidChange:(NSNotification *)obj
 {
-    id firstResponder = self.window.firstResponder;
-    for (NSTextField* textField in ((NSView*)self.window.contentView).subviews){
-        if ([textField isKindOfClass:[NSTextField class]]){
-            if (textField.currentEditor == firstResponder){
-                [self setFilterName:textField];
-                break;
-            }
-        }
-    }
+    [self setFilterName:[obj object]];
 }
 
 - (IBAction)setFilterName:(NSTextField*)sender
