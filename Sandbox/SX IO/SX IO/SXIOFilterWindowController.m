@@ -11,7 +11,6 @@
 @interface SXIOFilterWindowController ()
 @property (weak) IBOutlet NSMatrix *filterSelectionMatrix;
 @property (nonatomic,strong) NSDictionary* filterNames;
-- (IBAction)setCurrentFilter:(NSMatrix*)sender;
 @end
 
 @implementation SXIOFilterWindowController
@@ -86,11 +85,6 @@ static void* kvoContext;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
-}
-
-- (IBAction)setCurrentFilter:(NSMatrix*)sender
-{
-    [self.filterWheelController setCurrentFilter:[sender.cells indexOfObject:sender.selectedCell]];
 }
 
 - (NSString*)filterWheelNamesKey
