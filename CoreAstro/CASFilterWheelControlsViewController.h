@@ -25,8 +25,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class CASCCDExposure;
-@class CASCameraController;
+@class CASFilterWheelController;
 
 @interface CASFilterWheelControlsViewController : NSViewController
+@property (nonatomic,readonly) CASFilterWheelController* currentFilterWheel;
 @end
