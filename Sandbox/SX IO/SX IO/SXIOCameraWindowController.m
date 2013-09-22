@@ -57,6 +57,8 @@
     BOOL _capturedFirstImage:1;
 }
 
+static void* kvoContext;
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];
@@ -104,21 +106,11 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == (__bridge void *)(self)) {
+    if (context == &kvoContext) {
         
         if (object == self.cameraController){
             if ([keyPath isEqualToString:@"state"] || [keyPath isEqualToString:@"progress"]){
                 [self updateExposureIndicator];
-            }
-        }
-        else if (object == self.exposureView){
-            if ([keyPath isEqualToString:@"showSelection"]){
-                if (self.exposureView.showSelection){
-                    self.selectionControl.selectedSegment = 0;
-                }
-                else {
-                    self.selectionControl.selectedSegment = 1;
-                }
             }
         }
     }
@@ -131,13 +123,13 @@
 {
     if (_cameraController != cameraController){
         if (_cameraController){
-            [_cameraController removeObserver:self forKeyPath:@"state" context:(__bridge void *)(self)];
-            [_cameraController removeObserver:self forKeyPath:@"progress" context:(__bridge void *)(self)];
+            [_cameraController removeObserver:self forKeyPath:@"state" context:&kvoContext];
+            [_cameraController removeObserver:self forKeyPath:@"progress" context:&kvoContext];
         }
         _cameraController = cameraController;
         if (_cameraController){
-            [_cameraController addObserver:self forKeyPath:@"state" options:0 context:(__bridge void *)(self)];
-            [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:(__bridge void *)(self)];
+            [_cameraController addObserver:self forKeyPath:@"state" options:0 context:&kvoContext];
+            [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:&kvoContext];
         }
         [self configureForCameraController];
     }
