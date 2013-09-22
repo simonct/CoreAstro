@@ -202,6 +202,12 @@ static void* kvoContext;
 
 - (IBAction)capture:(NSButton*)sender
 {
+    // todo; need a more generic mechanism to express 'ready to capture'
+    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+        [self presentAlertWithTitle:@"Filter Wheel" message:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"];
+        return;
+    }
+    
     // check we have somewhere to save the file, a prefix and a sequence number
     const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
     __block NSURL* url = [self beginAccessToSaveTarget];
