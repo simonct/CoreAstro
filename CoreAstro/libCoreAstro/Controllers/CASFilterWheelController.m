@@ -24,6 +24,7 @@
 //
 
 #import "CASFilterWheelController.h"
+#import "CASClassDefaults.h"
 
 @interface CASFilterWheelController ()
 @property (nonatomic,strong) CASDevice<CASFWDevice>* filterWheel;
@@ -36,8 +37,14 @@
     self = [super init];
     if (self){
         self.filterWheel = filterWheel;
+        [self registerDeviceDefaults];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self unregisterDeviceDefaults];
 }
 
 - (void)connect:(void(^)(NSError*))block
@@ -82,7 +89,29 @@
 
 - (void)setCurrentFilter:(NSInteger)currentFilter
 {
+    NSLog(@"setCurrentFilter: %ld",currentFilter);
     self.filterWheel.currentFilter = currentFilter;
+}
+
+- (NSArray*)deviceDefaultsKeys
+{
+    return @[@"filterNames"];
+}
+
+- (void)registerDeviceDefaults
+{
+    NSString* deviceName = self.filterWheel.deviceName;
+    if (deviceName){
+        [[CASDeviceDefaults defaultsForClassname:deviceName] registerKeys:self.deviceDefaultsKeys ofInstance:self];
+    }
+}
+
+- (void)unregisterDeviceDefaults
+{
+    NSString* deviceName = self.filterWheel.deviceName;
+    if (deviceName){
+        [[CASDeviceDefaults defaultsForClassname:deviceName] unregisterKeys:self.deviceDefaultsKeys ofInstance:self];
+    }
 }
 
 @end

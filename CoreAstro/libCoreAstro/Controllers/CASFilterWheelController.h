@@ -29,6 +29,7 @@
 @interface CASFilterWheelController : CASScriptableObject<CASFWDevice>
 
 @property (nonatomic,strong,readonly) CASDevice<CASFWDevice>* filterWheel;
+@property (nonatomic,strong) NSDictionary* filterNames;
 
 - (id)initWithFilterWheel:(CASDevice<CASFWDevice>*)guider;
 

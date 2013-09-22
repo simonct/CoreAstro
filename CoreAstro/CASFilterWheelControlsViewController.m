@@ -34,11 +34,13 @@
 
 @implementation CASFilterWheelControlsViewController
 
+static void* kvoContext;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self){
-        [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+        [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
     }
     return self;
 }
@@ -59,22 +61,14 @@
 {
 //    NSLog(@"observeValueForKeyPath: %@ (%@)",keyPath,change);
     
-    if (context == (__bridge void *)(self)) {
+    if (context == &kvoContext) {
         
         if (object == [CASDeviceManager sharedManager]){
-            
             if ([keyPath isEqualToString:@"filterWheelControllers"]){
-                
-                // new fw? add observers
-                // old one, remove them
-                
                 [self updateFilterWheelMenu];
             }
         }
-        else if (object == self.currentFilterWheel){
-            
-            [self updateFilterWheelFilterMenu];
-        }
+        [self updateFilterWheelFilterMenu];
         
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -83,29 +77,32 @@
 
 - (void)updateFilterWheelMenu
 {
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
-        
     NSMenuItem* selectedItem = nil;
-    for (CASFilterWheelController* filterWheel in [CASDeviceManager sharedManager].filterWheelControllers){
-        
-        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:filterWheel.filterWheel.deviceName action:@selector(filterWheelMenuAction:) keyEquivalent:@""];
-        item.representedObject = filterWheel;
-        item.target = self;
-        [menu addItem:item];
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
-        if (self.currentFilterWheel == filterWheel){
-            selectedItem = item;
+    NSArray* filterWheelControllers = [CASDeviceManager sharedManager].filterWheelControllers;
+    if (![filterWheelControllers count]){
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"None" action:nil keyEquivalent:@""]];
+    }
+    else {
+        
+        for (CASFilterWheelController* filterWheel in filterWheelControllers){
+            
+            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:filterWheel.filterWheel.deviceName action:@selector(filterWheelMenuAction:) keyEquivalent:@""];
+            item.representedObject = filterWheel;
+            item.target = self;
+            [menu addItem:item];
+            
+            if (self.currentFilterWheel == filterWheel){
+                selectedItem = item;
+            }
         }
     }
     
     self.filterWheelMenu.menu = menu;
     
     NSArray* items = [menu itemArray];
-    if (![items count]){
-        self.filterWheelMenu.enabled = NO;
-    }
-    else {
-        self.filterWheelMenu.enabled = YES;
+    if ([items count]){
         if (!selectedItem){
             selectedItem = items[0];
         }
@@ -119,14 +116,14 @@
 {
     NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
-    if (!self.currentFilterWheel){
-        self.filterWheelFilterMenu.enabled = NO;
+    const NSInteger filterCount = self.currentFilterWheel.filterWheel.filterCount;
+    if (!filterCount){
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"None" action:nil keyEquivalent:@""]];
     }
     else{
-        
-        self.filterWheelFilterMenu.enabled = YES;
-        for (NSUInteger i = 0; i < self.currentFilterWheel.filterWheel.filterCount; ++i){
-            NSString* filterName = [NSString stringWithFormat:@"%ld",i+1]; // tmp, just use index
+    
+        for (NSUInteger i = 0; i < filterCount; ++i){
+            NSString* filterName = self.currentFilterWheel.filterNames[[@(i) description]] ?: [NSString stringWithFormat:@"Filter %ld",i+1];
             NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:filterName action:@selector(filterWheelFilterMenuAction:) keyEquivalent:@""];
             item.target = self;
             [menu addItem:item];
@@ -153,15 +150,17 @@
 - (void)setCurrentFilterWheel:(CASFilterWheelController *)currentFilterWheel
 {
     if (_currentFilterWheel){
-        [_currentFilterWheel removeObserver:self forKeyPath:@"currentFilter"];
-        [_currentFilterWheel removeObserver:self forKeyPath:@"filterCount"];
+        [_currentFilterWheel removeObserver:self forKeyPath:@"currentFilter" context:&kvoContext];
+        [_currentFilterWheel removeObserver:self forKeyPath:@"filterCount" context:&kvoContext];
+        [_currentFilterWheel removeObserver:self forKeyPath:@"filterNames" context:&kvoContext];
     }
     
     _currentFilterWheel = currentFilterWheel;
     
     if (_currentFilterWheel){
-        [_currentFilterWheel addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-        [_currentFilterWheel addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+        [_currentFilterWheel addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+        [_currentFilterWheel addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+        [_currentFilterWheel addObserver:self forKeyPath:@"filterNames" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     }
 }
 

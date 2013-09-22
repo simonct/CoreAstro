@@ -87,34 +87,15 @@ static void* kvoContext;
     }
 }
 
-- (NSString*)filterWheelNamesKey
-{
-    if (!self.filterWheelController){
-        return nil;
-    }
-    // fundamental limitation here that there's one set of names shared across all filter wheels of the same type
-    return [NSString stringWithFormat:@"CASFilterWheelFilterNames_%@",self.filterWheelController.filterWheel.deviceName];
-}
-
 - (NSDictionary*)filterNames
 {
-    if (!self.filterWheelController){
-        return nil;
-    }
-    NSDictionary* result = [[NSUserDefaults standardUserDefaults] dictionaryForKey:[self filterWheelNamesKey]];
-    return result ?: [NSDictionary dictionary];
+    NSDictionary* filterNames = self.filterWheelController.filterNames;
+    return filterNames ?: [NSMutableDictionary dictionaryWithCapacity:7];
 }
 
 - (void)setFilterNames:(NSDictionary*)names
 {
-    if (self.filterWheelController){
-        if (!names){
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:[self filterWheelNamesKey]];
-        }
-        else {
-            [[NSUserDefaults standardUserDefaults] setObject:[names copy] forKey:[self filterWheelNamesKey]];
-        }
-    }
+    self.filterWheelController.filterNames = names;
     [self updateFilterNames];
 }
 

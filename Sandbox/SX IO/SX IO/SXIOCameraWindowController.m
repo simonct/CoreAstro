@@ -11,6 +11,7 @@
 #import "CASExposureView.h"
 #import "CASCameraControlsViewController.h"
 #import "SXIOSaveTargetViewController.h"
+#import "CASFilterWheelControlsViewController.h"
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
@@ -41,6 +42,7 @@
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
+@property (strong) CASFilterWheelControlsViewController *filterWheelControlsViewController;
 @property (assign) BOOL equalise;
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
@@ -87,6 +89,17 @@ static void* kvoContext;
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
     
+    // filter wheel controls
+    self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
+    self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.controlsContainerView addSubview:self.filterWheelControlsViewController.view];
+    
+    // layout filter wheel controls
+    id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
+    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
+    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+
     // save target controls
     self.saveTargetControlsViewController = [[SXIOSaveTargetViewController alloc] initWithNibName:@"SXIOSaveTargetViewController" bundle:nil];
     self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -94,9 +107,9 @@ static void* kvoContext;
     
     // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
-    viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,saveTargetControlsViewController1);
+    viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,saveTargetControlsViewController1);
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
     
     // bind the controllers
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
