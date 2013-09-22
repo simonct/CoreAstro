@@ -85,7 +85,7 @@
 {
     if (context == (__bridge void *)(self)) {
         
-        NSLog(@"Observed property with keyPath %@ on %@ changed to %@",keyPath,object,[object valueForKeyPath:keyPath]);
+        //NSLog(@"Observed property with keyPath %@ on %@ changed to %@",keyPath,object,[object valueForKeyPath:keyPath]);
         
         NSMutableDictionary* domain = [self.domain mutableCopy];
         domain[keyPath] = [object valueForKeyPath:keyPath];
