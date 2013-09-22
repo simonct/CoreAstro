@@ -90,12 +90,13 @@
     self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.controlsContainerView addSubview:self.saveTargetControlsViewController.view];
     
-    // save target controls
+    // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,saveTargetControlsViewController1);
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
     [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
     
+    // bind the controllers
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
     [self.saveTargetControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
@@ -149,27 +150,6 @@
                    alternateButton:nil
                        otherButton:nil
          informativeTextWithFormat:@"%@",message] runModal];
-}
-
-- (NSString*)currentDeviceExposurePathWithName:(NSString*)name
-{
-    NSString* path = [_targetFolder path];
-    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]] : nil;
-}
-
-- (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
-{
-    if (!suffix || !_targetFolder){
-        return nil;
-    }
-    NSString* filename = [self exposureSaveNameWithSuffix:suffix];
-    NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
-    CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-    if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:exp readPixels:YES error:nil]){
-        return nil;
-    }
-    // check binning and dimenions match
-    return exposure;
 }
 
 #pragma mark - Actions
@@ -529,19 +509,9 @@
     [self presentCaptureControllerWithMode:kCASCaptureModelModeDark];
 }
 
-- (IBAction)deleteDarks:(id)sender
-{
-//    [self removeExposureWithName:@"dark"];
-}
-
 - (IBAction)captureBias:(id)sender
 {
     [self presentCaptureControllerWithMode:kCASCaptureModelModeBias];
-}
-
-- (IBAction)deleteBias:(id)sender
-{
-//    [self removeExposureWithName:@"bias"];
 }
 
 - (IBAction)captureFlats:(id)sender
@@ -549,12 +519,97 @@
     [self presentCaptureControllerWithMode:kCASCaptureModelModeFlat];
 }
 
-- (IBAction)deleteFlats:(id)sender
+- (IBAction)toggleShowHistogram:(id)sender
 {
-//    [self removeExposureWithName:@"flat"];
+    self.exposureView.showHistogram = !self.exposureView.showHistogram;
 }
 
-#pragma mark - Save Utilities
+- (IBAction)toggleShowReticle:(id)sender
+{
+    self.exposureView.showReticle = !self.exposureView.showReticle;
+}
+
+- (IBAction)toggleShowStarProfile:(id)sender
+{
+    self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
+}
+
+- (IBAction)toggleShowImageStats:(id)sender
+{
+    self.exposureView.showImageStats = !self.exposureView.showImageStats;
+}
+
+- (IBAction)toggleInvertImage:(id)sender
+{
+    self.exposureView.invert = !self.exposureView.invert;
+}
+
+- (IBAction)toggleMedianFilter:(id)sender
+{
+    self.exposureView.medianFilter = !self.exposureView.medianFilter;
+}
+
+- (IBAction)toggleEqualiseHistogram:(id)sender
+{
+    self.equalise = !self.equalise;
+    [self resetAndRedisplayCurrentExposure];
+}
+
+- (IBAction)toggleContrastStretch:(id)sender
+{
+    self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
+}
+
+- (IBAction)toggleCalibrate:(id)sender
+{
+    self.calibrate = !self.calibrate;
+    [self resetAndRedisplayCurrentExposure];
+}
+
+- (IBAction)applyDebayer:(NSMenuItem*)sender
+{
+    switch (sender.tag) {
+        case 11000:
+            self.imageDebayer.mode = kCASImageDebayerNone;
+            break;
+        case 11001:
+            self.imageDebayer.mode = kCASImageDebayerRGGB;
+            break;
+        case 11002:
+            self.imageDebayer.mode = kCASImageDebayerGRBG;
+            break;
+        case 11003:
+            self.imageDebayer.mode = kCASImageDebayerBGGR;
+            break;
+        case 11004:
+            self.imageDebayer.mode = kCASImageDebayerGBRG;
+            break;
+    }
+    [self resetAndRedisplayCurrentExposure];
+}
+
+#pragma mark - Path & Save Utilities
+
+- (NSString*)currentDeviceExposurePathWithName:(NSString*)name
+{
+    NSString* path = [_targetFolder path];
+    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]] : nil;
+}
+
+- (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
+{
+    if (!suffix || !_targetFolder){
+        return nil;
+    }
+    NSString* filename = [self exposureSaveNameWithSuffix:suffix];
+    NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
+    CASCCDExposure* exp = [[CASCCDExposure alloc] init];
+    if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:exp readPixels:YES error:nil]){
+        return nil;
+    }
+    // check binning and dimenions match
+    return exposure;
+}
 
 - (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
 {
@@ -786,7 +841,7 @@
         }
         
         // optionally live calibrate using saved bias and flat frames
-        if (/*self.calibrate*/1){
+        if (self.calibrate){
             
             NSURL* url = [self beginAccessToSaveTarget];
             if (url){
@@ -990,75 +1045,6 @@
 }
 
 #pragma mark - Menu validation
-
-- (IBAction)toggleShowHistogram:(id)sender
-{
-    self.exposureView.showHistogram = !self.exposureView.showHistogram;
-}
-
-- (IBAction)toggleShowReticle:(id)sender
-{
-    self.exposureView.showReticle = !self.exposureView.showReticle;
-}
-
-- (IBAction)toggleShowStarProfile:(id)sender
-{
-    self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
-}
-
-- (IBAction)toggleShowImageStats:(id)sender
-{
-    self.exposureView.showImageStats = !self.exposureView.showImageStats;
-}
-
-- (IBAction)toggleInvertImage:(id)sender
-{
-    self.exposureView.invert = !self.exposureView.invert;
-}
-
-- (IBAction)toggleMedianFilter:(id)sender
-{
-    self.exposureView.medianFilter = !self.exposureView.medianFilter;
-}
-
-- (IBAction)toggleEqualiseHistogram:(id)sender
-{
-    self.equalise = !self.equalise;
-    [self resetAndRedisplayCurrentExposure];
-}
-
-- (IBAction)toggleContrastStretch:(id)sender
-{
-    self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
-}
-
-- (IBAction)toggleCalibrate:(id)sender
-{
-    self.calibrate = !self.calibrate;
-    [self resetAndRedisplayCurrentExposure];
-}
-
-- (IBAction)applyDebayer:(NSMenuItem*)sender
-{
-    switch (sender.tag) {
-        case 11000:
-            self.imageDebayer.mode = kCASImageDebayerNone;
-            break;
-        case 11001:
-            self.imageDebayer.mode = kCASImageDebayerRGGB;
-            break;
-        case 11002:
-            self.imageDebayer.mode = kCASImageDebayerGRBG;
-            break;
-        case 11003:
-            self.imageDebayer.mode = kCASImageDebayerBGGR;
-            break;
-        case 11004:
-            self.imageDebayer.mode = kCASImageDebayerGBRG;
-            break;
-    }
-    [self resetAndRedisplayCurrentExposure];
-}
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
