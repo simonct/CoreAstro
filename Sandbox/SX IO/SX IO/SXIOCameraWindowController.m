@@ -710,7 +710,12 @@
                 self.progressStatusText.stringValue = @"Downloading image...";
             }
             else {
-                self.progressStatusText.stringValue = @"Capturing...";
+                if (self.cameraController.captureCount > 1){
+                    self.progressStatusText.stringValue = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.currentCaptureIndex+1,self.cameraController.captureCount];
+                }
+                else {
+                    self.progressStatusText.stringValue = @"Capturing...";
+                }
             }
         }
             break;
