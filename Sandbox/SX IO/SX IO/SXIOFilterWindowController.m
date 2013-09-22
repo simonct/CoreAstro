@@ -42,6 +42,8 @@ static void* kvoContext;
         NSString* name = filterWheelController.filterWheel.deviceName;
         self.window.title = name ?: @"Filter Wheel";
         
+        [self.window setFrameAutosaveName:self.window.title];
+        
         [self updateFilterNames];
     }
 }

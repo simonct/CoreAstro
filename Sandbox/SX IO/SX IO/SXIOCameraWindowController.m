@@ -686,6 +686,7 @@ static void* kvoContext;
     NSString* title = self.cameraController.camera.deviceName;
     if (title){
         self.window.title = title;
+        [self.window setFrameAutosaveName:self.window.title];
     }
     else {
         self.window.title = @"";
