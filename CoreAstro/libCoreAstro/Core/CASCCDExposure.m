@@ -80,6 +80,23 @@
     return self.io.thumbnail;
 }
 
+- (NSString*) filterName
+{
+    return self.meta[@"filter"];
+}
+
+- (void)setFilterName:(NSString *)filterName
+{
+    NSMutableDictionary* meta = [self.meta mutableCopy];
+    if (!filterName){
+        [meta removeObjectForKey:@"filter"];
+    }
+    else {
+        meta[@"filter"] = [filterName copy];
+    }
+    self.meta = [meta copy];
+}
+
 - (NSString*) displayName
 {
     NSString* displayName = [self.meta objectForKey:@"displayName"];

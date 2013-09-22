@@ -475,6 +475,14 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         fits_update_key(fptr, TSTRING, "IMAGETYP", (void*)imageType, "Image type", &status);
                     }
 
+                    NSString* filterName = exposure.meta[@"filter"];
+                    if (filterName){
+                        const char* filterNameC = [filterName UTF8String];
+                        if (filterNameC){
+                            fits_update_key(fptr, TSTRING, "FILTER", (void*)filterNameC, "Filter", &status);
+                        }
+                    }
+
                     if (exposure.uuid){
                         const char* uuid = [exposure.uuid UTF8String];
                         fits_update_key(fptr, TSTRING, "CAS_UUID", (void*)uuid, "CoreAstro exposure UUID", &status);

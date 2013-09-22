@@ -162,6 +162,8 @@ static void* kvoContext;
         [_currentFilterWheel addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:&kvoContext];
         [_currentFilterWheel addObserver:self forKeyPath:@"filterNames" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     }
+    
+    self.cameraController.filterWheel = _currentFilterWheel;
 }
 
 @end

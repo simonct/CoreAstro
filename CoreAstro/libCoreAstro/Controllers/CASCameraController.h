@@ -30,6 +30,7 @@
 @class CASImageProcessor;
 @class CASGuideAlgorithm;
 @class CASGuiderController;
+@class CASFilterWheelController;
 @class CASCCDExposure;
 @class CASMovieExporter;
 
@@ -68,6 +69,8 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
 
 @property (nonatomic,strong) CASGuiderController* guider;
+@property (nonatomic,strong) CASFilterWheelController* filterWheel;
+
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 

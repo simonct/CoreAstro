@@ -89,8 +89,17 @@
 
 - (void)setCurrentFilter:(NSInteger)currentFilter
 {
-    NSLog(@"setCurrentFilter: %ld",currentFilter);
     self.filterWheel.currentFilter = currentFilter;
+}
+
+- (NSString*) currentFilterName
+{
+    return [self.filterNames[[@(self.currentFilter) description]] copy];
+}
+
++ (NSSet*)keyPathsForValuesAffectingCurrentFilterName
+{
+    return [NSSet setWithObject:@"currentFilter"];
 }
 
 - (NSArray*)deviceDefaultsKeys

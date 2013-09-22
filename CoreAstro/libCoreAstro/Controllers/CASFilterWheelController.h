@@ -30,6 +30,7 @@
 
 @property (nonatomic,strong,readonly) CASDevice<CASFWDevice>* filterWheel;
 @property (nonatomic,strong) NSDictionary* filterNames;
+@property (nonatomic,readonly) NSString* currentFilterName;
 
 - (id)initWithFilterWheel:(CASDevice<CASFWDevice>*)guider;
 

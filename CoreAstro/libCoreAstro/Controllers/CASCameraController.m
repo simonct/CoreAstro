@@ -26,6 +26,7 @@
 #import "CASCameraController.h"
 #import "CASCCDExposureLibrary.h"
 #import "CASGuiderController.h"
+#import "CASFilterWheelController.h"
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
 #import "CASMovieExporter.h"
@@ -288,6 +289,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     _waitingForDevice = YES;
     
+    NSString* filterName = self.filterWheel.currentFilterName;
+    
     [self.camera exposeWithParams:_expParams type:self.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
     
         self.progress = 1;
@@ -317,7 +320,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 }
                 
                 exposure.type = self.exposureType;
-                
+                exposure.filterName = filterName;
+
                 if (!saveExposure && !_cancelled){
                     endCapture(error,exposure);
                 }
@@ -354,6 +358,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         return;
     }
     
+    if (self.filterWheel.filterWheel.moving){
+        block([NSError errorWithDomain:@"CASCameraController"
+                                  code:2
+                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,@"The associated filter wheel is moving",nil]],nil);
+        return;
+    }
+    
+
     _cancelled = NO;
 
     self.currentCaptureIndex = 0;
