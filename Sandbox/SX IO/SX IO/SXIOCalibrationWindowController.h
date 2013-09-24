@@ -9,5 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface SXIOCalibrationWindowController : NSWindowController
-@property (nonatomic,copy) NSURL* url;
+@property (nonatomic,copy) NSURL* url; // todo; change to CASExposureEnumerator
 @end

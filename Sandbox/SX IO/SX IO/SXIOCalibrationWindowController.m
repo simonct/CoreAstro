@@ -476,14 +476,20 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         
         [[self mutableArrayValueForKey:@"images"] removeAllObjects];
         
-        NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:self.url
-                                                        includingPropertiesForKeys:nil
-                                                                           options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
-                                                                      errorHandler:nil];
-        
-        NSURL* imageURL;
-        while ((imageURL = [e nextObject]) != nil) {
-            [self addImageAtPath:[imageURL path]];
+        [self.window setRepresentedURL:self.url];
+        [self.window setTitle:[[NSFileManager defaultManager] displayNameAtPath:[self.url path]]];
+
+        if (self.url){
+            
+            NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:self.url
+                                                            includingPropertiesForKeys:nil
+                                                                               options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                          errorHandler:nil];
+            
+            NSURL* imageURL;
+            while ((imageURL = [e nextObject]) != nil) {
+                [self addImageAtPath:[imageURL path]];
+            }
         }
     }
     @finally {
