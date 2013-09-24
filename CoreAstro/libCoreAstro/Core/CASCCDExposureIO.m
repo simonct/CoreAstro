@@ -475,11 +475,30 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         fits_update_key(fptr, TSTRING, "IMAGETYP", (void*)imageType, "Image type", &status);
                     }
 
-                    NSString* filterName = exposure.meta[@"filter"];
-                    if (filterName){
-                        const char* filterNameC = [filterName UTF8String];
-                        if (filterNameC){
-                            fits_update_key(fptr, TSTRING, "FILTER", (void*)filterNameC, "Filter", &status);
+                    // filters
+                    NSArray* filters = exposure.meta[@"filters"];
+                    if ([filters count] > 0){
+                        
+                        if ([filters count] == 1){
+                            
+                            NSString* filterName = filters[0];
+                            if (filterName){
+                                const char* filterNameC = [filterName UTF8String];
+                                if (filterNameC){
+                                    fits_update_key(fptr, TSTRING, "FILTER", (void*)filterNameC, "Filter", &status);
+                                }
+                            }
+                        }
+                        else{
+                            
+                            NSInteger i = 1;
+                            for (NSString* filterName in filters) {
+                                const char* filterNameC = [filterName UTF8String];
+                                if (filterNameC){
+                                    fits_update_key(fptr, TSTRING, [[NSString stringWithFormat:@"FILTER%ld",i] UTF8String], (void*)filterNameC, [[NSString stringWithFormat:@"Filter %ld",i] UTF8String], &status);
+                                }
+                                ++i;
+                            }
                         }
                     }
 

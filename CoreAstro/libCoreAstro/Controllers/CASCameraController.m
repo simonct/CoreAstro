@@ -320,7 +320,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 }
                 
                 exposure.type = self.exposureType;
-                exposure.filterName = filterName;
+                if (filterName){
+                    exposure.filters = @[filterName];
+                }
 
                 if (!saveExposure && !_cancelled){
                     endCapture(error,exposure);

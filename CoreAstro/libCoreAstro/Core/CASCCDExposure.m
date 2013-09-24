@@ -80,19 +80,19 @@
     return self.io.thumbnail;
 }
 
-- (NSString*) filterName
+- (NSArray*) filters
 {
-    return self.meta[@"filter"];
+    return self.meta[@"filters"];
 }
 
-- (void)setFilterName:(NSString *)filterName
+- (void)setFilters:(NSArray *)filters
 {
     NSMutableDictionary* meta = [self.meta mutableCopy];
-    if (!filterName){
-        [meta removeObjectForKey:@"filter"];
+    if (!filters){
+        [meta removeObjectForKey:@"filters"];
     }
     else {
-        meta[@"filter"] = [filterName copy];
+        meta[@"filters"] = [filters copy];
     }
     self.meta = [meta copy];
 }
