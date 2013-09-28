@@ -21,6 +21,7 @@
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
+		F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
 		F48534F517D23C7700C5EE8C /* SXIOCalibrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */; };
@@ -264,6 +265,8 @@
 		F4415B4817CBAF7D00D1233C /* CASCaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCaptureWindowController.h; path = ../../../CoreAstro/CASCaptureWindowController.h; sourceTree = "<group>"; };
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
+		F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExposureEnumerator.h; sourceTree = "<group>"; };
+		F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExposureEnumerator.m; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
 		F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCalibrationWindowController.h; sourceTree = "<group>"; };
@@ -735,6 +738,8 @@
 				F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */,
 				F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */,
 				F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */,
+				F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */,
+				F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1134,6 +1139,7 @@
 				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
 				F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */,
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
+				F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */,
 				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
 				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,
 				F4A25873179BC0100013D220 /* CASExposureView.m in Sources */,
