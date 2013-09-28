@@ -37,4 +37,6 @@
 - (void)connect:(void(^)(NSError*))block;
 - (void)disconnect;
 
++ (NSString*)sanitizeFilterName:(NSString*)string;
+
 @end

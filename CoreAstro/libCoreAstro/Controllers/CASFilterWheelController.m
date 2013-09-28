@@ -123,6 +123,13 @@
     }
 }
 
++ (NSString*)sanitizeFilterName:(NSString*)string
+{
+    NSData* ascii = [string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString* asciiString = [[NSString alloc] initWithData:ascii encoding:NSASCIIStringEncoding];
+    return asciiString;
+}
+
 @end
 
 @implementation CASFilterWheelController (CASScripting)

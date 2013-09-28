@@ -29,6 +29,7 @@
 @class CASFilterWheelController;
 
 @interface CASFilterWheelControlsViewController : NSViewController
+@property (nonatomic,copy,readonly) NSString* filterName;
 @property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic,readonly) CASFilterWheelController* currentFilterWheel;
 @end

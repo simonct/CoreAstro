@@ -27,10 +27,14 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASFilterWheelControlsViewController ()
+@property (nonatomic,copy) NSString* filterName;
+@property (nonatomic,weak) IBOutlet NSTextField *filterTextField;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *filterWheelMenu;
 @property (nonatomic,weak) IBOutlet NSPopUpButton *filterWheelFilterMenu;
 @property (nonatomic,weak) CASFilterWheelController* currentFilterWheel;
 @end
+
+static NSString* const kCASFilterWheelControlsViewControllerFilterNameDefaultsKey = @"CASFilterWheelControlsViewControllerFilterName";
 
 @implementation CASFilterWheelControlsViewController
 
@@ -55,6 +59,32 @@ static void* kvoContext;
 {
     [super awakeFromNib];
     [self updateFilterWheelMenu];
+}
+
+- (NSString*)filterName
+{
+    return self.currentFilterWheel ? nil: [[NSUserDefaults standardUserDefaults] stringForKey:kCASFilterWheelControlsViewControllerFilterNameDefaultsKey];
+}
+
+- (void)setFilterName:(NSString *)filterName
+{
+    filterName = [CASFilterWheelController sanitizeFilterName:filterName]; // limit to ascii
+    if (!filterName){
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kCASFilterWheelControlsViewControllerFilterNameDefaultsKey];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setObject:filterName forKey:kCASFilterWheelControlsViewControllerFilterNameDefaultsKey];
+    }
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj
+{
+    NSTextField* textField = [obj object];
+    NSString* stringValue = textField.stringValue;
+    NSString* sanitized = [CASFilterWheelController sanitizeFilterName:textField.stringValue];
+    if (![sanitized isEqualToString:stringValue]){
+        textField.stringValue = sanitized;
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

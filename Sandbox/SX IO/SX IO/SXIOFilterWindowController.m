@@ -123,20 +123,13 @@ static void* kvoContext;
     [self setFilterName:[obj object]];
 }
 
-- (NSString*)asciiString:(NSString*)string
-{
-    NSData* ascii = [string dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-    NSString* asciiString = [[NSString alloc] initWithData:ascii encoding:NSASCIIStringEncoding];
-    return asciiString;
-}
-
 - (IBAction)setFilterName:(NSTextField*)sender
 {
     // use NSDictionaryController ?
     const NSInteger tag = sender.tag;
     if (tag > 0){
         const NSInteger index = tag - 1;
-        NSString* name = [self asciiString:sender.stringValue]; // force ascii as we'll want to store this in a FITS header; shame as H-β would look quite good
+        NSString* name = [CASFilterWheelController sanitizeFilterName:sender.stringValue]; // force ascii as we'll want to store this in a FITS header; shame as H-β would look quite good
         NSMutableDictionary* names = [self.filterNames mutableCopy];
         if (name){
             names[[@(index) description]] = name;

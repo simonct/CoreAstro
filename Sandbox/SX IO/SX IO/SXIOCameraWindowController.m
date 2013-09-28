@@ -238,6 +238,12 @@ static void* kvoContext;
                 // save to the designated folder with the current settings as a fits file
                 if (exposure && saveToFile){
                     
+                    // check for a user-entered filter name
+                    NSString* filterName = self.filterWheelControlsViewController.filterName;
+                    if ([filterName length]){
+                        exposure.filters = @[filterName];
+                    }
+                    
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
                     NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]]];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
