@@ -99,15 +99,17 @@ static const NSSize unitSize = {1.0, 1.0};
     }
     
     const CGRect containerFrame = self.containerView.frame;
-    
-    const CGFloat unitAspect = unitFrame.size.width/unitFrame.size.height;
-    const CGFloat containerAspect = containerFrame.size.width/containerFrame.size.height;
-    
-    if (unitAspect > containerAspect){
-        self.zoom = containerFrame.size.width/unitFrame.size.width;
-    }
-    else {
-        self.zoom = containerFrame.size.height/unitFrame.size.height;
+    if (containerFrame.size.width > 0 && containerFrame.size.height > 0){
+        
+        const CGFloat unitAspect = unitFrame.size.width/unitFrame.size.height;
+        const CGFloat containerAspect = containerFrame.size.width/containerFrame.size.height;
+        
+        if (unitAspect > containerAspect){
+            self.zoom = containerFrame.size.width/unitFrame.size.width;
+        }
+        else {
+            self.zoom = containerFrame.size.height/unitFrame.size.height;
+        }
     }
 }
 
