@@ -1106,6 +1106,10 @@ static void* kvoContext;
             item.state = self.exposureView.showImageStats;
             break;
             
+        case 10007:
+            item.state = self.calibrate;
+            break;
+
         case 10010:
             item.state = self.exposureView.scaleSubframe;
             break;
