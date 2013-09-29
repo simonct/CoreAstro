@@ -45,7 +45,7 @@
 - (void)keyDown:(NSEvent *)theEvent
 {
     NSString* key = [theEvent charactersIgnoringModifiers];
-    if([key isEqual:@" "]) {
+    if(/*[key isEqual:@" "]*/0) {
         [self togglePreviewPanel:self];
     }
     else if ([key isEqual:@"\r"]){
