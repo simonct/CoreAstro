@@ -529,9 +529,11 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                     }
                     
-                    NSData* metaData = [NSJSONSerialization dataWithJSONObject:exposure.meta options:0 error:&error]; // null terminated ???
+                    NSData* metaData = [NSJSONSerialization dataWithJSONObject:exposure.meta options:0 error:&error];
                     if (!error){
-                        const char* metaDataStr = [metaData bytes];
+                        NSMutableData* mutableMetaData = [NSMutableData dataWithData:metaData];
+                        [mutableMetaData setLength:[mutableMetaData length] + 1]; // ensure a trailing null
+                        const char* metaDataStr = [mutableMetaData bytes];
                         const char* metaDataStrArg[] = {metaDataStr};
                         if (fits_write_col(fptr, TSTRING, 1, 1, 1, 1, metaDataStrArg, &status)){
                             error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
@@ -603,9 +605,12 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                                     else if (params) {
                                         NSLog(@"Expecting exposure metadata to be a NSDictionary but it's a %@",NSStringFromClass([params class]));
                                     }
+                                    if (error){
+                                        NSLog(@"Error reading reading FITS JSON: %@",error);
+                                    }
                                 }
                                 @catch (NSException *exception) {
-                                    NSLog(@"Exception reading JSON: %@",exception);
+                                    NSLog(@"Exception reading FITS JSON: %@",exception);
                                 }
                             }
                             free(data);
@@ -730,7 +735,10 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     long naxes[2];
                     fits_get_img_dim(fptr, &naxis, &status);
                     fits_get_img_size(fptr, 2, naxes, &status);
-                    if (naxis == 2){
+                    if (naxis != 2){
+                        error = createFITSError(BAD_NAXIS,[NSString stringWithFormat:@"File doesn't contain a 2D image"]);
+                    }
+                    else{
                         
                         deviceParams[@"width"] = @(naxes[0]);
                         deviceParams[@"height"] = @(naxes[1]);
