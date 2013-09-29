@@ -15,6 +15,7 @@
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
+#import "SXIOExposureEnumerator.h"
 
 #import <Quartz/Quartz.h>
 
@@ -116,6 +117,16 @@ static void* kvoContext;
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
     [self.saveTargetControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.filterWheelControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
+    
+    // observe the save target vc for save url changes; get the initial one and request access to it
+    [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+}
+
+- (void)dealloc
+{
+    if (_targetFolder){
+        [_targetFolder stopAccessingSecurityScopedResource];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -125,6 +136,14 @@ static void* kvoContext;
         if (object == self.cameraController){
             if ([keyPath isEqualToString:@"state"] || [keyPath isEqualToString:@"progress"]){
                 [self updateExposureIndicator];
+            }
+        }
+        
+        if (object == self.saveTargetControlsViewController){
+            if ([keyPath isEqualToString:@"saveFolderURL"]){
+                if (self.saveTargetControlsViewController.saveFolderURL && ![self beginAccessToSaveTarget]){
+                    self.saveTargetControlsViewController.saveFolderURL = nil;
+                }
             }
         }
     }
@@ -162,6 +181,11 @@ static void* kvoContext;
 
 - (NSURL*)beginAccessToSaveTarget
 {
+    if (_targetFolder){
+        [_targetFolder stopAccessingSecurityScopedResource];
+    }
+    _targetFolder = nil;
+    
     // check we have somewhere to save the file, a prefix and a sequence number
     __block NSURL* url;
     BOOL securityScoped = NO;
@@ -175,13 +199,9 @@ static void* kvoContext;
     if (!url) {
         url = self.saveTargetControlsViewController.saveFolderURL;
     }
-    if (!url){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
-        return nil;
-    }
+    
     if (securityScoped && ![url startAccessingSecurityScopedResource]){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You don't have permission to access the image save folder or it cannot be found"];
-        return nil;
+        url = nil;
     }
     
     _targetFolder = url;
@@ -208,10 +228,14 @@ static void* kvoContext;
         [self presentAlertWithTitle:@"Filter Wheel" message:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"];
         return;
     }
-    
+
+    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
+        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
+        return;
+    }
+
     // check we have somewhere to save the file, a prefix and a sequence number
     const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
-    __block NSURL* url = [self beginAccessToSaveTarget];
     
     // do not save to the library todo; replace with an exposure sink interface
     self.cameraController.autoSave = NO;
@@ -245,7 +269,7 @@ static void* kvoContext;
                     }
                     
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]]];
+                    NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]]];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
                                         
                     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
@@ -287,8 +311,6 @@ static void* kvoContext;
                     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
 
                 }
-
-                [url stopAccessingSecurityScopedResource];
             }
         }
     }];
@@ -423,9 +445,8 @@ static void* kvoContext;
         return;
     }
     
-    NSURL* url = [self beginAccessToSaveTarget];
-    if (!url){
-        // alert
+    if (!_targetFolder){
+        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return;
     }
     
@@ -495,7 +516,7 @@ static void* kvoContext;
                                     break;
                             }
                             
-                            NSURL* finalUrl = [url URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
+                            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
                             
                             // remove existing one
                             [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
@@ -516,8 +537,6 @@ static void* kvoContext;
                     // self.cameraController popExposureSettings
                 }];
             }
-            
-            [url stopAccessingSecurityScopedResource];
         }
     }];
 }
@@ -885,8 +904,6 @@ static void* kvoContext;
                     }
                 }];
                 exposure = corrected;
-                
-                [url stopAccessingSecurityScopedResource];
             }
         }
         
