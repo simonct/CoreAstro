@@ -31,8 +31,12 @@
 #import "SXIOCalibrationWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
+@interface SXIOAppDelegate ()
+@property (weak) IBOutlet NSPanel *noDevicesHUD;
+@end
+
 @implementation SXIOAppDelegate {
-    NSMutableArray* _cameraWindows;
+    NSMutableArray* _windows;
     SXIOCalibrationWindowController* _calibrationWindow;
 }
 
@@ -53,7 +57,7 @@ static void* kvoContext;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    _cameraWindows = [NSMutableArray arrayWithCapacity:5];
+    _windows = [NSMutableArray arrayWithCapacity:5];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -88,6 +92,16 @@ static void* kvoContext;
         [[CASDeviceManager sharedManager] scan];
         
         [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
+
+        // check after 1s to see if no devices are connected and if not show a one-time HUD indicating that something needs to be plugged in
+        double delayInSeconds = 1.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            if (![_windows count]){
+                [self.noDevicesHUD center];
+                [self.noDevicesHUD makeKeyAndOrderFront:nil];
+            }
+        });
     });
 }
 
@@ -126,7 +140,7 @@ static void* kvoContext;
 
 - (NSWindowController*)findWindowController:(id)controller
 {
-    for (id window in [_cameraWindows copy]){
+    for (id window in [_windows copy]){
         if ([window isKindOfClass:[SXIOCameraWindowController class]] && ((SXIOCameraWindowController*)window).cameraController == controller){
             return window;
         }
@@ -167,22 +181,23 @@ static void* kvoContext;
                     }
                     
                     if (windowController){
+                        [self.noDevicesHUD orderOut:nil];
                         [windowController setShouldCascadeWindows:YES];
                         [windowController.window makeKeyAndOrderFront:nil];
-                        [_cameraWindows addObject:windowController];
+                        [_windows addObject:windowController];
                     }
                 }];
             }
                 break;
                 
-                // camera removed, close the capture window
+                // camera or filter wheel removed, close the related window
             case NSKeyValueChangeRemoval:{
                 [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     
                     NSWindowController* window = [self findWindowController:obj];
                     if (window){
                         [window close];
-                        [_cameraWindows removeObject:window];
+                        [_windows removeObject:window];
                     }
                 }];
             }
