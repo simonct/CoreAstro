@@ -166,7 +166,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     for (NSView* hud in self.huds){
         hud.hidden = YES;
         hud.autoresizingMask = NSViewMinXMargin|NSViewMinYMargin;
-        hud.translatesAutoresizingMaskIntoConstraints = NO;
+        // hud.translatesAutoresizingMaskIntoConstraints = NO; // no, need to add constraints
         [self.hudContainerView addSubview:hud];
     }
 }
