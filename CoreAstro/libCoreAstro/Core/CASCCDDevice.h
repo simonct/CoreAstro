@@ -31,7 +31,9 @@
 @interface CASCCDDevice : CASDevice
 
 @property (nonatomic,strong,readonly) CASCCDProperties* sensor;
-@property (nonatomic,readonly) BOOL isColour, hasCooler;
+@property (nonatomic,readonly) BOOL isColour, hasCooler, canSubframe;
+@property (nonatomic,readonly) NSArray* binningModes;
+@property (nonatomic,readonly) CGSize sensorSize; // part of sensor ?
 @property (nonatomic,assign) CGFloat temperature; // temp in °C
 @property (nonatomic,assign) CGFloat targetTemperature; // temp in °C
 @property (nonatomic,readonly) NSInteger temperatureFrequency;

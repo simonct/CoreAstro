@@ -64,5 +64,17 @@
     NSLog(@"-[CASCCDDevice cancelExposure] not implemented");
 }
 
+- (BOOL)canSubframe {
+    return YES; // can this camera capture subframes ?
+}
+
+- (NSArray*)binningModes {
+    return nil; // todo @[1,2,3,4], etc
+}
+
+- (CGSize)sensorSize {
+    return CGSizeZero;
+}
+
 @end
 
