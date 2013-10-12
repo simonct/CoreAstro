@@ -48,6 +48,7 @@
 // flush the chip
 @interface SXCCDIOFlushCommand : CASIOCommand
 @property (nonatomic,assign) BOOL noWipe;
+@property (nonatomic,assign) SXCCDIOField field;
 @end
 
 // read delayed; flushes, exposes using an internal timer and reads the pixels in one command
@@ -57,6 +58,7 @@
 @property (nonatomic,assign) BOOL readPixels;
 @property (nonatomic,assign) BOOL latchPixels;
 @property (nonatomic,readonly) NSData* pixels;
+@property (nonatomic,assign) SXCCDIOField field;
 - (NSData*)postProcessPixels:(NSData*)pixels;
 @end
 
@@ -70,7 +72,7 @@
 
 // expose command for interlaced cameras that can de-interlace the two fields and apply an intensity correction
 @interface SXCCDIOExposeCommandInterlaced : SXCCDIOExposeCommand
-@property (nonatomic,strong) CASCCDExposure* biasExposure;
+@property (nonatomic,assign) SXCCDIOField field;
 @end
 
 // bulk read command
@@ -81,11 +83,6 @@
 
 // reads odd, even or both fields from the ccd
 @interface SXCCDIOReadFieldCommand : SXCCDIOReadCommand
-enum {
-    kSXCCDIOReadFieldCommandOdd,
-    kSXCCDIOReadFieldCommandEven,
-    kSXCCDIOReadFieldCommandBoth
-};
 @property (nonatomic,assign) NSInteger field;
 @end
 

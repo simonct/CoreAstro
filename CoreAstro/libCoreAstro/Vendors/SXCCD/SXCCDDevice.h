@@ -31,6 +31,12 @@
 
 @interface SXCCDDevice : CASCCDDevice 
 
+typedef NS_ENUM(NSInteger, SXCCDIOField) {
+    kSXCCDIOFieldBoth,
+    kSXCCDIOFieldOdd,
+    kSXCCDIOFieldEven
+};
+
 @property (nonatomic,strong,readonly) SXCCDProperties* sensor;
 @property (nonatomic,readonly) BOOL hasStar2KPort, hasCompressedPixels, hasEEPROM, hasIntegratedGuider, isInterlaced, hasShutter;
 @property (nonatomic,assign) NSInteger productID;
@@ -43,7 +49,7 @@
 
 - (void)getParams:(void (^)(NSError*,SXCCDProperties* sensor))block;
 
-- (void)flush:(void (^)(NSError*))block;
+- (void)flushField:(SXCCDIOField)field block:(void (^)(NSError*))block;
 
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 

@@ -107,6 +107,7 @@
 #define SXCCD_EXP_FLAGS_NOWIPE_FRAME  	8
 #define SXCCD_EXP_FLAGS_TDI             32
 #define SXCCD_EXP_FLAGS_NOCLEAR_FRAME 	64
+#define SXCCD_EXP_FLAGS_NOCLEAR_REGISTER  128
 
 /*
  * Control request fields.
@@ -470,8 +471,17 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOFlushCommand
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.field = kSXCCDIOFieldBoth;
+    }
+    return self;
+}
+
 - (NSString*)description {
-    return [NSString stringWithFormat:@"<%@: noWipe=%d>",NSStringFromClass([self class]),self.noWipe];
+    return [NSString stringWithFormat:@"<%@: field=%ld, noWipe=%d>",NSStringFromClass([self class]),self.field,self.noWipe];
 }
 
 - (NSData*)toDataRepresentation {
@@ -481,7 +491,18 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         flags = SXCCD_EXP_FLAGS_NOWIPE_FRAME;
     }
     else {
-        flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+        switch (self.field) {
+            default:
+            case kSXCCDIOFieldBoth:
+                flags = SXCCD_EXP_FLAGS_FIELD_BOTH|SXCCD_EXP_FLAGS_NOCLEAR_REGISTER;
+                break;
+            case kSXCCDIOFieldEven:
+                flags = SXCCD_EXP_FLAGS_FIELD_EVEN|SXCCD_EXP_FLAGS_NOCLEAR_REGISTER;
+                break;
+            case kSXCCDIOFieldOdd:
+                flags = SXCCD_EXP_FLAGS_FIELD_ODD|SXCCD_EXP_FLAGS_NOCLEAR_REGISTER;
+                break;
+        }
     }
     sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,buffer);
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
@@ -489,27 +510,49 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @end
 
+@interface SXCCDIOExposeCommand ()
+@property (nonatomic,strong) NSData* pixels;
+@end
+
 @implementation SXCCDIOExposeCommand
 
 @synthesize ms, params, readPixels, pixels = _pixels;
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"<%@: readPixels=%d, latchPixels=%d, ms=%ld, params=%@>",
-            NSStringFromClass([self class]),self.readPixels,self.latchPixels,(long)self.ms,NSStringFromCASExposeParams(self.params)];
+    return [NSString stringWithFormat:@"<%@: field=%ld, readPixels=%d, latchPixels=%d, ms=%ld, params=%@>",
+            NSStringFromClass([self class]),self.field,self.readPixels,self.latchPixels,(long)self.ms,NSStringFromCASExposeParams(self.params)];
 }
 
 - (NSData*)toDataRepresentation {
+
+    USHORT flags = 0;
+    switch (self.field) {
+        default:
+        case kSXCCDIOFieldBoth:
+            flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+        case kSXCCDIOFieldEven:
+            flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        case kSXCCDIOFieldOdd:
+            flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+    }
+    
+    const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.height : self.params.size.height/2;
     
     if (self.latchPixels){
         
         uint8_t buffer[18];
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,buffer);
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,self.params.bin.height,buffer);
+        
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
         
         uint8_t buffer[22];
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,self.params.origin.x,self.params.origin.y,self.params.size.width,self.params.size.height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
 }
@@ -660,22 +703,46 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @implementation SXCCDIOExposeCommandInterlaced
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.field = kSXCCDIOFieldBoth;
+    }
+    return self;
+}
+
 - (NSInteger) readSize {
-    return 0;
+    NSInteger count = [super readSize];
+    
+    if (self.field != kSXCCDIOFieldBoth){
+        count /= 2;
+    }
+    
+//    NSLog(@"-[SXCCDIOExposeCommandInterlaced readSize]: %ld",count);
+
+    return count;
+}
+
+- (NSError*)fromDataRepresentation:(NSData*)data {
+
+//    NSLog(@"-[SXCCDIOExposeCommandInterlaced fromDataRepresentation]: %ld",[data length]);
+
+    self.pixels = data; // don't post process as we're reading fields
+    
+    return nil;
 }
 
 - (NSData*)toDataRepresentation {
     
     if (self.params.bin.width == 3 && self.params.bin.height == 3){
         NSLog(@"SXCCDIOExposeCommandInterlaced: Replacing 3x3 binning with 4x4");
-        CASExposeParams params = self.params;
-        params.bin = CASSizeMake(4, 4);
-        self.params = params;
+        CASExposeParams modParams = self.params;
+        modParams.bin = CASSizeMake(4, 4);
+        self.params = modParams;
     }
     
-    uint8_t buffer[8];
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,buffer);
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    return [super toDataRepresentation];
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
@@ -722,7 +789,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
                 if (ratio != 0){
                     for (unsigned long y = 1; y < height; y += 2){
                         for (unsigned long x = 0; x < width; x += 1){
-                            const uint16_t p = rearrangedPixelsPtr[x + (y * width)] / ratio;
+                            const uint16_t p = MAX(MIN(rearrangedPixelsPtr[x + (y * width)] / ratio, 65535), 0); // prevent zebraing (make configurable ? can be quite quite handy)
                             rearrangedPixelsPtr[x + (y * width)] = p;
                             finalOddAverage += p;
                         }
@@ -768,7 +835,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSInteger) readSize {
     NSInteger count = [super readSize];
-    if (self.field != kSXCCDIOReadFieldCommandBoth){
+    if (self.field != kSXCCDIOFieldBoth){
         count /= 2;
     }
     return count;
@@ -784,19 +851,19 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSInteger height = self.params.size.height / 2;
     
     switch (self.field) {
-        case kSXCCDIOReadFieldCommandOdd:
+        case kSXCCDIOFieldOdd:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
             break;
-        case kSXCCDIOReadFieldCommandEven:
+        case kSXCCDIOFieldEven:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
             break;
-        case kSXCCDIOReadFieldCommandBoth:
+        case kSXCCDIOFieldBoth:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
             binY /= 2;
             break;
     }
     
-    NSLog(@"SXCCDIOReadFieldCommand: field=%ld, height=%ld, binX=%ld, binY=%ld",self.field,height,binX,binY);
+    // NSLog(@"SXCCDIOReadFieldCommand: fieldFlag=%ld, height=%ld, binX=%ld, binY=%ld",fieldFlag,height,binX,binY);
     
     sxReadPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,fieldFlag,self.params.origin.x,self.params.origin.y,self.params.size.width,height,binX,binY,buffer);
     
