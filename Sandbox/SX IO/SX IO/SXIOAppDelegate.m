@@ -50,7 +50,8 @@ static void* kvoContext;
          @"CASDefaultScopeAperture":@(101),
          @"CASDefaultScopeFNumber":@(5.4),
          @"SXIODefaultExposureFileType":@"fits",
-         @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"]
+         @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"],
+         @"SXIONoDevicesAlertOnStartup":@YES
          }];
     }
 }
@@ -94,14 +95,17 @@ static void* kvoContext;
         [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
 
         // check after 1s to see if no devices are connected and if not show a one-time HUD indicating that something needs to be plugged in
-        double delayInSeconds = 1.0;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            if (![_windows count]){
-                [self.noDevicesHUD center];
-                [self.noDevicesHUD makeKeyAndOrderFront:nil];
-            }
-        });
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIONoDevicesAlertOnStartup"]){
+            
+            double delayInSeconds = 1.0;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                if (![_windows count]){
+                    [self.noDevicesHUD center];
+                    [self.noDevicesHUD makeKeyAndOrderFront:nil];
+                }
+            });
+        }
     });
 }
 
