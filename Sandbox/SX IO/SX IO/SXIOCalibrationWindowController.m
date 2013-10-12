@@ -13,117 +13,6 @@
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
-@class SXIOCalibrationCollectionView, SXIOCalibrationModel;
-
-@interface SXIOCalibrationWindowController ()
-@property (nonatomic,strong) NSMutableArray* images;
-@property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
-@property (strong) IBOutlet NSArrayController *arrayController;
-@property (weak) IBOutlet NSButton *chooseButton;
-@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
-@property (readonly) BOOL calibrationButtonEnabled;
-@property (nonatomic,readonly) float minScale, maxScale;
-@property (nonatomic) float scale;
-@end
-
-@interface SXIOCalibrationCollectionView : NSCollectionView <QLPreviewPanelDelegate,QLPreviewPanelDataSource>
-@property (nonatomic,strong) QLPreviewPanel* previewPanel;
-@end
-
-@implementation SXIOCalibrationCollectionView
-
-- (IBAction)togglePreviewPanel:(id)previewPanel
-{
-    if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible]) {
-        [[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
-    }
-    else {
-        [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
-    }
-}
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-    NSString* key = [theEvent charactersIgnoringModifiers];
-    if(/*[key isEqual:@" "]*/0) {
-        [self togglePreviewPanel:self];
-    }
-    else if ([key isEqual:@"\r"]){
-        SXIOCalibrationWindowController* wc = self.window.windowController;
-        [wc.chooseButton performKeyEquivalent:theEvent];
-    }
-    else {
-        [super keyDown:theEvent];
-    }
-}
-
-- (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
-{
-    return YES;
-}
-
-- (void)beginPreviewPanelControl:(QLPreviewPanel *)panel
-{
-    self.previewPanel = panel;
-    self.previewPanel.delegate = self;
-    self.previewPanel.dataSource = self;
-}
-
-- (void)endPreviewPanelControl:(QLPreviewPanel *)panel
-{
-    self.previewPanel = nil;
-}
-
-- (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel
-{
-    return [self.selectionIndexes count];
-}
-
-- (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
-{
-    return [[self.content objectsAtIndexes:self.selectionIndexes] objectAtIndex:index];
-}
-
-@end
-
-@interface SXIOCalibrationItemView : NSView
-@property (nonatomic) BOOL selected;
-@end
-
-@implementation SXIOCalibrationItemView
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    if (self.selected){
-        [[NSColor selectedControlColor] set];
-        NSRectFill(self.bounds);
-    }
-}
-
-- (NSMenu*)menuForEvent:(NSEvent*)event
-{
-    NSLog(@"menuForEvent");
-    return nil;
-}
-
-@end
-
-@interface SXIOCalibrationItem : NSCollectionViewItem
-@end
-
-@implementation SXIOCalibrationItem
-
-- (void)setSelected:(BOOL)selected
-{
-    [super setSelected:selected];
-    
-    SXIOCalibrationItemView* view = (SXIOCalibrationItemView*)self.view;
-    [view setSelected:self.selected];
-    [view setNeedsDisplay:YES];
-}
-
-@end
-
 @interface SXIOCalibrationModel : NSObject <QLPreviewItem>
 @property (nonatomic,copy) NSURL* url;
 @property (nonatomic,copy) NSString* name;
@@ -218,6 +107,157 @@
     NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
     NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
     return [[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename] stringByAppendingPathExtension:[path pathExtension]];
+}
+
+@end
+
+@class SXIOCalibrationCollectionView, SXIOCalibrationModel;
+
+@interface SXIOCalibrationWindowController ()
+@property (nonatomic,strong) NSMutableArray* images;
+@property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
+@property (strong) IBOutlet NSArrayController *arrayController;
+@property (weak) IBOutlet NSButton *chooseButton;
+@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
+@property (readonly) BOOL calibrationButtonEnabled;
+@property (nonatomic,readonly) float minScale, maxScale;
+@property (nonatomic) float scale;
+@end
+
+@interface SXIOCalibrationCollectionView : NSCollectionView <QLPreviewPanelDelegate,QLPreviewPanelDataSource>
+@property (nonatomic,strong) QLPreviewPanel* previewPanel;
+@end
+
+@implementation SXIOCalibrationCollectionView
+
+- (IBAction)togglePreviewPanel:(id)previewPanel
+{
+    if ([QLPreviewPanel sharedPreviewPanelExists] && [[QLPreviewPanel sharedPreviewPanel] isVisible]) {
+        [[QLPreviewPanel sharedPreviewPanel] orderOut:nil];
+    }
+    else {
+        [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
+    }
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    NSString* key = [theEvent charactersIgnoringModifiers];
+    if(/*[key isEqual:@" "]*/0) {
+        [self togglePreviewPanel:self];
+    }
+    else if ([key isEqual:@"\r"]){
+        SXIOCalibrationWindowController* wc = self.window.windowController;
+        [wc.chooseButton performKeyEquivalent:theEvent];
+    }
+    else {
+        [super keyDown:theEvent];
+    }
+}
+
+- (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    return YES;
+}
+
+- (void)beginPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    self.previewPanel = panel;
+    self.previewPanel.delegate = self;
+    self.previewPanel.dataSource = self;
+}
+
+- (void)endPreviewPanelControl:(QLPreviewPanel *)panel
+{
+    self.previewPanel = nil;
+}
+
+- (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel
+{
+    return [self.selectionIndexes count];
+}
+
+- (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
+{
+    return [[self.content objectsAtIndexes:self.selectionIndexes] objectAtIndex:index];
+}
+
+@end
+
+@interface SXIOCalibrationItemView : NSView
+@property (nonatomic) BOOL selected;
+@property (nonatomic,weak) SXIOCalibrationModel* model;
+@end
+
+@implementation SXIOCalibrationItemView
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    if (self.selected){
+        [[NSColor selectedControlColor] set];
+        NSRectFill(self.bounds);
+    }
+}
+
+- (NSMenu*)menuForEvent:(NSEvent*)event // this is actually insufficient, it really needs to be implemented higher up the view stack were it can handle with multiple selections
+{
+    NSMenu* menu;
+    if (self.model.url){
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"Reveal in Finder" action:@selector(reveal:) keyEquivalent:@""];
+        item.target = self;
+        menu = [[NSMenu alloc] init];
+        [menu addItem:item];
+    }
+    return menu;
+}
+
+- (void)reveal:sender
+{
+    NSURL* url = self.model.url;
+    if (url){
+        if (self.model.hasCalibratedFrame){
+            url = [NSURL fileURLWithPath:[SXIOCalibrationModel calibratedPathForExposurePath:url.path]];
+        }
+        if (url){
+            [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[url]];
+        }
+    }
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    if (theEvent.modifierFlags & NSControlKeyMask){ // odd you have to do this...
+        [self rightMouseDown:theEvent];
+    }
+    else {
+        [super mouseDown:theEvent];
+    }
+}
+
+@end
+
+@interface SXIOCalibrationItem : NSCollectionViewItem
+@end
+
+@implementation SXIOCalibrationItem
+
+- (void)setSelected:(BOOL)selected
+{
+    [super setSelected:selected];
+    
+    SXIOCalibrationItemView* view = (SXIOCalibrationItemView*)self.view;
+    [view setSelected:self.selected];
+    [view setNeedsDisplay:YES];
+}
+
+- (void)setRepresentedObject:(id)representedObject
+{
+    [super setRepresentedObject:representedObject];
+    
+    SXIOCalibrationItemView* view = (SXIOCalibrationItemView*)self.view;
+    if ([view isKindOfClass:[SXIOCalibrationItemView class]]){
+        view.model = self.representedObject;
+    }
 }
 
 @end
