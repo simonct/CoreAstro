@@ -364,6 +364,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
             int format = 0;
             int datatype = 0;
             float scale = 1;
+            float zero = 0;
             NSInteger pixelCount = 0;
             NSData* pixelData = nil;
             switch ([[exposure.meta objectForKey:@"format"] integerValue]) {
@@ -380,6 +381,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 default:
                     format = USHORT_IMG;
                     datatype = TUSHORT;
+                    zero = 32768;
                     pixelData = exposure.pixels;
                     pixelCount = [pixelData length]/sizeof(uint16_t);
                     break;
@@ -395,7 +397,6 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 if ( fits_update_key(fptr, TFLOAT, "BSCALE", (void*)&scale, "pixel scaling factor", &status) ) {
                     error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                 }
-                float zero = 0;
                 if ( fits_update_key(fptr, TFLOAT, "BZERO", (void*)&zero, "pixel zero value", &status) ) {
                     error = createFITSError(status,[NSString stringWithFormat:@"Failed to write FITS metadata %d",status]);
                 }
