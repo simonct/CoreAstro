@@ -111,21 +111,20 @@ static void* kvoContext;
     NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
     NSArray* filterWheelControllers = [CASDeviceManager sharedManager].filterWheelControllers;
-    if (![filterWheelControllers count]){
-        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"None" action:nil keyEquivalent:@""]];
-    }
-    else {
+
+    NSMenuItem* noneItem = [[NSMenuItem alloc] initWithTitle:@"None" action:@selector(filterWheelMenuAction:) keyEquivalent:@""];
+    noneItem.target = self;
+    [menu addItem:noneItem];
+
+    for (CASFilterWheelController* filterWheel in filterWheelControllers){
         
-        for (CASFilterWheelController* filterWheel in filterWheelControllers){
-            
-            NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:filterWheel.filterWheel.deviceName action:@selector(filterWheelMenuAction:) keyEquivalent:@""];
-            item.representedObject = filterWheel;
-            item.target = self;
-            [menu addItem:item];
-            
-            if (self.currentFilterWheel == filterWheel){
-                selectedItem = item;
-            }
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:filterWheel.filterWheel.deviceName action:@selector(filterWheelMenuAction:) keyEquivalent:@""];
+        item.representedObject = filterWheel;
+        item.target = self;
+        [menu addItem:item];
+        
+        if (self.currentFilterWheel == filterWheel){
+            selectedItem = item;
         }
     }
     
