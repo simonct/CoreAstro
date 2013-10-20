@@ -7,7 +7,6 @@
 //
 
 #import "CASLX200IPClient.h"
-#import "CASSocketClient.h"
 #import "CASLX200Commands.h"
 
 @interface CASLX200IPClientClientRequest : CASSocketClientRequest

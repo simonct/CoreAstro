@@ -10,9 +10,9 @@
 
 #import "MKOAppDelegate.h"
 #import "CASEQMacClient.h"
-#import "CASPlateSolver.h"
 #import "CASConfigureIPMountWindowController.h"
 #import "CASPlateSolveImageView.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface MKOAppDelegate ()
 @property (nonatomic,strong) CASPlateSolveSolution* solution;

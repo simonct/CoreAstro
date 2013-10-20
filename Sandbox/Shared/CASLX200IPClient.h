@@ -6,8 +6,7 @@
 //  Copyright (c) 2013 Simon Taylor. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "CASSocketClient.h"
+#import <CoreAstro/CoreAstro.h>
 
 typedef NS_OPTIONS(NSUInteger, CASLX200ClientPrecision) {
     CASLX200ClientPrecisionUnknown = 0,

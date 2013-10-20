@@ -7,8 +7,8 @@
 //
 
 #import "CASEQMacClient.h"
-#import "CASSocketClient.h"
 #import "CASLX200Commands.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASEQMacClient ()
 @end
