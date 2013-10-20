@@ -12,6 +12,7 @@
 #import "CASEQMacClient.h"
 #import "CASConfigureIPMountWindowController.h"
 #import "CASPlateSolveImageView.h"
+#import "CASFolderWatcher.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface MKOAppDelegate ()
@@ -22,6 +23,8 @@
 @property (nonatomic,assign) float arcsecsPerPixel;
 @property (nonatomic,assign) CGSize fieldSizeDegrees;
 @property (nonatomic,copy) NSString* fieldSizeDisplay;
+@property (nonatomic,strong) CASFolderWatcher* watcher;
+@property (nonatomic,strong) NSMutableOrderedSet* pendingWatchedPaths;
 @end
 
 @implementation MKOAppDelegate
@@ -59,7 +62,23 @@
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASBinningFactor" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorWidthMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 
+#if 0
+    NSString* watchPath = @"/Users/simon/Desktop/drop-folder";
+    self.watcher = [CASFolderWatcher watcherWithPath:watchPath callback:^(NSArray *paths) { // regex for filenames/extensions to watch ?
+        for (NSString* path in paths){
+            [self handleAddedFileAtPath:path];
+        }
+    }];
+    NSDirectoryEnumerator* dirEnum = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL fileURLWithPath:watchPath]
+                                                          includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                        errorHandler:nil];
+    NSURL* imageURL;
+    while ((imageURL = [dirEnum nextObject]) != nil) {
+        [self handleAddedFileAtPath:imageURL.path];
+    }
+#endif
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -76,17 +95,19 @@
             self.solution = nil;
             NSString* title = [[NSFileManager defaultManager] displayNameAtPath:self.imageView.url.path];
             self.window.title = title ? title : @"";
-            NSString* solutionPath = [self plateSolutionPathForImageURL:self.imageView.url];
+            NSString* solutionPath = [self plateSolutionPathForImagePath:self.imageView.url.path];
             if ([[NSFileManager defaultManager] fileExistsAtPath:solutionPath isDirectory:nil]){
                 NSData* solutionData = [NSData dataWithContentsOfFile:solutionPath];
                 if ([solutionData length]){
                     self.solution = [CASPlateSolveSolution solutionWithData:solutionData];
                 }
             }
+            [self.window setRepresentedURL:self.imageView.url];
         }
         else if (object == [NSUserDefaultsController sharedUserDefaultsController]){
             [self calculateImageScale];
             [self calculateFieldSize];
+            // watch folder...
         }
         
     } else {
@@ -152,28 +173,83 @@
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
-- (NSString*)plateSolutionPathForImageURL:(NSURL*)url
+- (void)setSolution:(CASPlateSolveSolution *)solution
 {
-    NSString* solutionPath = [url.path stringByDeletingLastPathComponent];
-    NSString* solutionName = [[[url.path lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"plateSolution"];
+    if (solution != _solution){
+        
+        _solution = solution;
+        
+        if (!_solution){
+            self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
+            self.pixelScaleLabel.stringValue = self.fieldWidthLabel.stringValue = self.fieldHeightLabel.stringValue = @"";
+        }
+        else {
+            self.solutionRALabel.stringValue = self.solution.displayCentreRA;
+            self.solutionDecLabel.stringValue = self.solution.displayCentreDec;
+            self.solutionAngleLabel.stringValue = self.solution.centreAngle;
+            self.pixelScaleLabel.stringValue = self.solution.pixelScale;
+            self.fieldWidthLabel.stringValue = self.solution.fieldWidth;
+            self.fieldHeightLabel.stringValue = self.solution.fieldHeight;
+        }
+    }
+}
+
+- (NSString*)plateSolutionPathForImagePath:(NSString*)imagePath
+{
+    NSString* solutionPath = [imagePath stringByDeletingLastPathComponent];
+    NSString* solutionName = [[[imagePath lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"plateSolution"];
     return [solutionPath stringByAppendingPathComponent:solutionName];
 }
 
-- (IBAction)solve:(id)sender
+- (void)addPendingWatchedPathsObject:(NSString *)path
 {
-    if (!self.imageView.image || self.plateSolver){
+    if (!self.pendingWatchedPaths){
+        self.pendingWatchedPaths = [NSMutableOrderedSet orderedSet];
+    }
+    if (![self.pendingWatchedPaths containsObject:path]){
+        [self.pendingWatchedPaths addObject:path];
+        NSLog(@"Adding %@ to pending list",path);
+    }
+}
+
+- (void)handleAddedFileAtPath:(NSString*)path
+{
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]){
+        return;
+    }
+    if ([[path pathExtension] isEqualToString:@"plateSolution"] || [[NSFileManager defaultManager] fileExistsAtPath:[self plateSolutionPathForImagePath:path]]){
         return;
     }
     
-    if (!self.indexDirectoryURL){
-        [self presentAlertWithMessage:@"You need to select the location of the astrometry.net indexes before solving"];
-        return;
+    if (!self.plateSolver){
+        self.imageView.url = [NSURL fileURLWithPath:path];
+        if (self.imageView.url){
+            [self solve:nil];
+        }
+        else {
+            [self addPendingWatchedPathsObject:path]; // assume it's an image file that's just not completed writing so retry indefinitely
+        }
     }
+    else {
+        [self addPendingWatchedPathsObject:path];
+    }
+}
 
+- (void)checkForPendingWatchPaths
+{
+    if (!self.plateSolver && [self.pendingWatchedPaths count]){
+        [self handleAddedFileAtPath:[self.pendingWatchedPaths[0] copy]];
+        [self.pendingWatchedPaths removeObjectAtIndex:0];
+    }
+}
+
+- (void)solveImageAtPath:(NSString*)imagePath
+{
     NSError* error;
     self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
     if (![self.plateSolver canSolveExposure:nil error:&error]){
         [NSApp presentError:error];
+        self.plateSolver = nil;
     }
     else{
 
@@ -188,11 +264,10 @@
             [self.spinner stopAnimation:nil];
             self.plateSolver = nil;
         };
-
-        // bindings...
-        self.solutionRALabel.stringValue = self.solutionDecLabel.stringValue = self.solutionAngleLabel.stringValue = @"";
-        self.pixelScaleLabel.stringValue = self.fieldWidthLabel.stringValue = self.fieldHeightLabel.stringValue = @"";
         
+        self.solution = nil;
+        
+        self.imageView.acceptDrop = NO;
         self.solveButton.enabled = NO;
         self.imageView.alphaValue = 0.5;
         self.spinner.hidden = NO;
@@ -217,12 +292,17 @@
                 self.plateSolver.fieldSizeDegrees = self.fieldSizeDegrees;
             }
             
+            // simply get the pixels from the image view ??
+            
             BOOL removeWhenDone = NO;
-            NSString* path = self.imageView.url.path;
-            NSData* data = [CASPlateSolveImageView imageDataFromExposurePath:self.imageView.url.path];
+            NSString* path = imagePath;
+            NSData* data = [CASPlateSolveImageView imageDataFromExposurePath:imagePath error:nil];
             if (data){
                 path = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"plate-solve-tmp-%d.png",getpid()]];
                 removeWhenDone = [data writeToFile:path options:NSDataWritingAtomic error:nil];
+            }
+            else {
+                NSLog(@"No image data - file is probably still being written");
             }
             
             [self.plateSolver solveImageAtPath:path completion:^(NSError *error, NSDictionary* results) {
@@ -236,28 +316,33 @@
                     completeWithError([error localizedDescription]);
 
                     self.solution = results[@"solution"];
-
-                    // bindings...
-                    if (self.solution){
-                        self.solutionRALabel.stringValue = self.solution.displayCentreRA;
-                        self.solutionDecLabel.stringValue = self.solution.displayCentreDec;
-                        self.solutionAngleLabel.stringValue = self.solution.centreAngle;
-                        self.pixelScaleLabel.stringValue = self.solution.pixelScale;
-                        self.fieldWidthLabel.stringValue = self.solution.fieldWidth;
-                        self.fieldHeightLabel.stringValue = self.solution.fieldHeight;
-                    }
-
                     self.plateSolver = nil;
                     
                     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASPlateSolveSaveSolution"]){
-                        if (![[self.solution solutionData] writeToFile:[self plateSolutionPathForImageURL:self.imageView.url] atomically:YES]){
+                        if (![[self.solution solutionData] writeToFile:[self plateSolutionPathForImagePath:self.imageView.url.path] atomically:YES]){
                             [self presentAlertWithMessage:@"There was a problem saving the solution to the same folder as the image"];
                         }
                     }
+                    
+                    [self checkForPendingWatchPaths];
                 });
             }];
         });
     }
+}
+
+- (IBAction)solve:(id)sender
+{
+    if (!self.imageView.image || self.plateSolver){
+        return;
+    }
+    
+    if (!self.indexDirectoryURL){
+        [self presentAlertWithMessage:@"You need to select the location of the astrometry.net indexes before solving"];
+        return;
+    }
+
+    [self solveImageAtPath:self.imageView.url.path];
 }
 
 - (IBAction)showFontPanel:(id)sender

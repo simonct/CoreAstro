@@ -20,7 +20,7 @@
 @property (nonatomic,strong) CATextLayer* draggingAnnotation;
 @property (nonatomic,strong) CATextLayer* eqMacAnnotation;
 @property (nonatomic,weak) CASLX200IPClient* ipMountClient;
-+ (NSData*)imageDataFromExposurePath:(NSString*)path;
++ (NSData*)imageDataFromExposurePath:(NSString*)path error:(NSError**)error;
 - (void)createAnnotations;
 - (void)updateAnnotations;
 @end

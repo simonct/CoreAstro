@@ -20,6 +20,7 @@
 		F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1E9F181422F200D04CB8 /* CASAuxWindowController.m */; };
 		F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */; };
 		F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
+		F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F48BACFD18143447005788CC /* CASFolderWatcher.m */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
 		F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A386C9168887FE00E77631 /* InfoPlist.strings */; };
 		F4A386CD168887FE00E77631 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386CC168887FE00E77631 /* main.m */; };
@@ -391,6 +392,8 @@
 		F470AC2217C8CC1F007277F0 /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
 		F470AC2317C8CC1F007277F0 /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F470AC2417C8CC1F007277F0 /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
+		F48BACFC18143447005788CC /* CASFolderWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFolderWatcher.h; sourceTree = "<group>"; };
+		F48BACFD18143447005788CC /* CASFolderWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFolderWatcher.m; sourceTree = "<group>"; };
 		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4A386C3168887FE00E77631 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -1099,6 +1102,8 @@
 				F4A386D2168887FE00E77631 /* MKOAppDelegate.h */,
 				F4A386D3168887FE00E77631 /* MKOAppDelegate.m */,
 				F4A386D5168887FF00E77631 /* MainMenu.xib */,
+				F48BACFC18143447005788CC /* CASFolderWatcher.h */,
+				F48BACFD18143447005788CC /* CASFolderWatcher.m */,
 				F40572E417649317009CEC05 /* CASPlateSolveImageView.h */,
 				F40572E517649317009CEC05 /* CASPlateSolveImageView.m */,
 				F40572C8176399FB009CEC05 /* CASConfigureIPMountWindowController.h */,
@@ -1724,6 +1729,7 @@
 				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
 				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
+				F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */,
 				F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,

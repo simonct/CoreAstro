@@ -65,15 +65,18 @@
     return NO;
 }
 
-+ (NSData*)imageDataFromExposurePath:(NSString*)path
++ (NSData*)imageDataFromExposurePath:(NSString*)path error:(NSError**)error
 {
     NSData* imageData = nil;
     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
     if (io){
         CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-        if ([io readExposure:exp readPixels:YES error:nil]){
+        if ([io readExposure:exp readPixels:YES error:error]){
             imageData = [[exp newImage] dataForUTType:@"public.png" options:nil];
         }
+    }
+    else {
+        NSLog(@"no io");
     }
     return imageData;
 }
@@ -81,12 +84,19 @@
 - (void)setUrl:(NSURL *)url
 {
     // check to see if it's an exposure object and create a tmp image if it is
-    NSData* data = [[self class] imageDataFromExposurePath:url.path];
+    NSError* error;
+    NSData* data = [[self class] imageDataFromExposurePath:url.path error:&error];
     if ([data length]){
         CGImageRef cgImage = [[[NSImage alloc] initWithData:data] CGImageForProposedRect:nil context:nil hints:nil]; // use ImageIO
         if (cgImage){
             [self setCGImage:cgImage];
         }
+        else {
+            url = nil;
+        }
+    }
+    else if (error){
+        url = nil;
     }
     [super setUrl:url];
     self.annotations = nil;
