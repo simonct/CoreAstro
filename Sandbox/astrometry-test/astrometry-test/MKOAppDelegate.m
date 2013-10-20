@@ -217,7 +217,19 @@
                 self.plateSolver.fieldSizeDegrees = self.fieldSizeDegrees;
             }
             
-            [self.plateSolver solveImageAtPath:self.imageView.url.path completion:^(NSError *error, NSDictionary* results) {
+            BOOL removeWhenDone = NO;
+            NSString* path = self.imageView.url.path;
+            NSData* data = [CASPlateSolveImageView imageDataFromExposurePath:self.imageView.url.path];
+            if (data){
+                path = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"plate-solve-tmp-%d.png",getpid()]];
+                removeWhenDone = [data writeToFile:path options:NSDataWritingAtomic error:nil];
+            }
+            
+            [self.plateSolver solveImageAtPath:path completion:^(NSError *error, NSDictionary* results) {
+                
+                if (removeWhenDone){
+                    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+                }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     

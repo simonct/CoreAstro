@@ -8,6 +8,7 @@
 
 #import "CASImageView.h"
 #import <QuartzCore/QuartzCore.h>
+#import <CoreAstro/CoreAstro.h>
 
 @class CASLX200IPClient;
 
@@ -19,6 +20,7 @@
 @property (nonatomic,strong) CATextLayer* draggingAnnotation;
 @property (nonatomic,strong) CATextLayer* eqMacAnnotation;
 @property (nonatomic,weak) CASLX200IPClient* ipMountClient;
++ (NSData*)imageDataFromExposurePath:(NSString*)path;
 - (void)createAnnotations;
 - (void)updateAnnotations;
 @end

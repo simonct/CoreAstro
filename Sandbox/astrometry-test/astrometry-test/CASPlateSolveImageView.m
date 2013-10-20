@@ -9,6 +9,7 @@
 #import "CASPlateSolveImageView.h"
 #import "CASEQMacClient.h"
 #import "CASPlateSolvedObject+Drawing.h"
+#include <CoreAstro/CoreAstro.h>
 
 @implementation CASPlateSolveImageView
 
@@ -52,46 +53,41 @@
     
     NSString* urlString = [sender.draggingPasteboard stringForType:(id)kUTTypeFileURL];
     if ([urlString isKindOfClass:[NSString class]]){
-#if 0 // DEBUG
-        if ([[urlString pathExtension] isEqualToString:@"plist"]){
-            
-            NSDictionary* annotations = [NSDictionary dictionaryWithContentsOfFile:[[NSURL URLWithString:urlString] path]];
-            if ([annotations isKindOfClass:[NSDictionary class]]){
-                
-                NSMutableArray* objects = nil;
-                for (NSDictionary* annotation in [annotations objectForKey:@"annotations"]){
-                    CASPlateSolvedObject* object = [CASPlateSolvedObject new];
-                    object.enabled = [[annotation objectForKey:@"type"] isEqualToString:@"ngc"];
-                    object.annotation = annotation;
-                    if (!objects){
-                        objects = [NSMutableArray arrayWithCapacity:[annotations count]];
-                    }
-                    [objects addObject:object];
-                }
-                
-                self.annotations = objects;
-                [self createAnnotations];
-                return YES;
-            }
+        self.url = [NSURL URLWithString:urlString]; // todo; deal with alias/bookmarks
+        if (self.image){
+            return YES;
         }
-        else
-#endif
-        {
-            self.url = [NSURL URLWithString:urlString]; // todo; deal with alias/bookmarks
-            if (self.image){
-                return YES;
-            }
-            else {
-                [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
-            }
+        else {
+            [[NSAlert alertWithMessageText:@"Sorry" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Unrecognised image format"] runModal];
         }
     }
     
     return NO;
 }
 
++ (NSData*)imageDataFromExposurePath:(NSString*)path
+{
+    NSData* imageData = nil;
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    if (io){
+        CASCCDExposure* exp = [[CASCCDExposure alloc] init];
+        if ([io readExposure:exp readPixels:YES error:nil]){
+            imageData = [[exp newImage] dataForUTType:@"public.png" options:nil];
+        }
+    }
+    return imageData;
+}
+
 - (void)setUrl:(NSURL *)url
 {
+    // check to see if it's an exposure object and create a tmp image if it is
+    NSData* data = [[self class] imageDataFromExposurePath:url.path];
+    if ([data length]){
+        CGImageRef cgImage = [[[NSImage alloc] initWithData:data] CGImageForProposedRect:nil context:nil hints:nil]; // use ImageIO
+        if (cgImage){
+            [self setCGImage:cgImage];
+        }
+    }
     [super setUrl:url];
     self.annotations = nil;
     [self zoomImageToFit:nil];
