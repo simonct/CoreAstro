@@ -50,3 +50,4 @@
 #import <CoreAstro/CASMovieExporter.h>
 #import <CoreAstro/CASPlateSolver.h>
 #import <CoreAstro/CASBatchProcessor.h>
+#import <CoreAstro/CASSocketClient.h>

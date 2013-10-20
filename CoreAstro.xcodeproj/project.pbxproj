@@ -14,7 +14,7 @@
 		F40093681699B2DB00E96DBE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093671699B2DA00E96DBE /* AVFoundation.framework */; };
 		F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093691699B2ED00E96DBE /* CoreMedia.framework */; };
 		F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572DC1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m */; };
-		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; };
+		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
 		F412975915FCA977009C215E /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975115FCA977009C215E /* move.pdf */; };
