@@ -223,7 +223,7 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"fieldh"] doubleValue]];
 }
 
-- (NSData*)dataForSolution
+- (NSData*)solutionData
 {
     return [NSKeyedArchiver archivedDataWithRootObject:self];
 }

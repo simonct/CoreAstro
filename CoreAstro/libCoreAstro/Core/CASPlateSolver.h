@@ -42,7 +42,7 @@
 @property (nonatomic,readonly) NSString* fieldHeight;
 @property (nonatomic,readonly) NSArray* objects;
 @property (nonatomic,copy) NSString* wcsPath;
-- (NSData*)dataForSolution;
+- (NSData*)solutionData;
 + (instancetype)solutionWithData:(NSData*)data;
 @end
 

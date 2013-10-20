@@ -238,7 +238,7 @@
                     self.plateSolver = nil;
                     
                     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASPlateSolveSaveSolution"]){
-                        if (![[self.solution dataForSolution] writeToFile:[self plateSolutionPathForImageURL:self.imageView.url] atomically:YES]){
+                        if (![[self.solution solutionData] writeToFile:[self plateSolutionPathForImageURL:self.imageView.url] atomically:YES]){
                             [self presentAlertWithMessage:@"There was a problem saving the solution to the same folder as the image"];
                         }
                     }
