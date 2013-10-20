@@ -33,7 +33,8 @@
      @"CASIPMountPort":@(4030),
      @"CASPixelSizeMicrometer":@(9),
      @"CASFocalLengthMillemeter":@(540),
-     @"CASBinningFactor":@(1)
+     @"CASBinningFactor":@(1),
+     @"CASPlateSolveSaveSolution":@YES
      }];
 }
 
@@ -75,6 +76,13 @@
             self.solution = nil;
             NSString* title = [[NSFileManager defaultManager] displayNameAtPath:self.imageView.url.path];
             self.window.title = title ? title : @"";
+            NSString* solutionPath = [self plateSolutionPathForImageURL:self.imageView.url];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:solutionPath isDirectory:nil]){
+                NSData* solutionData = [NSData dataWithContentsOfFile:solutionPath];
+                if ([solutionData length]){
+                    self.solution = [CASPlateSolveSolution solutionWithData:solutionData];
+                }
+            }
         }
         else if (object == [NSUserDefaultsController sharedUserDefaultsController]){
             [self calculateImageScale];
@@ -142,6 +150,13 @@
 - (void)presentAlertWithMessage:(NSString*)message
 {
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+}
+
+- (NSString*)plateSolutionPathForImageURL:(NSURL*)url
+{
+    NSString* solutionPath = [url.path stringByDeletingLastPathComponent];
+    NSString* solutionName = [[[url.path lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"plateSolution"];
+    return [solutionPath stringByAppendingPathComponent:solutionName];
 }
 
 - (IBAction)solve:(id)sender
@@ -222,12 +237,11 @@
 
                     self.plateSolver = nil;
                     
-#if 0 // DEBUG
-                    NSString* solutionPath = [self.imageView.url.path stringByDeletingLastPathComponent];
-                    NSString* solutionName = [[[self.imageView.url.path lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"plist"];
-                    [report writeToFile:[solutionPath stringByAppendingPathComponent:solutionName] atomically:YES];
-#endif
-
+                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASPlateSolveSaveSolution"]){
+                        if (![[self.solution dataForSolution] writeToFile:[self plateSolutionPathForImageURL:self.imageView.url] atomically:YES]){
+                            [self presentAlertWithMessage:@"There was a problem saving the solution to the same folder as the image"];
+                        }
+                    }
                 });
             }];
         });

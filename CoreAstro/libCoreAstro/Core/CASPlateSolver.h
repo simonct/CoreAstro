@@ -42,6 +42,8 @@
 @property (nonatomic,readonly) NSString* fieldHeight;
 @property (nonatomic,readonly) NSArray* objects;
 @property (nonatomic,copy) NSString* wcsPath;
+- (NSData*)dataForSolution;
++ (instancetype)solutionWithData:(NSData*)data;
 @end
 
 @protocol CASPlateSolver <NSObject>

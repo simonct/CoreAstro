@@ -223,6 +223,16 @@
             [[self numberFromInfo:self.wcsinfo withKey:@"fieldh"] doubleValue]];
 }
 
+- (NSData*)dataForSolution
+{
+    return [NSKeyedArchiver archivedDataWithRootObject:self];
+}
+
++ (instancetype)solutionWithData:(NSData*)data
+{
+    return data ? [NSKeyedUnarchiver unarchiveObjectWithData:data] : nil;
+}
+
 @end
 
 @interface CASPlateSolver ()
@@ -364,7 +374,7 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
                 [args addObjectsFromArray:@[@"--scale-units",@"degwidth",@"--scale-low",[@(minw) description],@"--scale-high",[@(maxw) description]]];
             }
             [args addObjectsFromArray:@[@"-D",self.cacheDirectory,@"-b",configPath]];
-            NSLog(@"args: %@",args);
+            // NSLog(@"args: %@",args);
             [self.solverTask setArguments:args];
             
             // run the solver task
