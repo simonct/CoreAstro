@@ -92,7 +92,9 @@
         else if (object == [NSUserDefaultsController sharedUserDefaultsController]){
             [self calculateImageScale];
             [self calculateFieldSize];
-            [self updateWatchFolder];
+            if ([@[@"values.CASPlateSolveWatchFolderURL",@"values.CASEnablePlateSolveWatchFolder"] containsObject:keyPath]){
+                [self updateWatchFolder];
+            }
         }
         
     } else {
@@ -135,9 +137,9 @@
 
 - (void)updateWatchFolder
 {
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASEnablePlateSolveWatchFolder"] && self.watchDirectoryURL){
+    NSString* watchPath = self.watchDirectoryURL.path;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASEnablePlateSolveWatchFolder"] && [[NSFileManager defaultManager] fileExistsAtPath:watchPath]){
         
-        NSString* watchPath = self.watchDirectoryURL.path;
         self.watcher = [CASFolderWatcher watcherWithPath:watchPath callback:^(NSArray *paths) { // regex for filenames/extensions to watch ?
             for (NSString* path in paths){
                 [self handleAddedFileAtPath:path];
