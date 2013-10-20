@@ -62,23 +62,8 @@
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASBinningFactor" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorWidthMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-
-#if 0
-    NSString* watchPath = @"/Users/simon/Desktop/drop-folder";
-    self.watcher = [CASFolderWatcher watcherWithPath:watchPath callback:^(NSArray *paths) { // regex for filenames/extensions to watch ?
-        for (NSString* path in paths){
-            [self handleAddedFileAtPath:path];
-        }
-    }];
-    NSDirectoryEnumerator* dirEnum = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL fileURLWithPath:watchPath]
-                                                          includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
-                                                                        errorHandler:nil];
-    NSURL* imageURL;
-    while ((imageURL = [dirEnum nextObject]) != nil) {
-        [self handleAddedFileAtPath:imageURL.path];
-    }
-#endif
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolderURL" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASEnablePlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -107,7 +92,7 @@
         else if (object == [NSUserDefaultsController sharedUserDefaultsController]){
             [self calculateImageScale];
             [self calculateFieldSize];
-            // watch folder...
+            [self updateWatchFolder];
         }
         
     } else {
@@ -126,6 +111,17 @@
     [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
 }
 
+- (NSURL*)watchDirectoryURL
+{
+    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASPlateSolveWatchFolderURL"];
+    return s ? [NSURL fileURLWithPath:s] : nil;
+}
+
+- (void)setWatchDirectoryURL:(NSURL*)url
+{
+    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:@"CASPlateSolveWatchFolderURL"];
+}
+
 - (void)setFieldSizeDegrees:(CGSize)fieldSizeDegrees
 {
     _fieldSizeDegrees = fieldSizeDegrees;
@@ -134,6 +130,29 @@
     }
     else {
         self.fieldSizeDisplay = [NSString stringWithFormat:@"%.2f\u2032x%.2f\u2032",_fieldSizeDegrees.width,_fieldSizeDegrees.height];
+    }
+}
+
+- (void)updateWatchFolder
+{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASEnablePlateSolveWatchFolder"] && self.watchDirectoryURL){
+        
+        NSString* watchPath = self.watchDirectoryURL.path;
+        self.watcher = [CASFolderWatcher watcherWithPath:watchPath callback:^(NSArray *paths) { // regex for filenames/extensions to watch ?
+            for (NSString* path in paths){
+                [self handleAddedFileAtPath:path];
+            }
+        }];
+        NSDirectoryEnumerator* dirEnum = [[NSFileManager defaultManager] enumeratorAtURL:[NSURL fileURLWithPath:watchPath]
+                                                              includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                            errorHandler:nil];
+        NSURL* imageURL;
+        while ((imageURL = [dirEnum nextObject]) != nil) {
+            [self handleAddedFileAtPath:imageURL.path];
+        }
+    }
+    else {
+        self.watcher = nil;
     }
 }
 
@@ -208,7 +227,7 @@
     }
     if (![self.pendingWatchedPaths containsObject:path]){
         [self.pendingWatchedPaths addObject:path];
-        NSLog(@"Adding %@ to pending list",path);
+        NSLog(@"Adding %@ to pending list",[path stringByAbbreviatingWithTildeInPath]);
     }
 }
 
@@ -237,9 +256,10 @@
 
 - (void)checkForPendingWatchPaths
 {
-    if (!self.plateSolver && [self.pendingWatchedPaths count]){
-        [self handleAddedFileAtPath:[self.pendingWatchedPaths[0] copy]];
+    if ([self.pendingWatchedPaths count]){
+        NSString* path = [self.pendingWatchedPaths[0] copy];
         [self.pendingWatchedPaths removeObjectAtIndex:0];
+        [self handleAddedFileAtPath:path]; // path will be added back to the watch list if required
     }
 }
 

@@ -886,7 +886,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="po6-xJ-fXm">
                                         <rect key="frame" x="0.0" y="0.0" width="169" height="138"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="613">
                                                 <rect key="frame" x="0.0" y="0.0" width="169" height="138"/>
@@ -949,8 +949,8 @@ DQ
                         <rect key="frame" x="-4" y="-4" width="762" height="654"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="EaC-KJ-mMJ">
-                            <rect key="frame" x="1" y="1" width="760" height="652"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <rect key="frame" x="1" y="1" width="745" height="636"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <imageView wantsLayer="YES" id="536" customClass="CASPlateSolveImageView">
                                     <rect key="frame" x="0.0" y="0.0" width="760" height="652"/>
@@ -960,11 +960,11 @@ DQ
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" verticalHuggingPriority="750" id="631">
-                            <rect key="frame" x="1" y="638" width="754" height="15"/>
+                            <rect key="frame" x="1" y="637" width="745" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" id="632">
-                            <rect key="frame" x="746" y="1" width="15" height="646"/>
+                            <rect key="frame" x="746" y="1" width="15" height="636"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -996,8 +996,8 @@ DQ
                                     </buttonCell>
                                     <connections>
                                         <action selector="showFontPanel:" target="494" id="653"/>
-                                        <binding destination="494" name="fontFamilyName" keyPath="imageView.annotationsFont.familyName" id="659"/>
                                         <binding destination="494" name="title" keyPath="imageView.annotationsFont.displayName" id="656"/>
+                                        <binding destination="494" name="fontFamilyName" keyPath="imageView.annotationsFont.familyName" id="659"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -1040,7 +1040,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="6bM-1P-79Q">
                             <rect key="frame" x="0.0" y="0.0" width="518" height="431"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" verticallyResizable="YES" spellingCorrection="YES" id="558">
                                     <rect key="frame" x="0.0" y="0.0" width="518" height="431"/>
@@ -1060,7 +1060,7 @@ DQ
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" id="560">
-                            <rect key="frame" x="503" y="0.0" width="15" height="431"/>
+                            <rect key="frame" x="502" y="0.0" width="16" height="431"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -1076,14 +1076,14 @@ DQ
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="689" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="272" y="961" width="263" height="245"/>
+            <rect key="contentRect" x="272" y="961" width="263" height="298"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
             <view key="contentView" id="690">
-                <rect key="frame" x="0.0" y="0.0" width="263" height="245"/>
+                <rect key="frame" x="0.0" y="0.0" width="263" height="298"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" id="691">
-                        <rect key="frame" x="41" y="208" width="101" height="17"/>
+                        <rect key="frame" x="41" y="261" width="101" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Pixel size (µm):" id="692">
                             <font key="font" metaFont="system"/>
@@ -1092,7 +1092,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="723">
-                        <rect key="frame" x="17" y="154" width="127" height="17"/>
+                        <rect key="frame" x="17" y="207" width="127" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sensor width (mm):" id="724">
                             <font key="font" metaFont="system"/>
@@ -1101,7 +1101,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="729">
-                        <rect key="frame" x="12" y="127" width="132" height="17"/>
+                        <rect key="frame" x="12" y="180" width="132" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sensor height (mm):" id="730">
                             <font key="font" metaFont="system"/>
@@ -1110,7 +1110,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="693">
-                        <rect key="frame" x="17" y="181" width="125" height="17"/>
+                        <rect key="frame" x="17" y="234" width="125" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Focal Length (mm):" id="694">
                             <font key="font" metaFont="system"/>
@@ -1119,7 +1119,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="695">
-                        <rect key="frame" x="86" y="100" width="56" height="17"/>
+                        <rect key="frame" x="86" y="153" width="56" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Binning:" id="696">
                             <font key="font" metaFont="system"/>
@@ -1128,7 +1128,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="703">
-                        <rect key="frame" x="55" y="47" width="87" height="17"/>
+                        <rect key="frame" x="55" y="100" width="87" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Arcsec/Pixel:" id="704">
                             <font key="font" metaFont="system"/>
@@ -1137,7 +1137,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="705">
-                        <rect key="frame" x="147" y="47" width="99" height="17"/>
+                        <rect key="frame" x="147" y="100" width="99" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="706">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="750">
@@ -1155,7 +1155,7 @@ DQ
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="697">
-                        <rect key="frame" x="147" y="205" width="96" height="22"/>
+                        <rect key="frame" x="147" y="258" width="96" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="698">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="713">
@@ -1175,7 +1175,7 @@ DQ
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="725">
-                        <rect key="frame" x="147" y="151" width="96" height="22"/>
+                        <rect key="frame" x="147" y="204" width="96" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="726">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="727">
@@ -1195,7 +1195,7 @@ DQ
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="731">
-                        <rect key="frame" x="147" y="124" width="96" height="22"/>
+                        <rect key="frame" x="147" y="177" width="96" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="732">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="733">
@@ -1215,7 +1215,7 @@ DQ
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="699">
-                        <rect key="frame" x="147" y="178" width="96" height="22"/>
+                        <rect key="frame" x="147" y="231" width="96" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="700">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="714">
@@ -1235,7 +1235,7 @@ DQ
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="701">
-                        <rect key="frame" x="147" y="97" width="96" height="22"/>
+                        <rect key="frame" x="147" y="150" width="96" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="702">
                             <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#,##0.###" negativeFormat="#,##0.###" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" minimumFractionDigits="0" maximumFractionDigits="3" id="715">
@@ -1255,7 +1255,7 @@ DQ
                         </connections>
                     </textField>
                     <button id="720">
-                        <rect key="frame" x="18" y="46" width="22" height="18"/>
+                        <rect key="frame" x="18" y="99" width="22" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="721">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1266,7 +1266,7 @@ DQ
                         </connections>
                     </button>
                     <textField verticalHuggingPriority="750" id="735">
-                        <rect key="frame" x="69" y="72" width="73" height="17"/>
+                        <rect key="frame" x="69" y="125" width="73" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Field size°:" id="740">
                             <font key="font" metaFont="system"/>
@@ -1275,7 +1275,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="736">
-                        <rect key="frame" x="147" y="72" width="99" height="17"/>
+                        <rect key="frame" x="147" y="125" width="99" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="739">
                             <font key="font" metaFont="system"/>
@@ -1287,7 +1287,7 @@ DQ
                         </connections>
                     </textField>
                     <button id="737">
-                        <rect key="frame" x="18" y="72" width="22" height="18"/>
+                        <rect key="frame" x="18" y="125" width="22" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="738">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1298,7 +1298,7 @@ DQ
                         </connections>
                     </button>
                     <button id="lqD-WZ-1tU">
-                        <rect key="frame" x="18" y="18" width="227" height="18"/>
+                        <rect key="frame" x="18" y="71" width="227" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Save solution to image folder" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="GSs-ux-Kxa">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1308,6 +1308,32 @@ DQ
                             <binding destination="569" name="value" keyPath="values.CASPlateSolveSaveSolution" id="CZT-aw-uRL"/>
                         </connections>
                     </button>
+                    <button id="hyA-ou-2VZ">
+                        <rect key="frame" x="18" y="43" width="104" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Watch Folder" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="PYv-WN-QPq">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="569" name="value" keyPath="values.CASEnablePlateSolveWatchFolder" id="QgQ-gn-Tn8"/>
+                        </connections>
+                    </button>
+                    <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="Wjw-3O-fB4">
+                        <rect key="frame" x="29" y="16" width="214" height="22"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <pathCell key="cell" controlSize="small" selectable="YES" editable="YES" alignment="left" placeholderString="Watch Folder" pathStyle="popUp" id="OfI-ri-MPP">
+                            <font key="font" metaFont="smallSystem"/>
+                        </pathCell>
+                        <connections>
+                            <binding destination="569" name="enabled" keyPath="values.CASEnablePlateSolveWatchFolder" id="t9N-Q0-L0B"/>
+                            <binding destination="494" name="value" keyPath="watchDirectoryURL" id="PIy-Pt-E6s">
+                                <dictionary key="options">
+                                    <string key="NSNullPlaceholder">Watch Folder</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </pathControl>
                 </subviews>
             </view>
         </window>
