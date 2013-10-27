@@ -21,7 +21,6 @@ static void* kvoContext;
 {
     if (_filterWheelController){
         [_filterWheelController removeObserver:self forKeyPath:@"filterCount" context:&kvoContext];
-        [_filterWheelController removeObserver:self forKeyPath:@"currentFilter" context:&kvoContext];
     }
 }
 
@@ -31,12 +30,10 @@ static void* kvoContext;
         
         if (_filterWheelController){
             [_filterWheelController removeObserver:self forKeyPath:@"filterCount" context:&kvoContext];
-            [_filterWheelController removeObserver:self forKeyPath:@"currentFilter" context:&kvoContext];
         }
         _filterWheelController = filterWheelController;
         if (_filterWheelController){
             [_filterWheelController addObserver:self forKeyPath:@"filterCount" options:NSKeyValueObservingOptionInitial context:&kvoContext];
-            [_filterWheelController addObserver:self forKeyPath:@"currentFilter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
         }
         
         NSString* name = filterWheelController.filterWheel.deviceName;
@@ -76,12 +73,6 @@ static void* kvoContext;
                 frame.origin.y += frame.size.height - height;
                 frame.size.height = height;
                 [self.window setFrame:frame display:NO animate:YES];
-            }
-        }
-        else if ([@"currentFilter" isEqualToString:keyPath]) {
-            
-            if (self.filterWheelController.currentFilter != NSNotFound && !self.filterWheelController.moving){
-                [self.filterSelectionMatrix selectCellAtRow:self.filterWheelController.currentFilter column:0];
             }
         }
     } else {
