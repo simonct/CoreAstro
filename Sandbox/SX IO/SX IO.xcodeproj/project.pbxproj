@@ -914,6 +914,11 @@
 				CLASSPREFIX = CAS;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4FD22FE179B30D60049F5B5 = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
+				};
 			};
 			buildConfigurationList = F4FD22FA179B30D60049F5B5 /* Build configuration list for PBXProject "SX IO" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1282,7 +1287,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
 				INFOPLIST_FILE = "QuickFITS/QuickFITS-Info.plist";
 				INSTALL_PATH = /Library/QuickLook;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks @loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = qlgenerator;
@@ -1298,7 +1303,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../External/cfitsio\"";
 				INFOPLIST_FILE = "QuickFITS/QuickFITS-Info.plist";
 				INSTALL_PATH = /Library/QuickLook;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks @loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = qlgenerator;
