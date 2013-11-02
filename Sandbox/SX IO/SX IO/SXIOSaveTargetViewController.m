@@ -27,6 +27,7 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface SXIOSaveTargetViewController ()
+@property (weak) IBOutlet NSPathControl *pathControl;
 @end
 
 @implementation SXIOSaveTargetViewController {
@@ -187,6 +188,11 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
     if (![sanitized isEqualToString:stringValue]){
         textField.stringValue = sanitized;
     }
+}
+
+- (void)pathControl:(NSPathControl *)pathControl willDisplayOpenPanel:(NSOpenPanel *)openPanel
+{
+    openPanel.canCreateDirectories = YES;
 }
 
 @end
