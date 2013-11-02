@@ -179,7 +179,7 @@ static void* kvoContext;
 
 #pragma mark - Actions
 
-- (NSURL*)beginAccessToSaveTarget
+- (NSURL*)beginAccessToSaveTarget // todo; NSError** param with reasons for failure
 {
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
@@ -201,11 +201,14 @@ static void* kvoContext;
                     trashPath = [trashPath stringByAppendingString:@"/"];
                 }
                 if ([path hasPrefix:trashPath]){
+                    NSLog(@"Looks like %@ is in the Trash located at %@",path,trashPath);
                     url = nil;
                     break;
                 }
             }
-            securityScoped = YES;
+            if (url){
+                securityScoped = YES;
+            }
         }
     }
     if (!url) {
@@ -213,9 +216,11 @@ static void* kvoContext;
     }
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]){
+        NSLog(@"Couldn't locate %@",url);
         url = nil;
     }
     else if (securityScoped && ![url startAccessingSecurityScopedResource]){
+        NSLog(@"Failed to get access to %@",url);
         url = nil;
     }
     
