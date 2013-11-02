@@ -219,7 +219,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 
 - (NSString*)keyWithCameraID:(NSString*)key // todo; push into a base class/utility
 {
-    return self.cameraController ? [key stringByAppendingString:self.cameraController.camera.uniqueID] : key;
+    return self.cameraController ? [key stringByAppendingFormat:@"_%@",self.cameraController.camera.uniqueID] : key;
 }
 
 - (NSString*)otherExposureCountKey
