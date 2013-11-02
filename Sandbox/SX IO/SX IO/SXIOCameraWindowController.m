@@ -193,6 +193,18 @@ static void* kvoContext;
     if (bookmark){
         url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
         if (url){
+            // folder might be in the Trash
+            NSString* path = [url path];
+            for (NSURL* trash in [[NSFileManager defaultManager] URLsForDirectory:NSTrashDirectory inDomains:NSAllDomainsMask]){
+                NSString* trashPath = [trash path];
+                if (![trashPath hasSuffix:@"/"]){
+                    trashPath = [trashPath stringByAppendingString:@"/"];
+                }
+                if ([path hasPrefix:trashPath]){
+                    url = nil;
+                    break;
+                }
+            }
             securityScoped = YES;
         }
     }
@@ -200,7 +212,10 @@ static void* kvoContext;
         url = self.saveTargetControlsViewController.saveFolderURL;
     }
     
-    if (securityScoped && ![url startAccessingSecurityScopedResource]){
+    if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]){
+        url = nil;
+    }
+    else if (securityScoped && ![url startAccessingSecurityScopedResource]){
         url = nil;
     }
     
