@@ -179,7 +179,7 @@ static void* kvoContext;
 
 #pragma mark - Actions
 
-- (NSURL*)beginAccessToSaveTarget
+- (NSURL*)beginAccessToSaveTarget // todo; NSError** param with reasons for failure
 {
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
@@ -193,14 +193,34 @@ static void* kvoContext;
     if (bookmark){
         url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
         if (url){
-            securityScoped = YES;
+            // folder might be in the Trash
+            NSString* path = [url path];
+            for (NSURL* trash in [[NSFileManager defaultManager] URLsForDirectory:NSTrashDirectory inDomains:NSAllDomainsMask]){
+                NSString* trashPath = [trash path];
+                if (![trashPath hasSuffix:@"/"]){
+                    trashPath = [trashPath stringByAppendingString:@"/"];
+                }
+                if ([path hasPrefix:trashPath]){
+                    NSLog(@"Looks like %@ is in the Trash located at %@",path,trashPath);
+                    url = nil;
+                    break;
+                }
+            }
+            if (url){
+                securityScoped = YES;
+            }
         }
     }
     if (!url) {
         url = self.saveTargetControlsViewController.saveFolderURL;
     }
     
-    if (securityScoped && ![url startAccessingSecurityScopedResource]){
+    if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]){
+        NSLog(@"Couldn't locate %@",url);
+        url = nil;
+    }
+    else if (securityScoped && ![url startAccessingSecurityScopedResource]){
+        NSLog(@"Failed to get access to %@",url);
         url = nil;
     }
     

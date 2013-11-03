@@ -26,6 +26,8 @@
 #import "CASCameraControlsViewController.h"
 #import <CoreAstro/CoreAstro.h>
 
+static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraControlsOtherCount";
+
 @interface CASCameraControlsViewController ()
 @property (weak) IBOutlet NSTextField *sensorSizeField;
 @property (weak) IBOutlet NSTextField *sensorPixelsField;
@@ -37,9 +39,12 @@
 @property (weak) IBOutlet NSMatrix *binningRadioButtons;
 @property (weak) IBOutlet NSTextField *subframeDisplay;
 @property (weak) IBOutlet NSPopUpButton *captureMenu;
+@property (strong) IBOutlet NSViewController *otherCountViewController;
+@property (strong) IBOutlet NSUserDefaultsController *sharedDefaultsController;
 @property (nonatomic,assign) BOOL ditherInPHD;
 @property (nonatomic,assign) NSInteger ditherInPHDAmount;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
+@property (nonatomic,assign) NSInteger otherExposureCount;
 @end
 
 @implementation CASCameraControlsViewController
@@ -49,16 +54,6 @@
     if (self == [CASCameraControlsViewController class]){
         // register temp converter
     }
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
 }
 
 - (CASCameraController*)cameraController
@@ -206,13 +201,68 @@
                 case 8:
                     self.cameraController.captureCount = 75;
                     break;
-                default:
-                    self.cameraController.captureCount = 1;
-                    NSLog(@"Unknown exposure index: %ld",_captureMenuSelectedIndex);
+                default:{
+                    NSPopover* popover = [[NSPopover alloc] init];
+                    popover.behavior = NSPopoverBehaviorTransient;
+                    popover.contentViewController = self.otherCountViewController;
+                    [popover showRelativeToRect:self.captureMenu.frame ofView:self.view preferredEdge:NSMaxXEdge];
+                    const NSInteger count = self.otherExposureCount;
+                    if (count > 0){
+                        self.cameraController.captureCount = count;
+                    }
+                }
                     break;
             }
         }
     }
+}
+
+- (NSString*)keyWithCameraID:(NSString*)key // todo; push into a base class/utility
+{
+    return self.cameraController ? [key stringByAppendingFormat:@"_%@",self.cameraController.camera.uniqueID] : key;
+}
+
+- (NSString*)otherExposureCountKey
+{
+    return [self keyWithCameraID:kCASCameraControlsOtherCountDefaultsKey];
+}
+
+- (NSInteger)otherExposureCount
+{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:[self otherExposureCountKey]];
+}
+
+- (void)setOtherExposureCount:(NSInteger)count
+{
+    count = MIN(MAX(0,count),10000);
+    [[NSUserDefaults standardUserDefaults] setInteger:count forKey:[self otherExposureCountKey]];
+    self.cameraController.captureCount = count;
+}
+
++ (NSSet*)keyPathsForValuesAffectingOtherExposureCount
+{
+    return [NSSet setWithObject:@"cameraController"];
+}
+
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([@"otherExposureCount" isEqualToString:key]){
+        self.otherExposureCount = 0;
+    }
+    else {
+        [super setNilValueForKey:key];
+    }
+}
+
+- (NSString*)otherMenuItemTitle
+{
+    const NSInteger count = self.otherExposureCount;
+    return count > 0 ? [NSString stringWithFormat:@"%ld frames...",(long)count] : @"Other...";
+}
+
++ (NSSet*)keyPathsForValuesAffectingOtherMenuItemTitle
+{
+    return [NSSet setWithObject:@"otherExposureCount"];
 }
 
 @end
