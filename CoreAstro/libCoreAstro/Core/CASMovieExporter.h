@@ -24,6 +24,7 @@
 //
 
 #import "CASCCDExposure.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface CASMovieExporter : NSObject
 
@@ -36,5 +37,13 @@
 - (void)complete;
 
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url;
+
+// todo; make this an input source indepdent of the exporter
+
+typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*);
+
+@property (nonatomic,copy) CASMovieExporterInput input;
+
+- (BOOL)startWithExposure:(CASCCDExposure*)exposure  error:(NSError**)errorPtr;
 
 @end

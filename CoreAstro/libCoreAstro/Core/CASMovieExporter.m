@@ -25,7 +25,6 @@
 
 #import "CASMovieExporter.h"
 #import "CASUtilities.h"
-#import <AVFoundation/AVFoundation.h>
 
 @interface CASMovieExporter ()
 @property (nonatomic,strong) NSURL* url;
@@ -80,8 +79,8 @@ static NSInteger count;
         
         const CASSize size = exposure.actualSize;
         
-        NSDictionary *options = @{(id)kCVPixelBufferCGImageCompatibilityKey:[NSNumber numberWithBool:YES],
-                                  (id)kCVPixelBufferCGBitmapContextCompatibilityKey:[NSNumber numberWithBool:YES]};
+        NSDictionary *options = @{(id)kCVPixelBufferCGImageCompatibilityKey:@YES,
+                                  (id)kCVPixelBufferCGBitmapContextCompatibilityKey:@YES};
         CVReturn status = CVPixelBufferCreate(kCFAllocatorDefault,size.width,size.height,kCVPixelFormatType_32ARGB,(__bridge CFDictionaryRef)(options),&pixelBuffer);
         if (status == kCVReturnSuccess){
             
@@ -106,10 +105,10 @@ static NSInteger count;
                 CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
             }
         }
-        
-        [exposure reset];
     }
     
+    [exposure reset];
+
     return pixelBuffer;
 }
 
@@ -118,7 +117,8 @@ static NSInteger count;
     NSError* error = nil;
     
     if (!_writer){
-        _writer = [AVAssetWriter assetWriterWithURL:_url fileType:AVFileTypeQuickTimeMovie error:&error];
+        _writer = [AVAssetWriter assetWriterWithURL:_url fileType:AVFileTypeMPEG4 error:&error];
+        _writer.shouldOptimizeForNetworkUse = YES;
     }
     
     if (!error){
@@ -128,8 +128,8 @@ static NSInteger count;
             _writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                               outputSettings:@{AVVideoCodecKey:AVVideoCodecH264, // H264 is the most compatible but ProRes might be a better choice for quality
                                                             // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
-                                                             AVVideoWidthKey:[NSNumber numberWithInteger:exposure.actualSize.width],
-                                                            AVVideoHeightKey:[NSNumber numberWithInteger:exposure.actualSize.height]}];
+                                                             AVVideoWidthKey:@(exposure.actualSize.width),
+                                                            AVVideoHeightKey:@(exposure.actualSize.height)}];
             [_writer addInput:_writerInput];
         }
         
@@ -138,7 +138,7 @@ static NSInteger count;
             // todo; use kCVPixelFormatType_64ARGB ?
             
             _writerInputAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_writerInput
-                                                                                                   sourcePixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32ARGB]}];
+                                                                                                   sourcePixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_32ARGB)}];
             [_writer startWriting];
             [_writer startSessionAtSourceTime:kCMTimeZero];
             
@@ -158,27 +158,35 @@ static NSInteger count;
                     
                     while (!_complete && [_writerInput isReadyForMoreMediaData]) {
                         
-                        CMTime time;
-                        CASCCDExposure* exposure = nil;
-                        [self _getLastExposure:&exposure time:&time];
-                        if (!exposure){
-                            break;
-                        }
-                        else{
+                        @autoreleasepool {
                             
-                            CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
-                            if (!buffer){
-                                NSLog(@"%@: no pixel buffer",NSStringFromSelector(_cmd));
+                            CMTime time;
+                            CASCCDExposure* exposure = nil;
+                            if (self.input){
+                                self.input(&exposure,&time);
+                            }
+                            else {
+                                [self _getLastExposure:&exposure time:&time];
+                            }
+                            if (!exposure){
                                 break;
                             }
                             else{
                                 
-                                if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:time]){
-                                    self.error = [_writer error];
-                                    NSLog(@"%@: -appendPixelBuffer:withPresentationTime: %@",NSStringFromSelector(_cmd),self.error);
-                                    [self complete];
+                                CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
+                                if (!buffer){
+                                    NSLog(@"%@: no pixel buffer",NSStringFromSelector(_cmd));
+                                    break;
                                 }
-                                CFRelease(buffer);
+                                else{
+                                    
+                                    if(![_writerInputAdaptor appendPixelBuffer:buffer withPresentationTime:time]){
+                                        self.error = [_writer error];
+                                        NSLog(@"%@: -appendPixelBuffer:withPresentationTime: %@",NSStringFromSelector(_cmd),self.error);
+                                        [self complete];
+                                    }
+                                    CVPixelBufferRelease(buffer);
+                                }
                             }
                         }
                     }
@@ -250,6 +258,21 @@ static NSInteger count;
         _writerInput = nil;
         _writer = nil;
     }
+}
+
+- (BOOL)startWithExposure:(CASCCDExposure*)exposure  error:(NSError**)errorPtr
+{
+    NSParameterAssert(exposure);
+    
+    NSError* error = nil;
+
+    [self _prepareWithExposure:exposure error:&error];
+
+    if (errorPtr){
+        *errorPtr = error;
+    }
+    
+    return (error == nil);
 }
 
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url
