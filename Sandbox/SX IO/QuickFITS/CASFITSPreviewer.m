@@ -14,7 +14,7 @@ const float kMaxPixelValue = 65535.0;
 
 @implementation CASFITSPreviewer
 
-- (CGImageRef)imageFromURL:(NSURL*)url error:(NSError**)error
+- (CGImageRef)newImageFromURL:(NSURL*)url error:(NSError**)error
 {
     int status = noErr;
     CGImageRef result = nil;

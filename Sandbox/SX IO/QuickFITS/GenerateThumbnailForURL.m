@@ -19,7 +19,7 @@ OSStatus GenerateThumbnailForURL(void *thisInterface, QLThumbnailRequestRef thum
     int status = noErr; // todo; get from error object
     
     CASFITSPreviewer* previewer = [[CASFITSPreviewer alloc] init];
-    CGImageRef image = [previewer imageFromURL:(__bridge NSURL *)(url) error:nil];
+    CGImageRef image = [previewer newImageFromURL:(__bridge NSURL *)(url) error:nil];
     if (!image){
         NSLog(@"QuickFITS: GenerateThumbnailForURL: failed to load image from url %@",url);
     }
