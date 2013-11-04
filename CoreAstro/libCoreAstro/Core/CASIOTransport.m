@@ -106,7 +106,7 @@
     NSParameterAssert(block);
     NSParameterAssert(command);
 
-    __weak CASBlockOperation* commandOp = nil;
+    CASBlockOperation* commandOp = nil;
     commandOp = [CASBlockOperation blockOperationWithBlock:^{
         
         if (![commandOp isCancelled]){
