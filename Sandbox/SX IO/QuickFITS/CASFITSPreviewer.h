@@ -10,6 +10,6 @@
 
 @interface CASFITSPreviewer : NSObject
 
-- (CGImageRef)imageFromURL:(NSURL*)url error:(NSError**)error;
+- (CGImageRef)newImageFromURL:(NSURL*)url error:(NSError**)error;
 
 @end

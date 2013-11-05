@@ -19,7 +19,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
     int status = noErr; // todo; get from error object
     
     CASFITSPreviewer* previewer = [[CASFITSPreviewer alloc] init];
-    CGImageRef image = [previewer imageFromURL:(__bridge NSURL *)(url) error:nil];
+    CGImageRef image = [previewer newImageFromURL:(__bridge NSURL *)(url) error:nil];
     if (!image){
         NSLog(@"QuickFITS: GeneratePreviewForURL: failed to load image from url %@",url);
     }
