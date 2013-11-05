@@ -480,7 +480,7 @@
 {
     if (_stretchGamma != stretchGamma){
         _stretchGamma = stretchGamma;
-        [self.layer setNeedsDisplay];
+        [self resetFilteredImage];
     }
 }
 
