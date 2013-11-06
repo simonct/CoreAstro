@@ -74,9 +74,15 @@
                         self.exporter = [CASMovieExporter exporterWithURL:save.URL];
                         if (self.exporter){
                             
+                            NSArray* sortedURLs = [open.URLs sortedArrayWithOptions:0 usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
+                                NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
+                                NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
+                                return [d1[NSURLCreationDateKey] compare:d2[NSURLCreationDateKey]];
+                            }];
+                            
                             NSError* error;
                             __block NSInteger frame = 0;
-                            NSEnumerator* urlEnum = [open.URLs objectEnumerator];
+                            NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
                             
                             __weak __typeof(self) weakSelf = self;
                             self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time){
@@ -109,7 +115,7 @@
                                 }
                             };
                             
-                            [self.exporter startWithExposure:[self exposureWithURL:open.URLs.firstObject] error:&error];
+                            [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
                         }
                     }
                 }];
