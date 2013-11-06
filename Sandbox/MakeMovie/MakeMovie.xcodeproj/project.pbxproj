@@ -306,6 +306,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Simon Taylor";
 				TargetAttributes = {
+					F498273018264834007310B9 = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
 					F498275118264834007310B9 = {
 						TestTargetID = F498273018264834007310B9;
 					};
@@ -551,6 +554,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MakeMovie/MakeMovie-Prefix.pch";
@@ -569,6 +573,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MakeMovie/MakeMovie-Prefix.pch";
