@@ -16,24 +16,50 @@
         <window title="Export Movie..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="NiW-GS-dMr">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="425" height="83"/>
+            <rect key="contentRect" x="335" y="390" width="425" height="87"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
             <view key="contentView" id="wZ5-mf-9Jz">
-                <rect key="frame" x="0.0" y="0.0" width="425" height="83"/>
+                <rect key="frame" x="0.0" y="0.0" width="425" height="87"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <progressIndicator maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="Etg-gO-BDe">
-                        <rect key="frame" x="20" y="44" width="385" height="20"/>
+                        <rect key="frame" x="20" y="48" width="385" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <connections>
                             <binding destination="-2" name="value" keyPath="progress" id="w9J-sS-THx"/>
                         </connections>
                     </progressIndicator>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oOk-bM-btg">
+                        <rect key="frame" x="329" y="13" width="82" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4ru-qj-Sac">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="cancelPressed:" target="-2" id="XIf-RP-JdM"/>
+                        </connections>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eKU-sM-PgF">
+                        <rect key="frame" x="20" y="22" width="310" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="dqQ-SD-PeM">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" white="0.49883442540322587" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="movieFilename" id="ArE-sw-bn4"/>
+                        </connections>
+                    </textField>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Etg-gO-BDe" firstAttribute="leading" secondItem="wZ5-mf-9Jz" secondAttribute="leading" constant="20" symbolic="YES" id="cOv-rG-xJZ"/>
                     <constraint firstAttribute="trailing" secondItem="Etg-gO-BDe" secondAttribute="trailing" constant="20" symbolic="YES" id="f5A-Ox-y5V"/>
-                    <constraint firstItem="Etg-gO-BDe" firstAttribute="centerY" secondItem="wZ5-mf-9Jz" secondAttribute="centerY" constant="-12.5" id="sRY-zh-9ZR"/>
+                    <constraint firstItem="Etg-gO-BDe" firstAttribute="centerY" secondItem="wZ5-mf-9Jz" secondAttribute="centerY" constant="-14.5" id="sRY-zh-9ZR"/>
                 </constraints>
             </view>
         </window>

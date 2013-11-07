@@ -13,7 +13,9 @@
 @property (nonatomic,strong) CASMovieExporter* exporter;
 @property (nonatomic,assign) int32_t fps;
 @property (nonatomic,assign) float progress;
+@property (nonatomic,assign) BOOL cancelled;
 @property (strong) IBOutlet NSView *saveAccessoryView;
+@property (nonatomic,copy) NSString* movieFilename;
 @end
 
 @implementation SXIOExportMovieWindowController
@@ -65,6 +67,10 @@
         [self.window makeKeyAndOrderFront:nil];
     }
     
+    self.progress = 0;
+    self.cancelled = NO;
+    self.movieFilename = nil;
+    
     NSOpenPanel* open = [NSOpenPanel openPanel];
     
     open.canChooseDirectories = NO;
@@ -76,7 +82,7 @@
     void (^callCompletion)() = ^(NSError* error, NSURL* url) {
         if (completion){
             dispatch_async(dispatch_get_main_queue(), ^{
-                completion(error,url);
+                completion(error,self.cancelled ? nil : url);
             });
         }
     };
@@ -110,6 +116,8 @@
                     
                         dispatch_async(dispatch_get_main_queue(), ^{
                             
+                            self.movieFilename = [save.URL.path lastPathComponent];
+                            
                             [[NSFileManager defaultManager] removeItemAtURL:save.URL error:nil];
                             
                             self.exporter = [CASMovieExporter exporterWithURL:save.URL];
@@ -128,7 +136,7 @@
                                 __weak __typeof(self) weakSelf = self;
                                 self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time){
                                     
-                                    NSURL* nextURL = [urlEnum nextObject];
+                                    NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
                                     if (!nextURL){
                                         
                                         [weakSelf.exporter complete];
@@ -155,6 +163,12 @@
             });
         }
     }];
+}
+
+- (IBAction)cancelPressed:(NSButton*)sender
+{
+    self.cancelled = YES;
+    [sender setEnabled:NO];
 }
 
 + (instancetype)loadWindowController
