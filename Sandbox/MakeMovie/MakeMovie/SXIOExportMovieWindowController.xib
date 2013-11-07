@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SXIOExportMovieWindowController">
+            <connections>
+                <outlet property="saveAccessoryView" destination="BQS-dL-N7m" id="KfJ-bV-Ycr"/>
+                <outlet property="window" destination="NiW-GS-dMr" id="aEQ-yU-dwD"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Export Movie..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="NiW-GS-dMr">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="335" y="390" width="425" height="83"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <view key="contentView" id="wZ5-mf-9Jz">
+                <rect key="frame" x="0.0" y="0.0" width="425" height="83"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <progressIndicator maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="Etg-gO-BDe">
+                        <rect key="frame" x="20" y="44" width="385" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="progress" id="w9J-sS-THx"/>
+                        </connections>
+                    </progressIndicator>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Etg-gO-BDe" firstAttribute="leading" secondItem="wZ5-mf-9Jz" secondAttribute="leading" constant="20" symbolic="YES" id="cOv-rG-xJZ"/>
+                    <constraint firstAttribute="trailing" secondItem="Etg-gO-BDe" secondAttribute="trailing" constant="20" symbolic="YES" id="f5A-Ox-y5V"/>
+                    <constraint firstItem="Etg-gO-BDe" firstAttribute="centerY" secondItem="wZ5-mf-9Jz" secondAttribute="centerY" constant="-12.5" id="sRY-zh-9ZR"/>
+                </constraints>
+            </view>
+        </window>
+        <customView id="BQS-dL-N7m">
+            <rect key="frame" x="0.0" y="0.0" width="385" height="55"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mfO-Xa-kej">
+                    <rect key="frame" x="20" y="16" width="96" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="96" id="u1H-06-14V"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="KYh-17-sYi">
+                        <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="CYz-Q0-U20">
+                            <real key="roundingIncrement" value="0.0"/>
+                            <real key="minimum" value="1"/>
+                            <real key="maximum" value="30"/>
+                            <metadata>
+                                <bool key="localizesFormat" value="YES"/>
+                            </metadata>
+                        </numberFormatter>
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="fps" id="JEw-6Z-Ktc"/>
+                    </connections>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j7a-on-6Iu">
+                    <rect key="frame" x="121" y="19" width="24" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="fps" id="oAa-8m-bAc">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="j7a-on-6Iu" secondAttribute="bottom" constant="19" id="Eap-PW-vPs"/>
+                <constraint firstItem="mfO-Xa-kej" firstAttribute="leading" secondItem="BQS-dL-N7m" secondAttribute="leading" constant="20" symbolic="YES" id="QIV-ZL-zwD"/>
+                <constraint firstItem="mfO-Xa-kej" firstAttribute="centerY" secondItem="BQS-dL-N7m" secondAttribute="centerY" id="Wtx-rR-TKr"/>
+                <constraint firstItem="j7a-on-6Iu" firstAttribute="leading" secondItem="mfO-Xa-kej" secondAttribute="trailing" constant="8" id="XBE-Sp-Zn8"/>
+            </constraints>
+        </customView>
+    </objects>
+</document>

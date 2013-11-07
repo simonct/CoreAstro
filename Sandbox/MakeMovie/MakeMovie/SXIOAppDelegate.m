@@ -7,131 +7,48 @@
 //
 
 #import "SXIOAppDelegate.h"
-#import <CoreAstro/CoreAstro.h>
+#import "SXIOExportMovieWindowController.h"
 
 @interface SXIOAppDelegate ()
-@property (nonatomic,strong) CASMovieExporter* exporter;
-@property (nonatomic,assign) int32_t fps;
-@property (nonatomic,assign) float progress;
-@property (strong) IBOutlet NSView *saveAccessoryView;
+@property (nonatomic,strong) SXIOExportMovieWindowController* exporter;
 @end
 
 @implementation SXIOAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.fps = 4;
     [self openDocument:nil];
-}
-
-- (CASCCDExposure*)exposureWithURL:(NSURL*)url
-{
-    NSError* error;
-    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:url.path];
-    CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
-    [io readExposure:exposure readPixels:YES error:&error];
-    exposure.io = io; // ensure pixels can be purged in -reset
-    if (error){
-        NSLog(@"exposureWithURL: %@",error);
-    }
-    return error ? nil : exposure;
 }
 
 - (void)openDocument:sender
 {
-    NSOpenPanel* open = [NSOpenPanel openPanel];
+    if (!self.exporter){
+        self.exporter = [SXIOExportMovieWindowController loadWindowController];
+    }
     
-    open.canChooseDirectories = NO;
-    open.canChooseFiles = YES;
-    open.allowedFileTypes = @[@"fit",@"fits"];
-    open.allowsMultipleSelection = YES;
-    open.message = @"Select exposures to make into a movie";
+    [self.exporter.window center];
+    [self.exporter.window makeKeyAndOrderFront:nil];
     
-    [open beginWithCompletionHandler:^(NSInteger result) {
+    [self.exporter runWithCompletion:^(NSError *error, NSURL *movieURL) {
         
-        if (result == NSFileHandlingPanelOKButton && [open.URLs count] > 2){
+        [self.exporter.window orderOut:nil];
+        self.exporter = nil;
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-               
-                NSSavePanel* save = [NSSavePanel savePanel];
-                
-                save.allowedFileTypes = @[@"mp4"];
-                save.canCreateDirectories = YES;
-                save.message = @"Choose where to save the movie file";
-                save.directoryURL = [open.URLs.firstObject URLByDeletingLastPathComponent];
-                save.nameFieldStringValue = @"movie";
-                save.accessoryView = self.saveAccessoryView;
-                
-                [save beginWithCompletionHandler:^(NSInteger result) {
-                    
-                    if (result == NSFileHandlingPanelOKButton){
-                        
-                        [self.window center];
-                        [self.window makeKeyAndOrderFront:nil];
-                        
-                        [[NSFileManager defaultManager] removeItemAtURL:save.URL error:nil];
-                        
-                        self.exporter = [CASMovieExporter exporterWithURL:save.URL];
-                        if (self.exporter){
-                            
-                            NSArray* sortedURLs = [open.URLs sortedArrayWithOptions:0 usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
-                                NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
-                                NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
-                                return [d1[NSURLCreationDateKey] compare:d2[NSURLCreationDateKey]];
-                            }];
-                            
-                            NSError* error;
-                            __block NSInteger frame = 0;
-                            NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
-                            
-                            __weak __typeof(self) weakSelf = self;
-                            self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time){
-                                
-                                NSURL* nextURL = [urlEnum nextObject];
-                                if (!nextURL){
-                                    
-                                    [weakSelf.exporter complete];
-                                    
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        
-                                        [weakSelf.window orderOut:nil];
-                                        
-                                        weakSelf.exporter = nil;
-                                        
-                                        NSAlert* alert = [NSAlert alertWithMessageText:@"Export Complete"
-                                                                         defaultButton:@"OK"
-                                                                       alternateButton:@"Cancel"
-                                                                           otherButton:nil
-                                                             informativeTextWithFormat:@"Open the output movie ?",nil];
-                                        if ([alert runModal] == NSOKButton){
-                                            [[NSWorkspace sharedWorkspace] openURL:save.URL];
-                                        }
-                                    });
-                                }
-                                else {
-                                    *time = CMTimeMake(++frame,weakSelf.fps);
-                                    *expPtr = [weakSelf exposureWithURL:nextURL];
-                                    weakSelf.progress = (float)frame / (float)[open.URLs count];
-                                }
-                            };
-                            
-                            [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
-                        }
-                    }
-                }];
-            });
+        if (error){
+            [NSApp presentError:error];
+        }
+        else if (movieURL) {
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Export Complete"
+                                             defaultButton:@"OK"
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"Open the output movie ?",nil];
+            if ([alert runModal] == NSOKButton){
+                [[NSWorkspace sharedWorkspace] openURL:movieURL];
+            }
         }
     }];
-}
-
-- (void)setNilValueForKey:(NSString *)key
-{
-    if ([key isEqualToString:@"fps"]){
-        self.fps = 1;
-    }
-    else {
-        [super setNilValueForKey:key];
-    }
 }
 
 @end

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F470C00A182B8059002577D0 /* SXIOExportMovieWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F470C008182B8059002577D0 /* SXIOExportMovieWindowController.m */; };
+		F470C00B182B8059002577D0 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F470C009182B8059002577D0 /* SXIOExportMovieWindowController.xib */; };
 		F498273518264834007310B9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F498273418264834007310B9 /* Cocoa.framework */; };
 		F498273F18264834007310B9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F498273D18264834007310B9 /* InfoPlist.strings */; };
 		F498274118264834007310B9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F498274018264834007310B9 /* main.m */; };
@@ -103,6 +105,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F470C007182B8059002577D0 /* SXIOExportMovieWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExportMovieWindowController.h; sourceTree = "<group>"; };
+		F470C008182B8059002577D0 /* SXIOExportMovieWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExportMovieWindowController.m; sourceTree = "<group>"; };
+		F470C009182B8059002577D0 /* SXIOExportMovieWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOExportMovieWindowController.xib; sourceTree = "<group>"; };
 		F498273118264834007310B9 /* MakeMovie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MakeMovie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F498273418264834007310B9 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F498273718264834007310B9 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -197,6 +202,9 @@
 			children = (
 				F498274618264834007310B9 /* SXIOAppDelegate.h */,
 				F498274718264834007310B9 /* SXIOAppDelegate.m */,
+				F470C007182B8059002577D0 /* SXIOExportMovieWindowController.h */,
+				F470C008182B8059002577D0 /* SXIOExportMovieWindowController.m */,
+				F470C009182B8059002577D0 /* SXIOExportMovieWindowController.xib */,
 				F498274918264834007310B9 /* MainMenu.xib */,
 				F498274C18264834007310B9 /* Images.xcassets */,
 				F498273B18264834007310B9 /* Supporting Files */,
@@ -398,6 +406,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F498273F18264834007310B9 /* InfoPlist.strings in Resources */,
+				F470C00B182B8059002577D0 /* SXIOExportMovieWindowController.xib in Resources */,
 				F498274D18264834007310B9 /* Images.xcassets in Resources */,
 				F498274518264834007310B9 /* Credits.rtf in Resources */,
 				F498274B18264834007310B9 /* MainMenu.xib in Resources */,
@@ -435,6 +444,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F470C00A182B8059002577D0 /* SXIOExportMovieWindowController.m in Sources */,
 				F498274118264834007310B9 /* main.m in Sources */,
 				F498274818264834007310B9 /* SXIOAppDelegate.m in Sources */,
 			);
