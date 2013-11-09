@@ -25,6 +25,7 @@
 
 #import "CASMovieExporter.h"
 #import "CASUtilities.h"
+#import <CoreVideo/CVPixelBuffer.h>
 
 @interface CASMovieExporter ()
 @property (nonatomic,strong) NSURL* url;
@@ -117,7 +118,7 @@ static NSInteger count;
     NSError* error = nil;
     
     if (!_writer){
-        _writer = [AVAssetWriter assetWriterWithURL:_url fileType:AVFileTypeMPEG4 error:&error];
+        _writer = [AVAssetWriter assetWriterWithURL:_url fileType:AVFileTypeQuickTimeMovie error:&error];
         _writer.shouldOptimizeForNetworkUse = YES;
     }
     
@@ -125,11 +126,23 @@ static NSInteger count;
         
         if (!_writerInput){
             
+            NSDictionary* settings;
+            if (self.uncompressed) {
+//                const uint32_t format = kCVPixelFormatType_32ARGB;
+//                NSString* formatStr = [[NSString alloc] initWithBytes:&format length:sizeof(format) encoding:NSASCIIStringEncoding];
+//                settings = @{AVVideoCodecKey:formatStr,
+//                             AVVideoWidthKey:@(exposure.actualSize.width),
+//                             AVVideoHeightKey:@(exposure.actualSize.height)};
+            }
+            else {
+                settings = @{AVVideoCodecKey:AVVideoCodecH264, // H264 is the most compatible but ProRes might be a better choice for quality
+                             // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
+                             AVVideoWidthKey:@(exposure.actualSize.width),
+                             AVVideoHeightKey:@(exposure.actualSize.height)};
+            }
+            
             _writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
-                                                              outputSettings:@{AVVideoCodecKey:AVVideoCodecH264, // H264 is the most compatible but ProRes might be a better choice for quality
-                                                            // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
-                                                             AVVideoWidthKey:@(exposure.actualSize.width),
-                                                            AVVideoHeightKey:@(exposure.actualSize.height)}];
+                                                              outputSettings:settings];
             [_writer addInput:_writerInput];
         }
         

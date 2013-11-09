@@ -40,6 +40,8 @@
 
 // todo; make this an input source indepdent of the exporter
 
+@property (nonatomic,assign) BOOL uncompressed;
+
 typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*);
 
 @property (nonatomic,copy) CASMovieExporterInput input;

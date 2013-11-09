@@ -14,6 +14,7 @@
 @property (nonatomic,assign) int32_t fps;
 @property (nonatomic,assign) float progress;
 @property (nonatomic,assign) BOOL cancelled;
+@property (nonatomic,assign) BOOL uncompressed;
 @property (strong) IBOutlet NSView *saveAccessoryView;
 @property (nonatomic,copy) NSString* movieFilename;
 @end
@@ -99,7 +100,7 @@
                 
                 NSSavePanel* save = [NSSavePanel savePanel];
                 
-                save.allowedFileTypes = @[@"mp4"];
+                save.allowedFileTypes = @[@"mov"];
                 save.canCreateDirectories = YES;
                 save.message = @"Choose where to save the movie file";
                 save.directoryURL = [open.URLs.firstObject URLByDeletingLastPathComponent];
@@ -154,6 +155,8 @@
                                         weakSelf.progress = (float)frame / (float)[open.URLs count];
                                     }
                                 };
+                                
+                                self.exporter.uncompressed = self.uncompressed;
                                 
                                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
                             }

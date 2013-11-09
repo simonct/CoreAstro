@@ -99,6 +99,17 @@ Gw
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44E-Bg-1gu">
+                    <rect key="frame" x="153" y="18" width="172" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Uncompressed" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="EJL-Wn-jx3">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="uncompressed" id="fb8-tz-xFF"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="j7a-on-6Iu" secondAttribute="bottom" constant="19" id="Eap-PW-vPs"/>
