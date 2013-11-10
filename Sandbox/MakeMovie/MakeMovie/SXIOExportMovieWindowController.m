@@ -156,6 +156,7 @@
                                     }
                                 };
                                 
+                                self.exporter.showDateTime = YES;
                                 self.exporter.uncompressed = self.uncompressed;
                                 
                                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];

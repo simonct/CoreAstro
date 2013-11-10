@@ -98,6 +98,21 @@ static NSInteger count;
                         if (context){
                             
                             CGContextDrawImage(context,CGRectMake(0,0,size.width,size.height),image);
+                            
+                            // draw timecode
+                            if (self.showDateTime){
+                                
+                                NSString* displayDate = exposure.displayDate;
+                                if ([displayDate length]) {
+                                    
+                                    const CGFloat fontSize = size.width < 1000 ? 24 : 36;
+                                    CGContextSelectFont(context, "Helvetica", fontSize, kCGEncodingMacRoman);
+                                    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.75);
+                                    CGContextSetTextDrawingMode(context, kCGTextFill);
+                                    CGContextShowTextAtPoint(context, 20, 20, [displayDate UTF8String], [displayDate length]);
+                                }
+                            }
+                            
                             CGContextRelease(context);
                         }
                         CGColorSpaceRelease(rgb);

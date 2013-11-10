@@ -40,6 +40,7 @@
 
 // todo; make this an input source indepdent of the exporter
 
+@property (nonatomic,assign) BOOL showDateTime;
 @property (nonatomic,assign) BOOL uncompressed;
 
 typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*);
