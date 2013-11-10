@@ -88,6 +88,20 @@
     return count;
 }
 
+- (CASCCDExposure*)exposureAtIndex:(NSInteger)index
+{
+    NSURL* url = self[index];
+    CASCCDExposure* exp;
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+    if (io){
+        exp = [[CASCCDExposure alloc] init];
+        if (![io readExposure:exp readPixels:NO error:nil]){
+            exp = nil;
+        }
+    }
+    return exp;
+}
+
 static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clientCallBackInfo, size_t numEvents, void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
 {
     NSMutableSet* added = [NSMutableSet setWithCapacity:[(__bridge NSArray*)eventPaths count]];
@@ -206,6 +220,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 + (instancetype)enumeratorWithURL:(NSURL*)url
 {
+    if (!url){
+        return nil;
+    }
     SXIOExposureEnumerator* e = [[SXIOExposureEnumerator alloc] init];
     e.url = url;
     return e;

@@ -19,6 +19,8 @@
 
 - (id)objectAtIndexedSubscript:(NSUInteger)idx;
 
+- (CASCCDExposure*)exposureAtIndex:(NSInteger)index;
+
 + (instancetype)enumeratorWithURL:(NSURL*)url;
 
 @end
