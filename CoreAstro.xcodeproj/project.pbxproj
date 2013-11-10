@@ -340,6 +340,8 @@
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
+		F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */; };
+		F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
 		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */; };
@@ -1336,6 +1338,8 @@
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
+		F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPowerMonitor.h; sourceTree = "<group>"; };
+		F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPowerMonitor.m; sourceTree = "<group>"; };
 		F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelController.m; sourceTree = "<group>"; };
 		F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelController.h; sourceTree = "<group>"; };
 		F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHFCUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.h; sourceTree = SOURCE_ROOT; };
@@ -1807,6 +1811,8 @@
 				F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */,
 				F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */,
 				F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */,
+				F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */,
+				F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -2809,6 +2815,7 @@
 				F4CA53C5169CC9FD00832CFF /* ctmf.h in Headers */,
 				F4CA53C6169CC9FD00832CFF /* dimage.h in Headers */,
 				F4CA53C7169CC9FD00832CFF /* dualtree.h in Headers */,
+				F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */,
 				F4CA53C8169CC9FD00832CFF /* dualtree_nearestneighbour.h in Headers */,
 				F4CA53C9169CC9FD00832CFF /* dualtree_rangesearch.h in Headers */,
 				F4CA53CA169CC9FD00832CFF /* errors.h in Headers */,
@@ -3345,6 +3352,7 @@
 				F4CA50DA169CB50900832CFF /* CASPlateSolver.m in Sources */,
 				F4CA50DE169CB62F00832CFF /* CASTaskWrapper.m in Sources */,
 				F4CA53B2169CC9FD00832CFF /* bl-nl.inc in Sources */,
+				F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */,
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
 				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
