@@ -68,10 +68,10 @@ Gw
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mfO-Xa-kej">
-                    <rect key="frame" x="20" y="16" width="96" height="22"/>
+                    <rect key="frame" x="20" y="16" width="56" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="96" id="u1H-06-14V"/>
+                        <constraint firstAttribute="width" constant="56" id="u1H-06-14V"/>
                     </constraints>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="KYh-17-sYi">
                         <numberFormatter key="formatter" formatterBehavior="default10_4" positiveFormat="#" negativeFormat="#" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="0" maximumFractionDigits="0" id="CYz-Q0-U20">
@@ -91,7 +91,7 @@ Gw
                     </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j7a-on-6Iu">
-                    <rect key="frame" x="121" y="19" width="24" height="17"/>
+                    <rect key="frame" x="81" y="19" width="24" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="fps" id="oAa-8m-bAc">
                         <font key="font" metaFont="system"/>
@@ -100,7 +100,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44E-Bg-1gu">
-                    <rect key="frame" x="153" y="18" width="172" height="18"/>
+                    <rect key="frame" x="108" y="18" width="126" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Uncompressed" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="EJL-Wn-jx3">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -108,6 +108,17 @@ Gw
                     </buttonCell>
                     <connections>
                         <binding destination="-2" name="value" keyPath="uncompressed" id="fb8-tz-xFF"/>
+                    </connections>
+                </button>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9CH-pj-OBa">
+                    <rect key="frame" x="238" y="18" width="96" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Date/Time" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="gOL-eh-6tg">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="showDateTime" id="gu1-Tm-2Pz"/>
                     </connections>
                 </button>
             </subviews>

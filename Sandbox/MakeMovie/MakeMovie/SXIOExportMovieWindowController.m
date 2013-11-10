@@ -15,6 +15,7 @@
 @property (nonatomic,assign) float progress;
 @property (nonatomic,assign) BOOL cancelled;
 @property (nonatomic,assign) BOOL uncompressed;
+@property (nonatomic,assign) BOOL showDateTime;
 @property (strong) IBOutlet NSView *saveAccessoryView;
 @property (nonatomic,copy) NSString* movieFilename;
 @end
@@ -156,7 +157,7 @@
                                     }
                                 };
                                 
-                                self.exporter.showDateTime = YES;
+                                self.exporter.showDateTime = self.showDateTime;
                                 self.exporter.uncompressed = self.uncompressed;
                                 
                                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
