@@ -796,7 +796,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             break;
     }
     
-    NSLog(@"SXCCDIOReadFieldCommand: field=%ld, height=%ld, binX=%ld, binY=%ld",self.field,height,binX,binY);
+//    NSLog(@"SXCCDIOReadFieldCommand: field=%ld, height=%ld, binX=%ld, binY=%ld",self.field,height,binX,binY);
     
     sxReadPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,fieldFlag,self.params.origin.x,self.params.origin.y,self.params.size.width,height,binX,binY,buffer);
     
