@@ -16,8 +16,11 @@
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
 #import "SXIOExposureEnumerator.h"
+#import "CASPowerMonitor.h"
 
 #import <Quartz/Quartz.h>
+
+static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
 @interface CASControlsContainerView : NSView
 @end
@@ -52,6 +55,8 @@
 @property (assign) BOOL calibrate;
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
+
+@property (nonatomic,strong) CASPowerMonitor* powerMonitor;
 
 @end
 
@@ -253,6 +258,29 @@ static void* kvoContext;
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return;
     }
+    
+    // pop a sleep warning alert
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:kSXIOCameraWindowControllerDisplayedSleepWarningKey]){
+        
+        NSAlert* alert = [NSAlert alertWithMessageText:@"System Sleep"
+                                         defaultButton:@"OK"
+                                       alternateButton:@"Cancel"
+                                           otherButton:nil
+                             informativeTextWithFormat:@"SX IO prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source."];
+        alert.showsSuppressionButton = YES;
+        if ([alert runModal] != NSOKButton){
+            return;
+        }
+        if (alert.suppressionButton.state){
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kSXIOCameraWindowControllerDisplayedSleepWarningKey];
+        }
+    }
+
+    // disable idle sleep
+    if (!self.powerMonitor){
+        self.powerMonitor = [[CASPowerMonitor alloc] init];
+    }
+    self.powerMonitor.disableSleep = YES;
 
     // check we have somewhere to save the file, a prefix and a sequence number
     const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
@@ -316,6 +344,9 @@ static void* kvoContext;
             
             if (!self.cameraController.capturing){
                 
+                // re-enable idle sleep
+                self.powerMonitor.disableSleep = NO;
+
                 if (!self.cameraController.cancelled){
                     
                     NSUserNotification* note = [[NSUserNotification alloc] init];
