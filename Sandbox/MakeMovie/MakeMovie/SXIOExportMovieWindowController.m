@@ -151,7 +151,7 @@
                                         });
                                     }
                                     else {
-                                        *time = CMTimeMake(++frame,weakSelf.fps);
+                                        *time = CMTimeMake(frame++,weakSelf.fps);
                                         *expPtr = [weakSelf exposureWithURL:nextURL];
                                         weakSelf.progress = (float)frame / (float)[open.URLs count];
                                     }
