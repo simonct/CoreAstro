@@ -316,10 +316,24 @@ static void* kvoContext;
                         exposure.filters = @[filterName];
                     }
                     
+                    // construct the filename
                     const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]]];
+                    NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]];
                     ++self.saveTargetControlsViewController.saveImagesSequence;
-                                        
+                    
+                    // ensure we have a unique filename (for instance, in case the sequence was reset)
+                    NSInteger suffix = 1;
+                    NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+                    while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
+                        NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
+                        finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
+                        if (suffix > 999){
+                            NSLog(@"*** Gave up trying to find a unique filename");
+                            break;
+                        }
+                    }
+                    
+                    // save the exposure
                     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
                     if (!io){
                         NSLog(@"*** Failed to create FITS exporter");
