@@ -322,7 +322,7 @@ static void* kvoContext;
                     ++self.saveTargetControlsViewController.saveImagesSequence;
                     
                     // ensure we have a unique filename (for instance, in case the sequence was reset)
-                    NSInteger suffix = 1;
+                    NSInteger suffix = 2;
                     NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
                     while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
                         NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
