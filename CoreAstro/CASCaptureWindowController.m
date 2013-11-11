@@ -32,7 +32,11 @@
 
 - (BOOL)exposureSecondsEnabled
 {
+#if CAS_CAPTURE_DARKS
     return (self.captureMode == kCASCaptureModelModeDark);
+#else
+    return NO;
+#endif
 }
 
 + (NSSet*)keyPathsForValuesAffectingExposureSecondsEnabled
@@ -103,12 +107,14 @@
     __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:self.model.captureCount];
 
     switch (self.model.captureMode) {
+#if CAS_CAPTURE_DARKS
         case kCASCaptureModelModeDark:
             exposureUnits = 0; // seconds
             exposureTime = self.model.exposureSeconds;
             temperatureLock = YES;
             exposureType = kCASCCDExposureDarkType;
             break;
+#endif
         case kCASCaptureModelModeBias:
             exposureUnits = 0; // seconds
             exposureTime = 0;
