@@ -372,7 +372,22 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     self.currentCaptureIndex = 0;
     
-    [self captureWithBlockImpl:block];
+    id activity;
+    NSProcessInfo* proc = [NSProcessInfo processInfo];
+    if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
+        const NSActivityOptions options = NSActivityIdleSystemSleepDisabled|NSActivitySuddenTerminationDisabled|NSActivityAutomaticTerminationDisabled|NSActivityUserInitiated;
+        activity = [proc beginActivityWithOptions:options reason:@"Capturing exposures"];
+    }
+    
+    [self captureWithBlockImpl:^(NSError *error, CASCCDExposure *exposure) {
+        
+        if (activity){
+            [proc endActivity:activity];
+        }
+        if (block){
+            block(error,exposure);
+        }
+    }];
 }
 
 - (void)cancelCapture
