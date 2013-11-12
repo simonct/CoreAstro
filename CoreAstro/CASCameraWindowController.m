@@ -1215,7 +1215,9 @@
 
 - (IBAction)captureDarks:(id)sender
 {
+#if CAS_CAPTURE_DARKS
     [self _presentCaptureControllerWithMode:kCASCaptureModelModeDark];
+#endif
 }
 
 - (IBAction)captureBias:(id)sender

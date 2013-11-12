@@ -99,6 +99,8 @@
 		F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E64283179DC2D10044B349 /* Quartz.framework */; };
 		F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
 		F4EF194217C1428400B8AD23 /* SXIOFilterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */; };
+		F4F6E114182F8E2100ACBFB4 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F6E113182F8E2100ACBFB4 /* CASPowerMonitor.m */; };
+		F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */; };
 		F4F9B20017B15A9A0063DD0D /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F4F9B20217B15A9A0063DD0D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
 		F4F9B20317B15A9A0063DD0D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
@@ -371,6 +373,9 @@
 		F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFilterWindowController.h; sourceTree = "<group>"; };
 		F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFilterWindowController.m; sourceTree = "<group>"; };
 		F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFilterWindowController.xib; sourceTree = "<group>"; };
+		F4F6E112182F8E2100ACBFB4 /* CASPowerMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPowerMonitor.h; sourceTree = "<group>"; };
+		F4F6E113182F8E2100ACBFB4 /* CASPowerMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPowerMonitor.m; sourceTree = "<group>"; };
+		F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContrastStretch.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		F4F9B20117B15A9A0063DD0D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -442,6 +447,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */,
 				F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */,
 				F4A25896179BC0CF0013D220 /* Accelerate.framework in Frameworks */,
 				F4A25875179BC06E0013D220 /* QuartzCore.framework in Frameworks */,
@@ -690,6 +696,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */,
 				F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */,
 				F4E64283179DC2D10044B349 /* Quartz.framework */,
 				F4A25895179BC0CF0013D220 /* Accelerate.framework */,
@@ -740,6 +747,8 @@
 				F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */,
 				F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */,
 				F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */,
+				F4F6E112182F8E2100ACBFB4 /* CASPowerMonitor.h */,
+				F4F6E113182F8E2100ACBFB4 /* CASPowerMonitor.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1159,6 +1168,7 @@
 				F4A2589F179BC1460013D220 /* CASTemperatureTransformer.m in Sources */,
 				F4A258AF179BC1630013D220 /* NSApplication+CASScripting.m in Sources */,
 				F4A258B0179BC1630013D220 /* CASScriptCommand.m in Sources */,
+				F4F6E114182F8E2100ACBFB4 /* CASPowerMonitor.m in Sources */,
 				F4A258B1179BC1630013D220 /* CASCaptureCommand.m in Sources */,
 				F4A258B2179BC1630013D220 /* CASGuideCommand.m in Sources */,
 				F4A258C4179BC1D90013D220 /* CASCameraControlsViewController.m in Sources */,

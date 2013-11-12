@@ -32,8 +32,11 @@
 
 @interface CASCaptureModel : NSObject
 @property (nonatomic,assign) NSInteger captureCount;
+#define CAS_CAPTURE_DARKS 0 //tmp
 enum {
+#if CAS_CAPTURE_DARKS
     kCASCaptureModelModeDark,
+#endif
     kCASCaptureModelModeBias,
     kCASCaptureModelModeFlat
 };

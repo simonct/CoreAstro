@@ -192,7 +192,17 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
 
 - (void)pathControl:(NSPathControl *)pathControl willDisplayOpenPanel:(NSOpenPanel *)openPanel
 {
+    openPanel.canChooseFiles = NO;
+    openPanel.canChooseDirectories = YES;
     openPanel.canCreateDirectories = YES;
+    openPanel.allowsMultipleSelection = NO;
+}
+
+- (void)pathControl:(NSPathControl *)pathControl willPopUpMenu:(NSMenu *)menu
+{
+    for (NSMenuItem* item in [menu.itemArray subarrayWithRange:NSMakeRange(2, [menu.itemArray count] - 2)]){
+        [item setEnabled:NO];
+    }
 }
 
 @end
