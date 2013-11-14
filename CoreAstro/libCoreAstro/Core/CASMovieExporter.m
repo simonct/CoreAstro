@@ -105,7 +105,7 @@ static NSInteger count;
                                 NSString* displayDate = exposure.displayDate;
                                 if ([displayDate length]) {
                                     
-                                    const CGFloat fontSize = size.width < 1000 ? 24 : 36;
+                                    const CGFloat fontSize = self.fontSize ? self.fontSize : (size.width < 1000 ? 24 : 36);
                                     CGContextSelectFont(context, "Helvetica", fontSize, kCGEncodingMacRoman);
                                     CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.75);
                                     CGContextSetTextDrawingMode(context, kCGTextFill);
@@ -142,18 +142,25 @@ static NSInteger count;
         if (!_writerInput){
             
             NSDictionary* settings;
-            if (self.uncompressed) {
-//                const uint32_t format = kCVPixelFormatType_32ARGB;
-//                NSString* formatStr = [[NSString alloc] initWithBytes:&format length:sizeof(format) encoding:NSASCIIStringEncoding];
-//                settings = @{AVVideoCodecKey:formatStr,
-//                             AVVideoWidthKey:@(exposure.actualSize.width),
-//                             AVVideoHeightKey:@(exposure.actualSize.height)};
-            }
-            else {
-                settings = @{AVVideoCodecKey:AVVideoCodecH264, // H264 is the most compatible but ProRes might be a better choice for quality
-                             // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
-                             AVVideoWidthKey:@(exposure.actualSize.width),
-                             AVVideoHeightKey:@(exposure.actualSize.height)};
+            switch (self.compressionLevel) {
+                case 0:
+                    settings = @{AVVideoCodecKey:AVVideoCodecH264,
+                                 // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
+                                 AVVideoWidthKey:@(exposure.actualSize.width),
+                                 AVVideoHeightKey:@(exposure.actualSize.height)};
+                    break;
+                case 1:
+                    settings = @{AVVideoCodecKey:AVVideoCodecAppleProRes422,
+                                 // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
+                                 AVVideoWidthKey:@(exposure.actualSize.width),
+                                 AVVideoHeightKey:@(exposure.actualSize.height)};
+                    break;
+                case 2:
+                    settings = @{AVVideoCodecKey:AVVideoCodecAppleProRes4444,
+                                 // AVVideoAverageBitRateKey, AVVideoProfileLevelKey ?
+                                 AVVideoWidthKey:@(exposure.actualSize.width),
+                                 AVVideoHeightKey:@(exposure.actualSize.height)};
+                    break;
             }
             
             _writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
@@ -162,8 +169,6 @@ static NSInteger count;
         }
         
         if (!_writerInputAdaptor){
-            
-            // todo; use kCVPixelFormatType_64ARGB ?
             
             _writerInputAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_writerInput
                                                                                                    sourcePixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_32ARGB)}];

@@ -41,7 +41,8 @@
 // todo; make this an input source indepdent of the exporter
 
 @property (nonatomic,assign) BOOL showDateTime;
-@property (nonatomic,assign) BOOL uncompressed;
+@property (nonatomic,assign) NSInteger fontSize;
+@property (nonatomic,assign) NSInteger compressionLevel;
 
 typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*);
 
