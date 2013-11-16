@@ -196,6 +196,7 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
     openPanel.canChooseDirectories = YES;
     openPanel.canCreateDirectories = YES;
     openPanel.allowsMultipleSelection = NO;
+    openPanel.prompt = @"Choose";
 }
 
 - (void)pathControl:(NSPathControl *)pathControl willPopUpMenu:(NSMenu *)menu
