@@ -40,7 +40,7 @@ static void CASPowerMonitorCallback(void *context)
     else {
         CFDictionaryRef extp = IOPSCopyExternalPowerAdapterDetails();
         NSLog(@"external ps: %@",extp);
-        CFRelease(extp);
+        if (extp) CFRelease(extp);
     }
 }
 
