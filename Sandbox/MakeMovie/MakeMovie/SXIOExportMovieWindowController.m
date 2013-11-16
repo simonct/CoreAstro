@@ -14,7 +14,8 @@
 @property (nonatomic,assign) int32_t fps;
 @property (nonatomic,assign) float progress;
 @property (nonatomic,assign) BOOL cancelled;
-@property (nonatomic,assign) BOOL uncompressed;
+@property (nonatomic,assign) NSInteger compressionLevel;
+@property (nonatomic,assign) NSInteger fontSize;
 @property (nonatomic,assign) BOOL showDateTime;
 @property (strong) IBOutlet NSView *saveAccessoryView;
 @property (nonatomic,copy) NSString* movieFilename;
@@ -25,7 +26,10 @@
 + (void)initialize
 {
     if (self == [SXIOExportMovieWindowController class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"SXIOExportMovieWindowControllerFPS":@(4)}];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+                                                                  @"SXIOExportMovieWindowControllerFPS":@(4),
+                                                                  @"SXIOExportMovieWindowControllerFontSize":@(14)
+                                                                  }];
     }
 }
 
@@ -37,6 +41,16 @@
 - (void)setFps:(int32_t)fps
 {
     [[NSUserDefaults standardUserDefaults] setInteger:fps forKey:@"SXIOExportMovieWindowControllerFPS"];
+}
+
+- (NSInteger)fontSize
+{
+    return (int32_t)[[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOExportMovieWindowControllerFontSize"];
+}
+
+- (void)setFontSize:(NSInteger)fontSize
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:fontSize forKey:@"SXIOExportMovieWindowControllerFontSize"];
 }
 
 - (CASCCDExposure*)exposureWithURL:(NSURL*)url
@@ -158,8 +172,9 @@
                                 };
                                 
                                 self.exporter.showDateTime = self.showDateTime;
-                                self.exporter.uncompressed = self.uncompressed;
-                                
+                                self.exporter.fontSize = self.fontSize;
+                                self.exporter.compressionLevel = self.compressionLevel;
+
                                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
                             }
                         });
