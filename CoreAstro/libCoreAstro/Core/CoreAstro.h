@@ -51,3 +51,4 @@
 #import <CoreAstro/CASPlateSolver.h>
 #import <CoreAstro/CASBatchProcessor.h>
 #import <CoreAstro/CASSocketClient.h>
+#import <CoreAstro/CASPowerMonitor.h>

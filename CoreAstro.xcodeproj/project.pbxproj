@@ -340,7 +340,7 @@
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
-		F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */; };
+		F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
 		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
