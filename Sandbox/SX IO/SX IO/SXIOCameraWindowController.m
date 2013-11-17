@@ -16,7 +16,6 @@
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
 #import "SXIOExposureEnumerator.h"
-#import "CASPowerMonitor.h"
 
 #import <Quartz/Quartz.h>
 
