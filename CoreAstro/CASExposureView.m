@@ -135,6 +135,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     BOOL _showSelection:1;
     BOOL _draggingSelection:1;
     BOOL _displayedFirstImage:1;
+    BOOL _autoContrastStretch;
     NSSize _draggingSelectionOffset;
     CASTaggedLayer* _dragHandleLayer;
     CALayer* _imageOverlayLayer;
@@ -707,6 +708,21 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self updateStatistics];
 }
 
+- (BOOL)autoContrastStretch
+{
+    return _autoContrastStretch;
+}
+
+- (void)setAutoContrastStretch:(BOOL)autoContrastStretch
+{
+    if (autoContrastStretch != _autoContrastStretch){
+        _autoContrastStretch = autoContrastStretch;
+        if (_autoContrastStretch && self.currentExposure){
+            [self configureContrastStretch];
+        }
+    }
+}
+
 #pragma mark - Display Objects
 
 - (void)setImage:(CGImageRef)image
@@ -789,6 +805,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     [self updateStarProfile];
     
     [self layoutHuds];
+    
+    if (self.autoContrastStretch){
+        [self configureContrastStretch];
+    }
 }
 
 - (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
@@ -1111,6 +1131,19 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CFBridgingRelease(colour);
     
     return circle;
+}
+
+#pragma mark - Contrast Stretch
+
+- (void)configureContrastStretch
+{
+    CASImageProcessor* proc = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    
+    const CASContrastStretchBounds bounds = [proc linearContrastStretchBoundsForExposure:self.currentExposure lowerLimit:0.005 upperLimit:0.995 maxPixelValue:1.0];
+    
+    self.stretchMin = bounds.lower;
+    self.stretchMax = bounds.upper;
+    self.contrastStretch = YES;
 }
 
 @end

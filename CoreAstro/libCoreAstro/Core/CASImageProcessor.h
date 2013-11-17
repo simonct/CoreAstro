@@ -55,7 +55,7 @@
 - (CGFloat)standardDeviationPixelValue:(CASCCDExposure*)exposure;
 
 typedef struct {
-    NSUInteger lower, upper;
+    float lower, upper;
     float maxPixelValue;
 } CASContrastStretchBounds;
 - (CASContrastStretchBounds)linearContrastStretchBoundsForExposure:(CASCCDExposure*)exposure

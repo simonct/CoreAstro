@@ -124,6 +124,9 @@ static void* kvoContext;
     
     // observe the save target vc for save url changes; get the initial one and request access to it
     [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    
+    // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
+    [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
 }
 
 - (void)dealloc

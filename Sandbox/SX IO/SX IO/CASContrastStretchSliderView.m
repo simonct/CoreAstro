@@ -10,15 +10,64 @@
 #import "SMDoubleSlider.h"
 #import "SXIOCameraWindowController.h"
 
+@interface CASContrastStretchSliderView ()
+@end
+
 @implementation CASContrastStretchSliderView
 
-- (void)viewWillMoveToWindow:(NSWindow *)newWindow;
+static void* kvoContext;
+
+- (void)viewWillMoveToWindow:(NSWindow *)newWindow
 {
+    // grab the frontmost camera window as we're about to be displayed
     SXIOCameraWindowController* controller = [NSApplication sharedApplication].keyWindow.windowController;
     self.controller = [controller isKindOfClass:[SXIOCameraWindowController class]] ? controller : nil;
 }
 
 - (void)viewDidMoveToWindow
+{
+    if (self.window && self.controller){
+        
+        // menu has been displayed
+        [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.SXIOAutoContrastStretch" options:0 context:&kvoContext];
+    }
+    else {
+        
+        // menu has been dismissed
+        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"values.SXIOAutoContrastStretch"];
+    }
+    
+    [self syncControls];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        [self syncControls];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)sliderChanged:sender
+{
+    if (self.controller){
+        self.controller.exposureView.stretchMin = self.slider.floatLoValue;
+        self.controller.exposureView.stretchMax = self.slider.floatHiValue;
+        self.controller.exposureView.stretchGamma = self.gammaSlider.floatValue;
+        [self updateLabels];
+    }
+}
+
+- (void)checkboxChanged:sender
+{
+    if (self.controller){
+        const BOOL contrastStretch = self.checkbox.intValue != 0;
+        self.controller.exposureView.contrastStretch = self.slider.enabled = self.gammaSlider.enabled = contrastStretch;
+    }
+}
+
+- (void)syncControls
 {
     if (self.window && self.controller){
         
@@ -37,6 +86,13 @@
         self.checkbox.target = self;
         self.checkbox.action = @selector(checkboxChanged:);
         self.checkbox.enabled = self.controller.exposureView.contrastStretch;
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOAutoContrastStretch"]){
+            self.checkbox.enabled = self.slider.enabled = NO;
+            self.checkbox.integerValue = 1;
+        }
+        
+        [self updateLabels];
     }
     else {
         
@@ -55,24 +111,6 @@
         self.checkbox.action = nil;
         self.checkbox.enabled = NO;
     }
-    
-    [self updateLabels];
-}
-
-- (void)sliderChanged:sender
-{
-    if (self.controller){
-        self.controller.exposureView.stretchMin = self.slider.floatLoValue;
-        self.controller.exposureView.stretchMax = self.slider.floatHiValue;
-        self.controller.exposureView.stretchGamma = self.gammaSlider.floatValue;
-        [self updateLabels];
-    }
-}
-
-- (void)checkboxChanged:sender
-{
-    const BOOL contrastStretch = self.checkbox.intValue != 0;
-    self.controller.exposureView.contrastStretch = self.slider.enabled = self.gammaSlider.enabled = contrastStretch;
 }
 
 - (void)updateLabels

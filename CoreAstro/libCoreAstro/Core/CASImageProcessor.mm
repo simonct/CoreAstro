@@ -665,7 +665,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                                                         upperLimit:(float)upperLimit
                                                      maxPixelValue:(float)maxPixelValue
 {
-    __block CASContrastStretchBounds result = {0,0};
+    __block CASContrastStretchBounds result = {0,0,0};
     
     float* pixels = (float*)[exposure.floatPixels bytes];
     if (pixels){
@@ -679,12 +679,20 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             
             vImageHistogramCalculation_PlanarF(&buffer,histogram,binCount,0,maxPixelValue,kvImageNoFlags);
             
+            if (0){
+                NSMutableString* s = [NSMutableString new];
+                for (int i = 0; i < binCount; ++i){
+                    [s appendFormat:@"%lu ",histogram[i]];
+                }
+                NSLog(@"%@",s);
+            }
+
             const CASSize actualSize = exposure.actualSize;
             const size_t pixelCount = actualSize.width*actualSize.height;
             
             const float lowerThreshold = pixelCount * lowerLimit;
             const float upperThreshold = pixelCount * upperLimit;
-            const NSInteger pixelsPerBin = round(maxPixelValue / (float)binCount);
+            const float pixelsPerBin = maxPixelValue / (float)binCount;
             
             NSUInteger total = 0;
             result.lower = -1;
