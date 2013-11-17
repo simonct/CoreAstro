@@ -660,4 +660,115 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     return stdev;
 }
 
+- (CASContrastStretchBounds)linearContrastStretchBoundsForExposure:(CASCCDExposure*)exposure
+                                                        lowerLimit:(float)lowerLimit
+                                                        upperLimit:(float)upperLimit
+                                                     maxPixelValue:(float)maxPixelValue
+{
+    __block CASContrastStretchBounds result = {0,0};
+    
+    float* pixels = (float*)[exposure.floatPixels bytes];
+    if (pixels){
+
+        const NSTimeInterval time = CASTimeBlock(^{
+            
+            vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
+            
+            const NSInteger binCount = 4096;
+            vImagePixelCount* histogram = (vImagePixelCount*)malloc(sizeof(vImagePixelCount) * binCount);
+            
+            vImageHistogramCalculation_PlanarF(&buffer,histogram,binCount,0,maxPixelValue,kvImageNoFlags);
+            
+            const CASSize actualSize = exposure.actualSize;
+            const size_t pixelCount = actualSize.width*actualSize.height;
+            
+            const float lowerThreshold = pixelCount * lowerLimit;
+            const float upperThreshold = pixelCount * upperLimit;
+            const NSInteger pixelsPerBin = round(maxPixelValue / (float)binCount);
+            
+            NSUInteger total = 0;
+            result.lower = -1;
+            result.upper = -1;
+            result.maxPixelValue = maxPixelValue;
+            for (NSInteger bin = 0; bin < binCount; ++bin){
+                
+                total += histogram[bin];
+                if (result.lower == -1 && total >= lowerThreshold){
+                    result.lower = bin * pixelsPerBin;
+                }
+                if (result.upper == -1 && total >= upperThreshold){
+                    result.upper = bin * pixelsPerBin;
+                }
+            }
+            
+            if (result.lower == -1){
+                result.lower = 0;
+            }
+            if (result.upper == -1){
+                result.upper = maxPixelValue;
+            }
+            
+            //            NSLog(@"CASFITSPreviewer: lower %ld, upper %ld, pixelsPerBin: %ld",(unsigned long)lower,(unsigned long)upper,pixelsPerBin);
+            
+//            const float scaler = maxPixelValue/(upper - lower);
+//            for (int i = 0; i < pixelCount; ++i){
+//                const float p = pixels[i];
+//                if (p < lower){
+//                    pixels[i] = 0;
+//                }
+//                else if (p > upper){
+//                    pixels[i] = maxPixelValue;
+//                }
+//                else {
+//                    pixels[i] = (p - lower)*scaler;
+//                }
+//            }
+            
+            free(histogram);
+        });
+        
+        NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    }
+    
+    return result;
+}
+
+- (CASCCDExposure*)rescaleExposure:(CASCCDExposure*)exposure linearContrastStretchBounds:(CASContrastStretchBounds)bounds
+{
+    __block CASCCDExposure* result = [exposure copy];
+    if (!result){
+        NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
+    }
+    else{
+        
+        const NSTimeInterval time = CASTimeBlock(^{
+            
+            float* pixels = (float*)[exposure.floatPixels bytes];
+            if (pixels){
+                
+                const CASSize actualSize = exposure.actualSize;
+                const size_t pixelCount = actualSize.width*actualSize.height;
+                
+                const float scaler = bounds.maxPixelValue/(bounds.upper - bounds.lower);
+                for (int i = 0; i < pixelCount; ++i){
+                    const float p = pixels[i];
+                    if (p < bounds.lower){
+                        pixels[i] = 0;
+                    }
+                    else if (p > bounds.upper){
+                        pixels[i] = bounds.maxPixelValue;
+                    }
+                    else {
+                        pixels[i] = (p - bounds.lower)*scaler;
+                    }
+                }
+            }
+        });
+        
+        NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    }
+    
+    return nil;
+}
+
 @end

@@ -54,6 +54,17 @@
 - (CGFloat)maximumPixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)standardDeviationPixelValue:(CASCCDExposure*)exposure;
 
+typedef struct {
+    NSUInteger lower, upper;
+    float maxPixelValue;
+} CASContrastStretchBounds;
+- (CASContrastStretchBounds)linearContrastStretchBoundsForExposure:(CASCCDExposure*)exposure
+                                                        lowerLimit:(float)lowerLimit
+                                                        upperLimit:(float)upperLimit
+                                                     maxPixelValue:(float)maxPixelValue;
+
+- (CASCCDExposure*)rescaleExposure:(CASCCDExposure*)exposure linearContrastStretchBounds:(CASContrastStretchBounds)bounds;
+
 @end
 
 @interface CASImageProcessor : NSObject<CASImageProcessor>
