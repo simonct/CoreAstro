@@ -696,6 +696,16 @@ static void* kvoContext;
     [self resetAndRedisplayCurrentExposure];
 }
 
+- (IBAction)toggleFlipVertical:(id)sender
+{
+    self.exposureView.flipVertical = !self.exposureView.flipVertical;
+}
+
+- (IBAction)toggleFlipHorizontal:(id)sender
+{
+    self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
+}
+
 #pragma mark - Path & Save Utilities
 
 - (NSString*)currentDeviceExposurePathWithName:(NSString*)name
@@ -1206,6 +1216,14 @@ static void* kvoContext;
             enabled = (self.currentExposure != nil && !self.cameraController.capturing);
             break;
             
+        case 10013:
+            item.state = self.exposureView.flipVertical;
+            break;
+
+        case 10014:
+            item.state = self.exposureView.flipHorizontal;
+            break;
+
         case 10020:
         case 10021:
         case 10022:
