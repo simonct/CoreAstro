@@ -78,6 +78,11 @@
         progressView.autoresizingMask = NSViewMaxXMargin;
         [self addSubview:progressView];
         self.progressView = progressView;
+        
+//        id views = NSDictionaryOfVariableBindings(label);
+//        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[label]-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:views]];
+//        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[label]-|" options:NSLayoutFormatAlignAllCenterX metrics:nil views:views]];
+        self.translatesAutoresizingMaskIntoConstraints = NO;
     }
     return self;
 }
