@@ -340,6 +340,8 @@
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
+		F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */; };
+		F4F59BA7183C0184006331E3 /* CASFITSUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
 		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */; };
@@ -1336,6 +1338,8 @@
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
+		F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSUtilities.h; sourceTree = "<group>"; };
+		F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSUtilities.m; sourceTree = "<group>"; };
 		F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelController.m; sourceTree = "<group>"; };
 		F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelController.h; sourceTree = "<group>"; };
 		F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHFCUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.h; sourceTree = SOURCE_ROOT; };
@@ -1807,6 +1811,8 @@
 				F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */,
 				F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */,
 				F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */,
+				F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */,
+				F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -2743,6 +2749,7 @@
 				F44EDF2415FCC6D8003B1B4C /* CASCCDExposure.h in Headers */,
 				F44EDF2615FCC6D8003B1B4C /* CASCCDExposureIO.h in Headers */,
 				F44EDF2815FCC6D8003B1B4C /* CASCCDExposureLibrary.h in Headers */,
+				F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */,
 				F44EDF2A15FCC6D8003B1B4C /* CASAutoGuider.h in Headers */,
 				F44EDF2C15FCC6D8003B1B4C /* CASCCDProperties.h in Headers */,
 				F44EDF2E15FCC6D8003B1B4C /* CASDeviceFactory.h in Headers */,
@@ -3311,6 +3318,7 @@
 				F44EDF2715FCC6D8003B1B4C /* CASCCDExposureIO.m in Sources */,
 				F44EDF2915FCC6D8003B1B4C /* CASCCDExposureLibrary.m in Sources */,
 				F44EDF2B15FCC6D8003B1B4C /* CASAutoGuider.mm in Sources */,
+				F4F59BA7183C0184006331E3 /* CASFITSUtilities.m in Sources */,
 				F44EDF2D15FCC6D8003B1B4C /* CASCCDProperties.m in Sources */,
 				F44EDF3115FCC6D8003B1B4C /* CASDeviceManager.m in Sources */,
 				F44EDF3315FCC6D8003B1B4C /* CASIOCommand.m in Sources */,
