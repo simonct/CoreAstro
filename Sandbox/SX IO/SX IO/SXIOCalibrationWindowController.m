@@ -44,6 +44,17 @@
             NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
             CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, nil);
             if (!cgImage){
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSAlert* alert = [NSAlert alertWithMessageText:@"Missing Thumbnail"
+                                                         defaultButton:@"OK"
+                                                       alternateButton:nil
+                                                           otherButton:nil
+                                             informativeTextWithFormat:@"Please ensure SX IO is in the Applications folder and try running it again. I'll fix this bug in a future release."];
+                        [alert runModal];
+                    });
+                });
                 NSLog(@"No QL thumbnail for %@",self.url);
             }
             else{
