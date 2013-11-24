@@ -51,6 +51,7 @@
         NSMutableDictionary* meta = [[NSMutableDictionary alloc] initWithDictionary:self.meta copyItems:YES]; // or serialize/deserialize
         [meta setObject:CASCreateUUID() forKey:@"uuid"];
         result.meta = [meta copy];
+        result.format = kCASCCDExposureFormatFloat;
     }
     return result;
 }

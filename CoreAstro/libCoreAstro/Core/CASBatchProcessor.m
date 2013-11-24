@@ -255,6 +255,7 @@
             [mutableMeta setObject:time forKey:@"time"];
         }
         self.result.meta = [mutableMeta copy];
+        self.result.format = kCASCCDExposureFormatFloat;
     }
 
     [self writeResult:self.result fromExposure:exposure error:nil];

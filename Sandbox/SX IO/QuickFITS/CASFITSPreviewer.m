@@ -12,6 +12,22 @@
 
 const float kMaxPixelValue = 65535.0;
 
+// from CASFITSUtilities - todo; link to CA framework instead
+int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status)
+{
+    *status = fits_open_diskfile(fptr,path,mode,status);
+    if (!*status){
+        
+        // from fits_open_image
+        int hdutype;
+        if (ffghdt(*fptr, &hdutype, status) <= 0) {
+            if (hdutype != IMAGE_HDU)
+                *status = NOT_IMAGE;
+        }
+    }
+    return *status;
+}
+
 @implementation CASFITSPreviewer
 
 - (CGImageRef)newImageFromURL:(NSURL*)url error:(NSError**)error
@@ -24,7 +40,7 @@ const float kMaxPixelValue = 65535.0;
     NSString* path = [url path];
     
     // open the fits file
-    if (fits_open_image(&fptr, [path UTF8String], READONLY, &status)) {
+    if (cas_fits_open_image(&fptr, [path UTF8String], READONLY, &status)) {
         return nil;
     }
     

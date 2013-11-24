@@ -13,6 +13,115 @@
 #import <QuickLook/QuickLook.h>
 #import <CoreAstro/CoreAstro.h>
 
+@interface SXIOCalibrationModel : NSObject <QLPreviewItem>
+@property (nonatomic,copy) NSURL* url;
+@property (nonatomic,copy) NSString* name;
+@property (nonatomic,strong) NSImage* image;
+@property (nonatomic,readonly) NSImage* tickImage;
+@property (nonatomic,strong) CASCCDExposure* exposure;
+@property (nonatomic) CGSize previewSize;
+@property (nonatomic) BOOL loading;
+@property (nonatomic,readonly) BOOL hasCalibratedFrame;
++ (BOOL)pathIsCalibrated:(NSString*)path;
++ (NSString*)calibratedPathForExposurePath:(NSString*)path;
+@end
+
+@implementation SXIOCalibrationModel
+
+- (NSString*)name
+{
+    return [[NSFileManager defaultManager] displayNameAtPath:[self.url path]];
+}
+
+- (NSImage*)image
+{
+    if (!_image && self.url){
+        
+        self.loading = YES;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
+            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, nil);
+            if (!cgImage){
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSAlert* alert = [NSAlert alertWithMessageText:@"Missing Thumbnail"
+                                                         defaultButton:@"OK"
+                                                       alternateButton:nil
+                                                           otherButton:nil
+                                             informativeTextWithFormat:@"Please ensure SX IO is in the Applications folder and try running it again. I'll fix this bug in a future release."];
+                        [alert runModal];
+                    });
+                });
+                NSLog(@"No QL thumbnail for %@",self.url);
+            }
+            else{
+                
+                NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(CGImageGetWidth(cgImage),CGImageGetHeight(cgImage))];
+                if (nsImage){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.image = nsImage;
+                    });
+                }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.loading = NO;
+            });
+        });
+    }
+    return _image;
+}
+
+- (NSImage*)tickImage
+{
+    return self.hasCalibratedFrame ? [NSImage imageNamed:NSImageNameStatusAvailable] : nil;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTickImage
+{
+    return [NSSet setWithObjects:@"image",@"url",nil];
+}
+
+- (NSURL*)previewItemURL
+{
+    return self.url;
+}
+
+- (NSString*)previewItemTitle
+{
+    return self.name;
+}
+
+- (BOOL)hasCalibratedFrame
+{
+    if (!self.url){
+        return NO;
+    }
+    NSString* calpath = [SXIOCalibrationModel calibratedPathForExposurePath:[self.url path]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:calpath];
+}
+
++ (BOOL)pathIsCalibrated:(NSString*)path
+{
+    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
+    return [filename hasSuffix:@"_calibrated"];
+}
+
++ (NSString*)calibratedPathForExposurePath:(NSString*)path
+{
+    if (!path){
+        return nil;
+    }
+    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
+    NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
+    return [[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename] stringByAppendingPathExtension:[path pathExtension]];
+}
+
+@end
+
 @class SXIOCalibrationCollectionView, SXIOCalibrationModel;
 
 @interface SXIOCalibrationWindowController ()
@@ -120,104 +229,6 @@
     SXIOCalibrationItemView* view = (SXIOCalibrationItemView*)self.view;
     [view setSelected:self.selected];
     [view setNeedsDisplay:YES];
-}
-
-@end
-
-@interface SXIOCalibrationModel : NSObject <QLPreviewItem>
-@property (nonatomic,copy) NSURL* url;
-@property (nonatomic,copy) NSString* name;
-@property (nonatomic,strong) NSImage* image;
-@property (nonatomic,readonly) NSImage* tickImage;
-@property (nonatomic,strong) CASCCDExposure* exposure;
-@property (nonatomic) CGSize previewSize;
-@property (nonatomic) BOOL loading;
-@property (nonatomic,readonly) BOOL hasCalibratedFrame;
-+ (BOOL)pathIsCalibrated:(NSString*)path;
-+ (NSString*)calibratedPathForExposurePath:(NSString*)path;
-@end
-
-@implementation SXIOCalibrationModel
-
-- (NSString*)name
-{
-    return [[NSFileManager defaultManager] displayNameAtPath:[self.url path]];
-}
-
-- (NSImage*)image
-{
-    if (!_image && self.url){
-        
-        self.loading = YES;
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            NSURL* url = self.hasCalibratedFrame ? [NSURL fileURLWithPath:[[self class] calibratedPathForExposurePath:[self.url path]]] : self.url;
-            CGImageRef cgImage = QLThumbnailImageCreate(NULL,(__bridge CFURLRef)url,self.previewSize, nil);
-            if (!cgImage){
-                NSLog(@"No QL thumbnail for %@",self.url);
-            }
-            else{
-                
-                NSImage* nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(CGImageGetWidth(cgImage),CGImageGetHeight(cgImage))];
-                if (nsImage){
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        self.image = nsImage;
-                    });
-                }
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.loading = NO;
-            });
-        });
-    }
-    return _image;
-}
-
-- (NSImage*)tickImage
-{
-    return self.hasCalibratedFrame ? [NSImage imageNamed:NSImageNameStatusAvailable] : nil;
-}
-
-+ (NSSet*)keyPathsForValuesAffectingTickImage
-{
-    return [NSSet setWithObjects:@"image",@"url",nil];
-}
-
-- (NSURL*)previewItemURL
-{
-    return self.url;
-}
-
-- (NSString*)previewItemTitle
-{
-    return self.name;
-}
-
-- (BOOL)hasCalibratedFrame
-{
-    if (!self.url){
-        return NO;
-    }
-    NSString* calpath = [SXIOCalibrationModel calibratedPathForExposurePath:[self.url path]];
-    return [[NSFileManager defaultManager] fileExistsAtPath:calpath];
-}
-
-+ (BOOL)pathIsCalibrated:(NSString*)path
-{
-    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
-    return [filename hasSuffix:@"_calibrated"];
-}
-
-+ (NSString*)calibratedPathForExposurePath:(NSString*)path
-{
-    if (!path){
-        return nil;
-    }
-    NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
-    NSString* calibratedFilename = [filename stringByAppendingFormat:@"_calibrated"];
-    return [[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:calibratedFilename] stringByAppendingPathExtension:[path pathExtension]];
 }
 
 @end

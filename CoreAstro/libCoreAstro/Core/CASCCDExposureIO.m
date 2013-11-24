@@ -24,6 +24,7 @@
 //
 
 #import "CASCCDExposureIO.h"
+#import "CASFITSUtilities.h"
 #import <Accelerate/Accelerate.h>
 
 #if CAS_ENABLE_FITS
@@ -330,15 +331,6 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                            userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
 };
 
-+ (NSString*)sanitizeExposurePath:(NSString*)path
-{
-    NSMutableString* s = [NSMutableString stringWithString:path];
-    [s replaceOccurrencesOfString:@"(" withString:@"{" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
-    [s replaceOccurrencesOfString:@")" withString:@"}" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
-    [s replaceOccurrencesOfString:@" " withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
-    [s replaceOccurrencesOfString:@"-" withString:@"_" options:NSLiteralSearch range:NSMakeRange(0, [s length])];
-    return [s copy];
-}
 
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
@@ -356,7 +348,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
         fitsfile *fptr;
         
         const char * path = [s fileSystemRepresentation];
-        if (fits_create_file(&fptr, path, &status)) {
+        if (fits_create_diskfile(&fptr, path, &status)) {
             error = createFITSError(status,[NSString stringWithFormat:@"Failed to create FITS file %d",status]);
         }
         else {
@@ -644,7 +636,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     fitsfile *fptr;
     int hdutype;
     
-    if (fits_open_image(&fptr, [[self.url path] UTF8String], READONLY, &status)){
+    if (cas_fits_open_image(&fptr, [[self.url path] UTF8String], READONLY, &status)){
         error = createFITSError(status,[NSString stringWithFormat:@"Failed to open FITS file %d",status]);
     }
     else {

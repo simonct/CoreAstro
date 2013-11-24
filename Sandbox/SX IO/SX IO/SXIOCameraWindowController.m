@@ -719,14 +719,20 @@ static void* kvoContext;
     if (!suffix || !_targetFolder){
         return nil;
     }
+    // look for a matching calibration frame
     NSString* filename = [self exposureSaveNameWithSuffix:suffix];
     NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
-    CASCCDExposure* exp = [[CASCCDExposure alloc] init];
-    if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:exp readPixels:YES error:nil]){
+    CASCCDExposure* calibration = [[CASCCDExposure alloc] init];
+    if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:calibration readPixels:YES error:nil]){
         return nil;
     }
     // check binning and dimenions match
-    return exposure;
+    const CASSize exposureSize = exposure.actualSize;
+    const CASSize calibrationSize = calibration.actualSize;
+    if (exposureSize.width != calibrationSize.width || exposureSize.height != calibrationSize.height){
+        return nil;
+    }
+    return calibration;
 }
 
 - (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock

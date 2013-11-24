@@ -115,7 +115,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     
     const NSTimeInterval time = CASTimeBlock(^{
 
-        result = [exposure_ copy];
+        result = [exposure_ copy]; // returns a floating point exposure
         if (!result){
             NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
         }
@@ -157,9 +157,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 }
             }
         }
-        
-        // set the exposure type (needed for saving it correctly)
-        result.format = exposure_.format;
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -182,7 +179,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
     const NSInteger groupCount = [self standardGroupSize];
     const NSInteger rowsPerGroup = (size.height - 2) / groupCount;
 
-    __block CASCCDExposure* result = [exposure_ copy];
+    __block CASCCDExposure* result = [exposure_ copy]; // returns a floating point exposure
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -212,9 +209,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 }
             }
         });
-        
-        // set the exposure type (needed for saving it correctly)
-        result.format = exposure_.format;
     }
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),[NSDate timeIntervalSinceReferenceDate] - start);
@@ -224,7 +218,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)invert:(CASCCDExposure*)exposure_
 {
-    __block CASCCDExposure* result = [exposure_ copy];
+    __block CASCCDExposure* result = [exposure_ copy]; // returns a floating point exposure
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -271,9 +265,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                     }
                 });
             }
-            
-            // set the exposure type (needed for saving it correctly)
-            result.format = exposure_.format;
         });
 
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -284,7 +275,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)normalise:(CASCCDExposure*)exposure
 {
-    __block CASCCDExposure* result = [exposure copy];
+    __block CASCCDExposure* result = [exposure copy]; // returns a floating point exposure
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -300,9 +291,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             // divide by the average
             vDSP_vsdiv(fbuf,1,(float*)&average,fbuf,1,[result.floatPixels length]/sizeof(float));
         }
-
-        // set the exposure type (needed for saving it correctly)
-        result.format = exposure.format;
     }
     
     return result;
@@ -310,7 +298,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (CASCCDExposure*)removeBayerMatrix:(CASCCDExposure*)exposure_
 {
-    __block CASCCDExposure* result = [exposure_ copy];
+    __block CASCCDExposure* result = [exposure_ copy]; // returns a floating point exposure
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -345,9 +333,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                 // cleanup
                 free(destination.data);
             }
-            
-            // set the exposure type (needed for saving it correctly)
-            result.format = exposure_.format;
         });
         
         NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
@@ -402,7 +387,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         return nil;
     }
  
-    __block CASCCDExposure* result = [exposure copy];
+    __block CASCCDExposure* result = [exposure copy]; // returns a floating point exposure
     if (!result){
         NSLog(@"%@: out of memory",NSStringFromSelector(_cmd));
     }
@@ -417,9 +402,6 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         else {
             vDSP_vsub(fdarkOrBias,1,fbuf,1,fbuf,1,[result.floatPixels length]/sizeof(float));
         }
-        
-        // set the exposure type (needed for saving it correctly)
-        result.format = exposure.format;
     }
     
     return result;
