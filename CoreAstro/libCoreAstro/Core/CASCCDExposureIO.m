@@ -308,9 +308,12 @@
 #if CAS_ENABLE_FITS
 
 @interface CASCCDExposureFITS : CASCCDExposureIO
+@property (nonatomic,readonly) NSDateFormatter* utcDateFormatter;
 @end
 
-@implementation CASCCDExposureFITS
+@implementation CASCCDExposureFITS {
+    NSDateFormatter* _utcDateFormatter;
+}
 
 - (NSString*)metaKey
 {
@@ -331,6 +334,15 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                            userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
 };
 
+- (NSDateFormatter*)utcDateFormatter
+{
+    if (!_utcDateFormatter){
+        _utcDateFormatter = [[NSDateFormatter alloc] init];
+        _utcDateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+        [_utcDateFormatter setDateFormat:@"yyyy'.'M'.'dd'T'HH':'mm':'ss'.'SSS"];
+    }
+    return _utcDateFormatter;
+}
 
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
@@ -416,14 +428,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     NSDate* date = exposure.date;
                     if (date){
                         // yyyy.mm.ddThh:mm:ss[.sss]
-                        static NSDateFormatter* utcFormatter = nil;
-                        static dispatch_once_t onceToken;
-                        dispatch_once(&onceToken, ^{
-                            utcFormatter = [[NSDateFormatter alloc] init];
-                            utcFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-                            [utcFormatter setDateFormat:@"yyyy'.'M'.'dd'T'HH':'mm':'ss'.'SSS"];
-                        });
-                        NSString* dateStr = [utcFormatter stringFromDate:date];
+                        NSString* dateStr = [self.utcDateFormatter stringFromDate:date];
                         if ([dateStr length]){
                             const char* s = [dateStr cStringUsingEncoding:NSASCIIStringEncoding];
                             if (s){
@@ -796,7 +801,13 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                             mmetadata[@"uuid"] = [NSString stringWithUTF8String:uuid];
                         }
                         
-                        // date-obs
+                        char dateObs[128];
+                        if (!fits_read_key(fptr,TSTRING,"DATE-OBS",(void*)dateObs,NULL,&status)){
+                            NSDate* date = [self.utcDateFormatter dateFromString:[NSString stringWithUTF8String:dateObs]];
+                            if (date){
+                                mmetadata[@"time"] = @([date timeIntervalSinceReferenceDate]);
+                            }
+                        }
 
                         mmetadata[@"device"] = device;
                         mmetadata[@"exposure"] = NSStringFromCASExposeParams(params);
