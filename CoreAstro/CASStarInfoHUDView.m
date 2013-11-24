@@ -66,18 +66,19 @@
             self.coordsLabel.stringValue = [NSString stringWithFormat:@"%.1fx%.1f",position.x,position.y];
 
             const NSInteger width = 100 * exposure.params.bin.width;
-            const NSInteger height = 15 * exposure.params.bin.height;
+            const NSInteger height = 100 * exposure.params.bin.height;
             const NSInteger xpos = roundf(position.x * exposure.params.bin.width);
             const NSInteger ypos = roundf(position.y * exposure.params.bin.height);
             
-            // grab a subframe around the star point
+            // grab a subframe around the star point; we'll scan downwards and find the row with the brightest pixel and assume that's the
+            // star's centre
             CASCCDExposure* subframe = [exposure subframeWithRect:CASRectMake(CASPointMake(xpos - width/2, ypos - height/2), CASSizeMake(width, height))];
             if (!subframe){
                 nostar();
             }
             else{
             
-                // grab the line of pixels closest to the y posn of the star
+                // grab the row of pixels closest to the y posn of the star
                 float* pixels = (float*)[[subframe floatPixels] bytes];
                 NSMutableData* pixelData = [NSMutableData dataWithLength:subframe.actualSize.width * sizeof(float)];
                 if (pixelData){
@@ -92,6 +93,26 @@
                         memcpy([pixelData mutableBytes], pixels, subframe.actualSize.width * sizeof(float));
                         self.graphView.samples = pixelData;
                         self.graphView.showLimits = YES;
+                        
+                        // hfd
+                        CASImageMetrics* metrics = [CASImageMetrics imageMetricsWithIdentifier:nil];
+                        if (metrics){
+                            
+                            __block double fastHFD, accurateHFD;
+                            __block CGPoint fastCentre, accurateCentre;
+                            
+                            const NSTimeInterval fastTime = CASTimeBlock(^{
+                                fastHFD = [metrics hfdForExposure:subframe centroid:&fastCentre mode:CASImageMetricsHFDModeFast];
+                            });
+                            NSLog(@"fastHFD: %f@%@ in %fs",fastHFD,NSStringFromCGPoint(fastCentre),fastTime);
+                            
+                            const NSTimeInterval accurateTime = CASTimeBlock(^{
+                                accurateHFD = [metrics hfdForExposure:subframe centroid:&accurateCentre mode:CASImageMetricsHFDModeAccurate];
+                            });
+                            NSLog(@"accurateHFD: %f@%@ in %fs",accurateHFD,NSStringFromCGPoint(accurateCentre),accurateTime);
+                            
+                            self.coordsLabel.stringValue = [NSString stringWithFormat:@"%f / %f",fastHFD,accurateHFD];
+                        }
                     }
                 }
             }

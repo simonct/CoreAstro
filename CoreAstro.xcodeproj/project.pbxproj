@@ -97,6 +97,16 @@
 		F455350916933C3A006A4A2F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59A15BDD7250097532B /* QuartzCore.framework */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
+		F4587242183EA98700CB53D1 /* CASImageMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587240183EA98700CB53D1 /* CASImageMetrics.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4587243183EA98700CB53D1 /* CASImageMetrics.mm in Sources */ = {isa = PBXBuildFile; fileRef = F4587241183EA98700CB53D1 /* CASImageMetrics.mm */; };
+		F4587249183EAAC800CB53D1 /* CASHalfFluxDiameter.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587247183EAAC800CB53D1 /* CASHalfFluxDiameter.h */; };
+		F458724A183EAAC800CB53D1 /* CASHalfFluxDiameter.m in Sources */ = {isa = PBXBuildFile; fileRef = F4587248183EAAC800CB53D1 /* CASHalfFluxDiameter.m */; };
+		F4587250183EABE200CB53D1 /* CASAlgorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = F458724C183EABE200CB53D1 /* CASAlgorithm.h */; };
+		F4587251183EABE200CB53D1 /* CASAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = F458724D183EABE200CB53D1 /* CASAlgorithm.m */; };
+		F4587252183EABE200CB53D1 /* CASAlgorithm+Exposure.h in Headers */ = {isa = PBXBuildFile; fileRef = F458724E183EABE200CB53D1 /* CASAlgorithm+Exposure.h */; };
+		F4587253183EABE200CB53D1 /* CASAlgorithm+Exposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F458724F183EABE200CB53D1 /* CASAlgorithm+Exposure.m */; };
+		F4587259183EACFC00CB53D1 /* CASFocusMetric.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587257183EACFC00CB53D1 /* CASFocusMetric.h */; };
+		F458725A183EACFC00CB53D1 /* CASFocusMetric.m in Sources */ = {isa = PBXBuildFile; fileRef = F4587258183EACFC00CB53D1 /* CASFocusMetric.m */; };
 		F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45A2DF8166B835100A1D79C /* CASExposureView.m */; };
 		F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */; };
 		F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */; };
@@ -585,6 +595,16 @@
 		F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
+		F4587240183EA98700CB53D1 /* CASImageMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageMetrics.h; sourceTree = "<group>"; };
+		F4587241183EA98700CB53D1 /* CASImageMetrics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageMetrics.mm; sourceTree = "<group>"; };
+		F4587247183EAAC800CB53D1 /* CASHalfFluxDiameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHalfFluxDiameter.h; sourceTree = "<group>"; };
+		F4587248183EAAC800CB53D1 /* CASHalfFluxDiameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHalfFluxDiameter.m; sourceTree = "<group>"; };
+		F458724C183EABE200CB53D1 /* CASAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAlgorithm.h; sourceTree = "<group>"; };
+		F458724D183EABE200CB53D1 /* CASAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAlgorithm.m; sourceTree = "<group>"; };
+		F458724E183EABE200CB53D1 /* CASAlgorithm+Exposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CASAlgorithm+Exposure.h"; sourceTree = "<group>"; };
+		F458724F183EABE200CB53D1 /* CASAlgorithm+Exposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CASAlgorithm+Exposure.m"; sourceTree = "<group>"; };
+		F4587257183EACFC00CB53D1 /* CASFocusMetric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFocusMetric.h; sourceTree = "<group>"; };
+		F4587258183EACFC00CB53D1 /* CASFocusMetric.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFocusMetric.m; sourceTree = "<group>"; };
 		F45A2DF7166B835100A1D79C /* CASExposureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureView.h; sourceTree = "<group>"; };
 		F45A2DF8166B835100A1D79C /* CASExposureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureView.m; sourceTree = "<group>"; };
 		F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraControlsViewController.h; sourceTree = "<group>"; };
@@ -1544,6 +1564,21 @@
 			path = ../CoreAstro/libCoreAstro/Vendors/SXCCD;
 			sourceTree = "<group>";
 		};
+		F458724B183EABD100CB53D1 /* Algorithm */ = {
+			isa = PBXGroup;
+			children = (
+				F4587257183EACFC00CB53D1 /* CASFocusMetric.h */,
+				F4587258183EACFC00CB53D1 /* CASFocusMetric.m */,
+				F458724C183EABE200CB53D1 /* CASAlgorithm.h */,
+				F458724D183EABE200CB53D1 /* CASAlgorithm.m */,
+				F458724E183EABE200CB53D1 /* CASAlgorithm+Exposure.h */,
+				F458724F183EABE200CB53D1 /* CASAlgorithm+Exposure.m */,
+				F4587247183EAAC800CB53D1 /* CASHalfFluxDiameter.h */,
+				F4587248183EAAC800CB53D1 /* CASHalfFluxDiameter.m */,
+			);
+			name = Algorithm;
+			sourceTree = "<group>";
+		};
 		F47B3A7B16346EDC008C73A7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1793,6 +1828,9 @@
 				F49E536815A995570018DC75 /* CASIOTransport.m */,
 				F49E537A15A9962F0018DC75 /* CASPluginManager.h */,
 				F49E537B15A9962F0018DC75 /* CASPluginManager.m */,
+				F4587240183EA98700CB53D1 /* CASImageMetrics.h */,
+				F4587241183EA98700CB53D1 /* CASImageMetrics.mm */,
+				F458724B183EABD100CB53D1 /* Algorithm */,
 				F448EBAF15E6B4CE002AB171 /* CASImageProcessor.h */,
 				F448EBB015E6B4CE002AB171 /* CASImageProcessor.mm */,
 				F4849C7016590C820069647F /* CASImageDebayer.h */,
@@ -2749,6 +2787,7 @@
 				F44EDF2415FCC6D8003B1B4C /* CASCCDExposure.h in Headers */,
 				F44EDF2615FCC6D8003B1B4C /* CASCCDExposureIO.h in Headers */,
 				F44EDF2815FCC6D8003B1B4C /* CASCCDExposureLibrary.h in Headers */,
+				F4587250183EABE200CB53D1 /* CASAlgorithm.h in Headers */,
 				F44EDF2A15FCC6D8003B1B4C /* CASAutoGuider.h in Headers */,
 				F44EDF2C15FCC6D8003B1B4C /* CASCCDProperties.h in Headers */,
 				F44EDF2E15FCC6D8003B1B4C /* CASDeviceFactory.h in Headers */,
@@ -2819,10 +2858,13 @@
 				F4CA53C8169CC9FD00832CFF /* dualtree_nearestneighbour.h in Headers */,
 				F4CA53C9169CC9FD00832CFF /* dualtree_rangesearch.h in Headers */,
 				F4CA53CA169CC9FD00832CFF /* errors.h in Headers */,
+				F4587242183EA98700CB53D1 /* CASImageMetrics.h in Headers */,
 				F4CA53CB169CC9FD00832CFF /* fit-wcs.h in Headers */,
 				F4CA53CC169CC9FD00832CFF /* fits-guess-scale.h in Headers */,
 				F4CA53CD169CC9FD00832CFF /* fitsbin.h in Headers */,
 				F4CA53CE169CC9FD00832CFF /* fitsfile.h in Headers */,
+				F4587259183EACFC00CB53D1 /* CASFocusMetric.h in Headers */,
+				F4587252183EABE200CB53D1 /* CASAlgorithm+Exposure.h in Headers */,
 				F4CA53CF169CC9FD00832CFF /* fitsioutils.h in Headers */,
 				F4CA53D0169CC9FD00832CFF /* fitstable.h in Headers */,
 				F4CA53D1169CC9FD00832CFF /* gslutils.h in Headers */,
@@ -2866,6 +2908,7 @@
 				F4CA53F7169CC9FD00832CFF /* qfits_filename.h in Headers */,
 				F4CA53F8169CC9FD00832CFF /* qfits_header.h in Headers */,
 				F4CA53F9169CC9FD00832CFF /* qfits_image.h in Headers */,
+				F4587249183EAAC800CB53D1 /* CASHalfFluxDiameter.h in Headers */,
 				F4CA53FA169CC9FD00832CFF /* qfits_keywords.h in Headers */,
 				F4CA53FB169CC9FD00832CFF /* qfits_md5.h in Headers */,
 				F4CA53FC169CC9FD00832CFF /* qfits_memory.h in Headers */,
@@ -3320,6 +3363,7 @@
 				F44EDF2B15FCC6D8003B1B4C /* CASAutoGuider.mm in Sources */,
 				F44EDF2D15FCC6D8003B1B4C /* CASCCDProperties.m in Sources */,
 				F44EDF3115FCC6D8003B1B4C /* CASDeviceManager.m in Sources */,
+				F458724A183EAAC800CB53D1 /* CASHalfFluxDiameter.m in Sources */,
 				F44EDF3315FCC6D8003B1B4C /* CASIOCommand.m in Sources */,
 				F44EDF3515FCC6D8003B1B4C /* CASIOTransport.m in Sources */,
 				F44EDF3715FCC6D8003B1B4C /* CASPluginManager.m in Sources */,
@@ -3335,6 +3379,7 @@
 				F4EEF2711604662100547009 /* CASHIDDeviceBrowser.m in Sources */,
 				F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */,
 				F4EEF2AA1604692600547009 /* HID_Utilities.c in Sources */,
+				F4587243183EA98700CB53D1 /* CASImageMetrics.mm in Sources */,
 				F4EEF2AD1604692600547009 /* ImmrHIDUtilAddOn.c in Sources */,
 				F4EEF2AF1604692600547009 /* IOHIDDevice_.c in Sources */,
 				F4EEF2B11604692600547009 /* IOHIDElement_.c in Sources */,
@@ -3352,11 +3397,14 @@
 				F4CA50DA169CB50900832CFF /* CASPlateSolver.m in Sources */,
 				F4CA50DE169CB62F00832CFF /* CASTaskWrapper.m in Sources */,
 				F4CA53B2169CC9FD00832CFF /* bl-nl.inc in Sources */,
+				F458725A183EACFC00CB53D1 /* CASFocusMetric.m in Sources */,
 				F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */,
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
 				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
+				F4587253183EABE200CB53D1 /* CASAlgorithm+Exposure.m in Sources */,
 				F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */,
+				F4587251183EABE200CB53D1 /* CASAlgorithm.m in Sources */,
 				F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */,
 				F4FCE71317772270000E117F /* CASSHFCUSBDevice.m in Sources */,
 				F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */,
