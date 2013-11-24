@@ -38,6 +38,7 @@
     CIImage* _filteredCIImage;
     NSMutableDictionary* _filterCache;
     CGRect _extent;
+    BOOL _flipVertical, _flipHorizontal;
 }
 
 + (void)loadCIPluginWithName:(NSString*)name
@@ -99,12 +100,14 @@
     // tracking area, mouse moved events, convertPoint:fromLayer
 }
 
+/* switch off for now - may offer an option of slower but more memory efficient in the future
 - (CALayer *)makeBackingLayer
 {
     CASTiledLayer* layer = [[CASTiledLayer alloc] init];
     layer.tileSize = CGSizeMake(512, 512);
     return layer;
 }
+*/
 
 - (CGRect) unitFrame
 {
@@ -149,6 +152,26 @@
     // todo; allow filter order to be set externally ?
     // todo; set roi to the area of the subframe using CIFilterShape
     
+    if (self.flipVertical || self.flipHorizontal){
+        
+        CIFilter* flip = [self filterWithName:@"CIAffineTransform"];
+        [flip setDefaults];
+        [flip setValue:image forKey:@"inputImage"];
+        
+        NSAffineTransform* transform = [NSAffineTransform transform];
+        if (self.flipVertical){
+            [transform scaleXBy:1.0 yBy:-1.0];
+            [transform translateXBy:0 yBy:-image.extent.size.height];
+        }
+        if (self.flipHorizontal){
+            [transform scaleXBy:-1.0 yBy:1.0];
+            [transform translateXBy:-image.extent.size.width yBy:0];
+        }
+        [flip setValue:transform forKey:@"inputTransform"];
+        
+        image = [flip valueForKey:@"outputImage"];
+    }
+
     if (self.debayer){
         CIFilter* debayer = [self filterWithName:@"CASDebayerFilter"];
         if (debayer){
@@ -480,6 +503,32 @@
 {
     if (_stretchGamma != stretchGamma){
         _stretchGamma = stretchGamma;
+        [self resetFilteredImage];
+    }
+}
+
+- (BOOL)flipVertical
+{
+    return _flipVertical;
+}
+
+- (void)setFlipVertical:(BOOL)flipVertical
+{
+    if (flipVertical != _flipVertical){
+        _flipVertical = flipVertical;
+        [self resetFilteredImage];
+    }
+}
+
+- (BOOL)flipHorizontal
+{
+    return _flipHorizontal;
+}
+
+- (void)setFlipHorizontal:(BOOL)flipHorizontal
+{
+    if (flipHorizontal != _flipHorizontal){
+        _flipHorizontal = flipHorizontal;
         [self resetFilteredImage];
     }
 }
