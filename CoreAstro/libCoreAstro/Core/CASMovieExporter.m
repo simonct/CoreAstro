@@ -25,6 +25,7 @@
 
 #import "CASMovieExporter.h"
 #import "CASUtilities.h"
+#import "CASCCDExposureIO.h"
 #import <CoreVideo/CVPixelBuffer.h>
 
 @interface CASMovieExporter ()
@@ -99,18 +100,41 @@ static NSInteger count;
                             
                             CGContextDrawImage(context,CGRectMake(0,0,size.width,size.height),image);
                             
+                            NSMutableString* label = [NSMutableString stringWithCapacity:256];
+                            
                             // draw timecode
                             if (self.showDateTime){
-                                
                                 NSString* displayDate = exposure.displayDate;
-                                if ([displayDate length]) {
-                                    
-                                    const CGFloat fontSize = self.fontSize ? self.fontSize : (size.width < 1000 ? 24 : 36);
-                                    CGContextSelectFont(context, "Helvetica", fontSize, kCGEncodingMacRoman);
-                                    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.75);
-                                    CGContextSetTextDrawingMode(context, kCGTextFill);
-                                    CGContextShowTextAtPoint(context, 20, 20, [displayDate UTF8String], [displayDate length]);
+                                if (displayDate) {
+                                    [label appendString:displayDate];
                                 }
+                            }
+                            
+                            // draw filename
+                            if (self.showFilename){
+                                NSString* name = [exposure.io.url resourceValuesForKeys:@[NSURLNameKey] error:nil][NSURLNameKey];
+                                if ([name length]){
+                                    if ([label length]){
+                                        [label appendString:@", "];
+                                    }
+                                    [label appendString:name];
+                                }
+                            }
+                            
+                            // draw custom
+                            if (self.showCustom && [self.customAnnotation length]){
+                                if ([label length]){
+                                    [label appendString:@", "];
+                                }
+                                [label appendString:self.customAnnotation];
+                            }
+                            
+                            if ([label length]){
+                                const CGFloat fontSize = self.fontSize ? self.fontSize : (size.width < 1000 ? 24 : 36);
+                                CGContextSelectFont(context, "Helvetica", fontSize, kCGEncodingMacRoman);
+                                CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.75);
+                                CGContextSetTextDrawingMode(context, kCGTextFill);
+                                CGContextShowTextAtPoint(context, 20, 20, [label UTF8String], [label length]);
                             }
                             
                             CGContextRelease(context);

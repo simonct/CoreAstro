@@ -16,9 +16,17 @@
 @property (nonatomic,assign) BOOL cancelled;
 @property (nonatomic,assign) NSInteger compressionLevel;
 @property (nonatomic,assign) NSInteger fontSize;
-@property (nonatomic,assign) BOOL showDateTime;
+@property (nonatomic,assign) BOOL showDateTime, showFilename, showCustom;
+@property (nonatomic,copy) NSString* customAnnotation;
 @property (strong) IBOutlet NSView *saveAccessoryView;
 @property (nonatomic,copy) NSString* movieFilename;
+
+typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
+    SXIOExportMovieDateSort,
+    SXIOExportMovieNameSort
+};
+@property (nonatomic,assign) SXIOExportMovieSortMode sortMode;
+
 @end
 
 @implementation SXIOExportMovieWindowController
@@ -139,11 +147,23 @@
                             self.exporter = [CASMovieExporter exporterWithURL:save.URL];
                             if (self.exporter){
                                 
-                                NSArray* sortedURLs = [open.URLs sortedArrayWithOptions:0 usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
-                                    NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
-                                    NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
-                                    return [d1[NSURLCreationDateKey] compare:d2[NSURLCreationDateKey]];
-                                }];
+                                NSArray* sortedURLs;
+                                switch (self.sortMode) {
+                                    case SXIOExportMovieDateSort:
+                                        sortedURLs = [open.URLs sortedArrayWithOptions:0 usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
+                                            NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
+                                            NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLCreationDateKey] error:nil];
+                                            return [d1[NSURLCreationDateKey] compare:d2[NSURLCreationDateKey]];
+                                        }];
+                                        break;
+                                    case SXIOExportMovieNameSort:
+                                        sortedURLs = [open.URLs sortedArrayWithOptions:0 usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
+                                            NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLNameKey] error:nil];
+                                            NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLNameKey] error:nil];
+                                            return [d1[NSURLNameKey] compare:d2[NSURLNameKey]];
+                                        }];
+                                        break;
+                                }
                                 
                                 NSError* error;
                                 __block NSInteger frame = 0;
@@ -152,15 +172,13 @@
                                 __weak __typeof(self) weakSelf = self;
                                 self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time){
                                     
+                                    // todo; pass in the annotation here rather than create it in the movie exporter ?
+                                    
                                     NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
                                     if (!nextURL){
-                                        
                                         [weakSelf.exporter complete];
-                                        
                                         dispatch_async(dispatch_get_main_queue(), ^{
-                                            
                                             weakSelf.exporter = nil;
-                                            
                                             callCompletion(nil,save.URL);
                                         });
                                     }
@@ -174,7 +192,10 @@
                                 self.exporter.showDateTime = self.showDateTime;
                                 self.exporter.fontSize = self.fontSize;
                                 self.exporter.compressionLevel = self.compressionLevel;
-
+                                self.exporter.showFilename = self.showFilename;
+                                self.exporter.showCustom = self.showCustom;
+                                self.exporter.customAnnotation = self.customAnnotation;
+                                
                                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
                             }
                         });
