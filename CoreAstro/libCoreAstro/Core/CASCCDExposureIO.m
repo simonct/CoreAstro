@@ -878,6 +878,18 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     return exp;
 }
 
++ (CASCCDExposure*)exposureWithPath:(NSString*)path readPixels:(BOOL)readPixels error:(NSError**)error
+{
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    if (io){
+        CASCCDExposure* exp = [CASCCDExposure new];
+        if ([io readExposure:exp readPixels:readPixels error:error]){
+            return exp;
+        }
+    }
+    return nil;
+}
+
 + (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure
 {
     NSString* name = exposure.deviceID;
