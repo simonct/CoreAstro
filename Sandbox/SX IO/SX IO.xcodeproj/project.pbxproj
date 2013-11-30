@@ -7,6 +7,80 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F40D5B2E1849EC5E00977FA9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
+		F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */; };
+		F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
+		F40D5B311849EC5E00977FA9 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
+		F40D5B321849EC5E00977FA9 /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586B179BC0100013D220 /* CASCenteringClipView.m */; };
+		F40D5B331849EC5E00977FA9 /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586D179BC0100013D220 /* CASZoomableView.m */; };
+		F40D5B341849EC5E00977FA9 /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586F179BC0100013D220 /* CASExposureView.m */; };
+		F40D5B351849EC5E00977FA9 /* CASHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25878179BC0990013D220 /* CASHUDView.m */; };
+		F40D5B361849EC5E00977FA9 /* CASExposureInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2587A179BC0990013D220 /* CASExposureInfoView.m */; };
+		F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2587D179BC0990013D220 /* CASStarInfoHUDView.m */; };
+		F40D5B381849EC5E00977FA9 /* CASProgressHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25880179BC0990013D220 /* CASProgressHUDView.m */; };
+		F40D5B391849EC5E00977FA9 /* CASHistogramHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25882179BC0990013D220 /* CASHistogramHUDView.m */; };
+		F40D5B3A1849EC5E00977FA9 /* CASPlateSolutionHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25885179BC0990013D220 /* CASPlateSolutionHUDView.m */; };
+		F40D5B3B1849EC5E00977FA9 /* CASSimpleGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25888179BC0990013D220 /* CASSimpleGraphView.m */; };
+		F40D5B3C1849EC5E00977FA9 /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2589B179BC1450013D220 /* CASExposuresController.m */; };
+		F40D5B3D1849EC5E00977FA9 /* CASTemperatureTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2589D179BC1460013D220 /* CASTemperatureTransformer.m */; };
+		F40D5B3E1849EC5E00977FA9 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258A8179BC1630013D220 /* NSApplication+CASScripting.m */; };
+		F40D5B3F1849EC5E00977FA9 /* CASScriptCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AA179BC1630013D220 /* CASScriptCommand.m */; };
+		F40D5B401849EC5E00977FA9 /* CASCaptureCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AC179BC1630013D220 /* CASCaptureCommand.m */; };
+		F40D5B411849EC5E00977FA9 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258AE179BC1630013D220 /* CASGuideCommand.m */; };
+		F40D5B421849EC5E00977FA9 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258B9179BC1D90013D220 /* CASCameraControlsViewController.m */; };
+		F40D5B431849EC5E00977FA9 /* CASGuiderControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258BC179BC1D90013D220 /* CASGuiderControlsViewController.m */; };
+		F40D5B441849EC5E00977FA9 /* CASFilterWheelControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258BF179BC1D90013D220 /* CASFilterWheelControlsViewController.m */; };
+		F40D5B451849EC5E00977FA9 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
+		F40D5B461849EC5E00977FA9 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
+		F40D5B471849EC5E00977FA9 /* SXIOSaveTargetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6424A179BEE540044B349 /* SXIOSaveTargetViewController.m */; };
+		F40D5B481849EC5E00977FA9 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6425F179C05C50044B349 /* CASShadowView.m */; };
+		F40D5B491849EC5E00977FA9 /* CASProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E64276179DC27A0044B349 /* CASProgressWindowController.m */; };
+		F40D5B4A1849EC5E00977FA9 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */; };
+		F40D5B4B1849EC5E00977FA9 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
+		F40D5B4C1849EC5E00977FA9 /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
+		F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
+		F40D5B4E1849EC5E00977FA9 /* CASContrastStretchSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */; };
+		F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
+		F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
+		F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
+		F40D5B531849EC5E00977FA9 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */; };
+		F40D5B541849EC5E00977FA9 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E64283179DC2D10044B349 /* Quartz.framework */; };
+		F40D5B551849EC5E00977FA9 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
+		F40D5B561849EC5E00977FA9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25874179BC06E0013D220 /* QuartzCore.framework */; };
+		F40D5B571849EC5E00977FA9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2302179B30D60049F5B5 /* Cocoa.framework */; };
+		F40D5B581849EC5E00977FA9 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
+		F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
+		F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2311179B30D60049F5B5 /* Credits.rtf */; };
+		F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4FD2317179B30D60049F5B5 /* MainMenu.xib */; };
+		F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A2587B179BC0990013D220 /* CASExposureInfoView.xib */; };
+		F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A2587E179BC0990013D220 /* CASStarInfoHUDView.xib */; };
+		F40D5B5F1849EC5E00977FA9 /* CASHistogramHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A25883179BC0990013D220 /* CASHistogramHUDView.xib */; };
+		F40D5B601849EC5E00977FA9 /* CASPlateSolutionHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A25886179BC0990013D220 /* CASPlateSolutionHUDView.xib */; };
+		F40D5B611849EC5E00977FA9 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258BA179BC1D90013D220 /* CASCameraControlsViewController.xib */; };
+		F40D5B621849EC5E00977FA9 /* CASGuiderControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258BD179BC1D90013D220 /* CASGuiderControlsViewController.xib */; };
+		F40D5B631849EC5E00977FA9 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
+		F40D5B641849EC5E00977FA9 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F40D5B651849EC5E00977FA9 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
+		F40D5B661849EC5E00977FA9 /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4E6422D179BDF8F0044B349 /* loop.png */; };
+		F40D5B671849EC5E00977FA9 /* SXIOSaveTargetViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E6424B179BEE540044B349 /* SXIOSaveTargetViewController.xib */; };
+		F40D5B681849EC5E00977FA9 /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F4E6424E179BFFBD0044B349 /* moon.icns */; };
+		F40D5B691849EC5E00977FA9 /* zoomout.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E6424F179BFFBD0044B349 /* zoomout.pdf */; };
+		F40D5B6A1849EC5E00977FA9 /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64250179BFFBD0044B349 /* move.pdf */; };
+		F40D5B6B1849EC5E00977FA9 /* zoomin.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64251179BFFBD0044B349 /* zoomin.pdf */; };
+		F40D5B6C1849EC5E00977FA9 /* opendevices.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64252179BFFBD0044B349 /* opendevices.pdf */; };
+		F40D5B6D1849EC5E00977FA9 /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64253179BFFBD0044B349 /* selection.pdf */; };
+		F40D5B6E1849EC5E00977FA9 /* zoomtofit.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64254179BFFBD0044B349 /* zoomtofit.pdf */; };
+		F40D5B6F1849EC5E00977FA9 /* zoom1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E64255179BFFBD0044B349 /* zoom1.pdf */; };
+		F40D5B701849EC5E00977FA9 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E64277179DC27A0044B349 /* CASProgressWindowController.xib */; };
+		F40D5B711849EC5E00977FA9 /* SXIOFilterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */; };
+		F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
+		F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */; };
+		F40D5B751849EC5E00977FA9 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
+		F40D5B771849EC5E00977FA9 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
+		F40D5B791849EC5E00977FA9 /* Debayer.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F48F465017C40971008FCEBE /* Debayer.plugin */; };
+		F40D5B7A1849EC5E00977FA9 /* ContrastStretch.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */; };
+		F40D5B7C1849EC5E00977FA9 /* QuickFITS.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; };
+		F40D5B891849ECBE00977FA9 /* CCD IO-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */; };
 		F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53517C95B7C001C42F1 /* QuickLook.framework */; };
 		F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53817C95B7C001C42F1 /* CoreServices.framework */; };
@@ -121,6 +195,41 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F40D5B241849EC5E00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F415C53317C95B7C001C42F1;
+			remoteInfo = QuickFITS;
+		};
+		F40D5B261849EC5E00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F48F463C17C40971008FCEBE;
+			remoteInfo = Debayer;
+		};
+		F40D5B281849EC5E00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4F9B1FD17B15A9A0063DD0D;
+			remoteInfo = ContrastStretch;
+		};
+		F40D5B2A1849EC5E00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F498A51815FE7F96006E8376;
+			remoteInfo = SXDevicesPlugin;
+		};
+		F40D5B2C1849EC5E00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD2321179B31360049F5B5 /* CoreAstro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
 		F415C54B17C95BD3001C42F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
@@ -208,6 +317,47 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		F40D5B741849EC5E00977FA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F40D5B751849EC5E00977FA9 /* CoreAstro.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D5B761849EC5E00977FA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
+			dstSubfolderSpec = 10;
+			files = (
+				F40D5B771849EC5E00977FA9 /* SXDevicesPlugin.casPlugin in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D5B781849EC5E00977FA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F40D5B791849EC5E00977FA9 /* Debayer.plugin in CopyFiles */,
+				F40D5B7A1849EC5E00977FA9 /* ContrastStretch.plugin in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40D5B7B1849EC5E00977FA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/QuickLook;
+			dstSubfolderSpec = 1;
+			files = (
+				F40D5B7C1849EC5E00977FA9 /* QuickFITS.qlgenerator in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C54D17C95BDF001C42F1 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -252,6 +402,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F40D5B811849EC5E00977FA9 /* CCD IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CCD IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CCD IO-Info.plist"; sourceTree = "<group>"; };
 		F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickFITS.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		F415C53517C95B7C001C42F1 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		F415C53817C95B7C001C42F1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -405,6 +557,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F40D5B521849EC5E00977FA9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5B531849EC5E00977FA9 /* IOKit.framework in Frameworks */,
+				F40D5B541849EC5E00977FA9 /* Quartz.framework in Frameworks */,
+				F40D5B551849EC5E00977FA9 /* Accelerate.framework in Frameworks */,
+				F40D5B561849EC5E00977FA9 /* QuartzCore.framework in Frameworks */,
+				F40D5B571849EC5E00977FA9 /* Cocoa.framework in Frameworks */,
+				F40D5B581849EC5E00977FA9 /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C52F17C95B7C001C42F1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -686,6 +851,7 @@
 				F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */,
 				F48F465017C40971008FCEBE /* Debayer.plugin */,
 				F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */,
+				F40D5B811849EC5E00977FA9 /* CCD IO.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -755,6 +921,7 @@
 			isa = PBXGroup;
 			children = (
 				F4FD230A179B30D60049F5B5 /* SX IO-Info.plist */,
+				F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */,
 				F4FD230B179B30D60049F5B5 /* InfoPlist.strings */,
 				F4FD230E179B30D60049F5B5 /* main.m */,
 				F4FD2310179B30D60049F5B5 /* SX IO-Prefix.pch */,
@@ -825,6 +992,33 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		F40D5B221849EC5E00977FA9 /* CCD IO */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40D5B7E1849EC5E00977FA9 /* Build configuration list for PBXNativeTarget "CCD IO" */;
+			buildPhases = (
+				F40D5B2D1849EC5E00977FA9 /* Sources */,
+				F40D5B521849EC5E00977FA9 /* Frameworks */,
+				F40D5B591849EC5E00977FA9 /* Resources */,
+				F40D5B741849EC5E00977FA9 /* CopyFiles */,
+				F40D5B761849EC5E00977FA9 /* CopyFiles */,
+				F40D5B781849EC5E00977FA9 /* CopyFiles */,
+				F40D5B7B1849EC5E00977FA9 /* CopyFiles */,
+				F40D5B7D1849EC5E00977FA9 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40D5B231849EC5E00977FA9 /* PBXTargetDependency */,
+				F40D5B251849EC5E00977FA9 /* PBXTargetDependency */,
+				F40D5B271849EC5E00977FA9 /* PBXTargetDependency */,
+				F40D5B291849EC5E00977FA9 /* PBXTargetDependency */,
+				F40D5B2B1849EC5E00977FA9 /* PBXTargetDependency */,
+			);
+			name = "CCD IO";
+			productName = "SX IO";
+			productReference = F40D5B811849EC5E00977FA9 /* CCD IO.app */;
+			productType = "com.apple.product-type.application";
+		};
 		F415C53317C95B7C001C42F1 /* QuickFITS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */;
@@ -919,6 +1113,9 @@
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Simon Taylor";
 				TargetAttributes = {
+					F40D5B221849EC5E00977FA9 = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
 					F4FD22FE179B30D60049F5B5 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 					};
@@ -943,6 +1140,7 @@
 			projectRoot = "";
 			targets = (
 				F4FD22FE179B30D60049F5B5 /* SX IO */,
+				F40D5B221849EC5E00977FA9 /* CCD IO */,
 				F48F463C17C40971008FCEBE /* Debayer */,
 				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
 				F415C53317C95B7C001C42F1 /* QuickFITS */,
@@ -1003,6 +1201,40 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F40D5B591849EC5E00977FA9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5B891849ECBE00977FA9 /* CCD IO-Info.plist in Resources */,
+				F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */,
+				F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */,
+				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
+				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
+				F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */,
+				F40D5B5F1849EC5E00977FA9 /* CASHistogramHUDView.xib in Resources */,
+				F40D5B601849EC5E00977FA9 /* CASPlateSolutionHUDView.xib in Resources */,
+				F40D5B611849EC5E00977FA9 /* CASCameraControlsViewController.xib in Resources */,
+				F40D5B621849EC5E00977FA9 /* CASGuiderControlsViewController.xib in Resources */,
+				F40D5B631849EC5E00977FA9 /* CASFilterWheelControlsViewController.xib in Resources */,
+				F40D5B641849EC5E00977FA9 /* CASPHDControlsViewController.xib in Resources */,
+				F40D5B651849EC5E00977FA9 /* SXIOCameraWindowController.xib in Resources */,
+				F40D5B661849EC5E00977FA9 /* loop.png in Resources */,
+				F40D5B671849EC5E00977FA9 /* SXIOSaveTargetViewController.xib in Resources */,
+				F40D5B681849EC5E00977FA9 /* moon.icns in Resources */,
+				F40D5B691849EC5E00977FA9 /* zoomout.pdf in Resources */,
+				F40D5B6A1849EC5E00977FA9 /* move.pdf in Resources */,
+				F40D5B6B1849EC5E00977FA9 /* zoomin.pdf in Resources */,
+				F40D5B6C1849EC5E00977FA9 /* opendevices.pdf in Resources */,
+				F40D5B6D1849EC5E00977FA9 /* selection.pdf in Resources */,
+				F40D5B6E1849EC5E00977FA9 /* zoomtofit.pdf in Resources */,
+				F40D5B6F1849EC5E00977FA9 /* zoom1.pdf in Resources */,
+				F40D5B701849EC5E00977FA9 /* CASProgressWindowController.xib in Resources */,
+				F40D5B711849EC5E00977FA9 /* SXIOFilterWindowController.xib in Resources */,
+				F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */,
+				F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C53117C95B7C001C42F1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1096,6 +1328,19 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		F40D5B7D1849EC5E00977FA9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\nrm -rf \"${shared_support}/astrometry\"\nrm -rf \"${shared_support}/support\"\n";
+		};
 		F4CE97FB17AD58F2000F28C8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1112,6 +1357,49 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F40D5B2D1849EC5E00977FA9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5B2E1849EC5E00977FA9 /* main.m in Sources */,
+				F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */,
+				F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */,
+				F40D5B311849EC5E00977FA9 /* SXIOExposureEnumerator.m in Sources */,
+				F40D5B321849EC5E00977FA9 /* CASCenteringClipView.m in Sources */,
+				F40D5B331849EC5E00977FA9 /* CASZoomableView.m in Sources */,
+				F40D5B341849EC5E00977FA9 /* CASExposureView.m in Sources */,
+				F40D5B351849EC5E00977FA9 /* CASHUDView.m in Sources */,
+				F40D5B361849EC5E00977FA9 /* CASExposureInfoView.m in Sources */,
+				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
+				F40D5B381849EC5E00977FA9 /* CASProgressHUDView.m in Sources */,
+				F40D5B391849EC5E00977FA9 /* CASHistogramHUDView.m in Sources */,
+				F40D5B3A1849EC5E00977FA9 /* CASPlateSolutionHUDView.m in Sources */,
+				F40D5B3B1849EC5E00977FA9 /* CASSimpleGraphView.m in Sources */,
+				F40D5B3C1849EC5E00977FA9 /* CASExposuresController.m in Sources */,
+				F40D5B3D1849EC5E00977FA9 /* CASTemperatureTransformer.m in Sources */,
+				F40D5B3E1849EC5E00977FA9 /* NSApplication+CASScripting.m in Sources */,
+				F40D5B3F1849EC5E00977FA9 /* CASScriptCommand.m in Sources */,
+				F40D5B401849EC5E00977FA9 /* CASCaptureCommand.m in Sources */,
+				F40D5B411849EC5E00977FA9 /* CASGuideCommand.m in Sources */,
+				F40D5B421849EC5E00977FA9 /* CASCameraControlsViewController.m in Sources */,
+				F40D5B431849EC5E00977FA9 /* CASGuiderControlsViewController.m in Sources */,
+				F40D5B441849EC5E00977FA9 /* CASFilterWheelControlsViewController.m in Sources */,
+				F40D5B451849EC5E00977FA9 /* CASPHDControlsViewController.m in Sources */,
+				F40D5B461849EC5E00977FA9 /* SXIOCameraWindowController.m in Sources */,
+				F40D5B471849EC5E00977FA9 /* SXIOSaveTargetViewController.m in Sources */,
+				F40D5B481849EC5E00977FA9 /* CASShadowView.m in Sources */,
+				F40D5B491849EC5E00977FA9 /* CASProgressWindowController.m in Sources */,
+				F40D5B4A1849EC5E00977FA9 /* CASAuxWindowController.m in Sources */,
+				F40D5B4B1849EC5E00977FA9 /* CASUpdateCheck.m in Sources */,
+				F40D5B4C1849EC5E00977FA9 /* SMDoubleSliderCell.m in Sources */,
+				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
+				F40D5B4E1849EC5E00977FA9 /* CASContrastStretchSliderView.m in Sources */,
+				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
+				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
+				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C52E17C95B7C001C42F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1187,6 +1475,31 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F40D5B231849EC5E00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F415C53317C95B7C001C42F1 /* QuickFITS */;
+			targetProxy = F40D5B241849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40D5B251849EC5E00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F48F463C17C40971008FCEBE /* Debayer */;
+			targetProxy = F40D5B261849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40D5B271849EC5E00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */;
+			targetProxy = F40D5B281849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40D5B291849EC5E00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SXDevicesPlugin;
+			targetProxy = F40D5B2A1849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40D5B2B1849EC5E00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "CoreAstro Framework";
+			targetProxy = F40D5B2C1849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
 		F415C54C17C95BD3001C42F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F415C53317C95B7C001C42F1 /* QuickFITS */;
@@ -1282,6 +1595,40 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F40D5B7F1849EC5E00977FA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "CCD IO";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F40D5B801849EC5E00977FA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "CCD IO";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 		F415C54917C95B7D001C42F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1466,6 +1813,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F40D5B7E1849EC5E00977FA9 /* Build configuration list for PBXNativeTarget "CCD IO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40D5B7F1849EC5E00977FA9 /* Debug */,
+				F40D5B801849EC5E00977FA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
