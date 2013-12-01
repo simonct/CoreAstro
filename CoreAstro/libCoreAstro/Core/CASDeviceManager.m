@@ -32,6 +32,7 @@
 #import "CASFilterWheelController.h"
 #import "CASCCDDevice.h"
 #import "CASFWDevice.h"
+#import "CASExternalSDK.h"
 
 @interface CASDeviceManager ()
 @property (nonatomic,strong) CASPluginManager* pluginManager;
@@ -98,26 +99,37 @@
     return nil;
 }
 
+- (NSMutableArray*)createDevices {
+    
+    if (!_devices){
+        _devices = [[NSMutableArray alloc] initWithCapacity:10];
+        [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
+    }
+    return _devices;
+}
+
 - (void)scan {
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
 
+        // loop over the installed transport browsers; todo - can this be expressed as a form of external SDK ?
         for (id<CASDeviceBrowser> browser in self.pluginManager.browsers){
             
             @try {
                 
-                __weak id<CASDeviceBrowser> weakBrowser = browser;
+                __weak typeof (browser) weakBrowser = browser;
                 
+                // Browser detected a new device, pass it onto each of the installed factories and see if any of them comes up with a match
                 browser.deviceAdded = ^(void* dev,NSString* path,NSDictionary* props) {
                     
                     CASDevice* device = nil;
                     if (![self deviceWithPath:path]){
                         
-                        if (!_devices){
-                            _devices = [[NSMutableArray alloc] initWithCapacity:10];
-                            [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
-                        }
+                        // create+observe devices array
+                        [self createDevices];
+                        
+                        // todo; check factory is compatible with the browser
                         for (id<CASDeviceFactory> factory in self.pluginManager.factories){
                             
                             device = [factory createDeviceWithDeviceRef:dev path:path properties:props];
@@ -126,6 +138,7 @@
                                 id<CASDeviceBrowser> strongBrowser = weakBrowser;
                                 if (strongBrowser){
                                     
+                                    // create a transport for the device
                                     device.transport = [strongBrowser createTransportWithDevice:device];
                                     if (!device.transport){
                                         NSLog(@"No transport for %@, another client has grabbed it or the transport is inappropriate e.g. HID device with bulk USB transport",device);
@@ -142,6 +155,7 @@
                     return device;
                 };
                 
+                // Browser detected that a device had disappeared
                 browser.deviceRemoved = ^(void* dev,NSString* path,NSDictionary* props) {
                     
                     CASDevice* device = [self deviceWithPath:path];
@@ -158,6 +172,36 @@
             @catch (NSException *exception) {
                 NSLog(@"*** Exception scanning for devices: %@",exception);
             }
+        }
+        
+        // loop over installed SDKs
+        for (id<CASExternalSDK> sdk in self.pluginManager.externalSDKs){
+            
+            __weak typeof (sdk) weakSDK = sdk;
+            
+            // SDK detected a new device
+            sdk.deviceAdded = ^(NSString* path,CASDevice* device){
+                
+                // check for duplicate
+                if (![self deviceWithPath:path]){
+                    
+                    // create+observe devices array
+                    [self createDevices];
+                    
+                    // add the device to the array
+                    NSLog(@"SDK %@ added device %@@%@",NSStringFromClass([weakSDK class]),device.deviceName,device.deviceLocation);
+                    [[self mutableArrayValueForKey:@"devices"] addObject:device];
+                }
+            };
+            
+            // SDK detected that a device had disappeared
+            sdk.deviceRemoved = ^(NSString* path,CASDevice* device){
+                
+                if (device && [self deviceWithPath:path]){
+                    NSLog(@"SDK %@ removed device %@",NSStringFromClass([weakSDK class]),device);
+                    [[self mutableArrayValueForKey:@"devices"] removeObject:device];
+                }
+            };
         }
     });
 }

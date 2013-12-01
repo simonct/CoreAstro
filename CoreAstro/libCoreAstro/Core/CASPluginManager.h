@@ -30,4 +30,5 @@
 @interface CASPluginManager : NSObject
 @property (nonatomic,readonly) NSArray* browsers;
 @property (nonatomic,readonly) NSArray* factories;
+@property (nonatomic,readonly) NSArray* externalSDKs;
 @end

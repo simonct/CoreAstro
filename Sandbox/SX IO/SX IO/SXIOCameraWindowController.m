@@ -939,33 +939,7 @@ static void* kvoContext;
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // prefer corrected exposure (and similarly for debayered)
-        CASCCDExposure* corrected = exposure.correctedExposure;
-        if (corrected){
-            exposure = corrected;
-        }
-        CASCCDExposure* debayered = exposure.debayeredExposure;
-        if (debayered){
-            exposure = debayered;
-        }
-        
-        static NSDateFormatter* exposureFormatter = nil;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            exposureFormatter = [[NSDateFormatter alloc] init];
-            [exposureFormatter setDateStyle:NSDateFormatterMediumStyle];
-            [exposureFormatter setTimeStyle:NSDateFormatterMediumStyle];
-        });
-        
-        // debayer if required
-        if (self.imageDebayer.mode != kCASImageDebayerNone){
-            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
-            if (debayeredExposure){
-                exposure = debayeredExposure;
-            }
-        }
-        
-        // optionally live calibrate using saved bias and flat frames
+        // live calibrate using saved bias and flat frames
         if (self.calibrate){
             
             NSURL* url = [self beginAccessToSaveTarget];
@@ -994,7 +968,15 @@ static void* kvoContext;
             }
         }
         
-        // optionally equalise
+        // debayer
+        if (self.imageDebayer.mode != kCASImageDebayerNone){
+            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
+            if (debayeredExposure){
+                exposure = debayeredExposure;
+            }
+        }
+
+        // equalise
         if (self.equalise){
             exposure = [self.imageProcessor equalise:exposure];
         }

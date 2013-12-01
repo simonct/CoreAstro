@@ -14,6 +14,13 @@
 		F40093681699B2DB00E96DBE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093671699B2DA00E96DBE /* AVFoundation.framework */; };
 		F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40093691699B2ED00E96DBE /* CoreMedia.framework */; };
 		F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572DC1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m */; };
+		F40D5BBD184A912600977FA9 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
+		F40D5BBE184A912600977FA9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
+		F40D5BDB184A925C00977FA9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40D5BD8184A925C00977FA9 /* InfoPlist.strings */; };
+		F40D5BDE184A930C00977FA9 /* FLICCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5BDD184A930C00977FA9 /* FLICCDDevice.m */; };
+		F40D5BE1184A934600977FA9 /* FLIDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F40D5BC9184A912600977FA9 /* FLIDevicesPlugin.casPlugin */; };
+		F40D5BFE184B314F00977FA9 /* FLISDK.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5BFD184B314F00977FA9 /* FLISDK.m */; };
+		F40D5C00184B3A5900977FA9 /* CASExternalSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = F40D5BFF184B3A5900977FA9 /* CASExternalSDK.h */; };
 		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
@@ -350,10 +357,10 @@
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
-		F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */; };
 		F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */; };
 		F4F59BA7183C0184006331E3 /* CASFITSUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */; };
+		F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */; };
 		F4FCB7F617511F1B001A27F9 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */; };
 		F4FCB7F717511F1B001A27F9 /* CASFilterWheelController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4FCE71217772270000E117F /* CASSHFCUSBDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */; };
@@ -361,6 +368,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F40D5BB5184A912600977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
+		};
+		F40D5BDF184A932D00977FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49E52B415A971610018DC75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F40D5BB3184A912600977FA9;
+			remoteInfo = FLIDevicesPlugin;
+		};
 		F44EDF0E15FCC386003B1B4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F49E52B415A971610018DC75 /* Project object */;
@@ -510,6 +531,7 @@
 			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
 			dstSubfolderSpec = 10;
 			files = (
+				F40D5BE1184A934600977FA9 /* FLIDevicesPlugin.casPlugin in CopyFiles */,
 				F4EEF3181606244100547009 /* SHDevicesPlugin.casPlugin in CopyFiles */,
 				F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */,
 			);
@@ -539,6 +561,15 @@
 		F40572DC1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F4068C6A15C886CE00A0BC7E /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
 		F4068C6B15C886CE00A0BC7E /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
+		F40D5BC9184A912600977FA9 /* FLIDevicesPlugin.casPlugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FLIDevicesPlugin.casPlugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40D5BD6184A925C00977FA9 /* FLIDevicesPlugin-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "FLIDevicesPlugin-Info.plist"; path = "FLIDevicesPlugin/FLIDevicesPlugin-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F40D5BD7184A925C00977FA9 /* FLIDevicesPlugin-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FLIDevicesPlugin-Prefix.pch"; path = "FLIDevicesPlugin/FLIDevicesPlugin-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		F40D5BD9184A925C00977FA9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = FLIDevicesPlugin/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		F40D5BDC184A930C00977FA9 /* FLICCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLICCDDevice.h; sourceTree = "<group>"; };
+		F40D5BDD184A930C00977FA9 /* FLICCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLICCDDevice.m; sourceTree = "<group>"; };
+		F40D5BFC184B314F00977FA9 /* FLISDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLISDK.h; sourceTree = "<group>"; };
+		F40D5BFD184B314F00977FA9 /* FLISDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLISDK.m; sourceTree = "<group>"; };
+		F40D5BFF184B3A5900977FA9 /* CASExternalSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExternalSDK.h; sourceTree = "<group>"; };
 		F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
 		F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
@@ -1360,10 +1391,10 @@
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
-		F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPowerMonitor.h; sourceTree = "<group>"; };
-		F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPowerMonitor.m; sourceTree = "<group>"; };
 		F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSUtilities.h; sourceTree = "<group>"; };
 		F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSUtilities.m; sourceTree = "<group>"; };
+		F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPowerMonitor.h; sourceTree = "<group>"; };
+		F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPowerMonitor.m; sourceTree = "<group>"; };
 		F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelController.m; sourceTree = "<group>"; };
 		F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelController.h; sourceTree = "<group>"; };
 		F4FCE7101777226F000E117F /* CASSHFCUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHFCUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHFCUSBDevice.h; sourceTree = SOURCE_ROOT; };
@@ -1375,6 +1406,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F40D5BBC184A912600977FA9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5BBD184A912600977FA9 /* CoreAstro.framework in Frameworks */,
+				F40D5BBE184A912600977FA9 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F44EDEF615FCC385003B1B4C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1456,6 +1496,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F40D5BD4184A91D900977FA9 /* FLI */ = {
+			isa = PBXGroup;
+			children = (
+				F40D5BFC184B314F00977FA9 /* FLISDK.h */,
+				F40D5BFD184B314F00977FA9 /* FLISDK.m */,
+				F40D5BDC184A930C00977FA9 /* FLICCDDevice.h */,
+				F40D5BDD184A930C00977FA9 /* FLICCDDevice.m */,
+				F40D5BD5184A922D00977FA9 /* Supporting Files */,
+			);
+			path = FLI;
+			sourceTree = "<group>";
+		};
+		F40D5BD5184A922D00977FA9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40D5BD8184A925C00977FA9 /* InfoPlist.strings */,
+				F40D5BD6184A925C00977FA9 /* FLIDevicesPlugin-Info.plist */,
+				F40D5BD7184A925C00977FA9 /* FLIDevicesPlugin-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F412974F15FCA977009C215E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1663,6 +1725,7 @@
 				F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */,
 				F4EEF3001606226100547009 /* SHDevicesPlugin.casPlugin */,
 				F4A4F2A71631DDDE00A3B4E9 /* CoreAstro.qlgenerator */,
+				F40D5BC9184A912600977FA9 /* FLIDevicesPlugin.casPlugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1790,6 +1853,7 @@
 		F49E535015A995350018DC75 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
+				F40D5BD4184A91D900977FA9 /* FLI */,
 				F498A51B15FE7F96006E8376 /* SXI */,
 				F4EEF302160622AE00547009 /* Shoestring */,
 			);
@@ -1822,6 +1886,7 @@
 				F448EBB415E6B628002AB171 /* CASAutoGuider.mm */,
 				F4A0E3B215C71049002878C9 /* CASCCDProperties.h */,
 				F4A0E3B315C71049002878C9 /* CASCCDProperties.m */,
+				F40D5BFF184B3A5900977FA9 /* CASExternalSDK.h */,
 				F49E537515A995800018DC75 /* CASDeviceFactory.h */,
 				F49E536215A995570018DC75 /* CASDeviceBrowser.h */,
 				F49E536315A995570018DC75 /* CASDeviceManager.h */,
@@ -2878,6 +2943,7 @@
 				F4CA53D2169CC9FD00832CFF /* hd.h in Headers */,
 				F4CA53D3169CC9FD00832CFF /* healpix-utils.h in Headers */,
 				F4CA53D4169CC9FD00832CFF /* healpix.h in Headers */,
+				F40D5C00184B3A5900977FA9 /* CASExternalSDK.h in Headers */,
 				F4CA53D5169CC9FD00832CFF /* hpquads.h in Headers */,
 				F4CA53D6169CC9FD00832CFF /* image2xy-files.h in Headers */,
 				F4CA53D7169CC9FD00832CFF /* image2xy.h in Headers */,
@@ -2979,6 +3045,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		F40D5BB3184A912600977FA9 /* FLIDevicesPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40D5BC6184A912600977FA9 /* Build configuration list for PBXNativeTarget "FLIDevicesPlugin" */;
+			buildPhases = (
+				F40D5BB6184A912600977FA9 /* Sources */,
+				F40D5BBC184A912600977FA9 /* Frameworks */,
+				F40D5BBF184A912600977FA9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40D5BB4184A912600977FA9 /* PBXTargetDependency */,
+			);
+			name = FLIDevicesPlugin;
+			productName = SXDevicesPlugin;
+			productReference = F40D5BC9184A912600977FA9 /* FLIDevicesPlugin.casPlugin */;
+			productType = "com.apple.product-type.bundle";
+		};
 		F44EDEF915FCC385003B1B4C /* CoreAstro Framework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F44EDF1A15FCC386003B1B4C /* Build configuration list for PBXNativeTarget "CoreAstro Framework" */;
@@ -3052,6 +3136,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F40D5BE0184A932D00977FA9 /* PBXTargetDependency */,
 				F4A4F2C11631DDEE00A3B4E9 /* PBXTargetDependency */,
 				F4EEF31A1606244900547009 /* PBXTargetDependency */,
 				F498A53915FE81E3006E8376 /* PBXTargetDependency */,
@@ -3161,6 +3246,7 @@
 				F498A51815FE7F96006E8376 /* SXDevicesPlugin */,
 				F4EEF2EB1606226100547009 /* SHDevicesPlugin */,
 				F4A4F2A61631DDDE00A3B4E9 /* QuickLook Plugin */,
+				F40D5BB3184A912600977FA9 /* FLIDevicesPlugin */,
 			);
 		};
 /* End PBXProject section */
@@ -3204,6 +3290,14 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F40D5BBF184A912600977FA9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5BDB184A925C00977FA9 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F44EDEF815FCC385003B1B4C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3358,6 +3452,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F40D5BB6184A912600977FA9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40D5BFE184B314F00977FA9 /* FLISDK.m in Sources */,
+				F40D5BDE184A930C00977FA9 /* FLICCDDevice.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F44EDEF515FCC385003B1B4C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3511,6 +3614,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F40D5BB4184A912600977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
+			targetProxy = F40D5BB5184A912600977FA9 /* PBXContainerItemProxy */;
+		};
+		F40D5BE0184A932D00977FA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F40D5BB3184A912600977FA9 /* FLIDevicesPlugin */;
+			targetProxy = F40D5BDF184A932D00977FA9 /* PBXContainerItemProxy */;
+		};
 		F44EDF0F15FCC386003B1B4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
@@ -3574,6 +3687,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		F40D5BD8184A925C00977FA9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40D5BD9184A925C00977FA9 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		F44EDEFF15FCC385003B1B4C /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3649,6 +3770,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F40D5BC7184A912600977FA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FLIDevicesPlugin/FLIDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "FLIDevicesPlugin/FLIDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = FLIDevicesPlugin;
+				WRAPPER_EXTENSION = casPlugin;
+			};
+			name = Debug;
+		};
+		F40D5BC8184A912600977FA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FLIDevicesPlugin/FLIDevicesPlugin-Prefix.pch";
+				INFOPLIST_FILE = "FLIDevicesPlugin/FLIDevicesPlugin-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = FLIDevicesPlugin;
+				WRAPPER_EXTENSION = casPlugin;
+			};
+			name = Release;
+		};
 		F44EDF1B15FCC386003B1B4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3959,6 +4112,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F40D5BC6184A912600977FA9 /* Build configuration list for PBXNativeTarget "FLIDevicesPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40D5BC7184A912600977FA9 /* Debug */,
+				F40D5BC8184A912600977FA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F44EDF1A15FCC386003B1B4C /* Build configuration list for PBXNativeTarget "CoreAstro Framework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

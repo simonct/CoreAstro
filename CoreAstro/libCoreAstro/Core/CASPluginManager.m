@@ -28,13 +28,16 @@
 static NSString* const kCASPluginManagerPluginExtension = @"casPlugin";
 static NSString* const kCASPluginManagerPluginClassesKey = @"CASClasses";
 static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClass";
+static NSString* const kCASPluginManagerExternalSDKClassKey = @"CASExternalSDK";
 
 @implementation CASPluginManager {
     NSMutableArray* _factoryClasses;
+    NSMutableArray* _externalSDKClasses;
 }
 
 @synthesize browsers = _browsers;
 @synthesize factories = _factories;
+@synthesize externalSDKs = _externalSDKs;
 
 - (id)init {
     self = [super init];
@@ -61,30 +64,66 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
         
             // handle factories (other class types to follow)
             NSArray* pluginFactories = [pluginClasses objectForKey:kCASPluginManagerPluginFactoryClassKey];
-            if (![pluginFactories isKindOfClass:[NSArray class]] || ![pluginFactories count]){
-                NSLog(@"Entry for %@ is either not an array or empty",kCASPluginManagerPluginFactoryClassKey);
-            }
-            else{
-            
-                // filter out bundles containing duplicate classes
-                BOOL foundClass = NO;
-                for (NSString* factoryName in pluginFactories){
-                    if ([_factoryClasses containsObject:factoryName]){
-                        NSLog(@"Already loaded %@, ignoring this bundle",factoryName); // todo: add 'from <bundle>', keep track of bundles where classes come from
-                        foundClass = YES;
+            if (pluginFactories){
+                
+                if (![pluginFactories isKindOfClass:[NSArray class]] || ![pluginFactories count]){
+                    NSLog(@"Entry for %@ is either not an array or empty",kCASPluginManagerPluginFactoryClassKey);
+                }
+                else{
+                    
+                    // filter out bundles containing duplicate classes
+                    BOOL foundClass = NO;
+                    for (NSString* factoryName in pluginFactories){
+                        if ([_factoryClasses containsObject:factoryName]){
+                            NSLog(@"Already loaded %@, ignoring this bundle",factoryName); // todo: add 'from <bundle>', keep track of bundles where classes come from
+                            foundClass = YES;
+                        }
+                    }
+                    
+                    if (!foundClass){
+                        
+                        // todo: lazy load plugins
+                        NSError* error = nil;
+                        if (![pluginBundle isLoaded] && ![pluginBundle loadAndReturnError:&error]){
+                            NSLog(@"Failed to load %@ (%@)",[[pluginBundle bundlePath] lastPathComponent],error);
+                        }
+                        else {
+                            [_factoryClasses addObjectsFromArray:pluginFactories];
+                            NSLog(@"Bundle loaded, factory classes are %@",_factoryClasses);
+                        }
                     }
                 }
+            }
+            
+            // handle external SDKs
+            NSArray* externalSDKs = [pluginClasses objectForKey:kCASPluginManagerExternalSDKClassKey];
+            if (externalSDKs){
                 
-                if (!foundClass){
+                if (![externalSDKs isKindOfClass:[NSArray class]] || ![externalSDKs count]){
+                    NSLog(@"Entry for %@ is either not a array or empty",kCASPluginManagerExternalSDKClassKey);
+                }
+                else{
                     
-                    // todo: lazy load plugins
-                    NSError* error = nil;
-                    if (![pluginBundle loadAndReturnError:&error]){
-                        NSLog(@"Failed to load %@ (%@)",[[pluginBundle bundlePath] lastPathComponent],error);
+                    // filter out bundles containing duplicate classes
+                    BOOL foundClass = NO;
+                    for (NSString* sdkName in externalSDKs){
+                        if ([_externalSDKClasses containsObject:sdkName]){
+                            NSLog(@"Already loaded %@, ignoring this bundle",sdkName); // todo: add 'from <bundle>', keep track of bundles where classes come from
+                            foundClass = YES;
+                        }
                     }
-                    else {
-                        [_factoryClasses addObjectsFromArray:pluginFactories];
-                        NSLog(@"Bundle loaded, factory classes are %@",_factoryClasses);
+                    
+                    if (!foundClass){
+                        
+                        // todo: lazy load plugins
+                        NSError* error = nil;
+                        if (![pluginBundle isLoaded] && ![pluginBundle loadAndReturnError:&error]){
+                            NSLog(@"Failed to load %@ (%@)",[[pluginBundle bundlePath] lastPathComponent],error);
+                        }
+                        else {
+                            [_externalSDKClasses addObjectsFromArray:externalSDKs];
+                            NSLog(@"Bundle loaded, SDK classes are %@",_externalSDKClasses);
+                        }
                     }
                 }
             }
@@ -95,7 +134,8 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
 - (void)loadBundles {
     
     _factoryClasses = [NSMutableArray arrayWithCapacity:5];
-
+    _externalSDKClasses = [NSMutableArray arrayWithCapacity:5];
+    
     // currently just search the framework plugins folder, in future use NSSearchDirectories to locate external plugin folders as well
     // (will need to deal with plugin versions e.g. scan all and pick the highest one before picking one to load)
     NSArray* paths = [NSArray arrayWithObjects:
@@ -124,6 +164,10 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
 
 - (NSArray*)factoryClasses {
     return [_factoryClasses copy];
+}
+
+- (NSArray*)externalSDKClasses {
+    return [_externalSDKClasses copy];
 }
 
 - (NSArray*)createInstancesFromClasses:(NSArray*)classes {
@@ -163,6 +207,15 @@ static NSString* const kCASPluginManagerPluginFactoryClassKey = @"CASFactoryClas
         }
     }
     return _factories;
+}
+
+- (NSArray*)externalSDKs {
+    @synchronized(self){
+        if (!_externalSDKs){
+            _externalSDKs = [self createInstancesFromClasses:[self externalSDKClasses]];
+        }
+    }
+    return _externalSDKs;
 }
 
 @end
