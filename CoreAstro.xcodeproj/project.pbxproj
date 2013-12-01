@@ -21,6 +21,18 @@
 		F40D5BE1184A934600977FA9 /* FLIDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F40D5BC9184A912600977FA9 /* FLIDevicesPlugin.casPlugin */; };
 		F40D5BFE184B314F00977FA9 /* FLISDK.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5BFD184B314F00977FA9 /* FLISDK.m */; };
 		F40D5C00184B3A5900977FA9 /* CASExternalSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = F40D5BFF184B3A5900977FA9 /* CASExternalSDK.h */; };
+		F40D5C3E184B5B8600977FA9 /* libfli-camera-parport.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C08184B5B8600977FA9 /* libfli-camera-parport.c */; };
+		F40D5C3F184B5B8600977FA9 /* libfli-camera-usb.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C0A184B5B8600977FA9 /* libfli-camera-usb.c */; };
+		F40D5C40184B5B8600977FA9 /* libfli-camera.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C0C184B5B8600977FA9 /* libfli-camera.c */; };
+		F40D5C41184B5B8600977FA9 /* libfli-filter-focuser.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C0F184B5B8600977FA9 /* libfli-filter-focuser.c */; };
+		F40D5C42184B5B8600977FA9 /* libfli-mem.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C12184B5B8600977FA9 /* libfli-mem.c */; };
+		F40D5C43184B5B8600977FA9 /* libfli-raw.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C14184B5B8600977FA9 /* libfli-raw.c */; };
+		F40D5C44184B5B8600977FA9 /* libfli.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C16184B5B8600977FA9 /* libfli.c */; };
+		F40D5C48184B5B8600977FA9 /* libfli-debug.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C1D184B5B8600977FA9 /* libfli-debug.c */; };
+		F40D5C49184B5B8600977FA9 /* libfli-serial.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C1F184B5B8600977FA9 /* libfli-serial.c */; };
+		F40D5C4B184B5B8600977FA9 /* libfli-usb.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C23184B5B8600977FA9 /* libfli-usb.c */; };
+		F40D5C4E184B5B8600977FA9 /* libfli-usb-sys.c in Sources */ = {isa = PBXBuildFile; fileRef = F40D5C2B184B5B8600977FA9 /* libfli-usb-sys.c */; };
+		F40D5C59184B5BBB00977FA9 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E531115A9731C0018DC75 /* IOKit.framework */; };
 		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
@@ -570,6 +582,30 @@
 		F40D5BFC184B314F00977FA9 /* FLISDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLISDK.h; sourceTree = "<group>"; };
 		F40D5BFD184B314F00977FA9 /* FLISDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLISDK.m; sourceTree = "<group>"; };
 		F40D5BFF184B3A5900977FA9 /* CASExternalSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExternalSDK.h; sourceTree = "<group>"; };
+		F40D5C08184B5B8600977FA9 /* libfli-camera-parport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera-parport.c"; sourceTree = "<group>"; };
+		F40D5C09184B5B8600977FA9 /* libfli-camera-parport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera-parport.h"; sourceTree = "<group>"; };
+		F40D5C0A184B5B8600977FA9 /* libfli-camera-usb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera-usb.c"; sourceTree = "<group>"; };
+		F40D5C0B184B5B8600977FA9 /* libfli-camera-usb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera-usb.h"; sourceTree = "<group>"; };
+		F40D5C0C184B5B8600977FA9 /* libfli-camera.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera.c"; sourceTree = "<group>"; };
+		F40D5C0D184B5B8600977FA9 /* libfli-camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera.h"; sourceTree = "<group>"; };
+		F40D5C0E184B5B8600977FA9 /* libfli-debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-debug.h"; sourceTree = "<group>"; };
+		F40D5C0F184B5B8600977FA9 /* libfli-filter-focuser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-filter-focuser.c"; sourceTree = "<group>"; };
+		F40D5C10184B5B8600977FA9 /* libfli-filter-focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-filter-focuser.h"; sourceTree = "<group>"; };
+		F40D5C11184B5B8600977FA9 /* libfli-libfli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-libfli.h"; sourceTree = "<group>"; };
+		F40D5C12184B5B8600977FA9 /* libfli-mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-mem.c"; sourceTree = "<group>"; };
+		F40D5C13184B5B8600977FA9 /* libfli-mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-mem.h"; sourceTree = "<group>"; };
+		F40D5C14184B5B8600977FA9 /* libfli-raw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-raw.c"; sourceTree = "<group>"; };
+		F40D5C15184B5B8600977FA9 /* libfli-raw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-raw.h"; sourceTree = "<group>"; };
+		F40D5C16184B5B8600977FA9 /* libfli.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libfli.c; sourceTree = "<group>"; };
+		F40D5C18184B5B8600977FA9 /* libfli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfli.h; sourceTree = "<group>"; };
+		F40D5C1D184B5B8600977FA9 /* libfli-debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-debug.c"; sourceTree = "<group>"; };
+		F40D5C1E184B5B8600977FA9 /* libfli-parport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-parport.h"; sourceTree = "<group>"; };
+		F40D5C1F184B5B8600977FA9 /* libfli-serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-serial.c"; sourceTree = "<group>"; };
+		F40D5C20184B5B8600977FA9 /* libfli-serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-serial.h"; sourceTree = "<group>"; };
+		F40D5C23184B5B8600977FA9 /* libfli-usb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-usb.c"; sourceTree = "<group>"; };
+		F40D5C24184B5B8600977FA9 /* libfli-usb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-usb.h"; sourceTree = "<group>"; };
+		F40D5C2B184B5B8600977FA9 /* libfli-usb-sys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-usb-sys.c"; sourceTree = "<group>"; };
+		F40D5C2C184B5B8600977FA9 /* libfli-usb-sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-usb-sys.h"; sourceTree = "<group>"; };
 		F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
 		F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
@@ -1410,6 +1446,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40D5C59184B5BBB00977FA9 /* IOKit.framework in Frameworks */,
 				F40D5BBD184A912600977FA9 /* CoreAstro.framework in Frameworks */,
 				F40D5BBE184A912600977FA9 /* Cocoa.framework in Frameworks */,
 			);
@@ -1503,6 +1540,7 @@
 				F40D5BFD184B314F00977FA9 /* FLISDK.m */,
 				F40D5BDC184A930C00977FA9 /* FLICCDDevice.h */,
 				F40D5BDD184A930C00977FA9 /* FLICCDDevice.m */,
+				F40D5C05184B5B8600977FA9 /* libfli-1.104 */,
 				F40D5BD5184A922D00977FA9 /* Supporting Files */,
 			);
 			path = FLI;
@@ -1516,6 +1554,53 @@
 				F40D5BD7184A925C00977FA9 /* FLIDevicesPlugin-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F40D5C05184B5B8600977FA9 /* libfli-1.104 */ = {
+			isa = PBXGroup;
+			children = (
+				F40D5C08184B5B8600977FA9 /* libfli-camera-parport.c */,
+				F40D5C09184B5B8600977FA9 /* libfli-camera-parport.h */,
+				F40D5C0A184B5B8600977FA9 /* libfli-camera-usb.c */,
+				F40D5C0B184B5B8600977FA9 /* libfli-camera-usb.h */,
+				F40D5C0C184B5B8600977FA9 /* libfli-camera.c */,
+				F40D5C0D184B5B8600977FA9 /* libfli-camera.h */,
+				F40D5C0E184B5B8600977FA9 /* libfli-debug.h */,
+				F40D5C0F184B5B8600977FA9 /* libfli-filter-focuser.c */,
+				F40D5C10184B5B8600977FA9 /* libfli-filter-focuser.h */,
+				F40D5C11184B5B8600977FA9 /* libfli-libfli.h */,
+				F40D5C12184B5B8600977FA9 /* libfli-mem.c */,
+				F40D5C13184B5B8600977FA9 /* libfli-mem.h */,
+				F40D5C14184B5B8600977FA9 /* libfli-raw.c */,
+				F40D5C15184B5B8600977FA9 /* libfli-raw.h */,
+				F40D5C16184B5B8600977FA9 /* libfli.c */,
+				F40D5C18184B5B8600977FA9 /* libfli.h */,
+				F40D5C1A184B5B8600977FA9 /* unix */,
+			);
+			path = "libfli-1.104";
+			sourceTree = "<group>";
+		};
+		F40D5C1A184B5B8600977FA9 /* unix */ = {
+			isa = PBXGroup;
+			children = (
+				F40D5C1D184B5B8600977FA9 /* libfli-debug.c */,
+				F40D5C1E184B5B8600977FA9 /* libfli-parport.h */,
+				F40D5C1F184B5B8600977FA9 /* libfli-serial.c */,
+				F40D5C20184B5B8600977FA9 /* libfli-serial.h */,
+				F40D5C23184B5B8600977FA9 /* libfli-usb.c */,
+				F40D5C24184B5B8600977FA9 /* libfli-usb.h */,
+				F40D5C2A184B5B8600977FA9 /* osx */,
+			);
+			path = unix;
+			sourceTree = "<group>";
+		};
+		F40D5C2A184B5B8600977FA9 /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				F40D5C2B184B5B8600977FA9 /* libfli-usb-sys.c */,
+				F40D5C2C184B5B8600977FA9 /* libfli-usb-sys.h */,
+			);
+			path = osx;
 			sourceTree = "<group>";
 		};
 		F412974F15FCA977009C215E /* Resources */ = {
@@ -3456,8 +3541,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40D5C3E184B5B8600977FA9 /* libfli-camera-parport.c in Sources */,
 				F40D5BFE184B314F00977FA9 /* FLISDK.m in Sources */,
 				F40D5BDE184A930C00977FA9 /* FLICCDDevice.m in Sources */,
+				F40D5C41184B5B8600977FA9 /* libfli-filter-focuser.c in Sources */,
+				F40D5C42184B5B8600977FA9 /* libfli-mem.c in Sources */,
+				F40D5C44184B5B8600977FA9 /* libfli.c in Sources */,
+				F40D5C4E184B5B8600977FA9 /* libfli-usb-sys.c in Sources */,
+				F40D5C49184B5B8600977FA9 /* libfli-serial.c in Sources */,
+				F40D5C4B184B5B8600977FA9 /* libfli-usb.c in Sources */,
+				F40D5C3F184B5B8600977FA9 /* libfli-camera-usb.c in Sources */,
+				F40D5C48184B5B8600977FA9 /* libfli-debug.c in Sources */,
+				F40D5C43184B5B8600977FA9 /* libfli-raw.c in Sources */,
+				F40D5C40184B5B8600977FA9 /* libfli-camera.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
