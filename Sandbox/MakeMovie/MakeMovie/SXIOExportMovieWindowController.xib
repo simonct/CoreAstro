@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5023" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5023"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOExportMovieWindowController">
@@ -17,7 +17,7 @@
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="425" height="87"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="746"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
             <view key="contentView" id="wZ5-mf-9Jz">
                 <rect key="frame" x="0.0" y="0.0" width="425" height="87"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -194,9 +194,9 @@ Gw
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" title="OtherViews" id="T9O-8F-4Xd">
                             <items>
-                                <menuItem title="H264" id="JpE-S6-FVK"/>
-                                <menuItem title="ProRes 422" id="kU6-1v-fxR"/>
-                                <menuItem title="ProRes 4444" id="y8W-Ai-KCO"/>
+                                <menuItem title="High (H264)" id="JpE-S6-FVK"/>
+                                <menuItem title="Medium (ProRes 422)" id="kU6-1v-fxR"/>
+                                <menuItem title="Low (ProRes 4444)" id="y8W-Ai-KCO"/>
                             </items>
                         </menu>
                     </popUpButtonCell>
@@ -253,7 +253,7 @@ Gw
                     <rect key="frame" x="110" y="17" width="262" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    <size key="cellSize" width="129" height="18"/>
+                    <size key="cellSize" width="130" height="18"/>
                     <size key="intercellSpacing" width="4" height="2"/>
                     <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="nek-s7-xO2">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
