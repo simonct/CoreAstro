@@ -1959,7 +1959,7 @@
 				<string key="NSClassName">CASContrastStretchSliderView</string>
 			</object>
 			<object class="NSWindowTemplate" id="373914135">
-				<int key="NSWindowStyleMask">8209</int>
+				<int key="NSWindowStyleMask">8211</int>
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{283, 305}, {472, 91}}</string>
 				<int key="NSWTFlags">611845120</int>
@@ -1968,7 +1968,7 @@
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="373658400">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="790696633">
@@ -1976,6 +1976,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 42}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="709462081"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -2000,6 +2001,8 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 0}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
+							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="231152739">
@@ -2023,6 +2026,8 @@
 						</object>
 					</array>
 					<string key="NSFrameSize">{472, 91}</string>
+					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="790696633"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
