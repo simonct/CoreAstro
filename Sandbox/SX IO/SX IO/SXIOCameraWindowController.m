@@ -16,6 +16,7 @@
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
 #import "SXIOExposureEnumerator.h"
+#import "SXIOExportMovieWindowController.h"
 
 #import <Quartz/Quartz.h>
 
@@ -54,6 +55,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (assign) BOOL calibrate;
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
+@property (nonatomic,strong) SXIOExportMovieWindowController* movieExportWindowController;
 
 @property (nonatomic,strong) CASPowerMonitor* powerMonitor;
 
@@ -724,6 +726,37 @@ static void* kvoContext;
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
 }
 
+- (IBAction)makeMovie:(id)sender
+{
+    if (!self.movieExportWindowController){
+        self.movieExportWindowController = [SXIOExportMovieWindowController loadWindowController];
+    }
+    
+    [self.movieExportWindowController.window center];
+    [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
+    
+    [self.movieExportWindowController runWithCompletion:^(NSError *error, NSURL *movieURL) {
+        
+        [self.movieExportWindowController.window orderOut:nil];
+        self.movieExportWindowController = nil;
+        
+        if (error){
+            [NSApp presentError:error];
+        }
+        else if (movieURL) {
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Export Complete"
+                                             defaultButton:@"OK"
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"Open the output movie ?",nil];
+            if ([alert runModal] == NSOKButton){
+                [[NSWorkspace sharedWorkspace] openURL:movieURL];
+            }
+        }
+    }];
+}
+
 #pragma mark - Path & Save Utilities
 
 - (NSString*)currentDeviceExposurePathWithName:(NSString*)name
@@ -1261,7 +1294,9 @@ static void* kvoContext;
         case 11100:
             item.state = self.calibrate;
             break;
+            
         case 11101:
+        case 11102:
             break;
 
     }

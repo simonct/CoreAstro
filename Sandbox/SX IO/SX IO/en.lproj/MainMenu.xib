@@ -1567,6 +1567,15 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11101</int>
 								</object>
+								<object class="NSMenuItem" id="946909826">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Make Movie...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11102</int>
+								</object>
 							</array>
 						</object>
 					</object>
@@ -1658,7 +1667,7 @@
 				<string key="NSClassName">NSFontManager</string>
 			</object>
 			<object class="NSCustomView" id="605472244">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSButton" id="790203836">
@@ -1666,7 +1675,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{29, 10}, {188, 20}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="564824785">
@@ -1701,7 +1709,6 @@
 						<int key="NSvFlags">12</int>
 						<string key="NSFrame">{{35, 36}, {180, 5}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="790203836"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<string key="NSOffsets">{0, 0}</string>
@@ -1738,7 +1745,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{154, 99}, {64, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1005134537"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1775,7 +1781,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{180, 134}, {38, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="927242298"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1796,7 +1801,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{32, 80}, {45, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="364884493"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1817,7 +1821,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{32, 44}, {73, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="252879843"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1838,7 +1841,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{32, 99}, {73, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="217382084"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1859,7 +1861,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{32, 134}, {45, 14}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="511938486"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1880,7 +1881,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{7, 111}, {22, 18}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="99252189"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1907,7 +1907,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{35, 59}, {180, 18}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="726738372"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1933,7 +1932,6 @@
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{35, 114}, {180, 18}}</string>
 						<reference key="NSSuperview" ref="605472244"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1034685861"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1956,8 +1954,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{235, 160}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="12408305"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">CASContrastStretchSliderView</string>
@@ -1972,7 +1968,7 @@
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="373658400">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="790696633">
@@ -1980,7 +1976,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 42}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="709462081"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -2005,7 +2000,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 0}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="231152739">
@@ -2029,8 +2023,6 @@
 						</object>
 					</array>
 					<string key="NSFrameSize">{472, 91}</string>
-					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="790696633"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
@@ -2860,6 +2852,14 @@
 						<reference key="destination" ref="459251863"/>
 					</object>
 					<int key="connectionID">890</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">makeMovie:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="946909826"/>
+					</object>
+					<int key="connectionID">892</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3974,6 +3974,7 @@
 							<reference ref="870119811"/>
 							<reference ref="101149719"/>
 							<reference ref="351274833"/>
+							<reference ref="946909826"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -5286,6 +5287,11 @@
 						<reference key="object" ref="473745878"/>
 						<reference key="parent" ref="342136496"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">891</int>
+						<reference key="object" ref="946909826"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5619,13 +5625,14 @@
 				<string key="886.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="887.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="888.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="891.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">890</int>
+			<int key="maxID">892</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5929,7 +5936,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">CASControlsContainerView</string>
-					<string key="superclassName">NSView</string>
+					<string key="superclassName">NSBox</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CASControlsContainerView.h</string>
@@ -6050,14 +6057,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">NSLayoutConstraint</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">SMDoubleSlider</string>
 					<string key="superclassName">NSSlider</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -6130,140 +6129,6 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOCameraWindowController</string>
 					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="applyDebayer:">NSMenuItem</string>
-						<string key="cancelCapture:">id</string>
-						<string key="capture:">NSButton</string>
-						<string key="captureBias:">id</string>
-						<string key="captureDarks:">id</string>
-						<string key="captureFlats:">id</string>
-						<string key="saveAs:">id</string>
-						<string key="saveToFITS:">id</string>
-						<string key="selection:">NSSegmentedControl</string>
-						<string key="toggleCalibrate:">id</string>
-						<string key="toggleContrastStretch:">id</string>
-						<string key="toggleEqualiseHistogram:">id</string>
-						<string key="toggleFlipHorizontal:">id</string>
-						<string key="toggleFlipVertical:">id</string>
-						<string key="toggleInvertImage:">id</string>
-						<string key="toggleMedianFilter:">id</string>
-						<string key="toggleShowHistogram:">id</string>
-						<string key="toggleShowImageStats:">id</string>
-						<string key="toggleShowReticle:">id</string>
-						<string key="toggleShowStarProfile:">id</string>
-						<string key="zoom:">NSSegmentedControl</string>
-						<string key="zoomFit:">NSSegmentedControl</string>
-						<string key="zoomImageToActualSize:">id</string>
-						<string key="zoomImageToFit:">id</string>
-						<string key="zoomIn:">id</string>
-						<string key="zoomOut:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="applyDebayer:">
-							<string key="name">applyDebayer:</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-						<object class="IBActionInfo" key="cancelCapture:">
-							<string key="name">cancelCapture:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="capture:">
-							<string key="name">capture:</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBActionInfo" key="captureBias:">
-							<string key="name">captureBias:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="captureDarks:">
-							<string key="name">captureDarks:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="captureFlats:">
-							<string key="name">captureFlats:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveAs:">
-							<string key="name">saveAs:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveToFITS:">
-							<string key="name">saveToFITS:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selection:">
-							<string key="name">selection:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="toggleCalibrate:">
-							<string key="name">toggleCalibrate:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleContrastStretch:">
-							<string key="name">toggleContrastStretch:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleEqualiseHistogram:">
-							<string key="name">toggleEqualiseHistogram:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleFlipHorizontal:">
-							<string key="name">toggleFlipHorizontal:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleFlipVertical:">
-							<string key="name">toggleFlipVertical:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleInvertImage:">
-							<string key="name">toggleInvertImage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleMedianFilter:">
-							<string key="name">toggleMedianFilter:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowHistogram:">
-							<string key="name">toggleShowHistogram:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowImageStats:">
-							<string key="name">toggleShowImageStats:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowReticle:">
-							<string key="name">toggleShowReticle:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowStarProfile:">
-							<string key="name">toggleShowStarProfile:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoom:">
-							<string key="name">zoom:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="zoomFit:">
-							<string key="name">zoomFit:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="zoomImageToActualSize:">
-							<string key="name">zoomImageToActualSize:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoomImageToFit:">
-							<string key="name">zoomImageToFit:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoomIn:">
-							<string key="name">zoomIn:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoomOut:">
-							<string key="name">zoomOut:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="captureButton">NSButton</string>
 						<string key="controlsContainerView">CASControlsContainerView</string>

@@ -82,6 +82,10 @@
 		F40D5B7C1849EC5E00977FA9 /* QuickFITS.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; };
 		F40D5B891849ECBE00977FA9 /* CCD IO-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */; };
 		F40D5BED184A940A00977FA9 /* FLIDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F40D5BEC184A940A00977FA9 /* FLIDevicesPlugin.casPlugin */; };
+		F40D5CAC1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */; };
+		F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */; };
+		F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
+		F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
 		F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53517C95B7C001C42F1 /* QuickLook.framework */; };
 		F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53817C95B7C001C42F1 /* CoreServices.framework */; };
@@ -96,6 +100,8 @@
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
+		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
+		F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
@@ -413,6 +419,9 @@
 /* Begin PBXFileReference section */
 		F40D5B811849EC5E00977FA9 /* CCD IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CCD IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CCD IO-Info.plist"; sourceTree = "<group>"; };
+		F40D5CA91851283E00977FA9 /* SXIOExportMovieWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExportMovieWindowController.h; sourceTree = "<group>"; };
+		F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExportMovieWindowController.m; sourceTree = "<group>"; };
+		F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOExportMovieWindowController.xib; sourceTree = "<group>"; };
 		F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickFITS.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		F415C53517C95B7C001C42F1 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		F415C53817C95B7C001C42F1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -427,6 +436,7 @@
 		F4415B4817CBAF7D00D1233C /* CASCaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCaptureWindowController.h; path = ../../../CoreAstro/CASCaptureWindowController.h; sourceTree = "<group>"; };
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
+		F4554895185128ED00D30926 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExposureEnumerator.h; sourceTree = "<group>"; };
 		F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExposureEnumerator.m; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
@@ -570,6 +580,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */,
 				F40D5B531849EC5E00977FA9 /* IOKit.framework in Frameworks */,
 				F40D5B541849EC5E00977FA9 /* Quartz.framework in Frameworks */,
 				F40D5B551849EC5E00977FA9 /* Accelerate.framework in Frameworks */,
@@ -618,6 +629,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */,
 				F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */,
 				F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */,
 				F4A25896179BC0CF0013D220 /* Accelerate.framework in Frameworks */,
@@ -868,6 +880,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4554895185128ED00D30926 /* CoreMedia.framework */,
 				F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */,
 				F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */,
 				F4E64283179DC2D10044B349 /* Quartz.framework */,
@@ -908,6 +921,9 @@
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
 				F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */,
+				F40D5CA91851283E00977FA9 /* SXIOExportMovieWindowController.h */,
+				F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */,
+				F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */,
 				F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */,
 				F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */,
 				F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */,
@@ -1239,6 +1255,7 @@
 				F40D5B671849EC5E00977FA9 /* SXIOSaveTargetViewController.xib in Resources */,
 				F40D5B681849EC5E00977FA9 /* moon.icns in Resources */,
 				F40D5B691849EC5E00977FA9 /* zoomout.pdf in Resources */,
+				F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
 				F40D5B6A1849EC5E00977FA9 /* move.pdf in Resources */,
 				F40D5B6B1849EC5E00977FA9 /* zoomin.pdf in Resources */,
 				F40D5B6C1849EC5E00977FA9 /* opendevices.pdf in Resources */,
@@ -1294,6 +1311,7 @@
 				F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */,
 				F4A2588B179BC0990013D220 /* CASExposureInfoView.xib in Resources */,
 				F4A2588D179BC0990013D220 /* CASStarInfoHUDView.xib in Resources */,
+				F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
 				F4A25890179BC0990013D220 /* CASHistogramHUDView.xib in Resources */,
 				F4A25892179BC0990013D220 /* CASPlateSolutionHUDView.xib in Resources */,
 				F4A258C5179BC1D90013D220 /* CASCameraControlsViewController.xib in Resources */,
@@ -1390,6 +1408,7 @@
 				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
 				F40D5B381849EC5E00977FA9 /* CASProgressHUDView.m in Sources */,
 				F40D5B391849EC5E00977FA9 /* CASHistogramHUDView.m in Sources */,
+				F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F40D5B3A1849EC5E00977FA9 /* CASPlateSolutionHUDView.m in Sources */,
 				F40D5B3B1849EC5E00977FA9 /* CASSimpleGraphView.m in Sources */,
 				F40D5B3C1849EC5E00977FA9 /* CASExposuresController.m in Sources */,
@@ -1462,6 +1481,7 @@
 				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
 				F4A2588E179BC0990013D220 /* CASProgressHUDView.m in Sources */,
 				F4A2588F179BC0990013D220 /* CASHistogramHUDView.m in Sources */,
+				F40D5CAC1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F4A25891179BC0990013D220 /* CASPlateSolutionHUDView.m in Sources */,
 				F4A25893179BC0990013D220 /* CASSimpleGraphView.m in Sources */,
 				F4A2589E179BC1460013D220 /* CASExposuresController.m in Sources */,
