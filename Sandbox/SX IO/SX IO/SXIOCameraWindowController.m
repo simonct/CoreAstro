@@ -455,18 +455,36 @@ static void* kvoContext;
     // run the save panel and save the exposures to the selected location
     [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
         
-        NSData* data = [[exposure newImage] dataForUTType:options.imageUTType options:options.imageProperties];
-        if (!data){
-            NSLog(@"*** Failed to create image from exposure");
+        CIImage* displayImage = self.exposureView.filteredCIImage;
+        if (!displayImage){
+            NSLog(@"*** No filtered image to save");
         }
-        else {
+        else{
+        
+            const CGRect extent = displayImage.extent;
+            CGContextRef context = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(extent.size.width, extent.size.height)];
+            if (!context){
+                NSLog(@"*** Failed to create save image context");
+            }
+            else {
             
-            NSError* error;
-            [data writeToFile:save.URL.path options:NSDataWritingAtomic error:&error];
-            if (error){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSApp presentError:error];
-                });
+                CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
+                CGImageRef displayCGImage = [ciContext createCGImage:displayImage fromRect:[displayImage extent]];
+                NSData* data = [CASCCDImage dataWithImage:displayCGImage forUTType:options.imageUTType options:options.imageProperties];
+                if (!data){
+                    NSLog(@"*** Failed to create image from exposure");
+                }
+                else {
+                    
+                    NSError* error;
+                    [data writeToFile:save.URL.path options:NSDataWritingAtomic error:&error];
+                    if (error){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [NSApp presentError:error];
+                        });
+                    }
+                }
+                CGContextRelease(context);
             }
         }
     } completionBlock:nil];

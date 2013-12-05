@@ -208,7 +208,7 @@
         image = [invert valueForKey:@"outputImage"];
     }
     
-    return image;
+    return [image imageByCroppingToRect:self.image.extent]; // this seems to be required to prevent the filtered image from having infinite extent
 }
 
 - (void)setupImageLayer
@@ -280,6 +280,16 @@
     }
 }
 
+- (CIImage*)filteredCIImage
+{
+    @synchronized(self){
+        if (!_filteredCIImage){
+            _filteredCIImage = [self filterImage:self.CIImage];
+        }
+    }
+    return _filteredCIImage;
+}
+
 - (void)setUrl:(NSURL *)url
 {
     if (url != _url){
@@ -302,11 +312,7 @@
 
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)context
 {
-    @synchronized(self){
-        if (!_filteredCIImage){
-            _filteredCIImage = [self filterImage:self.CIImage];
-        }
-    }
+    [self filteredCIImage];
     if (_filteredCIImage){
         const CGRect clip = CGContextGetClipBoundingBox(context);
         [[CIContext contextWithCGContext:context options:nil] drawImage:_filteredCIImage inRect:clip fromRect:clip];

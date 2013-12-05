@@ -28,4 +28,5 @@ typedef struct CASVector {
 @property (nonatomic) CASVector debayerOffset;
 @property (nonatomic) CGRect extent;
 @property (nonatomic) BOOL flipVertical, flipHorizontal;
+@property (readonly) CIImage* filteredCIImage;
 @end
