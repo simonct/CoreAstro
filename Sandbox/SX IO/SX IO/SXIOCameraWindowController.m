@@ -735,6 +735,21 @@ static void* kvoContext;
     [self.movieExportWindowController.window center];
     [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
     
+    // todo; use a single pipeline for everything, not just movie export
+    CASFilterPipeline* pipeline = [CASFilterPipeline new];
+    pipeline.equalise = self.equalise;
+    pipeline.invert = self.exposureView.invert;
+    pipeline.medianFilter = self.exposureView.medianFilter;
+    pipeline.contrastStretch = self.exposureView.contrastStretch;
+    pipeline.stretchMin = self.exposureView.stretchMin;
+    pipeline.stretchMax = self.exposureView.stretchMax;
+    pipeline.stretchGamma = self.exposureView.stretchGamma;
+    pipeline.flipVertical = self.exposureView.flipVertical;
+    pipeline.flipHorizontal = self.exposureView.flipHorizontal;
+    // todo; debayer
+    // todo; preprocessing
+    self.movieExportWindowController.filterPipeline = pipeline;
+    
     [self.movieExportWindowController runWithCompletion:^(NSError *error, NSURL *movieURL) {
         
         [self.movieExportWindowController.window orderOut:nil];

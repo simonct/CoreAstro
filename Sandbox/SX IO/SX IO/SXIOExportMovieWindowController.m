@@ -196,10 +196,8 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
                                 NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
                                 
                                 __weak __typeof(self) weakSelf = self;
-                                self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time){
-                                    
-                                    // todo; pass in the annotation here rather than create it in the movie exporter ?
-                                    
+                                self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time, NSString** annotatioPtr){
+                                                                        
                                     NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
                                     if (!nextURL){
                                         [weakSelf.exporter complete];
@@ -211,6 +209,9 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
                                     else {
                                         *time = CMTimeMake(frame++,weakSelf.fps);
                                         *expPtr = [weakSelf exposureWithURL:nextURL];
+                                        if (weakSelf.filterPipeline){
+                                         // filter exposure
+                                        }
                                         weakSelf.progress = (float)frame / (float)[open.URLs count];
                                     }
                                 };
