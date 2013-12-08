@@ -694,6 +694,7 @@
 		F47BB16A16AC536100E3F2FE /* CASZoomableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASZoomableView.h; sourceTree = "<group>"; };
 		F47BB16B16AC536100E3F2FE /* CASZoomableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASZoomableView.m; sourceTree = "<group>"; };
 		F47EF80815C1D244002E9AB1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F48310541854D2D900EDD049 /* libcfitsio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcfitsio.dylib; sourceTree = "<group>"; };
 		F4849C6A165900AF0069647F /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
 		F4849C7016590C820069647F /* CASImageDebayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageDebayer.h; sourceTree = "<group>"; };
 		F4849C7116590C820069647F /* CASImageDebayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageDebayer.mm; sourceTree = "<group>"; };
@@ -2629,6 +2630,7 @@
 				F4CA5244169CC9FC00832CFF /* libcairo.a */,
 				F4CA5245169CC9FC00832CFF /* libcairo.dylib */,
 				F4CA5246169CC9FC00832CFF /* libcairo.la */,
+				F48310541854D2D900EDD049 /* libcfitsio.dylib */,
 				F4CA5247169CC9FC00832CFF /* libexpat.1.dylib */,
 				F4CA5248169CC9FC00832CFF /* libexpat.a */,
 				F4CA5249169CC9FC00832CFF /* libexpat.dylib */,
@@ -3532,7 +3534,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "shared_support=\"$TARGET_BUILD_DIR/CoreAstro.framework/Versions/A/SharedSupport\"\nmkdir -p \"$shared_support\"\nditto \"$SRCROOT/External/astrometry.net/astrometry\" \"$shared_support/astrometry\"\nditto \"$SRCROOT/External/astrometry.net/support\" \"$shared_support/support\"";
+			shellScript = "shared_support=\"$TARGET_BUILD_DIR/CoreAstro.framework/Versions/A/SharedSupport\"\nmkdir -p \"$shared_support\"\nditto \"$SRCROOT/External/astrometry.net/astrometry\" \"$shared_support/astrometry\"\nditto \"$SRCROOT/External/astrometry.net/support\" \"$shared_support/support\"\nfind \"$shared_support\" -name \"*.a\" -exec rm -rf {} \\;\nfind \"$shared_support\" -name \"*.la\" -exec rm -rf {} \\;\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3915,9 +3917,9 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/External/astrometry.net/astrometry/lib\"",
-					"\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\"",
-					"\"$(SRCROOT)/External/astrometry.net/support\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/lib\\\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\\\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/support\\\"",
 				);
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
@@ -3941,9 +3943,9 @@
 				INSTALL_PATH = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/External/astrometry.net/astrometry/lib\"",
-					"\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\"",
-					"\"$(SRCROOT)/External/astrometry.net/support\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/lib\\\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\\\"",
+					"\\\"$(SRCROOT)/External/astrometry.net/support\\\"",
 				);
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
