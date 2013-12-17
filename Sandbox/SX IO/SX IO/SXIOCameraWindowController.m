@@ -59,6 +59,10 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (nonatomic,strong) CASPowerMonitor* powerMonitor;
 
+@property (assign) BOOL showPlateSolution;
+@property (nonatomic,strong) CASPlateSolver* plateSolver;
+@property (nonatomic,readonly) NSString* cachesDirectory;
+
 @end
 
 @implementation SXIOCameraWindowController {
@@ -128,7 +132,12 @@ static void* kvoContext;
     [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
-    [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
+    @try {
+        [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"FIXME: %@",exception);
+    }
 }
 
 - (void)dealloc
@@ -159,6 +168,13 @@ static void* kvoContext;
     else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+- (NSString*) cachesDirectory
+{
+    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    cache = [cache stringByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
+    return cache;
 }
 
 - (void)setCameraController:(CASCameraController *)cameraController
@@ -442,6 +458,30 @@ static void* kvoContext;
     [self.exposureView zoomImageToActualSize:sender];
 }
 
+- (IBAction)openDocument:(id)sender
+{
+    if (self.cameraController.capturing){
+        return;
+    }
+    
+    NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+    
+    openPanel.allowedFileTypes = [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIODefaultExposureFileTypes"];
+    
+    [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result == NSFileHandlingPanelOKButton){
+            NSError* error;
+            CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:openPanel.URL.path readPixels:YES error:nil];
+            if (exposure){
+                self.currentExposure = exposure;
+            }
+            else if (error){
+                [NSApp presentError:error];
+            }
+        }
+    }];
+}
+
 - (IBAction)saveAs:(id)sender
 {
     if (!self.currentExposure){
@@ -694,6 +734,12 @@ static void* kvoContext;
     [self resetAndRedisplayCurrentExposure];
 }
 
+- (IBAction)toggleShowPlateSolution:(id)sender
+{
+    self.showPlateSolution = !self.showPlateSolution;
+    [self resetAndRedisplayCurrentExposure];
+}
+
 - (IBAction)applyDebayer:(NSMenuItem*)sender
 {
     switch (sender.tag) {
@@ -770,6 +816,119 @@ static void* kvoContext;
             }
         }
     }];
+}
+
+- (NSURL*)plateSolutionURLForExposure:(CASCCDExposure*)exposure
+{
+    NSString* uuid = exposure.uuid;
+    if (![uuid length]){
+        uuid = [exposure.io.url lastPathComponent];
+    }
+    if (![uuid length]){
+        return nil;
+    }
+    NSString* caches = [self.cachesDirectory stringByAppendingPathComponent:@"Plate Solutions"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:caches withIntermediateDirectories:YES attributes:nil error:nil];
+    return [NSURL fileURLWithPath:[[caches stringByAppendingPathComponent:uuid] stringByAppendingPathExtension:@"caPlateSolution"]];
+}
+
+- (void)plateSolveImpl
+{
+    CASCCDExposure* exposure = self.currentExposure;
+    
+    NSError* error;
+    if (![self.plateSolver canSolveExposure:exposure error:&error]){
+        [NSApp presentError:error];
+    }
+    else{
+        
+        // todo; should be per exposure rather than blocking the whole app
+        // todo; show the spinner on the plate solution hud
+        // todo; autosolve when show plate solution is on, lose the plate solve command
+        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+        [progress beginSheetModalForWindow:self.window];
+        progress.label.stringValue = NSLocalizedString(@"Solving...", @"Progress sheet status label");
+        [progress.progressBar setIndeterminate:YES];
+        
+        // solve async - beware of races here since we're doing this async
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
+                
+                if (!error){
+                    
+                    // cache the plate solution - todo; do we want to share this in iCloud ?
+                    NSURL* url = [self plateSolutionURLForExposure:exposure];
+                    if (url){
+                        NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
+                        if (!solutionData){
+                            NSLog(@"Failed to archive solution data");
+                        }
+                        else{
+                            if (![solutionData writeToURL:url options:NSDataWritingAtomic error:&error]){
+                                NSLog(@"Failed to write solution data: %@",error);
+                            }
+                        }
+                    }
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                    else {
+                        self.exposureView.plateSolveSolution = results[@"solution"];
+                        [self resetAndRedisplayCurrentExposure];
+                    }
+                    self.plateSolver = nil;
+                });
+            }];
+        });
+    }
+}
+
+- (IBAction)plateSolve:(id)sender
+{
+    if (self.plateSolver){
+        // todo; solvers should be per exposure
+        NSLog(@"Already solving something");
+        return;
+    }
+    
+    CASCCDExposure* exposure = self.currentExposure;
+    if (!exposure){
+        NSLog(@"No current exposure");
+        return;
+    }
+    
+    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+    if (![self.plateSolver canSolveExposure:exposure error:nil]){
+        
+        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+        
+        openPanel.canChooseFiles = NO;
+        openPanel.canChooseDirectories = YES;
+        openPanel.canCreateDirectories = YES;
+        openPanel.allowsMultipleSelection = NO;
+        openPanel.prompt = @"Choose";
+        openPanel.message = @"Locate the astrometry.net indexes";;
+        
+        [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+            if (result == NSFileHandlingPanelOKButton){
+                self.plateSolver.indexDirectoryURL = openPanel.URL;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self plateSolveImpl];
+                });
+            }
+        }];
+        
+        return;
+    }
+
+    [self plateSolveImpl];
 }
 
 #pragma mark - Path & Save Utilities
@@ -1047,7 +1206,30 @@ static void* kvoContext;
             exposure = [self.imageProcessor equalise:exposure];
         }
         
+        // set the exposure
         [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
+        
+        // check for plate solution - do this after setting the exposure as that clears the annotations layer
+        CASPlateSolveSolution* solution;
+        if (self.showPlateSolution){
+            NSData* solutionData = [NSData dataWithContentsOfURL:[self plateSolutionURLForExposure:exposure]];
+            if ([solutionData length]){
+                @try {
+                    solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+                    if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
+                        NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
+                        solution = nil;
+                    }
+                }
+                @catch (NSException *exception) {
+                    NSLog(@"Exception opening solution data: %@",exception);
+                }
+            }
+            if (!solution){
+                // todo; start plate solve for this exposure, show solution hud but with a spinner
+            }
+        }
+        self.exposureView.plateSolveSolution = solution;
     }
 }
 
@@ -1224,6 +1406,13 @@ static void* kvoContext;
     if (item.action == @selector(saveAs:) || item.action == @selector(saveToFITS:)){
         enabled = self.currentExposure != nil;
     }
+    else if (item.action == @selector(openDocument:)) {
+#if DEBUG
+        enabled = !self.cameraController.capturing;
+#else
+        enabled = NO;
+#endif
+    }
     else switch (item.tag) {
             
         case 10000:
@@ -1260,6 +1449,10 @@ static void* kvoContext;
             
         case 10007:
             item.state = self.calibrate;
+            break;
+
+        case 10008:
+            item.state = self.showPlateSolution;
             break;
 
         case 10010:
@@ -1312,6 +1505,10 @@ static void* kvoContext;
             
         case 11101:
         case 11102:
+            break;
+            
+        case 11103:
+            enabled = (self.plateSolver == nil && self.currentExposure != nil);
             break;
 
     }

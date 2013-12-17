@@ -103,6 +103,8 @@
 		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
+		F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
+		F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
 		F48534F517D23C7700C5EE8C /* SXIOCalibrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */; };
@@ -439,6 +441,8 @@
 		F4554895185128ED00D30926 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExposureEnumerator.h; sourceTree = "<group>"; };
 		F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExposureEnumerator.m; sourceTree = "<group>"; };
+		F46A3EFC1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASPlateSolvedObject+Drawing.h"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.h"; sourceTree = "<group>"; };
+		F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
 		F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCalibrationWindowController.h; sourceTree = "<group>"; };
@@ -708,6 +712,8 @@
 				F4A2586D179BC0100013D220 /* CASZoomableView.m */,
 				F4A2586E179BC0100013D220 /* CASExposureView.h */,
 				F4A2586F179BC0100013D220 /* CASExposureView.m */,
+				F46A3EFC1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.h */,
+				F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */,
 			);
 			name = "Image View";
 			sourceTree = "<group>";
@@ -1144,6 +1150,11 @@
 					};
 					F4FD22FE179B30D60049F5B5 = {
 						DevelopmentTeam = D8EQ3MVHHB;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1397,6 +1408,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F40D5B2E1849EC5E00977FA9 /* main.m in Sources */,
+				F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */,
 				F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */,
 				F40D5B311849EC5E00977FA9 /* SXIOExposureEnumerator.m in Sources */,
@@ -1470,6 +1482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
+				F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */,
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
 				F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */,

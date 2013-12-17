@@ -1360,6 +1360,15 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">10007</int>
 								</object>
+								<object class="NSMenuItem" id="541892682">
+									<reference key="NSMenu" ref="342136496"/>
+									<string key="NSTitle">Show Plate Solution</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">10008</int>
+								</object>
 								<object class="NSMenuItem" id="771626131">
 									<reference key="NSMenu" ref="342136496"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -1575,6 +1584,25 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11102</int>
+								</object>
+								<object class="NSMenuItem" id="380626881">
+									<reference key="NSMenu" ref="43874950"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<bool key="NSIsSeparator">YES</bool>
+									<string key="NSTitle"/>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="484916835">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Plate Solve</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11103</int>
 								</object>
 							</array>
 						</object>
@@ -1968,7 +1996,7 @@
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="373658400">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="790696633">
@@ -1976,7 +2004,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 42}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="709462081"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -2001,8 +2028,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{17, 0}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="231152739">
@@ -2026,8 +2051,6 @@
 						</object>
 					</array>
 					<string key="NSFrameSize">{472, 91}</string>
-					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="790696633"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
@@ -2865,6 +2888,22 @@
 						<reference key="destination" ref="946909826"/>
 					</object>
 					<int key="connectionID">892</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">plateSolve:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="484916835"/>
+					</object>
+					<int key="connectionID">895</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleShowPlateSolution:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="541892682"/>
+					</object>
+					<int key="connectionID">898</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3980,6 +4019,8 @@
 							<reference ref="101149719"/>
 							<reference ref="351274833"/>
 							<reference ref="946909826"/>
+							<reference ref="380626881"/>
+							<reference ref="484916835"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4023,6 +4064,7 @@
 							<reference ref="798560423"/>
 							<reference ref="459251863"/>
 							<reference ref="473745878"/>
+							<reference ref="541892682"/>
 						</array>
 						<reference key="parent" ref="723391026"/>
 					</object>
@@ -5297,6 +5339,21 @@
 						<reference key="object" ref="946909826"/>
 						<reference key="parent" ref="43874950"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">893</int>
+						<reference key="object" ref="380626881"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">894</int>
+						<reference key="object" ref="484916835"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">896</int>
+						<reference key="object" ref="541892682"/>
+						<reference key="parent" ref="342136496"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -5631,13 +5688,16 @@
 				<string key="887.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="888.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="891.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="893.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="894.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="896.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">892</int>
+			<int key="maxID">898</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

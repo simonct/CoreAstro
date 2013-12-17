@@ -14,5 +14,7 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
+	<string>/private/tmp/</string>
 </dict>
 </plist>
