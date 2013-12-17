@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SXIOImageAdjustmentWindowController">
+            <connections>
+                <outlet property="autoContrastStretchCheckbox" destination="AeX-rC-2z9" id="Kk1-Pj-Tfq"/>
+                <outlet property="blackValueLabel" destination="Waf-ot-9fn" id="dVC-RT-FKd"/>
+                <outlet property="contrastStretchCheckbox" destination="yJP-5M-0ZU" id="J3R-o9-SI1"/>
+                <outlet property="contrastStretchSlider" destination="XDM-Jq-QCm" id="RTl-BS-Ryq"/>
+                <outlet property="gammaSlider" destination="mI1-5i-Tk3" id="bm6-sN-fpo"/>
+                <outlet property="gammaValueLabel" destination="dSc-30-A7S" id="EUj-fw-Q9P"/>
+                <outlet property="whiteValueLabel" destination="W9P-fY-74C" id="wsC-RE-lDX"/>
+                <outlet property="window" destination="RPZ-h1-zQW" id="Fji-k9-ICB"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Image Adjustments" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="Image Adjustments" animationBehavior="default" id="RPZ-h1-zQW" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" topStrut="YES"/>
+            <rect key="contentRect" x="93" y="1190" width="258" height="177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <view key="contentView" id="q9H-ol-1O4">
+                <rect key="frame" x="0.0" y="0.0" width="258" height="177"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XDM-Jq-QCm" customClass="SMDoubleSlider">
+                        <rect key="frame" x="45" y="123" width="180" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="180" id="8RY-xc-CTz"/>
+                        </constraints>
+                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" numberOfTickMarks="20" sliderType="linear" id="UvX-aP-x0T" customClass="SMDoubleSliderCell"/>
+                        <connections>
+                            <binding destination="-2" name="enabled2" keyPath="cameraWindowController.exposureView.autoContrastStretch" previousBinding="EuO-m3-bXM" id="kKy-BF-U70">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="enabled3" keyPath="cameraWindowController" previousBinding="kKy-BF-U70" id="3GA-Zr-UXQ">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="enabled" keyPath="cameraWindowController.exposureView.contrastStretch" id="EuO-m3-bXM"/>
+                        </connections>
+                    </slider>
+                    <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mI1-5i-Tk3">
+                        <rect key="frame" x="45" y="68" width="180" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="5" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="20" sliderType="linear" id="8SD-BJ-oVx"/>
+                        <connections>
+                            <binding destination="-2" name="enabled2" keyPath="cameraWindowController.exposureView.autoContrastStretch" previousBinding="DWI-dQ-arq" id="YhT-oh-5oe">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="enabled3" keyPath="cameraWindowController" previousBinding="YhT-oh-5oe" id="p8M-gJ-Wzv">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="enabled" keyPath="cameraWindowController.exposureView.contrastStretch" id="DWI-dQ-arq"/>
+                            <binding destination="-2" name="value" keyPath="cameraWindowController.exposureView.stretchGamma" id="Hky-3E-st4"/>
+                        </connections>
+                    </slider>
+                    <button translatesAutoresizingMaskIntoConstraints="NO" id="yJP-5M-0ZU">
+                        <rect key="frame" x="17" y="120" width="22" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="rdA-4V-xBt">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="enabled2" keyPath="cameraWindowController" previousBinding="h7m-bV-tOm" id="dGH-5w-2xQ">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="enabled" keyPath="cameraWindowController.exposureView.autoContrastStretch" id="h7m-bV-tOm">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="value" keyPath="cameraWindowController.exposureView.contrastStretch" id="fjr-VQ-S9A"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2Cm-AT-ADx">
+                        <rect key="frame" x="42" y="143" width="45" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Black" id="clb-JW-VrA">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Waf-ot-9fn">
+                        <rect key="frame" x="42" y="108" width="73" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="67" id="39G-uY-61c"/>
+                        </constraints>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="ZbX-iF-8nJ">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="blackDisplayValue" id="KPq-2t-bTy"/>
+                        </connections>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dSc-30-A7S">
+                        <rect key="frame" x="42" y="53" width="73" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="MqX-vW-h6f">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="gammaDisplayValue" id="LS2-QA-zwJ"/>
+                        </connections>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mcf-Le-tia">
+                        <rect key="frame" x="42" y="89" width="45" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Gamma" id="IY1-tj-w16">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gbW-8e-8Yf">
+                        <rect key="frame" x="190" y="143" width="38" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="32" id="e7B-2k-3VT"/>
+                        </constraints>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="White" id="tMQ-gL-Hh3">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="W9P-fY-74C">
+                        <rect key="frame" x="164" y="108" width="64" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="58" id="I4J-Aq-UFM"/>
+                        </constraints>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" id="ldd-gJ-xNB">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="whiteDisplayValue" id="e4m-Dk-7zg"/>
+                        </connections>
+                    </textField>
+                    <box autoresizesSubviews="NO" verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Der-3J-OIv">
+                        <rect key="frame" x="45" y="45" width="180" height="5"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <button translatesAutoresizingMaskIntoConstraints="NO" id="AeX-rC-2z9">
+                        <rect key="frame" x="39" y="19" width="188" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="14" id="0Yd-Gc-brU"/>
+                            <constraint firstAttribute="width" constant="183" id="itP-v5-opS"/>
+                        </constraints>
+                        <buttonCell key="cell" type="check" title="Automatic contrast stretch" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="cgo-Bu-HTB">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="enabled" keyPath="cameraWindowController" id="d1e-wA-Jor">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="value" keyPath="cameraWindowController.exposureView.autoContrastStretch" id="PYE-ZX-KHu"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="mI1-5i-Tk3" firstAttribute="trailing" secondItem="W9P-fY-74C" secondAttribute="trailing" id="1jm-O8-4Tb"/>
+                    <constraint firstItem="Der-3J-OIv" firstAttribute="trailing" secondItem="mI1-5i-Tk3" secondAttribute="trailing" id="3cz-5W-aUc"/>
+                    <constraint firstItem="Waf-ot-9fn" firstAttribute="leading" secondItem="XDM-Jq-QCm" secondAttribute="leading" id="901-io-tNr"/>
+                    <constraint firstItem="XDM-Jq-QCm" firstAttribute="trailing" secondItem="W9P-fY-74C" secondAttribute="trailing" id="Ag4-qX-pMg"/>
+                    <constraint firstItem="mcf-Le-tia" firstAttribute="top" secondItem="Waf-ot-9fn" secondAttribute="bottom" constant="5" id="BCH-Ig-4Gd"/>
+                    <constraint firstItem="XDM-Jq-QCm" firstAttribute="top" secondItem="gbW-8e-8Yf" secondAttribute="bottom" constant="2" id="IY5-FH-rui"/>
+                    <constraint firstItem="W9P-fY-74C" firstAttribute="baseline" secondItem="Waf-ot-9fn" secondAttribute="baseline" id="J3s-BU-bfm"/>
+                    <constraint firstItem="XDM-Jq-QCm" firstAttribute="trailing" secondItem="gbW-8e-8Yf" secondAttribute="trailing" id="Jq6-GK-trt"/>
+                    <constraint firstItem="mcf-Le-tia" firstAttribute="leading" secondItem="mI1-5i-Tk3" secondAttribute="leading" id="UtX-ik-Nqs"/>
+                    <constraint firstItem="dSc-30-A7S" firstAttribute="top" secondItem="mI1-5i-Tk3" secondAttribute="bottom" constant="2" id="XAu-ov-bPw"/>
+                    <constraint firstItem="mI1-5i-Tk3" firstAttribute="top" secondItem="mcf-Le-tia" secondAttribute="bottom" constant="3" id="e9z-oZ-wtV"/>
+                    <constraint firstItem="Der-3J-OIv" firstAttribute="top" secondItem="dSc-30-A7S" secondAttribute="bottom" constant="5" id="eO5-ur-pnA"/>
+                    <constraint firstItem="AeX-rC-2z9" firstAttribute="top" secondItem="Der-3J-OIv" secondAttribute="bottom" constant="11" id="f4P-xN-Lmr"/>
+                    <constraint firstItem="AeX-rC-2z9" firstAttribute="trailing" secondItem="Der-3J-OIv" secondAttribute="trailing" id="fes-qP-egH"/>
+                    <constraint firstItem="yJP-5M-0ZU" firstAttribute="top" secondItem="q9H-ol-1O4" secondAttribute="top" constant="42" id="gCG-MH-Gmv"/>
+                    <constraint firstItem="dSc-30-A7S" firstAttribute="leading" secondItem="mI1-5i-Tk3" secondAttribute="leading" id="h8T-MV-G9M"/>
+                    <constraint firstItem="gbW-8e-8Yf" firstAttribute="baseline" secondItem="2Cm-AT-ADx" secondAttribute="baseline" id="kpl-Th-br8"/>
+                    <constraint firstItem="yJP-5M-0ZU" firstAttribute="leading" secondItem="q9H-ol-1O4" secondAttribute="leading" constant="20" symbolic="YES" id="lTN-7A-dH5"/>
+                    <constraint firstItem="2Cm-AT-ADx" firstAttribute="trailing" secondItem="mcf-Le-tia" secondAttribute="trailing" id="obf-5E-8d5"/>
+                    <constraint firstItem="Der-3J-OIv" firstAttribute="leading" secondItem="dSc-30-A7S" secondAttribute="leading" id="p3S-KH-bD0"/>
+                    <constraint firstItem="XDM-Jq-QCm" firstAttribute="leading" secondItem="2Cm-AT-ADx" secondAttribute="leading" id="rcS-eJ-XV6"/>
+                    <constraint firstItem="XDM-Jq-QCm" firstAttribute="leading" secondItem="yJP-5M-0ZU" secondAttribute="trailing" constant="8" symbolic="YES" id="vQR-Qx-uRQ"/>
+                    <constraint firstItem="W9P-fY-74C" firstAttribute="top" secondItem="XDM-Jq-QCm" secondAttribute="bottom" constant="2" id="vWq-9I-pPm"/>
+                    <constraint firstItem="Waf-ot-9fn" firstAttribute="leading" secondItem="mcf-Le-tia" secondAttribute="leading" id="xKB-0k-Qv0"/>
+                    <constraint firstItem="dSc-30-A7S" firstAttribute="trailing" secondItem="Waf-ot-9fn" secondAttribute="trailing" id="yYK-f7-6yy"/>
+                    <constraint firstAttribute="bottom" secondItem="AeX-rC-2z9" secondAttribute="bottom" constant="22" id="zuD-JK-KS0"/>
+                </constraints>
+            </view>
+        </window>
+    </objects>
+</document>

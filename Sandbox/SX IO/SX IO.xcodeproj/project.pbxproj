@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F40A062D1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */; };
+		F40A062E1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */; };
+		F40A062F1860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */; };
+		F40A06301860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */; };
 		F40D5B2E1849EC5E00977FA9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
 		F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */; };
 		F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
@@ -419,6 +423,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F40A062A1860523400729934 /* SXIOImageAdjustmentWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOImageAdjustmentWindowController.h; sourceTree = "<group>"; };
+		F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOImageAdjustmentWindowController.m; sourceTree = "<group>"; };
+		F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOImageAdjustmentWindowController.xib; sourceTree = "<group>"; };
 		F40D5B811849EC5E00977FA9 /* CCD IO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CCD IO.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F40D5B881849ECBE00977FA9 /* CCD IO-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CCD IO-Info.plist"; sourceTree = "<group>"; };
 		F40D5CA91851283E00977FA9 /* SXIOExportMovieWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExportMovieWindowController.h; sourceTree = "<group>"; };
@@ -923,6 +930,9 @@
 				F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */,
 				F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */,
 				F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */,
+				F40A062A1860523400729934 /* SXIOImageAdjustmentWindowController.h */,
+				F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */,
+				F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */,
 				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
@@ -1255,6 +1265,7 @@
 				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
 				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
 				F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */,
+				F40A06301860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */,
 				F40D5B5F1849EC5E00977FA9 /* CASHistogramHUDView.xib in Resources */,
 				F40D5B601849EC5E00977FA9 /* CASPlateSolutionHUDView.xib in Resources */,
 				F40D5B611849EC5E00977FA9 /* CASCameraControlsViewController.xib in Resources */,
@@ -1317,6 +1328,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40A062F1860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */,
 				F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */,
 				F4FD2313179B30D60049F5B5 /* Credits.rtf in Resources */,
 				F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */,
@@ -1420,6 +1432,7 @@
 				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
 				F40D5B381849EC5E00977FA9 /* CASProgressHUDView.m in Sources */,
 				F40D5B391849EC5E00977FA9 /* CASHistogramHUDView.m in Sources */,
+				F40A062E1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */,
 				F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F40D5B3A1849EC5E00977FA9 /* CASPlateSolutionHUDView.m in Sources */,
 				F40D5B3B1849EC5E00977FA9 /* CASSimpleGraphView.m in Sources */,
@@ -1494,6 +1507,7 @@
 				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
 				F4A2588E179BC0990013D220 /* CASProgressHUDView.m in Sources */,
 				F4A2588F179BC0990013D220 /* CASHistogramHUDView.m in Sources */,
+				F40A062D1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */,
 				F40D5CAC1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F4A25891179BC0990013D220 /* CASPlateSolutionHUDView.m in Sources */,
 				F4A25893179BC0990013D220 /* CASSimpleGraphView.m in Sources */,

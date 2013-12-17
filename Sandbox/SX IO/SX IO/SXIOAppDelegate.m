@@ -29,6 +29,7 @@
 #import "SXIOFilterWindowController.h"
 #import "CASUpdateCheck.h"
 #import "SXIOCalibrationWindowController.h"
+#import "SXIOImageAdjustmentWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface SXIOAppDelegate ()
@@ -38,6 +39,7 @@
 @implementation SXIOAppDelegate {
     NSMutableArray* _windows;
     SXIOCalibrationWindowController* _calibrationWindow;
+    SXIOImageAdjustmentWindowController* _imageAdjustment;
 }
 
 static void* kvoContext;
@@ -228,12 +230,20 @@ static void* kvoContext;
     }
 }
 
-- (IBAction)calibrate:(id)sender // todo; this will acutually have to be on the app delegate otherwise you'd need a camera to be connected to calibrate captured images
+- (IBAction)calibrate:(id)sender
 {
     if (!_calibrationWindow){
         _calibrationWindow = [[SXIOCalibrationWindowController alloc] initWithWindowNibName:@"SXIOCalibrationWindowController"];
     }
     [_calibrationWindow showWindow:nil];
+}
+
+- (IBAction)imageAdjustment:(id)sender
+{
+    if (!_imageAdjustment){
+        _imageAdjustment = [[SXIOImageAdjustmentWindowController alloc] initWithWindowNibName:@"SXIOImageAdjustmentWindowController"];
+    }
+    [_imageAdjustment showWindow:nil];
 }
 
 @end
