@@ -884,6 +884,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     if (io){
         CASCCDExposure* exp = [CASCCDExposure new];
         if ([io readExposure:exp readPixels:readPixels error:error]){
+            exp.io = io;
             return exp;
         }
     }
