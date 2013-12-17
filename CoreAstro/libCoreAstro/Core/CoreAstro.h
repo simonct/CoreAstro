@@ -53,4 +53,4 @@
 #import <CoreAstro/CASSocketClient.h>
 #import <CoreAstro/CASPowerMonitor.h>
 #import <CoreAstro/CASImageMetrics.h>
-
+#import <CoreAstro/CASFilterPipeline.h>

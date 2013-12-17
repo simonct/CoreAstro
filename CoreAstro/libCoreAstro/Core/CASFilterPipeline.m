@@ -120,7 +120,7 @@
         }
     }
     
-    return image;
+    return [image imageByCroppingToRect:image.extent]; // this seems to be required to prevent the filtered image from having infinite extent
 }
 
 - (CVPixelBufferRef)pixelBufferWithExposure:(CASCCDExposure*)exposure

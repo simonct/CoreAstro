@@ -129,6 +129,8 @@
 		F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45A2DF8166B835100A1D79C /* CASExposureView.m */; };
 		F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */; };
 		F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */; };
+		F46A3EF11854E16A00CD336C /* CASFilterPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = F46A3EEF1854E16A00CD336C /* CASFilterPipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F46A3EF21854E16A00CD336C /* CASFilterPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EF01854E16A00CD336C /* CASFilterPipeline.m */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
 		F46FC8C016455D6400578010 /* CASProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8BE16455D6400578010 /* CASProgressWindowController.m */; };
 		F46FC8C116455D6400578010 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */; };
@@ -679,6 +681,9 @@
 		F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraControlsViewController.h; sourceTree = "<group>"; };
 		F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraControlsViewController.m; sourceTree = "<group>"; };
 		F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraControlsViewController.xib; sourceTree = "<group>"; };
+		F46A3EEF1854E16A00CD336C /* CASFilterPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterPipeline.h; sourceTree = "<group>"; };
+		F46A3EF01854E16A00CD336C /* CASFilterPipeline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterPipeline.m; sourceTree = "<group>"; };
+		F46A3F0C185DF21D00CD336C /* libjpeg.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjpeg.9.dylib; sourceTree = "<group>"; };
 		F46BA59A15BDD7250097532B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F46BA59C15BDD75C0097532B /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F46FC8BD16455D6400578010 /* CASProgressWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASProgressWindowController.h; sourceTree = "<group>"; };
@@ -2006,6 +2011,8 @@
 				F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */,
 				F4F6E102182F884600ACBFB4 /* CASPowerMonitor.h */,
 				F4F6E103182F884600ACBFB4 /* CASPowerMonitor.m */,
+				F46A3EEF1854E16A00CD336C /* CASFilterPipeline.h */,
+				F46A3EF01854E16A00CD336C /* CASFilterPipeline.m */,
 				F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */,
 				F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */,
 			);
@@ -2645,6 +2652,7 @@
 				F4CA5252169CC9FC00832CFF /* libfreetype.la */,
 				F4CA5253169CC9FC00832CFF /* libjbig.2.dylib */,
 				F4CA5254169CC9FC00832CFF /* libjpeg.8.dylib */,
+				F46A3F0C185DF21D00CD336C /* libjpeg.9.dylib */,
 				F4CA5255169CC9FC00832CFF /* libnetpbm.11.dylib */,
 				F4CA5256169CC9FC00832CFF /* libpixman-1.0.dylib */,
 				F4CA5257169CC9FC00832CFF /* libpixman-1.a */,
@@ -2972,6 +2980,7 @@
 				F4EEF2B01604692600547009 /* IOHIDDevice_.h in Headers */,
 				F4EEF2B21604692600547009 /* IOHIDElement_.h in Headers */,
 				F4EEF2B31604692600547009 /* IOHIDLib_.h in Headers */,
+				F46A3EF11854E16A00CD336C /* CASFilterPipeline.h in Headers */,
 				F48DF046160EF83000190D3E /* CASCameraController.h in Headers */,
 				F4AEDF191614DC16007641A2 /* CASGuiderController.h in Headers */,
 				F4849C7216590C820069647F /* CASImageDebayer.h in Headers */,
@@ -3575,6 +3584,7 @@
 				F458724A183EAAC800CB53D1 /* CASHalfFluxDiameter.m in Sources */,
 				F44EDF3315FCC6D8003B1B4C /* CASIOCommand.m in Sources */,
 				F44EDF3515FCC6D8003B1B4C /* CASIOTransport.m in Sources */,
+				F46A3EF21854E16A00CD336C /* CASFilterPipeline.m in Sources */,
 				F44EDF3715FCC6D8003B1B4C /* CASPluginManager.m in Sources */,
 				F44EDF3915FCC6D8003B1B4C /* CASImageProcessor.mm in Sources */,
 				F44EDF4115FCC6F7003B1B4C /* CASIOUSBTransport.m in Sources */,
