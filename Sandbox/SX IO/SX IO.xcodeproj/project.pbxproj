@@ -43,7 +43,6 @@
 		F40D5B4B1849EC5E00977FA9 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
 		F40D5B4C1849EC5E00977FA9 /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
-		F40D5B4E1849EC5E00977FA9 /* CASContrastStretchSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */; };
 		F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
 		F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
 		F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
@@ -163,7 +162,6 @@
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
-		F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */; };
 		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
@@ -523,8 +521,6 @@
 		F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSlider.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.m"; sourceTree = "<group>"; };
 		F4BDF8EC17B657AF00749F4B /* SMDoubleSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSliderCell.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.h"; sourceTree = "<group>"; };
 		F4BDF8ED17B657AF00749F4B /* SMDoubleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSlider.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.h"; sourceTree = "<group>"; };
-		F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASContrastStretchSliderView.h; sourceTree = "<group>"; };
-		F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASContrastStretchSliderView.m; sourceTree = "<group>"; };
 		F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcfitsio.dylib; path = ../../External/cfitsio/build/Release/libcfitsio.dylib; sourceTree = "<group>"; };
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
@@ -928,8 +924,6 @@
 				F4FD2315179B30D60049F5B5 /* SXIOAppDelegate.m */,
 				F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */,
 				F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */,
-				F4BDF8F017B682F400749F4B /* CASContrastStretchSliderView.h */,
-				F4BDF8F117B682F400749F4B /* CASContrastStretchSliderView.m */,
 				F40A062A1860523400729934 /* SXIOImageAdjustmentWindowController.h */,
 				F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */,
 				F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */,
@@ -1454,7 +1448,6 @@
 				F40D5B4B1849EC5E00977FA9 /* CASUpdateCheck.m in Sources */,
 				F40D5B4C1849EC5E00977FA9 /* SMDoubleSliderCell.m in Sources */,
 				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
-				F40D5B4E1849EC5E00977FA9 /* CASContrastStretchSliderView.m in Sources */,
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
@@ -1529,7 +1522,6 @@
 				F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */,
 				F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */,
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
-				F4BDF8F217B682F400749F4B /* CASContrastStretchSliderView.m in Sources */,
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
