@@ -245,6 +245,7 @@
 
 static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
+NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDirectoryBookmark";
 
 @synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees;
 
@@ -265,30 +266,48 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
 + (void)initialize
 {
     if (self == [CASPlateSolver class]){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Documents/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
+//        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Documents/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
     }
 }
 
 - (NSURL*)indexDirectoryURL
 {
-    NSString* s = [[[NSUserDefaults standardUserDefaults] stringForKey:kCASAstrometryIndexDirectoryURLKey] stringByResolvingSymlinksInPath];
-    return s ? [NSURL fileURLWithPath:s] : nil;
+    NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
+    if ([bookmark length]){
+        NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+        if (url){
+            return url;
+        }
+    }
+    return nil;
 }
 
 - (void)setIndexDirectoryURL:(NSURL*)url
 {
-    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
+    NSError* error;
+    NSData* bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (bookmark){
+        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kCASAstrometryIndexDirectoryBookmarkKey];
+    }
+    if (error){
+        NSLog(@"Failed to create index bookmark: %@",error);
+    }
 }
 
 - (NSString*)cacheDirectoryForExposure:(CASCCDExposure*)exposure
 {
     NSString* path = nil;
     
-    if (exposure.io){
+    if (/*exposure.io*/0){
         path = [[exposure.io.url path] stringByAppendingPathComponent:@"plate-solve"];
     }
     else {
         path = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
+        NSURL* url = exposure.io.url;
+        if (url){
+            path = [path stringByAppendingPathComponent:[[url.path lastPathComponent] stringByDeletingPathExtension]];
+            path = [path stringByAppendingPathComponent:@"plate-solve"];
+        }
     }
     
     [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -340,6 +359,10 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
 - (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block
 {
     void (^complete)(NSError*,NSDictionary*) = ^(NSError* error,NSDictionary* results){
+        
+        // close the sandbox
+        [self.indexDirectoryURL stopAccessingSecurityScopedResource];
+
         if (block){
             block(error,results);
         }
@@ -347,6 +370,9 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
 
     // create tasks on main queue otherwise we end up with no data being returned to the app (rings a bell but can't remember why this happens)
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        // open the sandbox
+        [self.indexDirectoryURL startAccessingSecurityScopedResource];
         
         // create a solver task for the embedded tool
         self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field"];
@@ -510,19 +536,6 @@ NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirecto
         
         // solve it
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
-            
-            if (!error){
-                
-                // cache the solution in the exposure bundle
-                NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
-                if (!solutionData){
-                    NSLog(@"Failed to archive solution data");
-                }
-                else{
-                    NSString* solutionDataPath = [self.cacheDirectory stringByAppendingPathComponent:kSolutionArchiveName];
-                    [solutionData writeToFile:solutionDataPath options:0 error:nil];
-                }
-            }
             complete(error,results);
         }];
     });
