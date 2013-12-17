@@ -64,7 +64,7 @@ Gw
             </view>
         </window>
         <customView id="BQS-dL-N7m">
-            <rect key="frame" x="0.0" y="0.0" width="417" height="203"/>
+            <rect key="frame" x="0.0" y="0.0" width="489" height="203"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mfO-Xa-kej">
@@ -187,7 +187,7 @@ Gw
                     </connections>
                 </button>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FNQ-8C-VjI">
-                    <rect key="frame" x="303" y="165" width="97" height="26"/>
+                    <rect key="frame" x="303" y="165" width="169" height="26"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="qPm-53-fAQ">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
