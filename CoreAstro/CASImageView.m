@@ -62,6 +62,7 @@
         _stretchMax = 1;
         _stretchGamma = 1;
         _extent = CGRectNull;
+        self.wantsLayer = YES;
     }
     return self;
 }
