@@ -16,7 +16,6 @@
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
 #import "SXIOExposureEnumerator.h"
-#import "SXIOExportMovieWindowController.h"
 
 #import <Quartz/Quartz.h>
 
@@ -55,7 +54,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (assign) BOOL calibrate;
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
-@property (nonatomic,strong) SXIOExportMovieWindowController* movieExportWindowController;
 
 @property (nonatomic,strong) CASPowerMonitor* powerMonitor;
 
@@ -770,52 +768,6 @@ static void* kvoContext;
 - (IBAction)toggleFlipHorizontal:(id)sender
 {
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
-}
-
-- (IBAction)makeMovie:(id)sender
-{
-    if (!self.movieExportWindowController){
-        self.movieExportWindowController = [SXIOExportMovieWindowController loadWindowController];
-    }
-    
-    [self.movieExportWindowController.window center];
-    [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
-    
-    // todo; use a single pipeline for everything, not just movie export
-    CASFilterPipeline* pipeline = [CASFilterPipeline new];
-    pipeline.equalise = self.equalise;
-    pipeline.invert = self.exposureView.invert;
-    pipeline.medianFilter = self.exposureView.medianFilter;
-    pipeline.contrastStretch = self.exposureView.contrastStretch;
-    pipeline.stretchMin = self.exposureView.stretchMin;
-    pipeline.stretchMax = self.exposureView.stretchMax;
-    pipeline.stretchGamma = self.exposureView.stretchGamma;
-    pipeline.flipVertical = self.exposureView.flipVertical;
-    pipeline.flipHorizontal = self.exposureView.flipHorizontal;
-    // todo; debayer
-    // todo; preprocessing
-    self.movieExportWindowController.filterPipeline = pipeline;
-    
-    [self.movieExportWindowController runWithCompletion:^(NSError *error, NSURL *movieURL) {
-        
-        [self.movieExportWindowController.window orderOut:nil];
-        self.movieExportWindowController = nil;
-        
-        if (error){
-            [NSApp presentError:error];
-        }
-        else if (movieURL) {
-            
-            NSAlert* alert = [NSAlert alertWithMessageText:@"Export Complete"
-                                             defaultButton:@"OK"
-                                           alternateButton:@"Cancel"
-                                               otherButton:nil
-                                 informativeTextWithFormat:@"Open the output movie ?",nil];
-            if ([alert runModal] == NSOKButton){
-                [[NSWorkspace sharedWorkspace] openURL:movieURL];
-            }
-        }
-    }];
 }
 
 - (NSURL*)plateSolutionURLForExposure:(CASCCDExposure*)exposure

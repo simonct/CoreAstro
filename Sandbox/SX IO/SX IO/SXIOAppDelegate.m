@@ -30,17 +30,18 @@
 #import "CASUpdateCheck.h"
 #import "SXIOCalibrationWindowController.h"
 #import "SXIOImageAdjustmentWindowController.h"
+#import "SXIOExportMovieWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface SXIOAppDelegate ()
 @property (weak) IBOutlet NSPanel *noDevicesHUD;
+@property (strong) NSMutableArray *windows;
+@property (strong) SXIOCalibrationWindowController *calibrationWindow;
+@property (strong) SXIOImageAdjustmentWindowController *imageAdjustment;
+@property (strong) SXIOExportMovieWindowController *movieExportWindowController;
 @end
 
-@implementation SXIOAppDelegate {
-    NSMutableArray* _windows;
-    SXIOCalibrationWindowController* _calibrationWindow;
-    SXIOImageAdjustmentWindowController* _imageAdjustment;
-}
+@implementation SXIOAppDelegate
 
 static void* kvoContext;
 
@@ -244,6 +245,52 @@ static void* kvoContext;
         _imageAdjustment = [[SXIOImageAdjustmentWindowController alloc] initWithWindowNibName:@"SXIOImageAdjustmentWindowController"];
     }
     [_imageAdjustment showWindow:nil];
+}
+
+- (IBAction)makeMovie:(id)sender
+{
+    if (!self.movieExportWindowController){
+        self.movieExportWindowController = [SXIOExportMovieWindowController loadWindowController];
+    }
+    
+    [self.movieExportWindowController.window center];
+    [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
+    
+    // todo; use a single pipeline for everything, not just movie export
+//    CASFilterPipeline* pipeline = [CASFilterPipeline new];
+//    pipeline.equalise = self.equalise;
+//    pipeline.invert = self.exposureView.invert;
+//    pipeline.medianFilter = self.exposureView.medianFilter;
+//    pipeline.contrastStretch = self.exposureView.contrastStretch;
+//    pipeline.stretchMin = self.exposureView.stretchMin;
+//    pipeline.stretchMax = self.exposureView.stretchMax;
+//    pipeline.stretchGamma = self.exposureView.stretchGamma;
+//    pipeline.flipVertical = self.exposureView.flipVertical;
+//    pipeline.flipHorizontal = self.exposureView.flipHorizontal;
+//    // todo; debayer
+//    // todo; preprocessing
+//    self.movieExportWindowController.filterPipeline = pipeline;
+    
+    [self.movieExportWindowController runWithCompletion:^(NSError *error, NSURL *movieURL) {
+        
+        [self.movieExportWindowController.window orderOut:nil];
+        self.movieExportWindowController = nil;
+        
+        if (error){
+            [NSApp presentError:error];
+        }
+        else if (movieURL) {
+            
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Export Complete"
+                                             defaultButton:@"OK"
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"Open the output movie ?",nil];
+            if ([alert runModal] == NSOKButton){
+                [[NSWorkspace sharedWorkspace] openURL:movieURL];
+            }
+        }
+    }];
 }
 
 @end

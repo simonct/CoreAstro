@@ -7,8 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOExportMovieWindowController">
             <connections>
+                <outlet property="exposureView" destination="zfu-eD-wMD" id="tbW-tY-zJt"/>
+                <outlet property="progressWindow" destination="NiW-GS-dMr" id="tyv-24-BTK"/>
                 <outlet property="saveAccessoryView" destination="BQS-dL-N7m" id="KfJ-bV-Ycr"/>
-                <outlet property="window" destination="NiW-GS-dMr" id="aEQ-yU-dwD"/>
+                <outlet property="window" destination="Sf8-ym-sEb" id="5Uf-3y-gkO"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -279,5 +281,95 @@ Gw
                 </matrix>
             </subviews>
         </customView>
+        <window title="Make Movie" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="Make Movie" animationBehavior="default" id="Sf8-ym-sEb">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="283" y="305" width="811" height="619"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <view key="contentView" id="XRn-ks-gDm">
+                <rect key="frame" x="0.0" y="0.0" width="811" height="619"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xaw-RQ-WoK">
+                        <rect key="frame" x="18" y="18" width="581" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="o7R-It-Fc3"/>
+                        <connections>
+                            <binding destination="-2" name="maxValue" keyPath="frameCount" id="bC0-cI-erR"/>
+                            <binding destination="-2" name="value" keyPath="currentFrame" previousBinding="bC0-cI-erR" id="Wh8-HT-ceu"/>
+                        </connections>
+                    </slider>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OrD-dk-FzT">
+                        <rect key="frame" x="698" y="11" width="99" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="87" id="XSn-pY-fd7"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bRK-Hf-KNm">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="savePressed:" target="-2" id="t27-DO-2mL"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nVQ-R2-R5N">
+                        <rect key="frame" x="599" y="11" width="99" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EdE-zH-VSx">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="cancelPressed:" target="-2" id="oeU-RG-f1Y"/>
+                        </connections>
+                    </button>
+                    <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5X8-vv-Lf6">
+                        <rect key="frame" x="-1" y="51" width="813" height="569"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <clipView key="contentView" id="D4y-hF-G3p">
+                            <rect key="frame" x="0.0" y="0.0" width="813" height="569"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfu-eD-wMD" customClass="CASExposureView">
+                                    <rect key="frame" x="0.0" y="0.0" width="811" height="567"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                </customView>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="nWu-7H-Kmo">
+                            <rect key="frame" x="0.0" y="553" width="813" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="pE7-JR-IVu">
+                            <rect key="frame" x="797" y="0.0" width="16" height="569"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="OrD-dk-FzT" secondAttribute="trailing" constant="20" id="0Nc-ap-GGn"/>
+                    <constraint firstAttribute="trailing" secondItem="5X8-vv-Lf6" secondAttribute="trailing" constant="-1" id="9kB-CJ-dg9"/>
+                    <constraint firstItem="xaw-RQ-WoK" firstAttribute="leading" secondItem="XRn-ks-gDm" secondAttribute="leading" constant="20" id="C4P-jA-UiL"/>
+                    <constraint firstItem="OrD-dk-FzT" firstAttribute="leading" secondItem="nVQ-R2-R5N" secondAttribute="trailing" constant="12" id="Hm5-bd-NEb"/>
+                    <constraint firstAttribute="bottom" secondItem="nVQ-R2-R5N" secondAttribute="bottom" constant="18" id="LKU-vv-orC"/>
+                    <constraint firstItem="nVQ-R2-R5N" firstAttribute="width" secondItem="OrD-dk-FzT" secondAttribute="width" id="NmF-zZ-ee3"/>
+                    <constraint firstItem="nVQ-R2-R5N" firstAttribute="leading" secondItem="xaw-RQ-WoK" secondAttribute="trailing" constant="8" id="P4w-Jj-ZOP"/>
+                    <constraint firstItem="nVQ-R2-R5N" firstAttribute="leading" secondItem="xaw-RQ-WoK" secondAttribute="trailing" constant="8" id="Saf-27-Jxk"/>
+                    <constraint firstItem="nVQ-R2-R5N" firstAttribute="top" secondItem="5X8-vv-Lf6" secondAttribute="bottom" constant="12" id="URU-QB-NGp"/>
+                    <constraint firstItem="5X8-vv-Lf6" firstAttribute="leading" secondItem="XRn-ks-gDm" secondAttribute="leading" constant="-1" id="bDW-h0-gVL"/>
+                    <constraint firstAttribute="bottom" secondItem="OrD-dk-FzT" secondAttribute="bottom" constant="18" id="bHa-UC-hcR"/>
+                    <constraint firstAttribute="bottom" secondItem="xaw-RQ-WoK" secondAttribute="bottom" constant="20" id="oVD-xV-MxH"/>
+                    <constraint firstItem="5X8-vv-Lf6" firstAttribute="top" secondItem="XRn-ks-gDm" secondAttribute="top" constant="-1" id="uKh-rR-WnG"/>
+                    <constraint firstItem="OrD-dk-FzT" firstAttribute="leading" secondItem="nVQ-R2-R5N" secondAttribute="trailing" constant="12" id="vxf-3o-sHz"/>
+                </constraints>
+            </view>
+        </window>
     </objects>
 </document>
