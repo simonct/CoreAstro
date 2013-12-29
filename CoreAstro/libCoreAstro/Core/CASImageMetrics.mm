@@ -53,7 +53,7 @@
         
         CGPoint centroid = CGPointZero;
         const CASSize size = exposure.actualSize;
-        const NSInteger length = [exposure.floatPixels length];
+        const NSInteger length = [exposure.floatPixels length]/sizeof(float);
         
         switch (mode) {
                 
