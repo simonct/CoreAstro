@@ -1069,7 +1069,7 @@ static void* kvoContext;
                 self.progressStatusText.stringValue = @"Downloading image...";
             }
             else {
-                if (self.cameraController.captureCount > 1){
+                if (self.cameraController.captureCount > 1 && !self.cameraController.continuous){
                     self.progressStatusText.stringValue = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.currentCaptureIndex+1,self.cameraController.captureCount];
                 }
                 else {
