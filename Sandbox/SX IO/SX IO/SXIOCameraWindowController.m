@@ -50,6 +50,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm; // used for star detection - todo; probably put into image metrics
 
 @property (assign) BOOL calibrate;
 @property (nonatomic,strong) CASCaptureController* captureController;
@@ -77,6 +78,7 @@ static void* kvoContext;
     // set up some helpers
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.exposureView.imageProcessor = self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
+    self.exposureView.guideAlgorithm = self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];;
 
     // set up the toolbar
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
