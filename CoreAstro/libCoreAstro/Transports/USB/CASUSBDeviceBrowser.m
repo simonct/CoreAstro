@@ -208,7 +208,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
     if (iterator){
         
         io_service_t usbInterfaceRef;
-        while ( (usbInterfaceRef = IOIteratorNext(iterator)) ) {
+        while ( !result && (usbInterfaceRef = IOIteratorNext(iterator)) ) {
             
             // create a transport object
             SInt32 score;
