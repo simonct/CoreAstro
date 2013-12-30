@@ -891,6 +891,17 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     return nil;
 }
 
++ (BOOL)writeExposure:(CASCCDExposure*)exposure toPath:(NSString*)path error:(NSError**)error
+{
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    if (io){
+        if ([io writeExposure:exposure writePixels:YES error:error]){
+            exposure.io = io;
+        }
+    }
+    return nil;
+}
+
 + (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure
 {
     NSString* name = exposure.deviceID;
