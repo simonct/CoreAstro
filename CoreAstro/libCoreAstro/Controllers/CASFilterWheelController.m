@@ -162,6 +162,33 @@
     self.filterWheel.currentFilter = index;
 }
 
+- (NSArray*)scriptingFilterNames
+{
+    NSDictionary* filterNames = self.filterNames;
+    NSMutableArray* result = [NSMutableArray arrayWithCapacity:[filterNames count]];
+    NSArray* sortedKeys = [[filterNames allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    for (id key in sortedKeys){
+        [result addObject:filterNames[key]];
+    }
+    return result;
+}
+
+- (NSString*)scriptingCurrentFilterName
+{
+    return self.currentFilterName;
+}
+
+- (void)setScriptingCurrentFilterName:(NSString*)name
+{
+    NSArray* indexes = [self.filterNames allKeysForObject:name];
+    if ([indexes count]){
+        self.filterWheel.currentFilter = [indexes[0] integerValue];
+    }
+    else {
+        NSLog(@"*** Unknown filter name: %@",name);
+    }
+}
+
 - (BOOL)scriptingIsMoving
 {
     return self.filterWheel.moving;

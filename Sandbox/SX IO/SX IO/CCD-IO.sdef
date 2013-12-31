@@ -114,6 +114,15 @@
                 <cocoa key="scriptingCurrentFilter"/>
             </property>
 
+            <property name="filter names" code="Filn" access="r" description="The assigned names of the filter slots in the filter wheel">
+                <type type="text" list="yes"/>
+                <cocoa key="scriptingFilterNames"/>
+            </property>
+
+            <property name="current filter name" code="Curn" type="text" description="The name of the curretly selected filter">
+                <cocoa key="scriptingCurrentFilterName"/>
+            </property>
+
             <property name="moving" code="Move" type="boolean" access="r" description="True if the wheel is currently moving">
                 <cocoa key="scriptingIsMoving"/>
             </property>
