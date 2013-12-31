@@ -159,4 +159,9 @@
     self.filterWheel.currentFilter = [currentFilter integerValue];
 }
 
+- (BOOL)scriptingIsMoving
+{
+    return self.filterWheel.moving;
+}
+
 @end

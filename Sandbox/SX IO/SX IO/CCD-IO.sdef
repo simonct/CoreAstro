@@ -114,6 +114,10 @@
                 <cocoa key="scriptingCurrentFilter"/>
             </property>
 
+            <property name="moving" code="Move" type="boolean" access="r" description="True if the wheel is currently moving">
+                <cocoa key="scriptingIsMoving"/>
+            </property>
+
         </class>
 
         <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item">
