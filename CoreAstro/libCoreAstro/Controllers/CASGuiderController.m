@@ -41,6 +41,11 @@
     return self;
 }
 
+- (CASDevice*) device
+{
+    return self.guider;
+}
+
 - (void)connect:(void(^)(NSError*))block
 {
     if (block){
@@ -65,16 +70,6 @@
 - (NSString*)containerAccessor
 {
 	return @"guiderControllers";
-}
-
-- (id)scriptingDeviceName
-{
-    return self.guider.deviceName;
-}
-
-- (id)scriptingVendorName
-{
-    return self.guider.vendorName;
 }
 
 - (void)scriptingGuide:(NSScriptCommand*)command

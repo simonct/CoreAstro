@@ -28,6 +28,10 @@
 	<string>Copyright © 2013 Simon Taylor. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>OSAScriptingDefinition</key>
+	<string>CCD-IO.sdef</string>
+	<key>NSAppleScriptEnabled</key>
+	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

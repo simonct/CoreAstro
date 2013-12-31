@@ -27,6 +27,7 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASCaptureCommand ()
+@property (nonatomic,strong) NSMutableArray* result;
 @end
 
 @implementation CASCaptureCommand
@@ -36,41 +37,64 @@
     CASCameraController* controller = (CASCameraController*)[self evaluatedReceivers];
     if ([controller isKindOfClass:[CASCameraController class]]){
         
-        [self suspendExecution];
-                                
-        id bin = [[self evaluatedArguments] objectForKey:@"bin"];
-        const NSInteger binningIndex = ([bin integerValue] > 0) ? [bin integerValue] - 1 : 0;
-        controller.binningIndex = MAX(0,MIN(3,binningIndex));
-        
-        NSDictionary* args = [self evaluatedArguments];
-        NSNumber* ms = [args objectForKey:@"milliseconds"];
-        NSNumber* secs = [args objectForKey:@"seconds"];
-        if ((!ms && !secs) || (ms && secs)){
-            [self setErrorCode:paramErr string:NSLocalizedString(@"You must specify the exposure duration in either seconds or milliseconds", @"Scripting error message")];
+        if (controller.capturing){
+            [self setErrorCode:paramErr string:NSLocalizedString(@"The camera is busy capturing a sequence", @"Scripting error message")];
         }
         else {
             
-            if (ms){
-                controller.exposure = [ms integerValue];
-                controller.exposureUnits = 1;
+            controller.scriptCommand = [NSScriptCommand currentCommand];
+            
+            [self suspendExecution];
+            
+            id bin = [[self evaluatedArguments] objectForKey:@"bin"];
+            const NSInteger binningIndex = ([bin integerValue] > 0) ? [bin integerValue] - 1 : 0;
+            controller.binningIndex = MAX(0,MIN(3,binningIndex));
+            
+            NSDictionary* args = [self evaluatedArguments];
+            NSNumber* ms = [args objectForKey:@"milliseconds"];
+            NSNumber* secs = [args objectForKey:@"seconds"];
+            if ((!ms && !secs) || (ms && secs)){
+                [self setErrorCode:paramErr string:NSLocalizedString(@"You must specify the exposure duration in either seconds or milliseconds", @"Scripting error message")];
+                [self resumeExecutionWithResult:nil];
             }
             else {
-                controller.exposure = [secs integerValue];
-                controller.exposureUnits = 0;
-            }
-            
-            [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
                 
-                if (error){
-                    [self setErrorCode:[error code] string:[error localizedDescription]];
+                if (ms){
+                    controller.exposure = [ms integerValue];
+                    controller.exposureUnits = 1;
                 }
-                else{
-                    [self resumeExecutionWithResult:exposure];
+                else {
+                    controller.exposure = [secs integerValue];
+                    controller.exposureUnits = 0;
                 }
-            }];
+                
+                self.result = [NSMutableArray arrayWithCapacity:controller.captureCount];
+                
+                [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
+                    
+                    if (error){
+                        [self setErrorCode:[error code] string:[error localizedDescription]];
+                    }
+                    if (exposure){
+                        [self.result addObject:exposure];
+                    }
+                    if (!controller.capturing){
+                        [self resumeExecutionWithResult:self.result];
+                    }
+                }];
+            }
         }
     }
 	return nil;
+}
+
+- (void)resumeExecutionWithResult:(id)result
+{
+    CASCameraController* controller = (CASCameraController*)[self evaluatedReceivers];
+
+    controller.scriptCommand = nil;
+    
+    [super resumeExecutionWithResult:result];
 }
 
 @end

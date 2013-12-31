@@ -665,10 +665,9 @@
     self.note = note;
 }
 
-- (NSString*)scriptingPath
+- (NSURL*)scriptingFile
 {
-    NSURL* url = self.io.url;
-    return [url isFileURL] ? [self.io.url path] : nil;
+    return self.io.url;
 }
 
 @end

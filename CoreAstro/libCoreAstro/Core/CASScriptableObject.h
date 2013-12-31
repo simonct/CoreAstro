@@ -28,6 +28,8 @@
 
 @interface CASScriptableObject : NSObject
 
+@property (nonatomic,strong) NSScriptCommand* scriptCommand;
+
 - (NSScriptObjectSpecifier*)objectSpecifier;
 
 - (NSString*)containerAccessor;

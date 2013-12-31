@@ -31,7 +31,9 @@
 #import "SXIOCalibrationWindowController.h"
 #import "SXIOImageAdjustmentWindowController.h"
 #import "SXIOExportMovieWindowController.h"
+#import "CASCaptureCommand.h"
 #import <CoreAstro/CoreAstro.h>
+#import <objc/runtime.h>
 
 @interface SXIOAppDelegate ()
 @property (weak) IBOutlet NSPanel *noDevicesHUD;
@@ -61,6 +63,9 @@ static void* kvoContext;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    // HACK; swizzle - (NSArray*)exposures
+    method_exchangeImplementations(class_getInstanceMethod([NSApplication class],@selector(exposures)),class_getInstanceMethod([NSApplication class],@selector(sxioExposures)));
+
     _windows = [NSMutableArray arrayWithCapacity:5];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -294,3 +299,46 @@ static void* kvoContext;
 }
 
 @end
+
+static NSMutableArray* gRecentExposures;
+
+@interface NSApplication (SXIOScripting)
+@end
+
+@implementation NSApplication (SXIOScripting)
+
+- (NSArray*)sxioExposures
+{
+    return gRecentExposures;
+}
+
+@end
+
+@interface SXIOCaptureCommand : CASCaptureCommand
+@end
+
+@implementation SXIOCaptureCommand
+
+- (id)initWithCommandDescription:(NSScriptCommandDescription *)commandDef
+{
+    self = [super initWithCommandDescription:commandDef];
+    if (self){
+        gRecentExposures = nil; // reset the exposures list
+    }
+    return self;
+}
+
+- (void)resumeExecutionWithResult:(id)result
+{
+    if ([result isKindOfClass:[NSArray class]]){
+        if (!gRecentExposures){
+            gRecentExposures = [NSMutableArray arrayWithCapacity:10];
+        }
+        [gRecentExposures addObjectsFromArray:result]; // todo; use NSCache ?
+        // reset exposures ?
+    }
+    [super resumeExecutionWithResult:result];
+}
+
+@end
+

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd"> 
+<dictionary title="CCD IO Terminology">
+    
+    <!--
+     CASS SUITE
+     -->
+    <suite name="CCD IO Suite" code="CASS" description="CCD IO specific classes and commands.">
+        
+        <!-- Classes -->
+        
+        <class name="application" code="capp" description="An application's top level scripting object.">
+            
+            <cocoa class="NSApplication"/>
+            
+            <element type="camera" access="r">
+                <cocoa key="cameraControllers"/>
+            </element>
+            
+            <!--
+            <element type="guider" access="r">
+                <cocoa key="guiderControllers"/>
+            </element>
+            -->
+
+            <element type="filter wheel" access="r">
+                <cocoa key="filterWheelControllers"/>
+            </element>
+
+            <!-- make this an element of the camera ? -->
+            <element type="exposure" access="r">
+                <cocoa key="exposures"/>
+            </element>
+
+        </class>
+        
+        <class name="device" plural="devices" code="CASD" description="A device object." inherits="item">
+            
+            <cocoa class="CASDeviceController"/>
+            
+            <property name="name" code="Name" type="text" access="r" description="The name of the device">
+                <cocoa key="scriptingDeviceName"/>
+            </property>
+            
+            <property name="vendor" code="Vend" type="text" access="r" description="The vendor of the device">
+                <cocoa key="scriptingVendorName"/>
+            </property>
+            
+        </class>
+
+        <class name="camera" plural="cameras" code="CASC" description="A camera object." inherits="device">
+            
+            <cocoa class="CASCameraController"/> 
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the camera">
+                <cocoa key="uniqueID"/>
+            </property>
+                       
+            <property name="temperature" code="Temp" type="number" description="The temperature of the camera">
+                <cocoa key="scriptingTemperature"/>
+            </property>
+            
+            <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
+                <cocoa key="scriptingSequenceCount"/>
+            </property>
+
+            <property name="sequence index" code="SeqI" type="number" access="r" description="The index of the exposure in the current sequence">
+                <cocoa key="scriptingSequenceIndex"/>
+            </property>
+
+            <property name="sequence interval" code="Seqi" type="number" description="The interval between exposures in the current sequence">
+                <cocoa key="scriptingSequenceInterval"/>
+            </property>
+
+            <property name="capturing" code="Busy" type="boolean" access="r" description="True if the camera is currently capturing">
+                <cocoa key="scriptingIsCapturing"/>
+            </property>
+
+            <responds-to name="capture">
+                <cocoa method="scriptingCapture:"/>
+            </responds-to>
+
+        </class> 
+        
+        <!--
+        <class name="guider" plural="guiders" code="CASG" description="A guider object." inherits="device">
+            
+            <cocoa class="CASGuiderController"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the guider">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <responds-to name="pulse">
+                <cocoa method="scriptingGuide:"/>
+            </responds-to>
+            
+        </class>
+        -->
+
+        <class name="filter wheel" plural="filter wheels" code="CASF" description="A filter wheel object." inherits="device">
+            
+            <cocoa class="CASFilterWheelController"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the filter wheel">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="filter count" code="Filc" type="number" access="r" description="The number of filter slots in the filter wheel">
+                <cocoa key="scriptingFilterCount"/>
+            </property>
+            
+            <property name="current filter" code="Curf" type="number" description="The index of the curretly selected filter">
+                <cocoa key="scriptingCurrentFilter"/>
+            </property>
+
+        </class>
+
+        <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item">
+            
+            <cocoa class="CASCCDExposure"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the exposure">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="date" code="Date" type="date" access="r" description="The date of the exposure">
+                <cocoa key="date"/>
+            </property>
+
+            <property name="width" code="Widt" type="integer" access="r" description="The width of the exposure">
+                <cocoa key="scriptingWidth"/>
+            </property>
+
+            <property name="height" code="Heig" type="integer" access="r" description="The height of the exposure">
+                <cocoa key="scriptingHeight"/>
+            </property>
+
+            <property name="milliseconds" code="MS  " type="integer" access="r" description="The duration of the exposure in ms">
+                <cocoa key="scriptingMilliseconds"/>
+            </property>
+
+            <property name="type" code="Type" type="exposure type" description="The type of the exposure">
+                <cocoa key="scriptingType"/>
+            </property>
+
+            <!--
+            <property name="note" code="Note" type="text" description="The note of the exposure">
+                <cocoa key="scriptingNote"/>
+            </property>
+            -->
+            
+            <property name="file" code="File" type="file" access="r" description="The exposure file">
+                <cocoa key="scriptingFile"/>
+            </property>
+
+        </class>
+
+        <!-- Commands -->
+        
+        <command name="capture" code="CASSCAPT" description="Capture an image.">
+            
+            <cocoa class="SXIOCaptureCommand"/>
+            
+            <direct-parameter description="The camera to capture the image from.">
+                <type type="camera" list="no"/>
+            </direct-parameter> 
+
+            <parameter name="milliseconds" code="Ms  " optional="yes" description="exposure time in ms.">
+                <cocoa key="milliseconds"/>
+                <type type="integer" list="no"/>
+            </parameter>  
+
+            <parameter name="seconds" code="Secs" optional="yes" description="exposure time in seconds">
+                <cocoa key="seconds"/>
+                <type type="integer" list="no"/>
+            </parameter>
+
+            <parameter name="bin" code="Bin " optional="yes" description="exposure binning.">
+                <cocoa key="bin"/>
+                <type type="integer" list="no"/>
+            </parameter>  
+
+            <result description="The exposures">
+                <type type="exposure" list="yes"/>
+            </result>
+            
+        </command>
+
+        <!--
+        <command name="pulse" code="CASSGUID" description="Issue a guide command.">
+            
+            <cocoa class="CASGuideCommand"/>
+            
+            <direct-parameter description="The guider to pulse.">
+                <type type="guider" list="no"/>
+            </direct-parameter>
+            
+            <parameter name="direction" code="Gdir" optional="no" description="guide direction.">
+                <cocoa key="direction"/>
+                <type type="guide direction" list="no"/>
+            </parameter>
+            
+            <parameter name="milliseconds" code="Gms " optional="no" description="guide duration in ms">
+                <cocoa key="duration"/>
+                <type type="integer" list="no"/>
+            </parameter>
+
+        </command>
+        -->
+        
+        <!-- Enumerations -->
+        
+        <enumeration name="exposure type" code="Dark">
+            <enumerator name="light" code="Ligt" description="A light frame."/>
+            <enumerator name="dark" code="Dark" description="A dark frame."/>
+            <enumerator name="bias" code="Bias" description="A bias frame."/>
+            <enumerator name="flat" code="Flat" description="A flat frame."/>
+        </enumeration>
+
+        <!--
+        <enumeration name="guide direction" code="Gdir">
+            <enumerator name="RAPlus" code="RAP " description="RA+ direction"/>
+            <enumerator name="RAMinus" code="RAM " description="RA- direction"/>
+            <enumerator name="DecPlus" code="DecP" description="Dec+ direction"/>
+            <enumerator name="DecMinus" code="DecM" description="Dec- direction"/>
+        </enumeration>
+        -->
+
+    </suite>
+    
+</dictionary>

@@ -23,7 +23,7 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASScriptableObject.h"
+#import "CASDeviceController.h"
 #import "CASCCDExposure.h"
 
 @class CASCCDDevice;
@@ -34,7 +34,11 @@
 @class CASCCDExposure;
 @class CASMovieExporter;
 
-@interface CASCameraController : CASScriptableObject
+@protocol CASCameraControllerSink <NSObject>
+- (void)captureCompletedWithExposure:(CASCCDExposure*)exposure error:(NSError*)error;
+@end
+
+@interface CASCameraController : CASDeviceController
 
 @property (nonatomic,readonly,strong) CASCCDDevice* camera;
 
@@ -47,7 +51,6 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,readonly) CASCameraControllerState state;
 @property (nonatomic,readonly) float progress;
 
-@property (nonatomic) BOOL autoSave;
 @property (nonatomic,readonly) BOOL capturing;
 @property (nonatomic,readonly) BOOL waitingForNextCapture;
 
@@ -74,7 +77,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 
-@property (nonatomic,strong) CASMovieExporter* movieExporter;
+@property (nonatomic,strong) id<CASCameraControllerSink> sink;
 
 @property (nonatomic,readonly) BOOL cancelled;
 

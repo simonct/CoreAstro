@@ -31,7 +31,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @implementation SXIOExposureView
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
@@ -301,12 +301,6 @@ static void* kvoContext;
         self.powerMonitor = [[CASPowerMonitor alloc] init];
     }
     self.powerMonitor.disableSleep = YES;
-
-    // check we have somewhere to save the file, a prefix and a sequence number
-    const BOOL saveToFile = self.saveTargetControlsViewController.saveImages && !self.cameraController.continuous;
-    
-    // do not save to the library todo; replace with an exposure sink interface
-    self.cameraController.autoSave = NO;
     
     // ensure this is recorded as a light frame
     self.cameraController.exposureType = kCASCCDExposureLightType;
@@ -314,88 +308,25 @@ static void* kvoContext;
     // issue the capture command
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
-        @try {
-
-            if (error){
-                // todo; run completion actions e.g. email, run processing scripts, etc
-                [NSApp presentError:error];
-            }
-            else{
-                
-                // todo; async
-                
-                // save to 'latest' - do we really want to do this with large files ?
-                // [self saveExposure:exposure withName:@"latest"];
-                
-                // save to the designated folder with the current settings as a fits file
-                if (exposure && saveToFile){
-                    
-                    // check for a user-entered filter name
-                    NSString* filterName = self.filterWheelControlsViewController.filterName;
-                    if ([filterName length]){
-                        exposure.filters = @[filterName];
-                    }
-                    
-                    // construct the filename
-                    const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-                    NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]];
-                    ++self.saveTargetControlsViewController.saveImagesSequence;
-                    
-                    // ensure we have a unique filename (for instance, in case the sequence was reset)
-                    NSInteger suffix = 2;
-                    NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
-                    while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
-                        NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
-                        finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
-                        if (suffix > 999){
-                            NSLog(@"*** Gave up trying to find a unique filename");
-                            break;
-                        }
-                    }
-                    
-                    // save the exposure
-                    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[finalUrl path]];
-                    if (!io){
-                        NSLog(@"*** Failed to create FITS exporter");
-                    }
-                    else {
-                        NSError* error = nil;
-                        [io writeExposure:exposure writePixels:YES error:&error];
-                        if (error){
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [NSApp presentError:error];
-                            });
-                        }
-                    }
-                }
-
-                const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
-                [self setCurrentExposure:exposure resetDisplay:resetDisplay];
-                _capturedFirstImage = YES;
-            }
-        }
-        @finally {
+        if (!self.cameraController.capturing){
             
-            if (!self.cameraController.capturing){
+            // re-enable idle sleep
+            self.powerMonitor.disableSleep = NO;
+            
+            if (!self.cameraController.cancelled){
                 
-                // re-enable idle sleep
-                self.powerMonitor.disableSleep = NO;
-
-                if (!self.cameraController.cancelled){
-                    
-                    NSUserNotification* note = [[NSUserNotification alloc] init];
-                    note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
-                    NSString* exposureUnits = (self.cameraController.exposureUnits == 0) ? @"s" : @"ms";
-                    if (self.cameraController.captureCount == 1){
-                        note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
-                    }
-                    else {
-                        note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
-                    }
-                    note.soundName = NSUserNotificationDefaultSoundName;
-                    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
-
+                NSUserNotification* note = [[NSUserNotification alloc] init];
+                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                NSString* exposureUnits = (self.cameraController.exposureUnits == 0) ? @"s" : @"ms";
+                if (self.cameraController.captureCount == 1){
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
                 }
+                else {
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
+                }
+                note.soundName = NSUserNotificationDefaultSoundName;
+                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+                
             }
         }
     }];
@@ -577,9 +508,6 @@ static void* kvoContext;
         return;
     }
     
-    // do not save to the library todo; replace with an exposure sink interface
-    self.cameraController.autoSave = NO;
-
     self.captureWindowController = [CASCaptureWindowController createWindowController];
     self.captureWindowController.model.captureCount = 25;
     self.captureWindowController.model.captureMode = mode;
@@ -990,6 +918,9 @@ static void* kvoContext;
     }
     else {
         
+        // use the sink interface to save the exposure if requested
+        self.cameraController.sink = self;
+
         // set the current displayed exposure to the last one recorded by this camera controller
         // (specifically check for pixels as this will detect if the backing store has been deleted)
         if (self.cameraController.lastExposure.pixels){
@@ -1253,6 +1184,55 @@ static void* kvoContext;
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
             self.cameraController.subframe = subframe;
         }
+    }
+}
+
+#pragma mark - CASCameraControllerSink
+
+- (void)captureCompletedWithExposure:(CASCCDExposure*)exposure error:(NSError*)error
+{
+    if (exposure){
+        
+        // check we have somewhere to save the file, a prefix and a sequence number
+        const BOOL saveToFile = (self.cameraController.scriptCommand || self.saveTargetControlsViewController.saveImages) && !self.cameraController.continuous;
+        if (saveToFile){
+            
+            // check for a user-entered filter name
+            NSString* filterName = self.filterWheelControlsViewController.filterName;
+            if ([filterName length]){
+                exposure.filters = @[filterName];
+            }
+            
+            // construct the filename
+            const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
+            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]];
+            ++self.saveTargetControlsViewController.saveImagesSequence;
+            
+            // ensure we have a unique filename (for instance, in case the sequence was reset)
+            NSInteger suffix = 2;
+            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+            while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
+                NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
+                finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
+                if (suffix > 999){
+                    NSLog(@"*** Gave up trying to find a unique filename");
+                    break;
+                }
+            }
+            
+            [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
+        }
+        
+        // display the exposure
+        const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
+        [self setCurrentExposure:exposure resetDisplay:resetDisplay];
+        _capturedFirstImage = YES;
+    }
+    
+    if (error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [NSApp presentError:error];
+        });
     }
 }
 

@@ -182,6 +182,8 @@
 		F4E64279179DC27A0044B349 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E64277179DC27A0044B349 /* CASProgressWindowController.xib */; };
 		F4E64282179DC2BF0044B349 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */; };
 		F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E64283179DC2D10044B349 /* Quartz.framework */; };
+		F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4E8B0DA18674444001A36EC /* CCD-IO.sdef */; };
+		F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4E8B0DA18674444001A36EC /* CCD-IO.sdef */; };
 		F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
 		F4EF194217C1428400B8AD23 /* SXIOFilterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */; };
 		F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */; };
@@ -547,6 +549,7 @@
 		F4E64280179DC2BF0044B349 /* CASAuxWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASAuxWindowController.h; path = ../../../CoreAstro/CASAuxWindowController.h; sourceTree = "<group>"; };
 		F4E64281179DC2BF0044B349 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAuxWindowController.m; path = ../../../CoreAstro/CASAuxWindowController.m; sourceTree = "<group>"; };
 		F4E64283179DC2D10044B349 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		F4E8B0DA18674444001A36EC /* CCD-IO.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "CCD-IO.sdef"; sourceTree = "<group>"; };
 		F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFilterWindowController.h; sourceTree = "<group>"; };
 		F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFilterWindowController.m; sourceTree = "<group>"; };
 		F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFilterWindowController.xib; sourceTree = "<group>"; };
@@ -970,6 +973,7 @@
 				F4E64253179BFFBD0044B349 /* selection.pdf */,
 				F4E64254179BFFBD0044B349 /* zoomtofit.pdf */,
 				F4E64255179BFFBD0044B349 /* zoom1.pdf */,
+				F4E8B0DA18674444001A36EC /* CCD-IO.sdef */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1257,6 +1261,7 @@
 				F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */,
 				F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */,
 				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
+				F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
 				F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */,
 				F40A06301860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */,
@@ -1336,6 +1341,7 @@
 				F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */,
 				F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */,
 				F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */,
+				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F4E6422E179BDF8F0044B349 /* loop.png in Resources */,
 				F4E6424D179BEE540044B349 /* SXIOSaveTargetViewController.xib in Resources */,
 				F4E64256179BFFBD0044B349 /* moon.icns in Resources */,

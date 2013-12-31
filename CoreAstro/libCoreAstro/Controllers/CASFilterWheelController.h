@@ -23,10 +23,10 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASScriptableObject.h"
+#import "CASDeviceController.h"
 #import "CASFWDevice.h"
 
-@interface CASFilterWheelController : CASScriptableObject<CASFWDevice>
+@interface CASFilterWheelController : CASDeviceController<CASFWDevice>
 
 @property (nonatomic,strong,readonly) CASDevice<CASFWDevice>* filterWheel;
 @property (nonatomic,strong) NSDictionary* filterNames;

@@ -337,6 +337,8 @@
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
+		F4E8B0EA18674573001A36EC /* CASDeviceController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E8B0E818674573001A36EC /* CASDeviceController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4E8B0EB18674573001A36EC /* CASDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E8B0E918674573001A36EC /* CASDeviceController.m */; };
 		F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E98F9816D90675005F9C5B /* CASGradientButton.m */; };
 		F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4EAFCA615D7E512001B7993 /* CoreAstro.sdef */; };
 		F4EAFCAA15D7E749001B7993 /* NSApplication+CASScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAFCA915D7E749001B7993 /* NSApplication+CASScripting.m */; };
@@ -1393,6 +1395,8 @@
 		F4CA532F169CC9FD00832CFF /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
+		F4E8B0E818674573001A36EC /* CASDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceController.h; sourceTree = "<group>"; };
+		F4E8B0E918674573001A36EC /* CASDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDeviceController.m; sourceTree = "<group>"; };
 		F4E979E4161F85470037ED1B /* CoreAstro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CoreAstro.entitlements; sourceTree = "<group>"; };
 		F4E98F9716D90675005F9C5B /* CASGradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGradientButton.h; sourceTree = "<group>"; };
 		F4E98F9816D90675005F9C5B /* CASGradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGradientButton.m; sourceTree = "<group>"; };
@@ -1750,6 +1754,8 @@
 		F48DF043160EF83000190D3E /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F4E8B0E818674573001A36EC /* CASDeviceController.h */,
+				F4E8B0E918674573001A36EC /* CASDeviceController.m */,
 				F4AEDF171614DC16007641A2 /* CASGuiderController.h */,
 				F4AEDF181614DC16007641A2 /* CASGuiderController.m */,
 				F48DF044160EF83000190D3E /* CASCameraController.h */,
@@ -2966,6 +2972,7 @@
 				F44EDF3815FCC6D8003B1B4C /* CASImageProcessor.h in Headers */,
 				F44EDF4F15FCC74D003B1B4C /* CASIOUSBTransport.h in Headers */,
 				F44EDF5015FCC74D003B1B4C /* CASUSBDeviceBrowser.h in Headers */,
+				F4E8B0EA18674573001A36EC /* CASDeviceController.h in Headers */,
 				F44EDF5115FCC754003B1B4C /* BusProbeClass.h in Headers */,
 				F44EDF5215FCC754003B1B4C /* BusProbeDevice.h in Headers */,
 				F44EDF5315FCC754003B1B4C /* BusProberSharedFunctions.h in Headers */,
@@ -3599,6 +3606,7 @@
 				F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */,
 				F4EEF2AA1604692600547009 /* HID_Utilities.c in Sources */,
 				F4587243183EA98700CB53D1 /* CASImageMetrics.mm in Sources */,
+				F4E8B0EB18674573001A36EC /* CASDeviceController.m in Sources */,
 				F4EEF2AD1604692600547009 /* ImmrHIDUtilAddOn.c in Sources */,
 				F4EEF2AF1604692600547009 /* IOHIDDevice_.c in Sources */,
 				F4EEF2B11604692600547009 /* IOHIDElement_.c in Sources */,

@@ -132,10 +132,19 @@
             return;
     }
     
+    // save/clear sink
+    id<CASCameraControllerSink> savedSink = self.cameraController.sink;
+    self.cameraController.sink = nil;
+    
+    void (^complete)() = ^(NSError*error,CASCCDExposure*exposure){
+        self.cameraController.sink = savedSink;
+        if (completion) completion(error,exposure);
+    };
+
     void (^__block capture)(void) = ^(void) {
       
         if (_cancelled){
-            if (completion) completion(nil,nil);
+            complete(nil,nil);
             return;
         }
         
@@ -152,7 +161,7 @@
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
             if (error){
-                if (completion) completion(error,nil);
+                complete(error,nil);
             }
             else{
                 
@@ -205,7 +214,7 @@
                             CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
                             
                             // match autosave flags
-                            processor.autoSave = self.cameraController.autoSave;
+                            processor.autoSave = NO;
                             
                             // run the processor in the background
                             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -243,13 +252,13 @@
                                                 [self.exposuresController removeObjects:exposures];
                                             }
                                         }
-                                        if (completion) completion(error,result);
+                                        complete(error,result);
                                     });
                                 }];
                             });
                         }
                         else {
-                            if (completion) completion(nil,nil);
+                            complete(nil,nil);
                         }
                     }
                 }

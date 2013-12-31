@@ -23,11 +23,11 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASScriptableObject.h"
+#import "CASDeviceController.h"
 #import "CASAutoGuider.h"
 #import "CASDevice.h"
 
-@interface CASGuiderController : CASScriptableObject<CASGuider>
+@interface CASGuiderController : CASDeviceController<CASGuider>
 
 @property (nonatomic,strong,readonly) CASDevice<CASGuider>* guider;
 

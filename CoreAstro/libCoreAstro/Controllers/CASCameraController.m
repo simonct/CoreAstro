@@ -29,7 +29,6 @@
 #import "CASFilterWheelController.h"
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
-#import "CASMovieExporter.h"
 #import "CASClassDefaults.h"
 
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
@@ -58,7 +57,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.camera = camera;
         self.temperatureLock = YES;
         self.exposureType = kCASCCDExposureLightType;
-        self.autoSave = YES;
         self.captureCount = 1;
         [self registerDeviceDefaults];
     }
@@ -68,6 +66,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)dealloc
 {
     [self unregisterDeviceDefaults];
+}
+
+- (CASDevice*) device
+{
+    return self.camera;
 }
 
 - (NSArray*)deviceDefaultsKeys
@@ -297,6 +300,20 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
         _waitingForDevice = NO;
         
+        exposure.type = self.exposureType;
+        if (filterName){
+            exposure.filters = @[filterName];
+        }
+
+        // send the exposure to the sink
+        @try {
+            [self.sink captureCompletedWithExposure:exposure error:error];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"*** Exception calling capture sink: %@",exception);
+        }
+
+        // figure out if we need to go round again or stop here
         if (error){
             endCapture(error,nil);
         }
@@ -308,43 +325,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             }
             else {
                 
-                if (self.movieExporter){
-                    NSError* movieError = nil;
-                    // todo; option to match histograms across exposures
-                    if (![self.movieExporter addExposure:exposure error:&movieError]){
-                        self.movieExporter = nil;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [NSApp presentError:movieError]; // no; might be running in something with no NSApp instance
-                        });
-                    }
-                }
-                
-                exposure.type = self.exposureType;
-                if (filterName){
-                    exposure.filters = @[filterName];
-                }
-
                 if (!saveExposure && !_cancelled){
                     endCapture(error,exposure);
                 }
                 else{
-                    
-                    if (!self.autoSave){
-                        
-                        endCapture(nil,exposure);
-                    }
-                    else{
-                        
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            
-                            [[CASCCDExposureLibrary sharedLibrary] addExposure:exposure save:YES block:^(NSError* saveError,NSURL* url) {
-                                
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    endCapture(saveError,exposure);
-                                });
-                            }];
-                        });
-                    }
+                    endCapture(nil,exposure);
                 }
             }
         }
@@ -410,11 +395,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.state = CASCameraControllerStateNone;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
-    
-    if (self.movieExporter){
-        [self.movieExporter complete];
-        self.movieExporter = nil;
-    }
 }
 
 - (BOOL) cancelled
@@ -457,16 +437,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (NSString*)containerAccessor
 {
 	return @"cameraControllers";
-}
-
-- (id)scriptingDeviceName
-{
-    return self.camera.deviceName;
-}
-
-- (id)scriptingVendorName
-{
-    return self.camera.vendorName;
 }
 
 - (void)scriptingCapture:(NSScriptCommand*)command

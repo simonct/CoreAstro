@@ -47,6 +47,11 @@
     [self unregisterDeviceDefaults];
 }
 
+- (CASDevice*) device
+{
+    return self.filterWheel;
+}
+
 - (void)connect:(void(^)(NSError*))block
 {
     if (block){
@@ -137,16 +142,6 @@
 - (NSString*)containerAccessor
 {
 	return @"filterWheelControllers";
-}
-
-- (id)scriptingDeviceName
-{
-    return self.filterWheel.deviceName;
-}
-
-- (id)scriptingVendorName
-{
-    return self.filterWheel.vendorName;
 }
 
 - (NSNumber*)scriptingFilterCount
