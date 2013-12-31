@@ -156,7 +156,10 @@
 
 - (void)setScriptingCurrentFilter:(NSNumber*)currentFilter
 {
-    self.filterWheel.currentFilter = [currentFilter integerValue];
+    NSInteger index = [currentFilter integerValue] - 1;
+    if (index < 0) {index = 0;}
+    if (index >= self.filterWheel.filterCount) {index = self.filterWheel.filterCount-1;}
+    self.filterWheel.currentFilter = index;
 }
 
 - (BOOL)scriptingIsMoving
