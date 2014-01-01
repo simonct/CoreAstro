@@ -151,7 +151,7 @@
 
 - (NSNumber*)scriptingCurrentFilter
 {
-    return @(self.filterWheel.currentFilter);
+    return @(self.filterWheel.currentFilter + 1);
 }
 
 - (void)setScriptingCurrentFilter:(NSNumber*)currentFilter
