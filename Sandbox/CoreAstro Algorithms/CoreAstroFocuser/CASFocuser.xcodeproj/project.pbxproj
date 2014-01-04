@@ -30,7 +30,26 @@
 		3B8E4C28162E13880015DD7A /* CASFocusMetric.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4C27162E13880015DD7A /* CASFocusMetric.m */; };
 		3B8E4CA4162E3E340015DD7A /* CASHalfFluxDiameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E4CA3162E3E340015DD7A /* CASHalfFluxDiameter.m */; };
 		3BF31CAE1610AF760020723A /* CASFocuser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B1F3F27160D0F77004E700D /* CASFocuser.m */; };
+		F49913B91878110A00B25838 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F49913B3187810E200B25838 /* libcfitsio.dylib */; };
+		F49913BC1878112900B25838 /* CASFITSUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F49913BB1878112900B25838 /* CASFITSUtilities.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F49913B2187810E200B25838 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49913AE187810E200B25838 /* cfitsio.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F4D967ED161894A100465163;
+			remoteInfo = cfitsio;
+		};
+		F49913B61878110500B25838 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49913AE187810E200B25838 /* cfitsio.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F4D967EC161894A100465163;
+			remoteInfo = cfitsio;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		3B1F3EFC160D050F004E700D /* CopyFiles */ = {
@@ -86,6 +105,9 @@
 		3B8E4C27162E13880015DD7A /* CASFocusMetric.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFocusMetric.m; sourceTree = SOURCE_ROOT; };
 		3B8E4CA2162E3E340015DD7A /* CASHalfFluxDiameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASHalfFluxDiameter.h; path = CoreAstroFocusMetrics/CASHalfFluxDiameter.h; sourceTree = SOURCE_ROOT; };
 		3B8E4CA3162E3E340015DD7A /* CASHalfFluxDiameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASHalfFluxDiameter.m; path = CoreAstroFocusMetrics/CASHalfFluxDiameter.m; sourceTree = SOURCE_ROOT; };
+		F49913AE187810E200B25838 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = ../../../External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
+		F49913BA1878112900B25838 /* CASFITSUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASFITSUtilities.h; path = ../../../../CoreAstro/libCoreAstro/Core/CASFITSUtilities.h; sourceTree = "<group>"; };
+		F49913BB1878112900B25838 /* CASFITSUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASFITSUtilities.m; path = ../../../../CoreAstro/libCoreAstro/Core/CASFITSUtilities.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +115,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F49913B91878110A00B25838 /* libcfitsio.dylib in Frameworks */,
 				3B1F3F57160D2C92004E700D /* IOKit.framework in Frameworks */,
 				3B1F3F55160D2C85004E700D /* AppKit.framework in Frameworks */,
 				3B1F3F53160D2C6B004E700D /* Accelerate.framework in Frameworks */,
@@ -108,6 +131,7 @@
 		3B1F3EF3160D050F004E700D = {
 			isa = PBXGroup;
 			children = (
+				F49913B4187810E900B25838 /* Dependencies */,
 				3B1F3F04160D050F004E700D /* CASFocuser */,
 				3B1F3F01160D050F004E700D /* Frameworks */,
 				3B1F3EFF160D050F004E700D /* Products */,
@@ -187,6 +211,8 @@
 				3B8E1F0016CF830E0025275A /* CASScriptableObject.m */,
 				3B8E1F0116CF830E0025275A /* CASUtilities.h */,
 				3B8E1F0216CF830E0025275A /* CASUtilities.m */,
+				F49913BA1878112900B25838 /* CASFITSUtilities.h */,
+				F49913BB1878112900B25838 /* CASFITSUtilities.m */,
 			);
 			name = "CoreAstro framework classes";
 			sourceTree = "<group>";
@@ -200,6 +226,22 @@
 			name = CoreAstroFocusMetrics;
 			path = CoreAstroFitness;
 			sourceTree = SOURCE_ROOT;
+		};
+		F49913AF187810E200B25838 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F49913B3187810E200B25838 /* libcfitsio.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F49913B4187810E900B25838 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				F49913AE187810E200B25838 /* cfitsio.xcodeproj */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -215,6 +257,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F49913B71878110500B25838 /* PBXTargetDependency */,
 			);
 			name = CASFocuser;
 			productName = CASFocuser;
@@ -240,6 +283,12 @@
 			mainGroup = 3B1F3EF3160D050F004E700D;
 			productRefGroup = 3B1F3EFF160D050F004E700D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F49913AF187810E200B25838 /* Products */;
+					ProjectRef = F49913AE187810E200B25838 /* cfitsio.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				3B1F3EFD160D050F004E700D /* CASFocuser */,
@@ -247,11 +296,22 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		F49913B3187810E200B25838 /* libcfitsio.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libcfitsio.dylib;
+			remoteRef = F49913B2187810E200B25838 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
 		3B1F3EFA160D050F004E700D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F49913BC1878112900B25838 /* CASFITSUtilities.m in Sources */,
 				3B1F3F06160D050F004E700D /* main.m in Sources */,
 				3BF31CAE1610AF760020723A /* CASFocuser.m in Sources */,
 				3B8E4B6A162E0A4D0015DD7A /* CASAlgorithm.m in Sources */,
@@ -273,6 +333,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F49913B71878110500B25838 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = cfitsio;
+			targetProxy = F49913B61878110500B25838 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3B1F3F0B160D0510004E700D /* Debug */ = {
@@ -333,6 +401,15 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CASFocuser/CASFocuser-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					CAS_ENABLE_FITS,
+					DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../../External/cfitsio\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -343,6 +420,12 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CASFocuser/CASFocuser-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = CAS_ENABLE_FITS;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../../External/cfitsio\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
