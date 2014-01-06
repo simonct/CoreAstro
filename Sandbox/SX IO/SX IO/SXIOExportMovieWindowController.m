@@ -217,129 +217,128 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
         }
         else{
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            self.movieFilename = [save.URL.path lastPathComponent];
+            
+            [[NSFileManager defaultManager] removeItemAtURL:save.URL error:nil];
+            
+            self.exporter = [CASMovieExporter exporterWithURL:save.URL];
+            if (self.exporter){
                 
-                self.movieFilename = [save.URL.path lastPathComponent];
-                
-                [[NSFileManager defaultManager] removeItemAtURL:save.URL error:nil];
-                
-                self.exporter = [CASMovieExporter exporterWithURL:save.URL];
-                if (self.exporter){
-                    
-                    NSArray* sortedURLs;
-                    switch (self.sortMode) {
-                        case SXIOExportMovieDateSort:{
-                            NSMutableArray* dates = [NSMutableArray arrayWithCapacity:[self.URLs count]];
-                            for (NSURL* url in self.URLs){
-                                @autoreleasepool {
-                                    CASCCDExposure* exp = [CASCCDExposureIO exposureWithPath:url.path readPixels:NO error:nil];
-                                    if (exp){
-                                        NSDate* date = exp.date;
-                                        if (date){
-                                            [dates addObject:@{@"url":url, @"date":date}];
-                                        }
+                NSArray* sortedURLs;
+                switch (self.sortMode) {
+                    case SXIOExportMovieDateSort:{
+                        NSMutableArray* dates = [NSMutableArray arrayWithCapacity:[self.URLs count]];
+                        for (NSURL* url in self.URLs){
+                            @autoreleasepool {
+                                CASCCDExposure* exp = [CASCCDExposureIO exposureWithPath:url.path readPixels:NO error:nil];
+                                if (exp){
+                                    NSDate* date = exp.date;
+                                    if (date){
+                                        [dates addObject:@{@"url":url, @"date":date}];
                                     }
                                 }
                             }
-                            
-                            if ([dates count] != [self.URLs count]){
-                                NSLog(@"Counts don't match");
-                            }
-                            
-                            sortedURLs = [[dates sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSDictionary* obj1, NSDictionary* obj2) {
-                                NSDate* d1 = obj1[@"date"];
-                                NSDate* d2 = obj2[@"date"];
-                                return [d1 compare:d2];
-                            }] valueForKey:@"url"];
                         }
-                            break;
-                        case SXIOExportMovieNameSort:
-                            sortedURLs = [self.URLs sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
-                                NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLNameKey] error:nil];
-                                NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLNameKey] error:nil];
-                                
-                                NSString* name1 = d1[NSURLNameKey];
-                                NSString* name2 = d2[NSURLNameKey];
-                                const NSRange name1Range = NSMakeRange(0, [name1 length]);
-                                
-                                return [name1 compare:name2
-                                              options:NSCaseInsensitiveSearch|NSNumericSearch|NSWidthInsensitiveSearch|NSForcedOrderingSearch
-                                                range:name1Range
-                                               locale:[NSLocale currentLocale]];
-                            }];
-                            break;
-                    }
-                    
-                    NSError* error;
-                    __block NSInteger frame = 0;
-                    NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
-                    
-                    __weak __typeof(self) weakSelf = self;
-                    self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time, NSString** annotationPtr){
                         
-                        NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
-                        if (!nextURL){
-                            [weakSelf.exporter complete];
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                weakSelf.exporter = nil;
-                                [weakSelf callCompletion:nil url:save.URL];
-                            });
+                        if ([dates count] != [self.URLs count]){
+                            NSLog(@"Counts don't match");
                         }
-                        else {
+                        
+                        sortedURLs = [[dates sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSDictionary* obj1, NSDictionary* obj2) {
+                            NSDate* d1 = obj1[@"date"];
+                            NSDate* d2 = obj2[@"date"];
+                            return [d1 compare:d2];
+                        }] valueForKey:@"url"];
+                    }
+                        break;
+                    case SXIOExportMovieNameSort:
+                        sortedURLs = [self.URLs sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
+                            NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLNameKey] error:nil];
+                            NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLNameKey] error:nil];
                             
-                            *time = CMTimeMake(frame++,weakSelf.fps);
+                            NSString* name1 = d1[NSURLNameKey];
+                            NSString* name2 = d2[NSURLNameKey];
+                            const NSRange name1Range = NSMakeRange(0, [name1 length]);
                             
-                            *expPtr = [weakSelf exposureWithURL:nextURL];
-                            
-                            NSMutableString* annotation = [NSMutableString stringWithCapacity:256];
-                            
-                            // draw timecode
-                            if (weakSelf.showDateTime){
-                                NSString* displayDate = (*expPtr).displayDate;
-                                if (displayDate) {
-                                    [annotation appendString:displayDate];
-                                }
+                            return [name1 compare:name2
+                                          options:NSCaseInsensitiveSearch|NSNumericSearch|NSWidthInsensitiveSearch|NSForcedOrderingSearch
+                                            range:name1Range
+                                           locale:[NSLocale currentLocale]];
+                        }];
+                        break;
+                }
+                
+                NSError* error;
+                __block NSInteger frame = 0;
+                NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
+                
+                __weak __typeof(self) weakSelf = self;
+                self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time, NSString** annotationPtr){
+                    
+                    NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
+                    if (!nextURL){
+                        [weakSelf.exporter complete];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            weakSelf.exporter = nil;
+                            [weakSelf callCompletion:nil url:save.URL];
+                        });
+                    }
+                    else {
+                        
+                        *time = CMTimeMake(frame++,weakSelf.fps);
+                        
+                        *expPtr = [weakSelf exposureWithURL:nextURL];
+                        
+                        NSMutableString* annotation = [NSMutableString stringWithCapacity:256];
+                        
+                        // draw timecode
+                        if (weakSelf.showDateTime){
+                            NSString* displayDate = (*expPtr).displayDate;
+                            if (displayDate) {
+                                [annotation appendString:displayDate];
                             }
-                            
-                            // draw filename
-                            if (weakSelf.showFilename){
-                                NSString* name = [(*expPtr).io.url resourceValuesForKeys:@[NSURLNameKey] error:nil][NSURLNameKey];
-                                if ([name length]){
-                                    if ([annotation length]){
-                                        [annotation appendString:@", "];
-                                    }
-                                    [annotation appendString:name];
-                                }
-                            }
-                            
-                            // draw custom
-                            if (weakSelf.showCustom && [weakSelf.customAnnotation length]){
+                        }
+                        
+                        // draw filename
+                        if (weakSelf.showFilename){
+                            NSString* name = [(*expPtr).io.url resourceValuesForKeys:@[NSURLNameKey] error:nil][NSURLNameKey];
+                            if ([name length]){
                                 if ([annotation length]){
                                     [annotation appendString:@", "];
                                 }
-                                [annotation appendString:weakSelf.customAnnotation];
+                                [annotation appendString:name];
                             }
-
-                            if (weakSelf.filterPipeline){
-                                // filter exposure
-                            }
-
-                            *annotationPtr = annotation;
-                            
-                            weakSelf.progress = (float)frame / (float)[weakSelf.URLs count];
                         }
-                    };
-                    
-                    self.exporter.showDateTime = self.showDateTime;
-                    self.exporter.fontSize = self.fontSize;
-                    self.exporter.compressionLevel = self.compressionLevel;
-                    self.exporter.showFilename = self.showFilename;
-                    self.exporter.showCustom = self.showCustom;
-                    self.exporter.customAnnotation = self.customAnnotation;
-                    
-                    [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
-                }
-            });
+                        
+                        // draw custom
+                        if (weakSelf.showCustom && [weakSelf.customAnnotation length]){
+                            if ([annotation length]){
+                                [annotation appendString:@", "];
+                            }
+                            [annotation appendString:weakSelf.customAnnotation];
+                        }
+                        
+                        if (weakSelf.filterPipeline){
+                            // filter exposure
+                        }
+                        
+                        *annotationPtr = annotation;
+                        
+                        weakSelf.progress = (float)frame / (float)[weakSelf.URLs count];
+                    }
+                };
+                
+                self.exporter.showDateTime = self.showDateTime;
+                self.exporter.fontSize = self.fontSize;
+                self.exporter.compressionLevel = self.compressionLevel;
+                self.exporter.showFilename = self.showFilename;
+                self.exporter.showCustom = self.showCustom;
+                self.exporter.customAnnotation = self.customAnnotation;
+                
+                [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
+                
+                [NSApp beginSheet:self.progressWindow modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+            }
         }
     }];
 }
