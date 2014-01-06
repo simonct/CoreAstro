@@ -275,7 +275,7 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
                     NSEnumerator* urlEnum = [sortedURLs objectEnumerator];
                     
                     __weak __typeof(self) weakSelf = self;
-                    self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time, NSString** annotatioPtr){
+                    self.exporter.input = ^(CASCCDExposure** expPtr,CMTime* time, NSString** annotationPtr){
                         
                         NSURL* nextURL = weakSelf.cancelled ? nil : [urlEnum nextObject];
                         if (!nextURL){
@@ -286,11 +286,46 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
                             });
                         }
                         else {
+                            
                             *time = CMTimeMake(frame++,weakSelf.fps);
+                            
                             *expPtr = [weakSelf exposureWithURL:nextURL];
+                            
+                            NSMutableString* annotation = [NSMutableString stringWithCapacity:256];
+                            
+                            // draw timecode
+                            if (weakSelf.showDateTime){
+                                NSString* displayDate = (*expPtr).displayDate;
+                                if (displayDate) {
+                                    [annotation appendString:displayDate];
+                                }
+                            }
+                            
+                            // draw filename
+                            if (weakSelf.showFilename){
+                                NSString* name = [(*expPtr).io.url resourceValuesForKeys:@[NSURLNameKey] error:nil][NSURLNameKey];
+                                if ([name length]){
+                                    if ([annotation length]){
+                                        [annotation appendString:@", "];
+                                    }
+                                    [annotation appendString:name];
+                                }
+                            }
+                            
+                            // draw custom
+                            if (weakSelf.showCustom && [weakSelf.customAnnotation length]){
+                                if ([annotation length]){
+                                    [annotation appendString:@", "];
+                                }
+                                [annotation appendString:weakSelf.customAnnotation];
+                            }
+
                             if (weakSelf.filterPipeline){
                                 // filter exposure
                             }
+
+                            *annotationPtr = annotation;
+                            
                             weakSelf.progress = (float)frame / (float)[weakSelf.URLs count];
                         }
                     };

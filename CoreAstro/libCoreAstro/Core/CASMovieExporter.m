@@ -71,7 +71,7 @@ static NSInteger count;
     }
 }
 
-- (CVPixelBufferRef)pixelBufferFromExposure:(CASCCDExposure*)exposure
+- (CVPixelBufferRef)pixelBufferFromExposure:(CASCCDExposure*)exposure withAnnotation:(NSString*)annotation
 {
     CVPixelBufferRef pixelBuffer = NULL;
     CGImageRef image = [exposure newImage].CGImage;
@@ -100,41 +100,12 @@ static NSInteger count;
                             
                             CGContextDrawImage(context,CGRectMake(0,0,size.width,size.height),image);
                             
-                            NSMutableString* label = [NSMutableString stringWithCapacity:256];
-                            
-                            // draw timecode
-                            if (self.showDateTime){
-                                NSString* displayDate = exposure.displayDate;
-                                if (displayDate) {
-                                    [label appendString:displayDate];
-                                }
-                            }
-                            
-                            // draw filename
-                            if (self.showFilename){
-                                NSString* name = [exposure.io.url resourceValuesForKeys:@[NSURLNameKey] error:nil][NSURLNameKey];
-                                if ([name length]){
-                                    if ([label length]){
-                                        [label appendString:@", "];
-                                    }
-                                    [label appendString:name];
-                                }
-                            }
-                            
-                            // draw custom
-                            if (self.showCustom && [self.customAnnotation length]){
-                                if ([label length]){
-                                    [label appendString:@", "];
-                                }
-                                [label appendString:self.customAnnotation];
-                            }
-                            
-                            if ([label length]){
+                            if ([annotation length]){
                                 const CGFloat fontSize = self.fontSize ? self.fontSize : (size.width < 1000 ? 24 : 36);
                                 CGContextSelectFont(context, "Helvetica", fontSize, kCGEncodingMacRoman);
                                 CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 0.75);
                                 CGContextSetTextDrawingMode(context, kCGTextFill);
-                                CGContextShowTextAtPoint(context, 20, 20, [label UTF8String], [label length]);
+                                CGContextShowTextAtPoint(context, 20, 20, [annotation UTF8String], [annotation length]);
                             }
                             
                             CGContextRelease(context);
@@ -218,9 +189,10 @@ static NSInteger count;
                         @autoreleasepool {
                             
                             CMTime time;
+                            NSString* annotation = nil;
                             CASCCDExposure* exposure = nil;
                             if (self.input){
-                                self.input(&exposure,&time);
+                                self.input(&exposure,&time,&annotation);
                             }
                             else {
                                 [self _getLastExposure:&exposure time:&time];
@@ -230,7 +202,7 @@ static NSInteger count;
                             }
                             else{
                                 
-                                CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure];
+                                CVPixelBufferRef buffer = (CVPixelBufferRef)[self pixelBufferFromExposure:exposure withAnnotation:annotation];
                                 if (!buffer){
                                     NSLog(@"%@: no pixel buffer",NSStringFromSelector(_cmd));
                                     break;

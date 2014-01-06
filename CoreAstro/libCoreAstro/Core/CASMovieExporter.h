@@ -46,7 +46,7 @@
 @property (nonatomic,assign) NSInteger fontSize;
 @property (nonatomic,assign) NSInteger compressionLevel;
 
-typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*);
+typedef void(^CASMovieExporterInput)(CASCCDExposure**,CMTime*,NSString**);
 
 @property (nonatomic,copy) CASMovieExporterInput input;
 
