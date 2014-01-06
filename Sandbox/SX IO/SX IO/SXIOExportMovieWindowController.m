@@ -42,7 +42,8 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
     if (self == [SXIOExportMovieWindowController class]){
         [[NSUserDefaults standardUserDefaults] registerDefaults:@{
                                                                   @"SXIOExportMovieWindowControllerFPS":@(4),
-                                                                  @"SXIOExportMovieWindowControllerFontSize":@(14)
+                                                                  @"SXIOExportMovieWindowControllerFontSize":@(14),
+                                                                  @"SXIOExportMovieWindowControllerCompressionLevel":@(1),
                                                                   }];
     }
 }
@@ -65,6 +66,56 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
 - (void)setFontSize:(NSInteger)fontSize
 {
     [[NSUserDefaults standardUserDefaults] setInteger:fontSize forKey:@"SXIOExportMovieWindowControllerFontSize"];
+}
+
+- (NSInteger)compressionLevel
+{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOExportMovieWindowControllerCompressionLevel"];
+}
+
+- (void)setCompressionLevel:(NSInteger)compressionLevel
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:compressionLevel forKey:@"SXIOExportMovieWindowControllerCompressionLevel"];
+}
+
+- (BOOL)showDateTime
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOExportMovieWindowControllerShowDateTime"];
+}
+
+- (void)setShowDateTime:(BOOL)showDateTime
+{
+    [[NSUserDefaults standardUserDefaults] setBool:showDateTime forKey:@"SXIOExportMovieWindowControllerShowDateTime"];
+}
+
+- (BOOL)showFilename
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOExportMovieWindowControllerShowFilename"];
+}
+
+- (void)setShowFilename:(BOOL)showFilename
+{
+    [[NSUserDefaults standardUserDefaults] setBool:showFilename forKey:@"SXIOExportMovieWindowControllerShowFilename"];
+}
+
+- (BOOL)showCustom
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOExportMovieWindowControllerShowCustom"];
+}
+
+- (void)setShowCustom:(BOOL)showCustom
+{
+    [[NSUserDefaults standardUserDefaults] setBool:showCustom forKey:@"SXIOExportMovieWindowControllerShowCustom"];
+}
+
+- (NSString*)customAnnotation
+{
+    return [[NSUserDefaults standardUserDefaults] stringForKey:@"SXIOExportMovieWindowControllerCustomAnnotation"];
+}
+
+- (void)setCustomAnnotation:(NSString *)customAnnotation
+{
+    [[NSUserDefaults standardUserDefaults] setObject:customAnnotation forKey:@"SXIOExportMovieWindowControllerCustomAnnotation"];
 }
 
 - (CASCCDExposure*)exposureWithURL:(NSURL*)url
