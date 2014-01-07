@@ -21,6 +21,7 @@
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic) CGSize previewSize;
 @property (nonatomic) BOOL loading;
+@property (nonatomic) BOOL external;
 @property (nonatomic,readonly) BOOL hasCalibratedFrame;
 + (BOOL)pathIsCalibrated:(NSString*)path;
 + (NSString*)calibratedPathForExposurePath:(NSString*)path;
@@ -133,6 +134,7 @@
 @property (readonly) BOOL calibrationButtonEnabled;
 @property (nonatomic,readonly) float minScale, maxScale;
 @property (nonatomic) float scale;
+- (void)removeSelectedExternalImages;
 @end
 
 @interface SXIOCalibrationCollectionView : NSCollectionView <QLPreviewPanelDelegate,QLPreviewPanelDataSource>
@@ -160,6 +162,10 @@
     else if ([key isEqual:@"\r"]){
         SXIOCalibrationWindowController* wc = self.window.windowController;
         [wc.chooseButton performKeyEquivalent:theEvent];
+    }
+    else if (theEvent.keyCode == 51){
+        SXIOCalibrationWindowController* wc = self.window.windowController;
+        [wc removeSelectedExternalImages];
     }
     else {
         [super keyDown:theEvent];
@@ -369,48 +375,59 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
     }]];
 }
 
+- (SXIOCalibrationModel*)createModelWithImageAtPath:(NSString*)path
+{
+    NSError* error;
+    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:NO error:&error];
+    if (error){
+        NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
+        return nil;
+    }
+    
+    SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
+    model.url = [NSURL fileURLWithPath:path];
+    model.exposure = exposure;
+    model.previewSize = CGSizeMake(((int)(_unitSize.width * self.maxScale)/125)*125, ((int)(_unitSize.height * self.maxScale)/125)*125);
+    
+    return model;
+}
+
 - (void)addImageAtPath:(NSString*)path
 {
-    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
-    if (io){
+    // has it been calibrated ? in which case don't show it
+    if (![SXIOCalibrationModel pathIsCalibrated:path]){
         
-        // has it been calibrated ? in which case don't show it
-        if ([SXIOCalibrationModel pathIsCalibrated:path]){
-            // NSLog(@"Ignoring calibrated frame at %@",path);
-        }
-        else {
+        // open the exposure and wrap it in a model (side effect is to set the correct models if appropriate)
+        SXIOCalibrationModel* model = [self createModelWithImageAtPath:path];
+        if (model){
             
-            NSError* error;
-            CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
-            if (![io readExposure:exposure readPixels:NO error:&error]){
-                NSLog(@"%@: error=%@",NSStringFromSelector(_cmd),error);
+            // check to see if it's a calibration frame
+            switch (model.exposure.type) {
+                case kCASCCDExposureBiasType:
+                    self.biasModel = model;
+                    break;
+                case kCASCCDExposureFlatType:
+                    self.flatModel = model;
+                    break;
+                default:
+                    break;
             }
-            else{
-                
-                exposure.io = io; // -readExposure:readPixels:error: should do this
-                
-                SXIOCalibrationModel* model = [[SXIOCalibrationModel alloc] init];
-                model.url = [NSURL fileURLWithPath:path];
-                model.exposure = exposure;
-                model.previewSize = CGSizeMake(((int)(_unitSize.width * self.maxScale)/125)*125, ((int)(_unitSize.height * self.maxScale)/125)*125);
-                
-                // check to see if it's a calibration frame
-                switch (exposure.type) {
-                    case kCASCCDExposureBiasType:
-                        self.biasModel = model;
-                        break;
-                    case kCASCCDExposureFlatType:
-                        self.flatModel = model;
-                        break;
-                    default:
-                        break;
-                }
-                
-                // add the image model (inefficient if we're adding a lot of images)
-                [[self mutableArrayValueForKey:@"images"] addObject:model];
-            }
+
+            // add the image model (inefficient if we're adding a lot of images)
+            [[self mutableArrayValueForKey:@"images"] addObject:model];
         }
     }
+}
+
+- (void)removeModel:(SXIOCalibrationModel*)model
+{
+    if (model == self.biasModel){
+        self.biasModel = nil;
+    }
+    if (model == self.flatModel){
+        self.flatModel = nil;
+    }
+    [[self mutableArrayValueForKey:@"images"] removeObject:model];
 }
 
 - (void)processFSUpdate:(NSNotification*)note
@@ -436,13 +453,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
     for (SXIOCalibrationModel* model in [self.images copy]){
         if ([removed containsObject:[model.url path]]){
-            if (model == self.biasModel){
-                self.biasModel = nil;
-            }
-            if (model == self.flatModel){
-                self.flatModel = nil;
-            }
-            [[self mutableArrayValueForKey:@"images"] removeObject:model];
+            [self removeModel:model];
         }
     }
     
@@ -547,6 +558,16 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 + (NSSet*)keyPathsForValuesAffectingCalibrationButtonEnabled
 {
     return [NSSet setWithArray:@[@"collectionView.selectionIndexes",@"flatModel",@"biasModel"]];
+}
+
+- (void)removeSelectedExternalImages
+{
+    NSArray* selection = [self.collectionView.content objectsAtIndexes:self.collectionView.selectionIndexes];
+    for (SXIOCalibrationModel* model in [selection copy]){
+        if (model.external){
+            [self removeModel:model];
+        }
+    }
 }
 
 - (IBAction)choose:(id)sender
@@ -673,6 +694,50 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
             });
         }];
     });
+}
+
+// allow user to add calibration frames from outside of the capture directory
+- (IBAction)addCalibrationFrames:(id)sender
+{
+    NSOpenPanel* open = [NSOpenPanel openPanel];
+    
+    open.canChooseFiles = YES;
+    open.canChooseDirectories = NO;
+    open.allowsMultipleSelection = YES;
+    
+    // no point in setting the delegate to filter only calibration frames as the
+    // sandbox doesn't allow us to inspect the file from within the delegate method
+    
+    [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            for (NSURL* url in open.URLs){
+                
+                SXIOCalibrationModel* model = [self createModelWithImageAtPath:url.path];
+                if (model){
+                    
+                    // check to see if it's a calibration frame otherwise ignore it
+                    switch (model.exposure.type) {
+                        case kCASCCDExposureBiasType:
+                            self.biasModel = model;
+                            break;
+                        case kCASCCDExposureFlatType:
+                            self.flatModel = model;
+                            break;
+                        default:
+                            model = nil;
+                            break;
+                    }
+                    
+                    if (model){
+                        model.external = YES;
+                        [[self mutableArrayValueForKey:@"images"] addObject:model];
+                    }
+                }
+            }
+        }
+    }];
 }
 
 @end
