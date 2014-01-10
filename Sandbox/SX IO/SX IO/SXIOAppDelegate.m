@@ -31,6 +31,7 @@
 #import "SXIOCalibrationWindowController.h"
 #import "SXIOImageAdjustmentWindowController.h"
 #import "SXIOExportMovieWindowController.h"
+#import "SXIOPreferencesWindowController.h"
 #import "CASCaptureCommand.h"
 #import <CoreAstro/CoreAstro.h>
 #import <objc/runtime.h>
@@ -41,6 +42,7 @@
 @property (strong) SXIOCalibrationWindowController *calibrationWindow;
 @property (strong) SXIOImageAdjustmentWindowController *imageAdjustment;
 @property (strong) SXIOExportMovieWindowController *movieExportWindowController;
+@property (strong) SXIOPreferencesWindowController *preferencesWindowController;
 @end
 
 @implementation SXIOAppDelegate
@@ -296,6 +298,14 @@ static void* kvoContext;
             }
         }
     }];
+}
+
+- (IBAction)showPreferences:(id)sender
+{
+    if (!self.preferencesWindowController){
+        self.preferencesWindowController = [[SXIOPreferencesWindowController alloc] initWithWindowNibName:@"SXIOPreferencesWindowController"];
+    }
+    [self.preferencesWindowController showWindow:nil];
 }
 
 @end
