@@ -263,6 +263,9 @@ static void* kvoContext;
     if (suffix){
         prefix = [prefix stringByAppendingFormat:@"_%@",suffix];
     }
+    
+    // todo; template replacement e.g. $prefix $bin $exptime $filter etc
+    
     return [prefix stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
 }
 
@@ -286,7 +289,7 @@ static void* kvoContext;
                                          defaultButton:@"OK"
                                        alternateButton:@"Cancel"
                                            otherButton:nil
-                             informativeTextWithFormat:@"SX IO prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source."];
+                             informativeTextWithFormat:@"%@ prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source.",[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
         alert.showsSuppressionButton = YES;
         if ([alert runModal] != NSOKButton){
             return;

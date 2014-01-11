@@ -52,7 +52,7 @@
                                                          defaultButton:@"OK"
                                                        alternateButton:nil
                                                            otherButton:nil
-                                             informativeTextWithFormat:@"Please ensure SX IO is in the Applications folder and try running it again. I'll fix this bug in a future release."];
+                                             informativeTextWithFormat:@"Please ensure %@ is in the Applications folder and try running it again. I'll fix this bug in a future release.",[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
                         [alert runModal];
                     });
                 });
