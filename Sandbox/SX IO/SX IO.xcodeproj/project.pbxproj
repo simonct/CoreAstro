@@ -127,6 +127,10 @@
 		F48F466F17C409E6008FCEBE /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F48F466417C409E6008FCEBE /* index.html */; };
 		F48F467317C40B37008FCEBE /* Debayer-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F48F467217C40B37008FCEBE /* Debayer-Info.plist */; };
 		F48F467717C40C6E008FCEBE /* Debayer.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F48F465017C40971008FCEBE /* Debayer.plugin */; };
+		F48F799D187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */; };
+		F48F799E187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */; };
+		F48F799F187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */; };
+		F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */; };
 		F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A25870179BC0100013D220 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
@@ -467,6 +471,9 @@
 		F48F466317C409E6008FCEBE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F48F466417C409E6008FCEBE /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		F48F467217C40B37008FCEBE /* Debayer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debayer-Info.plist"; sourceTree = "<group>"; };
+		F48F799A187CB31100DFB0F2 /* SXIOPreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPreferencesWindowController.h; sourceTree = "<group>"; };
+		F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPreferencesWindowController.m; sourceTree = "<group>"; };
+		F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOPreferencesWindowController.xib; sourceTree = "<group>"; };
 		F4A25868179BC0100013D220 /* CASImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASImageView.h; path = ../../../CoreAstro/CASImageView.h; sourceTree = "<group>"; };
 		F4A25869179BC0100013D220 /* CASImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASImageView.m; path = ../../../CoreAstro/CASImageView.m; sourceTree = "<group>"; };
 		F4A2586A179BC0100013D220 /* CASCenteringClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCenteringClipView.h; path = ../../../CoreAstro/CASCenteringClipView.h; sourceTree = "<group>"; };
@@ -948,6 +955,9 @@
 				F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */,
 				F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */,
 				F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */,
+				F48F799A187CB31100DFB0F2 /* SXIOPreferencesWindowController.h */,
+				F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */,
+				F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1285,6 +1295,7 @@
 				F40D5B6F1849EC5E00977FA9 /* zoom1.pdf in Resources */,
 				F40D5B701849EC5E00977FA9 /* CASProgressWindowController.xib in Resources */,
 				F40D5B711849EC5E00977FA9 /* SXIOFilterWindowController.xib in Resources */,
+				F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */,
 				F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */,
 				F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */,
 			);
@@ -1334,6 +1345,7 @@
 				F4A2588B179BC0990013D220 /* CASExposureInfoView.xib in Resources */,
 				F4A2588D179BC0990013D220 /* CASStarInfoHUDView.xib in Resources */,
 				F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
+				F48F799F187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */,
 				F4A25890179BC0990013D220 /* CASHistogramHUDView.xib in Resources */,
 				F4A25892179BC0990013D220 /* CASPlateSolutionHUDView.xib in Resources */,
 				F4A258C5179BC1D90013D220 /* CASCameraControlsViewController.xib in Resources */,
@@ -1446,6 +1458,7 @@
 				F40D5B431849EC5E00977FA9 /* CASGuiderControlsViewController.m in Sources */,
 				F40D5B441849EC5E00977FA9 /* CASFilterWheelControlsViewController.m in Sources */,
 				F40D5B451849EC5E00977FA9 /* CASPHDControlsViewController.m in Sources */,
+				F48F799E187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */,
 				F40D5B461849EC5E00977FA9 /* SXIOCameraWindowController.m in Sources */,
 				F40D5B471849EC5E00977FA9 /* SXIOSaveTargetViewController.m in Sources */,
 				F40D5B481849EC5E00977FA9 /* CASShadowView.m in Sources */,
@@ -1520,6 +1533,7 @@
 				F4A258C6179BC1D90013D220 /* CASGuiderControlsViewController.m in Sources */,
 				F4A258C8179BC1D90013D220 /* CASFilterWheelControlsViewController.m in Sources */,
 				F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */,
+				F48F799D187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */,
 				F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */,
 				F4E6424C179BEE540044B349 /* SXIOSaveTargetViewController.m in Sources */,
 				F4E64260179C05C60044B349 /* CASShadowView.m in Sources */,
