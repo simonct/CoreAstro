@@ -71,3 +71,4 @@
 @end
 
 extern NSString* const kCASAstrometryIndexDirectoryURLKey;
+extern NSString* const kCASAstrometryIndexDirectoryBookmarkKey;
