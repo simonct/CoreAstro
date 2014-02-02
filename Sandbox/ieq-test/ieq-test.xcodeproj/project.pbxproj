@@ -1,0 +1,542 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F4DAA6B31895195D00BAC143 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DAA6B21895195D00BAC143 /* Cocoa.framework */; };
+		F4DAA6BD1895195D00BAC143 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA6BB1895195D00BAC143 /* InfoPlist.strings */; };
+		F4DAA6BF1895195D00BAC143 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA6BE1895195D00BAC143 /* main.m */; };
+		F4DAA6C31895195D00BAC143 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA6C11895195D00BAC143 /* Credits.rtf */; };
+		F4DAA6C61895195D00BAC143 /* EQAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA6C51895195D00BAC143 /* EQAppDelegate.m */; };
+		F4DAA6C91895195D00BAC143 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA6C71895195D00BAC143 /* MainMenu.xib */; };
+		F4DAA6CB1895195D00BAC143 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA6CA1895195D00BAC143 /* Images.xcassets */; };
+		F4DAA6D21895195D00BAC143 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DAA6D11895195D00BAC143 /* XCTest.framework */; };
+		F4DAA6D31895195D00BAC143 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DAA6B21895195D00BAC143 /* Cocoa.framework */; };
+		F4DAA6DB1895195D00BAC143 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA6D91895195D00BAC143 /* InfoPlist.strings */; };
+		F4DAA6DD1895195D00BAC143 /* ieq_testTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA6DC1895195D00BAC143 /* ieq_testTests.m */; };
+		F4DAA7181895199000BAC143 /* ORSSerialPort.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA7091895199000BAC143 /* ORSSerialPort.m */; };
+		F4DAA7191895199000BAC143 /* ORSSerialPortManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA70B1895199000BAC143 /* ORSSerialPortManager.m */; };
+		F4DAA723189519EC00BAC143 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DAA722189519EC00BAC143 /* IOKit.framework */; };
+		F4DAA72618951A0500BAC143 /* CASMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72518951A0500BAC143 /* CASMount.m */; };
+		F4DAA72918951A6000BAC143 /* iEQMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72818951A6000BAC143 /* iEQMount.m */; };
+		F4DAA72D18951E1500BAC143 /* iEQWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72B18951E1500BAC143 /* iEQWindowController.m */; };
+		F4DAA72E18951E1500BAC143 /* iEQWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */; };
+		F4DAA73A18952E6600BAC143 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA73918952E6600BAC143 /* CASLX200Commands.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F4DAA6D41895195D00BAC143 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4DAA6A71895195D00BAC143 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4DAA6AE1895195D00BAC143;
+			remoteInfo = "ieq-test";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F4DAA6AF1895195D00BAC143 /* ieq-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ieq-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4DAA6B21895195D00BAC143 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F4DAA6B51895195D00BAC143 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F4DAA6B61895195D00BAC143 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F4DAA6B71895195D00BAC143 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4DAA6BA1895195D00BAC143 /* ieq-test-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ieq-test-Info.plist"; sourceTree = "<group>"; };
+		F4DAA6BC1895195D00BAC143 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4DAA6BE1895195D00BAC143 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4DAA6C01895195D00BAC143 /* ieq-test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ieq-test-Prefix.pch"; sourceTree = "<group>"; };
+		F4DAA6C21895195D00BAC143 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F4DAA6C41895195D00BAC143 /* EQAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EQAppDelegate.h; sourceTree = "<group>"; };
+		F4DAA6C51895195D00BAC143 /* EQAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EQAppDelegate.m; sourceTree = "<group>"; };
+		F4DAA6C81895195D00BAC143 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F4DAA6CA1895195D00BAC143 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F4DAA6D01895195D00BAC143 /* ieq-testTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ieq-testTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4DAA6D11895195D00BAC143 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F4DAA6D81895195D00BAC143 /* ieq-testTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ieq-testTests-Info.plist"; sourceTree = "<group>"; };
+		F4DAA6DA1895195D00BAC143 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4DAA6DC1895195D00BAC143 /* ieq_testTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ieq_testTests.m; sourceTree = "<group>"; };
+		F4DAA7081895199000BAC143 /* ORSSerialPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPort.h; sourceTree = "<group>"; };
+		F4DAA7091895199000BAC143 /* ORSSerialPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPort.m; sourceTree = "<group>"; };
+		F4DAA70A1895199000BAC143 /* ORSSerialPortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPortManager.h; sourceTree = "<group>"; };
+		F4DAA70B1895199000BAC143 /* ORSSerialPortManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPortManager.m; sourceTree = "<group>"; };
+		F4DAA722189519EC00BAC143 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		F4DAA72418951A0500BAC143 /* CASMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMount.h; sourceTree = "<group>"; };
+		F4DAA72518951A0500BAC143 /* CASMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMount.m; sourceTree = "<group>"; };
+		F4DAA72718951A6000BAC143 /* iEQMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iEQMount.h; sourceTree = "<group>"; };
+		F4DAA72818951A6000BAC143 /* iEQMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iEQMount.m; sourceTree = "<group>"; };
+		F4DAA72A18951E1500BAC143 /* iEQWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iEQWindowController.h; sourceTree = "<group>"; };
+		F4DAA72B18951E1500BAC143 /* iEQWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iEQWindowController.m; sourceTree = "<group>"; };
+		F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = iEQWindowController.xib; sourceTree = "<group>"; };
+		F4DAA73818952E6600BAC143 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASLX200Commands.h; path = ../../Shared/CASLX200Commands.h; sourceTree = "<group>"; };
+		F4DAA73918952E6600BAC143 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASLX200Commands.m; path = ../../Shared/CASLX200Commands.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4DAA6AC1895195D00BAC143 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA723189519EC00BAC143 /* IOKit.framework in Frameworks */,
+				F4DAA6B31895195D00BAC143 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4DAA6CD1895195D00BAC143 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA6D31895195D00BAC143 /* Cocoa.framework in Frameworks */,
+				F4DAA6D21895195D00BAC143 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4DAA6A61895195D00BAC143 = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6B81895195D00BAC143 /* ieq-test */,
+				F4DAA6D61895195D00BAC143 /* ieq-testTests */,
+				F4DAA6B11895195D00BAC143 /* Frameworks */,
+				F4DAA6B01895195D00BAC143 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4DAA6B01895195D00BAC143 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6AF1895195D00BAC143 /* ieq-test.app */,
+				F4DAA6D01895195D00BAC143 /* ieq-testTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4DAA6B11895195D00BAC143 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA722189519EC00BAC143 /* IOKit.framework */,
+				F4DAA6B21895195D00BAC143 /* Cocoa.framework */,
+				F4DAA6D11895195D00BAC143 /* XCTest.framework */,
+				F4DAA6B41895195D00BAC143 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4DAA6B41895195D00BAC143 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6B51895195D00BAC143 /* AppKit.framework */,
+				F4DAA6B61895195D00BAC143 /* CoreData.framework */,
+				F4DAA6B71895195D00BAC143 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F4DAA6B81895195D00BAC143 /* ieq-test */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6C41895195D00BAC143 /* EQAppDelegate.h */,
+				F4DAA6C51895195D00BAC143 /* EQAppDelegate.m */,
+				F4DAA6C71895195D00BAC143 /* MainMenu.xib */,
+				F4DAA72A18951E1500BAC143 /* iEQWindowController.h */,
+				F4DAA72B18951E1500BAC143 /* iEQWindowController.m */,
+				F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */,
+				F4DAA72418951A0500BAC143 /* CASMount.h */,
+				F4DAA72518951A0500BAC143 /* CASMount.m */,
+				F4DAA72718951A6000BAC143 /* iEQMount.h */,
+				F4DAA72818951A6000BAC143 /* iEQMount.m */,
+				F4DAA73818952E6600BAC143 /* CASLX200Commands.h */,
+				F4DAA73918952E6600BAC143 /* CASLX200Commands.m */,
+				F4DAA6E61895199000BAC143 /* ORSSerialPort */,
+				F4DAA6CA1895195D00BAC143 /* Images.xcassets */,
+				F4DAA6B91895195D00BAC143 /* Supporting Files */,
+			);
+			path = "ieq-test";
+			sourceTree = "<group>";
+		};
+		F4DAA6B91895195D00BAC143 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6BA1895195D00BAC143 /* ieq-test-Info.plist */,
+				F4DAA6BB1895195D00BAC143 /* InfoPlist.strings */,
+				F4DAA6BE1895195D00BAC143 /* main.m */,
+				F4DAA6C01895195D00BAC143 /* ieq-test-Prefix.pch */,
+				F4DAA6C11895195D00BAC143 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4DAA6D61895195D00BAC143 /* ieq-testTests */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6DC1895195D00BAC143 /* ieq_testTests.m */,
+				F4DAA6D71895195D00BAC143 /* Supporting Files */,
+			);
+			path = "ieq-testTests";
+			sourceTree = "<group>";
+		};
+		F4DAA6D71895195D00BAC143 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA6D81895195D00BAC143 /* ieq-testTests-Info.plist */,
+				F4DAA6D91895195D00BAC143 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4DAA6E61895199000BAC143 /* ORSSerialPort */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA7071895199000BAC143 /* Source */,
+			);
+			path = ORSSerialPort;
+			sourceTree = "<group>";
+		};
+		F4DAA7071895199000BAC143 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				F4DAA7081895199000BAC143 /* ORSSerialPort.h */,
+				F4DAA7091895199000BAC143 /* ORSSerialPort.m */,
+				F4DAA70A1895199000BAC143 /* ORSSerialPortManager.h */,
+				F4DAA70B1895199000BAC143 /* ORSSerialPortManager.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4DAA6AE1895195D00BAC143 /* ieq-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4DAA6E01895195D00BAC143 /* Build configuration list for PBXNativeTarget "ieq-test" */;
+			buildPhases = (
+				F4DAA6AB1895195D00BAC143 /* Sources */,
+				F4DAA6AC1895195D00BAC143 /* Frameworks */,
+				F4DAA6AD1895195D00BAC143 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ieq-test";
+			productName = "ieq-test";
+			productReference = F4DAA6AF1895195D00BAC143 /* ieq-test.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F4DAA6CF1895195D00BAC143 /* ieq-testTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4DAA6E31895195D00BAC143 /* Build configuration list for PBXNativeTarget "ieq-testTests" */;
+			buildPhases = (
+				F4DAA6CC1895195D00BAC143 /* Sources */,
+				F4DAA6CD1895195D00BAC143 /* Frameworks */,
+				F4DAA6CE1895195D00BAC143 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4DAA6D51895195D00BAC143 /* PBXTargetDependency */,
+			);
+			name = "ieq-testTests";
+			productName = "ieq-testTests";
+			productReference = F4DAA6D01895195D00BAC143 /* ieq-testTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4DAA6A71895195D00BAC143 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CAS;
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4DAA6CF1895195D00BAC143 = {
+						TestTargetID = F4DAA6AE1895195D00BAC143;
+					};
+				};
+			};
+			buildConfigurationList = F4DAA6AA1895195D00BAC143 /* Build configuration list for PBXProject "ieq-test" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F4DAA6A61895195D00BAC143;
+			productRefGroup = F4DAA6B01895195D00BAC143 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4DAA6AE1895195D00BAC143 /* ieq-test */,
+				F4DAA6CF1895195D00BAC143 /* ieq-testTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4DAA6AD1895195D00BAC143 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA6BD1895195D00BAC143 /* InfoPlist.strings in Resources */,
+				F4DAA6CB1895195D00BAC143 /* Images.xcassets in Resources */,
+				F4DAA6C31895195D00BAC143 /* Credits.rtf in Resources */,
+				F4DAA72E18951E1500BAC143 /* iEQWindowController.xib in Resources */,
+				F4DAA6C91895195D00BAC143 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4DAA6CE1895195D00BAC143 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA6DB1895195D00BAC143 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4DAA6AB1895195D00BAC143 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA7181895199000BAC143 /* ORSSerialPort.m in Sources */,
+				F4DAA6C61895195D00BAC143 /* EQAppDelegate.m in Sources */,
+				F4DAA72618951A0500BAC143 /* CASMount.m in Sources */,
+				F4DAA72918951A6000BAC143 /* iEQMount.m in Sources */,
+				F4DAA73A18952E6600BAC143 /* CASLX200Commands.m in Sources */,
+				F4DAA6BF1895195D00BAC143 /* main.m in Sources */,
+				F4DAA7191895199000BAC143 /* ORSSerialPortManager.m in Sources */,
+				F4DAA72D18951E1500BAC143 /* iEQWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4DAA6CC1895195D00BAC143 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4DAA6DD1895195D00BAC143 /* ieq_testTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4DAA6D51895195D00BAC143 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4DAA6AE1895195D00BAC143 /* ieq-test */;
+			targetProxy = F4DAA6D41895195D00BAC143 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4DAA6BB1895195D00BAC143 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4DAA6BC1895195D00BAC143 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4DAA6C11895195D00BAC143 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4DAA6C21895195D00BAC143 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F4DAA6C71895195D00BAC143 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4DAA6C81895195D00BAC143 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F4DAA6D91895195D00BAC143 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4DAA6DA1895195D00BAC143 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4DAA6DE1895195D00BAC143 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F4DAA6DF1895195D00BAC143 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4DAA6E11895195D00BAC143 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ieq-test/ieq-test-Prefix.pch";
+				INFOPLIST_FILE = "ieq-test/ieq-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F4DAA6E21895195D00BAC143 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ieq-test/ieq-test-Prefix.pch";
+				INFOPLIST_FILE = "ieq-test/ieq-test-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F4DAA6E41895195D00BAC143 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ieq-test.app/Contents/MacOS/ieq-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ieq-test/ieq-test-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "ieq-testTests/ieq-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		F4DAA6E51895195D00BAC143 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ieq-test.app/Contents/MacOS/ieq-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ieq-test/ieq-test-Prefix.pch";
+				INFOPLIST_FILE = "ieq-testTests/ieq-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4DAA6AA1895195D00BAC143 /* Build configuration list for PBXProject "ieq-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4DAA6DE1895195D00BAC143 /* Debug */,
+				F4DAA6DF1895195D00BAC143 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4DAA6E01895195D00BAC143 /* Build configuration list for PBXNativeTarget "ieq-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4DAA6E11895195D00BAC143 /* Debug */,
+				F4DAA6E21895195D00BAC143 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4DAA6E31895195D00BAC143 /* Build configuration list for PBXNativeTarget "ieq-testTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4DAA6E41895195D00BAC143 /* Debug */,
+				F4DAA6E51895195D00BAC143 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4DAA6A71895195D00BAC143 /* Project object */;
+}
