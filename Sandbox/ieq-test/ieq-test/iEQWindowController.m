@@ -48,6 +48,7 @@
 
 @interface iEQWindowController ()
 @property (nonatomic,strong) iEQMount* mount;
+@property (nonatomic,copy) NSString* searchString;
 @end
 
 @implementation iEQWindowController
@@ -68,6 +69,62 @@
         }
         else {
             NSLog(@"Failed to connect");
+        }
+    }];
+}
+
+// todo; put into its own class and cache results
+- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,double ra,double dec))completion
+{
+    NSParameterAssert(name);
+    NSParameterAssert(completion);
+    
+    NSString* script = [NSString stringWithFormat:@"format object \"%%IDLIST(1) : %%COO(d;A D)\"\nset epoch JNOW\nset limit 1\nquery id %@\nformat display\n",name];
+    script = [script stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://simbad.u-strasbg.fr/simbad/sim-script?submit=submit+script&script=%@",script]];
+    
+    NSURLRequest* request = [NSURLRequest requestWithURL:url];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        
+        if (connectionError){
+            NSLog(@"%@",connectionError);
+            completion(NO,0,0);
+        }
+        else {
+            
+            BOOL foundIt = NO;
+            double ra, dec;
+            
+            NSString* responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSArray* responseLines = [responseString componentsSeparatedByString:@"\n"];
+            
+            for (NSString* line in [responseLines reverseObjectEnumerator]){
+                
+                NSScanner* scanner = [NSScanner scannerWithString:line];
+                
+                NSString* object;
+                if ([scanner scanUpToString:@":" intoString:&object]){
+                    
+                    NSMutableCharacterSet* cs = [NSMutableCharacterSet decimalDigitCharacterSet];
+                    [cs addCharactersInString:@"+-"];
+                    
+                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
+                    [scanner scanDouble:&ra];
+                    
+                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
+                    [scanner scanDouble:&dec];
+                    
+                    NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
+                    
+                    foundIt = YES;
+                    
+                    break;
+                }
+            };
+            
+            completion(foundIt,ra,dec);
         }
     }];
 }
@@ -109,4 +166,52 @@
     [self.mount dumpInfo];
 }
 
+- (IBAction)slew:(id)sender
+{
+    if (![self.searchString length]){
+        return;
+    }
+    
+    [self lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
+        
+        NSLog(@"Lookup ra=%f (raDegreesToHMS %@), dec=%f (highPrecisionDec %@)",ra,[CASLX200Commands raDegreesToHMS:ra],dec,[CASLX200Commands highPrecisionDec:dec]);
+        
+        if (success){
+
+            // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
+            ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
+            
+            [self.mount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError result) {
+
+                if (result == iEQMountSlewErrorNone){
+                    NSLog(@"Starting slew");
+                }
+                else {
+                    NSLog(@"Start failed: %ld",result);
+                }
+            }];
+        }
+    }];
+}
+
+- (IBAction)stop:(id)sender
+{
+    [self.mount halt];
+}
+
 @end
+
+#if 0
+
+format object "%IDLIST(1) : %COO(d;A D)"
+set epoch J2000
+set limit 1
+query id arcturus
+query id ic405
+format display
+
+http://simbad.u-strasbg.fr/simbad/sim-script?submit=submit+script&script=format+object+%22%25IDLIST%281%29+%3A+%25COO%28d%3BA+D%29%22%0D%0Aset+epoch+J2000%0D%0Aset+limit+1%0D%0Aquery+id+ic410%0D%0Aquery+id+ic405%0D%0Aformat+display%0D%0A
+
+https://maps.google.co.uk/maps?q=Amersham&hl=en&ll=51.675536,-0.607252&spn=0.057217,0.111408&sll=52.8382,-2.327815&sspn=14.291495,28.520508&oq=amersham&hnear=Amersham,+Buckinghamshire,+United+Kingdom&t=m&z=14
+
+#endif
