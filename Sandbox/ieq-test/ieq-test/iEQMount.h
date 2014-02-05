@@ -15,13 +15,21 @@
 @property (nonatomic,readonly) BOOL slewing;
 @property (nonatomic,readonly) NSNumber* ra;
 @property (nonatomic,readonly) NSNumber* dec;
+@property (nonatomic,readonly) NSNumber* alt;
+@property (nonatomic,readonly) NSNumber* az;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port;
 
 - (void)connectWithCompletion:(void(^)(void))completion;
 - (void)disconnect;
 
-- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion;
+typedef NS_ENUM(NSInteger, iEQMountSlewError) {
+    iEQMountSlewErrorNone,
+    iEQMountSlewErrorInvalidRA,
+    iEQMountSlewErrorInvalidDec,
+    iEQMountSlewErrorInvalidLocation
+};
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(iEQMountSlewError))completion;
 - (void)halt;
 
 typedef NS_ENUM(NSInteger, iEQMountTrackingRate) {

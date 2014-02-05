@@ -15,6 +15,8 @@
 @interface iEQMountResponse : NSObject
 @property (nonatomic,assign) BOOL useTerminator;
 @property (nonatomic,assign) NSInteger readCount;
+@property (nonatomic,copy) NSString* command;
+@property (nonatomic,assign) BOOL inProgress;
 @property (nonatomic,copy) void (^completion)(NSString*);
 @end
 
@@ -32,7 +34,8 @@
 @property (nonatomic,assign) BOOL tracking;
 @property (nonatomic,assign) NSNumber* ra;
 @property (nonatomic,assign) NSNumber* dec;
-
+@property (nonatomic,assign) NSNumber* alt;
+@property (nonatomic,assign) NSNumber* az;
 @end
 
 @interface iEQMount (ORSSerialPortDelegate)<ORSSerialPortDelegate>
@@ -60,14 +63,22 @@
     return self;
 }
 
+- (void)sendNextCommand
+{
+    iEQMountResponse* responseObject = [self.completionStack firstObject];
+    if (responseObject && !responseObject.inProgress){
+        responseObject.inProgress = YES;
+//        NSLog(@"sending : %@",responseObject.command);
+        [self.port sendData:[responseObject.command dataUsingEncoding:NSASCIIStringEncoding]];
+    }
+}
+
 - (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion
 {
     //    if (!self.connected){
     //        NSLog(@"sendCommand but not connected");
     //        return;
     //    }
-        
-    // NSLog(@"sendCommand: %@",command);
     
     if (completion){
         if (!self.completionStack){
@@ -77,10 +88,12 @@
         response.completion = completion;
         response.readCount = readCount;
         response.useTerminator = (readCount == 0);
+        response.command = command;
         [self.completionStack addObject:response];
 //        NSLog(@"%ld commands in stack",[self.completionStack count]);
     }
-    [self.port sendData:[command dataUsingEncoding:NSASCIIStringEncoding]];
+    
+    [self sendNextCommand];
 }
 
 - (void)sendCommand:(NSString*)command completion:(void (^)(NSString*))completion
@@ -134,7 +147,7 @@
         
         [self sendCommand:@":AG#" completion:^(NSString *response) {
             
-            NSLog(@"Guide rate: %@",response);
+            // NSLog(@"Guide rate: %@",response);
 
             [self sendCommand:@":AT#" readCount:1 completion:^(NSString *response) {
                 
@@ -154,6 +167,20 @@
                         
                         // NSLog(@"Dec: %@ -> %@",response,self.dec); // sDD*MM:SS#
                         
+                        [self sendCommand:[CASLX200Commands getTelescopeAltitude] completion:^(NSString *response) {
+                            
+                            self.alt = @([CASLX200Commands fromDecString:response]);
+                            
+                            [self sendCommand:[CASLX200Commands getTelescopeAzimuth] completion:^(NSString *response) {
+                                
+                                self.az = @([CASLX200Commands fromDecString:response]);
+                                
+                                [self performSelector:_cmd withObject:nil afterDelay:1];
+                            }];
+
+                            [self performSelector:_cmd withObject:nil afterDelay:1];
+                        }];
+
                         [self performSelector:_cmd withObject:nil afterDelay:1];
                     }];
                 }];
@@ -179,7 +206,7 @@
     self.connected = NO;
 }
 
-- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(BOOL))completion
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(iEQMountSlewError))completion
 {
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
@@ -189,30 +216,40 @@
     
     NSLog(@"startSlewToRA:%f (%@) dec:%f (%@)",ra,formattedRA,dec,formattedDec);
     
+    // todo; stop polling as this seems to prevent slewing
+    
     // “:Sd sDD*MM:SS#”
-    [self sendCommand:[CASLX200Commands setTargetObjectDeclination:formattedDec] readCount:1 completion:^(NSString *setDecResponse) {
+    NSString* decCommand = [CASLX200Commands setTargetObjectDeclination:formattedDec];
+    NSLog(@"Dec command: %@",decCommand);
+    [self sendCommand:decCommand readCount:1 completion:^(NSString *setDecResponse) {
         
         if (![setDecResponse isEqualToString:@"1"]){
+            NSLog(@"Failed to set dec: %@",setDecResponse);
             if (completion){
-                completion(NO);
+                completion(iEQMountSlewErrorInvalidDec);
             }
         }
         else {
             
             // “:Sr HH:MM:SS#”
-            [self sendCommand:[CASLX200Commands setTargetObjectRightAscension:formattedRA] readCount:1 completion:^(NSString *setRAResponse) {
+            NSString* raCommand = [CASLX200Commands setTargetObjectRightAscension:formattedRA];
+            NSLog(@"RA command: %@",raCommand);
+            [self sendCommand:raCommand readCount:1 completion:^(NSString *setRAResponse) {
                 
                 if (![setRAResponse isEqualToString:@"1"]){
+                    NSLog(@"Failed to set ra: %@",setRAResponse);
                     if (completion){
-                        completion(NO);
+                        completion(iEQMountSlewErrorInvalidRA);
                     }
                 }
                 else {
                     
                     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
                         
+                        NSLog(@"slewResponse: %@",slewResponse);
+                        
                         if (completion){
-                            completion([slewResponse isEqualToString:@"0"]);
+                            completion([slewResponse isEqualToString:@"1"] ? iEQMountSlewErrorNone : iEQMountSlewErrorInvalidLocation);
                         }
                     }];
                 }
@@ -223,7 +260,7 @@
 
 - (void)halt
 {
-    [self sendCommand:@":Q#" completion:^(NSString* response) {
+    [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
         NSLog(@"Halt command response: %@",response);
     }];
 }
@@ -283,12 +320,14 @@
         [_input deleteCharactersInRange:NSMakeRange(0,[response length] + 1)];
     }
     
-    // NSLog(@"Read complete response %@",response);
+    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
     
     if (responseObject.completion){
         responseObject.completion(response);
     }
     [self.completionStack removeObject:responseObject];
+    
+    [self sendNextCommand];
 }
 
 - (void)serialPortWasRemovedFromSystem:(ORSSerialPort *)serialPort
