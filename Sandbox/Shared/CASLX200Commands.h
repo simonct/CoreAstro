@@ -51,4 +51,6 @@
 + (NSString*)lowPrecisionDec:(double)dec;
 + (double)fromDecString:(NSString*)dec;
 
++ (NSString*)raDegreesToHMS:(double)degrees; // use for converting RA expressed as decimal degrees to the high precision H:M:S string format
+
 @end

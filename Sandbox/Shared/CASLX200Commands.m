@@ -91,11 +91,11 @@
 }
 
 + (NSString*)setTargetObjectDeclination:(NSString*)dec {
-    return [NSString stringWithFormat:@":Sds%@#",dec];
+    return [NSString stringWithFormat:@":Sd %@#",dec];
 }
 
 + (NSString*)setTargetObjectRightAscension:(NSString*)ra {
-    return [NSString stringWithFormat:@":Sr%@#",ra];
+    return [NSString stringWithFormat:@":Sr %@#",ra];
 }
 
 + (NSString*)slewToTargetObject {
@@ -161,10 +161,10 @@
     
     NSString* formattedRA;
     if (dec < 0){
-        formattedRA = [NSString stringWithFormat:@"%03d*%02d:%02d",(int)h,(int)m,(int)s];
+        formattedRA = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)h,(int)m,(int)s];
     }
     else {
-        formattedRA = [NSString stringWithFormat:@"%02d*%02d:%02d",(int)h,(int)m,(int)s];
+        formattedRA = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)h,(int)m,(int)s];
     }
 
     return formattedRA;
@@ -195,6 +195,19 @@
     }
     
     return dec;
+}
+
++ (NSString*)raDegreesToHMS:(double)degrees {
+
+    const double trunc_deg = trunc(degrees);
+
+    const double h = trunc(12.0*trunc_deg/180.0);
+    const double m = trunc((degrees - trunc_deg)*60.0);
+    const double s = (degrees - trunc_deg)*60.0*60.0 - 60.0*m;
+
+    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
+    
+    return formattedRA;
 }
 
 @end
