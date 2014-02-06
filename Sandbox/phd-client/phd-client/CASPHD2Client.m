@@ -12,8 +12,8 @@
 
 @interface CASPHD2Client ()
 @property (nonatomic,strong) CASPHD2SocketClient* client;
-@property (nonatomic,assign) CASPHD2ClientState state;
 @property (nonatomic,strong) NSMutableDictionary* callbacks;
+@property (nonatomic,assign) BOOL guiding;
 - (void)handleIncomingMessage:(NSDictionary*)message;
 @end
 
@@ -23,9 +23,9 @@
 @property (nonatomic,strong) NSMutableData* readBuffer;
 @end
 
-@implementation CASPHD2SocketClient
-
 static const char CRLF[] = "\r\n";
+
+@implementation CASPHD2SocketClient
 
 - (void)read
 {
@@ -44,8 +44,6 @@ static const char CRLF[] = "\r\n";
         // read a buffer's worth of data from the stream
         const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
         if (count > 0){
-            
-//            NSLog(@"Read: %@",[[NSString alloc] initWithBytes:[self.readBuffer mutableBytes] length:count encoding:NSUTF8StringEncoding]);
             
             // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
             [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
@@ -80,7 +78,8 @@ static const char CRLF[] = "\r\n";
 @end
 
 @implementation CASPHD2Client {
-    NSInteger _id; // persist this ?
+    NSInteger _id;
+    BOOL _settling;
 }
 
 - (id)init
@@ -141,8 +140,37 @@ static const char CRLF[] = "\r\n";
     // Resumed
     // GuidingDithered
     NSLog(@"%@",message[@"Event"]);
-    if ([@"SettleDone" isEqualToString:message[@"Event"]]){
-        NSLog(@"%@",message);
+    
+    NSString* event = message[@"Event"];
+    
+    if ([@"AppState" isEqualToString:event]){
+        if ([message[@"State"] isEqualToString:@"Guiding"]){
+            _settling = NO;
+            self.guiding = YES;
+        }
+    }
+    
+    if ([@"SettleDone" isEqualToString:event]){
+        _settling = NO;
+        if ([message[@"Status"] integerValue] == 0){
+            self.guiding = YES;
+        }
+        else {
+            NSLog(@"Settling failed %@",message);
+        }
+    }
+    
+    if ([@[@"Settling",@"StartGuiding"] containsObject:event]){
+        self.guiding = NO;
+        _settling = YES;
+    }
+
+    if ([@[@"StartGuiding",@"GuideStep"] containsObject:event]){
+        self.guiding = !_settling;
+    }
+    
+    if ([@[@"GuidingStopped"] containsObject:event]){
+        self.guiding = NO;
     }
 }
 
@@ -163,15 +191,12 @@ static const char CRLF[] = "\r\n";
     NSError* error;
     NSData* data = [NSJSONSerialization dataWithJSONObject:mcmd options:0 error:&error];
     if (error){
-        NSLog(@"error: %@",error);
+        NSLog(@"enqueueCommand: %@",error);
     }
     else {
         
         NSMutableData* mdata = [data mutableCopy];
         [mdata appendBytes:CRLF length:2];
-        
-        //NSLog(@"Sending: %@",[[NSString alloc] initWithData:mdata encoding:NSUTF8StringEncoding]);
-        
         [self.client enqueue:mdata readCount:0 completion:nil];
     }
 }
@@ -179,14 +204,25 @@ static const char CRLF[] = "\r\n";
 - (void)start
 {
     [self enqueueCommand:@{@"method":@"guide",@"params":@[@{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)},@(NO)]} completion:^(id result) {
-        NSLog(@"start: %@",result);
+        if ([result integerValue] == 0){
+            NSLog(@"Started");
+        }
+        else{
+            NSLog(@"Start failed: %@",result);
+        }
     }];
 }
 
 - (void)stop
 {
     [self enqueueCommand:@{@"method":@"stop_capture"} completion:^(id result) {
-        NSLog(@"stop: %@",result);
+        if ([result integerValue] == 0){
+            NSLog(@"Stopped");
+            self.guiding = NO;
+        }
+        else {
+            NSLog(@"Stop failed: %@",result);
+        }
     }];
 }
 
@@ -206,8 +242,14 @@ static const char CRLF[] = "\r\n";
 
 - (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly
 {
+    self.guiding = NO;
     [self enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),@{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)}]} completion:^(id result) {
-        NSLog(@"ditherByPixels: %@",result);
+        if ([result integerValue] == 0){
+            NSLog(@"Dithering...");
+        }
+        else {
+            NSLog(@"Dither failed: %@",result);
+        }
     }];
 }
 

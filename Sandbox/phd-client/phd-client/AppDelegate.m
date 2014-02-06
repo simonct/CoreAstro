@@ -30,6 +30,10 @@
     [super setNilValueForKey:key];
 }
 
+- (BOOL)no {
+    return NO;
+}
+
 - (IBAction)start:(id)sender {
     [self.client start];
 }

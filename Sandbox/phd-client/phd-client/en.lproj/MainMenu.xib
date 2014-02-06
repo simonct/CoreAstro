@@ -688,6 +688,18 @@
                             <action selector="stop:" target="494" id="Fbc-H8-gqP"/>
                         </connections>
                     </button>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1YV-RS-bUR">
+                        <rect key="frame" x="18" y="22" width="72" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Guiding" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" inset="2" id="drd-QN-i2b">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="494" name="enabled" keyPath="no" id="eje-nO-5mu"/>
+                            <binding destination="494" name="value" keyPath="client.guiding" id="ut8-Zs-vMk"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
         </window>
