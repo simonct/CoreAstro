@@ -153,9 +153,9 @@
             [self process];
             break;
         case NSStreamEventErrorOccurred:
-            self.error = [aStream streamError];
             name = [NSString stringWithFormat:@"NSStreamEventErrorOccurred: %@",[aStream streamError]];
             [self disconnect];
+            self.error = [aStream streamError]; // set this after disconnecting as when we return from this we could have been deallocated
             break;
         case NSStreamEventEndEncountered:
             name = @"NSStreamEventEndEncountered";
