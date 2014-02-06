@@ -291,4 +291,14 @@
     }
 }
 
+- (BOOL) hasBytesAvailable
+{
+    return self.inputStream.hasBytesAvailable;
+}
+
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len
+{
+    return [self.inputStream read:buffer maxLength:len];
+}
+
 @end

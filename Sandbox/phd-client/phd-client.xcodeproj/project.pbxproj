@@ -14,6 +14,7 @@
 		F44C924C16B86D5700822E29 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F44C924B16B86D5700822E29 /* AppDelegate.m */; };
 		F44C924F16B86D5700822E29 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44C924D16B86D5700822E29 /* MainMenu.xib */; };
 		F44C925716B86D8000822E29 /* CASPHDClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F44C925616B86D8000822E29 /* CASPHDClient.m */; };
+		F474472418A3750400BE38DB /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F474472318A3750400BE38DB /* CASPHD2Client.m */; };
 		F4A2583E179BBB910013D220 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2583D179BBB910013D220 /* CASSocketClient.m */; };
 		F4E6D9C6175512B500C4AC23 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6D9C1175512B500C4AC23 /* CASLX200Commands.m */; };
 		F4E6D9C7175512B500C4AC23 /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6D9C3175512B500C4AC23 /* CASLX200IPClient.m */; };
@@ -35,6 +36,8 @@
 		F44C924E16B86D5700822E29 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		F44C925516B86D8000822E29 /* CASPHDClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHDClient.h; sourceTree = "<group>"; };
 		F44C925616B86D8000822E29 /* CASPHDClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHDClient.m; sourceTree = "<group>"; };
+		F474472218A3750400BE38DB /* CASPHD2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHD2Client.h; sourceTree = "<group>"; };
+		F474472318A3750400BE38DB /* CASPHD2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHD2Client.m; sourceTree = "<group>"; };
 		F4A2583C179BBB910013D220 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSocketClient.h; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.h; sourceTree = "<group>"; };
 		F4A2583D179BBB910013D220 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSocketClient.m; path = ../../CoreAstro/libCoreAstro/Core/CASSocketClient.m; sourceTree = "<group>"; };
 		F4E6D9C0175512B500C4AC23 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200Commands.h; sourceTree = "<group>"; };
@@ -98,6 +101,8 @@
 				F44C924B16B86D5700822E29 /* AppDelegate.m */,
 				F44C925516B86D8000822E29 /* CASPHDClient.h */,
 				F44C925616B86D8000822E29 /* CASPHDClient.m */,
+				F474472218A3750400BE38DB /* CASPHD2Client.h */,
+				F474472318A3750400BE38DB /* CASPHD2Client.m */,
 				F44C924D16B86D5700822E29 /* MainMenu.xib */,
 				F4A2583F179BBB9C0013D220 /* Core */,
 				F4E6D9BF175512B500C4AC23 /* Shared */,
@@ -207,6 +212,7 @@
 				F44C924516B86D5700822E29 /* main.m in Sources */,
 				F44C924C16B86D5700822E29 /* AppDelegate.m in Sources */,
 				F44C925716B86D8000822E29 /* CASPHDClient.m in Sources */,
+				F474472418A3750400BE38DB /* CASPHD2Client.m in Sources */,
 				F4E6D9C6175512B500C4AC23 /* CASLX200Commands.m in Sources */,
 				F4E6D9C7175512B500C4AC23 /* CASLX200IPClient.m in Sources */,
 				F4A2583E179BBB910013D220 /* CASSocketClient.m in Sources */,

@@ -27,4 +27,6 @@
 - (void)enqueueRequest:(CASSocketClientRequest*)request;
 - (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion;
 - (CASSocketClientRequest*)makeRequest;
+@property (nonatomic,readonly) BOOL hasBytesAvailable;
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
 @end
