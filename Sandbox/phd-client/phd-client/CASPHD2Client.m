@@ -82,17 +82,55 @@ static const char CRLF[] = "\r\n";
     BOOL _settling;
 }
 
+static void* kvoContext;
+
 - (id)init
 {
     self = [super init];
     if (self) {
-        self.client = [[CASPHD2SocketClient alloc] init];\
+        [self setupClient];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
+}
+
+- (void)setupClient
+{
+    if (!self.client){
+        self.client = [[CASPHD2SocketClient alloc] init];
         self.client.owner = self;
         self.client.host = [NSHost hostWithAddress:@"127.0.0.1"];
         self.client.port = 4400;
         [self.client connect];
     }
-    return self;
+}
+
+- (void)setClient:(CASPHD2SocketClient *)client
+{
+    if (client != _client){
+        [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
+        _client = client;
+        if (!_client){
+            self.guiding = NO;
+        }
+        [_client addObserver:self forKeyPath:@"error" options:0 context:&kvoContext];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if (self.client.error){
+            NSLog(@"error: %@",self.client.error);
+            self.client = nil;
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)handleIncomingMessage:(NSDictionary*)message
@@ -201,9 +239,15 @@ static const char CRLF[] = "\r\n";
     }
 }
 
+- (NSDictionary*)settleParam
+{
+    return @{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)};
+}
+
 - (void)start
 {
-    [self enqueueCommand:@{@"method":@"guide",@"params":@[@{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)},@(NO)]} completion:^(id result) {
+    [self setupClient];
+    [self enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Started");
         }
@@ -243,7 +287,7 @@ static const char CRLF[] = "\r\n";
 - (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly
 {
     self.guiding = NO;
-    [self enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),@{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)}]} completion:^(id result) {
+    [self enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Dithering...");
         }
