@@ -35,7 +35,14 @@
 }
 
 - (IBAction)start:(id)sender {
-    [self.client start];
+    [self.client guideWithCompletion:^(BOOL success) {
+        if (success){
+            NSLog(@"Guiding started");
+        }
+        else {
+            NSLog(@"Guiding failed");
+        }
+    }];
 }
 
 - (IBAction)stop:(id)sender {
@@ -43,7 +50,14 @@
 }
 
 - (IBAction)dither:(id)sender {
-    [self.client ditherByPixels:3 inRAOnly:NO];
+    [self.client ditherByPixels:15 inRAOnly:NO completion:^(BOOL success) {
+        if (success){
+            NSLog(@"Dither complete");
+        }
+        else {
+            NSLog(@"Dither failed");
+        }
+    }];
 }
 
 @end

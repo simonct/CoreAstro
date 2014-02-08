@@ -12,9 +12,9 @@
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL guiding;
 
-- (void)start;
+- (void)guideWithCompletion:(void(^)(BOOL))completion;
 - (void)stop;
 
-- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly;
+- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion;
 
 @end

@@ -12,6 +12,7 @@
 @property (nonatomic,strong) CASJSONRPCSocketClient* client;
 @property (nonatomic,assign) BOOL guiding;
 @property (nonatomic,assign) BOOL connected;
+@property (nonatomic,copy) void(^settleCompletion)(BOOL);
 @end
 
 @implementation CASPHD2Client {
@@ -111,6 +112,10 @@ static void* kvoContext;
         else {
             NSLog(@"Settling failed %@",message);
         }
+        if (self.settleCompletion){
+            self.settleCompletion(self.guiding);
+            self.settleCompletion = nil;
+        }
     }
     
     if ([@[@"Settling",@"StartGuiding"] containsObject:event]){
@@ -132,9 +137,10 @@ static void* kvoContext;
     return @{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)};
 }
 
-- (void)start
+- (void)guideWithCompletion:(void(^)(BOOL))completion
 {
     [self setupClient];
+    self.settleCompletion = completion;
     [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Started");
@@ -147,6 +153,7 @@ static void* kvoContext;
 
 - (void)stop
 {
+    [self setupClient];
     [self.client enqueueCommand:@{@"method":@"stop_capture"} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Stopped");
@@ -158,23 +165,39 @@ static void* kvoContext;
     }];
 }
 
-- (void)pause
-{
-    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@YES]} completion:^(id result) {
-        NSLog(@"pause: %@",result);
-    }];
-}
+//- (void)pause
+//{
+//    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@YES]} completion:^(id result) {
+//        NSLog(@"pause: %@",result);
+//    }];
+//}
+//
+//- (void)resume
+//{
+//    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@NO]} completion:^(id result) {
+//        NSLog(@"resume: %@",result);
+//    }];
+//}
 
-- (void)resume
+- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
-    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@NO]} completion:^(id result) {
-        NSLog(@"resume: %@",result);
-    }];
-}
-
-- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly
-{
+    if (!self.guiding){
+        NSLog(@"Attempting to dither while not guiding");
+        if (completion){
+            completion(NO);
+        }
+        return;
+    }
+    [self setupClient];
+    if (!self.client){
+        NSLog(@"Attempting to dither while not connected");
+        if (completion){
+            completion(NO);
+        }
+        return;
+    }
     self.guiding = NO;
+    self.settleCompletion = completion;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Dithering...");
