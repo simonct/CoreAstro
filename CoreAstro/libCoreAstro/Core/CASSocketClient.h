@@ -29,8 +29,10 @@
 - (CASSocketClientRequest*)makeRequest;
 @end
 
+@class CASJSONRPCSocketClient;
+
 @protocol CASJSONRPCSocketClientDelegate <NSObject>
-- (void)handleIncomingEvent:(NSDictionary*)message;
+- (void)client:(CASJSONRPCSocketClient*)client receivedNotification:(NSDictionary*)message;
 @end
 
 @interface CASJSONRPCSocketClient : CASSocketClient

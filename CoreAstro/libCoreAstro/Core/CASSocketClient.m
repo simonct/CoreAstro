@@ -396,7 +396,7 @@ static const char CRLF[] = "\r\n";
 {
     NSString* event = message[@"Event"];
     if ([event length]){
-        [self.delegate handleIncomingEvent:message];
+        [self.delegate client:self receivedNotification:message];
     }
     else {
         NSString* jsonrpc = message[@"jsonrpc"];

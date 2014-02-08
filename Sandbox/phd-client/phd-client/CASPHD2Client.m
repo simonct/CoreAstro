@@ -79,8 +79,12 @@ static void* kvoContext;
     }
 }
 
-- (void)handleIncomingEvent:(NSDictionary*)message
+- (void)client:(CASJSONRPCSocketClient*)client receivedNotification:(NSDictionary*)message
 {
+    if (client != self.client){
+        return;
+    }
+    
     // Version
     // StarSelected
     // LockPositionSet
