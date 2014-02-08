@@ -46,6 +46,8 @@
 		F412976315FCAD16009C215E /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F412976215FCAD16009C215E /* moon.icns */; };
 		F4175A6116A749550032954F /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4175A6016A749550032954F /* loop.png */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
+		F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */ = {isa = PBXBuildFile; fileRef = F43D311918A6A1FC00087C52 /* CASPHD2Client.h */; };
+		F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */; };
 		F44791E816806BB2007A6815 /* CASProgressHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791E716806BB1007A6815 /* CASProgressHUDView.m */; };
@@ -629,6 +631,8 @@
 		F4175A6016A749550032954F /* loop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loop.png; sourceTree = "<group>"; };
 		F4198F9B1635DDC7009164B0 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = "External/Sparkle 1.5b6/Extras/Signing Tools/dsa_pub.pem"; sourceTree = SOURCE_ROOT; };
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
+		F43D311918A6A1FC00087C52 /* CASPHD2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHD2Client.h; sourceTree = "<group>"; };
+		F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHD2Client.m; sourceTree = "<group>"; };
 		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
 		F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASExposureInfoView.xib; sourceTree = "<group>"; };
 		F44791E616806BB1007A6815 /* CASProgressHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASProgressHUDView.h; sourceTree = "<group>"; };
@@ -2027,6 +2031,8 @@
 				F4F59BA5183C0184006331E3 /* CASFITSUtilities.m */,
 				F48F79B018818E5E00DFB0F2 /* CASExposureSettings.h */,
 				F48F79B118818E5E00DFB0F2 /* CASExposureSettings.m */,
+				F43D311918A6A1FC00087C52 /* CASPHD2Client.h */,
+				F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -3050,6 +3056,7 @@
 				F4CA53D0169CC9FD00832CFF /* fitstable.h in Headers */,
 				F4CA53D1169CC9FD00832CFF /* gslutils.h in Headers */,
 				F4CA53D2169CC9FD00832CFF /* hd.h in Headers */,
+				F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */,
 				F4CA53D3169CC9FD00832CFF /* healpix-utils.h in Headers */,
 				F4CA53D4169CC9FD00832CFF /* healpix.h in Headers */,
 				F40D5C00184B3A5900977FA9 /* CASExternalSDK.h in Headers */,
@@ -3620,6 +3627,7 @@
 				F4EEF2BF1604699600547009 /* HID_Config_Utilities.c in Sources */,
 				F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */,
 				F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */,
+				F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */,
 				F4EEF2C21604699600547009 /* HID_Queue_Utilities.c in Sources */,
 				F48DF047160EF83000190D3E /* CASCameraController.m in Sources */,
 				F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */,
