@@ -27,6 +27,13 @@
 - (void)enqueueRequest:(CASSocketClientRequest*)request;
 - (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion;
 - (CASSocketClientRequest*)makeRequest;
-@property (nonatomic,readonly) BOOL hasBytesAvailable;
-- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
+@end
+
+@protocol CASJSONRPCSocketClientDelegate <NSObject>
+- (void)handleIncomingEvent:(NSDictionary*)message;
+@end
+
+@interface CASJSONRPCSocketClient : CASSocketClient
+@property (nonatomic,weak) id<CASJSONRPCSocketClientDelegate> delegate;
+- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id))completion;
 @end

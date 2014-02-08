@@ -33,6 +33,8 @@
 @property (nonatomic,strong) NSInputStream* inputStream;
 @property (nonatomic,strong) NSOutputStream* outputStream;
 @property (nonatomic,strong) NSError* error;
+@property (nonatomic,readonly) BOOL hasBytesAvailable;
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
 @end
 
 @implementation CASSocketClient {
@@ -299,6 +301,125 @@
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len
 {
     return [self.inputStream read:buffer maxLength:len];
+}
+
+@end
+
+@interface CASJSONRPCSocketClient ()
+@property (nonatomic,strong) NSMutableData* buffer;
+@property (nonatomic,strong) NSMutableData* readBuffer;
+@property (nonatomic,strong) NSMutableDictionary* callbacks;
+@end
+
+@implementation CASJSONRPCSocketClient {
+    NSInteger _id;
+}
+
+static const char CRLF[] = "\r\n";
+
+- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id))completion
+{
+    NSMutableDictionary* mcmd = [command mutableCopy];
+    id msgID = @(++_id);
+    [mcmd addEntriesFromDictionary:@{@"id":msgID}];
+    
+    // associate completion block with id
+    if (!self.callbacks){
+        self.callbacks = [NSMutableDictionary dictionaryWithCapacity:5];
+    }
+    if (completion){
+        self.callbacks[msgID] = [completion copy];
+    }
+    
+    NSError* error;
+    NSData* data = [NSJSONSerialization dataWithJSONObject:mcmd options:0 error:&error];
+    if (error){
+        NSLog(@"enqueueCommand: %@",error);
+    }
+    else {
+        
+        NSMutableData* mdata = [data mutableCopy];
+        [mdata appendBytes:CRLF length:2];
+        [self enqueue:mdata readCount:0 completion:nil];
+    }
+}
+
+- (void)read
+{
+    while ([self hasBytesAvailable]){
+        
+        // create the persistent read buffer
+        if (!self.buffer){
+            self.buffer = [NSMutableData dataWithCapacity:1024];
+        }
+        
+        // create a transient read buffer
+        if (!self.readBuffer){
+            self.readBuffer = [NSMutableData dataWithLength:1024];
+        }
+        
+        // read a buffer's worth of data from the stream
+        const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
+        if (count > 0){
+            
+            // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
+            [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
+            [self.readBuffer resetBytesInRange:NSMakeRange(0, [self.readBuffer length])];
+            
+            // search the persistent buffer for json separated by CRLF and keep going while we find any
+            while (1) {
+                
+                // look for CRLF
+                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
+                if (range.location == NSNotFound){
+                    break;
+                }
+                
+                // attempt to deserialise up to the CRLF
+                NSRange jsonRange = NSMakeRange(0, range.location);
+                id json = [NSJSONSerialization JSONObjectWithData:[self.buffer subdataWithRange:jsonRange] options:0 error:nil];
+                
+                // remove the json + CRLF from the front of the persistent buffer
+                jsonRange.length += 2;
+                [self.buffer replaceBytesInRange:jsonRange withBytes:nil length:0];
+                
+                if (!json){
+                    break;
+                }
+                [self handleIncomingMessage:json];
+            }
+        }
+    }
+}
+
+- (void)handleIncomingMessage:(NSDictionary*)message
+{
+    NSString* event = message[@"Event"];
+    if ([event length]){
+        [self.delegate handleIncomingEvent:message];
+    }
+    else {
+        NSString* jsonrpc = message[@"jsonrpc"];
+        if (![jsonrpc isEqualToString:@"2.0"]){
+            NSLog(@"Unrecognised JSON-RPC version of %@",jsonrpc);
+        }
+        else{
+            id msgID = message[@"id"];
+            void(^callback)(id) = self.callbacks[msgID];
+            if (!callback){
+                NSLog(@"No callback for id %@",msgID);
+            }
+            else {
+                @try {
+                    callback(message[@"result"]);
+                }
+                @catch (NSException *exception) {
+                    NSLog(@"*** %@",exception);
+                }
+                [self.callbacks removeObjectForKey:msgID];
+            }
+        }
+    }
 }
 
 @end
