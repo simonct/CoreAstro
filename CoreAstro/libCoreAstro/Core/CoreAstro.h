@@ -55,3 +55,4 @@
 #import <CoreAstro/CASPowerMonitor.h>
 #import <CoreAstro/CASImageMetrics.h>
 #import <CoreAstro/CASFilterPipeline.h>
+#import <CoreAstro/CASExposureSettings.h>

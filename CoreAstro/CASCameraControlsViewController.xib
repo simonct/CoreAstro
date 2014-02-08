@@ -142,29 +142,29 @@
 							<string key="NSKeyEquivalent"/>
 							<int key="NSPeriodicDelay">400</int>
 							<int key="NSPeriodicInterval">75</int>
-							<nil key="NSMenuItem"/>
+							<object class="NSMenuItem" key="NSMenuItem" id="968975671">
+								<reference key="NSMenu" ref="414264728"/>
+								<string key="NSTitle">1 frame</string>
+								<string key="NSKeyEquiv"/>
+								<int key="NSKeyEquivModMask">1048576</int>
+								<int key="NSMnemonicLoc">2147483647</int>
+								<int key="NSState">1</int>
+								<object class="NSCustomResource" key="NSOnImage" id="292074311">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">NSMenuCheckmark</string>
+								</object>
+								<object class="NSCustomResource" key="NSMixedImage" id="400993220">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">NSMenuMixedState</string>
+								</object>
+								<string key="NSAction">_popUpItemAction:</string>
+								<reference key="NSTarget" ref="331824890"/>
+							</object>
 							<bool key="NSMenuItemRespectAlignment">YES</bool>
 							<object class="NSMenu" key="NSMenu" id="414264728">
 								<string key="NSTitle">OtherViews</string>
 								<array class="NSMutableArray" key="NSMenuItems">
-									<object class="NSMenuItem" id="968975671">
-										<reference key="NSMenu" ref="414264728"/>
-										<string key="NSTitle">1 frame</string>
-										<string key="NSKeyEquiv"/>
-										<int key="NSKeyEquivModMask">1048576</int>
-										<int key="NSMnemonicLoc">2147483647</int>
-										<int key="NSState">1</int>
-										<object class="NSCustomResource" key="NSOnImage" id="292074311">
-											<string key="NSClassName">NSImage</string>
-											<string key="NSResourceName">NSMenuCheckmark</string>
-										</object>
-										<object class="NSCustomResource" key="NSMixedImage" id="400993220">
-											<string key="NSClassName">NSImage</string>
-											<string key="NSResourceName">NSMenuMixedState</string>
-										</object>
-										<string key="NSAction">_popUpItemAction:</string>
-										<reference key="NSTarget" ref="331824890"/>
-									</object>
+									<reference ref="968975671"/>
 									<object class="NSMenuItem" id="881321850">
 										<reference key="NSMenu" ref="414264728"/>
 										<string key="NSTitle">2 frames</string>
@@ -451,7 +451,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="NSFrame">{{117, 11}, {84, 14}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:1535</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="711690883">
@@ -975,7 +974,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			</object>
 			<object class="NSViewController" id="191701071"/>
 			<object class="NSCustomView" id="125176815">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSTextField" id="915557971">
@@ -983,8 +982,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{109, 12}, {41, 14}}</string>
 						<reference key="NSSuperview" ref="125176815"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:397</string>
 						<string key="NSHuggingPriority">{251, 750}</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1005,7 +1002,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="NSvFlags">268</int>
 						<string key="NSFrame">{{8, 10}, {96, 19}}</string>
 						<reference key="NSSuperview" ref="125176815"/>
-						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="915557971"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
@@ -1059,8 +1055,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 				</array>
 				<string key="NSFrameSize">{155, 38}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="910484601"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<string key="NSClassName">NSView</string>
@@ -1174,26 +1168,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: cameraController.exposure</string>
-						<reference key="source" ref="585569306"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="585569306"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">value: cameraController.exposure</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">cameraController.exposure</string>
-							<dictionary key="NSOptions">
-								<boolean value="YES" key="NSContinuouslyUpdatesValue"/>
-								<boolean value="YES" key="NSValidatesImmediately"/>
-							</dictionary>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">422</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: cameraController.capturing</string>
 						<reference key="source" ref="585569306"/>
 						<reference key="destination" ref="1001"/>
@@ -1235,6 +1209,26 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</object>
 					<int key="connectionID">426</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: cameraController.settings.exposureDuration</string>
+						<reference key="source" ref="585569306"/>
+						<reference key="destination" ref="1001"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="585569306"/>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: cameraController.settings.exposureDuration</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">cameraController.settings.exposureDuration</string>
+							<dictionary key="NSOptions">
+								<boolean value="YES" key="NSContinuouslyUpdatesValue"/>
+								<boolean value="YES" key="NSValidatesImmediately"/>
+							</dictionary>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">576</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1335,22 +1329,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedIndex: cameraController.exposureUnits</string>
-						<reference key="source" ref="857587805"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="857587805"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">selectedIndex: cameraController.exposureUnits</string>
-							<string key="NSBinding">selectedIndex</string>
-							<string key="NSKeyPath">cameraController.exposureUnits</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">428</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: cameraController.capturing</string>
 						<reference key="source" ref="857587805"/>
 						<reference key="destination" ref="1001"/>
@@ -1395,19 +1373,19 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: cameraController.exposureInterval</string>
-						<reference key="source" ref="936276371"/>
+						<string key="label">selectedIndex: cameraController.settings.exposureUnits</string>
+						<reference key="source" ref="857587805"/>
 						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="936276371"/>
+							<reference key="NSSource" ref="857587805"/>
 							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">value: cameraController.exposureInterval</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">cameraController.exposureInterval</string>
+							<string key="NSLabel">selectedIndex: cameraController.settings.exposureUnits</string>
+							<string key="NSBinding">selectedIndex</string>
+							<string key="NSKeyPath">cameraController.settings.exposureUnits</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">457</int>
+					<int key="connectionID">584</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1455,23 +1433,19 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">displayPatternValue1: cameraController.exposureInterval</string>
-						<reference key="source" ref="83466071"/>
+						<string key="label">value: cameraController.settings.exposureInterval</string>
+						<reference key="source" ref="936276371"/>
 						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="83466071"/>
+							<reference key="NSSource" ref="936276371"/>
 							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">displayPatternValue1: cameraController.exposureInterval</string>
-							<string key="NSBinding">displayPatternValue1</string>
-							<string key="NSKeyPath">cameraController.exposureInterval</string>
-							<object class="NSDictionary" key="NSOptions">
-								<string key="NS.key.0">NSDisplayPattern</string>
-								<string key="NS.object.0">%{value1}@s interval</string>
-							</object>
+							<string key="NSLabel">value: cameraController.settings.exposureInterval</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">cameraController.settings.exposureInterval</string>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">463</int>
+					<int key="connectionID">586</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1495,15 +1469,35 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">hidden2: cameraController.exposureInterval</string>
+						<string key="label">displayPatternValue1: cameraController.settings.exposureInterval</string>
 						<reference key="source" ref="83466071"/>
 						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="83466071"/>
 							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">hidden2: cameraController.exposureInterval</string>
+							<string key="NSLabel">displayPatternValue1: cameraController.settings.exposureInterval</string>
+							<string key="NSBinding">displayPatternValue1</string>
+							<string key="NSKeyPath">cameraController.settings.exposureInterval</string>
+							<object class="NSDictionary" key="NSOptions">
+								<string key="NS.key.0">NSDisplayPattern</string>
+								<string key="NS.object.0">%{value1}@s interval</string>
+							</object>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">590</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">hidden2: cameraController.settings.exposureInterval</string>
+						<reference key="source" ref="83466071"/>
+						<reference key="destination" ref="1001"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="83466071"/>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">hidden2: cameraController.settings.exposureInterval</string>
 							<string key="NSBinding">hidden2</string>
-							<string key="NSKeyPath">cameraController.exposureInterval</string>
+							<string key="NSKeyPath">cameraController.settings.exposureInterval</string>
 							<dictionary key="NSOptions">
 								<integer value="-1" key="NSMultipleValuesPlaceholder"/>
 								<integer value="-1" key="NSNoSelectionPlaceholder"/>
@@ -1515,7 +1509,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">468</int>
+					<int key="connectionID">594</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1576,22 +1570,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedIndex: cameraController.binningIndex</string>
-						<reference key="source" ref="748717659"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="748717659"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">selectedIndex: cameraController.binningIndex</string>
-							<string key="NSBinding">selectedIndex</string>
-							<string key="NSKeyPath">cameraController.binningIndex</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">436</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: cameraController.capturing</string>
 						<reference key="source" ref="748717659"/>
 						<reference key="destination" ref="1001"/>
@@ -1633,6 +1611,22 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</object>
 					<int key="connectionID">440</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedIndex: cameraController.settings.binningIndex</string>
+						<reference key="source" ref="748717659"/>
+						<reference key="destination" ref="1001"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="748717659"/>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">selectedIndex: cameraController.settings.binningIndex</string>
+							<string key="NSBinding">selectedIndex</string>
+							<string key="NSKeyPath">cameraController.settings.binningIndex</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">596</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1696,15 +1690,15 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">enabled3: cameraController.continuous</string>
+						<string key="label">enabled3: cameraController.settings.continuous</string>
 						<reference key="source" ref="435947259"/>
 						<reference key="destination" ref="1001"/>
 						<object class="NSNibBindingConnector" key="connector">
 							<reference key="NSSource" ref="435947259"/>
 							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">enabled3: cameraController.continuous</string>
+							<string key="NSLabel">enabled3: cameraController.settings.continuous</string>
 							<string key="NSBinding">enabled3</string>
-							<string key="NSKeyPath">cameraController.continuous</string>
+							<string key="NSKeyPath">cameraController.settings.continuous</string>
 							<dictionary key="NSOptions">
 								<integer value="-1" key="NSMultipleValuesPlaceholder"/>
 								<integer value="-1" key="NSNoSelectionPlaceholder"/>
@@ -1716,7 +1710,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<int key="NSNibBindingConnectorVersion">2</int>
 						</object>
 					</object>
-					<int key="connectionID">449</int>
+					<int key="connectionID">601</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -1779,22 +1773,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">value: cameraController.continuous</string>
-						<reference key="source" ref="617077219"/>
-						<reference key="destination" ref="1001"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="617077219"/>
-							<reference key="NSDestination" ref="1001"/>
-							<string key="NSLabel">value: cameraController.continuous</string>
-							<string key="NSBinding">value</string>
-							<string key="NSKeyPath">cameraController.continuous</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">450</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: cameraController</string>
 						<reference key="source" ref="617077219"/>
 						<reference key="destination" ref="1001"/>
@@ -1812,6 +1790,22 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</object>
 					<int key="connectionID">452</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: cameraController.settings.continuous</string>
+						<reference key="source" ref="617077219"/>
+						<reference key="destination" ref="1001"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="617077219"/>
+							<reference key="NSDestination" ref="1001"/>
+							<string key="NSLabel">value: cameraController.settings.continuous</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">cameraController.settings.continuous</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">600</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -4142,7 +4136,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">573</int>
+			<int key="maxID">601</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4216,14 +4210,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/CASCameraControlsViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSLayoutConstraint</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
 					</object>
 				</object>
 			</array>

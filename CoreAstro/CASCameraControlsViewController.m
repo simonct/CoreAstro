@@ -63,9 +63,9 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 
 - (void)setCameraController:(CASCameraController *)cameraController
 {
-    [self.representedObject removeObserver:self forKeyPath:@"subframe"];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.subframe"];
     self.representedObject = cameraController;
-    [self.representedObject addObserver:self forKeyPath:@"subframe" options:0 context:nil];
+    [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:nil];
     [self configureForCameraController];
 }
 
@@ -73,15 +73,13 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 {
     if (context == nil) {
         
-        if ([keyPath isEqualToString:@"subframe"]){
+        if ([keyPath isEqualToString:@"settings.subframe"]){
             
-            const CGRect subframe = self.cameraController.subframe;
+            const CGRect subframe = self.cameraController.settings.subframe;
             if (CGRectIsEmpty(subframe)){
-                
                 [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
             }
             else {
-                
                 [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             }
         }
@@ -175,8 +173,8 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 {
     if (_captureMenuSelectedIndex != index){
         _captureMenuSelectedIndex = index;
-        if (self.cameraController.continuous){
-            self.cameraController.captureCount = 0;
+        if (self.cameraController.settings.continuous){
+            self.cameraController.settings.captureCount = 0;
         }
         else {
             
@@ -187,19 +185,19 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
                 case 2:
                 case 3:
                 case 4:
-                    self.cameraController.captureCount = _captureMenuSelectedIndex + 1;
+                    self.cameraController.settings.captureCount = _captureMenuSelectedIndex + 1;
                     break;
                 case 5:
-                    self.cameraController.captureCount = 10;
+                    self.cameraController.settings.captureCount = 10;
                     break;
                 case 6:
-                    self.cameraController.captureCount = 25;
+                    self.cameraController.settings.captureCount = 25;
                     break;
                 case 7:
-                    self.cameraController.captureCount = 50;
+                    self.cameraController.settings.captureCount = 50;
                     break;
                 case 8:
-                    self.cameraController.captureCount = 75;
+                    self.cameraController.settings.captureCount = 75;
                     break;
                 default:{
                     NSPopover* popover = [[NSPopover alloc] init];
@@ -208,7 +206,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
                     [popover showRelativeToRect:self.captureMenu.frame ofView:self.view preferredEdge:NSMaxXEdge];
                     const NSInteger count = self.otherExposureCount;
                     if (count > 0){
-                        self.cameraController.captureCount = count;
+                        self.cameraController.settings.captureCount = count;
                     }
                 }
                     break;
@@ -236,7 +234,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 {
     count = MIN(MAX(0,count),10000);
     [[NSUserDefaults standardUserDefaults] setInteger:count forKey:[self otherExposureCountKey]];
-    self.cameraController.captureCount = count;
+    self.cameraController.settings.captureCount = count;
 }
 
 + (NSSet*)keyPathsForValuesAffectingOtherExposureCount

@@ -48,11 +48,11 @@
             
             id bin = [[self evaluatedArguments] objectForKey:@"bin"];
             const NSInteger binningIndex = ([bin integerValue] > 0) ? [bin integerValue] - 1 : 0;
-            controller.binningIndex = MAX(0,MIN(3,binningIndex));
+            controller.settings.binning = MAX(1,MIN(4,binningIndex));
             
             NSDictionary* args = [self evaluatedArguments];
             NSNumber* ms = [args objectForKey:@"milliseconds"];
-            NSNumber* secs = [args objectForKey:@"seconds"];
+            NSNumber* secs = @(1); // [args objectForKey:@"seconds"];
             if ((!ms && !secs) || (ms && secs)){
                 [self setErrorCode:paramErr string:NSLocalizedString(@"You must specify the exposure duration in either seconds or milliseconds", @"Scripting error message")];
                 [self resumeExecutionWithResult:nil];
@@ -60,15 +60,15 @@
             else {
                 
                 if (ms){
-                    controller.exposure = [ms integerValue];
-                    controller.exposureUnits = 1;
+                    controller.settings.exposureDuration = [ms integerValue];
+                    controller.settings.exposureUnits = 1;
                 }
                 else {
-                    controller.exposure = [secs integerValue];
-                    controller.exposureUnits = 0;
+                    controller.settings.exposureDuration = [secs integerValue];
+                    controller.settings.exposureUnits = 0;
                 }
                 
-                self.result = [NSMutableArray arrayWithCapacity:controller.captureCount];
+                self.result = [NSMutableArray arrayWithCapacity:controller.settings.captureCount];
                 
                 [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
                     

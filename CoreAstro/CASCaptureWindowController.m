@@ -122,8 +122,8 @@
             exposureType = kCASCCDExposureBiasType;
             break;
         case kCASCaptureModelModeFlat:
-            exposureUnits = 1; // ms
-            exposureTime = 100;
+            exposureUnits = 0; // seconds
+            exposureTime = 1;
             temperatureLock = NO;
             exposureType = kCASCCDExposureFlatType;
             break;
@@ -148,16 +148,16 @@
             return;
         }
         
-        self.cameraController.continuous = NO;
-        self.cameraController.captureCount = 1;
-        self.cameraController.exposure = exposureTime;
-        self.cameraController.exposureUnits = exposureUnits;
-        self.cameraController.binningIndex = 0;
-        self.cameraController.subframe = CGRectZero;
+        self.cameraController.settings.continuous = NO;
+        self.cameraController.settings.captureCount = 1;
+        self.cameraController.settings.exposureDuration = exposureTime;
+        self.cameraController.settings.exposureUnits = exposureUnits;
+        self.cameraController.settings.binning = 1;
+        self.cameraController.settings.subframe = CGRectZero;
         self.cameraController.guider = nil;
         self.cameraController.temperatureLock = temperatureLock;
-        self.cameraController.exposureType = exposureType;
-
+        self.cameraController.settings.exposureType = exposureType;
+        
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
             if (error){
@@ -185,7 +185,11 @@
                     else {
                         exposureTime *= (targetFloatAverage/average);
                     }
-                    NSLog(@"Flats: average of %f, now using exposure of %ldms",average,exposureTime);
+                    NSLog(@"Flats: average of %f, now using exposure of %lds",average,exposureTime);
+                    
+                    // todo; check the exposure time doesn't vary too much, this might happen if the intensity of the light source for the flat changes
+                    // once we've started saving exposures we should probably reduce the tolerance ?
+                    // alternatively, scale before averaging all the flats to match the first one ?
                 }
                 
                 if (!saveExposure) {

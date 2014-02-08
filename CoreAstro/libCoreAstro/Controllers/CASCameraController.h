@@ -25,14 +25,13 @@
 
 #import "CASDeviceController.h"
 #import "CASCCDExposure.h"
+#import "CASExposureSettings.h"
 
 @class CASCCDDevice;
 @class CASImageProcessor;
 @class CASGuideAlgorithm;
 @class CASGuiderController;
 @class CASFilterWheelController;
-@class CASCCDExposure;
-@class CASMovieExporter;
 
 @protocol CASCameraControllerSink <NSObject>
 - (void)captureCompletedWithExposure:(CASCCDExposure*)exposure error:(NSError*)error;
@@ -55,17 +54,9 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,readonly) BOOL waitingForNextCapture;
 
 @property (nonatomic,assign) BOOL temperatureLock;
-@property (nonatomic,assign) BOOL continuous;
-@property (nonatomic,assign) NSInteger captureCount;
-@property (nonatomic,assign) NSInteger currentCaptureIndex;
-@property (nonatomic,readonly) NSTimeInterval continuousNextExposureTime;
 
-@property (nonatomic,assign) NSInteger exposure; // -> exposureTime/exposureDuration
-@property (nonatomic,assign) NSInteger exposureUnits;
-@property (nonatomic,assign) NSInteger binningIndex;
-@property (nonatomic,assign) NSInteger exposureInterval;
-@property (nonatomic,assign) CGRect subframe;
-@property (nonatomic,assign) CASCCDExposureType exposureType;
+@property (nonatomic,readonly) CASExposureSettings* settings;
+
 @property (nonatomic,assign) CGFloat targetTemperature;
 @property (nonatomic,strong) NSDate* exposureStart;
 

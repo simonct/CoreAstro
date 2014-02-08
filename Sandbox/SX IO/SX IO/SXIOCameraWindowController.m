@@ -306,7 +306,7 @@ static void* kvoContext;
     self.powerMonitor.disableSleep = YES;
     
     // ensure this is recorded as a light frame
-    self.cameraController.exposureType = kCASCCDExposureLightType;
+    self.cameraController.settings.exposureType = kCASCCDExposureLightType;
 
     // issue the capture command
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
@@ -320,12 +320,12 @@ static void* kvoContext;
                 
                 NSUserNotification* note = [[NSUserNotification alloc] init];
                 note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
-                NSString* exposureUnits = (self.cameraController.exposureUnits == 0) ? @"s" : @"ms";
-                if (self.cameraController.captureCount == 1){
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
+                NSString* exposureUnits = (self.cameraController.settings.exposureUnits == 0) ? @"s" : @"ms";
+                if (self.cameraController.settings.captureCount == 1){
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
                 else {
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.captureCount,self.cameraController.exposure,exposureUnits];
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
                 note.soundName = NSUserNotificationDefaultSoundName;
                 [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
@@ -1003,8 +1003,8 @@ static void* kvoContext;
                 self.progressStatusText.stringValue = @"Downloading image...";
             }
             else {
-                if (self.cameraController.captureCount > 1 && !self.cameraController.continuous){
-                    self.progressStatusText.stringValue = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.currentCaptureIndex+1,self.cameraController.captureCount];
+                if (self.cameraController.settings.captureCount > 1 && !self.cameraController.settings.continuous){
+                    self.progressStatusText.stringValue = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.settings.currentCaptureIndex+1,self.cameraController.settings.captureCount];
                 }
                 else {
                     self.progressStatusText.stringValue = @"Capturing...";
@@ -1170,7 +1170,7 @@ static void* kvoContext;
         const CGRect rect = self.exposureView.selectionRect;
         if (CGRectIsEmpty(rect)){
             
-            self.cameraController.subframe = CGRectZero;
+            self.cameraController.settings.subframe = CGRectZero;
         }
         else {
             
@@ -1185,7 +1185,7 @@ static void* kvoContext;
             
             CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-            self.cameraController.subframe = subframe;
+            self.cameraController.settings.subframe = subframe;
         }
     }
 }
@@ -1197,7 +1197,7 @@ static void* kvoContext;
     if (exposure){
         
         // check we have somewhere to save the file, a prefix and a sequence number
-        const BOOL saveToFile = (self.cameraController.scriptCommand || self.saveTargetControlsViewController.saveImages) && !self.cameraController.continuous;
+        const BOOL saveToFile = (self.cameraController.scriptCommand || self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
         if (saveToFile){
             
             // check for a user-entered filter name
