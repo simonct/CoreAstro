@@ -15,6 +15,8 @@
 - (void)guideWithCompletion:(void(^)(BOOL))completion;
 - (void)stop;
 
-- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion;
+- (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion;
+
+- (void)cancel;
 
 @end

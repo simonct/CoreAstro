@@ -97,7 +97,7 @@ static void* kvoContext;
     // Paused
     // Resumed
     // GuidingDithered
-    NSLog(@"%@",message[@"Event"]);
+    // NSLog(@"%@",message[@"Event"]);
     
     NSString* event = message[@"Event"];
     
@@ -183,7 +183,7 @@ static void* kvoContext;
 //    }];
 //}
 
-- (void)ditherByPixels:(NSInteger)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
+- (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
     if (!self.guiding){
         NSLog(@"Attempting to dither while not guiding");
@@ -204,12 +204,20 @@ static void* kvoContext;
     self.settleCompletion = completion;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
         if ([result integerValue] == 0){
-            NSLog(@"Dithering...");
+            NSLog(@"Dithering %.1f pixels...",pixels);
         }
         else {
             NSLog(@"Dither failed: %@",result);
         }
     }];
+}
+
+- (void)cancel
+{
+    if (self.settleCompletion){
+        self.settleCompletion(NO);
+        self.settleCompletion = nil;
+    }
 }
 
 @end

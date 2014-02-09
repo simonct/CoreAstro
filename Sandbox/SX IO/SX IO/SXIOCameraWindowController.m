@@ -1012,6 +1012,11 @@ static void* kvoContext;
             }
         }
             break;
+            
+        case CASCameraControllerStateDithering:{
+            commonShowProgressSetup(@"Dithering...",NO);
+            self.progressIndicator.indeterminate = YES;
+        }
     }
     
     if (self.progressIndicator.isIndeterminate){
@@ -1197,7 +1202,7 @@ static void* kvoContext;
     if (exposure){
         
         // check we have somewhere to save the file, a prefix and a sequence number
-        const BOOL saveToFile = (self.cameraController.scriptCommand || self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
+        const BOOL saveToFile = (self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
         if (saveToFile){
             
             // check for a user-entered filter name

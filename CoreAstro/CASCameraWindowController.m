@@ -586,6 +586,11 @@
                 self.progressStatusText.stringValue = @"Capturing...";
             }
         }
+            
+        case CASCameraControllerStateDithering:{
+            commonShowProgressSetup(@"Dithering...",NO);
+            self.progressIndicator.indeterminate = YES;
+        }
             break;
     }
     

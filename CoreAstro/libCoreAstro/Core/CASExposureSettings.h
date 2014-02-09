@@ -29,8 +29,20 @@
 
 @property (nonatomic,assign) CASCCDExposureType exposureType;
 
+@property (nonatomic,assign) BOOL ditherEnabled;
+@property (nonatomic,assign) float ditherPixels;
+
 @end
 
 @interface CASExposureSettings (Bindings)
 @property (nonatomic,assign) NSInteger binningIndex;
+@end
+
+@interface CASExposureSettings (CASScripting)
+@property (nonatomic,strong) NSNumber* scriptingSequenceCount;
+@property (nonatomic,readonly) NSNumber* scriptingSequenceIndex;
+@property (nonatomic,strong) NSNumber* scriptingInterval;
+@property (nonatomic,strong) NSNumber* scriptingDitherPixels;
+@property (nonatomic,strong) NSNumber* scriptingBinning;
+@property (nonatomic,strong) NSNumber* scriptingDuration;
 @end

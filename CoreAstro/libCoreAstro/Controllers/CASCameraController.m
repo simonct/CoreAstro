@@ -30,6 +30,7 @@
 #import "CASAutoGuider.h"
 #import "CASCCDDevice.h"
 #import "CASClassDefaults.h"
+#import "CASPHD2Client.h"
 
 @interface CASExposureSettings ()
 @property (nonatomic,assign) NSInteger currentCaptureIndex; // give the camera controller privileged access to this property
@@ -45,6 +46,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic) CASCameraControllerState state;
 @property (nonatomic) float progress;
 @property (nonatomic,strong) CASExposureSettings* settings;
+@property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @end
 
 @implementation CASCameraController {
@@ -78,7 +80,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval"];
+    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
 }
 
 - (void)registerDeviceDefaults
@@ -154,6 +156,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.continuousNextExposureTime = [NSDate timeIntervalSinceReferenceDate] + t;
         [self performSelector:_cmd withObject:block afterDelay:t inModes:@[NSRunLoopCommonModes]];
     };
+    
+    // todo; move most of this into a sequence class ?
     
     void (^endCapture)(NSError*,CASCCDExposure*) = ^(NSError* error,CASCCDExposure* exp){
         
@@ -270,73 +274,97 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }
     }
     
-    self.state = CASCameraControllerStateExposing;
-    
-    const BOOL saveExposure = !self.settings.continuous;
+    void (^startExposure)() = ^(){
+                
+        self.state = CASCameraControllerStateExposing;
         
-    bzero(&_expParams, sizeof _expParams);
-    
-    const NSInteger xBin = self.settings.binning;
-    const NSInteger yBin = self.settings.binning;
-    const NSInteger exposureMS = (self.settings.exposureUnits == 0) ? self.settings.exposureDuration * 1000 : self.settings.exposureDuration;
-    const CGRect subframe = self.settings.subframe;
-    
-    if (CGRectIsEmpty(subframe)){
-        _expParams = CASExposeParamsMake(self.camera.sensor.width, self.camera.sensor.height, 0, 0, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
-    }
-    else {
-        _expParams = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
-    }
-    
-    self.exposureStart = [NSDate date];
-    
-    self.progress = 0;
-    [self updateProgress];
-
-    _waitingForDevice = YES;
-    
-    NSString* filterName = self.filterWheel.currentFilterName;
-    
-    [self.camera exposeWithParams:_expParams type:self.settings.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
-    
-        self.progress = 1;
-
-        _waitingForDevice = NO;
+        const BOOL saveExposure = !self.settings.continuous;
         
-        exposure.type = self.settings.exposureType;
-        if (filterName){
-            exposure.filters = @[filterName];
-        }
-
-        // send the exposure to the sink
-        @try {
-            [self.sink captureCompletedWithExposure:exposure error:error];
-        }
-        @catch (NSException *exception) {
-            NSLog(@"*** Exception calling capture sink: %@",exception);
-        }
-
-        // figure out if we need to go round again or stop here
-        if (error){
-            endCapture(error,nil);
+        bzero(&_expParams, sizeof _expParams);
+        
+        const NSInteger xBin = self.settings.binning;
+        const NSInteger yBin = self.settings.binning;
+        const NSInteger exposureMS = (self.settings.exposureUnits == 0) ? self.settings.exposureDuration * 1000 : self.settings.exposureDuration;
+        const CGRect subframe = self.settings.subframe;
+        
+        if (CGRectIsEmpty(subframe)){
+            _expParams = CASExposeParamsMake(self.camera.sensor.width, self.camera.sensor.height, 0, 0, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
         }
         else {
+            _expParams = CASExposeParamsMake(subframe.size.width, subframe.size.height, subframe.origin.x, subframe.origin.y, self.camera.sensor.width, self.camera.sensor.height, xBin, yBin, self.camera.sensor.bitsPerPixel,exposureMS);
+        }
+        
+        self.exposureStart = [NSDate date];
+        
+        self.progress = 0;
+        [self updateProgress];
+        
+        _waitingForDevice = YES;
+        
+        NSString* filterName = [self.filterWheel.currentFilterName copy];
+
+        [self.camera exposeWithParams:_expParams type:self.settings.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
             
-            // no exposure means it was cancelled
-            if (!exposure){
-                endCapture(nil,nil);
+            self.progress = 1;
+            
+            _waitingForDevice = NO;
+            
+            exposure.type = self.settings.exposureType;
+            if (filterName){
+                exposure.filters = @[filterName];
+            }
+            
+            // send the exposure to the sink
+            @try {
+                [self.sink captureCompletedWithExposure:exposure error:error];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** Exception calling capture sink: %@",exception);
+            }
+            
+            // figure out if we need to go round again or stop here
+            if (error){
+                endCapture(error,nil);
             }
             else {
                 
-                if (!saveExposure && !_cancelled){
-                    endCapture(error,exposure);
+                // no exposure means it was cancelled
+                if (!exposure){
+                    endCapture(nil,nil);
                 }
-                else{
-                    endCapture(nil,exposure);
+                else {
+                    
+                    if (!saveExposure && !_cancelled){
+                        endCapture(error,exposure);
+                    }
+                    else{
+                        endCapture(nil,exposure);
+                    }
                 }
             }
-        }
-    }];
+        }];
+    };
+    
+    // dither if requested and we're not in continuous capture or on the first exposure of a sequence
+    if (self.settings.continuous || !self.settings.ditherEnabled || self.settings.ditherPixels < 1 || self.settings.currentCaptureIndex == 0){
+        startExposure();
+    }
+    else{
+        
+        self.state = CASCameraControllerStateDithering;
+        
+        [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
+            if (success){
+                NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
+            }
+            else {
+                NSLog(@"Dither failed");
+            }
+            if (!_cancelled){
+                startExposure(); // expose anyway as long as we haven't been cancelled
+            }
+        }];
+    }
 }
 
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block
@@ -360,6 +388,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     self.settings.currentCaptureIndex = 0;
     
+    if (self.settings.ditherEnabled && !self.phd2Client){
+        self.phd2Client = [CASPHD2Client new];
+    }
+
     id activity;
     NSProcessInfo* proc = [NSProcessInfo processInfo];
     if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
@@ -386,6 +418,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     _cancelled = YES;
     self.settings.continuous = NO;
+    
+    // cancel any pending dither
+    [self.phd2Client cancel];
     
     [self.camera cancelExposure];
     
@@ -465,6 +500,63 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (NSNumber*)scriptingIsCapturing
 {
     return [NSNumber numberWithBool:self.capturing];
+}
+
+// todo; for now leave these settings on the camera and route through to the settings object but may want to revist that
+
+- (NSNumber*)scriptingSequenceCount
+{
+    return self.settings.scriptingSequenceCount;
+}
+
+- (void)setScriptingSequenceCount:(NSNumber*)count
+{
+    self.settings.scriptingSequenceCount = count;
+}
+
+- (NSNumber*)scriptingSequenceIndex
+{
+    return self.settings.scriptingSequenceIndex;
+}
+
+- (NSNumber*)scriptingInterval
+{
+    return self.settings.scriptingInterval;
+}
+
+- (void)setScriptingInterval:(NSNumber*)interval
+{
+    self.settings.scriptingInterval = interval;
+}
+
+- (NSNumber*)scriptingDitherPixels
+{
+    return self.settings.scriptingDitherPixels;
+}
+
+- (void)setScriptingDitherPixels:(NSNumber*)ditherPixels
+{
+    self.settings.scriptingDitherPixels = ditherPixels;
+}
+
+- (NSNumber*)scriptingBinning
+{
+    return self.settings.scriptingBinning;
+}
+
+- (void)setScriptingBinning:(NSNumber*)binning
+{
+    self.settings.scriptingBinning = binning;
+}
+
+- (NSNumber*)scriptingDuration
+{
+    return self.settings.scriptingDuration;
+}
+
+- (void)setScriptingDuration:(NSNumber*)duration
+{
+    self.settings.scriptingDuration = duration;
 }
 
 @end

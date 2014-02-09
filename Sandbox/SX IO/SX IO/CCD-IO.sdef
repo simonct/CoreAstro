@@ -50,7 +50,7 @@
 
         <class name="camera" plural="cameras" code="CASC" description="A camera object." inherits="device">
             
-            <cocoa class="CASCameraController"/> 
+            <cocoa class="CASCameraController"/>
             
             <property name="id" code="ID  " type="text" access="r" description="The unique ID of the camera">
                 <cocoa key="uniqueID"/>
@@ -67,9 +67,21 @@
             <property name="sequence index" code="SeqI" type="number" access="r" description="The index of the exposure in the current sequence">
                 <cocoa key="scriptingSequenceIndex"/>
             </property>
+            
+            <property name="binning" code="Binn" type="number" description="The binning to use for exposures in the sequence">
+                <cocoa key="scriptingBinning"/>
+            </property>
+            
+            <property name="exposure interval" code="Seqi" type="number" description="The interval between exposures in the current sequence">
+                <cocoa key="scriptingInterval"/>
+            </property>
+            
+            <property name="exposure duration" code="Dura" type="number" description="The duration in seconds for each exposure in the sequence">
+                <cocoa key="scriptingDuration"/>
+            </property>
 
-            <property name="sequence interval" code="Seqi" type="number" description="The interval between exposures in the current sequence">
-                <cocoa key="scriptingSequenceInterval"/>
+            <property name="dither" code="Dith" type="number" description="The amount of pixels by which to dither the exposure between frames (requires that you are using PHD2 to guide on the same machine)">
+                <cocoa key="scriptingDitherPixels"/>
             </property>
 
             <property name="capturing" code="Busy" type="boolean" access="r" description="True if the camera is currently capturing">
@@ -163,7 +175,7 @@
             </property>
             -->
             
-            <property name="file" code="File" type="file" access="r" description="The exposure file">
+            <property name="exposure file" code="File" type="file" access="r" description="The exposure file">
                 <cocoa key="scriptingFile"/>
             </property>
 

@@ -46,43 +46,20 @@
             
             [self suspendExecution];
             
-            id bin = [[self evaluatedArguments] objectForKey:@"bin"];
-            const NSInteger binningIndex = ([bin integerValue] > 0) ? [bin integerValue] - 1 : 0;
-            controller.settings.binning = MAX(1,MIN(4,binningIndex));
+            self.result = [NSMutableArray arrayWithCapacity:controller.settings.captureCount];
             
-            NSDictionary* args = [self evaluatedArguments];
-            NSNumber* ms = [args objectForKey:@"milliseconds"];
-            NSNumber* secs = @(1); // [args objectForKey:@"seconds"];
-            if ((!ms && !secs) || (ms && secs)){
-                [self setErrorCode:paramErr string:NSLocalizedString(@"You must specify the exposure duration in either seconds or milliseconds", @"Scripting error message")];
-                [self resumeExecutionWithResult:nil];
-            }
-            else {
+            [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
                 
-                if (ms){
-                    controller.settings.exposureDuration = [ms integerValue];
-                    controller.settings.exposureUnits = 1;
+                if (error){
+                    [self setErrorCode:[error code] string:[error localizedDescription]];
                 }
-                else {
-                    controller.settings.exposureDuration = [secs integerValue];
-                    controller.settings.exposureUnits = 0;
+                if (exposure){
+                    [self.result addObject:exposure];
                 }
-                
-                self.result = [NSMutableArray arrayWithCapacity:controller.settings.captureCount];
-                
-                [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
-                    
-                    if (error){
-                        [self setErrorCode:[error code] string:[error localizedDescription]];
-                    }
-                    if (exposure){
-                        [self.result addObject:exposure];
-                    }
-                    if (!controller.capturing){
-                        [self resumeExecutionWithResult:self.result];
-                    }
-                }];
-            }
+                if (!controller.capturing){
+                    [self resumeExecutionWithResult:self.result];
+                }
+            }];
         }
     }
 	return nil;

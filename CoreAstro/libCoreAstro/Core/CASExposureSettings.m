@@ -95,14 +95,25 @@
     return [NSNumber numberWithInteger:self.currentCaptureIndex + 1];
 }
 
-- (NSNumber*)scriptingSequenceInterval
+- (NSNumber*)scriptingInterval
 {
     return [NSNumber numberWithInteger:self.exposureInterval];
 }
 
-- (void)setScriptingSequenceInterval:(NSNumber*)interval
+- (void)setScriptingInterval:(NSNumber*)interval
 {
     self.exposureInterval = MIN(1000,MAX(0,[interval integerValue]));
+}
+
+- (NSNumber*)scriptingDitherPixels
+{
+    return @(self.ditherPixels);
+}
+
+- (void)setScriptingDitherPixels:(NSNumber*)ditherPixels
+{
+    self.ditherPixels = MIN(100,MAX(0,[ditherPixels floatValue]));
+    self.ditherEnabled = (self.ditherPixels > 0);
 }
 
 - (NSNumber*)scriptingBinning
