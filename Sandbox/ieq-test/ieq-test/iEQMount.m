@@ -70,6 +70,9 @@
         responseObject.inProgress = YES;
 //        NSLog(@"sending : %@",responseObject.command);
         [self.port sendData:[responseObject.command dataUsingEncoding:NSASCIIStringEncoding]];
+        if (!responseObject.completion){
+            [self.completionStack removeObject:responseObject];
+        }
     }
 }
 
@@ -80,18 +83,16 @@
     //        return;
     //    }
     
-    if (completion){
-        if (!self.completionStack){
-            self.completionStack = [NSMutableArray arrayWithCapacity:3];
-        }
-        iEQMountResponse* response = [iEQMountResponse new];
-        response.completion = completion;
-        response.readCount = readCount;
-        response.useTerminator = (readCount == 0);
-        response.command = command;
-        [self.completionStack addObject:response];
-//        NSLog(@"%ld commands in stack",[self.completionStack count]);
+    if (!self.completionStack){
+        self.completionStack = [NSMutableArray arrayWithCapacity:3];
     }
+    iEQMountResponse* response = [iEQMountResponse new];
+    response.completion = completion;
+    response.readCount = readCount;
+    response.useTerminator = (readCount == 0);
+    response.command = command;
+    [self.completionStack addObject:response];
+    //        NSLog(@"%ld commands in stack",[self.completionStack count]);
     
     [self sendNextCommand];
 }
@@ -176,12 +177,15 @@
                                 self.az = @([CASLX200Commands fromDecString:response]);
                                 
                                 [self performSelector:_cmd withObject:nil afterDelay:1];
+
+//                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
+//                                    
+//                                    NSLog(@"Moving rate: %@",response);
+//                                    
+//                                    [self performSelector:_cmd withObject:nil afterDelay:1];
+//                                }];
                             }];
-
-                            [self performSelector:_cmd withObject:nil afterDelay:1];
                         }];
-
-                        [self performSelector:_cmd withObject:nil afterDelay:1];
                     }];
                 }];
             }];
@@ -320,7 +324,7 @@
         [_input deleteCharactersInRange:NSMakeRange(0,[response length] + 1)];
     }
     
-    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
+//    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
     
     if (responseObject.completion){
         responseObject.completion(response);
@@ -405,6 +409,8 @@
 
 - (void)startMoving:(iEQMountDirection)direction
 {
+    // unpark first ? “:MP0#”
+    
     if (_direction != direction){
         
         _direction = direction;
@@ -426,8 +432,6 @@
                 break;
         }
         // start a safety timer ?
-        
-        NSLog(@"start");
     }
 }
 
@@ -435,8 +439,38 @@
 {
     _direction = iEQMountDirectionNone;
     [self sendCommand:@":q#" completion:nil];
+}
+
+- (void)pulseInDirection:(iEQMountDirection)direction ms:(NSInteger)ms
+{
+    NSString* command;
+ 
+    ms = MAX(ms, 0);
+    ms = MIN(ms, 32767);
     
-    NSLog(@"stop");
+    switch (direction) {
+        case iEQMountDirectionNorth:
+            command = [NSString stringWithFormat:@":Mn%05ld#",ms];
+            break;
+        case iEQMountDirectionEast:
+            command = [NSString stringWithFormat:@":Me%05ld#",ms];
+            break;
+        case iEQMountDirectionSouth:
+            command = [NSString stringWithFormat:@":Ms%05ld#",ms];
+            break;
+        case iEQMountDirectionWest:
+            command = [NSString stringWithFormat:@":Mw%05ld#",ms];
+            break;
+        default:
+            break;
+    }
+    
+    NSLog(@"command: %@",command);
+    
+    [self sendCommand:command completion:nil];
+    
+    // to stop “:Mx00000#”
+    
 }
 
 - (NSInteger)slewRate
@@ -453,7 +487,7 @@
         
         _slewRate = slewRate;
         
-        NSString* command = [NSString stringWithFormat:@":SR%ld#",(long)_slewRate];
+        NSString* command = [NSString stringWithFormat:@":SR%ld#",(long)_slewRate+1];
         [self sendCommand:command readCount:1 completion:^(NSString* response) {
             NSLog(@"Set rate response: %@",response);
         }];

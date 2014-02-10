@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, iEQMountDirection) {
 @property (nonatomic,readonly) iEQMountDirection direction;
 - (void)startMoving:(iEQMountDirection)direction;
 - (void)stopMoving;
+- (void)pulseInDirection:(iEQMountDirection)direction ms:(NSInteger)ms;
 
 @property (nonatomic,assign) NSInteger slewRate;
 
