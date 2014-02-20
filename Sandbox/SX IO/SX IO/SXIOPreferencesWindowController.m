@@ -24,4 +24,7 @@
     return self;
 }
 
+// todo; utilities to download plate solving indexes
+// todo; background plate solving option
+
 @end
