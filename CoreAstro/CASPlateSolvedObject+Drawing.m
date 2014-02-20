@@ -60,9 +60,9 @@
 
 - (CASAnnotationLayer*)createLayerInLayer:(CALayer*)annotationLayer withFont:(NSFont*)font andColour:(CGColorRef)colour scaling:(NSInteger)scaling
 {
-    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue];
-    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue];
-    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue];
+    const CGFloat x = [[self.annotation objectForKey:@"pixelx"] doubleValue] * scaling;
+    const CGFloat y = [[self.annotation objectForKey:@"pixely"] doubleValue] * scaling;
+    const CGFloat radius = [[self.annotation objectForKey:@"radius"] doubleValue] * scaling;
     
     CASAnnotationLayer* result = [self createCircularLayerAtPosition:CGPointMake(x, y) radius:radius annotation:self.name inLayer:annotationLayer withFont:font andColour:colour];
     
