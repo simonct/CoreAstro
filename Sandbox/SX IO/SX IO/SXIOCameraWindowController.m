@@ -760,6 +760,7 @@ static void* kvoContext;
                         [NSApp presentError:error];
                     }
                     else {
+                        self.showPlateSolution = YES;
                         self.exposureView.plateSolveSolution = results[@"solution"];
                         [self resetAndRedisplayCurrentExposure];
                     }
