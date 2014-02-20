@@ -44,6 +44,7 @@
             
             controller.scriptCommand = [NSScriptCommand currentCommand];
             
+            [CASPowerMonitor sharedInstance].disableSleep = YES;
             [self suspendExecution];
             
             self.result = [NSMutableArray arrayWithCapacity:controller.settings.captureCount];
@@ -57,6 +58,7 @@
                     [self.result addObject:exposure];
                 }
                 if (!controller.capturing){
+                    [CASPowerMonitor sharedInstance].disableSleep = NO;
                     [self resumeExecutionWithResult:self.result];
                 }
             }];

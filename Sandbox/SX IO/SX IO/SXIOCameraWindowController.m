@@ -56,8 +56,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 
-@property (nonatomic,strong) CASPowerMonitor* powerMonitor;
-
 @property (assign) BOOL showPlateSolution;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,readonly) NSString* cachesDirectory;
@@ -300,11 +298,8 @@ static void* kvoContext;
     }
 
     // disable idle sleep
-    if (!self.powerMonitor){
-        self.powerMonitor = [[CASPowerMonitor alloc] init];
-    }
-    self.powerMonitor.disableSleep = YES;
-    
+    [CASPowerMonitor sharedInstance].disableSleep = YES;
+
     // ensure this is recorded as a light frame
     self.cameraController.settings.exposureType = kCASCCDExposureLightType;
 
@@ -314,8 +309,8 @@ static void* kvoContext;
         if (!self.cameraController.capturing){
             
             // re-enable idle sleep
-            self.powerMonitor.disableSleep = NO;
-            
+            [CASPowerMonitor sharedInstance].disableSleep = NO;
+
             if (!self.cameraController.cancelled){
                 
                 NSUserNotification* note = [[NSUserNotification alloc] init];

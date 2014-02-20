@@ -11,4 +11,5 @@
 @interface CASPowerMonitor : NSObject
 @property (readonly) BOOL onWallPower;
 @property (nonatomic,assign) BOOL disableSleep;
++ (instancetype)sharedInstance;
 @end

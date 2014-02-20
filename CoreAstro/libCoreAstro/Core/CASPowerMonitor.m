@@ -21,6 +21,7 @@
     CFRunLoopRef _runLoop;
     CFRunLoopSourceRef _runLoopSource;
     IOPMAssertionID _sleepAssertion;
+    NSInteger _refCount;
 }
 
 static void CASPowerMonitorCallback(void *context)
@@ -43,11 +44,21 @@ static void CASPowerMonitorCallback(void *context)
     }
 }
 
++ (instancetype)sharedInstance
+{
+    static CASPowerMonitor* _shared;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _shared = [CASPowerMonitor new];
+    });
+    return _shared;
+}
+
 - (id)init
 {
     self = [super init];
     if (self) {
-        _runLoop = CFRunLoopGetCurrent();
+        _runLoop = CFRunLoopGetMain();
         if (IOPSCreateLimitedPowerNotification){ // this is only on 10.9+
             _runLoopSource = IOPSCreateLimitedPowerNotification(CASPowerMonitorCallback,(__bridge void *)(self));
         }
@@ -100,10 +111,15 @@ static void CASPowerMonitorCallback(void *context)
 - (void)setDisableSleep:(BOOL)disableSleep
 {
     if (disableSleep){
-        [self createPowerAssertion];
+        if (_refCount++ == 0){
+            [self createPowerAssertion];
+        }
     }
     else {
-        [self releasePowerAssertion];
+        if (--_refCount == 0){
+            [self releasePowerAssertion];
+        }
+        NSAssert(_refCount >= 0,@"CASPowerMonitor ref count over decremented");
     }
 }
 
