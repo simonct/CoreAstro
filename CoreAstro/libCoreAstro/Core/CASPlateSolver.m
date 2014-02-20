@@ -536,6 +536,10 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         
         // solve it
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
+            
+            // delete the cache
+            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+            
             complete(error,results);
         }];
     });
