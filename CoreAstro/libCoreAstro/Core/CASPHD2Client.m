@@ -169,23 +169,10 @@ static void* kvoContext;
     }];
 }
 
-//- (void)pause
-//{
-//    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@YES]} completion:^(id result) {
-//        NSLog(@"pause: %@",result);
-//    }];
-//}
-//
-//- (void)resume
-//{
-//    [self.client enqueueCommand:@{@"method":@"set_paused",@"params":@[@NO]} completion:^(id result) {
-//        NSLog(@"resume: %@",result);
-//    }];
-//}
-
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
     if (!self.guiding){
+        // todo; this can happen if this is called before we've got the AppState event after connecting, queue the request up ?
         NSLog(@"Attempting to dither while not guiding");
         if (completion){
             completion(NO);
