@@ -8,6 +8,8 @@
 		<string>H814c</string>
 		<key>has-cooler</key>
 		<true/>
+		<key>sensor-size</key>
+		<string>{12.5,10.0}</string>
 	</dict>
 	<key>408</key>
 	<dict>
@@ -15,6 +17,8 @@
 		<string>H814</string>
 		<key>has-cooler</key>
 		<true/>
+		<key>sensor-size</key>
+		<string>{12.5,10.0}</string>
 	</dict>
 	<key>1289</key>
 	<dict>
@@ -22,6 +26,8 @@
 		<string>SuperStar (Mono)</string>
 		<key>image</key>
 		<string>superstar</string>
+		<key>sensor-size</key>
+		<string>{6.4,4.75}</string>
 	</dict>
 	<key>261</key>
 	<dict>
@@ -60,6 +66,8 @@
 		<string>SXVF-M9</string>
 		<key>interlaced</key>
 		<true/>
+		<key>sensor-size</key>
+		<string>{8.98,6.7}</string>
 	</dict>
 	<key>805</key>
 	<dict>
@@ -69,11 +77,19 @@
 		<true/>
 		<key>image</key>
 		<string>H25</string>
+		<key>sensor-size</key>
+		<string>{23.4,15.6}</string>
 	</dict>
 	<key>-806</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-M26C</string>
+		<key>interlaced</key>
+		<true/>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{23.4,15.6}</string>
 	</dict>
 	<key>296</key>
 	<dict>
@@ -88,6 +104,8 @@
 		<string>SXVR-H16</string>
 		<key>flush-count</key>
 		<integer>2</integer>
+		<key>sensor-size</key>
+		<string>{15.15,15.15}</string>
 	</dict>
 	<key>309</key>
 	<dict>
@@ -95,8 +113,12 @@
 		<string>SXVR-H35</string>
 		<key>image</key>
 		<string>H36</string>
+		<key>has-cooler</key>
+		<true/>
 		<key>flush-count</key>
 		<integer>2</integer>
+		<key>sensor-size</key>
+		<string>{36.3,24.2}</string>
 	</dict>
 	<key>310</key>
 	<dict>
@@ -108,16 +130,26 @@
 		<true/>
 		<key>flush-count</key>
 		<integer>2</integer>
+		<key>sensor-size</key>
+		<string>{36.3,24.2}</string>
 	</dict>
 	<key>281</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H9</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{8.98,6.7}</string>
 	</dict>
 	<key>793</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H9C</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{8.98,6.7}</string>
 	</dict>
 	<key>1287</key>
 	<dict>
@@ -127,6 +159,9 @@
 		<string>lodestar</string>
 		<key>interlaced</key>
 		<true/>
+		<key>sensor-size</key>
+		<string>{6.4,4.75}</string>
+
 	</dict>
 	<key>884</key>
 	<dict>
@@ -136,6 +171,8 @@
 		<string>H694</string>
 		<key>has-cooler</key>
 		<true/>
+		<key>sensor-size</key>
+		<string>{8.81,6.63}</string>
 	</dict>
 	<key>2336</key>
 	<dict>

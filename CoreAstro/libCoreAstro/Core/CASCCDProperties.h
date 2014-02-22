@@ -33,8 +33,8 @@
 @interface CASCCDProperties : NSObject
 @property (nonatomic,assign) NSInteger width;
 @property (nonatomic,assign) NSInteger height;
-@property (nonatomic,assign) float pixelWidth;
-@property (nonatomic,assign) float pixelHeight;
+@property (nonatomic,assign) CGSize pixelSize;
+@property (nonatomic,assign) CGSize sensorSize;
 @property (nonatomic,assign) NSInteger bitsPerPixel;
 @end
 

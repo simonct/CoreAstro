@@ -1575,8 +1575,18 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="201649639">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Plate Solve...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11104</int>
+								</object>
 								<object class="NSMenuItem" id="484916835">
 									<reference key="NSMenu" ref="43874950"/>
+									<bool key="NSIsAlternate">YES</bool>
 									<string key="NSTitle">Plate Solve</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -2620,6 +2630,14 @@
 						<reference key="destination" ref="547965110"/>
 					</object>
 					<int key="connectionID">899</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">plateSolveWithOptions:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="201649639"/>
+					</object>
+					<int key="connectionID">902</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3673,6 +3691,7 @@
 							<reference ref="946909826"/>
 							<reference ref="380626881"/>
 							<reference ref="484916835"/>
+							<reference ref="201649639"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4134,6 +4153,11 @@
 						<reference key="object" ref="541892682"/>
 						<reference key="parent" ref="342136496"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">901</int>
+						<reference key="object" ref="201649639"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4358,193 +4382,20 @@
 				<string key="893.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="894.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="896.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="901.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">900</int>
+			<int key="maxID">902</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">CASCameraWindowController</string>
 					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="adjustAll:">NSSlider</string>
-						<string key="adjustBlue:">NSSlider</string>
-						<string key="adjustGreen:">NSSlider</string>
-						<string key="adjustRed:">NSSlider</string>
-						<string key="applyDebayer:">NSMenuItem</string>
-						<string key="cancelCapture:">NSButton</string>
-						<string key="capture:">NSButton</string>
-						<string key="captureBias:">id</string>
-						<string key="captureDarks:">id</string>
-						<string key="captureFlats:">id</string>
-						<string key="deleteExposure:">id</string>
-						<string key="exportToFITS:">id</string>
-						<string key="exportToMovie:">id</string>
-						<string key="libraryBackButtonPressed:">id</string>
-						<string key="plateSolve:">id</string>
-						<string key="saveAs:">id</string>
-						<string key="selectExposure:">id</string>
-						<string key="selection:">NSSegmentedControl</string>
-						<string key="sendFeedback:">id</string>
-						<string key="toggleDevices:">id</string>
-						<string key="toggleEqualiseHistogram:">id</string>
-						<string key="toggleInvertImage:">id</string>
-						<string key="toggleMedianFilter:">id</string>
-						<string key="toggleRecordAsVideo:">id</string>
-						<string key="toggleScaleSubframe:">id</string>
-						<string key="toggleShowHistogram:">id</string>
-						<string key="toggleShowImageStats:">id</string>
-						<string key="toggleShowPlateSolution:">id</string>
-						<string key="toggleShowReticle:">id</string>
-						<string key="toggleShowStarProfile:">id</string>
-						<string key="zoom:">NSSegmentedControl</string>
-						<string key="zoomFit:">NSSegmentedControl</string>
-						<string key="zoomIn:">id</string>
-						<string key="zoomOut:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="adjustAll:">
-							<string key="name">adjustAll:</string>
-							<string key="candidateClassName">NSSlider</string>
-						</object>
-						<object class="IBActionInfo" key="adjustBlue:">
-							<string key="name">adjustBlue:</string>
-							<string key="candidateClassName">NSSlider</string>
-						</object>
-						<object class="IBActionInfo" key="adjustGreen:">
-							<string key="name">adjustGreen:</string>
-							<string key="candidateClassName">NSSlider</string>
-						</object>
-						<object class="IBActionInfo" key="adjustRed:">
-							<string key="name">adjustRed:</string>
-							<string key="candidateClassName">NSSlider</string>
-						</object>
-						<object class="IBActionInfo" key="applyDebayer:">
-							<string key="name">applyDebayer:</string>
-							<string key="candidateClassName">NSMenuItem</string>
-						</object>
-						<object class="IBActionInfo" key="cancelCapture:">
-							<string key="name">cancelCapture:</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBActionInfo" key="capture:">
-							<string key="name">capture:</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBActionInfo" key="captureBias:">
-							<string key="name">captureBias:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="captureDarks:">
-							<string key="name">captureDarks:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="captureFlats:">
-							<string key="name">captureFlats:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="deleteExposure:">
-							<string key="name">deleteExposure:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="exportToFITS:">
-							<string key="name">exportToFITS:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="exportToMovie:">
-							<string key="name">exportToMovie:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="libraryBackButtonPressed:">
-							<string key="name">libraryBackButtonPressed:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="plateSolve:">
-							<string key="name">plateSolve:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveAs:">
-							<string key="name">saveAs:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectExposure:">
-							<string key="name">selectExposure:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selection:">
-							<string key="name">selection:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="sendFeedback:">
-							<string key="name">sendFeedback:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleDevices:">
-							<string key="name">toggleDevices:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleEqualiseHistogram:">
-							<string key="name">toggleEqualiseHistogram:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleInvertImage:">
-							<string key="name">toggleInvertImage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleMedianFilter:">
-							<string key="name">toggleMedianFilter:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleRecordAsVideo:">
-							<string key="name">toggleRecordAsVideo:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleScaleSubframe:">
-							<string key="name">toggleScaleSubframe:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowHistogram:">
-							<string key="name">toggleShowHistogram:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowImageStats:">
-							<string key="name">toggleShowImageStats:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowPlateSolution:">
-							<string key="name">toggleShowPlateSolution:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowReticle:">
-							<string key="name">toggleShowReticle:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleShowStarProfile:">
-							<string key="name">toggleShowStarProfile:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoom:">
-							<string key="name">zoom:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="zoomFit:">
-							<string key="name">zoomFit:</string>
-							<string key="candidateClassName">NSSegmentedControl</string>
-						</object>
-						<object class="IBActionInfo" key="zoomIn:">
-							<string key="name">zoomIn:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="zoomOut:">
-							<string key="name">zoomOut:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="captureButton">NSButton</string>
 						<string key="controlsConatainer">CASControlsContainerView</string>
@@ -4747,14 +4598,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">NSLayoutConstraint</string>
-					<string key="superclassName">NSObject</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSLayoutConstraint.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">NSTextView</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="orderFrontSharingServicePicker:">id</string>
@@ -4778,30 +4621,6 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOAppDelegate</string>
 					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="calibrate:">id</string>
-						<string key="imageAdjustment:">id</string>
-						<string key="makeMovie:">id</string>
-						<string key="sendFeedback:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="calibrate:">
-							<string key="name">calibrate:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="imageAdjustment:">
-							<string key="name">imageAdjustment:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="makeMovie:">
-							<string key="name">makeMovie:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="sendFeedback:">
-							<string key="name">sendFeedback:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">noDevicesHUD</string>
 						<string key="NS.object.0">NSPanel</string>
@@ -4885,6 +4704,160 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOCameraWindowController</string>
 					<string key="superclassName">NSWindowController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="applyDebayer:">NSMenuItem</string>
+						<string key="cancelCapture:">id</string>
+						<string key="capture:">NSButton</string>
+						<string key="captureBias:">id</string>
+						<string key="captureDarks:">id</string>
+						<string key="captureFlats:">id</string>
+						<string key="openDocument:">id</string>
+						<string key="plateSolve:">id</string>
+						<string key="plateSolveWithOptions:">id</string>
+						<string key="saveAs:">id</string>
+						<string key="saveToFITS:">id</string>
+						<string key="selection:">NSSegmentedControl</string>
+						<string key="toggleCalibrate:">id</string>
+						<string key="toggleContrastStretch:">id</string>
+						<string key="toggleEqualiseHistogram:">id</string>
+						<string key="toggleFlipHorizontal:">id</string>
+						<string key="toggleFlipVertical:">id</string>
+						<string key="toggleInvertImage:">id</string>
+						<string key="toggleMedianFilter:">id</string>
+						<string key="toggleShowHistogram:">id</string>
+						<string key="toggleShowImageStats:">id</string>
+						<string key="toggleShowPlateSolution:">id</string>
+						<string key="toggleShowReticle:">id</string>
+						<string key="toggleShowStarProfile:">id</string>
+						<string key="zoom:">NSSegmentedControl</string>
+						<string key="zoomFit:">NSSegmentedControl</string>
+						<string key="zoomImageToActualSize:">id</string>
+						<string key="zoomImageToFit:">id</string>
+						<string key="zoomIn:">id</string>
+						<string key="zoomOut:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="applyDebayer:">
+							<string key="name">applyDebayer:</string>
+							<string key="candidateClassName">NSMenuItem</string>
+						</object>
+						<object class="IBActionInfo" key="cancelCapture:">
+							<string key="name">cancelCapture:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="capture:">
+							<string key="name">capture:</string>
+							<string key="candidateClassName">NSButton</string>
+						</object>
+						<object class="IBActionInfo" key="captureBias:">
+							<string key="name">captureBias:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="captureDarks:">
+							<string key="name">captureDarks:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="captureFlats:">
+							<string key="name">captureFlats:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="openDocument:">
+							<string key="name">openDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="plateSolve:">
+							<string key="name">plateSolve:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="plateSolveWithOptions:">
+							<string key="name">plateSolveWithOptions:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveAs:">
+							<string key="name">saveAs:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveToFITS:">
+							<string key="name">saveToFITS:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="selection:">
+							<string key="name">selection:</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="toggleCalibrate:">
+							<string key="name">toggleCalibrate:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleContrastStretch:">
+							<string key="name">toggleContrastStretch:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleEqualiseHistogram:">
+							<string key="name">toggleEqualiseHistogram:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleFlipHorizontal:">
+							<string key="name">toggleFlipHorizontal:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleFlipVertical:">
+							<string key="name">toggleFlipVertical:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleInvertImage:">
+							<string key="name">toggleInvertImage:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleMedianFilter:">
+							<string key="name">toggleMedianFilter:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowHistogram:">
+							<string key="name">toggleShowHistogram:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowImageStats:">
+							<string key="name">toggleShowImageStats:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowPlateSolution:">
+							<string key="name">toggleShowPlateSolution:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowReticle:">
+							<string key="name">toggleShowReticle:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleShowStarProfile:">
+							<string key="name">toggleShowStarProfile:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="zoom:">
+							<string key="name">zoom:</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="zoomFit:">
+							<string key="name">zoomFit:</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="zoomImageToActualSize:">
+							<string key="name">zoomImageToActualSize:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="zoomImageToFit:">
+							<string key="name">zoomImageToFit:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="zoomIn:">
+							<string key="name">zoomIn:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="zoomOut:">
+							<string key="name">zoomOut:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="captureButton">NSButton</string>
 						<string key="controlsContainerView">CASControlsContainerView</string>

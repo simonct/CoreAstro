@@ -105,6 +105,10 @@
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
 		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
+		F45C486D18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
+		F45C486E18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
+		F45C486F18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */; };
+		F45C487018B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */; };
 		F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
 		F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
@@ -450,6 +454,9 @@
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
 		F4554895185128ED00D30926 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolveOptionsWindowController.h; sourceTree = "<group>"; };
+		F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolveOptionsWindowController.m; sourceTree = "<group>"; };
+		F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOPlateSolveOptionsWindowController.xib; sourceTree = "<group>"; };
 		F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExposureEnumerator.h; sourceTree = "<group>"; };
 		F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExposureEnumerator.m; sourceTree = "<group>"; };
 		F46A3EFC1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASPlateSolvedObject+Drawing.h"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.h"; sourceTree = "<group>"; };
@@ -958,6 +965,9 @@
 				F48F799A187CB31100DFB0F2 /* SXIOPreferencesWindowController.h */,
 				F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */,
 				F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */,
+				F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */,
+				F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */,
+				F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1271,6 +1281,7 @@
 				F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */,
 				F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */,
 				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
+				F45C487018B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */,
 				F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
 				F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */,
@@ -1356,6 +1367,7 @@
 				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F4E6422E179BDF8F0044B349 /* loop.png in Resources */,
 				F4E6424D179BEE540044B349 /* SXIOSaveTargetViewController.xib in Resources */,
+				F45C486F18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */,
 				F4E64256179BFFBD0044B349 /* moon.icns in Resources */,
 				F4E64257179BFFBD0044B349 /* zoomout.pdf in Resources */,
 				F4E64258179BFFBD0044B349 /* move.pdf in Resources */,
@@ -1459,6 +1471,7 @@
 				F40D5B441849EC5E00977FA9 /* CASFilterWheelControlsViewController.m in Sources */,
 				F40D5B451849EC5E00977FA9 /* CASPHDControlsViewController.m in Sources */,
 				F48F799E187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */,
+				F45C486E18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */,
 				F40D5B461849EC5E00977FA9 /* SXIOCameraWindowController.m in Sources */,
 				F40D5B471849EC5E00977FA9 /* SXIOSaveTargetViewController.m in Sources */,
 				F40D5B481849EC5E00977FA9 /* CASShadowView.m in Sources */,
@@ -1534,6 +1547,7 @@
 				F4A258C8179BC1D90013D220 /* CASFilterWheelControlsViewController.m in Sources */,
 				F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */,
 				F48F799D187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */,
+				F45C486D18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */,
 				F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */,
 				F4E6424C179BEE540044B349 /* SXIOSaveTargetViewController.m in Sources */,
 				F4E64260179C05C60044B349 /* CASShadowView.m in Sources */,

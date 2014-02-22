@@ -27,11 +27,6 @@
 #import <objc/runtime.h>
 
 @implementation CASCCDProperties
-@synthesize width;
-@synthesize height;
-@synthesize pixelWidth;
-@synthesize pixelHeight;
-@synthesize bitsPerPixel;
 @end
 
 @implementation NSObject (CASCCDProperties)

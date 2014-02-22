@@ -15,7 +15,7 @@
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
-#import "SXIOExposureEnumerator.h"
+#import "SXIOPlateSolveOptionsWindowController.h"
 
 #import <Quartz/Quartz.h>
 
@@ -55,6 +55,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (assign) BOOL calibrate;
 @property (nonatomic,strong) CASCaptureController* captureController;
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
+
+@property (nonatomic,strong) SXIOPlateSolveOptionsWindowController* plateSolveOptionsWindowController;
 
 @property (assign) BOOL showPlateSolution;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
@@ -698,6 +700,8 @@ static void* kvoContext;
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
 }
 
+#pragma mark - Plate Solving
+
 - (NSURL*)plateSolutionURLForExposure:(CASCCDExposure*)exposure
 {
     NSString* uuid = exposure.uuid;
@@ -712,7 +716,51 @@ static void* kvoContext;
     return [NSURL fileURLWithPath:[[caches stringByAppendingPathComponent:uuid] stringByAppendingPathExtension:@"caPlateSolution"]];
 }
 
-- (void)plateSolveImpl
+- (void)preparePlateSolveWithCompletion:(void(^)(BOOL))completion
+{
+    NSParameterAssert(completion);
+    
+    if (self.plateSolver){
+        // todo; solvers should be per exposure
+        NSLog(@"Already solving something");
+        completion(NO);
+        return;
+    }
+    
+    CASCCDExposure* exposure = self.currentExposure;
+    if (!exposure){
+        NSLog(@"No current exposure");
+        completion(NO);
+        return;
+    }
+    
+    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+    if ([self.plateSolver canSolveExposure:exposure error:nil]){
+        completion(YES);
+    }
+    else{
+        
+        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+        
+        openPanel.canChooseFiles = NO;
+        openPanel.canChooseDirectories = YES;
+        openPanel.canCreateDirectories = YES;
+        openPanel.allowsMultipleSelection = NO;
+        openPanel.prompt = @"Choose";
+        openPanel.message = @"Locate the astrometry.net indexes";;
+        
+        [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+            if (result == NSFileHandlingPanelOKButton){
+                self.plateSolver.indexDirectoryURL = openPanel.URL;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(YES);
+                });
+            }
+        }];
+    }
+}
+
+- (void)plateSolveWithFieldSize:(CGSize)fieldSize arcsecsPerPixel:(float)arcsecsPerPixel
 {
     CASCCDExposure* exposure = self.currentExposure;
     
@@ -733,6 +781,9 @@ static void* kvoContext;
         // solve async - beware of races here since we're doing this async
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
+            self.plateSolver.fieldSizeDegrees = fieldSize;
+            self.plateSolver.arcsecsPerPixel = arcsecsPerPixel;
+
             [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                 
                 if (!error){
@@ -773,43 +824,29 @@ static void* kvoContext;
 
 - (IBAction)plateSolve:(id)sender
 {
-    if (self.plateSolver){
-        // todo; solvers should be per exposure
-        NSLog(@"Already solving something");
-        return;
-    }
-    
-    CASCCDExposure* exposure = self.currentExposure;
-    if (!exposure){
-        NSLog(@"No current exposure");
-        return;
-    }
-    
-    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
-    if (![self.plateSolver canSolveExposure:exposure error:nil]){
-        
-        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
-        
-        openPanel.canChooseFiles = NO;
-        openPanel.canChooseDirectories = YES;
-        openPanel.canCreateDirectories = YES;
-        openPanel.allowsMultipleSelection = NO;
-        openPanel.prompt = @"Choose";
-        openPanel.message = @"Locate the astrometry.net indexes";;
-        
-        [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-            if (result == NSFileHandlingPanelOKButton){
-                self.plateSolver.indexDirectoryURL = openPanel.URL;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self plateSolveImpl];
-                });
-            }
-        }];
-        
-        return;
-    }
+    [self preparePlateSolveWithCompletion:^(BOOL ok) {
+        if (ok){
+            [self plateSolveWithFieldSize:CGSizeZero arcsecsPerPixel:0];
+        }
+    }];
+}
 
-    [self plateSolveImpl];
+- (IBAction)plateSolveWithOptions:(id)sender
+{
+    [self preparePlateSolveWithCompletion:^(BOOL ok) {
+        if (ok){
+            self.plateSolveOptionsWindowController = [SXIOPlateSolveOptionsWindowController createWindowController];
+            self.plateSolveOptionsWindowController.cameraController = self.cameraController;
+            [self.plateSolveOptionsWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+                if (result == NSOKButton) {
+                    const CGSize fieldSize = self.plateSolveOptionsWindowController.enableFieldSize ? self.plateSolveOptionsWindowController.fieldSizeDegrees : CGSizeZero;
+                    const float arcsecsPerPixel = self.plateSolveOptionsWindowController.enablePixelSize ? self.plateSolveOptionsWindowController.arcsecsPerPixel: 0;
+                    [self plateSolveWithFieldSize:fieldSize arcsecsPerPixel:arcsecsPerPixel];
+                }
+                self.plateSolveOptionsWindowController = nil;
+            }];
+        }
+    }];
 }
 
 #pragma mark - Path & Save Utilities
@@ -1446,6 +1483,7 @@ static void* kvoContext;
             break;
             
         case 11103:
+        case 11104:
             enabled = (self.plateSolver == nil && self.currentExposure != nil);
             break;
 

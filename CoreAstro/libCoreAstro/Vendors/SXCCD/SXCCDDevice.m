@@ -134,8 +134,7 @@
                         self.sensor.width = [[storedParams objectForKey:@"width"] integerValue];
                         self.sensor.height = [[storedParams objectForKey:@"height"] integerValue];
                         self.sensor.bitsPerPixel = [[storedParams objectForKey:@"bits-per-pixel"] integerValue];
-                        self.sensor.pixelWidth = [[storedParams objectForKey:@"pix-width"] floatValue];
-                        self.sensor.pixelHeight = [[storedParams objectForKey:@"pix-height"] floatValue];
+                        self.sensor.sensorSize = NSSizeFromString([storedParams objectForKey:@"sensor-size"]);
                         self.sensor.horizFrontPorch = [[storedParams objectForKey:@"h-front-porch"] integerValue];
                         self.sensor.horizBackPorch = [[storedParams objectForKey:@"h-back-porch"] integerValue];
                         self.sensor.vertFrontPorch = [[storedParams objectForKey:@"v-front-porch"] integerValue];
@@ -284,7 +283,9 @@
             
             if (self.isInterlaced){
                 getParams.params.height = getParams.params.height * 2;
-                getParams.params.pixelHeight = getParams.params.pixelHeight / 2;
+                CGSize pixelSize = getParams.params.pixelSize;
+                pixelSize.height /= 2;
+                getParams.params.pixelSize = pixelSize;
             }
             
 //            if (self.productID == 806){ // M26C
@@ -292,6 +293,7 @@
 //            }
             
             self.sensor = getParams.params;
+            self.sensor.sensorSize = NSSizeFromString([[self deviceParams] objectForKey:@"sensor-size"]);
         }
         
         if (block){

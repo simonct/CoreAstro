@@ -98,7 +98,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
     }
     else{
         [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
-        [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelWidth,camera.sensor.pixelHeight]];
+        [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelSize.width,camera.sensor.pixelSize.height]];
     }
 }
 
