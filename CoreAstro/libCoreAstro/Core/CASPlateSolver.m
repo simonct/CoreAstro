@@ -239,6 +239,7 @@
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) NSMutableString* logOutput;
+@property (nonatomic,assign) NSTimeInterval solveStartTime;
 @end
 
 @implementation CASPlateSolver
@@ -534,8 +535,12 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             return;
         }
         
+        self.solveStartTime = [NSDate timeIntervalSinceReferenceDate];
+        
         // solve it
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
+        
+            NSLog(@"Solved in %.1fs",[NSDate timeIntervalSinceReferenceDate] - self.solveStartTime);
             
             // delete the cache
             [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
