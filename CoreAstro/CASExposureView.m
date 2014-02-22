@@ -230,7 +230,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     _dragHandleLayer = nil;
     _draggingSelection = NO;
-    //    [super mouseUp:theEvent]; // get another IKImageView crash in here - see if we can do without it...
+    _draggingSelectionOffset = CGSizeZero;
+    [super mouseUp:theEvent];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
