@@ -62,6 +62,11 @@
         _stretchMax = 1;
         _stretchGamma = 1;
         _extent = CGRectNull;
+        
+        // set a custom backing layer (could vary the tile size depending on the image size ?)
+        CASTiledLayer* layer = [[CASTiledLayer alloc] init];
+        layer.tileSize = CGSizeMake(1024, 1024); // todo; this value really needs to come from OpenGL
+        [self setLayer:layer];
         self.wantsLayer = YES;
     }
     return self;
@@ -99,13 +104,6 @@
     // todo; might need to sync on self to protect CIImage instance
     
     // tracking area, mouse moved events, convertPoint:fromLayer
-}
-
-- (CALayer *)makeBackingLayer
-{
-    CASTiledLayer* layer = [[CASTiledLayer alloc] init];
-    layer.tileSize = CGSizeMake(1024, 1024); // todo; this value really needs to come from OpenGL
-    return layer;
 }
 
 - (CGRect) unitFrame
