@@ -101,14 +101,12 @@
     // tracking area, mouse moved events, convertPoint:fromLayer
 }
 
-/* switch off for now - may offer an option of slower but more memory efficient in the future
 - (CALayer *)makeBackingLayer
 {
     CASTiledLayer* layer = [[CASTiledLayer alloc] init];
-    layer.tileSize = CGSizeMake(512, 512);
+    layer.tileSize = CGSizeMake(1024, 1024); // todo; this value really needs to come from OpenGL
     return layer;
 }
-*/
 
 - (CGRect) unitFrame
 {
