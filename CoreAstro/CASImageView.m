@@ -54,6 +54,18 @@
     }
 }
 
++ (BOOL)createLayerInMakeBackingLayer
+{
+    return [self instancesRespondToSelector:@selector(canDrawSubviewsIntoLayer)]; // using this as a proxy for 10.9+
+}
+
++ (CALayer*)createBackingLayer
+{
+    CASTiledLayer* layer = [[CASTiledLayer alloc] init];
+    layer.tileSize = CGSizeMake(1024, 1024); // todo; this value really needs to come from OpenGL
+    return layer;
+}
+
 - (id)initWithFrame:(NSRect)frameRect
 {
     self = [super initWithFrame:frameRect];
@@ -64,9 +76,9 @@
         _extent = CGRectNull;
         
         // set a custom backing layer (could vary the tile size depending on the image size ?)
-        CASTiledLayer* layer = [[CASTiledLayer alloc] init];
-        layer.tileSize = CGSizeMake(1024, 1024); // todo; this value really needs to come from OpenGL
-        [self setLayer:layer];
+        if (![[self class] createLayerInMakeBackingLayer]){
+            [self setLayer:[[self class] createBackingLayer]];
+        }
         self.wantsLayer = YES;
     }
     return self;
@@ -104,6 +116,16 @@
     // todo; might need to sync on self to protect CIImage instance
     
     // tracking area, mouse moved events, convertPoint:fromLayer
+}
+
+- (CALayer*)makeBackingLayer
+{
+    if ([[self class] createLayerInMakeBackingLayer]){
+        return [[self class] createBackingLayer];
+    }
+    else {
+        return [super makeBackingLayer];
+    }
 }
 
 - (CGRect) unitFrame
