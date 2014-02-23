@@ -449,8 +449,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     _params.vertFrontPorch = params.vfront_porch;
     _params.vertBackPorch = params.vback_porch;
     _params.height = params.height;
-    _params.pixelWidth = params.pix_width;
-    _params.pixelHeight = params.pix_height;
+    _params.pixelSize = CGSizeMake(params.pix_width, params.pix_height);
     _params.colourMatrix = params.color_matrix;
     _params.bitsPerPixel = params.bits_per_pixel;
     _params.serialPortCount = params.num_serial_ports;
