@@ -285,6 +285,8 @@
 
 @implementation iEQMount (ORSSerialPortDelegate)
 
+// todo; put into the CASSerialTransport class ?
+
 - (void)serialPort:(ORSSerialPort *)serialPort didReceiveData:(NSData *)data
 {
     // todo; see if we have to detect the trailling #

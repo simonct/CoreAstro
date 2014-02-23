@@ -49,6 +49,7 @@
 @interface iEQWindowController ()
 @property (nonatomic,strong) iEQMount* mount;
 @property (nonatomic,copy) NSString* searchString;
+@property (nonatomic,assign) NSInteger guideDurationInMS;
 @end
 
 @implementation iEQWindowController
@@ -66,6 +67,7 @@
     [self.mount connectWithCompletion:^{
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
+            self.guideDurationInMS = 1000;
         }
         else {
             NSLog(@"Failed to connect");
@@ -154,6 +156,26 @@
 - (IBAction)east:(id)sender
 {
     [self startMoving:iEQMountDirectionEast];
+}
+
+- (IBAction)guideNorth:(id)sender
+{
+    [self.mount pulseInDirection:iEQMountDirectionNorth ms:self.guideDurationInMS];
+}
+
+- (IBAction)guideEast:(id)sender
+{
+    [self.mount pulseInDirection:iEQMountDirectionEast ms:self.guideDurationInMS];
+}
+
+- (IBAction)guideSouth:(id)sender
+{
+    [self.mount pulseInDirection:iEQMountDirectionSouth ms:self.guideDurationInMS];
+}
+
+- (IBAction)guideWest:(id)sender
+{
+    [self.mount pulseInDirection:iEQMountDirectionWest ms:self.guideDurationInMS];
 }
 
 - (void)stopMoving:sender
