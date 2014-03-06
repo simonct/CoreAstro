@@ -55,7 +55,18 @@
 }
 
 - (NSDictionary*)cas_propertyValues {
-    return [self dictionaryWithValuesForKeys:[[self cas_properties] allObjects]];
+    NSMutableDictionary* result = [[self dictionaryWithValuesForKeys:[[self cas_properties] allObjects]] mutableCopy];
+    for (NSValue* value in [result allValues]){
+        if ([value isKindOfClass:[NSValue class]]){
+            const char* type = [value objCType];
+            if (!strcmp(type, @encode(CGSize))){
+                for (id key in [result allKeysForObject:value]){
+                    result[key] = NSStringFromSize([value sizeValue]);
+                }
+            }
+        }
+    }
+    return result;
 }
 
 @end
