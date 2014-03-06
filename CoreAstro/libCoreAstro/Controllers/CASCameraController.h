@@ -32,9 +32,10 @@
 @class CASGuideAlgorithm;
 @class CASGuiderController;
 @class CASFilterWheelController;
+@class CASCameraController;
 
 @protocol CASCameraControllerSink <NSObject>
-- (void)captureCompletedWithExposure:(CASCCDExposure*)exposure error:(NSError*)error;
+- (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error;
 @end
 
 @interface CASCameraController : CASDeviceController

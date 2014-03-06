@@ -316,7 +316,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             // send the exposure to the sink
             @try {
-                [self.sink captureCompletedWithExposure:exposure error:error];
+                [self.sink cameraController:self didCompleteExposure:exposure error:error];
             }
             @catch (NSException *exception) {
                 NSLog(@"*** Exception calling capture sink: %@",exception);

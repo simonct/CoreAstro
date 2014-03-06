@@ -1230,7 +1230,7 @@ static void* kvoContext;
 
 #pragma mark - CASCameraControllerSink
 
-- (void)captureCompletedWithExposure:(CASCCDExposure*)exposure error:(NSError*)error
+- (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
     if (exposure){
         
