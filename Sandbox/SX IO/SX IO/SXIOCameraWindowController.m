@@ -573,6 +573,12 @@ static void* kvoContext;
                                     break;
                             }
                             
+                            // check for a user-entered filter name
+                            NSString* filterName = self.filterWheelControlsViewController.filterName;
+                            if ([filterName length]){
+                                result.filters = @[filterName];
+                            }
+
                             NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
                             
                             // remove existing one
