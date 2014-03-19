@@ -897,9 +897,10 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     if (io){
         if ([io writeExposure:exposure writePixels:YES error:error]){
             exposure.io = io;
+            return YES;
         }
     }
-    return nil;
+    return NO;
 }
 
 + (NSString*)defaultFilenameForExposure:(CASCCDExposure*)exposure
