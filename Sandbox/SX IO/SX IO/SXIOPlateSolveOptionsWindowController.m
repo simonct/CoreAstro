@@ -96,6 +96,26 @@ static void* kvoContext;
     [[NSUserDefaults standardUserDefaults] setInteger:focalLength forKey:[self focalLengthKey]];
 }
 
+- (BOOL)enableFieldSize
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOPlateSolverEnableFieldSize"];
+}
+
+- (void)setEnableFieldSize:(BOOL)enableFieldSize
+{
+    [[NSUserDefaults standardUserDefaults] setBool:enableFieldSize forKey:@"SXIOPlateSolverEnableFieldSize"];
+}
+
+- (BOOL)enablePixelSize
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOPlateSolverEnablePixelSize"];
+}
+
+- (void)setEnablePixelSize:(BOOL)enablePixelSize
+{
+    [[NSUserDefaults standardUserDefaults] setBool:enablePixelSize forKey:@"SXIOPlateSolverEnablePixelSize"];
+}
+
 - (void)setNilValueForKey:(NSString *)key
 {
     if ([@"focalLength" isEqualToString:key]){
