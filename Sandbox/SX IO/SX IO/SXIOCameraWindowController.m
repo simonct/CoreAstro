@@ -254,7 +254,8 @@ static void* kvoContext;
     return url;
 }
 
-- (NSString*)exposureSaveNameWithSuffix:(NSString*)suffix
+// todo; belongs in its own class ?
+- (NSString*)exposureSaveNameWithSuffix:(NSString*)suffix fileType:(NSString*)fileType
 {
     NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
     if (!prefix){
@@ -264,9 +265,35 @@ static void* kvoContext;
         prefix = [prefix stringByAppendingFormat:@"_%@",suffix];
     }
     
-    // todo; template replacement e.g. $prefix $bin $exptime $filter etc
+    // template replacement e.g. $prefix $bin $exptime $filter etc
+    if ([prefix rangeOfString:@"$"].location != NSNotFound) {
+        
+        NSMutableString* ms = [prefix mutableCopy];
+        
+        [ms replaceOccurrencesOfString:@"$bin" withString:[NSString stringWithFormat:@"%ldx%ld",(long)self.cameraController.settings.binning,(long)self.cameraController.settings.binning] options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        
+        [ms replaceOccurrencesOfString:@"$camera" withString:self.cameraController.device.deviceName options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        
+        NSString* duration = [NSString stringWithFormat:@"%ld",self.cameraController.settings.exposureDuration];
+        if (self.cameraController.settings.exposureUnits == 0){
+            duration = [duration stringByAppendingString:@"s"];
+        }
+        else {
+            duration = [duration stringByAppendingString:@"ms"];
+        }
+        [ms replaceOccurrencesOfString:@"$exposure" withString:duration options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        
+        // $filter
+        // $date
+        // $temp
+        
+        prefix = [ms copy];
+    }
     
-    return [prefix stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
+    if (!fileType){
+        fileType = [[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"];
+    }
+    return [prefix stringByAppendingPathExtension:fileType];
 }
 
 - (IBAction)capture:(NSButton*)sender
@@ -427,39 +454,7 @@ static void* kvoContext;
     
     // run the save panel and save the exposures to the selected location
     [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
-        
-        CIImage* displayImage = self.exposureView.filteredCIImage;
-        if (!displayImage){
-            NSLog(@"*** No filtered image to save");
-        }
-        else{
-        
-            const CGRect extent = displayImage.extent;
-            CGContextRef context = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(extent.size.width, extent.size.height)];
-            if (!context){
-                NSLog(@"*** Failed to create save image context");
-            }
-            else {
-            
-                CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
-                CGImageRef displayCGImage = [ciContext createCGImage:displayImage fromRect:[displayImage extent]];
-                NSData* data = [CASCCDImage dataWithImage:displayCGImage forUTType:options.imageUTType options:options.imageProperties];
-                if (!data){
-                    NSLog(@"*** Failed to create image from exposure");
-                }
-                else {
-                    
-                    NSError* error;
-                    [data writeToFile:save.URL.path options:NSDataWritingAtomic error:&error];
-                    if (error){
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [NSApp presentError:error];
-                        });
-                    }
-                }
-                CGContextRelease(context);
-            }
-        }
+        [self saveCIImage:self.exposureView.filteredCIImage toPath:save.URL.path type:options.imageUTType properties:options.imageProperties];
     } completionBlock:nil];
 }
 
@@ -579,7 +574,7 @@ static void* kvoContext;
                                 result.filters = @[filterName];
                             }
 
-                            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name]];
+                            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name fileType:@"fits"]];
                             
                             // remove existing one
                             [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
@@ -869,7 +864,7 @@ static void* kvoContext;
         return nil;
     }
     // look for a matching calibration frame
-    NSString* filename = [self exposureSaveNameWithSuffix:suffix];
+    NSString* filename = [self exposureSaveNameWithSuffix:suffix fileType:@"fits"];
     NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
     CASCCDExposure* calibration = [[CASCCDExposure alloc] init];
     if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:calibration readPixels:YES error:nil]){
@@ -939,6 +934,38 @@ static void* kvoContext;
             });
         }
     }];
+}
+
+- (void)saveCIImage:(CIImage*)image toPath:(NSString*)path type:(NSString*)type properties:(NSDictionary*)properties
+{
+    NSParameterAssert(image);
+    NSParameterAssert(path);
+    
+    const CGRect extent = image.extent;
+    CGContextRef context = [CASCCDImage newRGBBitmapContextWithSize:CASSizeMake(extent.size.width, extent.size.height)];
+    if (!context){
+        NSLog(@"*** Failed to create save image context");
+    }
+    else {
+        
+        CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
+        CGImageRef displayCGImage = [ciContext createCGImage:image fromRect:[image extent]];
+        NSData* data = [CASCCDImage dataWithImage:displayCGImage forUTType:type options:properties];
+        if (!data){
+            NSLog(@"*** Failed to create image from exposure");
+        }
+        else {
+            
+            NSError* error;
+            [data writeToFile:path options:NSDataWritingAtomic error:&error];
+            if (error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSApp presentError:error];
+                });
+            }
+        }
+        CGContextRelease(context);
+    }
 }
 
 #pragma mark - Exposure Display
@@ -1240,6 +1267,8 @@ static void* kvoContext;
 {
     if (exposure){
         
+        NSURL* finalUrl;
+        
         // check we have somewhere to save the file, a prefix and a sequence number
         const BOOL saveToFile = (self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
         if (saveToFile){
@@ -1252,28 +1281,39 @@ static void* kvoContext;
             
             // construct the filename
             const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1]];
+            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1] fileType:nil];
             ++self.saveTargetControlsViewController.saveImagesSequence;
             
             // ensure we have a unique filename (for instance, in case the sequence was reset)
             NSInteger suffix = 2;
-            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+            finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
             while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
                 NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
                 finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
                 if (suffix > 999){
                     NSLog(@"*** Gave up trying to find a unique filename");
+                    finalUrl = nil;
                     break;
                 }
             }
-            
-            [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
         }
         
         // display the exposure
         const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
         [self setCurrentExposure:exposure resetDisplay:resetDisplay];
         _capturedFirstImage = YES;
+        
+        // save the file
+        if (finalUrl){
+            
+            // todo; incorporate into CASCCDExposureIO ?
+            if ([@"png" isEqualToString:[[finalUrl path] pathExtension]]){
+                [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
+            }
+            else {
+                [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
+            }
+        }
     }
     
     if (error){

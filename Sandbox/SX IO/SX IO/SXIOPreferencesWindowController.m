@@ -11,6 +11,7 @@
 
 @interface SXIOPreferencesWindowController ()
 @property (nonatomic,strong) CASPlateSolver* solver;
+@property (nonatomic,assign) NSInteger fileFormatIndex;
 @end
 
 @implementation SXIOPreferencesWindowController
@@ -22,6 +23,25 @@
         self.solver = [CASPlateSolver plateSolverWithIdentifier:nil];
     }
     return self;
+}
+
+- (NSInteger)fileFormatIndex
+{
+    NSString* format = [[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"];
+    if ([@"png" isEqualToString:format]){
+        return 1;
+    }
+    return 0; // fits
+}
+
+- (void)setFileFormatIndex:(NSInteger)fileFormatIndex
+{
+    if (fileFormatIndex == 0){
+        [[NSUserDefaults standardUserDefaults] setObject:@"fits" forKey:@"SXIODefaultExposureFileType"];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setObject:@"png" forKey:@"SXIODefaultExposureFileType"];
+    }
 }
 
 // todo; utilities to download plate solving indexes

@@ -172,7 +172,6 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
     NSString* sanitized = prefix;
     if (!_io){
         _io = [CASCCDExposureIO exposureIOWithPath:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
-        NSAssert(_io, @"No IO class for current value of SXIODefaultExposureFileType default");
     }
     if (_io){
         sanitized = [[_io class] sanitizeExposurePath:prefix];
