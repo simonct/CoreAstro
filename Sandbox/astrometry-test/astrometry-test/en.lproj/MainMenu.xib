@@ -1019,6 +1019,7 @@ DQ
             <connections>
                 <outlet property="fieldHeightLabel" destination="605" id="610"/>
                 <outlet property="fieldWidthLabel" destination="601" id="609"/>
+                <outlet property="ieqWindow" destination="iY2-3x-qsG" id="yiq-Of-oEP"/>
                 <outlet property="imageView" destination="536" id="548"/>
                 <outlet property="outputLogPanel" destination="555" id="561"/>
                 <outlet property="outputLogTextView" destination="558" id="562"/>
@@ -1316,6 +1317,58 @@ DQ
                             </binding>
                         </connections>
                     </pathControl>
+                </subviews>
+            </view>
+        </window>
+        <window title="iEQ Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="iEQ Mount" animationBehavior="default" id="iY2-3x-qsG">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="335" y="1107" width="369" height="58"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <view key="contentView" id="DKg-4q-ig5">
+                <rect key="frame" x="0.0" y="0.0" width="369" height="58"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <popUpButton verticalHuggingPriority="750" id="ej0-Kz-o4q">
+                        <rect key="frame" x="91" y="15" width="173" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jmr-PF-J8g" id="f72-Mb-3yF">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="TIa-IF-AL7">
+                                <items>
+                                    <menuItem title="Item 1" state="on" id="jmr-PF-J8g"/>
+                                    <menuItem title="Item 2" id="zEd-Xb-HB0"/>
+                                    <menuItem title="Item 3" id="Rrb-Oj-tAU"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="494" name="content" keyPath="serialPortManager.availablePorts" id="DJf-OF-Wsv"/>
+                            <binding destination="494" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="DJf-OF-Wsv" id="dNl-C7-FbC"/>
+                            <binding destination="494" name="selectedObject" keyPath="selectedSerialPort" previousBinding="dNl-C7-FbC" id="lKj-AX-AQv"/>
+                        </connections>
+                    </popUpButton>
+                    <button verticalHuggingPriority="750" id="0eT-tj-uFC">
+                        <rect key="frame" x="263" y="11" width="92" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cg6-N9-gkK">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="connectToiEQ:" target="494" id="Spv-KG-Ej5"/>
+                        </connections>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pyw-gA-gmX">
+                        <rect key="frame" x="20" y="20" width="68" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Serial Port" id="Fvg-7z-L1E">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
         </window>

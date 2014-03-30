@@ -29,8 +29,10 @@
 @property (nonatomic,strong) CASFolderWatcher* watcher;
 @property (nonatomic,strong) NSMutableOrderedSet* pendingWatchedPaths;
 @property (nonatomic,strong) CASPlateSolver* solver;
+@property (nonatomic,weak) ORSSerialPort* selectedSerialPort;
 @property (nonatomic,strong) ORSSerialPortManager* serialPortManager;
 @property (nonatomic,strong) iEQMount* ieqMount;
+@property (nonatomic,strong) IBOutlet NSWindow *ieqWindow;
 @end
 
 @implementation MKOAppDelegate
@@ -587,12 +589,13 @@
 
 - (IBAction)goToIniEQ:(id)sender
 {
-    if (!self.serialPortManager){
-        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
-    }
-    
     if (!self.ieqMount){
-        self.ieqMount = [[iEQMount alloc] initWithSerialPort:[self.serialPortManager.availablePorts firstObject]];
+        if (!self.serialPortManager){
+            self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+        }
+        self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+        [self.ieqWindow makeKeyAndOrderFront:nil]; // sheet ?
+        return;
     }
     
     if (!self.ieqMount){
@@ -622,6 +625,25 @@
             }
         }];
     }
+}
+
+- (IBAction)connectToiEQ:(id)sender
+{
+    if (!self.selectedSerialPort){
+        NSLog(@"No selected port");
+        return;
+    }
+    
+    if (self.selectedSerialPort.isOpen){
+        NSLog(@"Selected port is open");
+        return;
+    }
+    
+    [self.ieqWindow orderOut:nil];
+    
+    self.ieqMount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    
+    [self goToIniEQ:nil];
 }
 
 @end
