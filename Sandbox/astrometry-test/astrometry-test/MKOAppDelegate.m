@@ -25,6 +25,7 @@
 @property (nonatomic,copy) NSString* fieldSizeDisplay;
 @property (nonatomic,strong) CASFolderWatcher* watcher;
 @property (nonatomic,strong) NSMutableOrderedSet* pendingWatchedPaths;
+@property (nonatomic,strong) CASPlateSolver* solver;
 @end
 
 @implementation MKOAppDelegate
@@ -43,14 +44,10 @@
 
 - (void)awakeFromNib
 {
+    self.solver = [CASPlateSolver plateSolverWithIdentifier:nil]; // this is purely to provide access to the plate solve index directory
+
     self.spinner.hidden = YES;
     self.spinner.usesThreadedAnimation = YES;
-        
-    if (self.indexDirectoryURL){
-        if (![[NSFileManager defaultManager] fileExistsAtPath:[self.indexDirectoryURL path] ]){
-            self.indexDirectoryURL = nil;
-        }
-    }
     
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.objects" options:nil];
@@ -100,17 +97,6 @@
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
-}
-
-- (NSURL*)indexDirectoryURL
-{
-    NSString* s = [[NSUserDefaults standardUserDefaults] stringForKey:kCASAstrometryIndexDirectoryURLKey];
-    return s ? [NSURL fileURLWithPath:s] : nil;
-}
-
-- (void)setIndexDirectoryURL:(NSURL*)url
-{
-    [[NSUserDefaults standardUserDefaults] setValue:[url path] forKey:kCASAstrometryIndexDirectoryURLKey];
 }
 
 - (NSURL*)watchDirectoryURL
@@ -359,11 +345,6 @@
         return;
     }
     
-    if (!self.indexDirectoryURL){
-        [self presentAlertWithMessage:@"You need to select the location of the astrometry.net indexes before solving"];
-        return;
-    }
-
     [self solveImageAtPath:self.imageView.url.path];
 }
 
@@ -390,7 +371,7 @@
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
     
-    open.allowedFileTypes = [NSImage imageFileTypes];
+    open.allowedFileTypes = [[NSImage imageFileTypes] arrayByAddingObjectsFromArray:@[@"fits",@"fts",@"fit"]];
     open.allowsMultipleSelection = NO;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
@@ -599,8 +580,12 @@
     [self.configureIPController beginSheetModalForWindow:self.window completionHandler:nil];
 }
 
-- (IBAction)showPreferences:(id)sender {
-    NSLog(@"showPreferences");
+- (IBAction)goToIniEQ:(id)sender
+{
+    NSLog(@"goToIniEQ");
+    
+    // connect if not already connected
+    // slew to co-ords
 }
 
 @end
