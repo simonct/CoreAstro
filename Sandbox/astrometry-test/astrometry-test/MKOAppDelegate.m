@@ -595,27 +595,33 @@
         self.ieqMount = [[iEQMount alloc] initWithSerialPort:[self.serialPortManager.availablePorts firstObject]];
     }
     
-    [self.ieqMount connectWithCompletion:^{
+    if (!self.ieqMount){
+        NSLog(@"No iEQ mount object");
+    }
+    else {
         
-        if (!self.ieqMount.connected){
-            NSLog(@"Failed to connect to iEQ mount");
-        }
-        else {
+        [self.ieqMount connectWithCompletion:^{
             
-            const double dec = self.solution.centreDec;
-            const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
-            
-            [self.ieqMount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError error) {
-               
-                if (error != iEQMountSlewErrorNone){
-                    NSLog(@"Start slew failed with error %ld",error);
-                }
-                else {
-                    NSLog(@"Slewing...");
-                }
-            }];
-        }
-    }];
+            if (!self.ieqMount.connected){
+                NSLog(@"Failed to connect to iEQ mount");
+            }
+            else {
+                
+                const double dec = self.solution.centreDec;
+                const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
+                
+                [self.ieqMount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError error) {
+                    
+                    if (error != iEQMountSlewErrorNone){
+                        NSLog(@"Start slew failed with error %ld",error);
+                    }
+                    else {
+                        NSLog(@"Slewing...");
+                    }
+                }];
+            }
+        }];
+    }
 }
 
 @end
