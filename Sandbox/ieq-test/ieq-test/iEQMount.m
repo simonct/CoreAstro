@@ -32,10 +32,11 @@
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,assign) BOOL slewing;
 @property (nonatomic,assign) BOOL tracking;
-@property (nonatomic,assign) NSNumber* ra;
-@property (nonatomic,assign) NSNumber* dec;
-@property (nonatomic,assign) NSNumber* alt;
-@property (nonatomic,assign) NSNumber* az;
+@property (nonatomic,strong) NSNumber* ra;
+@property (nonatomic,strong) NSNumber* dec;
+@property (nonatomic,strong) NSNumber* alt;
+@property (nonatomic,strong) NSNumber* az;
+@property (nonatomic,copy) NSString* name;
 @end
 
 @interface iEQMount (ORSSerialPortDelegate)<ORSSerialPortDelegate>
@@ -118,6 +119,7 @@
         else {
             [self sendCommand:@":MountInfo#" readCount:4 completion:^(NSString *response) {
                 self.connected = YES;
+                self.name = response;
                 complete();
                 [self pollMountStatus];
             }];
@@ -176,6 +178,10 @@
                                 
                                 self.az = @([CASLX200Commands fromDecString:response]);
                                 
+                                // doesn't always seem to complete when combined with a slew ?
+                                // probably if a stop command is issued you don't get a response to one of these ?
+                                
+                                // just do this at the end of the selector rather than in the completion block ?
                                 [self performSelector:_cmd withObject:nil afterDelay:1];
 
 //                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
@@ -447,7 +453,7 @@
 {
     NSString* command;
  
-    ms = MAX(ms, 0);
+    ms = MAX(ms, 1); // sending 0 starts guiding and never stops until another “:Mx00000#” command is sent
     ms = MIN(ms, 32767);
     
     switch (direction) {
@@ -467,12 +473,9 @@
             break;
     }
     
-    NSLog(@"command: %@",command);
+    NSLog(@"pulseInDirection: %@",command);
     
     [self sendCommand:command completion:nil];
-    
-    // to stop “:Mx00000#”
-    
 }
 
 - (NSInteger)slewRate

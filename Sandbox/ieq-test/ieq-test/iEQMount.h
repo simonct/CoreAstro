@@ -13,10 +13,14 @@
 
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL slewing;
-@property (nonatomic,readonly) NSNumber* ra;
-@property (nonatomic,readonly) NSNumber* dec;
-@property (nonatomic,readonly) NSNumber* alt;
-@property (nonatomic,readonly) NSNumber* az;
+
+// todo; expose the actual values, display formatting is a differet job
+@property (nonatomic,strong,readonly) NSNumber* ra;
+@property (nonatomic,strong,readonly) NSNumber* dec;
+@property (nonatomic,strong,readonly) NSNumber* alt;
+@property (nonatomic,strong,readonly) NSNumber* az;
+
+@property (nonatomic,copy,readonly) NSString* name;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port;
 
