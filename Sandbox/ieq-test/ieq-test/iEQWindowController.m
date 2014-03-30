@@ -198,18 +198,30 @@
         
         NSLog(@"Lookup ra=%f (raDegreesToHMS %@), dec=%f (highPrecisionDec %@)",ra,[CASLX200Commands raDegreesToHMS:ra],dec,[CASLX200Commands highPrecisionDec:dec]);
         
-        if (success){
+        if (!success){
+            [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
+        }
+        else{
 
             // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
             ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
             
-            [self.mount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError result) {
-
-                if (result == iEQMountSlewErrorNone){
-                    NSLog(@"Starting slew");
-                }
-                else {
-                    NSLog(@"Start failed: %ld",result);
+            // confirm slew before starting
+            NSAlert* alert = [NSAlert alertWithMessageText:self.searchString defaultButton:@"Slew" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands raDegreesToHMS:ra],[CASLX200Commands highPrecisionDec:dec]];
+            [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+            
+                if (returnCode == NSModalResponseContinue){
+                    
+                    [self.mount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError result) {
+                        
+                        if (result == iEQMountSlewErrorNone){
+                            NSLog(@"Starting slew");
+                        }
+                        else {
+                            NSBeep();
+                            NSLog(@"Start failed: %ld",result);
+                        }
+                    }];
                 }
             }];
         }
