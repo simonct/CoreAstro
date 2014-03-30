@@ -52,14 +52,19 @@
 {
     self = [super init];
     if (self){
-        self.port = port;
-        self.port.baudRate = @(9600);
-        self.port.parity = ORSSerialPortParityNone;
-        self.port.numberOfStopBits = 1;
-        self.port.usesRTSCTSFlowControl = NO;
-        self.port.usesDTRDSRFlowControl = NO;
-        self.port.usesDCDOutputFlowControl = NO;
-        self.port.delegate = self;
+        if (!port){
+            self = nil;
+        }
+        else {
+            self.port = port;
+            self.port.baudRate = @(9600);
+            self.port.parity = ORSSerialPortParityNone;
+            self.port.numberOfStopBits = 1;
+            self.port.usesRTSCTSFlowControl = NO;
+            self.port.usesDTRDSRFlowControl = NO;
+            self.port.usesDCDOutputFlowControl = NO;
+            self.port.delegate = self;
+        }
     }
     return self;
 }
