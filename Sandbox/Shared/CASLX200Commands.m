@@ -112,7 +112,7 @@
     
     const double h = trunc_ra;
     const double m = trunc((ra - trunc_ra)*60.0);
-    const double s = (ra - trunc_ra)*60.0*60.0 - 60.0*m;
+    const double s = (ra - trunc_ra)*60.0*60.0 - 60.0*m; // round ?
     
     NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
     
@@ -157,7 +157,7 @@
     
     const double h = trunc_dec;
     const double m = trunc((dec - trunc_dec)*60.0);
-    const double s = (dec - trunc_dec)*60.0*60.0 - 60.0*m;
+    const double s = (dec - trunc_dec)*60.0*60.0 - 60.0*m; // round ?
     
     NSString* formattedRA;
     if (dec < 0){
@@ -199,11 +199,13 @@
 
 + (NSString*)raDegreesToHMS:(double)degrees {
 
-    const double trunc_deg = trunc(degrees);
+    const double hours = 24.0*degrees/360.0;
+    const double h = trunc(hours);
 
-    const double h = trunc(12.0*trunc_deg/180.0);
-    const double m = trunc((degrees - trunc_deg)*60.0);
-    const double s = (degrees - trunc_deg)*60.0*60.0 - 60.0*m;
+    const double minutes = (hours-h)*60.0;
+    const double m = trunc(minutes);
+    
+    const double s = (minutes-m)*60.0; // round ?
 
     NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
     
