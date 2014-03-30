@@ -13,6 +13,9 @@
 #import "CASConfigureIPMountWindowController.h"
 #import "CASPlateSolveImageView.h"
 #import "CASFolderWatcher.h"
+#import "iEQMount.h"
+#import "ORSSerialPortManager.h"
+#import "CASLX200Commands.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface MKOAppDelegate ()
@@ -26,6 +29,8 @@
 @property (nonatomic,strong) CASFolderWatcher* watcher;
 @property (nonatomic,strong) NSMutableOrderedSet* pendingWatchedPaths;
 @property (nonatomic,strong) CASPlateSolver* solver;
+@property (nonatomic,strong) ORSSerialPortManager* serialPortManager;
+@property (nonatomic,strong) iEQMount* ieqMount;
 @end
 
 @implementation MKOAppDelegate
@@ -582,10 +587,35 @@
 
 - (IBAction)goToIniEQ:(id)sender
 {
-    NSLog(@"goToIniEQ");
+    if (!self.serialPortManager){
+        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    }
     
-    // connect if not already connected
-    // slew to co-ords
+    if (!self.ieqMount){
+        self.ieqMount = [[iEQMount alloc] initWithSerialPort:[self.serialPortManager.availablePorts firstObject]];
+    }
+    
+    [self.ieqMount connectWithCompletion:^{
+        
+        if (!self.ieqMount.connected){
+            NSLog(@"Failed to connect to iEQ mount");
+        }
+        else {
+            
+            const double dec = self.solution.centreDec;
+            const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
+            
+            [self.ieqMount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError error) {
+               
+                if (error != iEQMountSlewErrorNone){
+                    NSLog(@"Start slew failed with error %ld",error);
+                }
+                else {
+                    NSLog(@"Slewing...");
+                }
+            }];
+        }
+    }];
 }
 
 @end
