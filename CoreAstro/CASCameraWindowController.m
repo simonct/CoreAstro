@@ -550,7 +550,7 @@
         
         // todo; tidy this interface up
         self.imageView.showProgress = showIndicator;
-        self.imageView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
+        self.imageView.progressInterval = self.cameraController.settings.exposureUnits ? self.cameraController.settings.exposureDuration/1000 : self.cameraController.settings.exposureDuration;
         
         self.progressIndicator.hidden = NO;
         self.progressIndicator.indeterminate = NO;
@@ -750,7 +750,7 @@
         
         if (result == NSFileHandlingPanelOKButton){
             
-            self.cameraController.movieExporter = [CASMovieExporter exporterWithURL:save.URL];
+//            self.cameraController.movieExporter = [CASMovieExporter exporterWithURL:save.URL];
             
             // todo; some kind of record indicator on the exposure view
             
@@ -764,7 +764,7 @@
 - (IBAction)capture:(NSButton*)sender
 {
     // if recording to video, select a file todo; just save to exposure library
-    if (self.cameraController.continuous && self.recordAsVideo && !self.cameraController.movieExporter){
+    if (self.cameraController.settings.continuous && self.recordAsVideo /*&& !self.cameraController.movieExporter*/){
         [self _chooseMovieLocationAndStartRecordingWithBlock:^{
             [self _captureImpl];
         }];
@@ -1295,19 +1295,19 @@
     if (!self.recordAsVideo){
         
         // stop any active recoring
-        if (self.cameraController.movieExporter){
-            [self.cameraController.movieExporter complete];
-            self.cameraController.movieExporter = nil;
-        }
+//        if (self.cameraController.movieExporter){
+//            [self.cameraController.movieExporter complete];
+//            self.cameraController.movieExporter = nil;
+//        }
     }
     else {
         
-        if (!self.cameraController.movieExporter) {
-            
-            // todo; have this as an option, by default save to exposure library ?
-            
-            [self _chooseMovieLocationAndStartRecordingWithBlock:nil];
-        }
+//        if (!self.cameraController.movieExporter) {
+//            
+//            // todo; have this as an option, by default save to exposure library ?
+//            
+//            [self _chooseMovieLocationAndStartRecordingWithBlock:nil];
+//        }
     }
 }
 
@@ -1445,7 +1445,7 @@
         const CGRect rect = self.imageView.selectionRect;
         if (CGRectIsEmpty(rect)){
             
-            self.cameraController.subframe = CGRectZero;
+            self.cameraController.settings.subframe = CGRectZero;
             //[self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
         }
         else {
@@ -1462,7 +1462,7 @@
             CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
             subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
             //[self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
-            self.cameraController.subframe = subframe;
+            self.cameraController.settings.subframe = subframe;
         }
     }
 }
