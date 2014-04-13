@@ -44,9 +44,12 @@
 
 @implementation iEQMount {
     NSInteger _slewRate;
-    iEQMountDirection _direction;
+    CASMountDirection _direction;
     NSMutableString* _input;
 }
+
+@synthesize connected,slewing;
+@synthesize ra,dec,alt,az;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port
 {
@@ -221,15 +224,15 @@
     self.connected = NO;
 }
 
-- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(iEQMountSlewError))completion
+- (void)startSlewToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
 {
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
     
-    NSString* formattedRA = [CASLX200Commands highPrecisionRA:ra];
-    NSString* formattedDec = [CASLX200Commands highPrecisionDec:dec];
+    NSString* formattedRA = [CASLX200Commands highPrecisionRA:ra_];
+    NSString* formattedDec = [CASLX200Commands highPrecisionDec:dec_];
     
-    NSLog(@"startSlewToRA:%f (%@) dec:%f (%@)",ra,formattedRA,dec,formattedDec);
+    NSLog(@"startSlewToRA:%f (%@) dec:%f (%@)",ra_,formattedRA,dec_,formattedDec);
     
     // todo; stop polling as this seems to prevent slewing
     
@@ -241,7 +244,7 @@
         if (![setDecResponse isEqualToString:@"1"]){
             NSLog(@"Failed to set dec: %@",setDecResponse);
             if (completion){
-                completion(iEQMountSlewErrorInvalidDec);
+                completion(CASMountSlewErrorInvalidDec);
             }
         }
         else {
@@ -254,7 +257,7 @@
                 if (![setRAResponse isEqualToString:@"1"]){
                     NSLog(@"Failed to set ra: %@",setRAResponse);
                     if (completion){
-                        completion(iEQMountSlewErrorInvalidRA);
+                        completion(CASMountSlewErrorInvalidRA);
                     }
                 }
                 else {
@@ -264,7 +267,7 @@
                         NSLog(@"slewResponse: %@",slewResponse);
                         
                         if (completion){
-                            completion([slewResponse isEqualToString:@"1"] ? iEQMountSlewErrorNone : iEQMountSlewErrorInvalidLocation);
+                            completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
                         }
                     }];
                 }
@@ -415,12 +418,12 @@
     }];
 }
 
-- (iEQMountDirection) direction
+- (CASMountDirection) direction
 {
     return _direction;
 }
 
-- (void)startMoving:(iEQMountDirection)direction
+- (void)startMoving:(CASMountDirection)direction
 {
     // unpark first ? “:MP0#”
     
@@ -429,16 +432,16 @@
         _direction = direction;
         
         switch (_direction) {
-            case iEQMountDirectionNorth:
+            case CASMountDirectionNorth:
                 [self sendCommand:@":mn#" completion:nil];
                 break;
-            case iEQMountDirectionEast:
+            case CASMountDirectionEast:
                 [self sendCommand:@":me#" completion:nil];
                 break;
-            case iEQMountDirectionSouth:
+            case CASMountDirectionSouth:
                 [self sendCommand:@":ms#" completion:nil];
                 break;
-            case iEQMountDirectionWest:
+            case CASMountDirectionWest:
                 [self sendCommand:@":mw#" completion:nil];
                 break;
             default:
@@ -450,11 +453,11 @@
 
 - (void)stopMoving
 {
-    _direction = iEQMountDirectionNone;
+    _direction = CASMountDirectionNone;
     [self sendCommand:@":q#" completion:nil];
 }
 
-- (void)pulseInDirection:(iEQMountDirection)direction ms:(NSInteger)ms
+- (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
 {
     NSString* command;
  
@@ -462,16 +465,16 @@
     ms = MIN(ms, 32767);
     
     switch (direction) {
-        case iEQMountDirectionNorth:
+        case CASMountDirectionNorth:
             command = [NSString stringWithFormat:@":Mn%05ld#",ms];
             break;
-        case iEQMountDirectionEast:
+        case CASMountDirectionEast:
             command = [NSString stringWithFormat:@":Me%05ld#",ms];
             break;
-        case iEQMountDirectionSouth:
+        case CASMountDirectionSouth:
             command = [NSString stringWithFormat:@":Ms%05ld#",ms];
             break;
-        case iEQMountDirectionWest:
+        case CASMountDirectionWest:
             command = [NSString stringWithFormat:@":Mw%05ld#",ms];
             break;
         default:
