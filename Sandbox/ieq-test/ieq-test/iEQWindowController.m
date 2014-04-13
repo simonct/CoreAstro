@@ -52,7 +52,9 @@
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @end
 
-@implementation iEQWindowController
+@implementation iEQWindowController {
+    double _ra, _dec;
+}
 
 + (void)initialize
 {
@@ -131,7 +133,7 @@
     }];
 }
 
-- (void)startMoving:(iEQMountDirection)direction
+- (void)startMoving:(CASMountDirection)direction
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving:) object:nil];
     [self performSelector:@selector(stopMoving:) withObject:nil afterDelay:0.25];
@@ -140,42 +142,42 @@
 
 - (IBAction)north:(id)sender
 {
-    [self startMoving:iEQMountDirectionNorth];
+    [self startMoving:CASMountDirectionNorth];
 }
 
 - (IBAction)soutgh:(id)sender
 {
-    [self startMoving:iEQMountDirectionSouth];
+    [self startMoving:CASMountDirectionSouth];
 }
 
 - (IBAction)west:(id)sender
 {
-    [self startMoving:iEQMountDirectionWest];
+    [self startMoving:CASMountDirectionWest];
 }
 
 - (IBAction)east:(id)sender
 {
-    [self startMoving:iEQMountDirectionEast];
+    [self startMoving:CASMountDirectionEast];
 }
 
 - (IBAction)guideNorth:(id)sender
 {
-    [self.mount pulseInDirection:iEQMountDirectionNorth ms:self.guideDurationInMS];
+    [self.mount pulseInDirection:CASMountDirectionNorth ms:self.guideDurationInMS];
 }
 
 - (IBAction)guideEast:(id)sender
 {
-    [self.mount pulseInDirection:iEQMountDirectionEast ms:self.guideDurationInMS];
+    [self.mount pulseInDirection:CASMountDirectionEast ms:self.guideDurationInMS];
 }
 
 - (IBAction)guideSouth:(id)sender
 {
-    [self.mount pulseInDirection:iEQMountDirectionSouth ms:self.guideDurationInMS];
+    [self.mount pulseInDirection:CASMountDirectionSouth ms:self.guideDurationInMS];
 }
 
 - (IBAction)guideWest:(id)sender
 {
-    [self.mount pulseInDirection:iEQMountDirectionWest ms:self.guideDurationInMS];
+    [self.mount pulseInDirection:CASMountDirectionWest ms:self.guideDurationInMS];
 }
 
 - (void)stopMoving:sender
@@ -204,28 +206,32 @@
         else{
 
             // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
-            ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
+            _dec = dec;
+            _ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
             
             // confirm slew before starting
             NSAlert* alert = [NSAlert alertWithMessageText:self.searchString defaultButton:@"Slew" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands raDegreesToHMS:ra],[CASLX200Commands highPrecisionDec:dec]];
-            [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
             
-                if (returnCode == NSModalResponseContinue){
-                    
-                    [self.mount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError result) {
-                        
-                        if (result == iEQMountSlewErrorNone){
-                            NSLog(@"Starting slew");
-                        }
-                        else {
-                            NSBeep();
-                            NSLog(@"Start failed: %ld",result);
-                        }
-                    }];
-                }
-            }];
+            [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(slewAlertDidEnd:returnCode:contextInfo:) contextInfo:nil];
         }
     }];
+}
+
+- (void) slewAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if (returnCode == NSOKButton){
+        
+        [self.mount startSlewToRA:_ra dec:_dec completion:^(CASMountSlewError result) {
+            
+            if (result == CASMountSlewErrorNone){
+                NSLog(@"Starting slew");
+            }
+            else {
+                NSBeep();
+                NSLog(@"Start failed: %ld",result);
+            }
+        }];
+    }
 }
 
 - (IBAction)stop:(id)sender
