@@ -31,7 +31,7 @@
 
 @interface CASBatchProcessor : NSObject
 
-@property (nonatomic) BOOL autoSave;
+@property (nonatomic) BOOL autoSave; // todo; replace with sink interface
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASCCDExposureLibraryProject* project;
 
