@@ -400,9 +400,8 @@
     
     // always flush the camera if the last exposure was more than 3 seconds ago
     if (!initialFlushCount && [[NSDate date] timeIntervalSinceDate:self.lastCompletionDate] > self.maximumFlushInterval){
-        initialFlushCount = 1;
+        initialFlushCount = MAX(1,initialFlushCount);
     }
-    initialFlushCount = 1;
     
     // record the exposure start time
     NSDate* time = [NSDate date];
