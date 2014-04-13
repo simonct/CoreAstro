@@ -33,8 +33,13 @@
 
 - (void)endSheetWithCode:(NSInteger)code
 {
-    [NSApp endSheet:self.window returnCode:code];
-    [self.window orderOut:self];
+    if ([self.window.parentWindow respondsToSelector:@selector(endSheet:returnCode:)]){
+        [self.window.parentWindow endSheet:self.window returnCode:code];
+    }
+    else {
+        [NSApp endSheet:self.window returnCode:code];
+        [self.window orderOut:self];
+    }
     
     if (self.modalHandler){
         self.modalHandler(code);
@@ -45,7 +50,14 @@
 {
     self.modalHandler = handler;
     
-    [NSApp beginSheet:self.window modalForWindow:window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    if ([window respondsToSelector:@selector(beginSheet:completionHandler:)]){
+        [window beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+            handler(returnCode);
+        }];
+    }
+    else {
+        [NSApp beginSheet:self.window modalForWindow:window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    }
 }
 
 + (id)createWindowController
