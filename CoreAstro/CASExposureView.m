@@ -260,9 +260,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 self.selectionRect = frame; // invokes -selectionRectChanged: on delegate
             }
             else {
-                if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
-                    [self.exposureViewDelegate selectionRectChanged:self];
-                }
+                [self informSelectionChanged];
             }
         }
         @catch (NSException *exception) {
@@ -563,19 +561,52 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
 - (CGRect)selectionRect
 {
-    return _showSelection ? self.selectionLayer.frame : CGRectZero;
+    CGRect frame = CGRectZero;
+    if (_showSelection){
+        frame = self.selectionLayer.frame;
+        CGAffineTransform transform = CGAffineTransformIdentity;
+        if (self.flipHorizontal){
+            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(-1, 1));
+            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(self.layer.bounds.size.width, 0));
+        }
+        if (self.flipVertical){
+            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(1, -1));
+            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(0, self.layer.bounds.size.height));
+        }
+        frame = CGRectApplyAffineTransform(frame,transform);
+    }
+    return frame;
+}
+
+- (void)informSelectionChanged
+{
+    if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
+        [self.exposureViewDelegate selectionRectChanged:self];
+    }
 }
 
 - (void)setSelectionRect:(CGRect)rect
 {
     self.selectionLayer.frame = rect;
     
-    if ([self.exposureViewDelegate respondsToSelector:@selector(selectionRectChanged:)]){
-        [self.exposureViewDelegate selectionRectChanged:self];
-    }
+    [self informSelectionChanged];
     
     [self updateStatistics];
     [self updateStarProfile];
+}
+
+- (void)setFlipHorizontal:(BOOL)flipHorizontal
+{
+    [super setFlipHorizontal:flipHorizontal];
+    // move self.selectionLayer.frame ?
+    [self informSelectionChanged];
+}
+
+- (void)setFlipVertical:(BOOL)flipVertical
+{
+    [super setFlipVertical:flipVertical];
+    // move self.selectionLayer.frame ?
+    [self informSelectionChanged];
 }
 
 - (void)setImageProcessor:(CASImageProcessor *)imageProcessor
@@ -826,7 +857,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
             
             // todo; choose font based on image size
             const NSUInteger width = self.currentExposure.params.frame.width;
-            NSFont* font = [NSFont boldSystemFontOfSize:32 * (width/1932)];
+            NSFont* font = [NSFont boldSystemFontOfSize:32 * (width/1932)]; // <<< todo; magic number ??
 
             CGColorRef colour = CGColorCreateGenericRGB(1, 1, 0, 0.75);
             
@@ -1101,6 +1132,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - hoffset, imageHeight/2-imageHeight/2, reticleWidth, imageHeight));
     CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 + hoffset, imageHeight/2-imageHeight/2, reticleWidth, imageHeight));
     
+    // centre spot
+    CGPathAddRect(path, nil, CGRectMake(imageWidth/2.0 - 0.5, imageHeight/2 - 0.5, 1, 1));
+
 //    CGPathAddEllipseInRect(path, nil, CGRectMake(imageWidth/2-imageHeight/2, 0, imageHeight, imageHeight));
 //    CGPathAddEllipseInRect(path, nil, CGRectMake(0, imageHeight/2-imageWidth/2, imageWidth, imageWidth));
 
