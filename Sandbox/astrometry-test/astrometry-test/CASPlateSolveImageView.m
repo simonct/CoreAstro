@@ -9,6 +9,8 @@
 #import "CASPlateSolveImageView.h"
 #import "CASEQMacClient.h"
 #import "CASPlateSolvedObject+Drawing.h"
+#import "CASMount.h"
+#import "CASLX200Commands.h"
 #include <CoreAstro/CoreAstro.h>
 
 @implementation CASPlateSolveImageView
@@ -163,16 +165,16 @@
     return colour;
 }
 
-- (void)setIpMountClient:(CASLX200IPClient *)ipMountClient
+- (void)setMount:(CASMount *)mount
 {
-    if (ipMountClient != _ipMountClient){
-        [_ipMountClient removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
-        [_ipMountClient removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
-        [_ipMountClient removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
-        _ipMountClient = ipMountClient;
-        [_ipMountClient addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
-        [_ipMountClient addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
-        [_ipMountClient addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
+    if (mount != _mount){
+        [_mount removeObserver:self forKeyPath:@"ra" context:(__bridge void *)(self)];
+        [_mount removeObserver:self forKeyPath:@"dec" context:(__bridge void *)(self)];
+        [_mount removeObserver:self forKeyPath:@"connected" context:(__bridge void *)(self)];
+        _mount = mount;
+        [_mount addObserver:self forKeyPath:@"ra" options:0 context:(__bridge void *)(self)];
+        [_mount addObserver:self forKeyPath:@"dec" options:0 context:(__bridge void *)(self)];
+        [_mount addObserver:self forKeyPath:@"connected" options:0 context:(__bridge void *)(self)];
     }
 }
 
@@ -245,7 +247,7 @@
         objectLayer.mask = shape;
     }
     
-    if (!self.ipMountClient.connected){
+    if (!self.mount.connected){
         
         [self.eqMacAnnotation removeFromSuperlayer];
         self.eqMacAnnotation = nil;
@@ -261,7 +263,7 @@
         self.eqMacAnnotation.font = (__bridge CFTypeRef)annotationsFont;
         self.eqMacAnnotation.fontSize = annotationsFont.pointSize;
         self.eqMacAnnotation.foregroundColor = annotationsColour;
-        self.eqMacAnnotation.string = [NSString stringWithFormat:@"RA: %@ Dec: %@",self.ipMountClient.ra,self.ipMountClient.dec];
+        self.eqMacAnnotation.string = [NSString stringWithFormat:@"RA: %@ Dec: %@",[CASLX200Commands highPrecisionRA:[self.mount.ra doubleValue]],[CASLX200Commands highPrecisionDec:[self.mount.dec doubleValue]]];
         const CGSize size = [self.eqMacAnnotation.string sizeWithAttributes:@{NSFontAttributeName:annotationsFont}];
         self.eqMacAnnotation.bounds = CGRectMake(0, 0, size.width + 10, size.height + 5);
         self.eqMacAnnotation.position = CGPointMake(CGRectGetMidX(self.annotationLayer.frame), CGRectGetMaxY(self.annotationLayer.frame) - self.eqMacAnnotation.bounds.size.height - 5);
@@ -306,7 +308,7 @@
         
         [self updateAnnotations];
         
-        if (object == self.ipMountClient){
+        if (object == self.mount){
             // update scope position annotation
         }
         

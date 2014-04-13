@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreAstro/CoreAstro.h>
 
-@class CASLX200IPClient;
+@class CASMount;
 
 @interface CASPlateSolveImageView : CASImageView
 @property (nonatomic,assign) BOOL acceptDrop;
@@ -19,7 +19,7 @@
 @property (nonatomic,strong) NSFont* annotationsFont;
 @property (nonatomic,strong) CATextLayer* draggingAnnotation;
 @property (nonatomic,strong) CATextLayer* eqMacAnnotation;
-@property (nonatomic,weak) CASLX200IPClient* ipMountClient;
+@property (nonatomic,weak) CASMount* mount;
 + (NSData*)imageDataFromExposurePath:(NSString*)path error:(NSError**)error;
 - (void)createAnnotations;
 - (void)updateAnnotations;

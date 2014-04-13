@@ -471,23 +471,18 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
-    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToInEQMac:) || menuItem.action == @selector(goToInIPMount:)){
+    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToIniEQ:)){
         return (self.solution != nil);
+    }
+    if (menuItem.action == @selector(configureIPMount:) || menuItem.action == @selector(goToInEQMac:) || menuItem.action == @selector(goToInIPMount:)){
+        return NO; // unable to test so switch off for now
     }
     return YES;
 }
 
 @end
 
-@implementation MKOAppDelegate (EQMacSupport)
-
-- (void)setIpMountClient:(CASLX200IPClient *)ipMountClient
-{
-    if (ipMountClient != _ipMountClient){
-        _ipMountClient = ipMountClient;
-        self.imageView.ipMountClient = _ipMountClient;
-    }
-}
+@implementation MKOAppDelegate (MountSupport)
 
 - (void)slewToSolutionCentre
 {
@@ -594,7 +589,7 @@
             self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
         }
         self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-        [self.ieqWindow makeKeyAndOrderFront:nil]; // sheet ?
+        [self.ieqWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
         return;
     }
     
@@ -613,9 +608,9 @@
                 const double dec = self.solution.centreDec;
                 const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
                 
-                [self.ieqMount startSlewToRA:ra dec:dec completion:^(iEQMountSlewError error) {
+                [self.ieqMount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
                     
-                    if (error != iEQMountSlewErrorNone){
+                    if (error != CASMountSlewErrorNone){
                         NSLog(@"Start slew failed with error %ld",error);
                     }
                     else {
