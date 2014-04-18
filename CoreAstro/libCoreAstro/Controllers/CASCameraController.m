@@ -388,11 +388,17 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     self.settings.currentCaptureIndex = 0;
     
+    // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
     if (self.settings.ditherEnabled && !self.phd2Client){
         self.phd2Client = [CASPHD2Client new];
     }
 
-    id activity;
+    [self.phd2Client connectWithCompletion:^{
+        NSLog(@"PHD2 connected, guiding = %hhd",self.phd2Client.guiding);
+        // start capture in here ?
+    }];
+    
+    __block id activity;
     NSProcessInfo* proc = [NSProcessInfo processInfo];
     if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
         const NSActivityOptions options = NSActivityIdleSystemSleepDisabled|NSActivitySuddenTerminationDisabled|NSActivityAutomaticTerminationDisabled|NSActivityUserInitiated;
@@ -401,11 +407,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     [self captureWithBlockImpl:^(NSError *error, CASCCDExposure *exposure) {
         
-        if (activity){
-            [proc endActivity:activity];
-        }
         if (block){
             block(error,exposure);
+        }
+        if (activity){
+            [proc endActivity:activity];
+            activity = nil;
         }
     }];
 }

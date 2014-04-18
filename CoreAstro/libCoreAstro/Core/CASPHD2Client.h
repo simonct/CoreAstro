@@ -12,6 +12,8 @@
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL guiding;
 
+- (void)connectWithCompletion:(void(^)())completion;
+
 - (void)guideWithCompletion:(void(^)(BOOL))completion;
 - (void)stop;
 

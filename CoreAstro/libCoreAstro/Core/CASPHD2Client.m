@@ -12,6 +12,7 @@
 @property (nonatomic,strong) CASJSONRPCSocketClient* client;
 @property (nonatomic,assign) BOOL guiding;
 @property (nonatomic,assign) BOOL connected;
+@property (nonatomic,copy) void(^connectCompletion)();
 @property (nonatomic,copy) void(^settleCompletion)(BOOL);
 @end
 
@@ -21,19 +22,23 @@
 
 static void* kvoContext;
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        [self setupClient];
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
     [_client removeObserver:self forKeyPath:@"connected" context:&kvoContext];
+}
+
+- (void)connectWithCompletion:(void(^)())completion
+{
+    if (self.connected){
+        if (completion){
+            completion();
+        }
+    }
+    else {
+        self.connectCompletion = completion;
+        [self setupClient];
+    }
 }
 
 - (void)setupClient
@@ -105,6 +110,10 @@ static void* kvoContext;
         if ([message[@"State"] isEqualToString:@"Guiding"]){
             _settling = NO;
             self.guiding = YES;
+        }
+        if (self.connectCompletion){
+            self.connectCompletion();
+            self.connectCompletion = nil;
         }
     }
     
