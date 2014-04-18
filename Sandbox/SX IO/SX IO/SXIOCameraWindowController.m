@@ -508,6 +508,45 @@ static void* kvoContext;
     self.captureWindowController.model.captureMode = mode;
     self.captureWindowController.model.combineMode = kCASCaptureModelCombineAverage;
     
+    BOOL (^saveExposure)() = ^BOOL(CASCCDExposure* exposure,NSInteger mode,NSInteger sequence,NSError** error){
+        
+        NSString* name = nil;
+        switch (mode) {
+#if CAS_CAPTURE_DARKS
+            case kCASCaptureModelModeDark:
+                name = @"dark";
+                break;
+#endif
+            case kCASCaptureModelModeBias:
+                name = @"bias";
+                break;
+            case kCASCaptureModelModeFlat:
+                name = @"flat";
+                break;
+        }
+        
+        // check for a user-entered filter name
+        NSString* filterName = self.filterWheelControlsViewController.filterName;
+        if ([filterName length]){
+            exposure.filters = @[filterName];
+        }
+        
+        NSURL* finalUrl;
+        if (sequence > 0){
+            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%@_%03ld",name,sequence] fileType:nil];
+            finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+        }
+        else{
+            finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name fileType:@"fits"]];
+        }
+        
+        // remove existing one
+        [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
+        
+        // save new one
+        return [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:exposure writePixels:YES error:error];
+    };
+    
     [self.captureWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         
         if (result == NSOKButton){
@@ -526,6 +565,7 @@ static void* kvoContext;
                 
                 // self.cameraController pushExposureSettings
                 
+                __block NSInteger sequence = 0;
                 __block BOOL inPostProcessing = NO;
                 
                 [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
@@ -541,6 +581,15 @@ static void* kvoContext;
                             inPostProcessing = YES;
                             [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Combining...", @"Progress sheet label")];
                         }
+                        if (self.captureController.model.combineMode == kCASCaptureModelCombineNone){
+                            NSError* error;
+                            saveExposure(exposure,mode,++sequence,&error);
+                            if (error){
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [NSApp presentError:error];
+                                });
+                            }
+                        }
                         progress.progressBar.doubleValue++;
                     });
                     
@@ -549,43 +598,16 @@ static void* kvoContext;
                     if (error){
                         [NSApp presentError:error];
                     }
-                    else {
+                    else if (result) {
                         
                         if (!self.captureController.cancelled){
                             
-                            NSString* name = nil;
-                            switch (mode) {
-#if CAS_CAPTURE_DARKS
-                                case kCASCaptureModelModeDark:
-                                    name = @"dark";
-                                    break;
-#endif
-                                case kCASCaptureModelModeBias:
-                                    name = @"bias";
-                                    break;
-                                case kCASCaptureModelModeFlat:
-                                    name = @"flat";
-                                    break;
-                            }
-                            
-                            // check for a user-entered filter name
-                            NSString* filterName = self.filterWheelControlsViewController.filterName;
-                            if ([filterName length]){
-                                result.filters = @[filterName];
-                            }
-
-                            NSURL* finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name fileType:@"fits"]];
-                            
-                            // remove existing one
-                            [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
-                            
-                            // save new one
                             NSError* error;
-                            [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:result writePixels:YES error:&error];
+                            saveExposure(result,mode,0,&error);
                             if (error){
                                 [NSApp presentError:error];
                             }
-                            
+
                             self.currentExposure = result;
                         }
                     }

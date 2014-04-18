@@ -213,57 +213,64 @@
                         // if we've hit the required number, process the accumulated exposures
 
                         NSLog(@"Completed %ld exposures",[exposures count]);
-                        
-                        if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
-                            
-                            CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
-                            
-                            // match autosave flags
-                            processor.autoSave = NO;
-                            
-                            // run the processor in the background
-                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                
-                                NSEnumerator* enumerator = [exposures objectEnumerator];
-                                
-                                [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
-                                    
-                                    CASCCDExposure* exp = [enumerator nextObject];
-                                    if (exp){
-                                        
-                                        if (self.model.captureMode == kCASCaptureModelModeFlat && self.cameraController.camera.isColour){
-                                            exp = [self.imageProcessor removeBayerMatrix:exp];
-                                        }
-                                    }
-                                    
-                                    *exposure = exp;
-                                    
-                                    if (progress) progress(exp,YES);
-                                    
-                                } completion:^(NSError *error, CASCCDExposure *result) {
-                                    
-                                    if (self.model.captureMode == kCASCaptureModelModeFlat){
-                                        // todo; save normalised flat data to its exposure bundle
-                                    }
-                                    
-                                    // run completion on the main thread
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        
-                                        if (error){
-                                            [NSApp presentError:error];
-                                        }
-                                        else {
-                                            if (!self.model.keepOriginals){
-                                                [self.exposuresController removeObjects:exposures];
-                                            }
-                                        }
-                                        complete(error,result);
-                                    });
-                                }];
-                            });
+
+                        if (self.model.combineMode == kCASCaptureModelCombineNone){
+                            if (progress) progress(exposure,NO);
+                            complete(nil,nil);
                         }
                         else {
-                            complete(nil,nil);
+                            
+                            if (self.model.combineMode == kCASCaptureModelCombineAverage && self.model.captureCount > 1){
+                                
+                                CASBatchProcessor* processor = [CASBatchProcessor batchProcessorsWithIdentifier:@"combine.average"];
+                                
+                                // match autosave flags
+                                processor.autoSave = NO;
+                                
+                                // run the processor in the background
+                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                    
+                                    NSEnumerator* enumerator = [exposures objectEnumerator];
+                                    
+                                    [processor processWithProvider:^(CASCCDExposure **exposure, NSDictionary **info) {
+                                        
+                                        CASCCDExposure* exp = [enumerator nextObject];
+                                        if (exp){
+                                            
+                                            if (self.model.captureMode == kCASCaptureModelModeFlat && self.cameraController.camera.isColour){
+                                                exp = [self.imageProcessor removeBayerMatrix:exp];
+                                            }
+                                        }
+                                        
+                                        *exposure = exp;
+                                        
+                                        if (progress) progress(exp,YES);
+                                        
+                                    } completion:^(NSError *error, CASCCDExposure *result) {
+                                        
+                                        if (self.model.captureMode == kCASCaptureModelModeFlat){
+                                            // todo; save normalised flat data to its exposure bundle
+                                        }
+                                        
+                                        // run completion on the main thread
+                                        dispatch_async(dispatch_get_main_queue(), ^{
+                                            
+                                            if (error){
+                                                [NSApp presentError:error];
+                                            }
+                                            else {
+                                                if (!self.model.keepOriginals){
+                                                    [self.exposuresController removeObjects:exposures];
+                                                }
+                                            }
+                                            complete(error,result);
+                                        });
+                                    }];
+                                });
+                            }
+                            else {
+                                complete(nil,nil);
+                            }
                         }
                     }
                 }
