@@ -103,7 +103,8 @@
     const CGFloat targetFloatAverageTolerance = 0.1;
 
     __block BOOL saveExposure = YES;
-    __block NSInteger exposureTime, exposureUnits;
+    __block float exposureTime;
+    __block NSInteger exposureUnits;
     __block NSMutableArray* exposures = [NSMutableArray arrayWithCapacity:self.model.captureCount];
 
     switch (self.model.captureMode) {
@@ -122,8 +123,8 @@
             exposureType = kCASCCDExposureBiasType;
             break;
         case kCASCaptureModelModeFlat:
-            exposureUnits = 0; // seconds
-            exposureTime = 1;
+            exposureUnits = 1; // milliseconds
+            exposureTime = 1000;
             temperatureLock = NO;
             exposureType = kCASCCDExposureFlatType;
             break;
@@ -185,7 +186,7 @@
                     else {
                         exposureTime *= (targetFloatAverage/average);
                     }
-                    NSLog(@"Flats: average of %f, now using exposure of %lds",average,exposureTime);
+                    NSLog(@"Flats: average of %f, now using exposure of %fs",average,exposureTime);
                     
                     // todo; check the exposure time doesn't vary too much, this might happen if the intensity of the light source for the flat changes
                     // once we've started saving exposures we should probably reduce the tolerance ?
