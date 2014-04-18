@@ -498,7 +498,7 @@ static void* kvoContext;
         return;
     }
     
-    if (!_targetFolder){
+    if (!self.saveTargetControlsViewController.saveImages || !_targetFolder){
         [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
         return;
     }
