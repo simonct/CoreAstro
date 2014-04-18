@@ -121,9 +121,9 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
         self.sensorSizeField.stringValue = [NSString stringWithFormat:@"%@ x %@",
                                             [params valueForKeyPath:@"width"],
                                             [params valueForKeyPath:@"height"]];
-        self.sensorPixelsField.stringValue = [NSString stringWithFormat:@"%0.2fµm x %0.2fµm",
-                                              [[params valueForKeyPath:@"pixelWidth"] doubleValue],
-                                              [[params valueForKeyPath:@"pixelHeight"] doubleValue]];
+        
+        const CGSize pixelSize = NSSizeFromString([params valueForKeyPath:@"pixelSize"]);
+        self.sensorPixelsField.stringValue = [NSString stringWithFormat:@"%0.2fµm x %0.2fµm",pixelSize.width,pixelSize.height];
         
         NSUInteger ms = self.exposure.params.ms;
         if (!ms){
