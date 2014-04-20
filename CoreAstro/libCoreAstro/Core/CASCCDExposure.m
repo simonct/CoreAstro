@@ -709,3 +709,52 @@ NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
 }
 
 @end
+
+@implementation CASCCDExposure (DisplayValues)
+
+// put into a category on ccdexposure
+- (NSString*)stringBySubstitutingPlaceholders:(NSString*)placeholders
+{
+    if ([placeholders rangeOfString:@"$"].location != NSNotFound) {
+        
+        NSMutableString* ms = [placeholders mutableCopy];
+        
+        // binning
+        [ms replaceOccurrencesOfString:@"$bin" withString:[NSString stringWithFormat:@"%ldx%ld",(long)self.params.bin.width,(long)self.params.bin.height] options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        
+        // camera model
+        if (self.displayDeviceName){
+            [ms replaceOccurrencesOfString:@"$camera" withString:self.displayDeviceName options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        }
+        
+        // exposure duration
+        NSString* duration;
+        if (self.params.ms > 999){
+            duration = [NSString stringWithFormat:@"%lds",self.params.ms/1000];
+        }
+        else {
+            duration = [NSString stringWithFormat:@"%ldms",self.params.ms];
+        }
+        [ms replaceOccurrencesOfString:@"$duration" withString:duration options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        
+        // filter
+        NSArray* filters = self.filters;
+        if ([filters count]) {
+            NSString* filter = self.filters[0];
+            [ms replaceOccurrencesOfString:@"$filter" withString:filter options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        }
+        
+        // $date
+        if (self.displayDate){
+            [ms replaceOccurrencesOfString:@"$date" withString:self.displayDate options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        }
+        
+        // $temp
+        
+        placeholders = [ms copy];
+    }
+    
+    return placeholders;
+}
+
+@end

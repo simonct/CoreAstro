@@ -265,31 +265,6 @@ static void* kvoContext;
         prefix = [prefix stringByAppendingFormat:@"_%@",suffix];
     }
     
-    // template replacement e.g. $prefix $bin $exptime $filter etc
-    if ([prefix rangeOfString:@"$"].location != NSNotFound) {
-        
-        NSMutableString* ms = [prefix mutableCopy];
-        
-        [ms replaceOccurrencesOfString:@"$bin" withString:[NSString stringWithFormat:@"%ldx%ld",(long)self.cameraController.settings.binning,(long)self.cameraController.settings.binning] options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
-        
-        [ms replaceOccurrencesOfString:@"$camera" withString:self.cameraController.device.deviceName options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
-        
-        NSString* duration = [NSString stringWithFormat:@"%ld",self.cameraController.settings.exposureDuration];
-        if (self.cameraController.settings.exposureUnits == 0){
-            duration = [duration stringByAppendingString:@"s"];
-        }
-        else {
-            duration = [duration stringByAppendingString:@"ms"];
-        }
-        [ms replaceOccurrencesOfString:@"$exposure" withString:duration options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
-        
-        // $filter
-        // $date
-        // $temp
-        
-        prefix = [ms copy];
-    }
-    
     if (!fileType){
         fileType = [[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"];
     }

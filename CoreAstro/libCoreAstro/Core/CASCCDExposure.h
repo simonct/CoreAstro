@@ -117,3 +117,10 @@ extern NSString* const kCASCCDExposurePlateSolutionKey;
 - (CASCCDExposure*)derivedExposureWithIdentifier:(NSString*)identifier;
 
 @end
+
+@interface CASCCDExposure (DisplayValues)
+
+- (NSString*)stringBySubstitutingPlaceholders:(NSString*)placeholders;
+
+@end
+
