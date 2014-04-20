@@ -512,11 +512,9 @@ static void* kvoContext;
         
         NSString* name = nil;
         switch (mode) {
-#if CAS_CAPTURE_DARKS
             case kCASCaptureModelModeDark:
                 name = @"dark";
                 break;
-#endif
             case kCASCaptureModelModeBias:
                 name = @"bias";
                 break;
@@ -623,9 +621,7 @@ static void* kvoContext;
 
 - (IBAction)captureDarks:(id)sender
 {
-#if CAS_CAPTURE_DARKS
     [self presentCaptureControllerWithMode:kCASCaptureModelModeDark];
-#endif
 }
 
 - (IBAction)captureBias:(id)sender
@@ -1517,6 +1513,7 @@ static void* kvoContext;
         case 10020:
         case 10021:
         case 10022:
+        case 10023:
             enabled = (self.cameraController != nil && !self.cameraController.capturing);
             break;
             
