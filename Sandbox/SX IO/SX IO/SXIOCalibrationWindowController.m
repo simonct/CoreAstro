@@ -130,7 +130,7 @@
 @property (weak) IBOutlet SXIOCalibrationCollectionView *collectionView;
 @property (strong) IBOutlet NSArrayController *arrayController;
 @property (weak) IBOutlet NSButton *chooseButton;
-@property (nonatomic,strong) SXIOCalibrationModel* biasModel, *flatModel;
+@property (nonatomic,strong) SXIOCalibrationModel *darkModel, *biasModel, *flatModel;
 @property (readonly) BOOL calibrationButtonEnabled;
 @property (nonatomic,readonly) float minScale, maxScale;
 @property (nonatomic) float scale;
@@ -403,6 +403,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
             
             // check to see if it's a calibration frame
             switch (model.exposure.type) {
+                case kCASCCDExposureDarkType:
+                    self.darkModel = model;
+                    break;
                 case kCASCCDExposureBiasType:
                     self.biasModel = model;
                     break;
@@ -421,6 +424,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (void)removeModel:(SXIOCalibrationModel*)model
 {
+    if (model == self.darkModel){
+        self.darkModel = nil;
+    }
     if (model == self.biasModel){
         self.biasModel = nil;
     }
@@ -552,12 +558,12 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (BOOL)calibrationButtonEnabled
 {
-    return [self.collectionView.selectionIndexes count] > 0 && (self.flatModel != nil || self.biasModel != nil);
+    return [self.collectionView.selectionIndexes count] > 0 && (self.darkModel != nil || self.flatModel != nil || self.biasModel != nil);
 }
 
 + (NSSet*)keyPathsForValuesAffectingCalibrationButtonEnabled
 {
-    return [NSSet setWithArray:@[@"collectionView.selectionIndexes",@"flatModel",@"biasModel"]];
+    return [NSSet setWithArray:@[@"collectionView.selectionIndexes",@"darkModel",@"flatModel",@"biasModel"]];
 }
 
 - (void)removeSelectedExternalImages
@@ -668,6 +674,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         
         SXIOCalibrationProcessor* corrector = [[SXIOCalibrationProcessor alloc] init];
         corrector.images = self.images;
+        corrector.dark = self.darkModel.exposure;
         corrector.bias = self.biasModel.exposure;
         corrector.flat = self.flatModel.exposure;
                 
@@ -719,6 +726,9 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                     
                     // check to see if it's a calibration frame otherwise ignore it
                     switch (model.exposure.type) {
+                        case kCASCCDExposureDarkType:
+                            self.darkModel = model;
+                            break;
                         case kCASCCDExposureBiasType:
                             self.biasModel = model;
                             break;
