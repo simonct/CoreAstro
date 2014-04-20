@@ -398,6 +398,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         // start capture in here ?
     }];
     
+    // todo; check focus - again, something better handled in a capture co-ordinator
+    
     __block id activity;
     NSProcessInfo* proc = [NSProcessInfo processInfo];
     if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
