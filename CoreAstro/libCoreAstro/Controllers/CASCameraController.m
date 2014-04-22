@@ -449,11 +449,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     return _cancelled;
 }
 
-- (BOOL)waitingForNextCapture
-{
-    return (self.state == CASCameraControllerStateWaitingForNextExposure);
-}
-
 - (void)setGuider:(CASGuiderController*)guider
 {
     _guider = guider;

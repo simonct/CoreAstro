@@ -53,7 +53,6 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,readonly) float progress;
 
 @property (nonatomic,readonly) BOOL capturing;
-@property (nonatomic,readonly) BOOL waitingForNextCapture;
 
 @property (nonatomic,assign) BOOL temperatureLock;
 
