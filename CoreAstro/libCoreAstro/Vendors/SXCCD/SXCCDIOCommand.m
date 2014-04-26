@@ -693,16 +693,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    // may have to be uint8_t for pointer arithmatic to work below
-    typedef uint8_t pixel_t;
-
     const NSInteger pixLen = [pixels length];
     NSMutableData* rearrangedPixels1 = [NSMutableData dataWithLength:pixLen];
     NSMutableData* rearrangedPixels2 = [NSMutableData dataWithLength:pixLen];
-
-//    const uint32_t pattern = 0x55555555;
-//    memset_pattern4([rearrangedPixels1 mutableBytes],&pattern,pixLen);
-//    memset_pattern4([rearrangedPixels2 mutableBytes],&pattern,pixLen);
 
     const long lineLength = 2616;
     const long lineCount = 3900;
@@ -716,23 +709,22 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineLengthx4 = 4 * lineLength;
     const long lineLengthx8 = 8 * lineLength;
     
-    // from input/output buffers
-    pixel_t* imptr1 = (pixel_t*)[rearrangedPixels2 mutableBytes];
-    pixel_t* imptr2 = ((pixel_t*)[pixels bytes]);
-    pixel_t* imptr3 = ((pixel_t*)[pixels bytes]) + pixLen/2;
-    pixel_t* imptr4 = (pixel_t*)[rearrangedPixels1 mutableBytes];
+    uint8_t* imptr1 = (uint8_t*)[rearrangedPixels2 mutableBytes];
+    uint8_t* imptr2 = ((uint8_t*)[pixels bytes]);
+    uint8_t* imptr3 = ((uint8_t*)[pixels bytes]) + pixLen/2;
+    uint8_t* imptr4 = (uint8_t*)[rearrangedPixels1 mutableBytes];
     
-    imptr4 = imptr4 + 10464; // (10464 == 4x2616)
+    imptr4 = imptr4 + lineLengthx4;
     
-    pixel_t* impt1 = imptr4 + lineBytes;
-    pixel_t* impt2 = imptr4 + (lineCount * lineBytes) - lineLengthx8 + 4;
-    pixel_t* impt3 = imptr4 + lineBytes - lineLengthx4 - 4;
-    pixel_t* impt4 = imptr4 + (lineCount * lineBytes) - lineLengthx4 + 4;
+    uint8_t* impt1 = imptr4 + lineBytes;
+    uint8_t* impt2 = imptr4 + (lineCount * lineBytes) - lineLengthx8 + 4;
+    uint8_t* impt3 = imptr4 + lineBytes - lineLengthx4 - 4;
+    uint8_t* impt4 = imptr4 + (lineCount * lineBytes) - lineLengthx4 + 4;
 
-    pixel_t* impt5 = imptr2;
-    pixel_t* impt6 = imptr2+2;
-    pixel_t* impt7 = imptr2+4;
-    pixel_t* impt8 = imptr2+6;
+    uint8_t* impt5 = imptr2;
+    uint8_t* impt6 = imptr2+2;
+    uint8_t* impt7 = imptr2+4;
+    uint8_t* impt8 = imptr2+6;
 
     for (long y = 0; y < lineCountBy4; ++y){
         for (long z = 1; z < lineLength; z += 2){
@@ -754,17 +746,13 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         impt2 -= lbx5;
         impt3 += lbx3;
         impt4 -= lbx5;
-//        impt5 += 10464;
-//        impt6 += 10464;
-//        impt7 += 10464;
-//        impt8 += 10464;
     }
     
-    imptr4 = imptr4 + lineLengthx2; // '- 10464
+    imptr4 = imptr4 + lineLengthx2;
     
-    impt1 = imptr4 + lineBytes + 2 - 10464;
+    impt1 = imptr4 + lineBytes + 2 - lineLengthx4;
     impt2 = imptr4 + (lineCount * lineBytes) - lineLengthx8 + 2;
-    impt3 = imptr4 + lineBytes + lineLengthx4 - 2 - 10464;
+    impt3 = imptr4 + lineBytes + lineLengthx4 - 2 - lineLengthx4;
     impt4= imptr4 + (lineCount * lineBytes) - lineLengthx4 + 2;
 
     impt5 = imptr3;
@@ -792,10 +780,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         impt2 -= lbx5;
         impt3 += lbx3;
         impt4 -= lbx5;
-        //        impt5 += 10464;
-        //        impt6 += 10464;
-        //        impt7 += 10464;
-        //        impt8 += 10464;
     }
     
     impt1 = imptr1 + 7802;
