@@ -284,14 +284,12 @@
             
             if (self.isInterlaced){
                 getParams.params.height = getParams.params.height * 2;
-                CGSize pixelSize = getParams.params.pixelSize;
-                pixelSize.height /= 2;
-                getParams.params.pixelSize = pixelSize;
+                if (self.productID != 806){ // M26C
+                    CGSize pixelSize = getParams.params.pixelSize;
+                    pixelSize.height /= 2;
+                    getParams.params.pixelSize = pixelSize;
+                }
             }
-            
-//            if (self.productID == 806){ // M26C
-//                getParams.params.height *= 2;
-//            }
             
             self.sensor = getParams.params;
             self.sensor.sensorSize = NSSizeFromString([[self deviceParams] objectForKey:@"sensor-size"]);
