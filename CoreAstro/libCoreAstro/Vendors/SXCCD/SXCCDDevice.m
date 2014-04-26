@@ -179,6 +179,7 @@
 }
 
 - (BOOL)isColour {
+    // todo; get from config file
     return self.sensor.colourMatrix != 0;   // unreliable e.g. M25C reports 0x0fff
 }
 
@@ -339,7 +340,12 @@
     SXCCDIOExposeCommand* expose = nil;
     
     if (self.isInterlaced){
-        expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
+        if (self.productID == 806){
+            expose = [[SXCCDIOExposeCommandM26C alloc] init]; // special command to handle the rotated/interleaved pixel structure
+        }
+        else {
+            expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
+        }
     }
     else switch (self.productID) {
         case 805:

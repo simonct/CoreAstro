@@ -80,7 +80,7 @@
 		<key>sensor-size</key>
 		<string>{23.4,15.6}</string>
 	</dict>
-	<key>-806</key>
+	<key>806</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-M26C</string>
@@ -161,7 +161,6 @@
 		<true/>
 		<key>sensor-size</key>
 		<string>{6.4,4.75}</string>
-
 	</dict>
 	<key>884</key>
 	<dict>

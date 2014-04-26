@@ -583,8 +583,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     
-    uint8_t buffer[22];
-    
     if (self.params.bin.width == 3 && self.params.bin.height == 3){
         NSLog(@"SXCCDIOExposeCommandM25C: Replacing 3x3 binning with 4x4");
         CASExposeParams params = self.params;
@@ -600,18 +598,24 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originY = self.params.origin.y / 2;
 
     if (self.latchPixels){
+        
+        uint8_t buffer[18];
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
+        
+        uint8_t buffer[22];
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
-    
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
     if ([pixels length]){
+        
+        // sxReconstructM25CFields()
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
         if ([rearrangedPixels length]){
@@ -651,51 +655,165 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     
-    // probably have to limit origins and subframe dimensions to a 2 or 4 pixel grid
+    // todo; limit binning to 1, 2 & 4
     
-    return [super toDataRepresentation];
+    USHORT flags = 0;
+    switch (self.field) {
+        default:
+        case kSXCCDIOFieldBoth:
+            flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+        case kSXCCDIOFieldEven:
+            flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        case kSXCCDIOFieldOdd:
+            flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+    }
+    
+    const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.height/2 : self.params.size.height/4;
+    const NSInteger width = self.params.size.width * 2;
+    
+    if (self.latchPixels){
+        
+        uint8_t buffer[18];
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,self.params.bin.width,self.params.bin.height,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
+    else {
+        
+        uint8_t buffer[22];
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
-        
-        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
-        if ([rearrangedPixels length]){
-            
-            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
-            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
-            
-            if (pixelsPtr && rearrangedPixelsPtr){
-                
-                const size_t width = self.params.size.width;
-                const size_t height = self.params.size.height;
-                
-                void (^reconstructField)(size_t startRow) = ^(size_t startRow){
-                                        
-                    size_t i = startRow*width*height/2; // start index into the source buffer
-                    
-                    // do we actually get a height*width image from the chip and have to rotate it e.g. run columns first ?
+    // may have to be uint8_t for pointer arithmatic to work below
+    typedef uint8_t pixel_t;
 
-                    for (size_t row = startRow; row < height; row += 2){
-                        const size_t rowOffset = row*width; // (height - row - 1)*width;
-                        for (size_t col = 0; col < width; col += 2){
-                            rearrangedPixelsPtr[col + rowOffset] = pixelsPtr[i++]; // red or blue, starting at column [0]
-                            rearrangedPixelsPtr[(width - col - 1) + rowOffset] = pixelsPtr[i++]; // green, starting at column [width - 1]
-                        }
-                    }
-                };
-                
-//                dispatch_apply(2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), reconstructField);
-                reconstructField(0);
-                reconstructField(1);
-                
-                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
-            }
+    const NSInteger pixLen = [pixels length];
+    NSMutableData* rearrangedPixels1 = [NSMutableData dataWithLength:pixLen];
+    NSMutableData* rearrangedPixels2 = [NSMutableData dataWithLength:pixLen];
+
+    const uint32_t pattern = 0x55555555;
+    memset_pattern4([rearrangedPixels1 mutableBytes],&pattern,pixLen);
+    memset_pattern4([rearrangedPixels2 mutableBytes],&pattern,pixLen);
+
+    const long lineLength = 3900;
+    const long lineCount = 2616;
+    
+    const long lineBytes = 2 * lineLength;
+    const long lbx3 = 3 * lineBytes;
+    const long lbx5 = 5 * lineBytes;
+
+    const long lineCountBy4 = lineCount / 4;
+    const long lineLengthx2 = 2 * lineLength;
+    const long lineLengthx4 = 4 * lineLength;
+    const long lineLengthx8 = 8 * lineLength;
+    
+    // from input/output buffers
+    pixel_t* imptr1 = (pixel_t*)[rearrangedPixels2 mutableBytes];
+    pixel_t* imptr2 = ((pixel_t*)[pixels bytes]);
+    pixel_t* imptr3 = ((pixel_t*)[pixels bytes]) + pixLen/2;
+    pixel_t* imptr4 = (pixel_t*)[rearrangedPixels1 mutableBytes];
+    
+    imptr4 = imptr4 + 10464; // (10464 == 4x2616)
+    
+    pixel_t* impt1 = imptr4 + lineBytes;
+    pixel_t* impt2 = imptr4 + (lineCount * lineBytes) - lineLengthx8 + 4;
+    pixel_t* impt3 = imptr4 + lineBytes - lineLengthx4 - 4;
+    pixel_t* impt4 = imptr4 + (lineCount * lineBytes) - lineLengthx4 + 4;
+
+    pixel_t* impt5 = imptr2;
+    pixel_t* impt6 = imptr2+2;
+    pixel_t* impt7 = imptr2+4;
+    pixel_t* impt8 = imptr2+6;
+
+    for (long y = 0; y < lineCountBy4; ++y){
+        for (long z = 1; z < lineLength; z += 2){
+            *(uint16_t*)impt1 = *(uint16_t*)impt7;
+            *(uint16_t*)impt2 = *(uint16_t*)impt8;
+            *(uint16_t*)impt3 = *(uint16_t*)impt5;
+            *(uint16_t*)impt4 = *(uint16_t*)impt6;
+            
+            impt1 += 4;
+            impt2 += 4;
+            impt3 += 4;
+            impt4 += 4;
+            impt5 += 8;
+            impt6 += 8;
+            impt7 += 8;
+            impt8 += 8;
         }
+        impt1 += lbx3;
+        impt2 -= lbx5;
+        impt3 += lbx3;
+        impt4 -= lbx5;
+//        impt5 += 10464;
+//        impt6 += 10464;
+//        impt7 += 10464;
+//        impt8 += 10464;
     }
     
-    return pixels;
+    imptr4 = imptr4 + lineLengthx2; // '- 10464
+    
+    impt1 = imptr4 + lineBytes + 2 - 10464;
+    impt2 = imptr4 + (lineCount * lineBytes) - lineLengthx8 + 2;
+    impt3 = imptr4 + lineBytes + lineLengthx4 - 2 - 10464;
+    impt4= imptr4 + (lineCount * lineBytes) - lineLengthx4 + 2;
+
+    impt5 = imptr3;
+    impt6 = imptr3+2;
+    impt7 = imptr3+4;
+    impt8 = imptr3+6;
+
+    for (long y = 0; y < lineCountBy4; ++y){
+        for (long z = 1; z < lineLength; z += 2){
+            *(uint16_t*)impt1 = *(uint16_t*)impt7;
+            *(uint16_t*)impt2 = *(uint16_t*)impt8;
+            *(uint16_t*)impt3 = *(uint16_t*)impt5;
+            *(uint16_t*)impt4 = *(uint16_t*)impt6;
+            
+            impt1 += 4;
+            impt2 += 4;
+            impt3 += 4;
+            impt4 += 4;
+            impt5 += 8;
+            impt6 += 8;
+            impt7 += 8;
+            impt8 += 8;
+        }
+        impt1 += lbx3;
+        impt2 -= lbx5;
+        impt3 += lbx3;
+        impt4 -= lbx5;
+        //        impt5 += 10464;
+        //        impt6 += 10464;
+        //        impt7 += 10464;
+        //        impt8 += 10464;
+    }
+    
+    impt1 = imptr1 + 7802;
+    impt2 = imptr4 + 5230;
+
+    for (long z = 0; z < 2616; ++z){
+        for (long y = 0; y < 3900; ++y){
+            *(uint16_t*)impt1 = *(uint16_t*)impt2;
+            impt1 += 2;
+            impt2 += 5232;
+        }
+        impt2 = impt2 - 20404800 - 2;
+    }
+    
+    // normalise...
+    
+    return rearrangedPixels1;
+    
+    // sxReconstructM26Fields();
 }
 
 @end
