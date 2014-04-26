@@ -671,8 +671,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             break;
     }
     
-    const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.height/2 : self.params.size.height/4;
-    const NSInteger width = self.params.size.width * 2;
+    // note that we're swapping width and height on the params sent to the M26C
+    const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.width/2 : self.params.size.width/4;
+    const NSInteger width = self.params.size.height * 2;
     
     if (self.latchPixels){
         
@@ -699,12 +700,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     NSMutableData* rearrangedPixels1 = [NSMutableData dataWithLength:pixLen];
     NSMutableData* rearrangedPixels2 = [NSMutableData dataWithLength:pixLen];
 
-    const uint32_t pattern = 0x55555555;
-    memset_pattern4([rearrangedPixels1 mutableBytes],&pattern,pixLen);
-    memset_pattern4([rearrangedPixels2 mutableBytes],&pattern,pixLen);
+//    const uint32_t pattern = 0x55555555;
+//    memset_pattern4([rearrangedPixels1 mutableBytes],&pattern,pixLen);
+//    memset_pattern4([rearrangedPixels2 mutableBytes],&pattern,pixLen);
 
-    const long lineLength = 3900;
-    const long lineCount = 2616;
+    const long lineLength = 2616;
+    const long lineCount = 3900;
     
     const long lineBytes = 2 * lineLength;
     const long lbx3 = 3 * lineBytes;
@@ -811,7 +812,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     // normalise...
     
-    return rearrangedPixels1;
+    return rearrangedPixels2;
     
     // sxReconstructM26Fields();
 }
