@@ -695,11 +695,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     const long lineLength = 2616;
     const long lineCount = 3900;
-    const NSInteger pixLen = [pixels length];
+    
+    const NSInteger bufferLength = [pixels length];
     const uint8_t* input = [pixels bytes];
     
-    NSMutableData* rearrangedPixels1 = [NSMutableData dataWithLength:pixLen];
-    NSMutableData* rearrangedPixels2 = [NSMutableData dataWithLength:pixLen];
+    NSMutableData* workingBuffer = [NSMutableData dataWithLength:bufferLength];
+    NSMutableData* outputBuffer = [NSMutableData dataWithLength:bufferLength];
     
 //    uint8_t* workingbuffer = [rearrangedPixels1 mutableBytes];
 //    uint8_t* outputbuffer = [rearrangedPixels2 mutableBytes];
@@ -712,106 +713,106 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
     const long lineCountBy4 = lineCount / 4;
     
-    uint8_t* imptr1 = (uint8_t*)[rearrangedPixels2 mutableBytes];
-    const uint8_t* imptr2 = input;
-    const uint8_t* imptr3 = input + pixLen/2;
-    uint8_t* imptr4 = (uint8_t*)[rearrangedPixels1 mutableBytes];
+    uint8_t* outputPixels = (uint8_t*)[outputBuffer mutableBytes];
+    const uint8_t* field1Pixels = input;
+    const uint8_t* field2Pixels = input + bufferLength/2;
+    uint8_t* workingPixels = (uint8_t*)[workingBuffer mutableBytes];
     
-    imptr4 = imptr4 + lineBytesx2;
+    workingPixels += lineBytesx2;
     
-    uint8_t* impt1 = imptr4 + lineBytes;
-    uint8_t* impt2 = imptr4 + pixLen - lineBytesx4 + 4;
-    uint8_t* impt3 = imptr4 + lineBytes - lineBytesx2 - 4;
-    uint8_t* impt4 = imptr4 + pixLen - lineBytesx2 + 4;
+    uint8_t* outputPtr1 = workingPixels + lineBytes;
+    uint8_t* outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 4;
+    uint8_t* outputPtr3 = workingPixels + lineBytes - lineBytesx2 - 4;
+    uint8_t* outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 4;
 
-    const uint8_t* impt5 = imptr2;
-    const uint8_t* impt6 = imptr2+2;
-    const uint8_t* impt7 = imptr2+4;
-    const uint8_t* impt8 = imptr2+6;
+    const uint8_t* inputPtr5 = field1Pixels;
+    const uint8_t* inputPtr6 = field1Pixels+2;
+    const uint8_t* inputPtr7 = field1Pixels+4;
+    const uint8_t* inputPtr8 = field1Pixels+6;
 
     for (long y = 0; y < lineCountBy4; ++y){
         for (long z = 0; z < lineLength; z += 2){
             
-//            assert(impt1 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt2 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt3 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt4 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr2 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr3 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr4 - workingbuffer < lineLength * lineCount * 2);
 
-            *(uint16_t*)impt1 = *(uint16_t*)impt7;
-            *(uint16_t*)impt2 = *(uint16_t*)impt8;
-            *(uint16_t*)impt3 = *(uint16_t*)impt5;
-            *(uint16_t*)impt4 = *(uint16_t*)impt6;
+            *(uint16_t*)outputPtr1 = *(uint16_t*)inputPtr7;
+            *(uint16_t*)outputPtr2 = *(uint16_t*)inputPtr8;
+            *(uint16_t*)outputPtr3 = *(uint16_t*)inputPtr5;
+            *(uint16_t*)outputPtr4 = *(uint16_t*)inputPtr6;
             
-            impt1 += 4;
-            impt2 += 4;
-            impt3 += 4;
-            impt4 += 4;
-            impt5 += 8;
-            impt6 += 8;
-            impt7 += 8;
-            impt8 += 8;
+            outputPtr1 += 4;
+            outputPtr2 += 4;
+            outputPtr3 += 4;
+            outputPtr4 += 4;
+            inputPtr5 += 8;
+            inputPtr6 += 8;
+            inputPtr7 += 8;
+            inputPtr8 += 8;
         }
-        impt1 += lineBytesx3;
-        impt2 -= lineBytesx5;
-        impt3 += lineBytesx3;
-        impt4 -= lineBytesx5;
+        outputPtr1 += lineBytesx3;
+        outputPtr2 -= lineBytesx5;
+        outputPtr3 += lineBytesx3;
+        outputPtr4 -= lineBytesx5;
     }
     
-    imptr4 = imptr4 + lineBytes;
+    workingPixels = workingPixels + lineBytes;
     
-    impt1 = imptr4 + lineBytes + 2 - lineBytesx2;
-    impt2 = imptr4 + pixLen - lineBytesx4 + 2;
-    impt3 = imptr4 + lineBytes + lineBytesx2 - 2 - lineBytesx2;
-    impt4= imptr4 + pixLen - lineBytesx2 + 2;
+    outputPtr1 = workingPixels + lineBytes + 2 - lineBytesx2;
+    outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 2;
+    outputPtr3 = workingPixels + lineBytes + lineBytesx2 - 2 - lineBytesx2;
+    outputPtr4= workingPixels + bufferLength - lineBytesx2 + 2;
 
-    impt5 = imptr3;
-    impt6 = imptr3+2;
-    impt7 = imptr3+4;
-    impt8 = imptr3+6;
+    inputPtr5 = field2Pixels;
+    inputPtr6 = field2Pixels+2;
+    inputPtr7 = field2Pixels+4;
+    inputPtr8 = field2Pixels+6;
 
     for (long y = 0; y < lineCountBy4; ++y){
         for (long z = 0; z < lineLength; z += 2){
             
-//            assert(impt1 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt2 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt3 - workingbuffer < lineLength * lineCount * 2);
-//            assert(impt4 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr2 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr3 - workingbuffer < lineLength * lineCount * 2);
+//            assert(outputPtr4 - workingbuffer < lineLength * lineCount * 2);
 
-            *(uint16_t*)impt1 = *(uint16_t*)impt7;
-            *(uint16_t*)impt2 = *(uint16_t*)impt8;
-            *(uint16_t*)impt3 = *(uint16_t*)impt5;
-            *(uint16_t*)impt4 = *(uint16_t*)impt6;
+            *(uint16_t*)outputPtr1 = *(uint16_t*)inputPtr7;
+            *(uint16_t*)outputPtr2 = *(uint16_t*)inputPtr8;
+            *(uint16_t*)outputPtr3 = *(uint16_t*)inputPtr5;
+            *(uint16_t*)outputPtr4 = *(uint16_t*)inputPtr6;
             
-            impt1 += 4;
-            impt2 += 4;
-            impt3 += 4;
-            impt4 += 4;
-            impt5 += 8;
-            impt6 += 8;
-            impt7 += 8;
-            impt8 += 8;
+            outputPtr1 += 4;
+            outputPtr2 += 4;
+            outputPtr3 += 4;
+            outputPtr4 += 4;
+            inputPtr5 += 8;
+            inputPtr6 += 8;
+            inputPtr7 += 8;
+            inputPtr8 += 8;
         }
-        impt1 += lineBytesx3;
-        impt2 -= lineBytesx5;
-        impt3 += lineBytesx3;
-        impt4 -= lineBytesx5;
+        outputPtr1 += lineBytesx3;
+        outputPtr2 -= lineBytesx5;
+        outputPtr3 += lineBytesx3;
+        outputPtr4 -= lineBytesx5;
     }
     
-    impt1 = imptr1 + 7802;
-    impt2 = imptr4 + 5230;
+    outputPtr1 = outputPixels + 7802;
+    outputPtr2 = workingPixels + 5230;
 
     for (long z = 0; z < 2616; ++z){
         for (long y = 0; y < 3900; ++y){
-            *(uint16_t*)impt1 = *(uint16_t*)impt2;
-            impt1 += 2;
-            impt2 += 5232;
+            *(uint16_t*)outputPtr1 = *(uint16_t*)outputPtr2;
+            outputPtr1 += 2;
+            outputPtr2 += 5232;
         }
-        impt2 = impt2 - 20404800 - 2;
+        outputPtr2 = outputPtr2 - 20404800 - 2;
     }
     
     // normalise...
     
-    return rearrangedPixels2;
+    return outputBuffer;
 }
 
 @end
