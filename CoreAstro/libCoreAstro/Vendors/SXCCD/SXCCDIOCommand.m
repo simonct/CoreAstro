@@ -707,16 +707,14 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     uint8_t* outputBuffer = malloc(inputLength);
     uint8_t* workingBuffer = malloc(inputLength + lineBytes);
 
-    uint8_t* outputPixels = outputBuffer; // line[0]
-    uint8_t* workingPixels = workingBuffer; // line[0]
     const uint8_t* field1Pixels = inputBuffer;
     const uint8_t* field2Pixels = inputBuffer + inputLength/2;
     
     // set output pointers to output buffer
-    uint8_t* outputPtr1 = workingPixels + lineBytesx2; // starts at line[3]
-    uint8_t* outputPtr3 = workingPixels; // line[1] - 4 // ** originally lineBytes - 4
-    uint8_t* outputPtr2 = workingPixels + inputLength - lineBytesx3 + 4; // line[3898] + 4
-    uint8_t* outputPtr4 = workingPixels + inputLength - lineBytes + 4; // line[3900] + 4 ** buffer overrun **
+    uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
+    uint8_t* outputPtr3 = workingBuffer; // line[1] - 4 // ** originally lineBytes - 4
+    uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 4; // line[3898] + 4
+    uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes + 4; // line[3900] + 4 ** buffer overrun **
 
     // set input pointers to field 1
     const uint8_t* inputPtr1 = field1Pixels;
@@ -752,10 +750,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     
     // reset output pointers to output buffer
-    outputPtr1 = workingPixels + 2; // starts at line[1] + 2
-    outputPtr3 = workingPixels + lineBytesx2 - 2; // starts at line[3] - 2
-    outputPtr2 = workingPixels + inputLength - lineBytesx3 + 2; // line[3898] + 2
-    outputPtr4 = workingPixels + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
+    outputPtr1 = workingBuffer + 2; // starts at line[1] + 2
+    outputPtr3 = workingBuffer + lineBytesx2 - 2; // starts at line[3] - 2
+    outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2; // line[3898] + 2
+    outputPtr4 = workingBuffer + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
 
     // reset input pointers to field 1
     inputPtr1 = field2Pixels;
@@ -793,12 +791,13 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     // derotate by copying from the height*width working buffer to the width*height output buffer
     for (long x = lineLength - 1; x >= 0; --x){
         
-        const uint8_t* input = workingPixels + (2 * (lineLength - x)); // move right to left along the input
-        uint8_t* output = outputPixels + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+        const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
+        uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
         
         // copy one column from the input to one row on the output
         for (long y = 0; y < lineCount; ++y){
             *(uint16_t*)output = *(uint16_t*)input;
+            assert(output >= outputBuffer);
             output += 2;
             input += lineBytes; // move down one line
         }
