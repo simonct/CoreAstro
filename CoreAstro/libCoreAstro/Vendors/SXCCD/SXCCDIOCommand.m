@@ -778,16 +778,16 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         outputPtr4 -= lineBytesx4;
     }
     
-    outputPtr1 = outputPixels + 7802;
-    outputPtr2 = workingPixels + lineBytesx3 + 5230; // start at end of line and work backwards
+    outputPtr1 = outputPixels + (2*lineCount) + 2;
+    outputPtr2 = workingPixels + lineBytesx3 + lineBytes - 2; // start at end of line and work backwards
 
-    for (long z = 0; z < 2616; ++z){
-        for (long y = 0; y < 3900; ++y){
+    for (long x = 0; x < lineLength; ++x){
+        for (long y = 0; y < lineCount; ++y){
             *(uint16_t*)outputPtr1 = *(uint16_t*)outputPtr2;
             outputPtr1 += 2;
-            outputPtr2 += 5232; // move down one line
+            outputPtr2 += lineBytes; // move down one line
         }
-        outputPtr2 = outputPtr2 - 20404800 - 2;
+        outputPtr2 = outputPtr2 - inputLength - 2;
     }
     
     // normalise...
