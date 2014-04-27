@@ -808,17 +808,17 @@ static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    const long lineLength = 2616;
-    const long lineCount = 3900;
-
-    if ([pixels length] == (lineLength * lineCount * 2) && self.params.bin.width == 1 && self.params.bin.height == 1){
+    if ([pixels length] == (self.params.size.width * self.params.size.height * 2) && self.params.bin.width == 1 && self.params.bin.height == 1){
         
         const uint8_t* inputBuffer = [pixels bytes];
         const NSInteger inputLength = [pixels length];
         
         const uint8_t* field1Pixels = inputBuffer;
         const uint8_t* field2Pixels = inputBuffer + inputLength/2;
-        
+
+        const long lineCount = self.params.size.width/self.params.bin.width;
+        const long lineLength = self.params.size.height/self.params.bin.height;
+
         uint8_t* outputBuffer = sxReconstructM26CFields(field1Pixels,field2Pixels,lineLength,lineCount);
         
         return outputBuffer ? [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES] : pixels;
