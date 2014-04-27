@@ -704,8 +704,8 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineBytesx3 = 3 * lineBytes;
     const long lineBytesx4 = 4 * lineBytes;
 
-    uint8_t* outputBuffer = malloc(inputLength + lineBytesx4);
-    uint8_t* workingBuffer = malloc(inputLength + lineBytesx4);
+    uint8_t* outputBuffer = malloc(inputLength);
+    uint8_t* workingBuffer = malloc(inputLength + lineBytes);
 
     uint8_t* outputPixels = outputBuffer; // line[0]
     uint8_t* workingPixels = workingBuffer; // line[0]
@@ -713,10 +713,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const uint8_t* field2Pixels = inputBuffer + inputLength/2;
     
     // set output pointers to output buffer
-    uint8_t* outputPtr1 = workingPixels + lineBytesx3; // starts at line[3]
-    uint8_t* outputPtr3 = workingPixels + lineBytes - 4; // line[1] - 4
-    uint8_t* outputPtr2 = workingPixels + inputLength - lineBytesx2 + 4; // line[3898] + 4
-    uint8_t* outputPtr4 = workingPixels + inputLength + 4; // line[3900] + 4 ** buffer overrun **
+    uint8_t* outputPtr1 = workingPixels + lineBytesx2; // starts at line[3]
+    uint8_t* outputPtr3 = workingPixels; // line[1] - 4 // ** originally lineBytes - 4
+    uint8_t* outputPtr2 = workingPixels + inputLength - lineBytesx3 + 4; // line[3898] + 4
+    uint8_t* outputPtr4 = workingPixels + inputLength - lineBytes + 4; // line[3900] + 4 ** buffer overrun **
 
     // set input pointers to field 1
     const uint8_t* inputPtr1 = field1Pixels;
@@ -730,6 +730,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         
         // process a single output line
         for (long x = 0; x < lineLength; x += 2, i += 4){
+            
+            assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+            assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+            assert(outputPtr3 >= workingBuffer);
+            assert(outputPtr4 >= workingBuffer);
+
             ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
             ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // blue
             ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
@@ -746,10 +752,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     
     // reset output pointers to output buffer
-    outputPtr1 = workingPixels + lineBytes + 2; // starts at line[1] + 2
-    outputPtr3 = workingPixels + lineBytesx3 - 2; // starts at line[3] - 2
-    outputPtr2 = workingPixels + inputLength - lineBytesx2 + 2; // line[3898] + 2
-    outputPtr4 = workingPixels + inputLength + 2; // line[3900] + 2 ** buffer overrun **
+    outputPtr1 = workingPixels + 2; // starts at line[1] + 2
+    outputPtr3 = workingPixels + lineBytesx2 - 2; // starts at line[3] - 2
+    outputPtr2 = workingPixels + inputLength - lineBytesx3 + 2; // line[3898] + 2
+    outputPtr4 = workingPixels + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
 
     // reset input pointers to field 1
     inputPtr1 = field2Pixels;
@@ -763,6 +769,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         
         // process a single output line
         for (long x = 0; x < lineLength; x += 2, i += 4){
+            
+            assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+            assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+            assert(outputPtr3 >= workingBuffer);
+            assert(outputPtr4 >= workingBuffer);
+
             ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
             ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // red
             ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
@@ -778,18 +790,20 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         outputPtr4 -= lineBytesx4;
     }
     
-    outputPtr1 = outputPixels + (2*lineCount) + 2;
-    outputPtr2 = workingPixels + lineBytesx3 + lineBytes - 2; // start at end of line and work backwards
-
-    for (long x = 0; x < lineLength; ++x){
+    // derotate by copying from the height*width working buffer to the width*height output buffer
+    for (long x = lineLength - 1; x >= 0; --x){
+        
+        const uint8_t* input = workingPixels + (2 * (lineLength - x)); // move right to left along the input
+        uint8_t* output = outputPixels + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+        
+        // copy one column from the input to one row on the output
         for (long y = 0; y < lineCount; ++y){
-            *(uint16_t*)outputPtr1 = *(uint16_t*)outputPtr2;
-            outputPtr1 += 2;
-            outputPtr2 += lineBytes; // move down one line
+            *(uint16_t*)output = *(uint16_t*)input;
+            output += 2;
+            input += lineBytes; // move down one line
         }
-        outputPtr2 = outputPtr2 - inputLength - 2;
     }
-    
+
     // normalise...
     
     if (workingBuffer){
