@@ -714,21 +714,21 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineCountBy4 = lineCount / 4;
     
     uint8_t* outputPixels = (uint8_t*)[outputBuffer mutableBytes];
+    uint8_t* workingPixels = (uint8_t*)[workingBuffer mutableBytes];
     const uint8_t* field1Pixels = input;
     const uint8_t* field2Pixels = input + bufferLength/2;
-    uint8_t* workingPixels = (uint8_t*)[workingBuffer mutableBytes];
     
     workingPixels += lineBytesx2;
     
     uint8_t* outputPtr1 = workingPixels + lineBytes;
     uint8_t* outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 4;
-    uint8_t* outputPtr3 = workingPixels + lineBytes - lineBytesx2 - 4;
+    uint8_t* outputPtr3 = workingPixels - lineBytes - 4;
     uint8_t* outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 4;
 
     const uint8_t* inputPtr1 = field1Pixels;
-    const uint8_t* inputPtr2 = field1Pixels+2;
-    const uint8_t* inputPtr3 = field1Pixels+4;
-    const uint8_t* inputPtr4 = field1Pixels+6;
+    const uint8_t* inputPtr2 = field1Pixels + 2;
+    const uint8_t* inputPtr3 = field1Pixels + 4;
+    const uint8_t* inputPtr4 = field1Pixels + 6;
 
     for (long y = 0; y < lineCountBy4; ++y){
         for (long z = 0; z < lineLength; z += 2){
@@ -766,15 +766,15 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     workingPixels += lineBytesx2; // * original was lineBytes
     
-    outputPtr1 = workingPixels + lineBytes + 2 - lineBytesx2;
+    outputPtr1 = workingPixels - lineBytes + 2;
     outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 2;
-    outputPtr3 = workingPixels + lineBytes + lineBytesx2 - 2 - lineBytesx2;
+    outputPtr3 = workingPixels + lineBytes - 2;
     outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 2;
 
     inputPtr1 = field2Pixels;
-    inputPtr2 = field2Pixels+2;
-    inputPtr3 = field2Pixels+4;
-    inputPtr4 = field2Pixels+6;
+    inputPtr2 = field2Pixels + 2;
+    inputPtr3 = field2Pixels + 4;
+    inputPtr4 = field2Pixels + 6;
 
     for (long y = 0; y < lineCountBy4; ++y){
         for (long z = 0; z < lineLength; z += 2){
