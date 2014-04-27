@@ -699,36 +699,41 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSInteger bufferLength = [pixels length];
     const uint8_t* input = [pixels bytes];
     
-    NSMutableData* workingBuffer = [NSMutableData dataWithLength:bufferLength];
-    NSMutableData* outputBuffer = [NSMutableData dataWithLength:bufferLength];
+//    NSMutableData* workingBuffer = [NSMutableData dataWithLength:bufferLength];
+//    NSMutableData* outputBuffer = [NSMutableData dataWithLength:bufferLength];
     
-//    uint8_t* workingbuffer = [rearrangedPixels1 mutableBytes];
-//    uint8_t* outputbuffer = [rearrangedPixels2 mutableBytes];
 
     const long lineBytes = 2 * lineLength;
     const long lineBytesx2 = 2 * lineBytes;
     const long lineBytesx3 = 3 * lineBytes;
     const long lineBytesx4 = 4 * lineBytes;
     const long lineBytesx5 = 5 * lineBytes;
-    
-    uint8_t* outputPixels = (uint8_t*)[outputBuffer mutableBytes];
-    uint8_t* workingPixels = (uint8_t*)[workingBuffer mutableBytes];
+//    const long lineBytesx6 = 6 * lineBytes;
+
+    uint8_t* workingBuffer = malloc(bufferLength + lineBytesx4);
+    uint8_t* outputBuffer = malloc(bufferLength + lineBytesx4);
+
+    uint8_t* outputPixels = outputBuffer; // (uint8_t*)[outputBuffer mutableBytes];
+    uint8_t* workingPixels = workingBuffer; // (uint8_t*)[workingBuffer mutableBytes];
     const uint8_t* field1Pixels = input;
     const uint8_t* field2Pixels = input + bufferLength/2;
     
     workingPixels += lineBytesx2;
     
-    uint8_t* outputPtr1 = workingPixels + lineBytes;
-    uint8_t* outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 4;
-    uint8_t* outputPtr3 = workingPixels - lineBytes - 4;
-    uint8_t* outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 4;
+    uint8_t* outputPtr1 = workingPixels + lineBytes; // starts 3 lines into the working buffer
+    uint8_t* outputPtr3 = workingPixels - lineBytes - 4; // starts 4 bytes from the end of the first line
+    uint8_t* outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 4; // starts 4 bytes in and 2 lines from the end
+    uint8_t* outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 4; // starts 4 bytes off the end of the buffer...
 
     const uint8_t* inputPtr1 = field1Pixels;
     const uint8_t* inputPtr2 = field1Pixels + 2;
     const uint8_t* inputPtr3 = field1Pixels + 4;
     const uint8_t* inputPtr4 = field1Pixels + 6;
 
+    // process 1 field's worth of alternate lines
     for (long y = 0; y < lineCount; y += 4){
+        
+        // process a single output line
         for (long z = 0; z < lineLength; z += 2){
             
 //            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
@@ -755,18 +760,22 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             inputPtr4 += 8;
         }
         
-        // move output up 4 rows
+        // outputPtr[1-4] are now 1 line down from their start positions.
+        
+        // move outputPtr[1,3] down another 3 rows for a total of 4 down from the start position
         outputPtr1 += lineBytesx3;
-        outputPtr2 -= lineBytesx5;
         outputPtr3 += lineBytesx3;
+        
+        // move outputPtr[2,4] up anther 5 rows for a total of 4 up from the start position
+        outputPtr2 -= lineBytesx5;
         outputPtr4 -= lineBytesx5;
     }
     
     workingPixels += lineBytesx2; // * original was lineBytes
     
     outputPtr1 = workingPixels - lineBytes + 2;
-    outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 2;
     outputPtr3 = workingPixels + lineBytes - 2;
+    outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 2;
     outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 2;
 
     inputPtr1 = field2Pixels;
@@ -822,7 +831,11 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     // normalise...
     
-    return outputBuffer;
+    if (workingBuffer){
+        free(workingBuffer);
+    }
+    
+    return [NSData dataWithBytesNoCopy:outputBuffer length:bufferLength freeWhenDone:YES];
 }
 
 @end
