@@ -368,6 +368,121 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     *state = setup_data[0] | (setup_data[1] << 8);
 }
 
+static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+{
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+    const long lineBytesx2 = 2 * lineBytes;
+    const long lineBytesx3 = 3 * lineBytes;
+    const long lineBytesx4 = 4 * lineBytes;
+    
+    uint8_t* outputBuffer = malloc(inputLength);
+    uint8_t* workingBuffer = malloc(inputLength);
+    if (outputBuffer && workingBuffer){
+        
+        // set output pointers to output buffer
+        uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
+        uint8_t* outputPtr3 = workingBuffer; // line[1] - 4 // ** originally lineBytes - 4
+        uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3; // line[3898] + 4 // ** originally + 4
+        uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes; // line[3900] + 4 ** buffer overrun ** // ** originally + 4
+        
+        // set input pointers to field 1
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        const uint8_t* inputPtr3 = field1Pixels + 4;
+        const uint8_t* inputPtr4 = field1Pixels + 6;
+        
+        // process 1 field's worth of alternate lines
+        long i = 0;
+        for (long y = 0; y < lineCount; y += 4){
+            
+            // process a single output line
+            for (long x = 0; x < lineLength; x += 2, i += 4){
+                
+                assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr3 >= workingBuffer);
+                assert(outputPtr4 >= workingBuffer);
+                
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // blue
+                ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+                ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // blue
+            }
+            
+            // move outputPtr[1,3] down 4 rows
+            outputPtr1 += lineBytesx4;
+            outputPtr3 += lineBytesx4;
+            
+            // move outputPtr[2,4] up 4 rows
+            outputPtr2 -= lineBytesx4;
+            outputPtr4 -= lineBytesx4;
+        }
+        
+        // reset output pointers to output buffer
+        outputPtr1 = workingBuffer + 2; // starts at line[1] + 2
+        outputPtr3 = workingBuffer + lineBytesx2 - 2; // starts at line[3] - 2
+        outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2; // line[3898] + 2
+        outputPtr4 = workingBuffer + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
+        
+        // reset input pointers to field 1
+        inputPtr1 = field2Pixels;
+        inputPtr2 = field2Pixels + 2;
+        inputPtr3 = field2Pixels + 4;
+        inputPtr4 = field2Pixels + 6;
+        
+        // process 1 field's worth of alternate lines
+        i = 0;
+        for (long y = 0; y < lineCount; y += 4){
+            
+            // process a single output line
+            for (long x = 0; x < lineLength; x += 2, i += 4){
+                
+                assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr3 >= workingBuffer);
+                assert(outputPtr4 >= workingBuffer);
+                
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // red
+                ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+                ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // red
+            }
+            
+            // move outputPtr[1,3] down 4 rows
+            outputPtr1 += lineBytesx4;
+            outputPtr3 += lineBytesx4;
+            
+            // move outputPtr[2,4] up 4 rows
+            outputPtr2 -= lineBytesx4;
+            outputPtr4 -= lineBytesx4;
+        }
+        
+        // derotate by copying from the height*width working buffer to the width*height output buffer
+        for (long x = lineLength - 1; x >= 0; --x){
+            
+            const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
+            uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+            
+            // copy one column from the input to one row on the output
+            for (long y = 0; y < lineCount; ++y){
+                *(uint16_t*)output = *(uint16_t*)input;
+                assert(output >= outputBuffer);
+                output += 2;
+                input += lineBytes; // move down one line
+            }
+        }
+        
+        // normalise...
+    }
+    
+    if (workingBuffer){
+        free(workingBuffer);
+    }
+    
+    return outputBuffer;
+}
+
 @implementation SXCCDIOResetCommand
 
 - (NSData*)toDataRepresentation {
@@ -695,121 +810,21 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     const long lineLength = 2616;
     const long lineCount = 3900;
-    
-    const uint8_t* inputBuffer = [pixels bytes];
-    const NSInteger inputLength = [pixels length];
-    
-    const long lineBytes = 2 * lineLength;
-    const long lineBytesx2 = 2 * lineBytes;
-    const long lineBytesx3 = 3 * lineBytes;
-    const long lineBytesx4 = 4 * lineBytes;
 
-    uint8_t* outputBuffer = malloc(inputLength);
-    uint8_t* workingBuffer = malloc(inputLength);
-
-    const uint8_t* field1Pixels = inputBuffer;
-    const uint8_t* field2Pixels = inputBuffer + inputLength/2;
-    
-    // set output pointers to output buffer
-    uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
-    uint8_t* outputPtr3 = workingBuffer; // line[1] - 4 // ** originally lineBytes - 4
-    uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3; // line[3898] + 4 // ** originally + 4
-    uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes; // line[3900] + 4 ** buffer overrun ** // ** originally + 4
-
-    // set input pointers to field 1
-    const uint8_t* inputPtr1 = field1Pixels;
-    const uint8_t* inputPtr2 = field1Pixels + 2;
-    const uint8_t* inputPtr3 = field1Pixels + 4;
-    const uint8_t* inputPtr4 = field1Pixels + 6;
-
-    // process 1 field's worth of alternate lines
-    long i = 0;
-    for (long y = 0; y < lineCount; y += 4){
+    if ([pixels length] == (lineLength * lineCount * 2) && self.params.bin.width == 1 && self.params.bin.height == 1){
         
-        // process a single output line
-        for (long x = 0; x < lineLength; x += 2, i += 4){
-            
-            assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
-            assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
-            assert(outputPtr3 >= workingBuffer);
-            assert(outputPtr4 >= workingBuffer);
-
-            ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
-            ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // blue
-            ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
-            ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // blue
-        }
+        const uint8_t* inputBuffer = [pixels bytes];
+        const NSInteger inputLength = [pixels length];
         
-        // move outputPtr[1,3] down 4 rows
-        outputPtr1 += lineBytesx4;
-        outputPtr3 += lineBytesx4;
+        const uint8_t* field1Pixels = inputBuffer;
+        const uint8_t* field2Pixels = inputBuffer + inputLength/2;
         
-        // move outputPtr[2,4] up 4 rows
-        outputPtr2 -= lineBytesx4;
-        outputPtr4 -= lineBytesx4;
+        uint8_t* outputBuffer = sxReconstructM26CFields(field1Pixels,field2Pixels,lineLength,lineCount);
+        
+        return outputBuffer ? [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES] : pixels;
     }
     
-    // reset output pointers to output buffer
-    outputPtr1 = workingBuffer + 2; // starts at line[1] + 2
-    outputPtr3 = workingBuffer + lineBytesx2 - 2; // starts at line[3] - 2
-    outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2; // line[3898] + 2
-    outputPtr4 = workingBuffer + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
-
-    // reset input pointers to field 1
-    inputPtr1 = field2Pixels;
-    inputPtr2 = field2Pixels + 2;
-    inputPtr3 = field2Pixels + 4;
-    inputPtr4 = field2Pixels + 6;
-
-    // process 1 field's worth of alternate lines
-    i = 0;
-    for (long y = 0; y < lineCount; y += 4){
-        
-        // process a single output line
-        for (long x = 0; x < lineLength; x += 2, i += 4){
-            
-            assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
-            assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
-            assert(outputPtr3 >= workingBuffer);
-            assert(outputPtr4 >= workingBuffer);
-
-            ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
-            ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // red
-            ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
-            ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // red
-        }
-        
-        // move outputPtr[1,3] down 4 rows
-        outputPtr1 += lineBytesx4;
-        outputPtr3 += lineBytesx4;
-        
-        // move outputPtr[2,4] up 4 rows
-        outputPtr2 -= lineBytesx4;
-        outputPtr4 -= lineBytesx4;
-    }
-    
-    // derotate by copying from the height*width working buffer to the width*height output buffer
-    for (long x = lineLength - 1; x >= 0; --x){
-        
-        const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
-        uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
-        
-        // copy one column from the input to one row on the output
-        for (long y = 0; y < lineCount; ++y){
-            *(uint16_t*)output = *(uint16_t*)input;
-            assert(output >= outputBuffer);
-            output += 2;
-            input += lineBytes; // move down one line
-        }
-    }
-
-    // normalise...
-    
-    if (workingBuffer){
-        free(workingBuffer);
-    }
-    
-    return [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES];
+    return pixels;
 }
 
 @end
