@@ -696,9 +696,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineLength = 2616;
     const long lineCount = 3900;
     
-    const NSInteger bufferLength = [pixels length];
-    const uint8_t* input = [pixels bytes];
-    
+    const uint8_t* inputBuffer = [pixels bytes];
+    const NSInteger inputLength = [pixels length];
+
 //    NSMutableData* workingBuffer = [NSMutableData dataWithLength:bufferLength];
 //    NSMutableData* outputBuffer = [NSMutableData dataWithLength:bufferLength];
     
@@ -710,20 +710,20 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineBytesx5 = 5 * lineBytes;
 //    const long lineBytesx6 = 6 * lineBytes;
 
-    uint8_t* workingBuffer = malloc(bufferLength + lineBytesx4);
-    uint8_t* outputBuffer = malloc(bufferLength + lineBytesx4);
+    uint8_t* workingBuffer = malloc(inputLength + lineBytesx4);
+    uint8_t* outputBuffer = malloc(inputLength + lineBytesx4);
 
-    uint8_t* outputPixels = outputBuffer; // (uint8_t*)[outputBuffer mutableBytes];
-    uint8_t* workingPixels = workingBuffer; // (uint8_t*)[workingBuffer mutableBytes];
-    const uint8_t* field1Pixels = input;
-    const uint8_t* field2Pixels = input + bufferLength/2;
+    uint8_t* outputPixels = outputBuffer; // line[0]
+    uint8_t* workingPixels = workingBuffer; // line[0]
+    const uint8_t* field1Pixels = inputBuffer;
+    const uint8_t* field2Pixels = inputBuffer + inputLength/2;
     
-    workingPixels += lineBytesx2;
+//    workingPixels += lineBytesx2; // move start point to line[2]
     
-    uint8_t* outputPtr1 = workingPixels + lineBytes; // starts 3 lines into the working buffer
-    uint8_t* outputPtr3 = workingPixels - lineBytes - 4; // starts 4 bytes from the end of the first line
-    uint8_t* outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 4; // starts 4 bytes in and 2 lines from the end
-    uint8_t* outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 4; // starts 4 bytes off the end of the buffer...
+    uint8_t* outputPtr1 = workingPixels + lineBytesx3; // starts at line[3]
+    uint8_t* outputPtr3 = workingPixels + lineBytes - 4; // line[1]-4
+    uint8_t* outputPtr2 = workingPixels + inputLength - lineBytesx2 + 4; // line[3896]+4
+    uint8_t* outputPtr4 = workingPixels + inputLength + 4; // line[3900]+4 ** buffer overrun **
 
     const uint8_t* inputPtr1 = field1Pixels;
     const uint8_t* inputPtr2 = field1Pixels + 2;
@@ -771,12 +771,12 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         outputPtr4 -= lineBytesx5;
     }
     
-    workingPixels += lineBytesx2; // * original was lineBytes
+//    workingPixels += lineBytesx2; // * original was lineBytes
     
-    outputPtr1 = workingPixels - lineBytes + 2;
-    outputPtr3 = workingPixels + lineBytes - 2;
-    outputPtr2 = workingPixels + bufferLength - lineBytesx4 + 2;
-    outputPtr4 = workingPixels + bufferLength - lineBytesx2 + 2;
+    outputPtr1 = workingPixels + lineBytes + 2;
+    outputPtr3 = workingPixels + lineBytesx3 - 2;
+    outputPtr2 = workingPixels + inputLength - lineBytesx2 + 2;
+    outputPtr4 = workingPixels + inputLength + 2;
 
     inputPtr1 = field2Pixels;
     inputPtr2 = field2Pixels + 2;
@@ -818,7 +818,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
     
     outputPtr1 = outputPixels + 7802;
-    outputPtr2 = workingPixels + 5230; // start at end of line and work backwards
+    outputPtr2 = workingPixels + lineBytesx3 + 5230; // start at end of line and work backwards
 
     for (long z = 0; z < 2616; ++z){
         for (long y = 0; y < 3900; ++y){
@@ -835,7 +835,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         free(workingBuffer);
     }
     
-    return [NSData dataWithBytesNoCopy:outputBuffer length:bufferLength freeWhenDone:YES];
+    return [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES];
 }
 
 @end
