@@ -710,8 +710,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineBytesx3 = 3 * lineBytes;
     const long lineBytesx4 = 4 * lineBytes;
     const long lineBytesx5 = 5 * lineBytes;
-
-    const long lineCountBy4 = lineCount / 4;
     
     uint8_t* outputPixels = (uint8_t*)[outputBuffer mutableBytes];
     uint8_t* workingPixels = (uint8_t*)[workingBuffer mutableBytes];
@@ -730,7 +728,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const uint8_t* inputPtr3 = field1Pixels + 4;
     const uint8_t* inputPtr4 = field1Pixels + 6;
 
-    for (long y = 0; y < lineCountBy4; ++y){
+    for (long y = 0; y < lineCount; y += 4){
         for (long z = 0; z < lineLength; z += 2){
             
 //            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
@@ -776,7 +774,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     inputPtr3 = field2Pixels + 4;
     inputPtr4 = field2Pixels + 6;
 
-    for (long y = 0; y < lineCountBy4; ++y){
+    for (long y = 0; y < lineCount; y += 4){
         for (long z = 0; z < lineLength; z += 2){
             
 //            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
