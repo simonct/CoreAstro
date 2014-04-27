@@ -705,7 +705,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const long lineBytesx4 = 4 * lineBytes;
 
     uint8_t* outputBuffer = malloc(inputLength);
-    uint8_t* workingBuffer = malloc(inputLength + lineBytes);
+    uint8_t* workingBuffer = malloc(inputLength);
 
     const uint8_t* field1Pixels = inputBuffer;
     const uint8_t* field2Pixels = inputBuffer + inputLength/2;
@@ -713,8 +713,8 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     // set output pointers to output buffer
     uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
     uint8_t* outputPtr3 = workingBuffer; // line[1] - 4 // ** originally lineBytes - 4
-    uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 4; // line[3898] + 4
-    uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes + 4; // line[3900] + 4 ** buffer overrun **
+    uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3; // line[3898] + 4 // ** originally + 4
+    uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes; // line[3900] + 4 ** buffer overrun ** // ** originally + 4
 
     // set input pointers to field 1
     const uint8_t* inputPtr1 = field1Pixels;
