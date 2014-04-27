@@ -698,27 +698,19 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     
     const uint8_t* inputBuffer = [pixels bytes];
     const NSInteger inputLength = [pixels length];
-
-//    NSMutableData* workingBuffer = [NSMutableData dataWithLength:bufferLength];
-//    NSMutableData* outputBuffer = [NSMutableData dataWithLength:bufferLength];
     
-
     const long lineBytes = 2 * lineLength;
     const long lineBytesx2 = 2 * lineBytes;
     const long lineBytesx3 = 3 * lineBytes;
     const long lineBytesx4 = 4 * lineBytes;
-    const long lineBytesx5 = 5 * lineBytes;
-//    const long lineBytesx6 = 6 * lineBytes;
 
-    uint8_t* workingBuffer = malloc(inputLength + lineBytesx4);
     uint8_t* outputBuffer = malloc(inputLength + lineBytesx4);
+    uint8_t* workingBuffer = malloc(inputLength + lineBytesx4);
 
     uint8_t* outputPixels = outputBuffer; // line[0]
     uint8_t* workingPixels = workingBuffer; // line[0]
     const uint8_t* field1Pixels = inputBuffer;
     const uint8_t* field2Pixels = inputBuffer + inputLength/2;
-    
-//    workingPixels += lineBytesx2; // move start point to line[2]
     
     uint8_t* outputPtr1 = workingPixels + lineBytesx3; // starts at line[3]
     uint8_t* outputPtr3 = workingPixels + lineBytes - 4; // line[1]-4
@@ -731,47 +723,25 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const uint8_t* inputPtr4 = field1Pixels + 6;
 
     // process 1 field's worth of alternate lines
+    long i = 0;
     for (long y = 0; y < lineCount; y += 4){
         
         // process a single output line
-        for (long z = 0; z < lineLength; z += 2){
-            
-//            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr2 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr3 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr4 - workingbuffer < lineLength * lineCount * 2);
-
-            // copy pixels
-            *(uint16_t*)outputPtr1 = *(uint16_t*)inputPtr3; // green
-            *(uint16_t*)outputPtr2 = *(uint16_t*)inputPtr4; // blue
-            *(uint16_t*)outputPtr3 = *(uint16_t*)inputPtr1; // green
-            *(uint16_t*)outputPtr4 = *(uint16_t*)inputPtr2; // blue
-            
-            // shift output by 2 pixels
-            outputPtr1 += 4;
-            outputPtr2 += 4;
-            outputPtr3 += 4;
-            outputPtr4 += 4;
-            
-            // shift input by 4 pixels
-            inputPtr1 += 8;
-            inputPtr2 += 8;
-            inputPtr3 += 8;
-            inputPtr4 += 8;
+        for (long x = 0; x < lineLength; x += 2, i += 4){
+            ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+            ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // blue
+            ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+            ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // blue
         }
         
-        // outputPtr[1-4] are now 1 line down from their start positions.
+        // move outputPtr[1,3] down 4 rows
+        outputPtr1 += lineBytesx4;
+        outputPtr3 += lineBytesx4;
         
-        // move outputPtr[1,3] down another 3 rows for a total of 4 down from the start position
-        outputPtr1 += lineBytesx3;
-        outputPtr3 += lineBytesx3;
-        
-        // move outputPtr[2,4] up anther 5 rows for a total of 4 up from the start position
-        outputPtr2 -= lineBytesx5;
-        outputPtr4 -= lineBytesx5;
+        // move outputPtr[2,4] up 4 rows
+        outputPtr2 -= lineBytesx4;
+        outputPtr4 -= lineBytesx4;
     }
-    
-//    workingPixels += lineBytesx2; // * original was lineBytes
     
     outputPtr1 = workingPixels + lineBytes + 2;
     outputPtr3 = workingPixels + lineBytesx3 - 2;
@@ -783,38 +753,25 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     inputPtr3 = field2Pixels + 4;
     inputPtr4 = field2Pixels + 6;
 
+    // process 1 field's worth of alternate lines
+    i = 0;
     for (long y = 0; y < lineCount; y += 4){
-        for (long z = 0; z < lineLength; z += 2){
-            
-//            assert(outputPtr1 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr2 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr3 - workingbuffer < lineLength * lineCount * 2);
-//            assert(outputPtr4 - workingbuffer < lineLength * lineCount * 2);
-            
-            // copy pixels
-            *(uint16_t*)outputPtr1 = *(uint16_t*)inputPtr3;
-            *(uint16_t*)outputPtr2 = *(uint16_t*)inputPtr4;
-            *(uint16_t*)outputPtr3 = *(uint16_t*)inputPtr1;
-            *(uint16_t*)outputPtr4 = *(uint16_t*)inputPtr2;
-            
-            // shift output by 2 pixels
-            outputPtr1 += 4;
-            outputPtr2 += 4;
-            outputPtr3 += 4;
-            outputPtr4 += 4;
-            
-            // shift input by 4 pixels
-            inputPtr1 += 8;
-            inputPtr2 += 8;
-            inputPtr3 += 8;
-            inputPtr4 += 8;
+        
+        // process a single output line
+        for (long x = 0; x < lineLength; x += 2, i += 4){
+            ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+            ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // red
+            ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+            ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // red
         }
         
-        // move output up 4 rows
-        outputPtr1 += lineBytesx3;
-        outputPtr2 -= lineBytesx5;
-        outputPtr3 += lineBytesx3;
-        outputPtr4 -= lineBytesx5;
+        // move outputPtr[1,3] down 4 rows
+        outputPtr1 += lineBytesx4;
+        outputPtr3 += lineBytesx4;
+        
+        // move outputPtr[2,4] up 4 rows
+        outputPtr2 -= lineBytesx4;
+        outputPtr4 -= lineBytesx4;
     }
     
     outputPtr1 = outputPixels + 7802;
