@@ -368,6 +368,42 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     *state = setup_data[0] | (setup_data[1] << 8);
 }
 
+uint8_t* sxDerotateM26CBuffer(const long lineLength,const long lineCount,uint8_t* workingBuffer)
+{
+    if (!workingBuffer){
+        return NULL;
+    }
+    
+    uint8_t* outputBuffer = NULL;
+    
+    const long inputLength = lineLength * lineCount * 2;
+    if (inputLength > 0){
+        
+        outputBuffer = malloc(inputLength);
+        if (outputBuffer){
+            
+            const long lineBytes = 2 * lineLength;
+
+            // derotate by copying from the height*width working buffer to the width*height output buffer
+            for (long x = lineLength - 1; x >= 0; --x){
+                
+                const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
+                uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+                
+                // copy one column from the input to one row on the output
+                for (long y = 0; y < lineCount; ++y){
+                    *(uint16_t*)output = *(uint16_t*)input;
+                    assert(output >= outputBuffer);
+                    output += 2;
+                    input += lineBytes; // move down one line
+                }
+            }
+        }
+    }
+    
+    return outputBuffer;
+}
+
 // try swapping field1Pixels and field2Pixels to see if there's any different in the final image
 static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uint8_t* field1Pixels,const long lineLength,const long lineCount)
 {
@@ -377,9 +413,9 @@ static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uin
     const long lineBytesx3 = 3 * lineBytes;
     const long lineBytesx4 = 4 * lineBytes;
     
-    uint8_t* outputBuffer = malloc(inputLength);
+    uint8_t* outputBuffer = NULL;
     uint8_t* workingBuffer = malloc(inputLength);
-    if (outputBuffer && workingBuffer){
+    if (workingBuffer){
         
         // set output pointers to output buffer
         uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
@@ -459,28 +495,13 @@ static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uin
             outputPtr4 -= lineBytesx4;
         }
         
-        // derotate by copying from the height*width working buffer to the width*height output buffer
-        for (long x = lineLength - 1; x >= 0; --x){
-            
-            const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
-            uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
-            
-            // copy one column from the input to one row on the output
-            for (long y = 0; y < lineCount; ++y){
-                *(uint16_t*)output = *(uint16_t*)input;
-                assert(output >= outputBuffer);
-                output += 2;
-                input += lineBytes; // move down one line
-            }
-        }
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
         
+        free(workingBuffer);
+
         // normalise...
     }
-    
-    if (workingBuffer){
-        free(workingBuffer);
-    }
-    
+
     return outputBuffer;
 }
 
@@ -491,9 +512,9 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
     const long lineBytesx2 = 2 * lineBytes;
 //    const long lineBytesx3 = 3 * lineBytes;
 
-    uint8_t* outputBuffer = malloc(inputLength);
+    uint8_t* outputBuffer = NULL;
     uint8_t* workingBuffer = malloc(inputLength);
-    if (outputBuffer && workingBuffer){
+    if (workingBuffer){
         
         uint8_t* outputPtr1 = workingBuffer + lineBytes + 2; // + 4;
         uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes; // (lineLength*4) + 2;
@@ -527,23 +548,8 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
             outputPtr2 -= lineBytesx2;
         }
         
-        // derotate by copying from the height*width working buffer to the width*height output buffer
-        for (long x = lineLength - 1; x >= 0; --x){
-            
-            const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
-            uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
-            
-            // copy one column from the input to one row on the output
-            for (long y = 0; y < lineCount; ++y){
-                *(uint16_t*)output = *(uint16_t*)input;
-                assert(output >= outputBuffer);
-                output += 2;
-                input += lineBytes; // move down one line
-            }
-        }
-    }
-    
-    if (workingBuffer){
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
+        
         free(workingBuffer);
     }
     
