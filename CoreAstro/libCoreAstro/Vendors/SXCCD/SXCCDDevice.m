@@ -489,7 +489,7 @@
                         else {
                             
                             // for interlaced cameras in binning mode read both fields together with no de-interlacing necessary...
-                            if (exp.bin.width != 1 || exp.bin.height != 1){
+                            if ((exp.bin.width != 1 || exp.bin.height != 1) && self.productID != 806){
                                 
                                 SXCCDIOReadFieldCommand* readField = [[SXCCDIOReadFieldCommand alloc] init];
                                 readField.params = exposureCommand.params;
@@ -570,7 +570,7 @@
     void (^startExposureSequence)(SXCCDIOExposeCommand*) = ^(SXCCDIOExposeCommand* exposureCommand) {
         
         // unbinned interlaced cameras require special handling
-        if (self.isInterlaced && exp.bin.width == 1 && exp.bin.height == 1){
+        if (self.isInterlaced && ((exp.bin.width == 1 && exp.bin.height == 1) || self.productID == 806)){
             
             const NSInteger flushOnce = 1;
             const NSInteger exposureTime = exp.ms;

@@ -368,7 +368,8 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     *state = setup_data[0] | (setup_data[1] << 8);
 }
 
-static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+// try swapping field1Pixels and field2Pixels to see if there's any different in the final image
+static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uint8_t* field1Pixels,const long lineLength,const long lineCount)
 {
     const long inputLength = lineLength * lineCount * 2;
     const long lineBytes = 2 * lineLength;
@@ -481,6 +482,77 @@ static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_
     }
     
     return outputBuffer;
+}
+
+static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+{
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+    const long lineBytesx2 = 2 * lineBytes;
+//    const long lineBytesx3 = 3 * lineBytes;
+
+    uint8_t* outputBuffer = malloc(inputLength);
+    uint8_t* workingBuffer = malloc(inputLength);
+    if (outputBuffer && workingBuffer){
+        
+        uint8_t* outputPtr1 = workingBuffer + lineBytes; // + 4;
+        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes; // (lineLength*4) + 2;
+
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        
+        long i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytesx2;
+            outputPtr2 -= lineBytesx2;
+        }
+        
+        outputPtr1 = workingBuffer; //  + 2 + 4;
+        outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytesx2; // + 4;
+        
+        inputPtr1 = field2Pixels;
+        inputPtr2 = field2Pixels + 2;
+        
+        i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytesx2;
+            outputPtr2 -= lineBytesx2;
+        }
+        
+        // derotate by copying from the height*width working buffer to the width*height output buffer
+        for (long x = lineLength - 1; x >= 0; --x){
+            
+            const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
+            uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+            
+            // copy one column from the input to one row on the output
+            for (long y = 0; y < lineCount; ++y){
+                *(uint16_t*)output = *(uint16_t*)input;
+                assert(output >= outputBuffer);
+                output += 2;
+                input += lineBytes; // move down one line
+            }
+        }
+    }
+    
+    if (workingBuffer){
+        free(workingBuffer);
+    }
+    
+    return outputBuffer;
+}
+
+static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+{
+    return nil;
 }
 
 @implementation SXCCDIOResetCommand
@@ -790,17 +862,32 @@ static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_
     const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.width/2 : self.params.size.width/4;
     const NSInteger width = self.params.size.height * 2;
     
+    NSInteger binx;
+    NSInteger biny;
+    if (self.params.bin.width == 4 && self.params.bin.height == 4){
+        binx = 8;
+        biny = 2;
+    }
+    else if (self.params.bin.width == 2 && self.params.bin.height == 2){
+        binx = 4;
+        biny = 1;
+    }
+    else {
+        binx = 1;
+        biny = 1;
+    }
+    
     if (self.latchPixels){
         
         uint8_t buffer[18];
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,self.params.bin.width,self.params.bin.height,buffer);
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,binx,biny,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
         
         uint8_t buffer[22];
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,self.params.bin.width,self.params.bin.height,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,binx,biny,(uint32_t)self.ms,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
@@ -808,7 +895,10 @@ static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    if ([pixels length] == (self.params.size.width * self.params.size.height * 2) && self.params.bin.width == 1 && self.params.bin.height == 1){
+    const long lineCount = self.params.size.width/self.params.bin.width;
+    const long lineLength = self.params.size.height/self.params.bin.height;
+
+    if ([pixels length] == (lineCount * lineLength * 2)){
         
         const uint8_t* inputBuffer = [pixels bytes];
         const NSInteger inputLength = [pixels length];
@@ -816,11 +906,15 @@ static uint8_t* sxReconstructM26CFields(const uint8_t* field1Pixels,const uint8_
         const uint8_t* field1Pixels = inputBuffer;
         const uint8_t* field2Pixels = inputBuffer + inputLength/2;
 
-        const long lineCount = self.params.size.width/self.params.bin.width;
-        const long lineLength = self.params.size.height/self.params.bin.height;
-
-        uint8_t* outputBuffer = sxReconstructM26CFields(field1Pixels,field2Pixels,lineLength,lineCount);
+        uint8_t* outputBuffer = nil;
         
+        if (self.params.bin.width == 1 && self.params.bin.height == 1){
+            outputBuffer = sxReconstructM26CFields1x1(field1Pixels,field2Pixels,lineLength,lineCount);
+        }
+        else if (self.params.bin.width == 2 && self.params.bin.height == 2){
+            outputBuffer = sxReconstructM26CFields2x2(field1Pixels,field2Pixels,lineLength,lineCount);
+        }
+
         return outputBuffer ? [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES] : pixels;
     }
     
