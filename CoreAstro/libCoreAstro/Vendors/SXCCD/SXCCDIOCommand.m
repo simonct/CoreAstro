@@ -495,7 +495,7 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
     uint8_t* workingBuffer = malloc(inputLength);
     if (outputBuffer && workingBuffer){
         
-        uint8_t* outputPtr1 = workingBuffer + lineBytes; // + 4;
+        uint8_t* outputPtr1 = workingBuffer + lineBytes + 2; // + 4;
         uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes; // (lineLength*4) + 2;
 
         const uint8_t* inputPtr1 = field1Pixels;
@@ -511,7 +511,7 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
             outputPtr2 -= lineBytesx2;
         }
         
-        outputPtr1 = workingBuffer; //  + 2 + 4;
+        outputPtr1 = workingBuffer + 2; //  + 2 + 4;
         outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytesx2; // + 4;
         
         inputPtr1 = field2Pixels;
@@ -894,6 +894,9 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
+    
+//    NSString* filename = [NSString stringWithFormat:@"m26c%ldx%ld.pixels",self.params.bin.width,self.params.bin.height];
+//    [pixels writeToFile:[@"/Users/simon/Desktop/" stringByAppendingPathComponent:filename] atomically:YES];
     
     const long lineCount = self.params.size.width/self.params.bin.width;
     const long lineLength = self.params.size.height/self.params.bin.height;
