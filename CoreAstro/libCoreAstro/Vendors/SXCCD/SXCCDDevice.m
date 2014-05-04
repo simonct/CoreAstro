@@ -35,6 +35,7 @@
 @property (nonatomic,assign) BOOL shutterOpen;
 @property (nonatomic,strong) SXCCDProperties* sensor;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures;
+@property (nonatomic,strong) NSDate* exposureStartDate;
 @property (nonatomic,strong) NSDate* exposureCompletionDate;
 @property (nonatomic,strong) NSDate* lastCompletionDate;
 @property (nonatomic,copy) void (^exposureCompletion)(NSError*,CASCCDExposure*image);
@@ -404,7 +405,7 @@
     }
     
     // record the exposure start time
-    NSDate* time = [NSDate date];
+    self.exposureStartDate = [NSDate date];
     
     // helper block to create the exposure object from the exposure's pixels and then call the completion block
     void (^exposureCompleted)(NSError*,NSData*) = ^(NSError* error,NSData* pixels) {
@@ -422,7 +423,7 @@
         
         CASCCDExposure* exposure = nil;
         if (!error){
-            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:self.exposureCommand.params time:time];
+            exposure = [CASCCDExposure exposureWithPixels:pixels camera:self params:self.exposureCommand.params time:self.exposureStartDate];
         }
         
         if (self.exposureCompletion){
@@ -464,10 +465,10 @@
                         // being externally timed and need to execute the command immediately
                         NSDate* when = nil;
                         if (!exposureCommand.latchPixels){
-                            when = [time dateByAddingTimeInterval:exposureCommand.params.ms/1000.0];
+                            when = [self.exposureStartDate dateByAddingTimeInterval:exposureCommand.params.ms/1000.0];
                         }
                         else {
-                            NSLog(@"Elapsed time %f",[[NSDate date] timeIntervalSinceDate:time]);
+                            NSLog(@"Elapsed time %f",[[NSDate date] timeIntervalSinceDate:self.exposureStartDate]);
                         }
                         
                         // todo; record the actual exposure time to account for inaccuracies in external timing
