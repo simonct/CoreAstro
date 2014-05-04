@@ -379,7 +379,7 @@ uint8_t* sxDerotateM26CBuffer(const long lineLength,const long lineCount,uint8_t
     const long inputLength = lineLength * lineCount * 2;
     if (inputLength > 0){
         
-        outputBuffer = malloc(inputLength);
+        outputBuffer = calloc(inputLength,1);
         if (outputBuffer){
             
             const long lineBytes = 2 * lineLength;
@@ -414,7 +414,7 @@ static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uin
     const long lineBytesx4 = 4 * lineBytes;
     
     uint8_t* outputBuffer = NULL;
-    uint8_t* workingBuffer = malloc(inputLength);
+    uint8_t* workingBuffer = calloc(inputLength,1);
     if (workingBuffer){
         
         // set output pointers to output buffer
@@ -513,7 +513,7 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
 //    const long lineBytesx3 = 3 * lineBytes;
 
     uint8_t* outputBuffer = NULL;
-    uint8_t* workingBuffer = malloc(inputLength);
+    uint8_t* workingBuffer = calloc(inputLength,1);
     if (workingBuffer){
         
         uint8_t* outputPtr1 = workingBuffer + lineBytes + 2; // + 4;
@@ -558,7 +558,37 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
 
 static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
 {
-    return nil;
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+    const long lineBytesx2 = 2 * lineBytes;
+    //    const long lineBytesx3 = 3 * lineBytes;
+    
+    uint8_t* outputBuffer = NULL;
+    uint8_t* workingBuffer = calloc(inputLength,1);
+    if (workingBuffer){
+        
+        uint8_t* outputPtr1 = workingBuffer;
+        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes;
+        
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        
+        long i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytes;
+            outputPtr2 -= lineBytes;
+        }
+        
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
+        
+        free(workingBuffer);
+    }
+    
+    return outputBuffer;
 }
 
 @implementation SXCCDIOResetCommand
@@ -864,6 +894,13 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
             break;
     }
     
+    if (self.params.bin.width == 3 && self.params.bin.height == 3){
+        NSLog(@"SXCCDIOExposeCommandM26C: Replacing 3x3 binning with 4x4");
+        CASExposeParams params = self.params;
+        params.bin = CASSizeMake(4, 4);
+        self.params = params;
+    }
+
     // note that we're swapping width and height on the params sent to the M26C
     const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.width/2 : self.params.size.width/4;
     const NSInteger width = self.params.size.height * 2;
@@ -907,7 +944,7 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     const long lineCount = self.params.size.width/self.params.bin.width;
     const long lineLength = self.params.size.height/self.params.bin.height;
 
-    if ([pixels length] == (lineCount * lineLength * 2)){
+    if (/*[pixels length] == (lineCount * lineLength * 2)*/1 /* *** TEMP ** */){
         
         const uint8_t* inputBuffer = [pixels bytes];
         const NSInteger inputLength = [pixels length];
@@ -923,11 +960,18 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
         else if (self.params.bin.width == 2 && self.params.bin.height == 2){
             outputBuffer = sxReconstructM26CFields2x2(field1Pixels,field2Pixels,lineLength,lineCount);
         }
+        else if (self.params.bin.width == 4 && self.params.bin.height == 4){
+            outputBuffer = sxReconstructM26CFields4x4(field1Pixels,field2Pixels,lineLength,lineCount);
+        }
 
         return outputBuffer ? [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES] : pixels;
     }
     
     return pixels;
+}
+
+- (BOOL)allowsUnderrun {
+    return YES; // 4x4 binning mode returns rather than 637650
 }
 
 @end
