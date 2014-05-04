@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, SXCCDIOField) {
 
 - (void)getParams:(void (^)(NSError*,SXCCDProperties* sensor))block;
 
-- (void)flushField:(SXCCDIOField)field block:(void (^)(NSError*))block;
+- (void)flushField:(SXCCDIOField)field wipe:(BOOL)wipe block:(void (^)(NSError*))block;
 
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
