@@ -700,7 +700,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 @end
 
-@implementation SXCCDIOExposeCommandInterlaced
+@implementation SXCCDIOExposeCommandInterlaced // todo; rename SXCCDIOExposeCommandLodestar as the param fixup and post processing is specific to that camera
 
 - (id)init
 {
@@ -741,7 +741,37 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         self.params = modParams;
     }
     
-    return [super toDataRepresentation];
+    NSInteger flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+    NSInteger binY = self.params.bin.height;
+    const NSInteger height = self.params.size.height / 2;
+    
+    switch (self.field) {
+        case kSXCCDIOFieldOdd:
+            flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+        case kSXCCDIOFieldEven:
+            flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        case kSXCCDIOFieldBoth:
+            flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            binY /= 2;
+            break;
+    }
+    
+    if (self.latchPixels){
+        
+        uint8_t buffer[18];
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
+    else {
+        
+        uint8_t buffer[22];
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,(uint32_t)self.ms,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
