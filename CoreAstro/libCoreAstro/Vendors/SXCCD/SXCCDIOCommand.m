@@ -418,10 +418,10 @@ static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uin
     if (workingBuffer){
         
         // set output pointers to output buffer
-        uint8_t* outputPtr1 = workingBuffer + lineBytesx2; // starts at line[3]
-        uint8_t* outputPtr3 = workingBuffer; // line[1] - 4 // ** originally lineBytes - 4
-        uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3; // line[3898] + 4 // ** originally + 4
-        uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes; // line[3900] + 4 ** buffer overrun ** // ** originally + 4
+        uint8_t* outputPtr1 = workingBuffer + lineBytesx2;
+        uint8_t* outputPtr3 = workingBuffer;
+        uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3;
+        uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes;
         
         // set input pointers to field 1
         const uint8_t* inputPtr1 = field1Pixels;
@@ -457,10 +457,10 @@ static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uin
         }
         
         // reset output pointers to output buffer
-        outputPtr1 = workingBuffer + 2; // starts at line[1] + 2
-        outputPtr3 = workingBuffer + lineBytesx2 - 2; // starts at line[3] - 2
-        outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2; // line[3898] + 2
-        outputPtr4 = workingBuffer + inputLength - lineBytes + 2; // line[3900] + 2 ** buffer overrun **
+        outputPtr1 = workingBuffer + 2;
+        outputPtr3 = workingBuffer + lineBytesx2 - 2;
+        outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2;
+        outputPtr4 = workingBuffer + inputLength - lineBytes + 2;
         
         // reset input pointers to field 1
         inputPtr1 = field2Pixels;
@@ -510,14 +510,13 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
     const long inputLength = lineLength * lineCount * 2;
     const long lineBytes = 2 * lineLength;
     const long lineBytesx2 = 2 * lineBytes;
-//    const long lineBytesx3 = 3 * lineBytes;
 
     uint8_t* outputBuffer = NULL;
     uint8_t* workingBuffer = calloc(inputLength,1);
     if (workingBuffer){
         
-        uint8_t* outputPtr1 = workingBuffer + lineBytes + 2; // + 4;
-        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes; // (lineLength*4) + 2;
+        uint8_t* outputPtr1 = workingBuffer + lineBytes + 2;
+        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes;
 
         const uint8_t* inputPtr1 = field1Pixels;
         const uint8_t* inputPtr2 = field1Pixels + 2;
@@ -532,8 +531,8 @@ static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uin
             outputPtr2 -= lineBytesx2;
         }
         
-        outputPtr1 = workingBuffer + 2; //  + 2 + 4;
-        outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytesx2; // + 4;
+        outputPtr1 = workingBuffer + 2;
+        outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytesx2;
         
         inputPtr1 = field2Pixels;
         inputPtr2 = field2Pixels + 2;
@@ -560,7 +559,7 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 {
     const long inputLength = lineLength * lineCount * 2;
     const long lineBytes = 2 * lineLength;
-    const long lineBytesx2 = 2 * lineBytes;
+//    const long lineBytesx2 = 2 * lineBytes;
     //    const long lineBytesx3 = 3 * lineBytes;
     
     uint8_t* outputBuffer = NULL;
