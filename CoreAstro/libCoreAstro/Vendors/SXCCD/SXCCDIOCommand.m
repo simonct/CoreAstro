@@ -795,6 +795,10 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     return pixels;
 }
 
+- (BOOL)isUnbinned {
+    return (self.params.bin.height == 1 && self.params.bin.width == 1);
+}
+
 @end
 
 @implementation SXCCDIOExposeCommandM25C
@@ -1019,9 +1023,58 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     return [super toDataRepresentation];
 }
 
+@end
+
+@implementation SXCCDIOExposeCommandLodestar
+
+- (NSInteger) readSize {
+    
+    if (self.isUnbinned){
+        return [super readSize];
+    }
+    
+    NSInteger count = [super readSize];
+    if (self.field != kSXCCDIOFieldBoth){
+        count /= 2;
+    }
+    return count;
+}
+
+- (NSData*)toDataRepresentation {
+    
+    if (self.isUnbinned){
+        return [super toDataRepresentation];
+    }
+    
+    uint8_t buffer[8];
+    
+    NSInteger fieldFlag;
+    switch (self.field) {
+        case kSXCCDIOFieldOdd:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+        case kSXCCDIOFieldEven:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        default:
+        case kSXCCDIOFieldBoth:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+    }
+    
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX, fieldFlag, buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
+    if (!self.isUnbinned){
+        return [super postProcessPixels:pixels];
+    }
+    
+    // de-interlace and normalise the two fields
+    if ([pixels length]){
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
         if ([rearrangedPixels length]){

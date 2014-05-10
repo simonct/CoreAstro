@@ -345,11 +345,16 @@
     SXCCDIOExposeCommand* expose = nil;
     
     if (self.isInterlaced){
-        if (self.productID == 806){
-            expose = [[SXCCDIOExposeCommandM26C alloc] init]; // special command to handle the rotated/interleaved pixel structure
-        }
-        else {
-            expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
+        switch (self.productID){
+            case 1287:
+                expose = [[SXCCDIOExposeCommandLodestar alloc] init];
+                break;
+            case 806:
+                expose = [[SXCCDIOExposeCommandM26C alloc] init];
+                break;
+            default:
+                expose = [[SXCCDIOExposeCommandInterlaced alloc] init];
+                break;
         }
     }
     else switch (self.productID) {

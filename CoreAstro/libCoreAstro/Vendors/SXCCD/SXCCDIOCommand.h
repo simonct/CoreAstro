@@ -59,6 +59,7 @@
 @property (nonatomic,assign) BOOL latchPixels;
 @property (nonatomic,readonly) NSData* pixels;
 @property (nonatomic,assign) SXCCDIOField field;
+@property (nonatomic,readonly) BOOL isUnbinned;
 - (NSData*)postProcessPixels:(NSData*)pixels;
 @end
 
@@ -73,6 +74,10 @@
 
 // specific expose command for the M26C that knows how to unpack the interleaved pixel format
 @interface SXCCDIOExposeCommandM26C : SXCCDIOExposeCommandInterlaced
+@end
+
+// specific expose command for the Lodestar
+@interface SXCCDIOExposeCommandLodestar : SXCCDIOExposeCommandInterlaced
 @end
 
 // bulk read command
