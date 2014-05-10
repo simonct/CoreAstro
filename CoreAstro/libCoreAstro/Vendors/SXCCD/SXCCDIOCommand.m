@@ -368,6 +368,228 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     *state = setup_data[0] | (setup_data[1] << 8);
 }
 
+uint8_t* sxDerotateM26CBuffer(const long lineLength,const long lineCount,uint8_t* workingBuffer)
+{
+    if (!workingBuffer){
+        return NULL;
+    }
+    
+    uint8_t* outputBuffer = NULL;
+    
+    const long inputLength = lineLength * lineCount * 2;
+    if (inputLength > 0){
+        
+        outputBuffer = calloc(inputLength,1);
+        if (outputBuffer){
+            
+            const long lineBytes = 2 * lineLength;
+
+            // derotate by copying from the height*width working buffer to the width*height output buffer
+            for (long x = lineLength - 1; x >= 0; --x){
+                
+                const uint8_t* input = workingBuffer + (2 * (lineLength - x)); // move right to left along the input
+                uint8_t* output = outputBuffer + inputLength - ((lineLength - x) * 2 * lineCount); // move bottom to top on the output
+                
+                // copy one column from the input to one row on the output
+                for (long y = 0; y < lineCount; ++y){
+                    *(uint16_t*)output = *(uint16_t*)input;
+                    assert(output >= outputBuffer);
+                    output += 2;
+                    input += lineBytes; // move down one line
+                }
+            }
+        }
+    }
+    
+    return outputBuffer;
+}
+
+// try swapping field1Pixels and field2Pixels to see if there's any different in the final image
+static uint8_t* sxReconstructM26CFields1x1(const uint8_t* field2Pixels,const uint8_t* field1Pixels,const long lineLength,const long lineCount)
+{
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+    const long lineBytesx2 = 2 * lineBytes;
+    const long lineBytesx3 = 3 * lineBytes;
+    const long lineBytesx4 = 4 * lineBytes;
+    
+    uint8_t* outputBuffer = NULL;
+    uint8_t* workingBuffer = calloc(inputLength,1);
+    if (workingBuffer){
+        
+        // set output pointers to output buffer
+        uint8_t* outputPtr1 = workingBuffer + lineBytesx2;
+        uint8_t* outputPtr3 = workingBuffer;
+        uint8_t* outputPtr2 = workingBuffer + inputLength - lineBytesx3;
+        uint8_t* outputPtr4 = workingBuffer + inputLength - lineBytes;
+        
+        // set input pointers to field 1
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        const uint8_t* inputPtr3 = field1Pixels + 4;
+        const uint8_t* inputPtr4 = field1Pixels + 6;
+        
+        // process 1 field's worth of alternate lines
+        long i = 0;
+        for (long y = 0; y < lineCount; y += 4){
+            
+            // process a single output line
+            for (long x = 0; x < lineLength; x += 2, i += 4){
+                
+                assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr3 >= workingBuffer);
+                assert(outputPtr4 >= workingBuffer);
+                
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // blue
+                ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+                ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // blue
+            }
+            
+            // move outputPtr[1,3] down 4 rows
+            outputPtr1 += lineBytesx4;
+            outputPtr3 += lineBytesx4;
+            
+            // move outputPtr[2,4] up 4 rows
+            outputPtr2 -= lineBytesx4;
+            outputPtr4 -= lineBytesx4;
+        }
+        
+        // reset output pointers to output buffer
+        outputPtr1 = workingBuffer + 2;
+        outputPtr3 = workingBuffer + lineBytesx2 - 2;
+        outputPtr2 = workingBuffer + inputLength - lineBytesx3 + 2;
+        outputPtr4 = workingBuffer + inputLength - lineBytes + 2;
+        
+        // reset input pointers to field 1
+        inputPtr1 = field2Pixels;
+        inputPtr2 = field2Pixels + 2;
+        inputPtr3 = field2Pixels + 4;
+        inputPtr4 = field2Pixels + 6;
+        
+        // process 1 field's worth of alternate lines
+        i = 0;
+        for (long y = 0; y < lineCount; y += 4){
+            
+            // process a single output line
+            for (long x = 0; x < lineLength; x += 2, i += 4){
+                
+                assert(outputPtr1 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr2 - workingBuffer < lineLength * lineCount * 2);
+                assert(outputPtr3 >= workingBuffer);
+                assert(outputPtr4 >= workingBuffer);
+                
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr3)[i]; // green
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr4)[i]; // red
+                ((uint16_t*)outputPtr3)[x] = ((uint16_t*)inputPtr1)[i]; // green
+                ((uint16_t*)outputPtr4)[x] = ((uint16_t*)inputPtr2)[i]; // red
+            }
+            
+            // move outputPtr[1,3] down 4 rows
+            outputPtr1 += lineBytesx4;
+            outputPtr3 += lineBytesx4;
+            
+            // move outputPtr[2,4] up 4 rows
+            outputPtr2 -= lineBytesx4;
+            outputPtr4 -= lineBytesx4;
+        }
+        
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
+        
+        free(workingBuffer);
+
+        // normalise...
+    }
+
+    return outputBuffer;
+}
+
+static uint8_t* sxReconstructM26CFields2x2(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+{
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+    const long lineBytesx2 = 2 * lineBytes;
+
+    uint8_t* outputBuffer = NULL;
+    uint8_t* workingBuffer = calloc(inputLength,1);
+    if (workingBuffer){
+        
+        uint8_t* outputPtr1 = workingBuffer + lineBytes + 2;
+        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes;
+
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        
+        long i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytesx2;
+            outputPtr2 -= lineBytesx2;
+        }
+        
+        outputPtr1 = workingBuffer + 2;
+        outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytesx2;
+        
+        inputPtr1 = field2Pixels;
+        inputPtr2 = field2Pixels + 2;
+        
+        i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytesx2;
+            outputPtr2 -= lineBytesx2;
+        }
+        
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
+        
+        free(workingBuffer);
+    }
+    
+    return outputBuffer;
+}
+
+static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uint8_t* field2Pixels,const long lineLength,const long lineCount)
+{
+    const long inputLength = lineLength * lineCount * 2;
+    const long lineBytes = 2 * lineLength;
+//    const long lineBytesx2 = 2 * lineBytes;
+    //    const long lineBytesx3 = 3 * lineBytes;
+    
+    uint8_t* outputBuffer = NULL;
+    uint8_t* workingBuffer = calloc(inputLength,1);
+    if (workingBuffer){
+        
+        uint8_t* outputPtr1 = workingBuffer;
+        uint8_t* outputPtr2 = workingBuffer + (lineCount * lineBytes) - lineBytes;
+        
+        const uint8_t* inputPtr1 = field1Pixels;
+        const uint8_t* inputPtr2 = field1Pixels + 2;
+        
+        long i = 0;
+        for (long y = 0; y < lineCount/2; ++y){
+            for (long x = 0; x < lineLength; x += 2, i += 2){
+                ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
+                ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
+            }
+            outputPtr1 += lineBytes;
+            outputPtr2 -= lineBytes;
+        }
+        
+        outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
+        
+        free(workingBuffer);
+    }
+    
+    return outputBuffer;
+}
+
 @implementation SXCCDIOResetCommand
 
 - (NSData*)toDataRepresentation {
@@ -573,6 +795,10 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     return pixels;
 }
 
+- (BOOL)isUnbinned {
+    return (self.params.bin.height == 1 && self.params.bin.width == 1);
+}
+
 @end
 
 @implementation SXCCDIOExposeCommandM25C
@@ -582,8 +808,6 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 }
 
 - (NSData*)toDataRepresentation {
-    
-    uint8_t buffer[22];
     
     if (self.params.bin.width == 3 && self.params.bin.height == 3){
         NSLog(@"SXCCDIOExposeCommandM25C: Replacing 3x3 binning with 4x4");
@@ -600,18 +824,24 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     const NSUInteger originY = self.params.origin.y / 2;
 
     if (self.latchPixels){
+        
+        uint8_t buffer[18];
         sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
+        
+        uint8_t buffer[22];
         sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,SXCCD_EXP_FLAGS_FIELD_BOTH,originX,originY,width,height,binX,binY,(uint32_t)self.ms,buffer);
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
-    
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
     if ([pixels length]){
+        
+        // sxReconstructM25CFields()
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
         if ([rearrangedPixels length]){
@@ -651,51 +881,100 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 
 - (NSData*)toDataRepresentation {
     
-    // probably have to limit origins and subframe dimensions to a 2 or 4 pixel grid
+    // todo; limit binning to 1, 2 & 4
     
-    return [super toDataRepresentation];
+    USHORT flags = 0;
+    switch (self.field) {
+        default:
+        case kSXCCDIOFieldBoth:
+            flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+        case kSXCCDIOFieldEven:
+            flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        case kSXCCDIOFieldOdd:
+            flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+    }
+    
+    if (self.params.bin.width == 3 && self.params.bin.height == 3){
+        NSLog(@"SXCCDIOExposeCommandM26C: Replacing 3x3 binning with 4x4");
+        CASExposeParams params = self.params;
+        params.bin = CASSizeMake(4, 4);
+        self.params = params;
+    }
+
+    // note that we're swapping width and height on the params sent to the M26C
+    const NSInteger height = (self.field == kSXCCDIOFieldBoth) ? self.params.size.width/2 : self.params.size.width/4;
+    const NSInteger width = self.params.size.height * 2;
+    
+    NSInteger binx;
+    NSInteger biny;
+    if (self.params.bin.width == 4 && self.params.bin.height == 4){
+        binx = 8;
+        biny = 2;
+    }
+    else if (self.params.bin.width == 2 && self.params.bin.height == 2){
+        binx = 4;
+        biny = 1;
+    }
+    else {
+        binx = 1;
+        biny = 1;
+    }
+    
+    if (self.latchPixels){
+        
+        uint8_t buffer[18];
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,binx,biny,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
+    else {
+        
+        uint8_t buffer[22];
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,width,height,binx,biny,(uint32_t)self.ms,buffer);
+        
+        return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    }
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
-        
-        NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
-        if ([rearrangedPixels length]){
-            
-            uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
-            uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
-            
-            if (pixelsPtr && rearrangedPixelsPtr){
-                
-                const size_t width = self.params.size.width;
-                const size_t height = self.params.size.height;
-                
-                void (^reconstructField)(size_t startRow) = ^(size_t startRow){
-                                        
-                    size_t i = startRow*width*height/2; // start index into the source buffer
-                    
-                    // do we actually get a height*width image from the chip and have to rotate it e.g. run columns first ?
+//    NSString* filename = [NSString stringWithFormat:@"m26c%ldx%ld.pixels",self.params.bin.width,self.params.bin.height];
+//    [pixels writeToFile:[@"/Users/simon/Desktop/" stringByAppendingPathComponent:filename] atomically:YES];
+    
+    const long lineCount = self.params.size.width/self.params.bin.width;
+    const long lineLength = self.params.size.height/self.params.bin.height;
 
-                    for (size_t row = startRow; row < height; row += 2){
-                        const size_t rowOffset = row*width; // (height - row - 1)*width;
-                        for (size_t col = 0; col < width; col += 2){
-                            rearrangedPixelsPtr[col + rowOffset] = pixelsPtr[i++]; // red or blue, starting at column [0]
-                            rearrangedPixelsPtr[(width - col - 1) + rowOffset] = pixelsPtr[i++]; // green, starting at column [width - 1]
-                        }
-                    }
-                };
-                
-//                dispatch_apply(2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), reconstructField);
-                reconstructField(0);
-                reconstructField(1);
-                
-                memcpy((void*)[pixels bytes], [rearrangedPixels bytes], [pixels length]);
-            }
+    if (/*[pixels length] == (lineCount * lineLength * 2)*/1 /* *** TEMP ** */){
+        
+        const uint8_t* inputBuffer = [pixels bytes];
+        const NSInteger inputLength = [pixels length];
+        
+        const uint8_t* field1Pixels = inputBuffer;
+        const uint8_t* field2Pixels = inputBuffer + inputLength/2;
+
+        uint8_t* outputBuffer = nil;
+        
+        if (self.params.bin.width == 1 && self.params.bin.height == 1){
+            outputBuffer = sxReconstructM26CFields1x1(field1Pixels,field2Pixels,lineLength,lineCount);
         }
+        else if (self.params.bin.width == 2 && self.params.bin.height == 2){
+            outputBuffer = sxReconstructM26CFields2x2(field1Pixels,field2Pixels,lineLength,lineCount);
+        }
+        else if (self.params.bin.width == 4 && self.params.bin.height == 4){
+            outputBuffer = sxReconstructM26CFields4x4(field1Pixels,field2Pixels,lineLength,lineCount);
+        }
+
+        return outputBuffer ? [NSData dataWithBytesNoCopy:outputBuffer length:inputLength freeWhenDone:YES] : pixels;
     }
     
     return pixels;
+}
+
+- (BOOL)allowsUnderrun {
+    return YES; // 4x4 binning mode returns rather than 637650
 }
 
 @end
@@ -774,9 +1053,58 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     }
 }
 
+@end
+
+@implementation SXCCDIOExposeCommandLodestar
+
+- (NSInteger) readSize {
+    
+    if (self.isUnbinned){
+        return [super readSize];
+    }
+    
+    NSInteger count = [super readSize];
+    if (self.field != kSXCCDIOFieldBoth){
+        count /= 2;
+    }
+    return count;
+}
+
+- (NSData*)toDataRepresentation {
+    
+    if (self.isUnbinned){
+        return [super toDataRepresentation];
+    }
+    
+    uint8_t buffer[8];
+    
+    NSInteger fieldFlag;
+    switch (self.field) {
+        case kSXCCDIOFieldOdd:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+        case kSXCCDIOFieldEven:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        default:
+        case kSXCCDIOFieldBoth:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+    }
+    
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX, fieldFlag, buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
+}
+
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
-    if ([pixels length] && self.params.bin.width == 1 && self.params.bin.height == 1){
+    if (!self.isUnbinned){
+        return [super postProcessPixels:pixels];
+    }
+    
+    // de-interlace and normalise the two fields
+    if ([pixels length]){
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
         if ([rearrangedPixels length]){

@@ -180,6 +180,7 @@
 }
 
 - (BOOL)isColour {
+    // todo; get from config file
     return self.sensor.colourMatrix != 0;   // unreliable e.g. M25C reports 0x0fff
 }
 
@@ -203,6 +204,13 @@
     const NSInteger flushCount = [[[self deviceParams] objectForKey:@"flush-count"] integerValue];
     // incorporate time since last exposure ?
     return flushCount;
+}
+
+- (NSInteger)interlacedExposureStrategyCutoff {
+    if (self.productID == 806){ // M26C
+        return 5000; // todo; this should probably come from the exposure command ?
+    }
+    return 1000;
 }
 
 - (void)fetchTemperature {
@@ -284,14 +292,12 @@
             
             if (self.isInterlaced){
                 getParams.params.height = getParams.params.height * 2;
-                CGSize pixelSize = getParams.params.pixelSize;
-                pixelSize.height /= 2;
-                getParams.params.pixelSize = pixelSize;
+                if (self.productID != 806){ // M26C
+                    CGSize pixelSize = getParams.params.pixelSize;
+                    pixelSize.height /= 2;
+                    getParams.params.pixelSize = pixelSize;
+                }
             }
-            
-//            if (self.productID == 806){ // M26C
-//                getParams.params.height *= 2;
-//            }
             
             self.sensor = getParams.params;
             self.sensor.sensorSize = NSSizeFromString([[self deviceParams] objectForKey:@"sensor-size"]);
@@ -340,15 +346,22 @@
     SXCCDIOExposeCommand* expose = nil;
     
     if (self.isInterlaced){
-        expose = [[SXCCDIOExposeCommandInterlaced alloc] init]; // actually just a clear e.g. start exposure command
+        switch (self.productID){
+            case 1287:
+                expose = [[SXCCDIOExposeCommandLodestar alloc] init];
+                break;
+            case 806:
+                expose = [[SXCCDIOExposeCommandM26C alloc] init];
+                break;
+            default:
+                expose = [[SXCCDIOExposeCommandInterlaced alloc] init];
+                break;
+        }
     }
     else switch (self.productID) {
         case 805:
             expose = [[SXCCDIOExposeCommandM25C alloc] init]; // special command to handle the dual output registers
             break;
-//        case 806:
-//            expose = [[SXCCDIOExposeCommandM26C alloc] init]; // special command to handle the rotated/interleaved pixel structure
-//            break;
         default:
             expose = [[SXCCDIOExposeCommand alloc] init]; // regular progressive camera
             break;
@@ -486,7 +499,7 @@
                         else {
                             
                             // for interlaced cameras in binning mode read both fields together with no de-interlacing necessary...
-                            if (exp.bin.width != 1 || exp.bin.height != 1){
+                            if ((exp.bin.width != 1 || exp.bin.height != 1) && self.productID != 806 /* todo; fixme, always use this mode for M26C even in binned mode */){
                                 
                                 SXCCDIOReadFieldCommand* readField = [[SXCCDIOReadFieldCommand alloc] init];
                                 readField.params = exposureCommand.params;
@@ -518,6 +531,8 @@
             completeExposure();
         }
         else {
+            
+            // hmm - do this for an interlaced exposure ??
             
             // if we're externally timed schedule a flush command for shortly before the exposure
             // completes to clear the vertical registers before reading the pixels (currently at T-2)
@@ -567,11 +582,11 @@
     void (^startExposureSequence)(SXCCDIOExposeCommand*) = ^(SXCCDIOExposeCommand* exposureCommand) {
         
         // unbinned interlaced cameras require special handling
-        if (self.isInterlaced && exp.bin.width == 1 && exp.bin.height == 1){
+        if (self.isInterlaced && ((exp.bin.width == 1 && exp.bin.height == 1) || self.productID == 806 /* todo; fixme, always use this mode for M26C even in binned mode */)){
             
             const NSInteger flushOnce = 1;
             const NSInteger exposureTime = exp.ms;
-            const NSInteger exposureStrategyCutoff = 1000; // or 5000 for M26C
+            const NSInteger exposureStrategyCutoff = [self interlacedExposureStrategyCutoff]; // 5000 for M26C, 1000 for everything else
             
             // clear both fields first ??
             
@@ -587,53 +602,62 @@
                 exposureCompleted(error,[exposureCommand postProcessPixels:combined]);
             };
             
-            if (exposureTime < exposureStrategyCutoff){
+            // start by flushing the whole chip
+            [self flushField:kSXCCDIOFieldBoth wipe:YES block:^(NSError *error) {
                 
-                exposureCommand.latchPixels = NO;
-                exposureCommand.readPixels = YES;
-                
-                // clear and expose EVEN
-                clearChargeAndExpose(exposureCommand,kSXCCDIOFieldEven,exposureTime,flushOnce,^(NSError* error,NSData* evenField){
+                // then check the exposure time; if it's quite short use a simple exposure strategy of simply exposing both fields independently
+                if (exposureTime < exposureStrategyCutoff){
                     
-                    // clear and expose ODD
-                    clearChargeAndExpose(exposureCommand,kSXCCDIOFieldOdd,exposureTime,flushOnce,^(NSError* error,NSData* oddField){
+                    NSLog(@"Using short exposure strategy");
+                    
+                    exposureCommand.latchPixels = NO; // use on-camera timing
+                    exposureCommand.readPixels = YES; // exposure command blocks until exposure is complete and reads pixels directly
+                    
+                    // clear and expose EVEN
+                    clearChargeAndExpose(exposureCommand,kSXCCDIOFieldEven,exposureTime,flushOnce,^(NSError* error,NSData* evenField){
                         
-                        // combine the fields, post process and complete
-                        combineAndComplete(error,evenField,oddField);
-                    });
-                });
-            }
-            else {
-                
-                __block CASExposeParams params = exposureCommand.params;
-                params.ms = 0;
-                exposureCommand.params = params;
-                exposureCommand.latchPixels = YES;
-                exposureCommand.readPixels = YES;
-                
-                // do a zero second clear, latch, read EVEN and discard the pixels
-                clearChargeAndExpose(exposureCommand,kSXCCDIOFieldEven,0,flushOnce,^(NSError* error,NSData* ignored){
-                    
-                    // reset the EVEN field
-                    [self flushField:kSXCCDIOFieldEven wipe:YES block:^(NSError *error) {
-
-                        // start a latched ODD exposure for the required exposure time
-                        params.ms = exposureTime;
-                        exposureCommand.params = params;
-                        exposePixelsAndCompleteExposure(kSXCCDIOFieldOdd,[NSDate dateWithTimeIntervalSinceNow:(exposureTime / 1000.0)],exposureCommand,^(NSError* error,NSData* oddField){
+                        // clear and expose ODD
+                        clearChargeAndExpose(exposureCommand,kSXCCDIOFieldOdd,exposureTime,flushOnce,^(NSError* error,NSData* oddField){
                             
-                            // finally, do an immediate EVEN latch and read
+                            // combine the fields, post process and complete
+                            combineAndComplete(error,evenField,oddField);
+                        });
+                    });
+                }
+                else {
+                    
+                    NSLog(@"Using long exposure strategy");
+                    
+                    __block CASExposeParams params = exposureCommand.params;
+                    params.ms = 0;
+                    exposureCommand.params = params;
+                    exposureCommand.latchPixels = YES; // use an external timer to control the exposure
+                    exposureCommand.readPixels = YES;  // exposure command blocks until exposure is complete and reads pixels directly
+                    
+                    // do a zero second clear, latch, read EVEN and discard the pixels
+                    clearChargeAndExpose(exposureCommand,kSXCCDIOFieldEven,0,flushOnce,^(NSError* error,NSData* ignored){
+                        
+                        // reset the EVEN field
+                        [self flushField:kSXCCDIOFieldEven wipe:YES block:^(NSError *error) {
+                            
+                            // start a latched ODD exposure for the required exposure time
                             params.ms = 0;
                             exposureCommand.params = params;
-                            exposePixelsAndCompleteExposure(kSXCCDIOFieldEven,nil,exposureCommand,^(NSError* error,NSData* evenField){
+                            exposePixelsAndCompleteExposure(kSXCCDIOFieldOdd,[NSDate dateWithTimeIntervalSinceNow:(exposureTime / 1000.0)],exposureCommand,^(NSError* error,NSData* oddField){
                                 
-                                // combine the fields, post process and complete
-                                combineAndComplete(error,evenField,oddField);
+                                // finally, do an immediate EVEN latch and read
+                                params.ms = 0;
+                                exposureCommand.params = params;
+                                exposePixelsAndCompleteExposure(kSXCCDIOFieldEven,nil,exposureCommand,^(NSError* error,NSData* evenField){
+                                    
+                                    // combine the fields, post process and complete
+                                    combineAndComplete(error,evenField,oddField);
+                                });
                             });
-                        });
-                    }];
-                });
-            }
+                        }];
+                    });
+                }
+            }];
         }
         else {
             
