@@ -559,8 +559,6 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 {
     const long inputLength = lineLength * lineCount * 2;
     const long lineBytes = 2 * lineLength;
-//    const long lineBytesx2 = 2 * lineBytes;
-    //    const long lineBytesx3 = 3 * lineBytes;
     
     uint8_t* outputBuffer = NULL;
     uint8_t* workingBuffer = calloc(inputLength,1);
@@ -574,7 +572,7 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
         
         long i = 0;
         for (long y = 0; y < lineCount/2; ++y){
-            for (long x = 0; x < lineLength; x += 2, i += 2){
+            for (long x = 0; x < lineLength; x += 1, i += 2){
                 ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
                 ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
             }
