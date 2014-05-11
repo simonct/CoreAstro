@@ -576,8 +576,8 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
                 ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
                 ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
             }
-            outputPtr1 += lineBytes;
-            outputPtr2 -= lineBytes;
+            outputPtr1 += 2*lineBytes;
+            outputPtr2 -= 2*lineBytes;
         }
         
         outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
