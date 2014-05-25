@@ -363,7 +363,14 @@ static void* kvoContext;
 - (IBAction)selection:(NSSegmentedControl*)sender
 {
     if (sender.selectedSegment == 0 && !self.exposureView.displayingScaledSubframe){
-        self.exposureView.showSelection = YES;
+        if (!self.cameraController.camera.canSubframe){
+            NSBeep(); // alert ?
+            sender.selectedSegment = 1;
+            self.exposureView.showSelection = NO;
+        }
+        else {
+            self.exposureView.showSelection = YES;
+        }
     }
     else {
         self.exposureView.showSelection = NO;
@@ -1017,6 +1024,11 @@ static void* kvoContext;
         }];
         
         [self zoomImageToFit:nil];
+    }
+    
+    // Subframes on the M26C aren't currently supported
+    if (!self.cameraController.camera.canSubframe){
+        [self.selectionControl setEnabled:NO forSegment:0];
     }
     
     // set progress display if this camera is capturing

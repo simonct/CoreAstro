@@ -69,7 +69,7 @@
 }
 
 - (NSArray*)binningModes {
-    return nil; // todo @[1,2,3,4], etc
+    return @[@1,@2,@3,@4];
 }
 
 @end

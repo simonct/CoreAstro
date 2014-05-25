@@ -191,6 +191,20 @@
     return (self.sensor.capabilities & (1 << 5)) != 0;
 }
 
+- (BOOL)canSubframe {
+    if (self.productID == 806){ // M26C
+        return NO;
+    }
+    return NO;
+}
+
+- (NSArray*)binningModes {
+    if (self.productID == 806){ // M26C
+        return @[@1,@2]; // todo; get 4x4 working
+    }
+    return @[@1,@2,@3,@4];
+}
+
 - (NSInteger)temperatureFrequency {
     return 5;
 }
