@@ -1093,50 +1093,6 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
-@end
-
-@implementation SXCCDIOExposeCommandLodestar
-
-- (NSInteger) readSize {
-    
-    if (self.isUnbinned){
-        return [super readSize];
-    }
-    
-    NSInteger count = [super readSize];
-    if (self.field != kSXCCDIOFieldBoth){
-        count /= 2;
-    }
-    return count;
-}
-
-- (NSData*)toDataRepresentation {
-    
-    if (self.isUnbinned){
-        return [super toDataRepresentation];
-    }
-    
-    uint8_t buffer[8];
-    
-    NSInteger fieldFlag;
-    switch (self.field) {
-        case kSXCCDIOFieldOdd:
-            fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
-            break;
-        case kSXCCDIOFieldEven:
-            fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
-            break;
-        default:
-        case kSXCCDIOFieldBoth:
-            fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
-            break;
-    }
-    
-    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX, fieldFlag, buffer);
-    
-    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
-}
-
 - (NSData*)postProcessPixels:(NSData*)pixels {
     
     if (!self.isUnbinned){
