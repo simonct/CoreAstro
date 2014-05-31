@@ -361,6 +361,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 {
     void (^complete)(NSError*,NSDictionary*) = ^(NSError* error,NSDictionary* results){
         
+        NSLog(@"Solved in %.1fs",[NSDate timeIntervalSinceReferenceDate] - self.solveStartTime);
+
         // close the sandbox
         [self.indexDirectoryURL stopAccessingSecurityScopedResource];
 
@@ -368,6 +370,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             block(error,results);
         }
     };
+
+    self.solveStartTime = [NSDate timeIntervalSinceReferenceDate];
 
     // create tasks on main queue otherwise we end up with no data being returned to the app (rings a bell but can't remember why this happens)
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -389,7 +393,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
-            NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r"] mutableCopy];
+            NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
             if (self.arcsecsPerPixel > 0){
                 const float low = (self.arcsecsPerPixel-0.5); // += %age ?
                 const float high = (self.arcsecsPerPixel+0.5);
@@ -535,12 +539,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             return;
         }
         
-        self.solveStartTime = [NSDate timeIntervalSinceReferenceDate];
-        
         // solve it
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
-        
-            NSLog(@"Solved in %.1fs",[NSDate timeIntervalSinceReferenceDate] - self.solveStartTime);
             
             // delete the cache
             [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
