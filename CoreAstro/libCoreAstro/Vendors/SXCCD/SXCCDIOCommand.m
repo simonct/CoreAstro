@@ -559,8 +559,6 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 {
     const long inputLength = lineLength * lineCount * 2;
     const long lineBytes = 2 * lineLength;
-//    const long lineBytesx2 = 2 * lineBytes;
-    //    const long lineBytesx3 = 3 * lineBytes;
     
     uint8_t* outputBuffer = NULL;
     uint8_t* workingBuffer = calloc(inputLength,1);
@@ -574,12 +572,12 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
         
         long i = 0;
         for (long y = 0; y < lineCount/2; ++y){
-            for (long x = 0; x < lineLength; x += 2, i += 2){
+            for (long x = 0; x < lineLength; x += 1, i += 2){
                 ((uint16_t*)outputPtr1)[x] = ((uint16_t*)inputPtr1)[i];
                 ((uint16_t*)outputPtr2)[x] = ((uint16_t*)inputPtr2)[i];
             }
-            outputPtr1 += lineBytes;
-            outputPtr2 -= lineBytes;
+            outputPtr1 += 2*lineBytes;
+            outputPtr2 -= 2*lineBytes;
         }
         
         outputBuffer = sxDerotateM26CBuffer(lineLength, lineCount, workingBuffer);
@@ -881,8 +879,6 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 
 - (NSData*)toDataRepresentation {
     
-    // todo; limit binning to 1, 2 & 4
-    
     USHORT flags = 0;
     switch (self.field) {
         default:
@@ -1051,6 +1047,50 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
+}
+
+@end
+
+@implementation SXCCDIOExposeCommandLodestar
+
+- (NSInteger) readSize {
+    
+    if (self.isUnbinned){
+        return [super readSize];
+    }
+    
+    NSInteger count = [super readSize];
+    if (self.field != kSXCCDIOFieldBoth){
+        count /= 2;
+    }
+    return count;
+}
+
+- (NSData*)toDataRepresentation {
+    
+    if (self.isUnbinned){
+        return [super toDataRepresentation];
+    }
+    
+    uint8_t buffer[8];
+    
+    NSInteger fieldFlag;
+    switch (self.field) {
+        case kSXCCDIOFieldOdd:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+            break;
+        case kSXCCDIOFieldEven:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            break;
+        default:
+        case kSXCCDIOFieldBoth:
+            fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
+            break;
+    }
+    
+    sxClearPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX, fieldFlag, buffer);
+    
+    return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }
 
 @end

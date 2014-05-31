@@ -35,7 +35,6 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 @property (weak) IBOutlet NSTextField *measuredTemperatureLabel;
 @property (weak) IBOutlet NSTextField *exposureField;
 @property (weak) IBOutlet NSPopUpButton *exposureScalePopup;
-@property (weak) IBOutlet NSMatrix *binningControl; // unused ? - same as binningRadioButtons
 @property (weak) IBOutlet NSMatrix *binningRadioButtons;
 @property (weak) IBOutlet NSTextField *subframeDisplay;
 @property (weak) IBOutlet NSPopUpButton *captureMenu;
@@ -48,6 +47,8 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 @end
 
 @implementation CASCameraControlsViewController
+
+static void* kvoContext;
 
 + (void)initialize
 {
@@ -63,15 +64,17 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 
 - (void)setCameraController:(CASCameraController *)cameraController
 {
-    [self.cameraController removeObserver:self forKeyPath:@"settings.subframe"];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.subframe" context:&kvoContext];
+    [self.cameraController removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
     self.representedObject = cameraController;
-    [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:nil];
+    [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
+    [self.cameraController addObserver:self forKeyPath:@"capturing" options:0 context:&kvoContext];
     [self configureForCameraController];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == nil) {
+    if (context == &kvoContext) {
         
         if ([keyPath isEqualToString:@"settings.subframe"]){
             
@@ -83,7 +86,11 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
                 [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
             }
         }
-    } else {
+        else if ([keyPath isEqualToString:@"capturing"]){
+            [self configureBinningControls];
+        }
+    }
+    else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
@@ -99,6 +106,26 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
     else{
         [self.sensorSizeField setStringValue:[NSString stringWithFormat:@"%ld x %ld",camera.sensor.width,camera.sensor.height]];
         [self.sensorPixelsField setStringValue:[NSString stringWithFormat:@"%0.2fµm x %0.2fµm",camera.sensor.pixelSize.width,camera.sensor.pixelSize.height]];
+    }
+    
+    [self configureBinningControls];
+}
+
+- (void)configureBinningControls
+{
+    NSArray* binningModes = self.cameraController.camera.binningModes;
+    const BOOL capturing = self.cameraController.capturing;
+    const BOOL hasCamera = (self.cameraController.camera != nil);
+    const NSInteger n = [self.binningRadioButtons numberOfColumns];
+    for (NSInteger i = 0; i < n; ++i){
+        NSButtonCell* cell = [self.binningRadioButtons cellAtRow:0 column:i];
+        const BOOL enabled = hasCamera && !capturing && ([binningModes containsObject:@(i+1)]);
+        [cell setEnabled:enabled];
+    }
+    for (NSInteger i = 0; i < n; ++i){
+        NSButtonCell* cell = [self.binningRadioButtons cellAtRow:0 column:i];
+        const BOOL enabled = hasCamera && !capturing && ([binningModes containsObject:@(i+1)]);
+        [cell setEnabled:enabled];
     }
 }
 
