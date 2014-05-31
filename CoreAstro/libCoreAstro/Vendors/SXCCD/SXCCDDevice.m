@@ -196,12 +196,15 @@
     if (self.productID == 806){ // M26C
         return NO;
     }
-    return NO;
+    return YES;
 }
 
 - (NSArray*)binningModes {
     if (self.productID == 806){ // M26C
         return @[@1,@2]; // todo; get 4x4 working
+    }
+    if (self.productID == 805){ // M25C
+        return @[@1,@2,@4];
     }
     return @[@1,@2,@3,@4];
 }
