@@ -39,6 +39,7 @@
         kCASCCDExposureReadPixels
     };
     NSInteger _readState;
+    NSURL* _pngURL; // tmp hack
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -667,6 +668,9 @@
 
 - (NSURL*)scriptingFile
 {
+    if (self.pngURL){
+        return self.pngURL; // temp hack until pngs are incorporated into exposure io
+    }
     return self.io.url;
 }
 
@@ -758,3 +762,19 @@ NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
 }
 
 @end
+
+@implementation CASCCDExposure (TemporaryHack)
+
+- (NSURL*)pngURL
+{
+    return _pngURL;
+}
+
+- (void)setPngURL:(NSURL *)pngURL
+{
+    _pngURL = pngURL;
+}
+
+@end
+
+

@@ -124,3 +124,10 @@ extern NSString* const kCASCCDExposurePlateSolutionKey;
 
 @end
 
+@interface CASCCDExposure (TemporaryHack)
+
+@property (nonatomic,strong) NSURL* pngURL;
+
+@end
+
+
