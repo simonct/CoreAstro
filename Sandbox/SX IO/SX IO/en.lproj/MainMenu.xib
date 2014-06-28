@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
-		<string key="IBDocument.SystemVersion">13C64</string>
+		<string key="IBDocument.SystemVersion">12F45</string>
 		<string key="IBDocument.InterfaceBuilderVersion">5056</string>
-		<string key="IBDocument.AppKitVersion">1265.19</string>
-		<string key="IBDocument.HIToolboxVersion">697.40</string>
+		<string key="IBDocument.AppKitVersion">1187.40</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			<string key="NS.object.0">5056</string>
@@ -1594,6 +1594,14 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11101</int>
 								</object>
+								<object class="NSMenuItem" id="903866397">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Make Movie...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="380626881">
 									<reference key="NSMenu" ref="43874950"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -1731,7 +1739,7 @@
 						<object class="NSTextField" id="790696633">
 							<reference key="NSNextResponder" ref="373658400"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{18, 42}, {436, 34}}</string>
+							<string key="NSFrame">{{17, 42}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
 							<reference key="NSNextKeyView" ref="709462081"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
@@ -1767,12 +1775,11 @@
 								</object>
 							</object>
 							<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
-							<int key="NSTextFieldAlignmentRectInsetsVersion">1</int>
 						</object>
 						<object class="NSTextField" id="709462081">
 							<reference key="NSNextResponder" ref="373658400"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{18, 0}, {442, 34}}</string>
+							<string key="NSFrame">{{17, 0}, {438, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -1781,7 +1788,7 @@
 								<int key="NSCellFlags2">138413056</int>
 								<string key="NSContents">Plug a camera or filter wheel into one of your Mac's USB sockets</string>
 								<object class="NSFont" key="NSSupport">
-									<string key="NSName">.LucidaGrandeUI-Bold</string>
+									<string key="NSName">LucidaGrande-Bold</string>
 									<double key="NSSize">13</double>
 									<int key="NSfFlags">2072</int>
 								</object>
@@ -1794,14 +1801,13 @@
 								</object>
 							</object>
 							<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
-							<int key="NSTextFieldAlignmentRectInsetsVersion">1</int>
 						</object>
 					</array>
 					<string key="NSFrameSize">{472, 91}</string>
 					<reference key="NSNextKeyView" ref="790696633"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1280, 778}}</string>
+				<string key="NSScreenRect">{{0, 0}, {2560, 1418}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<int key="NSWindowAnimationBehavior">5</int>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -2667,6 +2673,14 @@
 						<reference key="destination" ref="991913317"/>
 					</object>
 					<int key="connectionID">907</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">makeMovie:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="903866397"/>
+					</object>
+					<int key="connectionID">909</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3722,6 +3736,7 @@
 							<reference ref="201649639"/>
 							<reference ref="991913317"/>
 							<reference ref="296169039"/>
+							<reference ref="903866397"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4200,6 +4215,11 @@
 						<reference key="object" ref="991913317"/>
 						<reference key="parent" ref="43874950"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">908</int>
+						<reference key="object" ref="903866397"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4426,13 +4446,14 @@
 				<string key="901.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="903.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="904.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="908.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">907</int>
+			<int key="maxID">909</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

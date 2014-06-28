@@ -260,8 +260,8 @@ static void* kvoContext;
         self.movieExportWindowController = [SXIOExportMovieWindowController loadWindowController];
     }
     
-    [self.movieExportWindowController.window center];
-    [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
+//    [self.movieExportWindowController.window center];
+//    [self.movieExportWindowController.window makeKeyAndOrderFront:nil];
     
     // todo; use a single pipeline for everything, not just movie export
 //    CASFilterPipeline* pipeline = [CASFilterPipeline new];
@@ -280,7 +280,7 @@ static void* kvoContext;
     
     [self.movieExportWindowController runWithCompletion:^(NSError *error, NSURL *movieURL) {
         
-        [self.movieExportWindowController.window orderOut:nil];
+//        [self.movieExportWindowController.window orderOut:nil];
         self.movieExportWindowController = nil;
         
         if (error){

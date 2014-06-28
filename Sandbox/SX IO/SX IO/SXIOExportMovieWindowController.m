@@ -10,6 +10,8 @@
 #import "CASExposureView.h"
 #import <CoreAstro/CoreAstro.h>
 
+#define SXIO_USE_MOVIE_MAIN_WINDOW 0
+
 @interface SXIOExportMovieWindowController ()
 @property (nonatomic,strong) CASMovieExporter* exporter;
 @property (nonatomic,assign) int32_t fps;
@@ -152,10 +154,15 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
 
 - (void)runWithCompletion:(void(^)(NSError*,NSURL*))completion
 {
+#if SXIO_USE_MOVIE_MAIN_WINDOW
     if (!self.window.isVisible){
         [self.window center];
         [self.window makeKeyAndOrderFront:nil];
     }
+#else
+    // temp - we're not using the main window but we need to force it to load to resolve outlets
+    (void)self.window;
+#endif
     
     self.progress = 0;
     self.cancelled = NO;
@@ -166,20 +173,27 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
     
     open.canChooseDirectories = NO;
     open.canChooseFiles = YES;
-    open.allowedFileTypes = @[@"fit",@"fits"];
+    open.allowedFileTypes = @[@"fit",@"fits"]; // todo; add png
     open.allowsMultipleSelection = YES;
     open.message = @"Select exposures to make into a movie";
     
+#if SXIO_USE_MOVIE_MAIN_WINDOW
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        
+#else
+    [open beginWithCompletionHandler:^(NSInteger result) {
+#endif
         if (result != NSFileHandlingPanelOKButton || [open.URLs count] < 2){
             [self callCompletion:nil url:nil];
         }
         else {
             self.URLs = open.URLs;
+#if SXIO_USE_MOVIE_MAIN_WINDOW
             self.frameCount = [self.URLs count];
             _currentFrame = NSNotFound;
             self.currentFrame = 0;
+#else
+            [self savePressed:nil];
+#endif
         }
     }];
 }
@@ -209,8 +223,11 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
     save.nameFieldStringValue = @"movie";
     save.accessoryView = self.saveAccessoryView;
     
+#if SXIO_USE_MOVIE_MAIN_WINDOW
     [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        
+#else
+    [save beginWithCompletionHandler:^(NSInteger result) {
+#endif
         if (result != NSFileHandlingPanelOKButton){
             
             [self callCompletion:nil url:nil];
@@ -337,7 +354,12 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
                 
                 [self.exporter startWithExposure:[self exposureWithURL:sortedURLs.firstObject] error:&error];
                 
+#if SXIO_USE_MOVIE_MAIN_WINDOW
                 [NSApp beginSheet:self.progressWindow modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+#else
+                [self.progressWindow center];
+                [self.progressWindow makeKeyAndOrderFront:nil];
+#endif
             }
         }
     }];
