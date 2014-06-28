@@ -1301,6 +1301,7 @@ static void* kvoContext;
             
             // todo; incorporate into CASCCDExposureIO ?
             if ([@"png" isEqualToString:[[finalUrl path] pathExtension]]){
+                exposure.pngURL = finalUrl;
                 [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
             }
             else {
