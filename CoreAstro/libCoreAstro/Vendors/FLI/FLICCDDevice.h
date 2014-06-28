@@ -26,5 +26,5 @@
 #import "CASCCDDevice.h"
 
 @interface FLICCDDevice : CASCCDDevice
-
+- (instancetype)initWithId:(NSString*)ident path:(NSString*)path domain:(long)domain;
 @end

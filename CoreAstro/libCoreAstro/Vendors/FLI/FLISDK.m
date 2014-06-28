@@ -24,14 +24,50 @@
 //
 
 #import "FLISDK.h"
+#import "FLICCDDevice.h"
+#import "libfli.h"
 
 @implementation FLISDK
 
 @synthesize deviceAdded, deviceRemoved;
 
++ (void)load
+{
+    #define LIBVERSIZE 1024
+    char libver[LIBVERSIZE];
+    if(FLIGetLibVersion(libver, LIBVERSIZE) != 0) {
+		NSLog(@"Unable to retrieve library version!\n");
+	}
+    else {
+        NSLog(@"Library version is %s\n",libver);
+    }
+}
+
 - (void)scan
 {
+    if (!self.deviceAdded){
+        return;
+    }
     
+    #define MAX_PATH 1024
+	char file[MAX_PATH], name[MAX_PATH];
+	long domain;
+    
+	FLICreateList(FLIDOMAIN_USB | FLIDEVICE_CAMERA);
+    
+	if(FLIListFirst(&domain, file, MAX_PATH, name, MAX_PATH) == 0)
+	{
+		do
+		{
+            NSString* ident = [NSString stringWithUTF8String:name];
+            NSString* path = [NSString stringWithUTF8String:file];
+            FLICCDDevice* camera = [[FLICCDDevice alloc] initWithId:ident path:path domain:domain];
+            self.deviceAdded(path,camera);
+		}
+		while((FLIListNext(&domain, file, MAX_PATH, name, MAX_PATH) == 0));
+	}
+    
+	FLIDeleteList();
 }
 
 @end
