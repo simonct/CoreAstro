@@ -39,6 +39,9 @@
 // Move commands
 + (NSString*)slewToTargetObject;
 
+// Sync
++ (NSString*)syncToTargetObject;
+
 // Distance bars
 + (NSString*)getDistanceBars;
 

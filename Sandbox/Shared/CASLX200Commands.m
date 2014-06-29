@@ -7,6 +7,7 @@
 //
 
 #import "CASLX200Commands.h"
+#import "CASCoordinateUtils.h"
 
 @implementation CASLX200Commands
 
@@ -102,31 +103,28 @@
     return @":MS#";
 }
 
++ (NSString*)syncToTargetObject {
+    return @":CM#";
+}
+
 + (NSString*)getDistanceBars {
     return @":D#";
 }
 
 + (NSString*)highPrecisionRA:(double)ra {
     
-    const double trunc_ra = trunc(ra);
+    const CASHMSAngle hms = CASHMSAngleFromDegrees(ra);
     
-    const double h = trunc_ra;
-    const double m = trunc((ra - trunc_ra)*60.0);
-    const double s = (ra - trunc_ra)*60.0*60.0 - 60.0*m; // round ?
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
+    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
     
     return formattedRA;
 }
 
 + (NSString*)lowPrecisionRA:(double)ra {
     
-    const double trunc_ra = trunc(ra);
+    const CASHMAngle hm = CASHMAngleFromDegrees(ra);
     
-    const double h = trunc_ra;
-    const double m = (ra - trunc_ra)*60.0;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02.1f",(int)h,m];
+    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02.1f",(int)hm.h,hm.m];
     
     return formattedRA;
 }
@@ -153,18 +151,14 @@
 
 + (NSString*)highPrecisionDec:(double)dec {
     
-    const double trunc_dec = trunc(dec);
-    
-    const double h = trunc_dec;
-    const double m = trunc((dec - trunc_dec)*60.0);
-    const double s = (dec - trunc_dec)*60.0*60.0 - 60.0*m; // round ?
+    const CASHMSAngle hms = CASHMSAngleFromDegrees(dec);
     
     NSString* formattedRA;
     if (dec < 0){
-        formattedRA = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)h,(int)m,(int)s];
+        formattedRA = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
     }
     else {
-        formattedRA = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)h,(int)m,(int)s];
+        formattedRA = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
     }
 
     return formattedRA;
@@ -172,12 +166,9 @@
 
 + (NSString*)lowPrecisionDec:(double)dec {
     
-    const double trunc_dec = trunc(dec);
+    const CASHMAngle hm = CASHMAngleFromDegrees(dec);
     
-    const double h = trunc_dec;
-    const double m = (dec - trunc_dec)*60.0;
-    
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)h,(int)m];
+    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)hm.h,(int)hm.m];
     
     return formattedRA;
 }
