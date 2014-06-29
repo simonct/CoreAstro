@@ -136,7 +136,7 @@ static void* kvoContext;
         _settling = YES;
     }
 
-    if ([@[@"StartGuiding",@"GuideStep"] containsObject:event]){
+    if ([@[@"StartGuiding",@"GuideStep"] containsObject:event]){ // is inclusion of GuideStep correct - shouldn't that indicate self.guiding = YES; ?
         self.guiding = !_settling;
     }
     
