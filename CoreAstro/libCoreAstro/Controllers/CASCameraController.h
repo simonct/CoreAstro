@@ -52,6 +52,13 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 @property (nonatomic,readonly) CASCameraControllerState state;
 @property (nonatomic,readonly) float progress;
 
+typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
+    CASCameraControllerRoleNone,
+    CASCameraControllerRoleMaster,
+    CASCameraControllerRoleSlave
+};
+@property (nonatomic,assign) CASCameraControllerRole role;
+
 @property (nonatomic,readonly) BOOL capturing;
 
 @property (nonatomic,assign) BOOL temperatureLock;
@@ -79,6 +86,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerState) {
 - (void)disconnect;
 
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block;
+- (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block;
 
 - (void)cancelCapture;
 

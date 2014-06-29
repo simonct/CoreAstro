@@ -47,6 +47,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic) float progress;
 @property (nonatomic,strong) CASExposureSettings* settings;
 @property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
+@property (nonatomic,readonly) NSArray* slaves;
 @end
 
 @implementation CASCameraController {
@@ -121,6 +122,23 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         _state = state;
 //        NSLog(@"Changed state to %ld",_state);
     }
+}
+
+- (void)setRole:(CASCameraControllerRole)role
+{
+    NSAssert(!self.capturing,@"Can't set role while capturing");
+    _role = role;
+}
+
+- (NSArray*)slaves
+{
+    if (self.role == CASCameraControllerRoleMaster){
+        // return all slave camera controllers know to the device manager (this limits us to a single master per-process but that's probably fine for now)
+        return [[CASDeviceManager sharedManager].cameraControllers filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(CASCameraController* evaluatedObject, NSDictionary *bindings) {
+            return (evaluatedObject.role == CASCameraControllerRoleSlave);
+        }]];
+    }
+    return nil;
 }
 
 - (void)updateProgress
@@ -345,25 +363,38 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }];
     };
     
-    // dither if requested and we're not in continuous capture or on the first exposure of a sequence
-    if (self.settings.continuous || !self.settings.ditherEnabled || self.settings.ditherPixels < 1 || self.settings.currentCaptureIndex == 0){
-        startExposure();
-    }
-    else{
-        
-        self.state = CASCameraControllerStateDithering;
-        
-        [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
-            if (success){
-                NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
+    switch (self.role) {
+        case CASCameraControllerRoleMaster:{
+            // wait for slaves to complete the proceed with default behaviour
+        }
+            break;
+        case CASCameraControllerRoleSlave:{
+            // do not dither, wait for -captureWithRole: to be called
+        }
+            break;
+        default:{
+            // dither if requested and we're not in continuous capture or on the first exposure of a sequence
+            if (self.settings.continuous || !self.settings.ditherEnabled || self.settings.ditherPixels < 1 || self.settings.currentCaptureIndex == 0){
+                startExposure();
             }
-            else {
-                NSLog(@"Dither failed");
+            else{
+                
+                self.state = CASCameraControllerStateDithering;
+                
+                [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
+                    if (success){
+                        NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
+                    }
+                    else {
+                        NSLog(@"Dither failed");
+                    }
+                    if (!_cancelled){
+                        startExposure(); // expose anyway as long as we haven't been cancelled
+                    }
+                }];
             }
-            if (!_cancelled){
-                startExposure(); // expose anyway as long as we haven't been cancelled
-            }
-        }];
+        }
+            break;
     }
 }
 
@@ -417,6 +448,17 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             activity = nil;
         }
     }];
+}
+
+- (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block
+{
+    NSParameterAssert(role != CASCameraControllerRoleNone);
+    
+    self.role = role;
+
+    self.settings.continuous = NO; // continuous is inappropriate for either role
+    
+    [self captureWithBlock:block];
 }
 
 - (void)cancelCapture
