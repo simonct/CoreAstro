@@ -31,6 +31,7 @@
 #import "CASCCDDevice.h"
 #import "CASClassDefaults.h"
 #import "CASPHD2Client.h"
+#import "CASDeviceManager.h"
 
 @interface CASExposureSettings ()
 @property (nonatomic,assign) NSInteger currentCaptureIndex; // give the camera controller privileged access to this property
