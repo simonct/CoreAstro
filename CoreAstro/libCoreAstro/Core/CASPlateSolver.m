@@ -393,6 +393,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
+            // todo; target ra/dec + search radius
             NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
             if (self.arcsecsPerPixel > 0){
                 const float low = (self.arcsecsPerPixel-0.5); // += %age ?
