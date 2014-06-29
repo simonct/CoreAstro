@@ -34,6 +34,8 @@
 @property (nonatomic,assign) BOOL tracking;
 @property (nonatomic,strong) NSNumber* ra;
 @property (nonatomic,strong) NSNumber* dec;
+@property (nonatomic,strong) NSNumber* targetRa;
+@property (nonatomic,strong) NSNumber* targetDec;
 @property (nonatomic,strong) NSNumber* alt;
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,copy) NSString* name;
@@ -49,7 +51,7 @@
 }
 
 @synthesize connected,slewing;
-@synthesize ra,dec,alt,az;
+@synthesize ra,dec,alt,az,targetRa,targetDec;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port
 {
@@ -226,17 +228,76 @@
 
 - (void)startSlewToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
 {
+    NSParameterAssert(completion);
+    
+    __weak __typeof__(self) weakSelf = self;
+    
+    // set commanded ra and dec then issue slew command
+    [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
+        
+        if (error){
+            completion(error);
+        }
+        else {
+            
+            weakSelf.targetRa = @(ra_);
+            weakSelf.targetDec = @(dec_);
+
+            [weakSelf sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
+                
+                NSLog(@"slew response: %@",slewResponse);
+                
+                completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
+            }];
+        }
+    }];
+}
+
+- (void)halt
+{
+    [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
+        NSLog(@"Halt command response: %@",response);
+    }];
+}
+
+- (void)syncToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
+{
+    NSParameterAssert(completion);
+
+    __weak __typeof__(self) weakSelf = self;
+    
+    // set commanded ra and dec then issue sync command
+    [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
+        
+        if (error){
+            completion(error);
+        }
+        else {
+            
+            [weakSelf sendCommand:[CASLX200Commands syncToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
+                
+                NSLog(@"sync response: %@",slewResponse);
+                
+                completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
+            }];
+        }
+    }];
+}
+
+- (void)setTargetRA:(double)ra_ dec:(double)dec_ completion:(void(^)(CASMountSlewError))completion
+{
+    NSParameterAssert(completion);
+    NSParameterAssert(ra_ >= 0 && ra_ <= 360);
+    NSParameterAssert(dec_ >= -90 && dec_ <= 90);
+
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
     
     NSString* formattedRA = [CASLX200Commands highPrecisionRA:ra_];
     NSString* formattedDec = [CASLX200Commands highPrecisionDec:dec_];
     
-    NSLog(@"startSlewToRA:%f (%@) dec:%f (%@)",ra_,formattedRA,dec_,formattedDec);
+    NSLog(@"setTargetRA:%f (%@) dec:%f (%@)",ra_,formattedRA,dec_,formattedDec);
     
-    // todo; stop polling as this seems to prevent slewing
-    
-    // “:Sd sDD*MM:SS#”
     NSString* decCommand = [CASLX200Commands setTargetObjectDeclination:formattedDec];
     NSLog(@"Dec command: %@",decCommand);
     [self sendCommand:decCommand readCount:1 completion:^(NSString *setDecResponse) {
@@ -262,24 +323,10 @@
                 }
                 else {
                     
-                    [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
-                        
-                        NSLog(@"slewResponse: %@",slewResponse);
-                        
-                        if (completion){
-                            completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
-                        }
-                    }];
+                    completion(CASMountSlewErrorNone);
                 }
             }];
         }
-    }];
-}
-
-- (void)halt
-{
-    [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
-        NSLog(@"Halt command response: %@",response);
     }];
 }
 

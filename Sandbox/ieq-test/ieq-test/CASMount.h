@@ -15,8 +15,8 @@
 
 @property (nonatomic,strong,readonly) NSNumber* ra;
 @property (nonatomic,strong,readonly) NSNumber* dec;
-@property (nonatomic,strong,readonly) NSNumber* alt;
-@property (nonatomic,strong,readonly) NSNumber* az;
+@property (nonatomic,strong,readonly) NSNumber* targetRa;
+@property (nonatomic,strong,readonly) NSNumber* targetDec;
 
 typedef NS_ENUM(NSInteger, CASMountMode) {
     CASMountModeEQ,
@@ -47,6 +47,11 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 - (void)startMoving:(CASMountDirection)direction;
 - (void)stopMoving;
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
+
+@property (nonatomic,strong,readonly) NSNumber* alt;
+@property (nonatomic,strong,readonly) NSNumber* az;
+
+- (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
 
 @end
 

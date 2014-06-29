@@ -46,4 +46,8 @@
     NSAssert(NO, @"Not implemented");
 }
 
+- (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
+    NSAssert(NO, @"Not implemented");
+}
+
 @end
