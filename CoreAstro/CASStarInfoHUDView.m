@@ -95,6 +95,7 @@
                         self.graphView.showLimits = YES;
                         
                         // hfd
+#if 0
                         CASImageMetrics* metrics = [CASImageMetrics imageMetricsWithIdentifier:nil];
                         if (metrics){
                             
@@ -113,6 +114,7 @@
                             
                             self.coordsLabel.stringValue = [NSString stringWithFormat:@"%f / %f",fastHFD,accurateHFD];
                         }
+#endif
                     }
                 }
             }
