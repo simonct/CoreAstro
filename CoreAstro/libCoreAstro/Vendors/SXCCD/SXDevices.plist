@@ -5,7 +5,7 @@
 	<key>920</key>
 	<dict>
 		<key>name</key>
-		<string>H814c</string>
+		<string>SX814C</string>
 		<key>has-cooler</key>
 		<true/>
 		<key>sensor-size</key>
@@ -14,7 +14,7 @@
 	<key>408</key>
 	<dict>
 		<key>name</key>
-		<string>H814</string>
+		<string>SX814</string>
 		<key>has-cooler</key>
 		<true/>
 		<key>sensor-size</key>
@@ -172,6 +172,17 @@
 		<true/>
 		<key>sensor-size</key>
 		<string>{8.81,6.63}</string>
+	</dict>
+	<key>404</key>
+	<dict>
+		<key>name</key>
+		<string>SXVR-H694</string>
+		<key>image</key>
+		<string>H694</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{12.49,9.99}</string>
 	</dict>
 	<key>2336</key>
 	<dict>
