@@ -152,6 +152,7 @@
         self.cameraController.guider = nil;
         self.cameraController.temperatureLock = temperatureLock;
         self.cameraController.settings.exposureType = exposureType;
+        self.cameraController.settings.ditherEnabled = NO;
         
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
