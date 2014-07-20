@@ -203,7 +203,7 @@
     if (self.productID == 806){ // M26C
         return @[@1,@2]; // todo; get 4x4 working
     }
-    if (self.productID == 805){ // M25C
+    if (self.isInterlaced){ // M25C + Lodestar
         return @[@1,@2,@4];
     }
     return @[@1,@2,@3,@4];
