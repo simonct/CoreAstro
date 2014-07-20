@@ -1057,6 +1057,12 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 
 @implementation SXCCDIOExposeCommandLodestar
 
+- (BOOL)allowsUnderrun {
+    // rather like the M25C I sometimes get back less data than I asked for, possibly down to subframes not aligning with field boundaries
+    // (this may be a property of all interlaced cameras not just these two in particular)
+    return YES;
+}
+
 - (NSInteger) readSize {
     
     if (self.isUnbinned){
