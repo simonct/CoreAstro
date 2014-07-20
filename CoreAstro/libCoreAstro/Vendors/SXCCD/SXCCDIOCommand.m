@@ -1020,11 +1020,14 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     NSInteger binY = self.params.bin.height;
     const NSInteger height = self.params.size.height / 2;
     
+    NSInteger y = self.params.origin.y;
     switch (self.field) {
         case kSXCCDIOFieldOdd:
+            y /= 2;
             flags = SXCCD_EXP_FLAGS_FIELD_ODD;
             break;
         case kSXCCDIOFieldEven:
+            y /= 2;
             flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
             break;
         case kSXCCDIOFieldBoth:
@@ -1036,14 +1039,14 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     if (self.latchPixels){
         
         uint8_t buffer[18];
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,buffer);
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,y,self.params.size.width,height,self.params.bin.width,binY,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
         
         uint8_t buffer[22];
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,y,self.params.size.width,height,self.params.bin.width,binY,(uint32_t)self.ms,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
