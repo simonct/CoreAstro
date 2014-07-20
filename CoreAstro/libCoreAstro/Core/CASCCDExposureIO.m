@@ -670,8 +670,8 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 // get the zero and scaling values
                 float zero = 0;
                 float scale = 1;
-                fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status);
-                fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status);
+                fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status); status = 0;
+                fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status); status = 0;
                 //NSLog(@"CASCCDExposureFITS: BSCALE: %f, BZERO: %f",scale,zero);
                                 
                 // pixels
@@ -697,7 +697,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                                 break;
                             }
                             
-                            // handle scale and offset as the contrast stretch code assumes a max value of 65535
+                            // handle scale and offset
                             if (zero != 0 || scale != 1){
                                 
                                 if (zero == 32768 && scale == 1){
