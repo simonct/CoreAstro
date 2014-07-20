@@ -358,7 +358,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
             }
             else {
-                NSLog(@"Dither failed");
+                NSLog(@"Dither failed"); // an alert might be too intrusive - need a sequence log this can go into perhaps plus a non-blocking ui feature e.g. log window
             }
             if (!_cancelled){
                 startExposure(); // expose anyway as long as we haven't been cancelled
