@@ -48,5 +48,7 @@
 
 - (void)cancelExposure;
 
+- (CGRect)validateSubframe:(CGRect)subframe;
+
 @end
 

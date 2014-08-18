@@ -68,6 +68,10 @@
     return YES; // can this camera capture subframes ?
 }
 
+- (CGRect)validateSubframe:(CGRect)subframe {
+    return subframe;
+}
+
 - (NSArray*)binningModes {
     return @[@1,@2,@3,@4];
 }
