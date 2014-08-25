@@ -716,7 +716,6 @@ NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
 
 @implementation CASCCDExposure (DisplayValues)
 
-// put into a category on ccdexposure
 - (NSString*)stringBySubstitutingPlaceholders:(NSString*)placeholders
 {
     if ([placeholders rangeOfString:@"$"].location != NSNotFound) {
