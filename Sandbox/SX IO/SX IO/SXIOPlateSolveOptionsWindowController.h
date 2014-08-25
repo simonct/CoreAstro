@@ -11,7 +11,7 @@
 
 @interface SXIOPlateSolveOptionsWindowController : CASAuxWindowController
 
-@property (nonatomic,readonly) NSInteger focalLength;
+@property (nonatomic,readonly) float focalLength;
 @property (nonatomic,readonly) float pixelSize;
 @property (nonatomic,readonly) float sensorWidth;
 @property (nonatomic,readonly) float sensorHeight;

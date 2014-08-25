@@ -9,7 +9,7 @@
 #import "SXIOPlateSolveOptionsWindowController.h"
 
 @interface SXIOPlateSolveOptionsWindowController ()
-@property (nonatomic,assign) NSInteger focalLength;
+@property (nonatomic,assign) float focalLength;
 @property (nonatomic,assign) float pixelSize;
 @property (nonatomic,assign) float sensorWidth;
 @property (nonatomic,assign) float sensorHeight;
@@ -86,14 +86,14 @@ static void* kvoContext;
     return [NSString stringWithFormat:@"%@%@",key,self.cameraController.camera.uniqueID];
 }
 
-- (NSInteger)focalLength
+- (float)focalLength
 {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:[self focalLengthKey]];
+    return [[NSUserDefaults standardUserDefaults] floatForKey:[self focalLengthKey]];
 }
 
-- (void)setFocalLength:(NSInteger)focalLength
+- (void)setFocalLength:(float)focalLength
 {
-    [[NSUserDefaults standardUserDefaults] setInteger:focalLength forKey:[self focalLengthKey]];
+    [[NSUserDefaults standardUserDefaults] setFloat:focalLength forKey:[self focalLengthKey]];
 }
 
 - (BOOL)enableFieldSize
