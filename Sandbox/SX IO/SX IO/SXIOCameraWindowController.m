@@ -1289,6 +1289,9 @@ static void* kvoContext;
             NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1] fileType:nil];
             ++self.saveTargetControlsViewController.saveImagesSequence;
             
+            // handle any placeholders
+            filename = [exposure stringBySubstitutingPlaceholders:filename];
+            
             // ensure we have a unique filename (for instance, in case the sequence was reset)
             NSInteger suffix = 2;
             finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
