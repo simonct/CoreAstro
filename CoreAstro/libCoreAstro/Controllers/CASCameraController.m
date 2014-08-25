@@ -389,7 +389,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     self.settings.currentCaptureIndex = 0;
     
     // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
-    if (self.settings.ditherEnabled && !self.phd2Client){
+    if (self.settings.ditherEnabled){
         self.phd2Client = [CASPHD2Client new];
     }
 
