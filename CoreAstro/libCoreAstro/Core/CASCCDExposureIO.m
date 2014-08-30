@@ -344,6 +344,33 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     return _utcDateFormatter;
 }
 
+- (NSString*)stringForCoordinate:(float)coord
+{
+    // SDD MM SS.SSS
+    const char sign = coord < 0 ? '-' : '+';
+    
+    const float degs = fabsf(truncf(coord));
+    const float mins1 = (fabsf(coord) - degs)*60;
+    const float mins = truncf(mins1);
+    const float secs = (mins1 - mins)*60;
+    
+    return [NSString stringWithFormat:@"%c%02d %02d %0.3f",sign,(int)degs,(int)mins,secs];
+}
+
+- (void)addStringHeader:(const char*)header comment:(const char*)comment withValue:(id)value toFile:(fitsfile*)fptr
+{
+    if (value){
+        value = [value description];
+        if ([value length]){
+            const char* s = [value UTF8String];
+            if (s){
+                int status = 0;
+                fits_update_key(fptr, TSTRING, header, (void*)s, comment, &status);
+            }
+        }
+    }
+}
+
 - (BOOL)writeExposure:(CASCCDExposure*)exposure writePixels:(BOOL)writePixels error:(NSError**)errorPtr
 {
     NSError* error = nil;
@@ -503,6 +530,13 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     if (exposure.uuid){
                         const char* uuid = [exposure.uuid UTF8String];
                         fits_update_key(fptr, TSTRING, "CAS_UUID", (void*)uuid, "CoreAstro exposure UUID", &status);
+                    }
+                    
+                    if (exposure.meta[@"latitude"]){
+                        [self addStringHeader:"SITELAT" comment:"Latitude of the site" withValue:[self stringForCoordinate:[exposure.meta[@"latitude"] doubleValue]] toFile:fptr];
+                    }
+                    if (exposure.meta[@"longitude"]){
+                        [self addStringHeader:"SITELONG" comment:"Longitude of the site" withValue:[self stringForCoordinate:[exposure.meta[@"longitude"] doubleValue]] toFile:fptr];
                     }
                     
                     // CCD-TEMP

@@ -18,6 +18,7 @@
 #import "SXIOPlateSolveOptionsWindowController.h"
 
 #import <Quartz/Quartz.h>
+#import <CoreLocation/CoreLocation.h>
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
@@ -1320,6 +1321,16 @@ static void* kvoContext;
                 [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
             }
             else {
+                
+                NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+                NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+                if (latitude && longitude){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"latitude"] = latitude;
+                    meta[@"longitude"] = longitude;
+                    exposure.meta = [meta copy];
+                }
+
                 [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
             }
         }

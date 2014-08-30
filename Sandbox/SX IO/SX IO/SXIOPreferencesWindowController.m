@@ -8,10 +8,13 @@
 
 #import "SXIOPreferencesWindowController.h"
 #import <CoreAstro/CoreAstro.h>
+#import <CoreLocation/CoreLocation.h>
 
 @interface SXIOPreferencesWindowController ()
 @property (nonatomic,strong) CASPlateSolver* solver;
 @property (nonatomic,assign) NSInteger fileFormatIndex;
+@property (weak) IBOutlet NSTextField *locationLabel;
+@property (nonatomic,strong) CLLocationManager* locationManager;
 @end
 
 @implementation SXIOPreferencesWindowController
@@ -23,6 +26,15 @@
         self.solver = [CASPlateSolver plateSolverWithIdentifier:nil];
     }
     return self;
+}
+
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    
+    NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
+    [closeButton setTarget:self];
+    [closeButton setAction:@selector(close:)];
 }
 
 - (NSInteger)fileFormatIndex
@@ -42,6 +54,54 @@
     else {
         [[NSUserDefaults standardUserDefaults] setObject:@"png" forKey:@"SXIODefaultExposureFileType"];
     }
+}
+
+- (IBAction)close:sender
+{
+    [self close];
+    [self.locationManager stopUpdatingLocation];
+    self.locationManager = nil;
+}
+
+- (IBAction)updatePressed:(id)sender
+{
+    if (!self.locationManager){
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.delegate = (id)self;
+    }
+    [self.locationManager startUpdatingLocation];
+}
+
+- (IBAction)clearPressed:(id)sender
+{
+    [self.locationManager stopUpdatingLocation];
+    self.locationManager = nil;
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLatitude"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLongitude"];
+    self.locationLabel.stringValue = @"";
+}
+
+- (void)handleLocationUpdate:(CLLocation*)location
+{
+    NSLog(@"handleLocationUpdate: %@",location);
+    
+    if (location){
+        [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.latitude forKey:@"SXIOSiteLatitude"];
+        [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.longitude forKey:@"SXIOSiteLongitude"];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+	didUpdateToLocation:(CLLocation *)newLocation
+		   fromLocation:(CLLocation *)oldLocation
+{
+    [self handleLocationUpdate:newLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+	 didUpdateLocations:(NSArray *)locations
+{
+    [self handleLocationUpdate:[locations lastObject]];
 }
 
 // todo; utilities to download plate solving indexes
