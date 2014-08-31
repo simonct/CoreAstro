@@ -83,8 +83,6 @@
 
 - (void)handleLocationUpdate:(CLLocation*)location
 {
-    NSLog(@"handleLocationUpdate: %@",location);
-    
     if (location){
         [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.latitude forKey:@"SXIOSiteLatitude"];
         [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.longitude forKey:@"SXIOSiteLongitude"];
@@ -102,6 +100,17 @@
 	 didUpdateLocations:(NSArray *)locations
 {
     [self handleLocationUpdate:[locations lastObject]];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    NSLog(@"locationManager:didChangeAuthorizationStatus: %u",status);
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    NSLog(@"locationManager:didFailWithError: %@",error);
 }
 
 // todo; utilities to download plate solving indexes
