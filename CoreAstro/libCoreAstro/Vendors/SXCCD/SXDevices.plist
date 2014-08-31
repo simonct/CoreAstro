@@ -184,6 +184,15 @@
 		<key>sensor-size</key>
 		<string>{12.49,9.99}</string>
 	</dict>
+	<key>1817</key>
+	<dict>
+		<key>name</key>
+		<string>Lunt Solar Imager</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{8.98,6.7}</string>
+	</dict>
 	<key>2336</key>
 	<dict>
 		<key>name</key>
