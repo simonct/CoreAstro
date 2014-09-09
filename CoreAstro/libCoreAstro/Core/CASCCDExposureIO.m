@@ -539,8 +539,20 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         [self addStringHeader:"SITELONG" comment:"Longitude of the site" withValue:[self stringForCoordinate:[exposure.meta[@"longitude"] doubleValue]] toFile:fptr];
                     }
                     
-                    // CCD-TEMP
-                    // COLORCCD
+                    // temperature
+                    NSDictionary* temperature = exposure.meta[@"temperature"];
+                    if ([temperature count]){
+                        NSNumber* setPoint = temperature[@"setpoint"];
+                        if (setPoint){
+                            const float setPointFloat = [setPoint floatValue];
+                            fits_update_key(fptr, TFLOAT, "SET-TEMP", (void*)&setPointFloat, "Set Point Centigrade", &status);
+                        }
+                        NSArray* temperatures = temperature[@"temperatures"];
+                        if ([temperatures count]){
+                            const float startTempFloat = [[temperatures firstObject] floatValue];
+                            fits_update_key(fptr, TFLOAT, "CCD-TEMP", (void*)&startTempFloat, "CCD Temperature Centigrade", &status);
+                        }
+                    }
                     
                     /*
                     NSString* notes = exposure.note;

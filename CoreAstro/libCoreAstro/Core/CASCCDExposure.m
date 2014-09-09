@@ -515,6 +515,7 @@
         NSMutableDictionary* temp = [NSMutableDictionary dictionaryWithCapacity:2];
         [temp setObject:[NSNumber numberWithInteger:camera.temperatureFrequency] forKey:@"frequency"];
         [temp setObject:camera.exposureTemperatures forKey:@"temperatures"];
+        [temp setObject:@(camera.targetTemperature) forKey:@"setpoint"];
         [meta setObject:temp forKey:@"temperature"];
     }
 
