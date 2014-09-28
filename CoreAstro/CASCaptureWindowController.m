@@ -95,7 +95,7 @@
     BOOL temperatureLock = NO;
     CASCCDExposureType exposureType;
     
-    const CGFloat targetFloatAverage = 0.5;
+    const CGFloat targetFloatAverage = 0.33;
     const CGFloat targetFloatAverageTolerance = 0.1;
 
     __block BOOL saveExposure = YES;
