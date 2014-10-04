@@ -62,6 +62,9 @@
 
 - (IBAction)cancel:(id)sender {
     _cancelled = YES;
+    if (self.cancelBlock){
+        self.cancelBlock();
+    }
 }
 
 - (BOOL)canCancel

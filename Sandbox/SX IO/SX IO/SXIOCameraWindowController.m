@@ -493,33 +493,22 @@ static void* kvoContext;
     
     BOOL (^saveExposure)() = ^BOOL(CASCCDExposure* exposure,NSInteger mode,NSInteger sequence,NSError** error){
         
-        NSString* name = nil;
-        switch (mode) {
-            case kCASCaptureModelModeDark:
-                name = @"dark";
-                break;
-            case kCASCaptureModelModeBias:
-                name = @"bias";
-                break;
-            case kCASCaptureModelModeFlat:
-                name = @"flat";
-                break;
-        }
-        
         // check for a user-entered filter name
         NSString* filterName = self.filterWheelControlsViewController.filterName;
         if ([filterName length]){
             exposure.filters = @[filterName];
         }
         
+        // construct the exposure name
         NSURL* finalUrl;
+        NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
+        if ([prefix rangeOfString:@"$type"].location == NSNotFound){
+            prefix = [prefix stringByAppendingString:@"_$type"];
+        }
         if (sequence > 0){
-            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%@_%03ld",name,sequence] fileType:nil];
-            finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+            prefix = [NSString stringWithFormat:@"%@_%03ld",prefix,sequence];
         }
-        else{
-            finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name fileType:@"fits"]];
-        }
+        finalUrl = [[_targetFolder URLByAppendingPathComponent:[exposure stringBySubstitutingPlaceholders:prefix]] URLByAppendingPathExtension:@"fits"];
         
         // remove existing one
         [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
@@ -540,6 +529,9 @@ static void* kvoContext;
                 [progress beginSheetModalForWindow:self.window];
                 [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
                 progress.canCancel = YES;
+                progress.cancelBlock = ^(){
+                    [self.captureController cancelCapture];
+                };
                 
                 self.captureController.imageProcessor = self.imageProcessor;
                 self.captureController.cameraController = self.cameraController;

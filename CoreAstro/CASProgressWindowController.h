@@ -31,6 +31,7 @@
 @property (weak) IBOutlet NSButton *cancelButton;
 @property (nonatomic) BOOL canCancel; // default is NO
 @property (readonly) BOOL cancelled;
+@property (copy) void (^cancelBlock)();
 - (void)beginSheetModalForWindow:(NSWindow*)window;
 - (void)configureWithRange:(NSRange)range label:(NSString*)label;
 @end
