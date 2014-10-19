@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#if CAS_ENABLE_FITS
 #import "fitsio.h"
 
 // version of fits_open_image which allows bypassing of filename template processing
 extern int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status);
+#endif

@@ -8,6 +8,8 @@
 
 #import "CASFITSUtilities.h"
 
+#if CAS_ENABLE_FITS
+
 int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status)
 {
     *status = fits_open_diskfile(fptr,path,mode,status);
@@ -22,3 +24,5 @@ int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status)
     }
     return *status;
 }
+
+#endif
