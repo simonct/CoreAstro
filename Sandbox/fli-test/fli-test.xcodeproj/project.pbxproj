@@ -1,0 +1,895 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F46117D519F36E1A003BA344 /* libfli-camera-parport.c in Sources */ = {isa = PBXBuildFile; fileRef = F461179F19F36E1A003BA344 /* libfli-camera-parport.c */; };
+		F46117D619F36E1A003BA344 /* libfli-camera-usb.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117A119F36E1A003BA344 /* libfli-camera-usb.c */; };
+		F46117D719F36E1A003BA344 /* libfli-camera.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117A319F36E1A003BA344 /* libfli-camera.c */; };
+		F46117D819F36E1A003BA344 /* libfli-filter-focuser.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117A619F36E1A003BA344 /* libfli-filter-focuser.c */; };
+		F46117D919F36E1A003BA344 /* libfli-mem.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117A919F36E1A003BA344 /* libfli-mem.c */; };
+		F46117DA19F36E1A003BA344 /* libfli-raw.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117AB19F36E1A003BA344 /* libfli-raw.c */; };
+		F46117DB19F36E1A003BA344 /* libfli.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117AD19F36E1A003BA344 /* libfli.c */; };
+		F46117DF19F36E1A003BA344 /* libfli-debug.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117B419F36E1A003BA344 /* libfli-debug.c */; };
+		F46117E019F36E1A003BA344 /* libfli-serial.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117B619F36E1A003BA344 /* libfli-serial.c */; };
+		F46117E219F36E1A003BA344 /* libfli-usb.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117BA19F36E1A003BA344 /* libfli-usb.c */; };
+		F46117E519F36E1A003BA344 /* libfli-usb-sys.c in Sources */ = {isa = PBXBuildFile; fileRef = F46117C219F36E1A003BA344 /* libfli-usb-sys.c */; };
+		F46117F919F371DB003BA344 /* FLICCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F46117F319F371DB003BA344 /* FLICCDDevice.m */; };
+		F46117FA19F371DB003BA344 /* FLISDK.m in Sources */ = {isa = PBXBuildFile; fileRef = F46117F419F371DB003BA344 /* FLISDK.m */; };
+		F46117FB19F371DB003BA344 /* FLIDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F46117F819F371DB003BA344 /* FLIDeviceFactory.m */; };
+		F461185119F37295003BA344 /* CASCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46117FE19F37295003BA344 /* CASCameraController.m */; };
+		F461185219F37295003BA344 /* CASDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180019F37295003BA344 /* CASDeviceController.m */; };
+		F461185319F37295003BA344 /* CASFilterWheelController.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180219F37295003BA344 /* CASFilterWheelController.m */; };
+		F461185419F37295003BA344 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180419F37295003BA344 /* CASGuiderController.m */; };
+		F461185519F37295003BA344 /* CASAlgorithm+Exposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180719F37295003BA344 /* CASAlgorithm+Exposure.m */; };
+		F461185619F37295003BA344 /* CASAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180919F37295003BA344 /* CASAlgorithm.m */; };
+		F461185719F37295003BA344 /* CASAutoGuider.mm in Sources */ = {isa = PBXBuildFile; fileRef = F461180B19F37295003BA344 /* CASAutoGuider.mm */; };
+		F461185819F37295003BA344 /* CASBatchProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180D19F37295003BA344 /* CASBatchProcessor.m */; };
+		F461185919F37295003BA344 /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F461180F19F37295003BA344 /* CASCCDDevice.m */; };
+		F461185A19F37295003BA344 /* CASCCDExposure.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181119F37295003BA344 /* CASCCDExposure.m */; };
+		F461185B19F37295003BA344 /* CASCCDExposureIO.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181319F37295003BA344 /* CASCCDExposureIO.m */; };
+		F461185C19F37295003BA344 /* CASCCDExposureLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181519F37295003BA344 /* CASCCDExposureLibrary.m */; };
+		F461185D19F37295003BA344 /* CASCCDImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181719F37295003BA344 /* CASCCDImage.m */; };
+		F461185E19F37295003BA344 /* CASCCDProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181919F37295003BA344 /* CASCCDProperties.m */; };
+		F461185F19F37295003BA344 /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181B19F37295003BA344 /* CASClassDefaults.m */; };
+		F461186019F37295003BA344 /* CASDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F461181D19F37295003BA344 /* CASDevice.m */; };
+		F461186119F37295003BA344 /* CASDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182119F37295003BA344 /* CASDeviceManager.m */; };
+		F461186219F37295003BA344 /* CASExposureSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182319F37295003BA344 /* CASExposureSettings.m */; };
+		F461186319F37295003BA344 /* CASFilterPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182619F37295003BA344 /* CASFilterPipeline.m */; };
+		F461186419F37295003BA344 /* CASFITSUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182819F37295003BA344 /* CASFITSUtilities.m */; };
+		F461186519F37295003BA344 /* CASFocusMetric.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182A19F37295003BA344 /* CASFocusMetric.m */; };
+		F461186619F37295003BA344 /* CASFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182C19F37295003BA344 /* CASFWDevice.m */; };
+		F461186719F37295003BA344 /* CASHalfFluxDiameter.m in Sources */ = {isa = PBXBuildFile; fileRef = F461182E19F37295003BA344 /* CASHalfFluxDiameter.m */; };
+		F461186819F37295003BA344 /* CASImageDebayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = F461183019F37295003BA344 /* CASImageDebayer.mm */; };
+		F461186919F37295003BA344 /* CASImageMetrics.mm in Sources */ = {isa = PBXBuildFile; fileRef = F461183219F37295003BA344 /* CASImageMetrics.mm */; };
+		F461186A19F37295003BA344 /* CASImageProcessor.mm in Sources */ = {isa = PBXBuildFile; fileRef = F461183419F37295003BA344 /* CASImageProcessor.mm */; };
+		F461186B19F37295003BA344 /* CASImageStacker.m in Sources */ = {isa = PBXBuildFile; fileRef = F461183619F37295003BA344 /* CASImageStacker.m */; };
+		F461186C19F37295003BA344 /* CASIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F461183819F37295003BA344 /* CASIOCommand.m */; };
+		F461186D19F37295003BA344 /* CASIOTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = F461183A19F37295003BA344 /* CASIOTransport.m */; };
+		F461186E19F37295003BA344 /* CASMovieExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = F461183C19F37295003BA344 /* CASMovieExporter.m */; };
+		F461186F19F37295003BA344 /* CASNetworkServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F461183E19F37295003BA344 /* CASNetworkServer.m */; };
+		F461187019F37295003BA344 /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184019F37295003BA344 /* CASPHD2Client.m */; };
+		F461187119F37295003BA344 /* CASPlateSolver.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184219F37295003BA344 /* CASPlateSolver.m */; };
+		F461187219F37295003BA344 /* CASPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184419F37295003BA344 /* CASPluginManager.m */; };
+		F461187319F37295003BA344 /* CASPowerMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184619F37295003BA344 /* CASPowerMonitor.m */; };
+		F461187419F37295003BA344 /* CASScriptableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184819F37295003BA344 /* CASScriptableObject.m */; };
+		F461187519F37295003BA344 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184A19F37295003BA344 /* CASSocketClient.m */; };
+		F461187619F37295003BA344 /* CASTaskWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184C19F37295003BA344 /* CASTaskWrapper.m */; };
+		F461187719F37295003BA344 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184E19F37295003BA344 /* CASUtilities.m */; };
+		F461187819F37295003BA344 /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F461185019F37295003BA344 /* CoreAstro.m */; };
+		F461187A19F37344003BA344 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187919F37344003BA344 /* Accelerate.framework */; };
+		F461187C19F37350003BA344 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187B19F37350003BA344 /* AVFoundation.framework */; };
+		F461187E19F37361003BA344 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187D19F37361003BA344 /* CoreMedia.framework */; };
+		F461188019F3736E003BA344 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187F19F3736E003BA344 /* CoreVideo.framework */; };
+		F461188219F3737A003BA344 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461188119F3737A003BA344 /* QuartzCore.framework */; };
+		F4F1170218492626004A8F51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F1170118492626004A8F51 /* Cocoa.framework */; };
+		F4F1170C18492626004A8F51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4F1170A18492626004A8F51 /* InfoPlist.strings */; };
+		F4F1170E18492626004A8F51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F1170D18492626004A8F51 /* main.m */; };
+		F4F1171218492626004A8F51 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4F1171018492626004A8F51 /* Credits.rtf */; };
+		F4F1171818492626004A8F51 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F1171618492626004A8F51 /* MainMenu.xib */; };
+		F4F1171A18492626004A8F51 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4F1171918492626004A8F51 /* Images.xcassets */; };
+		F4F1172118492626004A8F51 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F1172018492626004A8F51 /* XCTest.framework */; };
+		F4F1172218492626004A8F51 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F1170118492626004A8F51 /* Cocoa.framework */; };
+		F4F1172A18492626004A8F51 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4F1172818492626004A8F51 /* InfoPlist.strings */; };
+		F4F1172C18492626004A8F51 /* fli_testTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F1172B18492626004A8F51 /* fli_testTests.m */; };
+		F4F1178D1849272C004A8F51 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F1178C1849272C004A8F51 /* IOKit.framework */; };
+		F4F1178F1849292A004A8F51 /* SXIOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F1178E1849292A004A8F51 /* SXIOAppDelegate.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F4F1172318492626004A8F51 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4F116F618492626004A8F51 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4F116FD18492626004A8F51;
+			remoteInfo = "fli-test";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F461179F19F36E1A003BA344 /* libfli-camera-parport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera-parport.c"; sourceTree = "<group>"; };
+		F46117A019F36E1A003BA344 /* libfli-camera-parport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera-parport.h"; sourceTree = "<group>"; };
+		F46117A119F36E1A003BA344 /* libfli-camera-usb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera-usb.c"; sourceTree = "<group>"; };
+		F46117A219F36E1A003BA344 /* libfli-camera-usb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera-usb.h"; sourceTree = "<group>"; };
+		F46117A319F36E1A003BA344 /* libfli-camera.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-camera.c"; sourceTree = "<group>"; };
+		F46117A419F36E1A003BA344 /* libfli-camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-camera.h"; sourceTree = "<group>"; };
+		F46117A519F36E1A003BA344 /* libfli-debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-debug.h"; sourceTree = "<group>"; };
+		F46117A619F36E1A003BA344 /* libfli-filter-focuser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-filter-focuser.c"; sourceTree = "<group>"; };
+		F46117A719F36E1A003BA344 /* libfli-filter-focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-filter-focuser.h"; sourceTree = "<group>"; };
+		F46117A819F36E1A003BA344 /* libfli-libfli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-libfli.h"; sourceTree = "<group>"; };
+		F46117A919F36E1A003BA344 /* libfli-mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-mem.c"; sourceTree = "<group>"; };
+		F46117AA19F36E1A003BA344 /* libfli-mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-mem.h"; sourceTree = "<group>"; };
+		F46117AB19F36E1A003BA344 /* libfli-raw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-raw.c"; sourceTree = "<group>"; };
+		F46117AC19F36E1A003BA344 /* libfli-raw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-raw.h"; sourceTree = "<group>"; };
+		F46117AD19F36E1A003BA344 /* libfli.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libfli.c; sourceTree = "<group>"; };
+		F46117AF19F36E1A003BA344 /* libfli.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libfli.h; sourceTree = "<group>"; };
+		F46117B419F36E1A003BA344 /* libfli-debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-debug.c"; sourceTree = "<group>"; };
+		F46117B519F36E1A003BA344 /* libfli-parport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-parport.h"; sourceTree = "<group>"; };
+		F46117B619F36E1A003BA344 /* libfli-serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-serial.c"; sourceTree = "<group>"; };
+		F46117B719F36E1A003BA344 /* libfli-serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-serial.h"; sourceTree = "<group>"; };
+		F46117BA19F36E1A003BA344 /* libfli-usb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-usb.c"; sourceTree = "<group>"; };
+		F46117BB19F36E1A003BA344 /* libfli-usb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-usb.h"; sourceTree = "<group>"; };
+		F46117C219F36E1A003BA344 /* libfli-usb-sys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "libfli-usb-sys.c"; sourceTree = "<group>"; };
+		F46117C319F36E1A003BA344 /* libfli-usb-sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-usb-sys.h"; sourceTree = "<group>"; };
+		F46117F319F371DB003BA344 /* FLICCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLICCDDevice.m; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLICCDDevice.m; sourceTree = "<group>"; };
+		F46117F419F371DB003BA344 /* FLISDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLISDK.m; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLISDK.m; sourceTree = "<group>"; };
+		F46117F519F371DB003BA344 /* FLICCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLICCDDevice.h; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLICCDDevice.h; sourceTree = "<group>"; };
+		F46117F619F371DB003BA344 /* FLIDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLIDeviceFactory.h; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLIDeviceFactory.h; sourceTree = "<group>"; };
+		F46117F719F371DB003BA344 /* FLISDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLISDK.h; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLISDK.h; sourceTree = "<group>"; };
+		F46117F819F371DB003BA344 /* FLIDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLIDeviceFactory.m; path = ../../../CoreAstro/libCoreAstro/Vendors/FLI/FLIDeviceFactory.m; sourceTree = "<group>"; };
+		F46117FD19F37295003BA344 /* CASCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraController.h; sourceTree = "<group>"; };
+		F46117FE19F37295003BA344 /* CASCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraController.m; sourceTree = "<group>"; };
+		F46117FF19F37295003BA344 /* CASDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceController.h; sourceTree = "<group>"; };
+		F461180019F37295003BA344 /* CASDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDeviceController.m; sourceTree = "<group>"; };
+		F461180119F37295003BA344 /* CASFilterWheelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterWheelController.h; sourceTree = "<group>"; };
+		F461180219F37295003BA344 /* CASFilterWheelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterWheelController.m; sourceTree = "<group>"; };
+		F461180319F37295003BA344 /* CASGuiderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuiderController.h; sourceTree = "<group>"; };
+		F461180419F37295003BA344 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
+		F461180619F37295003BA344 /* CASAlgorithm+Exposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CASAlgorithm+Exposure.h"; sourceTree = "<group>"; };
+		F461180719F37295003BA344 /* CASAlgorithm+Exposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CASAlgorithm+Exposure.m"; sourceTree = "<group>"; };
+		F461180819F37295003BA344 /* CASAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAlgorithm.h; sourceTree = "<group>"; };
+		F461180919F37295003BA344 /* CASAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAlgorithm.m; sourceTree = "<group>"; };
+		F461180A19F37295003BA344 /* CASAutoGuider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAutoGuider.h; sourceTree = "<group>"; };
+		F461180B19F37295003BA344 /* CASAutoGuider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASAutoGuider.mm; sourceTree = "<group>"; };
+		F461180C19F37295003BA344 /* CASBatchProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASBatchProcessor.h; sourceTree = "<group>"; };
+		F461180D19F37295003BA344 /* CASBatchProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASBatchProcessor.m; sourceTree = "<group>"; };
+		F461180E19F37295003BA344 /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
+		F461180F19F37295003BA344 /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
+		F461181019F37295003BA344 /* CASCCDExposure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposure.h; sourceTree = "<group>"; };
+		F461181119F37295003BA344 /* CASCCDExposure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposure.m; sourceTree = "<group>"; };
+		F461181219F37295003BA344 /* CASCCDExposureIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureIO.h; sourceTree = "<group>"; };
+		F461181319F37295003BA344 /* CASCCDExposureIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureIO.m; sourceTree = "<group>"; };
+		F461181419F37295003BA344 /* CASCCDExposureLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDExposureLibrary.h; sourceTree = "<group>"; };
+		F461181519F37295003BA344 /* CASCCDExposureLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDExposureLibrary.m; sourceTree = "<group>"; };
+		F461181619F37295003BA344 /* CASCCDImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDImage.h; sourceTree = "<group>"; };
+		F461181719F37295003BA344 /* CASCCDImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDImage.m; sourceTree = "<group>"; };
+		F461181819F37295003BA344 /* CASCCDProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDProperties.h; sourceTree = "<group>"; };
+		F461181919F37295003BA344 /* CASCCDProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDProperties.m; sourceTree = "<group>"; };
+		F461181A19F37295003BA344 /* CASClassDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASClassDefaults.h; sourceTree = "<group>"; };
+		F461181B19F37295003BA344 /* CASClassDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASClassDefaults.m; sourceTree = "<group>"; };
+		F461181C19F37295003BA344 /* CASDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDevice.h; sourceTree = "<group>"; };
+		F461181D19F37295003BA344 /* CASDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDevice.m; sourceTree = "<group>"; };
+		F461181E19F37295003BA344 /* CASDeviceBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceBrowser.h; sourceTree = "<group>"; };
+		F461181F19F37295003BA344 /* CASDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceFactory.h; sourceTree = "<group>"; };
+		F461182019F37295003BA344 /* CASDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceManager.h; sourceTree = "<group>"; };
+		F461182119F37295003BA344 /* CASDeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDeviceManager.m; sourceTree = "<group>"; };
+		F461182219F37295003BA344 /* CASExposureSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposureSettings.h; sourceTree = "<group>"; };
+		F461182319F37295003BA344 /* CASExposureSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASExposureSettings.m; sourceTree = "<group>"; };
+		F461182419F37295003BA344 /* CASExternalSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExternalSDK.h; sourceTree = "<group>"; };
+		F461182519F37295003BA344 /* CASFilterPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterPipeline.h; sourceTree = "<group>"; };
+		F461182619F37295003BA344 /* CASFilterPipeline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterPipeline.m; sourceTree = "<group>"; };
+		F461182719F37295003BA344 /* CASFITSUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSUtilities.h; sourceTree = "<group>"; };
+		F461182819F37295003BA344 /* CASFITSUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSUtilities.m; sourceTree = "<group>"; };
+		F461182919F37295003BA344 /* CASFocusMetric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFocusMetric.h; sourceTree = "<group>"; };
+		F461182A19F37295003BA344 /* CASFocusMetric.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFocusMetric.m; sourceTree = "<group>"; };
+		F461182B19F37295003BA344 /* CASFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFWDevice.h; sourceTree = "<group>"; };
+		F461182C19F37295003BA344 /* CASFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFWDevice.m; sourceTree = "<group>"; };
+		F461182D19F37295003BA344 /* CASHalfFluxDiameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASHalfFluxDiameter.h; sourceTree = "<group>"; };
+		F461182E19F37295003BA344 /* CASHalfFluxDiameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASHalfFluxDiameter.m; sourceTree = "<group>"; };
+		F461182F19F37295003BA344 /* CASImageDebayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageDebayer.h; sourceTree = "<group>"; };
+		F461183019F37295003BA344 /* CASImageDebayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageDebayer.mm; sourceTree = "<group>"; };
+		F461183119F37295003BA344 /* CASImageMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageMetrics.h; sourceTree = "<group>"; };
+		F461183219F37295003BA344 /* CASImageMetrics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageMetrics.mm; sourceTree = "<group>"; };
+		F461183319F37295003BA344 /* CASImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageProcessor.h; sourceTree = "<group>"; };
+		F461183419F37295003BA344 /* CASImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CASImageProcessor.mm; sourceTree = "<group>"; };
+		F461183519F37295003BA344 /* CASImageStacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageStacker.h; sourceTree = "<group>"; };
+		F461183619F37295003BA344 /* CASImageStacker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageStacker.m; sourceTree = "<group>"; };
+		F461183719F37295003BA344 /* CASIOCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOCommand.h; sourceTree = "<group>"; };
+		F461183819F37295003BA344 /* CASIOCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOCommand.m; sourceTree = "<group>"; };
+		F461183919F37295003BA344 /* CASIOTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASIOTransport.h; sourceTree = "<group>"; };
+		F461183A19F37295003BA344 /* CASIOTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASIOTransport.m; sourceTree = "<group>"; };
+		F461183B19F37295003BA344 /* CASMovieExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMovieExporter.h; sourceTree = "<group>"; };
+		F461183C19F37295003BA344 /* CASMovieExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMovieExporter.m; sourceTree = "<group>"; };
+		F461183D19F37295003BA344 /* CASNetworkServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASNetworkServer.h; sourceTree = "<group>"; };
+		F461183E19F37295003BA344 /* CASNetworkServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASNetworkServer.m; sourceTree = "<group>"; };
+		F461183F19F37295003BA344 /* CASPHD2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHD2Client.h; sourceTree = "<group>"; };
+		F461184019F37295003BA344 /* CASPHD2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHD2Client.m; sourceTree = "<group>"; };
+		F461184119F37295003BA344 /* CASPlateSolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPlateSolver.h; sourceTree = "<group>"; };
+		F461184219F37295003BA344 /* CASPlateSolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPlateSolver.m; sourceTree = "<group>"; };
+		F461184319F37295003BA344 /* CASPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPluginManager.h; sourceTree = "<group>"; };
+		F461184419F37295003BA344 /* CASPluginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPluginManager.m; sourceTree = "<group>"; };
+		F461184519F37295003BA344 /* CASPowerMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPowerMonitor.h; sourceTree = "<group>"; };
+		F461184619F37295003BA344 /* CASPowerMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPowerMonitor.m; sourceTree = "<group>"; };
+		F461184719F37295003BA344 /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
+		F461184819F37295003BA344 /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
+		F461184919F37295003BA344 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
+		F461184A19F37295003BA344 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
+		F461184B19F37295003BA344 /* CASTaskWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASTaskWrapper.h; sourceTree = "<group>"; };
+		F461184C19F37295003BA344 /* CASTaskWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASTaskWrapper.m; sourceTree = "<group>"; };
+		F461184D19F37295003BA344 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
+		F461184E19F37295003BA344 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
+		F461184F19F37295003BA344 /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
+		F461185019F37295003BA344 /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
+		F461187919F37344003BA344 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F461187B19F37350003BA344 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F461187D19F37361003BA344 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F461187F19F3736E003BA344 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		F461188119F3737A003BA344 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F4F116FE18492626004A8F51 /* fli-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fli-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4F1170118492626004A8F51 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F4F1170418492626004A8F51 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F4F1170518492626004A8F51 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F4F1170618492626004A8F51 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F4F1170918492626004A8F51 /* fli-test-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "fli-test-Info.plist"; sourceTree = "<group>"; };
+		F4F1170B18492626004A8F51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4F1170D18492626004A8F51 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4F1170F18492626004A8F51 /* fli-test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "fli-test-Prefix.pch"; sourceTree = "<group>"; };
+		F4F1171118492626004A8F51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		F4F1171318492626004A8F51 /* SXIOAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SXIOAppDelegate.h; sourceTree = "<group>"; };
+		F4F1171718492626004A8F51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F4F1171918492626004A8F51 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F4F1171F18492626004A8F51 /* fli-testTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fli-testTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4F1172018492626004A8F51 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F4F1172718492626004A8F51 /* fli-testTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "fli-testTests-Info.plist"; sourceTree = "<group>"; };
+		F4F1172918492626004A8F51 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F4F1172B18492626004A8F51 /* fli_testTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = fli_testTests.m; sourceTree = "<group>"; };
+		F4F1178C1849272C004A8F51 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		F4F1178E1849292A004A8F51 /* SXIOAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOAppDelegate.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4F116FB18492626004A8F51 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F461188219F3737A003BA344 /* QuartzCore.framework in Frameworks */,
+				F461188019F3736E003BA344 /* CoreVideo.framework in Frameworks */,
+				F461187E19F37361003BA344 /* CoreMedia.framework in Frameworks */,
+				F461187C19F37350003BA344 /* AVFoundation.framework in Frameworks */,
+				F461187A19F37344003BA344 /* Accelerate.framework in Frameworks */,
+				F4F1178D1849272C004A8F51 /* IOKit.framework in Frameworks */,
+				F4F1170218492626004A8F51 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4F1171C18492626004A8F51 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F1172218492626004A8F51 /* Cocoa.framework in Frameworks */,
+				F4F1172118492626004A8F51 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F461179C19F36E1A003BA344 /* libfli-1.104 */ = {
+			isa = PBXGroup;
+			children = (
+				F461179F19F36E1A003BA344 /* libfli-camera-parport.c */,
+				F46117A019F36E1A003BA344 /* libfli-camera-parport.h */,
+				F46117A119F36E1A003BA344 /* libfli-camera-usb.c */,
+				F46117A219F36E1A003BA344 /* libfli-camera-usb.h */,
+				F46117A319F36E1A003BA344 /* libfli-camera.c */,
+				F46117A419F36E1A003BA344 /* libfli-camera.h */,
+				F46117A519F36E1A003BA344 /* libfli-debug.h */,
+				F46117A619F36E1A003BA344 /* libfli-filter-focuser.c */,
+				F46117A719F36E1A003BA344 /* libfli-filter-focuser.h */,
+				F46117A819F36E1A003BA344 /* libfli-libfli.h */,
+				F46117A919F36E1A003BA344 /* libfli-mem.c */,
+				F46117AA19F36E1A003BA344 /* libfli-mem.h */,
+				F46117AB19F36E1A003BA344 /* libfli-raw.c */,
+				F46117AC19F36E1A003BA344 /* libfli-raw.h */,
+				F46117AD19F36E1A003BA344 /* libfli.c */,
+				F46117AF19F36E1A003BA344 /* libfli.h */,
+				F46117B119F36E1A003BA344 /* unix */,
+			);
+			name = "libfli-1.104";
+			path = "../../../CoreAstro/libCoreAstro/Vendors/FLI/libfli-1.104";
+			sourceTree = "<group>";
+		};
+		F46117B119F36E1A003BA344 /* unix */ = {
+			isa = PBXGroup;
+			children = (
+				F46117B419F36E1A003BA344 /* libfli-debug.c */,
+				F46117B519F36E1A003BA344 /* libfli-parport.h */,
+				F46117B619F36E1A003BA344 /* libfli-serial.c */,
+				F46117B719F36E1A003BA344 /* libfli-serial.h */,
+				F46117BA19F36E1A003BA344 /* libfli-usb.c */,
+				F46117BB19F36E1A003BA344 /* libfli-usb.h */,
+				F46117C119F36E1A003BA344 /* osx */,
+			);
+			path = unix;
+			sourceTree = "<group>";
+		};
+		F46117C119F36E1A003BA344 /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				F46117C219F36E1A003BA344 /* libfli-usb-sys.c */,
+				F46117C319F36E1A003BA344 /* libfli-usb-sys.h */,
+			);
+			path = osx;
+			sourceTree = "<group>";
+		};
+		F46117FC19F37295003BA344 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F46117FD19F37295003BA344 /* CASCameraController.h */,
+				F46117FE19F37295003BA344 /* CASCameraController.m */,
+				F46117FF19F37295003BA344 /* CASDeviceController.h */,
+				F461180019F37295003BA344 /* CASDeviceController.m */,
+				F461180119F37295003BA344 /* CASFilterWheelController.h */,
+				F461180219F37295003BA344 /* CASFilterWheelController.m */,
+				F461180319F37295003BA344 /* CASGuiderController.h */,
+				F461180419F37295003BA344 /* CASGuiderController.m */,
+			);
+			name = Controllers;
+			path = ../../../CoreAstro/libCoreAstro/Controllers;
+			sourceTree = "<group>";
+		};
+		F461180519F37295003BA344 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				F461180619F37295003BA344 /* CASAlgorithm+Exposure.h */,
+				F461180719F37295003BA344 /* CASAlgorithm+Exposure.m */,
+				F461180819F37295003BA344 /* CASAlgorithm.h */,
+				F461180919F37295003BA344 /* CASAlgorithm.m */,
+				F461180A19F37295003BA344 /* CASAutoGuider.h */,
+				F461180B19F37295003BA344 /* CASAutoGuider.mm */,
+				F461180C19F37295003BA344 /* CASBatchProcessor.h */,
+				F461180D19F37295003BA344 /* CASBatchProcessor.m */,
+				F461180E19F37295003BA344 /* CASCCDDevice.h */,
+				F461180F19F37295003BA344 /* CASCCDDevice.m */,
+				F461181019F37295003BA344 /* CASCCDExposure.h */,
+				F461181119F37295003BA344 /* CASCCDExposure.m */,
+				F461181219F37295003BA344 /* CASCCDExposureIO.h */,
+				F461181319F37295003BA344 /* CASCCDExposureIO.m */,
+				F461181419F37295003BA344 /* CASCCDExposureLibrary.h */,
+				F461181519F37295003BA344 /* CASCCDExposureLibrary.m */,
+				F461181619F37295003BA344 /* CASCCDImage.h */,
+				F461181719F37295003BA344 /* CASCCDImage.m */,
+				F461181819F37295003BA344 /* CASCCDProperties.h */,
+				F461181919F37295003BA344 /* CASCCDProperties.m */,
+				F461181A19F37295003BA344 /* CASClassDefaults.h */,
+				F461181B19F37295003BA344 /* CASClassDefaults.m */,
+				F461181C19F37295003BA344 /* CASDevice.h */,
+				F461181D19F37295003BA344 /* CASDevice.m */,
+				F461181E19F37295003BA344 /* CASDeviceBrowser.h */,
+				F461181F19F37295003BA344 /* CASDeviceFactory.h */,
+				F461182019F37295003BA344 /* CASDeviceManager.h */,
+				F461182119F37295003BA344 /* CASDeviceManager.m */,
+				F461182219F37295003BA344 /* CASExposureSettings.h */,
+				F461182319F37295003BA344 /* CASExposureSettings.m */,
+				F461182419F37295003BA344 /* CASExternalSDK.h */,
+				F461182519F37295003BA344 /* CASFilterPipeline.h */,
+				F461182619F37295003BA344 /* CASFilterPipeline.m */,
+				F461182719F37295003BA344 /* CASFITSUtilities.h */,
+				F461182819F37295003BA344 /* CASFITSUtilities.m */,
+				F461182919F37295003BA344 /* CASFocusMetric.h */,
+				F461182A19F37295003BA344 /* CASFocusMetric.m */,
+				F461182B19F37295003BA344 /* CASFWDevice.h */,
+				F461182C19F37295003BA344 /* CASFWDevice.m */,
+				F461182D19F37295003BA344 /* CASHalfFluxDiameter.h */,
+				F461182E19F37295003BA344 /* CASHalfFluxDiameter.m */,
+				F461182F19F37295003BA344 /* CASImageDebayer.h */,
+				F461183019F37295003BA344 /* CASImageDebayer.mm */,
+				F461183119F37295003BA344 /* CASImageMetrics.h */,
+				F461183219F37295003BA344 /* CASImageMetrics.mm */,
+				F461183319F37295003BA344 /* CASImageProcessor.h */,
+				F461183419F37295003BA344 /* CASImageProcessor.mm */,
+				F461183519F37295003BA344 /* CASImageStacker.h */,
+				F461183619F37295003BA344 /* CASImageStacker.m */,
+				F461183719F37295003BA344 /* CASIOCommand.h */,
+				F461183819F37295003BA344 /* CASIOCommand.m */,
+				F461183919F37295003BA344 /* CASIOTransport.h */,
+				F461183A19F37295003BA344 /* CASIOTransport.m */,
+				F461183B19F37295003BA344 /* CASMovieExporter.h */,
+				F461183C19F37295003BA344 /* CASMovieExporter.m */,
+				F461183D19F37295003BA344 /* CASNetworkServer.h */,
+				F461183E19F37295003BA344 /* CASNetworkServer.m */,
+				F461183F19F37295003BA344 /* CASPHD2Client.h */,
+				F461184019F37295003BA344 /* CASPHD2Client.m */,
+				F461184119F37295003BA344 /* CASPlateSolver.h */,
+				F461184219F37295003BA344 /* CASPlateSolver.m */,
+				F461184319F37295003BA344 /* CASPluginManager.h */,
+				F461184419F37295003BA344 /* CASPluginManager.m */,
+				F461184519F37295003BA344 /* CASPowerMonitor.h */,
+				F461184619F37295003BA344 /* CASPowerMonitor.m */,
+				F461184719F37295003BA344 /* CASScriptableObject.h */,
+				F461184819F37295003BA344 /* CASScriptableObject.m */,
+				F461184919F37295003BA344 /* CASSocketClient.h */,
+				F461184A19F37295003BA344 /* CASSocketClient.m */,
+				F461184B19F37295003BA344 /* CASTaskWrapper.h */,
+				F461184C19F37295003BA344 /* CASTaskWrapper.m */,
+				F461184D19F37295003BA344 /* CASUtilities.h */,
+				F461184E19F37295003BA344 /* CASUtilities.m */,
+				F461184F19F37295003BA344 /* CoreAstro.h */,
+				F461185019F37295003BA344 /* CoreAstro.m */,
+			);
+			name = Core;
+			path = ../../../CoreAstro/libCoreAstro/Core;
+			sourceTree = "<group>";
+		};
+		F4F116F518492626004A8F51 = {
+			isa = PBXGroup;
+			children = (
+				F4F1170718492626004A8F51 /* fli-test */,
+				F4F1172518492626004A8F51 /* fli-testTests */,
+				F4F1170018492626004A8F51 /* Frameworks */,
+				F4F116FF18492626004A8F51 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4F116FF18492626004A8F51 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4F116FE18492626004A8F51 /* fli-test.app */,
+				F4F1171F18492626004A8F51 /* fli-testTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4F1170018492626004A8F51 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F461188119F3737A003BA344 /* QuartzCore.framework */,
+				F461187F19F3736E003BA344 /* CoreVideo.framework */,
+				F461187D19F37361003BA344 /* CoreMedia.framework */,
+				F461187B19F37350003BA344 /* AVFoundation.framework */,
+				F461187919F37344003BA344 /* Accelerate.framework */,
+				F4F1178C1849272C004A8F51 /* IOKit.framework */,
+				F4F1170118492626004A8F51 /* Cocoa.framework */,
+				F4F1172018492626004A8F51 /* XCTest.framework */,
+				F4F1170318492626004A8F51 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4F1170318492626004A8F51 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4F1170418492626004A8F51 /* AppKit.framework */,
+				F4F1170518492626004A8F51 /* CoreData.framework */,
+				F4F1170618492626004A8F51 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		F4F1170718492626004A8F51 /* fli-test */ = {
+			isa = PBXGroup;
+			children = (
+				F4F1171318492626004A8F51 /* SXIOAppDelegate.h */,
+				F4F1178E1849292A004A8F51 /* SXIOAppDelegate.m */,
+				F46117F719F371DB003BA344 /* FLISDK.h */,
+				F46117F419F371DB003BA344 /* FLISDK.m */,
+				F46117F519F371DB003BA344 /* FLICCDDevice.h */,
+				F46117F319F371DB003BA344 /* FLICCDDevice.m */,
+				F46117F619F371DB003BA344 /* FLIDeviceFactory.h */,
+				F46117F819F371DB003BA344 /* FLIDeviceFactory.m */,
+				F46117FC19F37295003BA344 /* Controllers */,
+				F461180519F37295003BA344 /* Core */,
+				F461179C19F36E1A003BA344 /* libfli-1.104 */,
+				F4F1171618492626004A8F51 /* MainMenu.xib */,
+				F4F1171918492626004A8F51 /* Images.xcassets */,
+				F4F1170818492626004A8F51 /* Supporting Files */,
+			);
+			path = "fli-test";
+			sourceTree = "<group>";
+		};
+		F4F1170818492626004A8F51 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4F1170918492626004A8F51 /* fli-test-Info.plist */,
+				F4F1170A18492626004A8F51 /* InfoPlist.strings */,
+				F4F1170D18492626004A8F51 /* main.m */,
+				F4F1170F18492626004A8F51 /* fli-test-Prefix.pch */,
+				F4F1171018492626004A8F51 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4F1172518492626004A8F51 /* fli-testTests */ = {
+			isa = PBXGroup;
+			children = (
+				F4F1172B18492626004A8F51 /* fli_testTests.m */,
+				F4F1172618492626004A8F51 /* Supporting Files */,
+			);
+			path = "fli-testTests";
+			sourceTree = "<group>";
+		};
+		F4F1172618492626004A8F51 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4F1172718492626004A8F51 /* fli-testTests-Info.plist */,
+				F4F1172818492626004A8F51 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4F116FD18492626004A8F51 /* fli-test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4F1172F18492626004A8F51 /* Build configuration list for PBXNativeTarget "fli-test" */;
+			buildPhases = (
+				F4F116FA18492626004A8F51 /* Sources */,
+				F4F116FB18492626004A8F51 /* Frameworks */,
+				F4F116FC18492626004A8F51 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "fli-test";
+			productName = "fli-test";
+			productReference = F4F116FE18492626004A8F51 /* fli-test.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F4F1171E18492626004A8F51 /* fli-testTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4F1173218492626004A8F51 /* Build configuration list for PBXNativeTarget "fli-testTests" */;
+			buildPhases = (
+				F4F1171B18492626004A8F51 /* Sources */,
+				F4F1171C18492626004A8F51 /* Frameworks */,
+				F4F1171D18492626004A8F51 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4F1172418492626004A8F51 /* PBXTargetDependency */,
+			);
+			name = "fli-testTests";
+			productName = "fli-testTests";
+			productReference = F4F1171F18492626004A8F51 /* fli-testTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4F116F618492626004A8F51 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = SXIO;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4F1171E18492626004A8F51 = {
+						TestTargetID = F4F116FD18492626004A8F51;
+					};
+				};
+			};
+			buildConfigurationList = F4F116F918492626004A8F51 /* Build configuration list for PBXProject "fli-test" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F4F116F518492626004A8F51;
+			productRefGroup = F4F116FF18492626004A8F51 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4F116FD18492626004A8F51 /* fli-test */,
+				F4F1171E18492626004A8F51 /* fli-testTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4F116FC18492626004A8F51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F1170C18492626004A8F51 /* InfoPlist.strings in Resources */,
+				F4F1171A18492626004A8F51 /* Images.xcassets in Resources */,
+				F4F1171218492626004A8F51 /* Credits.rtf in Resources */,
+				F4F1171818492626004A8F51 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4F1171D18492626004A8F51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F1172A18492626004A8F51 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4F116FA18492626004A8F51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F46117FB19F371DB003BA344 /* FLIDeviceFactory.m in Sources */,
+				F461185B19F37295003BA344 /* CASCCDExposureIO.m in Sources */,
+				F46117D519F36E1A003BA344 /* libfli-camera-parport.c in Sources */,
+				F461185119F37295003BA344 /* CASCameraController.m in Sources */,
+				F461187319F37295003BA344 /* CASPowerMonitor.m in Sources */,
+				F461187519F37295003BA344 /* CASSocketClient.m in Sources */,
+				F461185219F37295003BA344 /* CASDeviceController.m in Sources */,
+				F461187719F37295003BA344 /* CASUtilities.m in Sources */,
+				F4F1178F1849292A004A8F51 /* SXIOAppDelegate.m in Sources */,
+				F46117F919F371DB003BA344 /* FLICCDDevice.m in Sources */,
+				F4F1170E18492626004A8F51 /* main.m in Sources */,
+				F461186B19F37295003BA344 /* CASImageStacker.m in Sources */,
+				F461185819F37295003BA344 /* CASBatchProcessor.m in Sources */,
+				F461186519F37295003BA344 /* CASFocusMetric.m in Sources */,
+				F461186C19F37295003BA344 /* CASIOCommand.m in Sources */,
+				F461186219F37295003BA344 /* CASExposureSettings.m in Sources */,
+				F461185519F37295003BA344 /* CASAlgorithm+Exposure.m in Sources */,
+				F461185719F37295003BA344 /* CASAutoGuider.mm in Sources */,
+				F461185F19F37295003BA344 /* CASClassDefaults.m in Sources */,
+				F461187619F37295003BA344 /* CASTaskWrapper.m in Sources */,
+				F461186619F37295003BA344 /* CASFWDevice.m in Sources */,
+				F461186719F37295003BA344 /* CASHalfFluxDiameter.m in Sources */,
+				F461186819F37295003BA344 /* CASImageDebayer.mm in Sources */,
+				F461185C19F37295003BA344 /* CASCCDExposureLibrary.m in Sources */,
+				F461186019F37295003BA344 /* CASDevice.m in Sources */,
+				F46117FA19F371DB003BA344 /* FLISDK.m in Sources */,
+				F461185619F37295003BA344 /* CASAlgorithm.m in Sources */,
+				F461186319F37295003BA344 /* CASFilterPipeline.m in Sources */,
+				F461186419F37295003BA344 /* CASFITSUtilities.m in Sources */,
+				F461186919F37295003BA344 /* CASImageMetrics.mm in Sources */,
+				F461187419F37295003BA344 /* CASScriptableObject.m in Sources */,
+				F461186D19F37295003BA344 /* CASIOTransport.m in Sources */,
+				F46117D819F36E1A003BA344 /* libfli-filter-focuser.c in Sources */,
+				F461185E19F37295003BA344 /* CASCCDProperties.m in Sources */,
+				F461185319F37295003BA344 /* CASFilterWheelController.m in Sources */,
+				F461187019F37295003BA344 /* CASPHD2Client.m in Sources */,
+				F46117D919F36E1A003BA344 /* libfli-mem.c in Sources */,
+				F461185419F37295003BA344 /* CASGuiderController.m in Sources */,
+				F461186119F37295003BA344 /* CASDeviceManager.m in Sources */,
+				F461187219F37295003BA344 /* CASPluginManager.m in Sources */,
+				F461187819F37295003BA344 /* CoreAstro.m in Sources */,
+				F461186F19F37295003BA344 /* CASNetworkServer.m in Sources */,
+				F46117DB19F36E1A003BA344 /* libfli.c in Sources */,
+				F46117E519F36E1A003BA344 /* libfli-usb-sys.c in Sources */,
+				F46117E019F36E1A003BA344 /* libfli-serial.c in Sources */,
+				F46117E219F36E1A003BA344 /* libfli-usb.c in Sources */,
+				F461186A19F37295003BA344 /* CASImageProcessor.mm in Sources */,
+				F46117D619F36E1A003BA344 /* libfli-camera-usb.c in Sources */,
+				F461186E19F37295003BA344 /* CASMovieExporter.m in Sources */,
+				F461185A19F37295003BA344 /* CASCCDExposure.m in Sources */,
+				F46117DF19F36E1A003BA344 /* libfli-debug.c in Sources */,
+				F46117DA19F36E1A003BA344 /* libfli-raw.c in Sources */,
+				F46117D719F36E1A003BA344 /* libfli-camera.c in Sources */,
+				F461185D19F37295003BA344 /* CASCCDImage.m in Sources */,
+				F461185919F37295003BA344 /* CASCCDDevice.m in Sources */,
+				F461187119F37295003BA344 /* CASPlateSolver.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4F1171B18492626004A8F51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4F1172C18492626004A8F51 /* fli_testTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4F1172418492626004A8F51 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4F116FD18492626004A8F51 /* fli-test */;
+			targetProxy = F4F1172318492626004A8F51 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4F1170A18492626004A8F51 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F1170B18492626004A8F51 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F4F1171018492626004A8F51 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F1171118492626004A8F51 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		F4F1171618492626004A8F51 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F1171718492626004A8F51 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		F4F1172818492626004A8F51 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4F1172918492626004A8F51 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4F1172D18492626004A8F51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F4F1172E18492626004A8F51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4F1173018492626004A8F51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fli-test/fli-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../CoreAstro/libCoreAstro\"/**",
+				);
+				INFOPLIST_FILE = "fli-test/fli-test-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F4F1173118492626004A8F51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fli-test/fli-test-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../CoreAstro/libCoreAstro\"/**",
+				);
+				INFOPLIST_FILE = "fli-test/fli-test-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F4F1173318492626004A8F51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/fli-test.app/Contents/MacOS/fli-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fli-test/fli-test-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "fli-testTests/fli-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		F4F1173418492626004A8F51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/fli-test.app/Contents/MacOS/fli-test";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "fli-test/fli-test-Prefix.pch";
+				INFOPLIST_FILE = "fli-testTests/fli-testTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4F116F918492626004A8F51 /* Build configuration list for PBXProject "fli-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4F1172D18492626004A8F51 /* Debug */,
+				F4F1172E18492626004A8F51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4F1172F18492626004A8F51 /* Build configuration list for PBXNativeTarget "fli-test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4F1173018492626004A8F51 /* Debug */,
+				F4F1173118492626004A8F51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4F1173218492626004A8F51 /* Build configuration list for PBXNativeTarget "fli-testTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4F1173318492626004A8F51 /* Debug */,
+				F4F1173418492626004A8F51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4F116F618492626004A8F51 /* Project object */;
+}
