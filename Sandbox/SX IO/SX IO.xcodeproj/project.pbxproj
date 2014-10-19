@@ -168,6 +168,7 @@
 		F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
 		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC3CCD19AE644200401578 /* CoreLocation.framework */; };
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
 		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
@@ -533,6 +534,7 @@
 		F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPHDControlsViewController.h; path = ../../../CoreAstro/CASPHDControlsViewController.h; sourceTree = "<group>"; };
 		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
 		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
+		F4BC3CCD19AE644200401578 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSliderCell.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.m"; sourceTree = "<group>"; };
 		F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSlider.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.m"; sourceTree = "<group>"; };
 		F4BDF8EC17B657AF00749F4B /* SMDoubleSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSliderCell.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.h"; sourceTree = "<group>"; };
@@ -653,6 +655,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */,
 				F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */,
 				F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */,
 				F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */,
@@ -906,6 +909,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4BC3CCD19AE644200401578 /* CoreLocation.framework */,
 				F4554895185128ED00D30926 /* CoreMedia.framework */,
 				F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */,
 				F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */,
@@ -1434,7 +1438,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\nrm -rf \"${shared_support}/astrometry\"\nrm -rf \"${shared_support}/support\"\n";
+			shellScript = "#shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\n#rm -rf \"${shared_support}/astrometry\"\n#rm -rf \"${shared_support}/support\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -131,7 +131,7 @@ static void* kvoContext;
         }
     }
     
-    if ([@[@"Settling",@"StartGuiding"] containsObject:event]){
+    if ([@[@"Settling"/*,@"StartGuiding"*/] containsObject:event]){
         self.guiding = NO;
         _settling = YES;
     }
@@ -182,7 +182,7 @@ static void* kvoContext;
 {
     if (!self.guiding){
         // todo; this can happen if this is called before we've got the AppState event after connecting, queue the request up ?
-        NSLog(@"Attempting to dither while not guiding");
+        NSLog(@"Attempting to dither while not guiding"); // always getting this after stopping and starting guiding
         if (completion){
             completion(NO);
         }
@@ -204,6 +204,9 @@ static void* kvoContext;
         }
         else {
             NSLog(@"Dither failed: %@",result);
+            if (completion){
+                completion(NO);
+            }
         }
     }];
 }

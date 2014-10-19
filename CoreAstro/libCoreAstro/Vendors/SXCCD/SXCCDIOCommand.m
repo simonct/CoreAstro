@@ -1020,30 +1020,34 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     NSInteger binY = self.params.bin.height;
     const NSInteger height = self.params.size.height / 2;
     
+    NSInteger y = self.params.origin.y;
     switch (self.field) {
         case kSXCCDIOFieldOdd:
             flags = SXCCD_EXP_FLAGS_FIELD_ODD;
+            y /= 2;
             break;
         case kSXCCDIOFieldEven:
             flags = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            y /= 2;
             break;
         case kSXCCDIOFieldBoth:
             flags = SXCCD_EXP_FLAGS_FIELD_BOTH;
             binY /= 2;
+            y /= 2;
             break;
     }
     
     if (self.latchPixels){
         
         uint8_t buffer[18];
-        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,buffer);
+        sxLatchPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,y,self.params.size.width,height,self.params.bin.width,binY,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
     else {
         
         uint8_t buffer[22];
-        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,self.params.origin.y,self.params.size.width,height,self.params.bin.width,binY,(uint32_t)self.ms,buffer);
+        sxExposePixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,flags,self.params.origin.x,y,self.params.size.width,height,self.params.bin.width,binY,(uint32_t)self.ms,buffer);
         
         return [NSData dataWithBytes:buffer length:sizeof(buffer)];
     }
@@ -1052,6 +1056,12 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
 @end
 
 @implementation SXCCDIOExposeCommandLodestar
+
+- (BOOL)allowsUnderrun {
+    // rather like the M25C I sometimes get back less data than I asked for, possibly down to subframes not aligning with field boundaries
+    // (this may be a property of all interlaced cameras not just these two in particular)
+    return YES;
+}
 
 - (NSInteger) readSize {
     
@@ -1201,24 +1211,30 @@ static uint8_t* sxReconstructM26CFields4x4(const uint8_t* field1Pixels,const uin
     NSInteger fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
     NSInteger binX = self.params.bin.width;
     NSInteger binY = self.params.bin.height;
+    NSInteger y = self.params.origin.y;
+
     const NSInteger height = self.params.size.height / 2;
     
     switch (self.field) {
         case kSXCCDIOFieldOdd:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_ODD;
+            y /= 2;
             break;
         case kSXCCDIOFieldEven:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_EVEN;
+            y /= 2;
             break;
         case kSXCCDIOFieldBoth:
             fieldFlag = SXCCD_EXP_FLAGS_FIELD_BOTH;
             binY /= 2;
+            y /= 2;
             break;
     }
     
+
 //    NSLog(@"SXCCDIOReadFieldCommand: field=%ld, height=%ld, binX=%ld, binY=%ld",self.field,height,binX,binY);
     
-    sxReadPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,fieldFlag,self.params.origin.x,self.params.origin.y,self.params.size.width,height,binX,binY,buffer);
+    sxReadPixelsWriteData(SXUSB_MAIN_CAMERA_INDEX,fieldFlag,self.params.origin.x,y,self.params.size.width,height,binX,binY,buffer);
     
     return [NSData dataWithBytes:buffer length:sizeof(buffer)];
 }

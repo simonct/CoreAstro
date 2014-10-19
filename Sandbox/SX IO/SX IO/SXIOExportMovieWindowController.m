@@ -192,7 +192,9 @@ typedef NS_ENUM(NSInteger, SXIOExportMovieSortMode) {
             _currentFrame = NSNotFound;
             self.currentFrame = 0;
 #else
-            [self savePressed:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{ // let this NSOpenPanel session unwind before starting the NSSavePanel one
+                [self savePressed:nil];
+            });
 #endif
         }
     }];

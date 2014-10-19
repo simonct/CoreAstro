@@ -387,7 +387,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                         NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
                     }
                     else {
-                        NSLog(@"Dither failed");
+                        NSLog(@"*** Dither failed"); // an alert might be too intrusive - need a sequence log this can go into perhaps plus a non-blocking ui feature e.g. log window
+                        NSUserNotification* note = [[NSUserNotification alloc] init];
+                        note.title = NSLocalizedString(@"Dither failed", @"Notification title");
+                        note.subtitle = NSLocalizedString(@"Check PHD2 is guiding successfully", @"Notification subtitle");
+                        note.soundName = NSUserNotificationDefaultSoundName;
+                        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
                     }
                     if (!_cancelled){
                         startExposure(); // expose anyway as long as we haven't been cancelled
@@ -421,7 +426,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     self.settings.currentCaptureIndex = 0;
     
     // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
-    if (self.settings.ditherEnabled && !self.phd2Client){
+    if (self.settings.ditherEnabled){
         self.phd2Client = [CASPHD2Client new];
     }
 

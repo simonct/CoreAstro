@@ -69,8 +69,8 @@ int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status)
             // get the zero and scaling values
             float zero = 0;
             float scale = 1;
-            fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status);
-            fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status);
+            fits_read_key(fptr,TFLOAT,"BSCALE",(void*)&scale,NULL,&status); status = 0;
+            fits_read_key(fptr,TFLOAT,"BZERO",(void*)&zero,NULL,&status); status = 0;
             NSLog(@"CASFITSPreviewer: BSCALE: %f, BZERO: %f",scale,zero);
 
             // create a floating point bitmap context
@@ -95,8 +95,13 @@ int cas_fits_open_image(fitsfile **fptr,const char* path,int mode,int* status)
                         break;
                     }
                     
-                    // handle scale and offset as the contrast stretch code assumes a max value of 65535
-                    if (zero != 0 || scale != 1){
+                    // handle scale and offset as the contrast stretch code assumes images with a range of 0-65535
+                    if (zero == 0 && scale == 1){
+                        zero = 0;
+                        scale = 65535;
+                        vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                    }
+                    else {
                         vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
                     }
                     

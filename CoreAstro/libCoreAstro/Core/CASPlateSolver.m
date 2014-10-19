@@ -426,6 +426,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             } terminationBlock:^(int terminationStatus) {
                 
                 if (terminationStatus){
+                    NSLog(@"solve-field: %@",[self.solverTask taskOutput]);
                     complete([self errorWithCode:3 reason:@"Plate solve failed"],nil);
                 }
                 else {
@@ -448,6 +449,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                             [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
                                 
                                 if (terminationStatus){
+                                    NSLog(@"wcsinfo: %@",[self.solverTask taskOutput]);
                                     complete([self errorWithCode:5 reason:@"Failed to get solution info"],nil);
                                 }
                                 else {

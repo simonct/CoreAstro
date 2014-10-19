@@ -206,6 +206,9 @@
     if (self.productID == 805){ // M25C
         return @[@1,@2,@4];
     }
+    if (self.isInterlaced){ // Lodestar
+        return @[@1,@2,@4];
+    }
     return @[@1,@2,@3,@4];
 }
 

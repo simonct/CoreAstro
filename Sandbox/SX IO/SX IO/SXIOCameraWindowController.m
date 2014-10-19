@@ -18,6 +18,7 @@
 #import "SXIOPlateSolveOptionsWindowController.h"
 
 #import <Quartz/Quartz.h>
+#import <CoreLocation/CoreLocation.h>
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
@@ -492,33 +493,22 @@ static void* kvoContext;
     
     BOOL (^saveExposure)() = ^BOOL(CASCCDExposure* exposure,NSInteger mode,NSInteger sequence,NSError** error){
         
-        NSString* name = nil;
-        switch (mode) {
-            case kCASCaptureModelModeDark:
-                name = @"dark";
-                break;
-            case kCASCaptureModelModeBias:
-                name = @"bias";
-                break;
-            case kCASCaptureModelModeFlat:
-                name = @"flat";
-                break;
-        }
-        
         // check for a user-entered filter name
         NSString* filterName = self.filterWheelControlsViewController.filterName;
         if ([filterName length]){
             exposure.filters = @[filterName];
         }
         
+        // construct the exposure name
         NSURL* finalUrl;
+        NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
+        if ([prefix rangeOfString:@"$type"].location == NSNotFound){
+            prefix = [prefix stringByAppendingString:@"_$type"];
+        }
         if (sequence > 0){
-            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%@_%03ld",name,sequence] fileType:nil];
-            finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+            prefix = [NSString stringWithFormat:@"%@_%03ld",prefix,sequence];
         }
-        else{
-            finalUrl = [_targetFolder URLByAppendingPathComponent:[self exposureSaveNameWithSuffix:name fileType:@"fits"]];
-        }
+        finalUrl = [[_targetFolder URLByAppendingPathComponent:[exposure stringBySubstitutingPlaceholders:prefix]] URLByAppendingPathExtension:@"fits"];
         
         // remove existing one
         [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
@@ -539,6 +529,9 @@ static void* kvoContext;
                 [progress beginSheetModalForWindow:self.window];
                 [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
                 progress.canCancel = YES;
+                progress.cancelBlock = ^(){
+                    [self.captureController cancelCapture];
+                };
                 
                 self.captureController.imageProcessor = self.imageProcessor;
                 self.captureController.cameraController = self.cameraController;
@@ -1289,6 +1282,9 @@ static void* kvoContext;
             NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1] fileType:nil];
             ++self.saveTargetControlsViewController.saveImagesSequence;
             
+            // handle any placeholders
+            filename = [exposure stringBySubstitutingPlaceholders:filename];
+            
             // ensure we have a unique filename (for instance, in case the sequence was reset)
             NSInteger suffix = 2;
             finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
@@ -1317,6 +1313,16 @@ static void* kvoContext;
                 [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
             }
             else {
+                
+                NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+                NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+                if (latitude && longitude){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"latitude"] = latitude;
+                    meta[@"longitude"] = longitude;
+                    exposure.meta = [meta copy];
+                }
+
                 [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
             }
         }

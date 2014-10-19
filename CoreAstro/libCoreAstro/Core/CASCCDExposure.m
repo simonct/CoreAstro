@@ -515,6 +515,7 @@
         NSMutableDictionary* temp = [NSMutableDictionary dictionaryWithCapacity:2];
         [temp setObject:[NSNumber numberWithInteger:camera.temperatureFrequency] forKey:@"frequency"];
         [temp setObject:camera.exposureTemperatures forKey:@"temperatures"];
+        [temp setObject:@(camera.targetTemperature) forKey:@"setpoint"];
         [meta setObject:temp forKey:@"temperature"];
     }
 
@@ -716,7 +717,6 @@ NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
 
 @implementation CASCCDExposure (DisplayValues)
 
-// put into a category on ccdexposure
 - (NSString*)stringBySubstitutingPlaceholders:(NSString*)placeholders
 {
     if ([placeholders rangeOfString:@"$"].location != NSNotFound) {
@@ -754,6 +754,31 @@ NSString* const kCASCCDExposurePlateSolutionKey = @"plate-solve";
         }
         
         // $temp
+        NSNumber* temp = self.meta[@"temperature"][@"setpoint"];
+        if (temp){
+            [ms replaceOccurrencesOfString:@"$temp" withString:[temp description] options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        }
+
+        // $type; light, dark, bias, flat
+        NSString* type = nil;
+        switch (self.type) {
+            case kCASCCDExposureLightType:
+                type = @"light";
+                break;
+            case kCASCCDExposureDarkType:
+                type = @"dark";
+                break;
+            case kCASCCDExposureBiasType:
+                type = @"bias";
+                break;
+            case kCASCCDExposureFlatType:
+                type = @"flat";
+                break;
+
+        }
+        if (type){
+            [ms replaceOccurrencesOfString:@"$type" withString:type options:NSLiteralSearch range:NSMakeRange(0, [ms length])];
+        }
         
         placeholders = [ms copy];
     }

@@ -95,7 +95,7 @@
     BOOL temperatureLock = NO;
     CASCCDExposureType exposureType;
     
-    const CGFloat targetFloatAverage = 0.5;
+    const CGFloat targetFloatAverage = 0.33;
     const CGFloat targetFloatAverageTolerance = 0.1;
 
     __block BOOL saveExposure = YES;
@@ -152,6 +152,7 @@
         self.cameraController.guider = nil;
         self.cameraController.temperatureLock = temperatureLock;
         self.cameraController.settings.exposureType = exposureType;
+        self.cameraController.settings.ditherEnabled = NO;
         
         [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
             
