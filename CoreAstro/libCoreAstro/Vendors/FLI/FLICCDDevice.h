@@ -26,5 +26,20 @@
 #import "CASCCDDevice.h"
 
 @interface FLICCDDevice : CASCCDDevice
+
 - (instancetype)initWithId:(NSString*)ident path:(NSString*)path domain:(long)domain;
+
+@property (copy,readonly) NSString* fli_ident;
+@property (copy,readonly) NSString* fli_path;
+@property (copy,readonly) NSString* fli_model;
+@property (copy,readonly) NSString* fli_serial;
+@property (readonly) NSInteger fli_domain;
+@property (readonly) NSInteger fli_status;
+@property (readonly) NSInteger fli_hwVersion, fli_fwVersion;
+@property (readonly) double fli_ccdTemp, fli_baseTemp, fli_coolerPower;
+@property (readonly) CGSize fli_pixelSize;
+@property (readonly) CGRect fli_area;
+@property (readonly) NSString* fli_pixelSizeString;
+@property (readonly) NSString* fli_areaString;
+
 @end

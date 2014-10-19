@@ -37,8 +37,8 @@
 @property (assign) double fli_ccdTemp, fli_baseTemp, fli_coolerPower;
 @property (assign) CGSize fli_pixelSize;
 @property (assign) CGRect fli_area;
-@property (readonly) NSString* fli_pixelSizeString;
-@property (readonly) NSString* fli_areaString;
+//@property (readonly) NSString* fli_pixelSizeString;
+//@property (readonly) NSString* fli_areaString;
 @end
 
 @implementation FLICCDDevice {
