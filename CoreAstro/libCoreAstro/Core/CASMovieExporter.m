@@ -66,9 +66,11 @@ static NSInteger count;
 
 - (void)dealloc
 {
+#if !__has_feature(objc_arc)
     if (_queue){
         dispatch_release(_queue);
     }
+#endif
 }
 
 - (CVPixelBufferRef)pixelBufferFromExposure:(CASCCDExposure*)exposure withAnnotation:(NSString*)annotation
