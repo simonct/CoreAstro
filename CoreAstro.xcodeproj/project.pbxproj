@@ -3223,7 +3223,7 @@
 			name = "CoreAstro FrameworkTests";
 			productName = "CoreAstro FrameworkTests";
 			productReference = F44EDF0B15FCC386003B1B4C /* CoreAstro FrameworkTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		F498A51815FE7F96006E8376 /* SXDevicesPlugin */ = {
 			isa = PBXNativeTarget;
@@ -3286,7 +3286,7 @@
 			name = CoreAstroTests;
 			productName = CoreAstroTests;
 			productReference = F49E52DE15A971620018DC75 /* CoreAstroTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		F4A4F2A61631DDDE00A3B4E9 /* QuickLook Plugin */ = {
 			isa = PBXNativeTarget;
@@ -3944,6 +3944,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -3970,6 +3971,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
