@@ -26,15 +26,15 @@
 #import "CASAuxWindowController.h"
 
 @interface CASAuxWindowController ()
-
+@property (nonatomic,weak) NSWindow* parent;
 @end
 
 @implementation CASAuxWindowController
 
 - (void)endSheetWithCode:(NSInteger)code
 {
-    if ([self.window.parentWindow respondsToSelector:@selector(endSheet:returnCode:)]){
-        [self.window.parentWindow endSheet:self.window returnCode:code];
+    if ([self.parent respondsToSelector:@selector(endSheet:returnCode:)]){
+        [self.parent endSheet:self.window returnCode:code];
     }
     else {
         [NSApp endSheet:self.window returnCode:code];
@@ -48,10 +48,11 @@
 
 - (void)beginSheetModalForWindow:(NSWindow*)window completionHandler:(void (^)(NSInteger))handler
 {
+    self.parent = window;
     self.modalHandler = handler;
     
-    if ([window respondsToSelector:@selector(beginSheet:completionHandler:)]){
-        [window beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+    if ([self.parent respondsToSelector:@selector(beginSheet:completionHandler:)]){
+        [self.parent beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
             handler(returnCode);
         }];
     }
