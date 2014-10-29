@@ -27,4 +27,9 @@
 
 @interface NSApplication (CASScripting)
 
+- (NSArray*)cameraControllers;
+- (NSArray*)guiderControllers;
+- (NSArray*)filterWheelControllers;
+- (NSArray*)exposures; // todo: move this to the camera controller ?
+
 @end

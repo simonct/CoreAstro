@@ -30,6 +30,8 @@
 
 @property (nonatomic,strong) NSScriptCommand* scriptCommand;
 
+- (id)uniqueID;
+
 - (NSScriptObjectSpecifier*)objectSpecifier;
 
 - (NSString*)containerAccessor;

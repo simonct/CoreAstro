@@ -101,6 +101,9 @@
 		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
 		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
+		F440D25919FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
+		F440D25A19FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
+		F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */; };
 		F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
 		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
@@ -450,6 +453,9 @@
 		F415C54717C95B7D001C42F1 /* QuickFITS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickFITS-Prefix.pch"; sourceTree = "<group>"; };
 		F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSPreviewer.m; sourceTree = "<group>"; };
 		F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSPreviewer.h; sourceTree = "<group>"; };
+		F440D25619FCE318005510EB /* CASCameraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraServer.h; sourceTree = "<group>"; };
+		F440D25719FCE318005510EB /* CASCameraServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraServer.m; sourceTree = "<group>"; };
+		F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
 		F4415B4817CBAF7D00D1233C /* CASCaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCaptureWindowController.h; path = ../../../CoreAstro/CASCaptureWindowController.h; sourceTree = "<group>"; };
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
@@ -653,6 +659,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */,
 				F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */,
 				F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */,
 				F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */,
@@ -906,6 +913,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */,
 				F4554895185128ED00D30926 /* CoreMedia.framework */,
 				F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */,
 				F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */,
@@ -968,6 +976,8 @@
 				F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */,
 				F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */,
 				F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */,
+				F440D25619FCE318005510EB /* CASCameraServer.h */,
+				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1446,6 +1456,7 @@
 				F40D5B2E1849EC5E00977FA9 /* main.m in Sources */,
 				F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */,
+				F440D25A19FCE318005510EB /* CASCameraServer.m in Sources */,
 				F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */,
 				F40D5B311849EC5E00977FA9 /* SXIOExposureEnumerator.m in Sources */,
 				F40D5B321849EC5E00977FA9 /* CASCenteringClipView.m in Sources */,
@@ -1522,6 +1533,7 @@
 				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
 				F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */,
+				F440D25919FCE318005510EB /* CASCameraServer.m in Sources */,
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
 				F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */,
 				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
@@ -1871,7 +1883,6 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -1888,7 +1899,6 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
