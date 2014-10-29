@@ -54,9 +54,11 @@ static void* kvoContext;
                 case NSKeyValueChangeInsertion:{
                     [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                         if ([obj isKindOfClass:[CASCameraController class]]){
+                            CASCameraController* camera = obj;
                             for (NSString* keyPath in [self statusKeyPaths]){
                                 [obj addObserver:self forKeyPath:keyPath options:0 context:&kvoContext];
-                                // camera-connected ?
+                                NSDictionary* cameraConnected = @{@"cmd":@"camera-connected",@"id":camera.uniqueID,@"status":[self cameraStatus:camera]};
+                                [self respondToCommand:nil withReply:cameraConnected toPeers:self.session.connectedPeers completion:nil];
                             }
                         }
                     }];
@@ -66,9 +68,11 @@ static void* kvoContext;
                 case NSKeyValueChangeRemoval:{
                     [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                         if ([obj isKindOfClass:[CASCameraController class]]){
+                            CASCameraController* camera = obj;
                             for (NSString* keyPath in [self statusKeyPaths]){
                                 [obj removeObserver:self forKeyPath:keyPath context:&kvoContext];
-                                // camera-disconnected ?
+                                NSDictionary* cameraDisconnected = @{@"cmd":@"camera-disconnected",@"id":camera.uniqueID};
+                                [self respondToCommand:nil withReply:cameraDisconnected toPeers:self.session.connectedPeers completion:nil];
                             }
                         }
                     }];
