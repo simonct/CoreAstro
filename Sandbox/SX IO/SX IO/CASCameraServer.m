@@ -106,7 +106,7 @@ static void* kvoContext;
     
     [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
 
-    self.peerID = [[MCPeerID alloc] initWithDisplayName:@"SX IO Camera Server"];
+    self.peerID = [[MCPeerID alloc] initWithDisplayName:[NSProcessInfo processInfo].hostName]; // no, want sharing name
     self.session = [[MCSession alloc] initWithPeer:self.peerID];
     self.session.delegate = self;
     
@@ -190,6 +190,10 @@ static void* kvoContext;
     if (modes){
         props[@"binning-modes"] = modes;
     }
+    props[@"binning"] = @(camera.settings.binning);
+    props[@"continuous"] = @(camera.settings.continuous);
+    props[@"seconds"] = camera.settings.exposureUnits ? @(camera.settings.exposureDuration/1000) : @(camera.settings.exposureDuration);
+    props[@"subframe"] = NSStringFromRect(camera.settings.subframe);
     return [props copy];
 }
 
