@@ -192,7 +192,7 @@ static void* kvoContext;
     }
     props[@"binning"] = @(camera.settings.binning);
     props[@"continuous"] = @(camera.settings.continuous);
-    props[@"seconds"] = camera.settings.exposureUnits ? @(camera.settings.exposureDuration/1000) : @(camera.settings.exposureDuration);
+    props[@"seconds"] = camera.settings.exposureUnits ? @(camera.settings.exposureDuration/1000.0) : @(camera.settings.exposureDuration);
     if (!CGRectEqualToRect(camera.settings.subframe, NSZeroRect)){
         props[@"subframe"] = NSStringFromRect(camera.settings.subframe);
     }
