@@ -26,6 +26,7 @@ typedef struct CASVector {
 @property (nonatomic) float stretchMin, stretchMax, stretchGamma; // contrast stretch 0->1
 @property (nonatomic) BOOL debayer;
 @property (nonatomic) CASVector debayerOffset;
+@property (nonatomic) BOOL showClippedPixels;
 @property (nonatomic) CGRect extent;
 @property (nonatomic) BOOL flipVertical, flipHorizontal;
 @property (readonly) CIImage* filteredCIImage;

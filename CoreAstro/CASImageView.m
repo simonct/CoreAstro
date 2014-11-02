@@ -10,6 +10,36 @@
 #import "CASCenteringClipView.h"
 #import <QuartzCore/QuartzCore.h>
 
+@interface CASClipMaxFilter : CIFilter
+@end
+
+@implementation CASClipMaxFilter {
+    CIImage* inputImage;
+}
+
+- (CIImage *)outputImage
+{
+    CISampler *src = [CISampler samplerWithImage:inputImage];
+        
+    static CIKernel* kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSString* clipMax = @"kernel vec4 clipMax(sampler image)\
+        {\
+            vec4 p = sample(image, samplerCoord(image));\
+            p.rgba = greaterThanEqual(p.rgb,vec3(1)).r ? vec4(1,0,0,1) : p.rgba;\
+            return p;\
+        }";
+        
+        kernel = [[CIKernel kernelsWithString:clipMax] firstObject];
+    });
+    
+    return [self apply:kernel,src,nil];
+}
+
+@end
+
 @interface CASTiledLayer : CATiledLayer
 @end
 
@@ -35,6 +65,7 @@
     BOOL _invert, _medianFilter, _contrastStretch, _debayer;
     float _stretchMin, _stretchMax, _stretchGamma;
     CASVector _debayerOffset;
+    BOOL _showClippedPixels;
     CIImage* _filteredCIImage;
     NSMutableDictionary* _filterCache;
     CGRect _extent;
@@ -74,6 +105,7 @@
         _stretchMax = 1;
         _stretchGamma = 1;
         _extent = CGRectNull;
+        _showClippedPixels = YES;
         
         // set a custom backing layer (could vary the tile size depending on the image size ?)
         if (![[self class] createLayerInMakeBackingLayer]){
@@ -100,6 +132,7 @@
     _stretchGamma = 1;
     _contrastStretch = 1;
     _extent = CGRectNull;
+    _showClippedPixels = YES;
 
     if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
         self.layer.drawsAsynchronously = YES;
@@ -148,7 +181,12 @@
         }
         result = _filterCache[name];
         if (!result){
-            result = [CIFilter filterWithName:name];
+            if ([name isEqualToString:@"CASClipMaxFilter"]){
+                result = [CASClipMaxFilter new];
+            }
+            else {
+                result = [CIFilter filterWithName:name];
+            }
             if (result){
                 _filterCache[name] = result;
             }
@@ -222,6 +260,13 @@
     
     if (self.invert){
         CIFilter* invert = [self filterWithName:@"CIColorInvert"];
+        [invert setDefaults];
+        [invert setValue:image forKey:@"inputImage"];
+        image = [invert valueForKey:@"outputImage"];
+    }
+    
+    if (self.showClippedPixels){
+        CIFilter* invert = [self filterWithName:@"CASClipMaxFilter"];
         [invert setDefaults];
         [invert setValue:image forKey:@"inputImage"];
         image = [invert valueForKey:@"outputImage"];
@@ -504,6 +549,19 @@
             [self resetFilteredImage];
         }
     }
+}
+
+- (void)setShowClippedPixels:(BOOL)showClippedPixels
+{
+    if (showClippedPixels != _showClippedPixels){
+        _showClippedPixels = showClippedPixels;
+        [self resetFilteredImage];
+    }
+}
+
+- (BOOL)showClippedPixels
+{
+    return _showClippedPixels;
 }
 
 - (CGRect)extent
