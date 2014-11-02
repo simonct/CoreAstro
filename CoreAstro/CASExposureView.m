@@ -38,10 +38,10 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     const CGSize size = self.bounds.size;
     
-    [[[self sublayers] objectAtIndex:0] setPosition:CGPointMake(0,0)];
-    [[[self sublayers] objectAtIndex:1] setPosition:CGPointMake(size.width,0)];
-    [[[self sublayers] objectAtIndex:2] setPosition:CGPointMake(size.width,size.height)];
-    [[[self sublayers] objectAtIndex:3] setPosition:CGPointMake(0,size.height)];
+    [(CALayer*)[[self sublayers] objectAtIndex:0] setPosition:CGPointMake(0,0)];
+    [(CALayer*)[[self sublayers] objectAtIndex:1] setPosition:CGPointMake(size.width,0)];
+    [(CALayer*)[[self sublayers] objectAtIndex:2] setPosition:CGPointMake(size.width,size.height)];
+    [(CALayer*)[[self sublayers] objectAtIndex:3] setPosition:CGPointMake(0,size.height)];
 }
 
 - (void)dragHandle:(CASTaggedLayer*)dragHandle movedToPosition:(CGPoint)p
