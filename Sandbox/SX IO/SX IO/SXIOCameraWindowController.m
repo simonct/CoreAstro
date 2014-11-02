@@ -437,7 +437,10 @@ static void* kvoContext;
     
     // run the save panel and save the exposures to the selected location
     [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Saving...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
-        [self saveCIImage:self.exposureView.filteredCIImage toPath:save.URL.path type:options.imageUTType properties:options.imageProperties];
+        // running this on the default queue results in KVO errors when the save panel's dismissed so run on main
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self saveCIImage:self.exposureView.filteredCIImage toPath:save.URL.path type:options.imageUTType properties:options.imageProperties];
+        });
     } completionBlock:nil];
 }
 
@@ -453,25 +456,27 @@ static void* kvoContext;
     save.allowedFileTypes = [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIODefaultExposureFileTypes"];
     
     [self runSavePanel:save forExposures:@[self.currentExposure] withProgressLabel:NSLocalizedString(@"Exporting...", @"Progress text") exportBlock:^(CASCCDExposure* exposure) {
-        
-        NSURL* url = save.URL;
-        if (![save.allowedFileTypes containsObject:url.pathExtension]){
-            url = [save.URL URLByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
-        }
-        
-        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
-        if (!io){
-            NSLog(@"*** Failed to create FITS exporter");
-        }
-        else {
-            NSError* error = nil;
-            [io writeExposure:exposure writePixels:YES error:&error];
-            if (error){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [NSApp presentError:error];
-                });
+        // running this on the default queue results in KVO errors when the save panel's dismissed so run on main
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSURL* url = save.URL;
+            if (![save.allowedFileTypes containsObject:url.pathExtension]){
+                url = [save.URL URLByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]];
             }
-        }
+            
+            CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[url path]];
+            if (!io){
+                NSLog(@"*** Failed to create FITS exporter");
+            }
+            else {
+                NSError* error = nil;
+                [io writeExposure:exposure writePixels:YES error:&error];
+                if (error){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSApp presentError:error];
+                    });
+                }
+            }
+        });
     } completionBlock:nil];
 }
 
