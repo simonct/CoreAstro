@@ -33,6 +33,7 @@
 #import "SXIOExportMovieWindowController.h"
 #import "SXIOPreferencesWindowController.h"
 #import "CASCaptureCommand.h"
+#import "CASCameraServer.h"
 #import <CoreAstro/CoreAstro.h>
 #import <objc/runtime.h>
 
@@ -103,6 +104,8 @@ static void* kvoContext;
         [[CASDeviceManager sharedManager] scan];
         
         [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
+        
+        [[CASCameraServer sharedServer] start];
 
         // check after 1s to see if no devices are connected and if not show a one-time HUD indicating that something needs to be plugged in
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIONoDevicesAlertOnStartup"]){
