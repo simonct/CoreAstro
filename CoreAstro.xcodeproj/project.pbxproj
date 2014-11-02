@@ -24,6 +24,7 @@
 		F40D5C59184B5BBB00977FA9 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E531115A9731C0018DC75 /* IOKit.framework */; };
 		F40E9DBF1798877D00DE1A56 /* CASSocketClient.h in Headers */ = {isa = PBXBuildFile; fileRef = F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */; };
+		F4111FC11A06691E007350AE /* SXCCDDeviceUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F4111FBF1A06691E007350AE /* SXCCDDeviceUtilities.c */; };
 		F41157E01639CC7A00ABCA69 /* CASShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F41157DF1639CC7A00ABCA69 /* CASShadowView.m */; };
 		F412975915FCA977009C215E /* move.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975115FCA977009C215E /* move.pdf */; };
 		F412975A15FCA977009C215E /* selection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F412975215FCA977009C215E /* selection.pdf */; };
@@ -616,6 +617,8 @@
 		F40D5C2C184B5B8600977FA9 /* libfli-usb-sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libfli-usb-sys.h"; sourceTree = "<group>"; };
 		F40E9DBD1798877D00DE1A56 /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSocketClient.h; sourceTree = "<group>"; };
 		F40E9DBE1798877D00DE1A56 /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSocketClient.m; sourceTree = "<group>"; };
+		F4111FBF1A06691E007350AE /* SXCCDDeviceUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SXCCDDeviceUtilities.c; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDeviceUtilities.c; sourceTree = SOURCE_ROOT; };
+		F4111FC01A06691E007350AE /* SXCCDDeviceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXCCDDeviceUtilities.h; path = CoreAstro/libCoreAstro/Vendors/SXCCD/SXCCDDeviceUtilities.h; sourceTree = SOURCE_ROOT; };
 		F41157DE1639CC7A00ABCA69 /* CASShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASShadowView.h; sourceTree = "<group>"; };
 		F41157DF1639CC7A00ABCA69 /* CASShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASShadowView.m; sourceTree = "<group>"; };
 		F4125F1115D7A7D300E04052 /* superstar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = superstar.png; sourceTree = "<group>"; };
@@ -1792,6 +1795,8 @@
 				F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */,
 				F49E537615A995F40018DC75 /* SXCCDDeviceFactory.h */,
 				F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */,
+				F4111FC01A06691E007350AE /* SXCCDDeviceUtilities.h */,
+				F4111FBF1A06691E007350AE /* SXCCDDeviceUtilities.c */,
 				F49E53E015B899680018DC75 /* SXDevices.plist */,
 				F457B68F15DD4E480035F015 /* Images */,
 				F498A51C15FE7F96006E8376 /* Supporting Files */,
@@ -3674,6 +3679,7 @@
 				F4EEF31D1606273000547009 /* SXCCDDevice.m in Sources */,
 				F4EEF31E1606273400547009 /* SXCCDProperties.m in Sources */,
 				F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */,
+				F4111FC11A06691E007350AE /* SXCCDDeviceUtilities.c in Sources */,
 				F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
