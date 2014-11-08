@@ -3336,6 +3336,11 @@
 				CLASSPREFIX = MKO;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Mako Technology Ltd.";
+				TargetAttributes = {
+					F44EDEF915FCC385003B1B4C = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
+				};
 			};
 			buildConfigurationList = F49E52B715A971610018DC75 /* Build configuration list for PBXProject "CoreAstro" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -3944,7 +3949,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -3971,7 +3975,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
