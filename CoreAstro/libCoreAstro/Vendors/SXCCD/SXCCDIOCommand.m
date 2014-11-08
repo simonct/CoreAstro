@@ -908,8 +908,11 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
                 unsigned long i = 0;
                 double evenAverage = 0, oddAverage = 0, finalOddAverage = 0;
                 
+                const unsigned long evenStart = 1; // even seems to start at 1 ??
+                const unsigned long oddStart = 0;
+                
                 // copy even field, accumulating average pixel value
-                for (unsigned long y = 0; y < height; y += 2){
+                for (unsigned long y = evenStart; y < height; y += 2){
                     for (unsigned long x = 0; x < width; x += 1){
                         const uint16_t p = pixelsPtr[i++];
                         rearrangedPixelsPtr[x + (y * width)] = p;
@@ -919,7 +922,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
                 evenAverage /= count/2;
                 
                 // copy odd field, accumulating average pixel value
-                for (unsigned long y = 1; y < height; y += 2){
+                for (unsigned long y = oddStart; y < height; y += 2){
                     for (unsigned long x = 0; x < width; x += 1){
                         const uint16_t p = pixelsPtr[i++];
                         rearrangedPixelsPtr[x + (y * width)] = p;
@@ -931,7 +934,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
                 // correct odd field intensity
                 const float ratio = (evenAverage == 0) ? 0 : oddAverage/evenAverage;
                 if (ratio != 0){
-                    for (unsigned long y = 1; y < height; y += 2){
+                    for (unsigned long y = oddStart; y < height; y += 2){
                         for (unsigned long x = 0; x < width; x += 1){
                             const uint16_t p = MAX(MIN(rearrangedPixelsPtr[x + (y * width)] / ratio, 65535), 0); // prevent zebraing (make configurable ? can be quite quite handy)
                             rearrangedPixelsPtr[x + (y * width)] = p;
