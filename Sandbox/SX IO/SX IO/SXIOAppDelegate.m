@@ -58,7 +58,8 @@ static void* kvoContext;
          @"CASDefaultScopeFNumber":@(5.4),
          @"SXIODefaultExposureFileType":@"fits",
          @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"],
-         @"SXIONoDevicesAlertOnStartup":@YES
+         @"SXIONoDevicesAlertOnStartup":@YES,
+         @"SXIOAutoContrastStretch":@NO
          }];
     }
 }

@@ -133,12 +133,7 @@ static void* kvoContext;
     [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
-    @try {
-        [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"FIXME: %@",exception);
-    }
+    [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
 }
 
 - (void)dealloc
