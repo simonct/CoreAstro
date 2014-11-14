@@ -98,7 +98,7 @@
     _stretchMin = 0;
     _stretchMax = 1;
     _stretchGamma = 1;
-    _contrastStretch = 1;
+    _contrastStretch = 0;
     _extent = CGRectNull;
 
     if ([self.layer respondsToSelector:@selector(setDrawsAsynchronously:)]){
@@ -455,7 +455,9 @@
     stretchMin = MIN(stretchMin, _stretchMax);
     if (_stretchMin != stretchMin){
         _stretchMin = stretchMin;
-        [self resetFilteredImage];
+        if (self.contrastStretch){
+            [self resetFilteredImage];
+        }
     }
 }
 
@@ -472,7 +474,9 @@
     stretchMax = MAX(stretchMax, _stretchMin);
     if (_stretchMax != stretchMax){
         _stretchMax = stretchMax;
-        [self resetFilteredImage];
+        if (self.contrastStretch){
+            [self resetFilteredImage];
+        }
     }
 }
 
