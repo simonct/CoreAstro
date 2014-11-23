@@ -53,6 +53,7 @@
     
     if ([self.parent respondsToSelector:@selector(beginSheet:completionHandler:)]){
         [self.parent beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+            self.modalHandler = nil;
             handler(returnCode);
         }];
     }
