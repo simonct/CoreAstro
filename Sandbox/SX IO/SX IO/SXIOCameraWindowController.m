@@ -1121,6 +1121,12 @@ static void* kvoContext;
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
+        // grab any solution data before we start reusing the exposure variable
+        NSData* solutionData = nil;
+        if (self.showPlateSolution){
+            solutionData = [NSData dataWithContentsOfURL:[self plateSolutionURLForExposure:exposure]];
+        }
+        
         // live calibrate using saved bias and flat frames
         if (self.calibrate){
             
@@ -1169,7 +1175,6 @@ static void* kvoContext;
         // check for plate solution - do this after setting the exposure as that clears the annotations layer
         CASPlateSolveSolution* solution;
         if (self.showPlateSolution){
-            NSData* solutionData = [NSData dataWithContentsOfURL:[self plateSolutionURLForExposure:exposure]];
             if ([solutionData length]){
                 @try {
                     solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
