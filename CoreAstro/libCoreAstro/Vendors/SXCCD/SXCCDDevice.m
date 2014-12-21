@@ -101,6 +101,11 @@
     return self.deviceName; // temp, until I figure out how to get the serial number   
 }
 
+- (BOOL) beta
+{
+    return (self.productID == 806); // M26C
+}
+
 - (void)connect:(void (^)(NSError*))block {
     
     if (self.connected){

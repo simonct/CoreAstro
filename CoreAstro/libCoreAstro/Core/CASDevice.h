@@ -58,6 +58,8 @@ typedef enum {
 @property (nonatomic,readonly) NSString* serialNumber;
 @property (nonatomic,readonly) NSString* uniqueID;
 
+@property (nonatomic,readonly) BOOL beta;
+
 - (void)connect:(void (^)(NSError*))block;
 - (void)disconnect;
 

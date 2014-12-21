@@ -88,6 +88,10 @@
     return self.serialNumber;   
 }
 
+- (BOOL) beta {
+    return NO;
+}
+
 - (void)connect:(void (^)(NSError*))block {
     if (block){
         block(nil);
