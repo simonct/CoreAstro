@@ -25,6 +25,9 @@
 
 #import "CASTaskWrapper.h"
 
+NSString* const kCASTaskWrapperToolDirectoryDefaultsKey = @"CASTaskWrapperToolDirectory";
+NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey = @"CASTaskWrapperLibraryDirectory";
+
 @interface CASTaskWrapper ()
 @property (nonatomic,copy) void(^taskOutputBlock)(NSString*);
 @property (nonatomic,copy) void(^taskTerminationBlock)(int);
@@ -45,7 +48,11 @@
     self = [super init];
     if (self) {
         _iomask = 3;
-        _tool = [[[NSBundle bundleForClass:[self class]] sharedSupportPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"astrometry/bin/%@",tool]];
+        NSString* root = [[NSUserDefaults standardUserDefaults] stringForKey:kCASTaskWrapperToolDirectoryDefaultsKey];
+        if (![root length]){
+            root = @"/usr/local/bin";
+        }
+        _tool = [root stringByAppendingPathComponent:tool];
         if (![[NSFileManager defaultManager] isExecutableFileAtPath:_tool]){
             NSLog(@"No tool at %@",_tool);
             self = nil;
@@ -79,12 +86,13 @@
     
     _output = [NSMutableString stringWithCapacity:1024];
     
-    NSString* supportPath = [[[NSBundle bundleForClass:[self class]] sharedSupportPath] stringByAppendingPathComponent:@"support"];
-    
-    [_task setEnvironment:@{
-     @"PATH":[NSString stringWithFormat:@"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:%@",supportPath],
-     @"DYLD_LIBRARY_PATH":supportPath
-     }];
+    NSMutableDictionary* env = [NSMutableDictionary dictionaryWithObject:@"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" forKey:@"PATH"];
+    NSString* supportPath = [[NSUserDefaults standardUserDefaults] stringForKey:kCASTaskWrapperLibraryDirectoryDefaultsKey];
+    if ([supportPath length]){
+        env[@"PATH"] = [env[@"PATH"] stringByAppendingFormat:@":%@",supportPath];
+        env[@"DYLD_LIBRARY_PATH"] = supportPath;
+    }
+    [_task setEnvironment:env];
     
     NSPipe* output = [NSPipe pipe];
     if (_iomask & 1){
