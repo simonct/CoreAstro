@@ -710,7 +710,7 @@ static void* kvoContext;
     return [NSURL fileURLWithPath:[[caches stringByAppendingPathComponent:uuid] stringByAppendingPathExtension:@"caPlateSolution"]];
 }
 
-- (void)preparePlateSolveWithCompletion:(void(^)(BOOL))completion
+- (void)preparePlateSolveWithCompletion:(void(^)(NSError*))completion
 {
     NSParameterAssert(completion);
     
@@ -728,29 +728,37 @@ static void* kvoContext;
         return;
     }
     
+    NSError* error = nil;
     self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
-    if ([self.plateSolver canSolveExposure:exposure error:nil]){
-        completion(YES);
+    if ([self.plateSolver canSolveExposure:exposure error:&error]){
+        completion(nil);
     }
     else{
         
-        NSOpenPanel* openPanel = [NSOpenPanel openPanel];
-        
-        openPanel.canChooseFiles = NO;
-        openPanel.canChooseDirectories = YES;
-        openPanel.canCreateDirectories = YES;
-        openPanel.allowsMultipleSelection = NO;
-        openPanel.prompt = @"Choose";
-        openPanel.message = @"Locate the astrometry.net indexes";;
-        
-        [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-            if (result == NSFileHandlingPanelOKButton){
-                self.plateSolver.indexDirectoryURL = openPanel.URL;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(YES);
-                });
-            }
-        }];
+        if (error.code == 1){
+            
+            NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+            
+            openPanel.canChooseFiles = NO;
+            openPanel.canChooseDirectories = YES;
+            openPanel.canCreateDirectories = YES;
+            openPanel.allowsMultipleSelection = NO;
+            openPanel.prompt = @"Choose";
+            openPanel.message = @"Locate the astrometry.net indexes";;
+            
+            [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+                if (result == NSFileHandlingPanelOKButton){
+                    self.plateSolver.indexDirectoryURL = openPanel.URL;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(nil);
+                    });
+                }
+            }];
+        }
+        else if (error.code == 2) {
+            
+            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."];
+        }
     }
 }
 
@@ -818,8 +826,8 @@ static void* kvoContext;
 
 - (IBAction)plateSolve:(id)sender
 {
-    [self preparePlateSolveWithCompletion:^(BOOL ok) {
-        if (ok){
+    [self preparePlateSolveWithCompletion:^(NSError* error) {
+        if (!error){
             [self plateSolveWithFieldSize:CGSizeZero arcsecsPerPixel:0];
         }
     }];
@@ -827,8 +835,8 @@ static void* kvoContext;
 
 - (IBAction)plateSolveWithOptions:(id)sender
 {
-    [self preparePlateSolveWithCompletion:^(BOOL ok) {
-        if (ok){
+    [self preparePlateSolveWithCompletion:^(NSError* error) {
+        if (!error){
             self.plateSolveOptionsWindowController = [SXIOPlateSolveOptionsWindowController createWindowController];
             self.plateSolveOptionsWindowController.cameraController = self.cameraController;
             [self.plateSolveOptionsWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {

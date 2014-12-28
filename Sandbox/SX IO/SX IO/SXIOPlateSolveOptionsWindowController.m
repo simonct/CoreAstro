@@ -60,9 +60,9 @@ static void* kvoContext;
     
     CASCCDProperties* sensor = self.cameraController.camera.sensor;
     if (sensor) {
-        self.pixelSize = sensor.pixelSize.width;
-        self.sensorWidth = sensor.sensorSize.width;
-        self.sensorHeight = sensor.sensorSize.height;
+        self.pixelSize = 7.4; // sensor.pixelSize.width;
+        self.sensorWidth = 34; // sensor.sensorSize.width;
+        self.sensorHeight = 22; // sensor.sensorSize.height;
         self.binning = self.cameraController.settings.binning ?: 1;
     }
     else {
