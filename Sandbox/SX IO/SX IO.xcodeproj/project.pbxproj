@@ -1448,7 +1448,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\n#rm -rf \"${shared_support}/astrometry\"\n#rm -rf \"${shared_support}/support\"\n";
+			shellScript = "shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\nrm -rf \"${shared_support}/astrometry\"\nrm -rf \"${shared_support}/support\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

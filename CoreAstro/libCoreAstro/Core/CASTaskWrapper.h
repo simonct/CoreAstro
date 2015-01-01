@@ -35,3 +35,6 @@
 
 @interface CASSyncTaskWrapper : CASTaskWrapper
 @end
+
+extern NSString* const kCASTaskWrapperToolDirectoryDefaultsKey;
+extern NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey;

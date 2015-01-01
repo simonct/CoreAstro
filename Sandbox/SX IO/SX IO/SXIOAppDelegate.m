@@ -189,6 +189,30 @@ static void* kvoContext;
                             SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
                             cameraWindow.cameraController = obj;
                             windowController = cameraWindow;
+                            {
+                                CASCameraController* controller = (CASCameraController*)obj;
+                                if (controller.camera.beta){
+                                    NSString* const betaWarningKey = [NSString stringWithFormat:@"SXIODeviceBetaWarningDisplayed%@",controller.device.deviceName];
+                                    if (![[NSUserDefaults standardUserDefaults] boolForKey:betaWarningKey]){
+                                        
+                                        NSAlert* alert = [NSAlert alertWithMessageText:@"BETA SUPPORT"
+                                                                         defaultButton:@"OK"
+                                                                       alternateButton:nil
+                                                                           otherButton:nil
+                                                             informativeTextWithFormat:@"Support for this camera is still in development. Please let me know if you encounter any problems at feedback@coreastro.org",nil];
+                                        
+                                        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:betaWarningKey];
+                                        
+                                        alert.showsSuppressionButton = YES;
+                                        
+                                        [alert runModal];
+                                        
+                                        if ([[alert suppressionButton] state]){
+                                            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:betaWarningKey];
+                                        }
+                                    }
+                                }
+                            }
                         }
                         else if ([obj isKindOfClass:[CASFilterWheelController class]]){
                             

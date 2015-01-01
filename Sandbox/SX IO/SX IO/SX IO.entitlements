@@ -16,7 +16,15 @@
 	<true/>
 	<key>com.apple.security.personal-information.location</key>
 	<true/>
+	<key>com.apple.security.temporary-exception.files.absolute-path.read-only</key>
+	<array>
+		<string>/usr/local/lib/</string>
+		<string>/usr/local/Cellar/</string>
+		<string>/opt/X11/lib/</string>
+	</array>
 	<key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
-	<string>/private/tmp/</string>
+	<array>
+		<string>/private/tmp/</string>
+	</array>
 </dict>
 </plist>

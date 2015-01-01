@@ -271,6 +271,17 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     }
 }
 
++ (BOOL)toolsInstalled
+{
+    if ([[NSFileManager defaultManager] isExecutableFileAtPath:@"/usr/local/bin/solve-field"]){
+        return YES;
+    }
+    
+    // todo; search alternative install locations
+    
+    return NO;
+}
+
 - (NSURL*)indexDirectoryURL
 {
     NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
@@ -348,6 +359,12 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error
 {
+    if (![[self class] toolsInstalled]){
+        if (error){
+            *error = [self errorWithCode:2 reason:@"astrometry.net command line tools have not been installed"];
+        }
+        return NO;
+    }
     if (!self.indexDirectoryURL || ![self.indexDirectoryURL checkResourceIsReachableAndReturnError:nil]){
         if (error){
             *error = [self errorWithCode:1 reason:@"Plate solving index directory has not been set"];

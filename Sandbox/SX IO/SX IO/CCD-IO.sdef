@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd"> 
-<dictionary title="CCD IO Terminology">
+<dictionary title="SX IO Terminology">
     
     <!--
      CASS SUITE
      -->
-    <suite name="CCD IO Suite" code="CASS" description="CCD IO specific classes and commands.">
+    <suite name="SX IO Suite" code="CASS" description="SX IO specific classes and commands.">
         
         <!-- Classes -->
         
