@@ -106,7 +106,7 @@ static void* kvoContext;
         
         [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
         
-        [[CASCameraServer sharedServer] start];
+//        [[CASCameraServer sharedServer] start];
 
         // check after 1s to see if no devices are connected and if not show a one-time HUD indicating that something needs to be plugged in
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIONoDevicesAlertOnStartup"]){
