@@ -336,6 +336,26 @@ static void* kvoContext;
     [self.preferencesWindowController showWindow:nil];
 }
 
+- (BOOL)validateMenuItem:(NSMenuItem*)item
+{
+    BOOL enabled = YES;
+    
+    switch (item.tag) {
+        case 10030:{
+            SXIOCameraWindowController* cameraWindow = [[[NSApplication sharedApplication] mainWindow] windowController];
+            if ([cameraWindow isKindOfClass:[SXIOCameraWindowController class]]){
+                item.state = cameraWindow.exposureView.contrastStretch;
+            }
+            else {
+                item.state = NSOffState;
+            }
+        }
+            break;
+    }
+    
+    return enabled;
+}
+
 @end
 
 static NSMutableArray* gRecentExposures;
