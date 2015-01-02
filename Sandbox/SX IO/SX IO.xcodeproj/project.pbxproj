@@ -1713,6 +1713,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1730,6 +1731,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1887,6 +1889,7 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -1904,6 +1907,7 @@
 			baseConfigurationReference = F4E64242179BEB580044B349 /* sxio.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
