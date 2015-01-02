@@ -861,10 +861,25 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
             CGColorRef colour = CGColorCreateGenericRGB(1, 1, 0, 0.75);
             
+            // draw detected objects
             for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
-                if (/*object.enabled*/1){
-                    [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour scaling:self.currentExposure.params.bin.width];
-                }
+                [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour scaling:self.currentExposure.params.bin.width];
+            }
+            
+            // draw centre angle
+            if (plateSolveSolution.centreAngle){
+                
+                CALayer* angleLayer = [CALayer layer];
+                
+                angleLayer.borderColor = colour;
+                angleLayer.borderWidth = 2.5;
+                const double width = hypot(CGRectGetWidth(self.annotationsLayer.bounds),CGRectGetHeight(self.annotationsLayer.bounds));
+                angleLayer.bounds = CGRectMake(0,0,width,angleLayer.borderWidth);
+                angleLayer.position = CGPointMake(CGRectGetMidX(self.annotationsLayer.bounds), CGRectGetMidY(self.annotationsLayer.bounds));
+                
+                [angleLayer setAffineTransform:CGAffineTransformMakeRotation(-[plateSolveSolution.centreAngle floatValue]*M_PI/180.0)];
+                
+                [self.annotationsLayer addSublayer:angleLayer];
             }
             
             CGColorRelease(colour);
