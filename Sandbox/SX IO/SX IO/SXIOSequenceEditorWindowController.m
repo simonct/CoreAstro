@@ -8,18 +8,11 @@
 
 #import "SXIOSequenceEditorWindowController.h"
 
-@class SXIOSequenceStep;
-
-@interface SXIOSequence : NSObject<NSCoding>
-@property (nonatomic,strong) NSMutableArray* steps;
-@end
-
 @interface SXIOSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,assign) NSInteger duration;
 @property (nonatomic,assign) NSInteger binningIndex;
 @property (nonatomic,assign) NSInteger filterIndex;
-@property (nonatomic,copy) NSString* prefix;
 @end
 
 @implementation SXIOSequenceStep
@@ -41,7 +34,6 @@
         self.duration = [coder decodeIntegerForKey:@"duration"]; // default seconds
         self.binningIndex = [coder decodeIntegerForKey:@"binningIndex"]; // or value ?
         self.filterIndex = [coder decodeIntegerForKey:@"filterIndex"]; // or name ?
-        self.prefix = [coder decodeObjectOfClass:[NSString class] forKey:@"prefix"];
     }
     return self;
 }
@@ -52,7 +44,6 @@
     [aCoder encodeInteger:self.duration forKey:@"duration"];
     [aCoder encodeInteger:self.binningIndex forKey:@"binningIndex"];
     [aCoder encodeInteger:self.filterIndex forKey:@"filterIndex"];
-    [aCoder encodeObject:self.prefix forKey:@"prefix"];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -63,7 +54,6 @@
     copy.duration = self.duration;
     copy.binningIndex = self.binningIndex;
     copy.filterIndex = self.filterIndex;
-    copy.prefix = self.prefix;
 
     return copy;
 }
@@ -83,7 +73,9 @@
 
 @end
 
-@interface SXIOSequence ()
+@interface SXIOSequence : NSObject<NSCoding>
+@property (nonatomic,strong) NSMutableArray* steps;
+@property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
 @property (nonatomic,assign) NSInteger temperature;
 @end
@@ -125,6 +117,7 @@
 @end
 
 @interface SXIOSequenceEditorWindowController ()
+@property (nonatomic,strong) SXIOSequence* sequence;
 @property (nonatomic,strong) IBOutlet NSArrayController* stepsController;
 @end
 
@@ -138,7 +131,15 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    self.stepsController.content = [NSMutableArray arrayWithCapacity:10];
+    self.sequence = [SXIOSequence new];
+}
+
+- (void)setSequence:(SXIOSequence *)sequence
+{
+    if (_sequence != sequence){
+        _sequence = sequence;
+        self.stepsController.content = _sequence.steps;
+    }
 }
 
 - (IBAction)start:(id)sender
@@ -146,9 +147,53 @@
     NSLog(@"start");
 }
 
+- (void)updateWindowRepresentedURL:(NSURL*)url
+{
+    self.window.representedURL = url; // need scoped bookmark data ?
+    NSString* name = [url isFileURL] ? [[NSFileManager defaultManager] displayNameAtPath:url.path] : [url lastPathComponent];
+    [self.window setTitleWithRepresentedFilename:name];
+}
+
 - (IBAction)save:(id)sender
 {
-    NSLog(@"save");
+    void (^archiveToURL)(NSURL*) = ^(NSURL* url){
+        if ([[NSKeyedArchiver archivedDataWithRootObject:self.sequence] writeToURL:url options:NSDataWritingAtomic error:nil]){
+            [self updateWindowRepresentedURL:url];
+        }
+    };
+    
+    if (self.window.representedURL){
+        archiveToURL(self.window.representedURL);
+    }
+    else {
+        NSSavePanel* save = [NSSavePanel savePanel];
+        
+        save.allowedFileTypes = @[@"caSequence"];
+        save.canCreateDirectories = YES;
+        
+        [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+            if (result == NSFileHandlingPanelOKButton){
+                archiveToURL(save.URL);
+            }
+        }];
+    }
+}
+
+- (IBAction)open:(id)sender
+{
+    NSOpenPanel* open = [NSOpenPanel openPanel];
+    
+    open.allowedFileTypes = @[@"caSequence"];
+    
+    [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result == NSFileHandlingPanelOKButton){
+            SXIOSequence* sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
+            if ([sequence isKindOfClass:[SXIOSequence class]]){
+                self.sequence = sequence;
+                [self updateWindowRepresentedURL:open.URL];
+            }
+        }
+    }];
 }
 
 @end

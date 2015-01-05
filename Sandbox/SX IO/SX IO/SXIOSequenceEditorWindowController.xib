@@ -242,7 +242,7 @@
                             <rect key="frame" x="1" y="119" width="223" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="8Lk-Bb-to0">
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="8Lk-Bb-to0">
                             <rect key="frame" x="224" y="17" width="15" height="102"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -300,6 +300,16 @@
                             <action selector="save:" target="-2" id="9Wl-nD-Xkx"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0kq-Tx-Ixy">
+                        <rect key="frame" x="259" y="-2" width="74" height="32"/>
+                        <buttonCell key="cell" type="push" title="Open" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uiz-5v-Sy7">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="open:" target="-2" id="NA5-ft-S44"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="-1" id="3k5-Xy-YxX"/>
@@ -307,6 +317,7 @@
                     <constraint firstAttribute="bottom" secondItem="14M-km-aak" secondAttribute="bottom" constant="6" id="PpN-jz-S6E"/>
                     <constraint firstAttribute="bottom" secondItem="DbS-ay-4mf" secondAttribute="bottom" constant="6" id="TeY-LZ-7XE"/>
                     <constraint firstItem="14M-km-aak" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="6" id="Xr3-lD-UM8"/>
+                    <constraint firstAttribute="bottom" secondItem="0kq-Tx-Ixy" secondAttribute="bottom" constant="5" id="Xss-BX-FUx"/>
                     <constraint firstAttribute="trailing" secondItem="OgJ-KU-VDA" secondAttribute="trailing" constant="-1" id="i0Q-hv-bj9"/>
                     <constraint firstAttribute="trailing" secondItem="jm5-Wb-FH0" secondAttribute="trailing" constant="20" id="j3l-lr-NEh"/>
                     <constraint firstItem="DbS-ay-4mf" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="5" id="obE-WC-w2h"/>
@@ -314,10 +325,11 @@
                     <constraint firstAttribute="bottom" secondItem="90h-M2-bGc" secondAttribute="bottom" constant="5" id="rsA-qR-6Hf"/>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="-1" id="uu6-oq-Zef"/>
                     <constraint firstItem="DbS-ay-4mf" firstAttribute="leading" secondItem="14M-km-aak" secondAttribute="trailing" constant="8" id="vjh-lm-Ho3"/>
+                    <constraint firstItem="90h-M2-bGc" firstAttribute="leading" secondItem="0kq-Tx-Ixy" secondAttribute="trailing" constant="8" id="vqX-Zs-z63"/>
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-291" y="74"/>
+            <point key="canvasLocation" x="-456" y="-13"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" id="gGE-tq-u0q"/>
     </objects>
