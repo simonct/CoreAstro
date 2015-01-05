@@ -8,7 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CASCameraController;
+
 @interface SXIOSequenceEditorWindowController : NSWindowController
+
+@property (nonatomic,weak) CASCameraController* cameraController;
 
 + (instancetype)loadSequenceEditor;
 

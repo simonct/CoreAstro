@@ -233,6 +233,7 @@
                                     </tableColumns>
                                     <connections>
                                         <binding destination="gGE-tq-u0q" name="content" keyPath="arrangedObjects" id="jEe-e5-Onf"/>
+                                        <binding destination="gGE-tq-u0q" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="jEe-e5-Onf" id="hmK-wR-hUQ"/>
                                     </connections>
                                 </tableView>
                             </subviews>
@@ -285,9 +286,13 @@
                         <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KdN-wr-u9S">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
+                            <connections>
+                                <binding destination="-2" name="enabled" keyPath="canSave" id="K1H-vK-Hdw"/>
+                            </connections>
                         </buttonCell>
                         <connections>
                             <action selector="start:" target="-2" id="de5-ik-eWJ"/>
+                            <binding destination="-2" name="enabled" keyPath="canStart" id="ZhN-zN-HY2"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="90h-M2-bGc">
@@ -298,6 +303,7 @@
                         </buttonCell>
                         <connections>
                             <action selector="save:" target="-2" id="9Wl-nD-Xkx"/>
+                            <binding destination="-2" name="enabled" keyPath="canSave" id="1ia-7Q-vwJ"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0kq-Tx-Ixy">
@@ -308,6 +314,7 @@
                         </buttonCell>
                         <connections>
                             <action selector="open:" target="-2" id="NA5-ft-S44"/>
+                            <binding destination="-2" name="enabled" keyPath="canOpen" id="eZx-o3-UXn"/>
                         </connections>
                     </button>
                 </subviews>
@@ -329,8 +336,8 @@
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-456" y="-13"/>
+            <point key="canvasLocation" x="-627" y="-167"/>
         </window>
-        <arrayController objectClassName="SXIOSequenceStep" id="gGE-tq-u0q"/>
+        <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q"/>
     </objects>
 </document>

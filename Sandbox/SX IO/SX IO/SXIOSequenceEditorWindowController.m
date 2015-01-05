@@ -147,6 +147,16 @@
     NSLog(@"start");
 }
 
+- (BOOL)canStart
+{
+    return self.cameraController != nil && [self.sequence.steps count] > 0;
+}
+
++ (NSSet*)keyPathsForValuesAffectingCanStart
+{
+    return [NSSet setWithArray:@[@"cameraController",@"sequence.steps"]];
+}
+
 - (void)updateWindowRepresentedURL:(NSURL*)url
 {
     self.window.representedURL = url; // need scoped bookmark data ?
@@ -179,6 +189,18 @@
     }
 }
 
+- (BOOL)canSave
+{
+    BOOL canSave = [self.sequence.steps count] > 0;
+    NSLog(@"canSave: %d",canSave);
+    return canSave;
+}
+
++ (NSSet*)keyPathsForValuesAffectingCanSave
+{
+    return [NSSet setWithArray:@[@"sequence.steps"]];
+}
+
 - (IBAction)open:(id)sender
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
@@ -194,6 +216,11 @@
             }
         }
     }];
+}
+
+- (BOOL)canOpen
+{
+    return YES;
 }
 
 @end
