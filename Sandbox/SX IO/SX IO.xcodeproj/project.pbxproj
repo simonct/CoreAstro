@@ -101,6 +101,10 @@
 		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
 		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
+		F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
+		F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
+		F428D6221A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */; };
+		F428D6231A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */; };
 		F440D25919FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
 		F440D25A19FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
 		F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */; };
@@ -454,6 +458,9 @@
 		F415C54717C95B7D001C42F1 /* QuickFITS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickFITS-Prefix.pch"; sourceTree = "<group>"; };
 		F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSPreviewer.m; sourceTree = "<group>"; };
 		F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSPreviewer.h; sourceTree = "<group>"; };
+		F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSequenceEditorWindowController.h; sourceTree = "<group>"; };
+		F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOSequenceEditorWindowController.m; sourceTree = "<group>"; };
+		F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorWindowController.xib; sourceTree = "<group>"; };
 		F440D25619FCE318005510EB /* CASCameraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraServer.h; sourceTree = "<group>"; };
 		F440D25719FCE318005510EB /* CASCameraServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraServer.m; sourceTree = "<group>"; };
 		F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
@@ -980,6 +987,9 @@
 				F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */,
 				F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */,
 				F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */,
+				F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */,
+				F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */,
+				F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */,
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
@@ -1299,6 +1309,7 @@
 				F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
 				F40D5B5E1849EC5E00977FA9 /* CASStarInfoHUDView.xib in Resources */,
+				F428D6231A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */,
 				F40A06301860523400729934 /* SXIOImageAdjustmentWindowController.xib in Resources */,
 				F40D5B5F1849EC5E00977FA9 /* CASHistogramHUDView.xib in Resources */,
 				F40D5B601849EC5E00977FA9 /* CASPlateSolutionHUDView.xib in Resources */,
@@ -1385,6 +1396,7 @@
 				F4E64256179BFFBD0044B349 /* moon.icns in Resources */,
 				F4E64257179BFFBD0044B349 /* zoomout.pdf in Resources */,
 				F4E64258179BFFBD0044B349 /* move.pdf in Resources */,
+				F428D6221A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */,
 				F4E64259179BFFBD0044B349 /* zoomin.pdf in Resources */,
 				F4E6425A179BFFBD0044B349 /* opendevices.pdf in Resources */,
 				F4E6425B179BFFBD0044B349 /* selection.pdf in Resources */,
@@ -1495,6 +1507,7 @@
 				F40D5B4B1849EC5E00977FA9 /* CASUpdateCheck.m in Sources */,
 				F40D5B4C1849EC5E00977FA9 /* SMDoubleSliderCell.m in Sources */,
 				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
+				F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
@@ -1572,6 +1585,7 @@
 				F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */,
 				F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */,
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
+				F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
