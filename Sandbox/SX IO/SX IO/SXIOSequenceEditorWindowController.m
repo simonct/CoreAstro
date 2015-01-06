@@ -102,19 +102,6 @@
     return [NSSet setWithObject:@"binning"];
 }
 
-- (NSArray*)filterNames
-{
-    if (!_filterNames){
-        // hack... no - get from targets filter wheel controller
-        CASClassDefaults* defaults = [CASDeviceDefaults defaultsForClassname:@"SX Filter Wheel"];
-        NSArray* names = [[[defaults.domain[@"filterNames"] allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
-            return [evaluatedObject length] > 0;
-        }]] sortedArrayUsingSelector:@selector(compare:)];
-        _filterNames = [@[@"None"] arrayByAddingObjectsFromArray:names];
-    }
-    return _filterNames;
-}
-
 - (NSString*)selectedFilter
 {
     NSArray* filterNames = [self filterNames];
@@ -320,10 +307,28 @@ static void* kvoContext;
 
 @end
 
+@interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
+@property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
+@end
+
+@implementation SXIOSequenceEditorWindowControllerStepsController
+
+- (void)addObject:(id)object
+{
+    [super addObject:object];
+    
+    SXIOSequenceStep* step = object;
+    step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
+        return [evaluatedObject length] > 0;
+    }]] sortedArrayUsingSelector:@selector(compare:)];
+}
+
+@end
+
 @interface SXIOSequenceEditorWindowController ()
 @property (nonatomic,strong) SXIOSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
-@property (nonatomic,strong) IBOutlet NSArrayController* stepsController;
+@property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
 @end
 
 @implementation SXIOSequenceEditorWindowController

@@ -368,6 +368,10 @@ Gw
             <contentBorderThickness minY="32"/>
             <point key="canvasLocation" x="-2108" y="-985"/>
         </window>
-        <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q"/>
+        <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
+            <connections>
+                <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
+            </connections>
+        </arrayController>
     </objects>
 </document>
