@@ -465,8 +465,9 @@
         }
         
         if (self.exposureCompletion){
-            self.exposureCompletion(error,exposure);
+            __typeof (self.exposureCompletion) completion = self.exposureCompletion;
             self.exposureCompletion = nil;
+            completion(error,exposure);
         }
         
         self.flushCommand = nil;
@@ -723,8 +724,9 @@
 
         // call the completion block
         if (self.exposureCompletion){
-            self.exposureCompletion(nil,nil); // need to indicate cancelled somehow to block ? nil, nil enough ?
+            __typeof (self.exposureCompletion) completion = self.exposureCompletion;
             self.exposureCompletion = nil;
+            completion(nil,nil); // need to indicate cancelled somehow to block ? nil, nil enough ?
         }
     }
     
