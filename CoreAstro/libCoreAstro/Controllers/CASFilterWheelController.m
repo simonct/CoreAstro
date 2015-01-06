@@ -102,6 +102,17 @@
     return [self.filterNames[[@(self.currentFilter) description]] copy];
 }
 
+- (void)setCurrentFilterName:(NSString *)currentFilterName
+{
+    NSArray* indexes = [self.filterNames allKeysForObject:currentFilterName];
+    if ([indexes count]){
+        self.filterWheel.currentFilter = [indexes[0] integerValue];
+    }
+    else {
+        NSLog(@"*** Unknown filter name: %@",currentFilterName);
+    }
+}
+
 + (NSSet*)keyPathsForValuesAffectingCurrentFilterName
 {
     return [NSSet setWithObject:@"currentFilter"];
@@ -180,13 +191,7 @@
 
 - (void)setScriptingCurrentFilterName:(NSString*)name
 {
-    NSArray* indexes = [self.filterNames allKeysForObject:name];
-    if ([indexes count]){
-        self.filterWheel.currentFilter = [indexes[0] integerValue];
-    }
-    else {
-        NSLog(@"*** Unknown filter name: %@",name);
-    }
+    self.currentFilterName = name;
 }
 
 - (BOOL)scriptingIsMoving

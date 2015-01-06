@@ -14,11 +14,12 @@
 @property (nonatomic,assign) NSInteger duration;
 @property (nonatomic,assign) NSInteger binning;
 @property (nonatomic,assign) NSInteger binningIndex;
-@property (nonatomic,assign) NSInteger filterIndex;
+@property (nonatomic,copy) NSString* filter;
 @end
 
 @interface SXIOSequenceStep ()
 @property (nonatomic,assign) BOOL active;
+@property (nonatomic,strong) NSArray* filterNames;
 @end
 
 @implementation SXIOSequenceStep
@@ -29,7 +30,6 @@
 {
     self = [super init];
     if (self) {
-        self.filterIndex = NSNotFound;
         self.count = 1;
         self.duration = 300; // use a default, last value entered ?
         self.binning = 1;
@@ -44,7 +44,7 @@
         self.count = [coder decodeIntegerForKey:@"count"];
         self.duration = [coder decodeIntegerForKey:@"duration"]; // always seconds
         self.binning = [coder decodeIntegerForKey:@"binning"];
-        self.filterIndex = [coder decodeIntegerForKey:@"filterIndex"]; // or name ?
+        self.filter = [coder decodeObjectOfClass:[NSString class] forKey:@"filter"];
     }
     return self;
 }
@@ -54,7 +54,7 @@
     [aCoder encodeInteger:self.count forKey:@"count"];
     [aCoder encodeInteger:self.duration forKey:@"duration"];
     [aCoder encodeInteger:self.binning forKey:@"binning"];
-    [aCoder encodeInteger:self.filterIndex forKey:@"filterIndex"];
+    [aCoder encodeObject:self.filter forKey:@"filter"];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -64,7 +64,7 @@
     copy.count = self.count;
     copy.duration = self.duration;
     copy.binning = self.binning;
-    copy.filterIndex = self.filterIndex;
+    copy.filter = self.filter;
 
     return copy;
 }
@@ -100,6 +100,34 @@
 + (NSSet*)keyPathsForValuesAffectingBinningIndex
 {
     return [NSSet setWithObject:@"binning"];
+}
+
+- (NSArray*)filterNames
+{
+    if (!_filterNames){
+        // hack... no - get from targets filter wheel controller
+        CASClassDefaults* defaults = [CASDeviceDefaults defaultsForClassname:@"SX Filter Wheel"];
+        NSArray* names = [[[defaults.domain[@"filterNames"] allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
+            return [evaluatedObject length] > 0;
+        }]] sortedArrayUsingSelector:@selector(compare:)];
+        _filterNames = [@[@"None"] arrayByAddingObjectsFromArray:names];
+    }
+    return _filterNames;
+}
+
+- (NSString*)selectedFilter
+{
+    NSArray* filterNames = [self filterNames];
+    return [filterNames containsObject:self.filter] ? self.filter : [filterNames firstObject];
+}
+
+- (void)setSelectedFilter:(NSString *)filter
+{
+    NSArray* filterNames = [self filterNames];
+    if ([filter isEqualToString:[filterNames firstObject]] || ![filterNames containsObject:filter]){
+        filter = nil;
+    }
+    self.filter = filter;
 }
 
 @end
@@ -159,7 +187,16 @@
 @property (nonatomic,weak) SXIOSequenceStep* currentStep;
 @end
 
-@implementation SXIOSequenceRunner
+@implementation SXIOSequenceRunner {
+    BOOL _observing:1;
+}
+
+static void* kvoContext;
+
+- (void)dealloc
+{
+    [self unobserveFilterWheel];
+}
 
 - (BOOL)startWithError:(NSError**)error
 {
@@ -176,7 +213,24 @@
 
 - (void)stop
 {
+    [self unobserveFilterWheel];
     [self.target endSequence];
+}
+
+- (void)observeFilterWheel
+{
+    if (!_observing){
+        [self.target.sequenceFilterWheelController.filterWheel addObserver:self forKeyPath:@"moving" options:0 context:&kvoContext];
+        _observing = YES;
+    }
+}
+
+- (void)unobserveFilterWheel
+{
+    if (_observing){
+        [self.target.sequenceFilterWheelController.filterWheel removeObserver:self forKeyPath:@"moving" context:&kvoContext];
+        _observing = NO;
+    }
 }
 
 - (void)setCurrentStep:(SXIOSequenceStep *)currentStep
@@ -191,39 +245,76 @@
     }
 }
 
+- (void)capture
+{
+    [self.target captureWithCompletion:^(){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self advanceToNextStep];
+        });
+    }];
+}
+
+- (void)advanceToNextStep
+{
+    const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
+    if (index != NSNotFound && index < [self.sequence.steps count] - 1){
+        self.currentStep = self.sequence.steps[index + 1];
+    }
+}
+
 - (void)executeCurrentStep
 {
-    void (^nextStep)() = ^(){
-        const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
-        if (index != NSNotFound && index < [self.sequence.steps count] - 1){
-            self.currentStep = self.sequence.steps[index + 1];
-        }
-    };
-    
     if (self.currentStep.count < 1 || self.currentStep.duration < 1 || self.currentStep.binning < 1){
         NSLog(@"Skipping empty step");
-        nextStep();
+        [self advanceToNextStep];
     }
     else {
         
         SXIOSequenceStep* sequenceStep = self.currentStep;
         CASExposureSettings* settings = self.target.sequenceCameraController.settings;
-        
+
         settings.captureCount = sequenceStep.count;
         settings.exposureUnits = 0;
         settings.exposureDuration = sequenceStep.duration;
         settings.binningIndex = sequenceStep.binningIndex;
         
         // dither
-        // filter
         // temperature
         // prefix
 
-        [self.target captureWithCompletion:^(){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                nextStep();
-            });
-        }];
+        NSString* filter = sequenceStep.filter;
+        if ([filter length]){
+            // need to check it's a known filter name
+            CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+            if (!filterWheel){
+                NSLog(@"*** Filter wheel hasn't been selected in capture window");
+                [self advanceToNextStep];
+                return;
+            }
+            else {
+                filterWheel.currentFilterName = filter;
+                if (filterWheel.filterWheel.moving){
+                    [self observeFilterWheel];
+                    return;
+                }
+            }
+        }
+        
+        [self capture];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([@"moving" isEqualToString:keyPath]){
+            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:self.currentStep.filter]){
+                [self unobserveFilterWheel];
+                [self capture];
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
@@ -252,6 +343,8 @@ static void* kvoContext;
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
     [closeButton setAction:@selector(close:)];
+    
+    // restore last sequence
 }
 
 - (void)dealloc
@@ -263,6 +356,9 @@ static void* kvoContext;
 {
     // warn first...
     [self.sequenceRunner stop];
+    
+    // save current sequence
+    
     [super close];
 }
 
@@ -297,6 +393,8 @@ static void* kvoContext;
     // warn first...
     [self.sequenceRunner stop];
     
+    // save current sequence
+
     if (self.parent){
         [self endSheetWithCode:NSModalResponseCancel];
     }

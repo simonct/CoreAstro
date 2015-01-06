@@ -185,16 +185,11 @@
                                                             <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="gYc-WF-pwI">
                                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="smallSystem"/>
-                                                                <menu key="menu" id="jOv-yh-fkY">
-                                                                    <items>
-                                                                        <menuItem title="Item 1" id="Zn5-sY-mh4"/>
-                                                                        <menuItem title="Item 2" id="IL8-aH-dTe"/>
-                                                                        <menuItem title="Item 3" id="m0n-li-bPn"/>
-                                                                    </items>
-                                                                </menu>
+                                                                <menu key="menu" id="jOv-yh-fkY"/>
                                                             </popUpButtonCell>
                                                             <connections>
-                                                                <binding destination="h7f-dd-7Rg" name="selectedIndex" keyPath="objectValue.filterIndex" id="Zeh-dT-geh"/>
+                                                                <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
+                                                                <binding destination="h7f-dd-7Rg" name="selectedValue" keyPath="objectValue.selectedFilter" previousBinding="AYg-dc-ZpI" id="K3u-bL-FJQ"/>
                                                             </connections>
                                                         </popUpButton>
                                                     </subviews>
@@ -371,7 +366,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-1954" y="-492"/>
+            <point key="canvasLocation" x="-2108" y="-985"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q"/>
     </objects>
