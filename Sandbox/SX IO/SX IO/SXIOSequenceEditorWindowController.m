@@ -375,11 +375,15 @@ static void* kvoContext;
     [closeButton setAction:@selector(close:)];
     
     // restore last sequence
+    
+    // [NSSet setWithArray:@[@"stepsController.arrangedObjects"]] doesn't seem to work so trigger manually
+    [self.stepsController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:&kvoContext];
 }
 
 - (void)dealloc
 {
     self.sequenceRunner = nil;
+    [self.stepsController removeObserver:self forKeyPath:@"arrangedObjects" context:&kvoContext];
 }
 
 - (void)close
@@ -430,29 +434,8 @@ static void* kvoContext;
     }
 }
 
-- (void)setSequenceRunner:(SXIOSequenceRunner *)sequenceRunner
-{
-    if (_sequenceRunner != sequenceRunner){
-        [_sequenceRunner removeObserver:self forKeyPath:@"currentStep" context:&kvoContext];
-        _sequenceRunner = sequenceRunner;
-        [_sequenceRunner addObserver:self forKeyPath:@"currentStep" options:0 context:&kvoContext];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == &kvoContext) {
-        if ([@"currentStep" isEqualToString:keyPath]){
-            // show spinner on current row
-        }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
-
 - (BOOL)canStart
 {
-    return YES;
     return self.target != nil && [self.sequence.steps count] > 0;
 }
 
@@ -495,7 +478,6 @@ static void* kvoContext;
 
 - (BOOL)canSave
 {
-    return YES;
     return [self.sequence.steps count] > 0;
 }
 
@@ -524,6 +506,20 @@ static void* kvoContext;
 - (BOOL)canOpen
 {
     return YES;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        [self willChangeValueForKey:@"canStart"];
+        [self didChangeValueForKey:@"canStart"];
+        [self willChangeValueForKey:@"canSave"];
+        [self didChangeValueForKey:@"canSave"];
+        [self willChangeValueForKey:@"canOpen"];
+        [self didChangeValueForKey:@"canOpen"];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 @end

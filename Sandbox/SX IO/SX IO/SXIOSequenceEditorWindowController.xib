@@ -346,7 +346,6 @@ Gw
 </string>
                             <connections>
                                 <action selector="cancel:" target="-2" id="mBB-fZ-j3J"/>
-                                <binding destination="-2" name="enabled" keyPath="canSave" id="7Dk-5g-PO2"/>
                             </connections>
                         </buttonCell>
                     </button>
