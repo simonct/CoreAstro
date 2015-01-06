@@ -27,6 +27,7 @@
 
 @interface CASAuxWindowController : NSWindowController
 
+@property (nonatomic,weak,readonly) NSWindow* parent;
 @property (nonatomic,copy) void (^modalHandler)(NSInteger result);
 
 - (void)beginSheetModalForWindow:(NSWindow*)window completionHandler:(void (^)(NSInteger))handler;

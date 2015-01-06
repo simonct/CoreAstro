@@ -9,8 +9,9 @@
 #import <CoreAstro/CoreAstro.h>
 
 #import "CASExposureView.h"
+#import "SXIOSequenceEditorWindowController.h"
 
-@interface SXIOCameraWindowController : NSWindowController
+@interface SXIOCameraWindowController : NSWindowController<SXIOSequenceTarget>
 @property (weak) IBOutlet CASExposureView *exposureView;
 @property (nonatomic,strong) CASCameraController* cameraController;
 @end

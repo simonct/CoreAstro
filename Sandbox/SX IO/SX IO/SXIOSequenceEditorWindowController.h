@@ -7,13 +7,22 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CASAuxWindowController.h"
 
 @class CASCameraController;
+@class CASFilterWheelController;
 
-@interface SXIOSequenceEditorWindowController : NSWindowController
+@protocol SXIOSequenceTarget <NSObject>
+@required
+@property (nonatomic,readonly) CASCameraController* sequenceCameraController;
+@property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
+- (BOOL)prepareToStartSequenceWithError:(NSError**)error;
+- (void)captureWithCompletion:(void(^)())completion;
+- (void)endSequence;
+@end
 
-@property (nonatomic,weak) CASCameraController* cameraController;
+@interface SXIOSequenceEditorWindowController : CASAuxWindowController
 
-+ (instancetype)loadSequenceEditor;
+@property (nonatomic,weak) id<SXIOSequenceTarget> target;
 
 @end

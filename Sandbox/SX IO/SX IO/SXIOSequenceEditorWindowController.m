@@ -7,21 +7,32 @@
 //
 
 #import "SXIOSequenceEditorWindowController.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface SXIOSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,assign) NSInteger duration;
+@property (nonatomic,assign) NSInteger binning;
 @property (nonatomic,assign) NSInteger binningIndex;
 @property (nonatomic,assign) NSInteger filterIndex;
 @end
 
+@interface SXIOSequenceStep ()
+@property (nonatomic,assign) BOOL active;
+@end
+
 @implementation SXIOSequenceStep
+
+@synthesize active;
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         self.filterIndex = NSNotFound;
+        self.count = 1;
+        self.duration = 300; // use a default, last value entered ?
+        self.binning = 1;
     }
     return self;
 }
@@ -31,8 +42,8 @@
     self = [super init];
     if (self) {
         self.count = [coder decodeIntegerForKey:@"count"];
-        self.duration = [coder decodeIntegerForKey:@"duration"]; // default seconds
-        self.binningIndex = [coder decodeIntegerForKey:@"binningIndex"]; // or value ?
+        self.duration = [coder decodeIntegerForKey:@"duration"]; // always seconds
+        self.binning = [coder decodeIntegerForKey:@"binning"];
         self.filterIndex = [coder decodeIntegerForKey:@"filterIndex"]; // or name ?
     }
     return self;
@@ -42,7 +53,7 @@
 {
     [aCoder encodeInteger:self.count forKey:@"count"];
     [aCoder encodeInteger:self.duration forKey:@"duration"];
-    [aCoder encodeInteger:self.binningIndex forKey:@"binningIndex"];
+    [aCoder encodeInteger:self.binning forKey:@"binning"];
     [aCoder encodeInteger:self.filterIndex forKey:@"filterIndex"];
 }
 
@@ -52,7 +63,7 @@
     
     copy.count = self.count;
     copy.duration = self.duration;
-    copy.binningIndex = self.binningIndex;
+    copy.binning = self.binning;
     copy.filterIndex = self.filterIndex;
 
     return copy;
@@ -69,6 +80,26 @@
     else {
         [super setNilValueForKey:key];
     }
+}
+
+- (NSInteger)binningIndex
+{
+    return self.binning - 1;
+}
+
+- (void)setBinningIndex:(NSInteger)binningIndex
+{
+    self.binning = binningIndex + 1;
+}
+
+- (void)setBinning:(NSInteger)binning
+{
+    _binning = MIN(4,MAX(1,binning));
+}
+
++ (NSSet*)keyPathsForValuesAffectingBinningIndex
+{
+    return [NSSet setWithObject:@"binning"];
 }
 
 @end
@@ -116,12 +147,97 @@
 
 @end
 
+@interface SXIOSequenceRunner : NSObject
+@property (nonatomic,weak) SXIOSequence* sequence; // copy ?
+@property (nonatomic,weak) id<SXIOSequenceTarget> target;
+@property (nonatomic,weak,readonly) SXIOSequenceStep* currentStep;
+- (BOOL)startWithError:(NSError**)error;
+- (void)stop;
+@end
+
+@interface SXIOSequenceRunner ()
+@property (nonatomic,weak) SXIOSequenceStep* currentStep;
+@end
+
+@implementation SXIOSequenceRunner
+
+- (BOOL)startWithError:(NSError**)error
+{
+    NSParameterAssert(self.target);
+    
+    if (![self.target prepareToStartSequenceWithError:error]){
+        return NO;
+    }
+    
+    self.currentStep = [self.sequence.steps firstObject];
+    
+    return YES;
+}
+
+- (void)stop
+{
+    [self.target endSequence];
+}
+
+- (void)setCurrentStep:(SXIOSequenceStep *)currentStep
+{
+    if (_currentStep != currentStep){
+        _currentStep.active = NO;
+        _currentStep = currentStep;
+        if (_currentStep){
+            [self executeCurrentStep];
+            _currentStep.active = YES;
+        }
+    }
+}
+
+- (void)executeCurrentStep
+{
+    void (^nextStep)() = ^(){
+        const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
+        if (index != NSNotFound && index < [self.sequence.steps count] - 1){
+            self.currentStep = self.sequence.steps[index + 1];
+        }
+    };
+    
+    if (self.currentStep.count < 1 || self.currentStep.duration < 1 || self.currentStep.binning < 1){
+        NSLog(@"Skipping empty step");
+        nextStep();
+    }
+    else {
+        
+        SXIOSequenceStep* sequenceStep = self.currentStep;
+        CASExposureSettings* settings = self.target.sequenceCameraController.settings;
+        
+        settings.captureCount = sequenceStep.count;
+        settings.exposureUnits = 0;
+        settings.exposureDuration = sequenceStep.duration;
+        settings.binningIndex = sequenceStep.binningIndex;
+        
+        // dither
+        // filter
+        // temperature
+        // prefix
+
+        [self.target captureWithCompletion:^(){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                nextStep();
+            });
+        }];
+    }
+}
+
+@end
+
 @interface SXIOSequenceEditorWindowController ()
 @property (nonatomic,strong) SXIOSequence* sequence;
+@property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
 @property (nonatomic,strong) IBOutlet NSArrayController* stepsController;
 @end
 
 @implementation SXIOSequenceEditorWindowController
+
+static void* kvoContext;
 
 + (instancetype)loadSequenceEditor
 {
@@ -132,6 +248,22 @@
     [super windowDidLoad];
     
     self.sequence = [SXIOSequence new];
+    
+    NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
+    [closeButton setTarget:self];
+    [closeButton setAction:@selector(close:)];
+}
+
+- (void)dealloc
+{
+    self.sequenceRunner = nil;
+}
+
+- (void)close
+{
+    // warn first...
+    [self.sequenceRunner stop];
+    [super close];
 }
 
 - (void)setSequence:(SXIOSequence *)sequence
@@ -144,17 +276,61 @@
 
 - (IBAction)start:(id)sender
 {
-    NSLog(@"start");
+    NSParameterAssert(self.target);
+    NSParameterAssert([self.sequence.steps count] > 0);
+    
+    self.sequenceRunner = [SXIOSequenceRunner new];
+    self.sequenceRunner.target = self.target;
+    self.sequenceRunner.sequence = self.sequence;
+    
+    NSError* error;
+    if (![self.sequenceRunner startWithError:&error]){
+        [NSApp presentError:error];
+    }
+    else {
+        // change start to stop
+    }
+}
+
+- (IBAction)cancel:(id)sender
+{
+    // warn first...
+    [self.sequenceRunner stop];
+    
+    if (self.parent){
+        [self endSheetWithCode:NSModalResponseCancel];
+    }
+}
+
+- (void)setSequenceRunner:(SXIOSequenceRunner *)sequenceRunner
+{
+    if (_sequenceRunner != sequenceRunner){
+        [_sequenceRunner removeObserver:self forKeyPath:@"currentStep" context:&kvoContext];
+        _sequenceRunner = sequenceRunner;
+        [_sequenceRunner addObserver:self forKeyPath:@"currentStep" options:0 context:&kvoContext];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([@"currentStep" isEqualToString:keyPath]){
+            // show spinner on current row
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (BOOL)canStart
 {
-    return self.cameraController != nil && [self.sequence.steps count] > 0;
+    return YES;
+    return self.target != nil && [self.sequence.steps count] > 0;
 }
 
 + (NSSet*)keyPathsForValuesAffectingCanStart
 {
-    return [NSSet setWithArray:@[@"cameraController",@"sequence.steps"]];
+    return [NSSet setWithArray:@[@"target",@"stepsController.arrangedObjects"]];
 }
 
 - (void)updateWindowRepresentedURL:(NSURL*)url
@@ -191,14 +367,13 @@
 
 - (BOOL)canSave
 {
-    BOOL canSave = [self.sequence.steps count] > 0;
-    NSLog(@"canSave: %d",canSave);
-    return canSave;
+    return YES;
+    return [self.sequence.steps count] > 0;
 }
 
 + (NSSet*)keyPathsForValuesAffectingCanSave
 {
-    return [NSSet setWithArray:@[@"sequence.steps"]];
+    return [NSSet setWithArray:@[@"stepsController.arrangedObjects"]];
 }
 
 - (IBAction)open:(id)sender

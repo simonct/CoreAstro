@@ -16,6 +16,7 @@
 #import "CASShadowView.h"
 #import "CASCaptureWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h"
+#import "SXIOSequenceEditorWindowController.h"
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
@@ -58,6 +59,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 
 @property (nonatomic,strong) SXIOPlateSolveOptionsWindowController* plateSolveOptionsWindowController;
+@property (nonatomic,strong) SXIOSequenceEditorWindowController* sequenceEditorWindowController;
 
 @property (assign) BOOL showPlateSolution;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
@@ -270,13 +272,9 @@ static void* kvoContext;
 - (IBAction)capture:(NSButton*)sender
 {
     // todo; need a more generic mechanism to express 'ready to capture'
-    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
-        [self presentAlertWithTitle:@"Filter Wheel" message:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"];
-        return;
-    }
-
-    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
+    NSError* error;
+    if (![self prepareToStartSequenceWithError:&error]){
+        [NSApp presentError:error];
         return;
     }
     
@@ -297,37 +295,7 @@ static void* kvoContext;
         }
     }
 
-    // disable idle sleep
-    [CASPowerMonitor sharedInstance].disableSleep = YES;
-
-    // ensure this is recorded as a light frame
-    self.cameraController.settings.exposureType = kCASCCDExposureLightType;
-
-    // issue the capture command
-    [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
-        
-        if (!self.cameraController.capturing){
-            
-            // re-enable idle sleep
-            [CASPowerMonitor sharedInstance].disableSleep = NO;
-
-            if (!self.cameraController.cancelled){
-                
-                NSUserNotification* note = [[NSUserNotification alloc] init];
-                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
-                NSString* exposureUnits = (self.cameraController.settings.exposureUnits == 0) ? @"s" : @"ms";
-                if (self.cameraController.settings.captureCount == 1){
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
-                }
-                else {
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
-                }
-                note.soundName = NSUserNotificationDefaultSoundName;
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
-                
-            }
-        }
-    }];
+    [self captureWithCompletion:nil];
 }
 
 - (IBAction)cancelCapture:(id)sender
@@ -692,6 +660,15 @@ static void* kvoContext;
 - (IBAction)toggleFlipHorizontal:(id)sender
 {
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
+}
+
+- (IBAction)sequence:(id)sender
+{
+    self.sequenceEditorWindowController = [SXIOSequenceEditorWindowController createWindowController];
+    self.sequenceEditorWindowController.target = self;
+    [self.sequenceEditorWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        self.sequenceEditorWindowController = nil;
+    }];
 }
 
 #pragma mark - Plate Solving
@@ -1558,9 +1535,94 @@ static void* kvoContext;
         case 11104:
             enabled = (self.plateSolver == nil && self.currentExposure != nil);
             break;
+            
+        case 11105: // Sequence...
+            enabled = !self.cameraController.capturing;
+            break;
 
     }
     return enabled;
+}
+
+#pragma mark - Sequence Target
+
+- (CASCameraController*) sequenceCameraController
+{
+    return self.cameraController;
+}
+
+- (CASFilterWheelController*) sequenceFilterWheelController
+{
+    return self.filterWheelControlsViewController.currentFilterWheel;
+}
+
+- (BOOL)prepareToStartSequenceWithError:(NSError**)error
+{
+    // todo; need a more generic mechanism to express 'ready to capture'
+    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:1
+                                     userInfo:@{NSLocalizedFailureReasonErrorKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+        }
+        return NO;
+    }
+    
+    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:1
+                                     userInfo:@{NSLocalizedFailureReasonErrorKey:@"You need to specify a folder to save the images into"}];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)captureWithCompletion:(void(^)())completion
+{
+    // disable idle sleep
+    [CASPowerMonitor sharedInstance].disableSleep = YES;
+    
+    // ensure this is recorded as a light frame
+    self.cameraController.settings.exposureType = kCASCCDExposureLightType;
+    
+    // issue the capture command
+    [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
+        
+        if (!self.cameraController.capturing){
+            
+            // re-enable idle sleep
+            [CASPowerMonitor sharedInstance].disableSleep = NO;
+            
+            if (!self.cameraController.cancelled){
+                
+                NSUserNotification* note = [[NSUserNotification alloc] init];
+                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                NSString* exposureUnits = (self.cameraController.settings.exposureUnits == 0) ? @"s" : @"ms";
+                if (self.cameraController.settings.captureCount == 1){
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                }
+                else {
+                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                }
+                note.soundName = NSUserNotificationDefaultSoundName;
+                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+            }
+            
+            [self endSequence];
+            
+            if (completion){
+                completion();
+            }
+        }
+    }];
+}
+
+- (void)endSequence
+{
+    [self cancelCapture:nil];
 }
 
 @end
