@@ -230,6 +230,11 @@
                                                         <progressIndicator hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="jP1-SR-lzN">
                                                             <rect key="frame" x="10" y="1" width="16" height="16"/>
                                                             <connections>
+                                                                <binding destination="imM-WG-tlc" name="hidden" keyPath="objectValue.active" id="pHz-mb-78Z">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                    </dictionary>
+                                                                </binding>
                                                                 <binding destination="imM-WG-tlc" name="animate" keyPath="objectValue.active" id="ncv-2P-swa"/>
                                                             </connections>
                                                         </progressIndicator>

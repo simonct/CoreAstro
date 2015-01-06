@@ -200,6 +200,7 @@ static void* kvoContext;
 
 - (void)stop
 {
+    self.currentStep.active = NO;
     [self unobserveFilterWheel];
     [self.target endSequence];
 }
@@ -243,6 +244,7 @@ static void* kvoContext;
 
 - (void)advanceToNextStep
 {
+    self.currentStep.active = NO;
     const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
     if (index != NSNotFound && index < [self.sequence.steps count] - 1){
         self.currentStep = self.sequence.steps[index + 1];
