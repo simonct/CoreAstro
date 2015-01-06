@@ -313,14 +313,37 @@ static void* kvoContext;
 
 @implementation SXIOSequenceEditorWindowControllerStepsController
 
-- (void)addObject:(id)object
+- (void)setFilterNameOnObject:(id)object
 {
-    [super addObject:object];
-    
     SXIOSequenceStep* step = object;
     step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
         return [evaluatedObject length] > 0;
     }]] sortedArrayUsingSelector:@selector(compare:)];
+}
+
+- (void)setContent:(id)content
+{
+    [super setContent:content];
+    
+    for (id object in self.content){
+        [self setFilterNameOnObject:object];
+    }
+}
+
+- (void)addObject:(id)object
+{
+    [super addObject:object];
+    
+    [self setFilterNameOnObject:object];
+}
+
+- (void)addObjects:(NSArray*)objects
+{
+    [super addObjects:objects];
+    
+    for (id object in objects){
+        [self setFilterNameOnObject:object];
+    }
 }
 
 @end
