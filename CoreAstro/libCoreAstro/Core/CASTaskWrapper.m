@@ -25,9 +25,6 @@
 
 #import "CASTaskWrapper.h"
 
-NSString* const kCASTaskWrapperToolDirectoryDefaultsKey = @"CASTaskWrapperToolDirectory";
-NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey = @"CASTaskWrapperLibraryDirectory";
-
 @interface CASTaskWrapper ()
 @property (nonatomic,copy) void(^taskOutputBlock)(NSString*);
 @property (nonatomic,copy) void(^taskTerminationBlock)(int);
@@ -37,37 +34,38 @@ NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey = @"CASTaskWrapperLib
 
 @implementation CASTaskWrapper {
     NSTask* _task;
-    NSString* _tool;
+    NSString* _root;
     NSMutableString* _output;
     NSFileHandle* _taskOutputHandle;
     NSInteger _iomask;
 }
 
-- (id)initWithTool:(NSString*)tool
+- (id)initWithTool:(NSString*)tool root:(NSString*)root
 {
     self = [super init];
     if (self) {
         _iomask = 3;
-        NSString* root = [[NSUserDefaults standardUserDefaults] stringForKey:kCASTaskWrapperToolDirectoryDefaultsKey];
         if (![root length]){
-            root = @"/usr/local/bin";
+            // built-in path
         }
-        _tool = [root stringByAppendingPathComponent:tool];
-        if (![[NSFileManager defaultManager] isExecutableFileAtPath:_tool]){
-            NSLog(@"No tool at %@",_tool);
+        _root = [root copy];
+        tool = [[root stringByAppendingPathComponent:@"usr/local/bin"] stringByAppendingPathComponent:tool];
+        if (![[NSFileManager defaultManager] isExecutableFileAtPath:tool]){
+            NSLog(@"No tool at %@",tool);
             self = nil;
         }
         else {
             self.task = [[NSTask alloc] init];
-            [_task setLaunchPath:_tool];
+            [_task setLaunchPath:tool];
+            NSLog(@"Tool launch path: %@",_task.launchPath);
         }
     }
     return self;
 }
 
-- (id)initWithTool:(NSString*)tool iomask:(NSInteger)iomask
+- (id)initWithTool:(NSString*)tool root:(NSString*)root iomask:(NSInteger)iomask
 {
-    self = [self initWithTool:tool];
+    self = [self initWithTool:tool root:root];
     if (self){
         _iomask = iomask;
     }
@@ -86,12 +84,15 @@ NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey = @"CASTaskWrapperLib
     
     _output = [NSMutableString stringWithCapacity:1024];
     
-    NSMutableDictionary* env = [NSMutableDictionary dictionaryWithObject:@"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" forKey:@"PATH"];
-    NSString* supportPath = [[NSUserDefaults standardUserDefaults] stringForKey:kCASTaskWrapperLibraryDirectoryDefaultsKey];
+    NSMutableDictionary* env = [NSMutableDictionary dictionaryWithDictionary:[[NSProcessInfo processInfo] environment]];
+    
+     NSString* supportPath = [NSString stringWithFormat:@"%@/usr/local/lib:%@/opt/X11/lib",_root,_root];
+    
     if ([supportPath length]){
-        env[@"PATH"] = [env[@"PATH"] stringByAppendingFormat:@":%@",supportPath];
-        env[@"DYLD_LIBRARY_PATH"] = supportPath;
-    }
+        env[@"DYLD_VERSIONED_LIBRARY_PATH"] = supportPath;    }
+
+    env[@"PATH"] = [env[@"PATH"] stringByAppendingFormat:@":%@/usr/local/bin:%@/opt/X11/lib",_root,_root];
+    
     [_task setEnvironment:env];
     
     NSPipe* output = [NSPipe pipe];

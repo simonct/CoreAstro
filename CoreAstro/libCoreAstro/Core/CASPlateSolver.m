@@ -271,15 +271,26 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     }
 }
 
-+ (BOOL)toolsInstalled
++ (NSArray*)toolPaths
 {
-    if ([[NSFileManager defaultManager] isExecutableFileAtPath:@"/usr/local/bin/solve-field"]){
-        return YES;
+    NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    NSString* appSupportPath = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
+    NSArray* paths = @[
+                       [[appSupportPath stringByAppendingPathComponent:bundleName] stringByAppendingPathComponent:@"astrometry.net"],
+                       @"/"
+                       ];
+    return paths;
+}
+
++ (NSString*)toolsInstallationPath
+{
+    for (NSString* path in [self toolPaths]){
+        NSString* solveFieldPath = [path stringByAppendingPathComponent:@"usr/local/bin/solve-field"];
+        if ([[NSFileManager defaultManager] isExecutableFileAtPath:solveFieldPath]){
+            return path;
+        }
     }
-    
-    // todo; search alternative install locations
-    
-    return NO;
+    return nil;
 }
 
 - (NSURL*)indexDirectoryURL
@@ -359,7 +370,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error
 {
-    if (![[self class] toolsInstalled]){
+    if (![[self class] toolsInstallationPath]){
         if (error){
             *error = [self errorWithCode:2 reason:@"astrometry.net command line tools have not been installed"];
         }
@@ -396,8 +407,11 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         // open the sandbox
         [self.indexDirectoryURL startAccessingSecurityScopedResource];
         
+        // get the tools root
+        NSString* const toolsRoot = [[self class] toolsInstallationPath];
+
         // create a solver task for the embedded tool
-        self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field"];
+        self.solverTask = [[CASTaskWrapper alloc] initWithTool:@"solve-field" root:toolsRoot];
         if (!self.solverTask){
             complete([self errorWithCode:2 reason:@"Can't find the embedded solve-field tool"],nil);
         }
@@ -429,6 +443,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             // run the solver task
             [self.solverTask launchWithOutputBlock:^(NSString* string) {
                 
+                NSLog(@"solve-field: %@",string);
+                
                 // accumulate the log output
                 if (!self.logOutput){
                     self.logOutput = [NSMutableString stringWithCapacity:1024];
@@ -454,7 +470,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                         
                         // get solution data by running the wcsinfo tool
-                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo"];
+                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"wcsinfo" root:toolsRoot];
                         if (!self.solverTask){
                             complete([self errorWithCode:4 reason:@"Can't find the embedded wcsinfo tool"],nil);
                         }
@@ -463,7 +479,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                             NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
                             [self.solverTask setArguments:@[[[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"]]];
                             
-                            [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                            [self.solverTask launchWithOutputBlock:^(NSString* string) { NSLog(@"wcsinfo: %@",string); } terminationBlock:^(int terminationStatus) {
                                 
                                 if (terminationStatus){
                                     NSLog(@"wcsinfo: %@",[self.solverTask taskOutput]);
@@ -482,7 +498,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                                         solution.wcsinfo = output;
                                         
                                         // get annotations by running plot-constellations in json mode
-                                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" iomask:2];
+                                        self.solverTask = [[CASSyncTaskWrapper alloc] initWithTool:@"plot-constellations" root:toolsRoot iomask:2];
                                         if (!self.solverTask){
                                             complete([self errorWithCode:6 reason:@"Can't find the embedded plot-constellations tool"],nil);
                                         }
@@ -491,7 +507,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                                             NSString* path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
                                             [self.solverTask setArguments:@[@"-w",path,@"-NCBJL"]];
                                             
-                                            [self.solverTask launchWithOutputBlock:nil terminationBlock:^(int terminationStatus) {
+                                            [self.solverTask launchWithOutputBlock:^(NSString* string) { NSLog(@"plot-constellations: %@",string); } terminationBlock:^(int terminationStatus) {
                                                 
                                                 if (terminationStatus){
                                                     complete([self errorWithCode:7 reason:@"Failed to get annotations"],nil);
@@ -563,7 +579,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
             
             // delete the cache
-            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+//            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
             
             complete(error,results);
         }];

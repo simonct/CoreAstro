@@ -27,14 +27,11 @@
 
 @interface CASTaskWrapper : NSObject
 @property (nonatomic,readonly) NSString* taskOutput;
-- (id)initWithTool:(NSString*)tool;
-- (id)initWithTool:(NSString*)tool iomask:(NSInteger)iomask;
+- (id)initWithTool:(NSString*)tool root:(NSString*)root;
+- (id)initWithTool:(NSString*)tool root:(NSString*)root iomask:(NSInteger)iomask;
 - (void)setArguments:(NSArray *)arguments;
 - (void)launchWithOutputBlock:(void(^)(NSString*))block terminationBlock:(void(^)(int))block2;
 @end
 
 @interface CASSyncTaskWrapper : CASTaskWrapper
 @end
-
-extern NSString* const kCASTaskWrapperToolDirectoryDefaultsKey;
-extern NSString* const kCASTaskWrapperLibraryDirectoryDefaultsKey;

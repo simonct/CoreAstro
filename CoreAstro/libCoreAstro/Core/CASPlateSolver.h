@@ -54,8 +54,6 @@
 @property (nonatomic,assign) float arcsecsPerPixel;
 @property (nonatomic,assign) CGSize fieldSizeDegrees;
 
-+ (BOOL)toolsInstalled;
-
 - (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure;
 
 - (BOOL)canSolveExposure:(CASCCDExposure*)exposure error:(NSError**)error;
