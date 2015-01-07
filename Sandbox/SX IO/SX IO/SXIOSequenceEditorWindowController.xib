@@ -61,6 +61,11 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <connections>
+                                                                <binding destination="NfE-1H-rKu" name="enabled" keyPath="objectValue.sequenceRunning" id="Gon-O1-Afk">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                    </dictionary>
+                                                                </binding>
                                                                 <binding destination="NfE-1H-rKu" name="value" keyPath="objectValue.count" id="A6O-3f-Rhv">
                                                                     <dictionary key="options">
                                                                         <bool key="NSContinuouslyUpdatesValue" value="YES"/>
@@ -101,6 +106,11 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <connections>
+                                                                <binding destination="tgf-uE-tj8" name="enabled" keyPath="objectValue.sequenceRunning" id="YNO-rh-IDo">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                    </dictionary>
+                                                                </binding>
                                                                 <binding destination="tgf-uE-tj8" name="value" keyPath="objectValue.duration" id="JzV-FB-YKe">
                                                                     <dictionary key="options">
                                                                         <bool key="NSContinuouslyUpdatesValue" value="YES"/>
@@ -150,6 +160,11 @@
                                                                 </menu>
                                                             </popUpButtonCell>
                                                             <connections>
+                                                                <binding destination="Lq9-Eq-hEc" name="enabled" keyPath="objectValue.sequenceRunning" id="Fjm-n4-AAd">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                    </dictionary>
+                                                                </binding>
                                                                 <binding destination="Lq9-Eq-hEc" name="selectedIndex" keyPath="objectValue.binningIndex" id="FIM-je-FNs"/>
                                                             </connections>
                                                         </popUpButton>
@@ -188,12 +203,21 @@
                                                                 <menu key="menu" id="jOv-yh-fkY"/>
                                                             </popUpButtonCell>
                                                             <connections>
+                                                                <binding destination="h7f-dd-7Rg" name="enabled2" keyPath="objectValue.sequenceRunning" previousBinding="FuL-qz-Ehr" id="j7S-2S-t73">
+                                                                    <dictionary key="options">
+                                                                        <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                                        <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                                        <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                                        <integer key="NSNullPlaceholder" value="-1"/>
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                                    </dictionary>
+                                                                </binding>
+                                                                <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
                                                                 <binding destination="h7f-dd-7Rg" name="enabled" keyPath="objectValue.filterNames" id="FuL-qz-Ehr">
                                                                     <dictionary key="options">
                                                                         <string key="NSValueTransformerName">NSIsNotNil</string>
                                                                     </dictionary>
                                                                 </binding>
-                                                                <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
                                                                 <binding destination="h7f-dd-7Rg" name="selectedValue" keyPath="objectValue.selectedFilter" previousBinding="AYg-dc-ZpI" id="K3u-bL-FJQ"/>
                                                             </connections>
                                                         </popUpButton>
@@ -235,12 +259,12 @@
                                                         <progressIndicator hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="jP1-SR-lzN">
                                                             <rect key="frame" x="10" y="1" width="16" height="16"/>
                                                             <connections>
+                                                                <binding destination="imM-WG-tlc" name="animate" keyPath="objectValue.active" id="ncv-2P-swa"/>
                                                                 <binding destination="imM-WG-tlc" name="hidden" keyPath="objectValue.active" id="pHz-mb-78Z">
                                                                     <dictionary key="options">
                                                                         <string key="NSValueTransformerName">NSNegateBoolean</string>
                                                                     </dictionary>
                                                                 </binding>
-                                                                <binding destination="imM-WG-tlc" name="animate" keyPath="objectValue.active" id="ncv-2P-swa"/>
                                                             </connections>
                                                         </progressIndicator>
                                                     </subviews>
@@ -411,7 +435,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-2295" y="-1108"/>
+            <point key="canvasLocation" x="-2441" y="-1364"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>

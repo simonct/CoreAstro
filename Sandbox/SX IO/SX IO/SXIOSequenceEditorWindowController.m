@@ -19,6 +19,7 @@
 
 @interface SXIOSequenceStep ()
 @property (nonatomic,assign) BOOL active;
+@property (nonatomic,assign) BOOL sequenceRunning;
 @property (nonatomic,strong) NSArray* filterNames;
 @end
 
@@ -196,12 +197,24 @@ static void* kvoContext;
     
     self.currentStep = [self.sequence.steps firstObject];
     
+    // table cell subviews only seem to be able to bind to the container table view cell so
+    // we need to set a property on its objectValue directly rather than going through the
+    // File Owner proxy
+    for (SXIOSequenceStep* step in self.sequence.steps){
+        step.sequenceRunning = YES;
+    }
+    
     return YES;
 }
 
 - (void)stop
 {
     self.currentStep.active = NO;
+    
+    for (SXIOSequenceStep* step in self.sequence.steps){
+        step.sequenceRunning = NO;
+    }
+
     [self unobserveFilterWheel];
     [self.target endSequence];
     if (self.completion){
