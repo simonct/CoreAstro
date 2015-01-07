@@ -166,6 +166,7 @@
 @property (nonatomic,weak) SXIOSequence* sequence; // copy ?
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
 @property (nonatomic,weak,readonly) SXIOSequenceStep* currentStep;
+@property (nonatomic,copy) void(^completion)();
 - (BOOL)startWithError:(NSError**)error;
 - (void)stop;
 @end
@@ -203,6 +204,9 @@ static void* kvoContext;
     self.currentStep.active = NO;
     [self unobserveFilterWheel];
     [self.target endSequence];
+    if (self.completion){
+        self.completion();
+    }
 }
 
 - (void)observeFilterWheel
@@ -244,10 +248,12 @@ static void* kvoContext;
 
 - (void)advanceToNextStep
 {
-    self.currentStep.active = NO;
     const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
     if (index != NSNotFound && index < [self.sequence.steps count] - 1){
         self.currentStep = self.sequence.steps[index + 1];
+    }
+    else {
+        [self stop];
     }
 }
 
@@ -413,8 +419,14 @@ static void* kvoContext;
     self.sequenceRunner.target = self.target;
     self.sequenceRunner.sequence = self.sequence;
     
+    __typeof(self) weakSelf = self;
+    self.sequenceRunner.completion = ^(){
+        weakSelf.sequenceRunner = nil;
+    };
+    
     NSError* error;
     if (![self.sequenceRunner startWithError:&error]){
+        self.sequenceRunner = nil;
         [NSApp presentError:error];
     }
     else {
@@ -426,6 +438,7 @@ static void* kvoContext;
 {
     // warn first...
     [self.sequenceRunner stop];
+    self.sequenceRunner = nil;
     
     // save current sequence
 

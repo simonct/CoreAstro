@@ -188,6 +188,11 @@
                                                                 <menu key="menu" id="jOv-yh-fkY"/>
                                                             </popUpButtonCell>
                                                             <connections>
+                                                                <binding destination="h7f-dd-7Rg" name="enabled" keyPath="objectValue.filterNames" id="FuL-qz-Ehr">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSIsNotNil</string>
+                                                                    </dictionary>
+                                                                </binding>
                                                                 <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
                                                                 <binding destination="h7f-dd-7Rg" name="selectedValue" keyPath="objectValue.selectedFilter" previousBinding="AYg-dc-ZpI" id="K3u-bL-FJQ"/>
                                                             </connections>
@@ -284,6 +289,15 @@
                         <connections>
                             <action selector="add:" target="gGE-tq-u0q" id="b7R-5q-qOX"/>
                             <binding destination="gGE-tq-u0q" name="enabled" keyPath="canAdd" id="XhF-1b-bf6"/>
+                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="XhF-1b-bf6" id="bW8-KO-WvL">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DbS-ay-4mf">
@@ -298,6 +312,15 @@
                         <connections>
                             <action selector="remove:" target="gGE-tq-u0q" id="ce2-PL-lCb"/>
                             <binding destination="gGE-tq-u0q" name="enabled" keyPath="canRemove" id="1N6-wJ-eNS"/>
+                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="1N6-wJ-eNS" id="DT5-HF-YKh">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jm5-Wb-FH0">
@@ -312,6 +335,15 @@
                         <connections>
                             <action selector="start:" target="-2" id="de5-ik-eWJ"/>
                             <binding destination="-2" name="enabled" keyPath="canStart" id="ZhN-zN-HY2"/>
+                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="ZhN-zN-HY2" id="dfI-XS-7GZ">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="90h-M2-bGc">
@@ -334,6 +366,15 @@
                         <connections>
                             <action selector="open:" target="-2" id="NA5-ft-S44"/>
                             <binding destination="-2" name="enabled" keyPath="canOpen" id="eZx-o3-UXn"/>
+                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="eZx-o3-UXn" id="XXn-FU-6Xj">
+                                <dictionary key="options">
+                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                    <integer key="NSNullPlaceholder" value="-1"/>
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uLq-dk-P9Z">
@@ -370,7 +411,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-2108" y="-985"/>
+            <point key="canvasLocation" x="-2295" y="-1108"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>
