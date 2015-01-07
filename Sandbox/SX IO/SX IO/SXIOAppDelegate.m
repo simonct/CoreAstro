@@ -74,7 +74,7 @@ static void* kvoContext;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        // beta warning for this version
+#if SXIO_BETA
         NSString* const betaWarningKey = [NSString stringWithFormat:@"SXIOBetaWarningDisplayed%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
         if (![[NSUserDefaults standardUserDefaults] boolForKey:betaWarningKey]){
             
@@ -98,6 +98,7 @@ static void* kvoContext;
                 }
             }
         }
+#endif
         
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
