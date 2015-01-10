@@ -46,10 +46,10 @@
     [self disconnect];
 }
 
-- (void)connect
+- (BOOL)connect
 {
     if (self.connected){
-        return;
+        return YES;
     }
     
     self.error = nil;
@@ -58,7 +58,14 @@
     
     NSInputStream* is;
     NSOutputStream* os;
-    [NSStream getStreamsToHost:host port:self.port inputStream:&is outputStream:&os];
+    if ([[NSStream class] respondsToSelector:@selector(getStreamsToHostWithName:port:inputStream:outputStream:)]){
+        [NSStream getStreamsToHostWithName:host.name port:self.port inputStream:&is outputStream:&os];
+    }
+    else {
+        [NSStream getStreamsToHost:host port:self.port inputStream:&is outputStream:&os];
+    }
+    
+    BOOL success = NO;
     
     if (!is || !os){
         NSLog(@"Can't open connection to %@",host.name);
@@ -76,7 +83,11 @@
         
         [self.inputStream open];
         [self.outputStream open];
+        
+        success = YES;
     }
+    
+    return success;
 }
 
 - (void)disconnect

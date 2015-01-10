@@ -431,7 +431,17 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     }
 
     [self.phd2Client connectWithCompletion:^{
-        NSLog(@"PHD2 connected, guiding = %hhd",self.phd2Client.guiding);
+        if (!self.phd2Client.connected){
+            NSLog(@"PHD2 not connected");
+            NSUserNotification* note = [[NSUserNotification alloc] init];
+            note.title = NSLocalizedString(@"PHD2 connection failed", @"Notification title");
+            note.subtitle = NSLocalizedString(@"Check PHD2 is running and Tools->Enable Server is on", @"Notification subtitle");
+            note.soundName = NSUserNotificationDefaultSoundName;
+            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+        }
+        else {
+            NSLog(@"PHD2 connected, guiding = %hhd",self.phd2Client.guiding);
+        }
         // start capture in here ?
     }];
     

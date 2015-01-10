@@ -41,6 +41,14 @@ static void* kvoContext;
     }
 }
 
+- (void)callConnectCompletion
+{
+    if (self.connectCompletion){
+        self.connectCompletion();
+        self.connectCompletion = nil;
+    }
+}
+
 - (void)setupClient
 {
     if (!self.client){
@@ -48,7 +56,9 @@ static void* kvoContext;
         self.client.delegate = self;
         self.client.host = [NSHost hostWithAddress:@"127.0.0.1"];
         self.client.port = 4400;
-        [self.client connect];
+        if (![self.client connect]){
+            [self callConnectCompletion];
+        }
     }
 }
 
@@ -74,6 +84,10 @@ static void* kvoContext;
         if (self.client.error){
             NSLog(@"error: %@",self.client.error);
             self.client = nil;
+            [self callConnectCompletion];
+        }
+        if ([@"connected" isEqualToString:keyPath]){
+            self.connected = _client.connected;
         }
 //        else if (!self.client.connected){
 //            NSLog(@"disconnected");
@@ -102,7 +116,7 @@ static void* kvoContext;
     // Paused
     // Resumed
     // GuidingDithered
-    // NSLog(@"%@",message[@"Event"]);
+    NSLog(@"%@",message[@"Event"]);
     
     NSString* event = message[@"Event"];
     
@@ -111,10 +125,7 @@ static void* kvoContext;
             _settling = NO;
             self.guiding = YES;
         }
-        if (self.connectCompletion){
-            self.connectCompletion();
-            self.connectCompletion = nil;
-        }
+        [self callConnectCompletion];
     }
     
     if ([@"SettleDone" isEqualToString:event]){
@@ -131,16 +142,22 @@ static void* kvoContext;
         }
     }
     
-    if ([@[@"Settling"/*,@"StartGuiding"*/] containsObject:event]){
+    if ([@[@"Settling"] containsObject:event]){
         self.guiding = NO;
         _settling = YES;
     }
 
-    if ([@[@"StartGuiding",@"GuideStep"] containsObject:event]){ // is inclusion of GuideStep correct - shouldn't that indicate self.guiding = YES; ?
+    if ([@[@"GuideStep"] containsObject:event]){
         self.guiding = !_settling;
     }
     
+    if ([@"StartGuiding" isEqualToString:event]){
+        _settling = NO;
+        self.guiding = YES;
+    }
+    
     if ([@[@"GuidingStopped"] containsObject:event]){
+        _settling = NO;
         self.guiding = NO;
     }
 }

@@ -22,7 +22,7 @@
 @property (nonatomic,assign) NSInteger port;
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) NSError* error;
-- (void)connect;
+- (BOOL)connect;
 - (void)disconnect;
 - (void)enqueueRequest:(CASSocketClientRequest*)request;
 - (void)enqueue:(NSData*)data readCount:(NSUInteger)readCount completion:(void (^)(NSData*))completion;
