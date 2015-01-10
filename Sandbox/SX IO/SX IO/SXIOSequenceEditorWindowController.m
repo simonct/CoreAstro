@@ -10,6 +10,47 @@
 #import <CoreAstro/CoreAstro.h>
 
 @interface SXIOSequenceStep : NSObject<NSCoding,NSCopying>
+@property (nonatomic,readonly,copy) NSString* type;
+@property (nonatomic,readonly,getter=isValid) BOOL valid;
+@end
+
+@interface SXIOSequenceStep ()
+@property (nonatomic,assign) BOOL active; // per-step flag
+@property (nonatomic,assign) BOOL sequenceRunning; // whole sequence flag
+@property (nonatomic,copy) NSString* type;
+@end
+
+@implementation SXIOSequenceStep
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    if (self) {
+        self.type = [coder decodeObjectOfClass:[NSString class] forKey:@"type"];
+    }
+    return self;
+}
+
+- (BOOL)isValid
+{
+    return YES;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.type forKey:@"type"];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    SXIOSequenceStep* copy = [[self class] new];
+    copy.type = self.type;
+    return copy;
+}
+
+@end
+
+@interface SXIOSequenceExposureStep : SXIOSequenceStep
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,assign) NSInteger duration;
 @property (nonatomic,assign) NSInteger binning;
@@ -17,15 +58,11 @@
 @property (nonatomic,copy) NSString* filter;
 @end
 
-@interface SXIOSequenceStep ()
-@property (nonatomic,assign) BOOL active;
-@property (nonatomic,assign) BOOL sequenceRunning;
+@interface SXIOSequenceExposureStep ()
 @property (nonatomic,strong) NSArray* filterNames;
 @end
 
-@implementation SXIOSequenceStep
-
-@synthesize active;
+@implementation SXIOSequenceExposureStep
 
 - (instancetype)init
 {
@@ -40,7 +77,7 @@
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    self = [super init];
+    self = [super initWithCoder:coder];
     if (self) {
         self.count = [coder decodeIntegerForKey:@"count"];
         self.duration = [coder decodeIntegerForKey:@"duration"]; // always seconds
@@ -52,6 +89,7 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    [super encodeWithCoder:aCoder];
     [aCoder encodeInteger:self.count forKey:@"count"];
     [aCoder encodeInteger:self.duration forKey:@"duration"];
     [aCoder encodeInteger:self.binning forKey:@"binning"];
@@ -60,7 +98,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SXIOSequenceStep* copy = [SXIOSequenceStep new];
+    SXIOSequenceExposureStep* copy = [super copyWithZone:zone];
     
     copy.count = self.count;
     copy.duration = self.duration;
@@ -68,6 +106,16 @@
     copy.filter = self.filter;
 
     return copy;
+}
+
+- (NSString*)type
+{
+    return @"exposure";
+}
+
+- (BOOL)isValid
+{
+    return (self.count > 0 && self.duration > 0 && self.binning > 0);
 }
 
 - (void)setNilValueForKey:(NSString *)key
@@ -163,7 +211,7 @@
 
 @end
 
-@interface SXIOSequenceRunner : NSObject
+@interface SXIOSequenceRunner : NSObject // use an operation queue?
 @property (nonatomic,weak) SXIOSequence* sequence; // copy ?
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
 @property (nonatomic,weak,readonly) SXIOSequenceStep* currentStep;
@@ -177,6 +225,7 @@
 @end
 
 @implementation SXIOSequenceRunner {
+    BOOL _stopped:1;
     BOOL _observing:1;
 }
 
@@ -190,6 +239,8 @@ static void* kvoContext;
 - (BOOL)startWithError:(NSError**)error
 {
     NSParameterAssert(self.target);
+    
+    _stopped = NO;
     
     if (![self.target prepareToStartSequenceWithError:error]){
         return NO;
@@ -209,7 +260,9 @@ static void* kvoContext;
 
 - (void)stop
 {
-    self.currentStep.active = NO;
+    _stopped = YES;
+    
+    self.currentStep = nil;
     
     for (SXIOSequenceStep* step in self.sequence.steps){
         step.sequenceRunning = NO;
@@ -253,9 +306,11 @@ static void* kvoContext;
 - (void)capture
 {
     [self.target captureWithCompletion:^(){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self advanceToNextStep];
-        });
+        if (!_stopped){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self advanceToNextStep];
+            });
+        }
     }];
 }
 
@@ -272,13 +327,13 @@ static void* kvoContext;
 
 - (void)executeCurrentStep
 {
-    if (self.currentStep.count < 1 || self.currentStep.duration < 1 || self.currentStep.binning < 1){
+    if (![self.currentStep isValid]){
         NSLog(@"Skipping empty step");
         [self advanceToNextStep];
     }
     else {
         
-        SXIOSequenceStep* sequenceStep = self.currentStep;
+        SXIOSequenceExposureStep* sequenceStep = (SXIOSequenceExposureStep*)self.currentStep;
         CASExposureSettings* settings = self.target.sequenceCameraController.settings;
 
         settings.captureCount = sequenceStep.count;
@@ -316,7 +371,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
         if ([@"moving" isEqualToString:keyPath]){
-            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:self.currentStep.filter]){
+            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:((SXIOSequenceExposureStep*)self.currentStep).filter]){
                 [self unobserveFilterWheel];
                 [self capture];
             }
@@ -336,19 +391,31 @@ static void* kvoContext;
 
 - (void)setFilterNameOnObject:(id)object
 {
-    SXIOSequenceStep* step = object;
-    step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
-        return [evaluatedObject length] > 0;
-    }]] sortedArrayUsingSelector:@selector(compare:)];
+    SXIOSequenceExposureStep* step = object;
+    if ([step respondsToSelector:@selector(setFilterNames:)]){
+        step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
+            return [evaluatedObject length] > 0;
+        }]] sortedArrayUsingSelector:@selector(compare:)];
+    }
 }
 
 - (void)setContent:(id)content
 {
     [super setContent:content];
     
+    // only supporting exposure types for now but in the future could have focus, slew, etc
+    self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(SXIOSequenceStep* step, NSDictionary *bindings) {
+        return [step isKindOfClass:[SXIOSequenceExposureStep class]];
+    }];
+    
     for (id object in self.content){
         [self setFilterNameOnObject:object];
     }
+}
+
+- (id)newObject
+{
+    return [SXIOSequenceExposureStep new];
 }
 
 - (void)addObject:(id)object
@@ -520,10 +587,26 @@ static void* kvoContext;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            SXIOSequence* sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
+            SXIOSequence* sequence = nil;
+            @try {
+                sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"Exception opening sequence archive: %@",exception);
+            }
             if ([sequence isKindOfClass:[SXIOSequence class]]){
                 self.sequence = sequence;
                 [self updateWindowRepresentedURL:open.URL];
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                });
             }
         }
     }];
