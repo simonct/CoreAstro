@@ -21,6 +21,7 @@
 @property (nonatomic,readonly) BOOL enableFieldSize;
 @property (nonatomic,readonly) BOOL enablePixelSize;
 
+@property (nonatomic,weak) CASCCDExposure* exposure;
 @property (nonatomic,weak) CASCameraController* cameraController;
 //@property (nonatomic,copy) void (^completion)(BOOL);
 @end

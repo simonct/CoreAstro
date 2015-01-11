@@ -825,6 +825,9 @@ static void* kvoContext;
         if (!error){
             [self plateSolveWithFieldSize:CGSizeZero arcsecsPerPixel:0];
         }
+        else {
+            self.plateSolver = nil;
+        }
     }];
 }
 
@@ -833,6 +836,7 @@ static void* kvoContext;
     [self preparePlateSolveWithCompletion:^(NSError* error) {
         if (!error){
             self.plateSolveOptionsWindowController = [SXIOPlateSolveOptionsWindowController createWindowController];
+            self.plateSolveOptionsWindowController.exposure = self.currentExposure;
             self.plateSolveOptionsWindowController.cameraController = self.cameraController;
             [self.plateSolveOptionsWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
                 if (result == NSOKButton) {
@@ -840,8 +844,14 @@ static void* kvoContext;
                     const float arcsecsPerPixel = self.plateSolveOptionsWindowController.enablePixelSize ? self.plateSolveOptionsWindowController.arcsecsPerPixel: 0;
                     [self plateSolveWithFieldSize:fieldSize arcsecsPerPixel:arcsecsPerPixel];
                 }
+                else {
+                    self.plateSolver = nil;
+                }
                 self.plateSolveOptionsWindowController = nil;
             }];
+        }
+        else {
+            self.plateSolver = nil;
         }
     }];
 }

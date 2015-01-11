@@ -58,15 +58,43 @@ static void* kvoContext;
         [self addObserver:self forKeyPath:@"binning" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     }
     
-    CASCCDProperties* sensor = self.cameraController.camera.sensor;
-    if (sensor) {
-        self.pixelSize = sensor.pixelSize.width;
-        self.sensorWidth = sensor.sensorSize.width;
-        self.sensorHeight = sensor.sensorSize.height;
-        self.binning = self.cameraController.settings.binning ?: 1;
+    // first try and extract exposure params from the exposure metadata
+    NSNumber* pixelSizeObj, *sensorWidthObj, *sensorHeightObj, *binningObj;
+    NSDictionary* deviceParams = [self.exposure.meta valueForKeyPath:@"device.params"];
+    if ([deviceParams count]){
+        const CGSize pixelSize = NSSizeFromString([deviceParams valueForKeyPath:@"pixelSize"]);
+        const CGSize sensorSize = NSSizeFromString([deviceParams valueForKeyPath:@"sensorSize"]);
+        if (pixelSize.width > 0 && sensorSize.width > 0){
+            pixelSizeObj = @(pixelSize.width);
+            sensorWidthObj = @(sensorSize.width);
+            sensorHeightObj = @(sensorSize.height);
+        }
+    }
+    if (pixelSizeObj){
+        const NSInteger binWidth = self.exposure.params.bin.width;
+        if (binWidth > 0){
+            binningObj = @(binWidth);
+        }
+    }
+    if (pixelSizeObj && binningObj){
+        self.pixelSize = [pixelSizeObj floatValue];
+        self.sensorWidth = [sensorWidthObj floatValue];
+        self.sensorHeight = [sensorHeightObj floatValue];
+        self.binning = [binningObj integerValue];
     }
     else {
-        self.binning = 1;
+        
+        // if any of the exposure metadata wasn't available, use the camera sensor
+        CASCCDProperties* sensor = self.cameraController.camera.sensor;
+        if (sensor) {
+            self.pixelSize = sensor.pixelSize.width;
+            self.sensorWidth = sensor.sensorSize.width;
+            self.sensorHeight = sensor.sensorSize.height;
+            self.binning = self.cameraController.settings.binning ?: 1;
+        }
+        else {
+            self.binning = 1;
+        }
     }
 }
 
