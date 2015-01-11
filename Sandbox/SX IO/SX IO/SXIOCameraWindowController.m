@@ -1223,18 +1223,27 @@ static void* kvoContext;
 {
     if (_currentExposure != currentExposure){
         
-        // unload the current exposure's pixels
-        [_currentExposure reset];
+        [self willChangeValueForKey:@"currentExposure"];
         
-        _currentExposure = currentExposure;
-        
-        // display the exposure
-        [self displayExposure:_currentExposure resetDisplay:resetDisplay];
-        
-        // clear selection - necessary ?
-        if (!_currentExposure){
-            [self clearSelection];
+        @try {
+            // unload the current exposure's pixels
+            [_currentExposure reset];
+            
+            _currentExposure = currentExposure;
+            
+            // display the exposure
+            [self displayExposure:_currentExposure resetDisplay:resetDisplay];
+            
+            // clear selection - necessary ?
+            if (!_currentExposure){
+                [self clearSelection];
+            }
         }
+        @catch (NSException *exception) {
+            NSLog(@"*** Exception setting exposure: %@",exception);
+        }
+        
+        [self didChangeValueForKey:@"currentExposure"];
     }
 }
 
@@ -1458,11 +1467,7 @@ static void* kvoContext;
         enabled = self.currentExposure != nil;
     }
     else if (item.action == @selector(openDocument:)) {
-#if DEBUG
         enabled = !self.cameraController.capturing;
-#else
-        enabled = NO;
-#endif
     }
     else switch (item.tag) {
             

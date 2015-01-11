@@ -29,6 +29,7 @@
 static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraControlsOtherCount";
 
 @interface CASCameraControlsViewController ()
+@property (weak) IBOutlet NSTextField *sensorLabel;
 @property (weak) IBOutlet NSTextField *sensorSizeField;
 @property (weak) IBOutlet NSTextField *sensorPixelsField;
 @property (weak) IBOutlet NSTextField *measuredTemperatureField;
@@ -176,6 +177,14 @@ static void* kvoContext;
         self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = self.measuredTemperatureField.stringValue = @"";
     }
     else {
+        
+        // if the exposure doesn't match the current camera, change the Sensor heading to make that more obvious
+        if ([self.exposure.deviceID isEqualToString:self.cameraController.device.uniqueID]){
+            self.sensorLabel.stringValue = @"Sensor";
+        }
+        else {
+            self.sensorLabel.stringValue = @"Exposure";
+        }
         
         self.sensorSizeField.stringValue = [NSString stringWithFormat:@"%@ x %@",
                                             [params valueForKeyPath:@"width"],

@@ -58,6 +58,7 @@
 						<string key="NSFrame">{{14, 7}, {195, 14}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:526</string>
 						<string key="NSHuggingPriority">{251, 750}</string>
 						<bool key="NSEnabled">YES</bool>
@@ -100,6 +101,7 @@
 						<string key="NSFrame">{{124, 34}, {78, 19}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="705720910"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSTextFieldCell" key="NSCell" id="419608433">
@@ -1351,6 +1353,14 @@ y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp2
 						<reference key="destination" ref="705720910"/>
 					</object>
 					<int key="connectionID">785</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">sensorLabel</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1003795320"/>
+					</object>
+					<int key="connectionID">850</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
@@ -4533,7 +4543,7 @@ y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp2
 					<reference ref="326106962"/>
 				</array>
 				<reference key="1.IBNSViewMetadataGestureRecognizers" ref="0"/>
-				<string key="1.IBPersistedLastKnownCanvasPosition">{-328.5, 320.5}</string>
+				<string key="1.IBPersistedLastKnownCanvasPosition">{-667.5, 111.5}</string>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<array key="10.IBNSViewMetadataConstraints">
 					<reference ref="19700263"/>
@@ -4785,7 +4795,7 @@ y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp2
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">849</int>
+			<int key="maxID">850</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4808,6 +4818,7 @@ y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp2
 						<string key="measuredTemperatureField">NSTextField</string>
 						<string key="measuredTemperatureLabel">NSTextField</string>
 						<string key="otherCountViewController">NSViewController</string>
+						<string key="sensorLabel">NSTextField</string>
 						<string key="sensorPixelsField">NSTextField</string>
 						<string key="sensorSizeField">NSTextField</string>
 						<string key="sharedDefaultsController">NSUserDefaultsController</string>
@@ -4845,6 +4856,10 @@ y7bMNcy1zTXNtc42zrbPN8+40DnQutE80b7SP9LB00TTxtRJ1MvVTtXR1lXW2Ndc1+DYZNjo2WzZ8dp2
 						<object class="IBToOneOutletInfo" key="otherCountViewController">
 							<string key="name">otherCountViewController</string>
 							<string key="candidateClassName">NSViewController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="sensorLabel">
+							<string key="name">sensorLabel</string>
+							<string key="candidateClassName">NSTextField</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="sensorPixelsField">
 							<string key="name">sensorPixelsField</string>
