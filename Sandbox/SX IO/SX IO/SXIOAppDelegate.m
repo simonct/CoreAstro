@@ -40,6 +40,7 @@
 @interface SXIOAppDelegate ()
 @property (weak) IBOutlet NSPanel *noDevicesHUD;
 @property (strong) NSMutableArray *windows;
+@property (strong) NSMenu *windowMenu;
 @property (strong) SXIOCalibrationWindowController *calibrationWindow;
 @property (strong) SXIOImageAdjustmentWindowController *imageAdjustment;
 @property (strong) SXIOExportMovieWindowController *movieExportWindowController;
@@ -122,6 +123,20 @@ static void* kvoContext;
             });
         }
     });
+
+    // Clone Window menu as we want to manage it ourselves
+    NSMenu* existingWindowMenu = [NSApplication sharedApplication].windowsMenu;
+    self.windowMenu = [[NSMenu alloc] initWithTitle:existingWindowMenu.title];
+    for (NSMenuItem* item in existingWindowMenu.itemArray){
+        [self.windowMenu addItem:[item copy]];
+    }
+    NSMenuItem *windowItem = [[NSMenuItem alloc] initWithTitle:existingWindowMenu.title action:NULL keyEquivalent:@""];
+    [windowItem setSubmenu:self.windowMenu];
+    
+    [[[NSApplication sharedApplication] mainMenu] removeItemAtIndex:[[NSApplication sharedApplication] mainMenu].numberOfItems - 2];
+    [NSApplication sharedApplication].windowsMenu = nil;
+
+    [[NSApp mainMenu] insertItem:windowItem atIndex:[NSApp mainMenu].numberOfItems-1];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -228,6 +243,15 @@ static void* kvoContext;
                         [windowController setShouldCascadeWindows:YES];
                         [windowController.window makeKeyAndOrderFront:nil];
                         [_windows addObject:windowController];
+                        
+                        // add to Window menu
+                        if ([_windows count] == 1){
+                            [self.windowMenu addItem:[NSMenuItem separatorItem]];
+                        }
+                        NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
+                        windowControllerItem.target = self;
+                        windowControllerItem.representedObject = windowController;
+                        [self.windowMenu addItem:windowControllerItem];
                     }
                 }];
             }
@@ -239,8 +263,21 @@ static void* kvoContext;
                     
                     NSWindowController* window = [self findWindowController:obj];
                     if (window){
+                        
+                        // remove from Window menu
+                        for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
+                            if (item.representedObject == window){
+                                [self.windowMenu removeItem:item];
+                            }
+                        }
+
                         [window close];
                         [_windows removeObject:window];
+                        
+                        // remove trailing separator
+                        if ([_windows count] == 0){
+                            [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
+                        }
                     }
                 }];
             }
@@ -251,6 +288,14 @@ static void* kvoContext;
                 
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)activateWindow:(NSMenuItem*)sender
+{
+    NSWindowController* window = sender.representedObject;
+    if ([window isKindOfClass:[NSWindowController class]]){
+        [window.window makeKeyAndOrderFront:nil];
     }
 }
 
@@ -349,6 +394,13 @@ static void* kvoContext;
             }
             else {
                 item.state = NSOffState;
+            }
+        }
+            break;
+        default:{
+            NSWindowController* windowController = item.representedObject;
+            if ([windowController isKindOfClass:[NSWindowController class]]){
+                item.state = (windowController.window == [NSApp mainWindow]);
             }
         }
             break;

@@ -17,11 +17,26 @@
 
 static void* kvoContext;
 
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    
+    // map close button to hide window
+    NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
+    [close setTarget:self];
+    [close setAction:@selector(hideWindow:)];
+}
+
 - (void)dealloc
 {
     if (_filterWheelController){
         [_filterWheelController removeObserver:self forKeyPath:@"filterCount" context:&kvoContext];
     }
+}
+
+- (void)hideWindow:sender
+{
+    [self.window orderOut:nil];
 }
 
 - (void)setFilterWheelController:(CASFilterWheelController *)filterWheelController

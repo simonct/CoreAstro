@@ -136,6 +136,11 @@ static void* kvoContext;
     
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
     [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
+    
+    // map close button to hide window
+    NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
+    [close setTarget:self];
+    [close setAction:@selector(hideWindow:)];
 }
 
 - (void)dealloc
@@ -143,6 +148,11 @@ static void* kvoContext;
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
     }
+}
+
+- (void)hideWindow:sender
+{
+    [self.window orderOut:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
