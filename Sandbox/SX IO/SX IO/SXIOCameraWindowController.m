@@ -1062,12 +1062,20 @@ static void* kvoContext;
                 self.progressStatusText.stringValue = @"Downloading image...";
             }
             else {
+                NSString* statusText;
                 if (self.cameraController.settings.captureCount > 1 && !self.cameraController.settings.continuous){
-                    self.progressStatusText.stringValue = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.settings.currentCaptureIndex+1,self.cameraController.settings.captureCount];
+                    statusText = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.settings.currentCaptureIndex+1,self.cameraController.settings.captureCount];
                 }
                 else {
-                    self.progressStatusText.stringValue = @"Capturing...";
+                    statusText = @"Capturing...";
                 }
+                if (self.cameraController.settings.exposureUnits == 0){
+                    const NSTimeInterval timeRemaining = self.cameraController.settings.exposureDuration - [[NSDate date] timeIntervalSinceDate:self.cameraController.exposureStart];
+                    if (timeRemaining > 0){
+                        statusText = [statusText stringByAppendingFormat:@" %.0fs",timeRemaining];
+                    }
+                }
+                self.progressStatusText.stringValue = statusText;
             }
         }
             break;
