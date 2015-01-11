@@ -384,16 +384,24 @@ static void* kvoContext;
     
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            NSError* error;
-            CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:openPanel.URL.path readPixels:YES error:nil];
-            if (exposure){
-                self.currentExposure = exposure;
-            }
-            else if (error){
-                [NSApp presentError:error];
-            }
+            [self openExposureAtPath:openPanel.URL.path];
         }
     }];
+}
+
+- (BOOL)openExposureAtPath:(NSString*)path
+{
+    NSError* error;
+    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
+    if (exposure){
+        self.currentExposure = exposure;
+        [self updateWindowTitleWithExposurePath:path];
+        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:path]];
+    }
+    else if (error){
+        [NSApp presentError:error];
+    }
+    return (error == nil);
 }
 
 - (IBAction)saveAs:(id)sender
@@ -968,16 +976,29 @@ static void* kvoContext;
 
 #pragma mark - Exposure Display
 
-- (void)configureForCameraController
+- (void)updateWindowTitleWithExposurePath:(NSString*)path
 {
-    NSString* title = self.cameraController.camera.deviceName;
-    if (title){
-        self.window.title = title;
-        [self.window setFrameAutosaveName:self.window.title];
+    NSString* cameraName = self.cameraController.camera.deviceName;
+    if (cameraName){
+        
+        if (path){
+            self.window.title = [cameraName stringByAppendingFormat:@" [%@]",[[NSFileManager defaultManager] displayNameAtPath:path]];
+            [self.window setRepresentedFilename:path];
+        }
+        else {
+            self.window.title = cameraName;
+            [self.window setRepresentedFilename:@""];
+        }
+        [self.window setFrameAutosaveName:cameraName];
     }
     else {
         self.window.title = @"";
     }
+}
+
+- (void)configureForCameraController
+{
+    [self updateWindowTitleWithExposurePath:nil];
     
     if (!self.cameraController){
         
@@ -1352,7 +1373,11 @@ static void* kvoContext;
 
                 [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
             }
+            
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
         }
+        
+        [self updateWindowTitleWithExposurePath:finalUrl.path];
     }
     
     if (error){

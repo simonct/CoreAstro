@@ -167,6 +167,19 @@ static void* kvoContext;
     }
 }
 
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
+{
+    BOOL result = NO;
+    
+    // assume this is targeted at the frontmost camera window
+    SXIOCameraWindowController* cameraWindow = [[[NSApplication sharedApplication] mainWindow] windowController];
+    if ([cameraWindow isKindOfClass:[SXIOCameraWindowController class]]){
+        result = [cameraWindow openExposureAtPath:filename];
+    }
+    
+    return result;
+}
+
 - (void)quitConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
