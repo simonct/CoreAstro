@@ -44,6 +44,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 @property (nonatomic,assign) NSInteger ditherInPHDAmount;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,assign) NSInteger otherExposureCount;
+@property (weak) IBOutlet NSTextField *exposureCompletionLabel;
 @end
 
 @implementation CASCameraControlsViewController
@@ -65,9 +66,17 @@ static void* kvoContext;
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     [self.cameraController removeObserver:self forKeyPath:@"settings.subframe" context:&kvoContext];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.captureCount" context:&kvoContext];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.exposureDuration" context:&kvoContext];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.exposureUnits" context:&kvoContext];
+    [self.cameraController removeObserver:self forKeyPath:@"settings.exposureInterval" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
     self.representedObject = cameraController;
     [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
+    [self.cameraController addObserver:self forKeyPath:@"settings.captureCount" options:0 context:&kvoContext];
+    [self.cameraController addObserver:self forKeyPath:@"settings.exposureDuration" options:0 context:&kvoContext];
+    [self.cameraController addObserver:self forKeyPath:@"settings.exposureUnits" options:0 context:&kvoContext];
+    [self.cameraController addObserver:self forKeyPath:@"settings.exposureInterval" options:0 context:&kvoContext];
     [self.cameraController addObserver:self forKeyPath:@"capturing" options:0 context:&kvoContext];
     [self configureForCameraController];
 }
@@ -88,10 +97,32 @@ static void* kvoContext;
         }
         else if ([keyPath isEqualToString:@"capturing"]){
             [self configureBinningControls];
+            [self updateCompletionLabel];
+        }
+        else {
+            [self updateCompletionLabel];
         }
     }
     else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)updateCompletionLabel
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:_cmd object:nil];
+    CASExposureSettings* settings = self.cameraController.settings;
+    if (settings.exposureUnits != 0){
+        self.exposureCompletionLabel.stringValue = @"";
+    }
+    else if (!self.cameraController.capturing) {
+        const double duration = (settings.captureCount * settings.exposureDuration) + (settings.exposureInterval * (settings.captureCount - 1));
+        NSDate* completionDate = [NSDate dateWithTimeIntervalSinceNow:duration];
+        NSDateFormatter* formatter = [NSDateFormatter new];
+        formatter.dateStyle = NSDateFormatterMediumStyle;
+        formatter.timeStyle = NSDateFormatterShortStyle;
+        self.exposureCompletionLabel.stringValue = [NSString stringWithFormat:@"approx. %@",[formatter stringFromDate:completionDate]];
+        [self performSelector:_cmd withObject:nil afterDelay:60]; // actually want to try an update on the minute...
     }
 }
 
@@ -109,6 +140,7 @@ static void* kvoContext;
     }
     
     [self configureBinningControls];
+    [self updateCompletionLabel];
 }
 
 - (void)configureBinningControls
