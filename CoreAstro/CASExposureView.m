@@ -767,11 +767,6 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.searchLayer = nil;
     self.reticleLayer = nil;
     
-    if (_annotationsLayer){
-        [_annotationsLayer removeFromSuperlayer];
-        _annotationsLayer = nil;
-    }
-    
     [super setCGImage:image resetDisplay:resetDisplay];
     
     self.starLocation = kCASImageViewInvalidStarLocation;
@@ -790,6 +785,8 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     for (NSView* hud in self.huds){
         [self.hudContainerView addSubview:hud positioned:NSWindowAbove relativeTo:nil];
     }
+    
+    [self addSolutionAnnotations];
 }
 
 - (void)setCurrentExposure:(CASCCDExposure *)exposure
@@ -843,51 +840,79 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (void)removeSolutionAnnotations
+{
+    for (CALayer* layer in [[self.annotationsLayer sublayers] copy]){
+        [layer removeFromSuperlayer];
+    }
+}
+
+- (void)addSolutionAnnotations:(CASPlateSolveSolution*)solution withColour:(CGColorRef)colour
+{
+    if (!solution){
+        return;
+    }
+    
+    // todo; choose font based on image size
+    const NSUInteger width = self.currentExposure.params.frame.width;
+    NSFont* font = [NSFont boldSystemFontOfSize:32 * (width/1932)]; // <<< todo; magic number ??
+    
+    // draw detected objects
+    for (CASPlateSolvedObject* object in solution.objects){
+        [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour scaling:self.currentExposure.params.bin.width];
+    }
+    
+    // draw centre angle
+    if (solution.centreAngle){
+        
+        CALayer* angleLayer = [CALayer layer];
+        
+        angleLayer.borderColor = colour;
+        angleLayer.borderWidth = 2.5;
+        const double width = hypot(CGRectGetWidth(self.annotationsLayer.bounds),CGRectGetHeight(self.annotationsLayer.bounds));
+        angleLayer.bounds = CGRectMake(0,0,width,angleLayer.borderWidth);
+        angleLayer.position = CGPointMake(CGRectGetMidX(self.annotationsLayer.bounds), CGRectGetMidY(self.annotationsLayer.bounds));
+        
+        [angleLayer setAffineTransform:CGAffineTransformMakeRotation(-[solution.centreAngle floatValue]*M_PI/180.0)];
+        
+        [self.annotationsLayer addSublayer:angleLayer];
+    }
+    
+    CGColorRelease(colour);
+}
+
+- (void)addSolutionAnnotations
+{
+    [self removeSolutionAnnotations];
+    if (_plateSolveSolution){
+        [self addSolutionAnnotations:_plateSolveSolution withColour:CGColorCreateGenericRGB(1, 1, 0, 0.75)];
+    }
+    if (_lockedPlateSolveSolution){
+        [self addSolutionAnnotations:_lockedPlateSolveSolution withColour:CGColorCreateGenericRGB(1, 0, 0, 0.75)];
+    }
+}
+
 - (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
 {
     if (_plateSolveSolution != plateSolveSolution){
         
         _plateSolveSolution = plateSolveSolution;
         
-        for (CALayer* layer in [[self.annotationsLayer sublayers] copy]){
-            [layer removeFromSuperlayer];
-        }
-        
-        if (_plateSolveSolution){
-            
-            // todo; choose font based on image size
-            const NSUInteger width = self.currentExposure.params.frame.width;
-            NSFont* font = [NSFont boldSystemFontOfSize:32 * (width/1932)]; // <<< todo; magic number ??
-
-            CGColorRef colour = CGColorCreateGenericRGB(1, 1, 0, 0.75);
-            
-            // draw detected objects
-            for (CASPlateSolvedObject* object in self.plateSolveSolution.objects){
-                [object createLayerInLayer:self.annotationsLayer withFont:font andColour:colour scaling:self.currentExposure.params.bin.width];
-            }
-            
-            // draw centre angle
-            if (plateSolveSolution.centreAngle){
-                
-                CALayer* angleLayer = [CALayer layer];
-                
-                angleLayer.borderColor = colour;
-                angleLayer.borderWidth = 2.5;
-                const double width = hypot(CGRectGetWidth(self.annotationsLayer.bounds),CGRectGetHeight(self.annotationsLayer.bounds));
-                angleLayer.bounds = CGRectMake(0,0,width,angleLayer.borderWidth);
-                angleLayer.position = CGPointMake(CGRectGetMidX(self.annotationsLayer.bounds), CGRectGetMidY(self.annotationsLayer.bounds));
-                
-                [angleLayer setAffineTransform:CGAffineTransformMakeRotation(-[plateSolveSolution.centreAngle floatValue]*M_PI/180.0)];
-                
-                [self.annotationsLayer addSublayer:angleLayer];
-            }
-            
-            CGColorRelease(colour);
-        }
+        [self addSolutionAnnotations];
         
         self.plateSolutionView.solution = _plateSolveSolution;
         self.plateSolutionView.visible = (_plateSolveSolution != nil);
         [self layoutHuds];
+    }
+}
+
+- (void)setLockedPlateSolveSolution:(CASPlateSolveSolution *)lockedPlateSolveSolution
+{
+    if (lockedPlateSolveSolution != _lockedPlateSolveSolution){
+                
+        _lockedPlateSolveSolution = lockedPlateSolveSolution;
+        
+        [self addSolutionAnnotations];
     }
 }
 

@@ -44,6 +44,7 @@ typedef enum {
 @property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
 @property (nonatomic,assign) CGRect selectionRect;
 @property (nonatomic,strong) CASPlateSolveSolution* plateSolveSolution;
+@property (nonatomic,strong) CASPlateSolveSolution* lockedPlateSolveSolution;
 - (BOOL)shouldResetDisplayForExposure:(CASCCDExposure*)exposure;
 - (void)setCurrentExposure:(CASCCDExposure *)exposure resetDisplay:(BOOL)resetDisplay;
 @end

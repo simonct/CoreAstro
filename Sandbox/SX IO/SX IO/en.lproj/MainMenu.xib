@@ -1633,8 +1633,7 @@
 								</object>
 								<object class="NSMenuItem" id="484916835">
 									<reference key="NSMenu" ref="43874950"/>
-									<bool key="NSIsAlternate">YES</bool>
-									<string key="NSTitle">Plate Solve</string>
+									<string key="NSTitle">Lock Solution</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -2648,14 +2647,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">plateSolve:</string>
-						<reference key="source" ref="1014"/>
-						<reference key="destination" ref="484916835"/>
-					</object>
-					<int key="connectionID">895</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleShowPlateSolution:</string>
 						<reference key="source" ref="1014"/>
 						<reference key="destination" ref="541892682"/>
@@ -2701,6 +2692,14 @@
 						<reference key="destination" ref="705784632"/>
 					</object>
 					<int key="connectionID">911</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">lockSolution:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="484916835"/>
+					</object>
+					<int key="connectionID">912</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -4481,7 +4480,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">911</int>
+			<int key="maxID">912</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4902,11 +4901,16 @@
 					<string key="className">FirstResponder</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="applyDebayer:">id</string>
+						<string key="lockSolution:">id</string>
 						<string key="sequence:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="applyDebayer:">
 							<string key="name">applyDebayer:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="lockSolution:">
+							<string key="name">lockSolution:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="sequence:">
@@ -5087,6 +5091,7 @@
 						<string key="saveAs:">id</string>
 						<string key="saveToFITS:">id</string>
 						<string key="selection:">NSSegmentedControl</string>
+						<string key="sequence:">id</string>
 						<string key="toggleCalibrate:">id</string>
 						<string key="toggleContrastStretch:">id</string>
 						<string key="toggleEqualiseHistogram:">id</string>
@@ -5154,6 +5159,10 @@
 						<object class="IBActionInfo" key="selection:">
 							<string key="name">selection:</string>
 							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="sequence:">
+							<string key="name">sequence:</string>
+							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleCalibrate:">
 							<string key="name">toggleCalibrate:</string>

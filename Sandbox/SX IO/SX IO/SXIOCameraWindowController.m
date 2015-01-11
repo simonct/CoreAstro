@@ -838,6 +838,16 @@ static void* kvoContext;
     }];
 }
 
+- (void)lockSolution:sender
+{
+    if (self.exposureView.lockedPlateSolveSolution){
+        self.exposureView.lockedPlateSolveSolution = nil;
+    }
+    else {
+        self.exposureView.lockedPlateSolveSolution = self.exposureView.plateSolveSolution;
+    }
+}
+
 #pragma mark - Path & Save Utilities
 
 - (NSString*)currentDeviceExposurePathWithName:(NSString*)name
@@ -1549,8 +1559,17 @@ static void* kvoContext;
         case 11102:
             break;
             
-        case 11103:
-        case 11104:
+        case 11103: // Lock Solution
+            if (self.exposureView.lockedPlateSolveSolution){
+                item.title = @"Unlock Solution"; // add locked solution exposure name ?
+            }
+            else {
+                item.title = @"Lock Solution";
+                enabled = (self.exposureView.plateSolveSolution != nil);
+            }
+            break;
+            
+        case 11104: // Plate Solve...
             enabled = (self.plateSolver == nil && self.currentExposure != nil);
             break;
             
