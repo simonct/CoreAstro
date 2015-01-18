@@ -14,5 +14,6 @@
 @interface SXIOCameraWindowController : NSWindowController<SXIOSequenceTarget>
 @property (weak) IBOutlet CASExposureView *exposureView;
 @property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,copy,readonly) NSString* cameraDeviceID;
 - (BOOL)openExposureAtPath:(NSString*)path;
 @end

@@ -73,13 +73,15 @@ static void* kvoContext;
     [self.cameraController removeObserver:self forKeyPath:@"settings.exposureInterval" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
     self.representedObject = cameraController;
-    [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
-    [self.cameraController addObserver:self forKeyPath:@"settings.captureCount" options:0 context:&kvoContext];
-    [self.cameraController addObserver:self forKeyPath:@"settings.exposureDuration" options:0 context:&kvoContext];
-    [self.cameraController addObserver:self forKeyPath:@"settings.exposureUnits" options:0 context:&kvoContext];
-    [self.cameraController addObserver:self forKeyPath:@"settings.exposureInterval" options:0 context:&kvoContext];
-    [self.cameraController addObserver:self forKeyPath:@"capturing" options:0 context:&kvoContext];
-    [self configureForCameraController];
+    if (self.cameraController){
+        [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
+        [self.cameraController addObserver:self forKeyPath:@"settings.captureCount" options:0 context:&kvoContext];
+        [self.cameraController addObserver:self forKeyPath:@"settings.exposureDuration" options:0 context:&kvoContext];
+        [self.cameraController addObserver:self forKeyPath:@"settings.exposureUnits" options:0 context:&kvoContext];
+        [self.cameraController addObserver:self forKeyPath:@"settings.exposureInterval" options:0 context:&kvoContext];
+        [self.cameraController addObserver:self forKeyPath:@"capturing" options:0 context:&kvoContext];
+        [self configureForCameraController];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

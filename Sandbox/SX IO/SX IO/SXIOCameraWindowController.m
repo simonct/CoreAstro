@@ -65,6 +65,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,readonly) NSString* cachesDirectory;
 
+@property (nonatomic,copy) NSString* cameraDeviceID;
+
 @end
 
 @implementation SXIOCameraWindowController {
@@ -152,7 +154,12 @@ static void* kvoContext;
 
 - (void)hideWindow:sender
 {
-    [self.window orderOut:nil];
+    if (self.cameraController){
+        [self.window orderOut:nil];
+    }
+    else {
+        [self close];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -191,13 +198,16 @@ static void* kvoContext;
         if (_cameraController){
             [_cameraController removeObserver:self forKeyPath:@"state" context:&kvoContext];
             [_cameraController removeObserver:self forKeyPath:@"progress" context:&kvoContext];
+            if (!cameraController) {
+                self.window.title = [NSString stringWithFormat:@"%@ (Disconnected)",self.cameraController.camera.deviceName];
+            }
         }
         _cameraController = cameraController;
         if (_cameraController){
             [_cameraController addObserver:self forKeyPath:@"state" options:0 context:&kvoContext];
             [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:&kvoContext];
+            [self configureForCameraController];
         }
-        [self configureForCameraController];
     }
 }
 
@@ -1010,12 +1020,11 @@ static void* kvoContext;
 {
     [self updateWindowTitleWithExposurePath:nil];
     
-    if (!self.cameraController){
+    if (self.cameraController){
         
-        self.currentExposure = nil;
-    }
-    else {
-        
+        // only set the cameraDeviceID when setting the controller, not when clearing it
+        self.cameraDeviceID = self.cameraController.device.uniqueID;
+
         // use the sink interface to save the exposure if requested
         self.cameraController.sink = self;
 
@@ -1023,9 +1032,6 @@ static void* kvoContext;
         // (specifically check for pixels as this will detect if the backing store has been deleted)
         if (self.cameraController.lastExposure.pixels){
             self.currentExposure = self.cameraController.lastExposure;
-        }
-        else{
-            self.currentExposure = nil; // [self exposureWithName:@"latest"];
         }
         
         // if there's no exposure, create a placeholder image

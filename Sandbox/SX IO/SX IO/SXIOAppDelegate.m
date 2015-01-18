@@ -61,7 +61,8 @@ static void* kvoContext;
          @"SXIODefaultExposureFileType":@"fits",
          @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"],
          @"SXIONoDevicesAlertOnStartup":@YES,
-         @"SXIOAutoContrastStretch":@NO
+         @"SXIOAutoContrastStretch":@NO,
+         @"SXIOCloseCameraWindowsOnDisconnect":@YES
          }];
     }
 }
@@ -185,10 +186,10 @@ static void* kvoContext;
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
 }
 
-- (NSWindowController*)findWindowController:(id)controller
+- (NSWindowController*)findWindowController:(CASDeviceController*)controller
 {
-    for (id window in [_windows copy]){
-        if ([window isKindOfClass:[SXIOCameraWindowController class]] && ((SXIOCameraWindowController*)window).cameraController == controller){
+    for (id window in _windows){
+        if ([window isKindOfClass:[SXIOCameraWindowController class]] && (((SXIOCameraWindowController*)window).cameraController == controller || [((SXIOCameraWindowController*)window).cameraDeviceID isEqualToString:controller.device.uniqueID])){
             return window;
         }
         if ([window isKindOfClass:[SXIOFilterWindowController class]] && ((SXIOFilterWindowController*)window).filterWheelController == controller){
@@ -211,8 +212,12 @@ static void* kvoContext;
                 [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 
                     NSWindowController* windowController = [self findWindowController:obj];
-                    if (!windowController){
-                        
+                    if (windowController){
+                        SXIOCameraWindowController* cameraWindow = (SXIOCameraWindowController*)windowController;
+                        cameraWindow.cameraController = obj;
+                    }
+                    else{
+                    
                         if ([obj isKindOfClass:[CASCameraController class]]){
                             
                             SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
@@ -249,22 +254,22 @@ static void* kvoContext;
                             filterWindow.filterWheelController = obj;
                             windowController = filterWindow;
                         }
-                    }
-                    
-                    if (windowController){
-                        [self.noDevicesHUD orderOut:nil];
-                        [windowController setShouldCascadeWindows:YES];
-                        [windowController.window makeKeyAndOrderFront:nil];
-                        [_windows addObject:windowController];
                         
-                        // add to Window menu
-                        if ([_windows count] == 1){
-                            [self.windowMenu addItem:[NSMenuItem separatorItem]];
+                        if (windowController){
+                            [self.noDevicesHUD orderOut:nil];
+                            [windowController setShouldCascadeWindows:YES];
+                            [windowController.window makeKeyAndOrderFront:nil];
+                            [_windows addObject:windowController];
+                            
+                            // add to Window menu
+                            if ([_windows count] == 1){
+                                [self.windowMenu addItem:[NSMenuItem separatorItem]];
+                            }
+                            NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
+                            windowControllerItem.target = self;
+                            windowControllerItem.representedObject = windowController;
+                            [self.windowMenu addItem:windowControllerItem];
                         }
-                        NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
-                        windowControllerItem.target = self;
-                        windowControllerItem.representedObject = windowController;
-                        [self.windowMenu addItem:windowControllerItem];
                     }
                 }];
             }
@@ -277,19 +282,34 @@ static void* kvoContext;
                     NSWindowController* window = [self findWindowController:obj];
                     if (window){
                         
-                        // remove from Window menu
-                        for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
-                            if (item.representedObject == window){
-                                [self.windowMenu removeItem:item];
+                        // default behaviour is to close the window and remove from the Window menu
+                        BOOL closeWindow = YES;
+                        
+                        // but, there's an option to keep camera windows open, so we just nil out the camera controller instead
+                        if ([window isKindOfClass:[SXIOCameraWindowController class]]){
+                            if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOCloseCameraWindowsOnDisconnect"]){
+                                SXIOCameraWindowController* camera = (SXIOCameraWindowController*)window;
+                                camera.cameraController = nil;
+                                closeWindow = NO;
                             }
                         }
-
-                        [window close];
-                        [_windows removeObject:window];
                         
-                        // remove trailing separator
-                        if ([_windows count] == 0){
-                            [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
+                        if (closeWindow){
+                            
+                            // remove from Window menu
+                            for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
+                                if (item.representedObject == window){
+                                    [self.windowMenu removeItem:item];
+                                }
+                            }
+                            
+                            [window close];
+                            [_windows removeObject:window];
+                            
+                            // remove trailing separator
+                            if ([_windows count] == 0){
+                                [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
+                            }
                         }
                     }
                 }];
