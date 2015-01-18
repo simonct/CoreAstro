@@ -33,6 +33,7 @@
 		F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386D3168887FE00E77631 /* MKOAppDelegate.m */; };
 		F4A386D7168887FF00E77631 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A386D5168887FF00E77631 /* MainMenu.xib */; };
 		F4BC427218141FF200EA439F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC427118141FF200EA439F /* Accelerate.framework */; };
+		F4E403941A6BEE3C003650FA /* CASCoordinateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */; };
 		F4FAFB5C16A064CE00DBEAEA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -738,6 +739,8 @@
 		F4A38A1716889B4E00E77631 /* astrometry_net.table */ = {isa = PBXFileReference; lastKnownFileType = text; path = astrometry_net.table; sourceTree = "<group>"; };
 		F4BC427118141FF200EA439F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F4BC428D1814214100EA439F /* CoreAstro.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoreAstro.xcodeproj; path = ../../CoreAstro.xcodeproj; sourceTree = "<group>"; };
+		F4E403921A6BEE3C003650FA /* CASCoordinateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCoordinateUtils.h; sourceTree = "<group>"; };
+		F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCoordinateUtils.m; sourceTree = "<group>"; };
 		F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -773,6 +776,8 @@
 				F40572BF17636F8E009CEC05 /* CASLX200Commands.m */,
 				F40572C017636F8E009CEC05 /* CASLX200IPClient.h */,
 				F40572C117636F8E009CEC05 /* CASLX200IPClient.m */,
+				F4E403921A6BEE3C003650FA /* CASCoordinateUtils.h */,
+				F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */,
 			);
 			name = Shared;
 			path = ../../Shared;
@@ -1668,6 +1673,11 @@
 				CLASSPREFIX = MKO;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4A386BC168887FE00E77631 = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
+				};
 			};
 			buildConfigurationList = F4A386B8168887FE00E77631 /* Build configuration list for PBXProject "astrometry-test" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1785,6 +1795,7 @@
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,
 				F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */,
 				F4A101C118E84F890071035B /* iEQMount.m in Sources */,
+				F4E403941A6BEE3C003650FA /* CASCoordinateUtils.m in Sources */,
 				F40572E617649318009CEC05 /* CASPlateSolveImageView.m in Sources */,
 				F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */,
 			);
@@ -1890,7 +1901,7 @@
 		F4A386DB168887FF00E77631 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -1903,6 +1914,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1911,7 +1923,7 @@
 		F4A386DC168887FF00E77631 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -1924,6 +1936,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
