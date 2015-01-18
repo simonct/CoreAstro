@@ -401,7 +401,7 @@
     
     NSSavePanel* save = [NSSavePanel savePanel];
     
-    save.allowedFileTypes = @[[self.imageView.url pathExtension]];
+    save.allowedFileTypes = @[@"png"];
     save.canCreateDirectories = YES;
     save.nameFieldStringValue = [self.imageView.url lastPathComponent];
     
@@ -438,7 +438,7 @@
             
             // create a bitmap to render the contents into
             CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-            CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
+            CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast&kCGBitmapAlphaInfoMask);
             CFRelease(space);
             
             if (context){
@@ -594,14 +594,14 @@
     }
     
     if (!self.ieqMount){
-        NSLog(@"No iEQ mount object");
+        [self presentAlertWithMessage:@"No mount is conncted"];
     }
     else {
         
         [self.ieqMount connectWithCompletion:^{
             
             if (!self.ieqMount.connected){
-                NSLog(@"Failed to connect to iEQ mount");
+                [self presentAlertWithMessage:@"Failed to connect to the mount"];
             }
             else {
                 
@@ -611,7 +611,7 @@
                 [self.ieqMount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
                     
                     if (error != CASMountSlewErrorNone){
-                        NSLog(@"Start slew failed with error %ld",error);
+                        [self presentAlertWithMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
                     }
                     else {
                         NSLog(@"Slewing...");
@@ -625,12 +625,12 @@
 - (IBAction)connectToiEQ:(id)sender
 {
     if (!self.selectedSerialPort){
-        NSLog(@"No selected port");
+        [self presentAlertWithMessage:@"No selected serial port"];
         return;
     }
     
     if (self.selectedSerialPort.isOpen){
-        NSLog(@"Selected port is open");
+        [self presentAlertWithMessage:@"Selected serial port is already open"];
         return;
     }
     
