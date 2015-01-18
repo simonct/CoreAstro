@@ -514,16 +514,35 @@ static void* kvoContext;
     }
 }
 
-- (IBAction)cancel:(id)sender
+- (void)cancelSequence
 {
-    // warn first...
     [self.sequenceRunner stop];
     self.sequenceRunner = nil;
     
-    // save current sequence
-
     if (self.parent){
         [self endSheetWithCode:NSModalResponseCancel];
+    }
+}
+
+- (IBAction)cancel:(id)sender
+{
+    if (self.sequenceRunner){
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Cancel Sequence"
+                                         defaultButton:@"OK"
+                                       alternateButton:@"Cancel"
+                                           otherButton:nil
+                             informativeTextWithFormat:@"Are you sure you want to cancel the currently running sequence ?"];
+        [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(cancelSequenceAlertDidEnd:returnCode:contextInfo:) contextInfo:nil];
+    }
+    else {
+        [self cancelSequence];
+    }
+}
+
+- (void) cancelSequenceAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
+{
+    if (returnCode == NSOKButton){
+        [self cancelSequence];
     }
 }
 

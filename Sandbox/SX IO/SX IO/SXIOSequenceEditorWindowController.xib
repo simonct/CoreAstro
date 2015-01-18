@@ -16,16 +16,16 @@
         <window title="Sequence" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="324"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="480" height="270"/>
             <value key="maxSize" type="size" width="480" height="1024"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <rect key="frame" x="0.0" y="0.0" width="480" height="324"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="26" horizontalPageScroll="10" verticalLineScroll="26" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgJ-KU-VDA">
-                        <rect key="frame" x="-1" y="32" width="482" height="239"/>
+                    <scrollView autohidesScrollers="YES" horizontalLineScroll="26" horizontalPageScroll="10" verticalLineScroll="26" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgJ-KU-VDA">
+                        <rect key="frame" x="-1" y="52" width="482" height="273"/>
                         <clipView key="contentView" misplaced="YES" id="iZY-Zb-Rcn">
                             <rect key="frame" x="1" y="0.0" width="238" height="134"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -61,15 +61,15 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <connections>
-                                                                <binding destination="NfE-1H-rKu" name="enabled" keyPath="objectValue.sequenceRunning" id="Gon-O1-Afk">
-                                                                    <dictionary key="options">
-                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                                                    </dictionary>
-                                                                </binding>
                                                                 <binding destination="NfE-1H-rKu" name="value" keyPath="objectValue.count" id="A6O-3f-Rhv">
                                                                     <dictionary key="options">
                                                                         <bool key="NSContinuouslyUpdatesValue" value="YES"/>
                                                                         <bool key="NSValidatesImmediately" value="YES"/>
+                                                                    </dictionary>
+                                                                </binding>
+                                                                <binding destination="NfE-1H-rKu" name="enabled" keyPath="objectValue.sequenceRunning" id="Gon-O1-Afk">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
                                                                     </dictionary>
                                                                 </binding>
                                                             </connections>
@@ -106,15 +106,15 @@
                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <connections>
-                                                                <binding destination="tgf-uE-tj8" name="enabled" keyPath="objectValue.sequenceRunning" id="YNO-rh-IDo">
-                                                                    <dictionary key="options">
-                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                                                    </dictionary>
-                                                                </binding>
                                                                 <binding destination="tgf-uE-tj8" name="value" keyPath="objectValue.duration" id="JzV-FB-YKe">
                                                                     <dictionary key="options">
                                                                         <bool key="NSContinuouslyUpdatesValue" value="YES"/>
                                                                         <bool key="NSValidatesImmediately" value="YES"/>
+                                                                    </dictionary>
+                                                                </binding>
+                                                                <binding destination="tgf-uE-tj8" name="enabled" keyPath="objectValue.sequenceRunning" id="YNO-rh-IDo">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
                                                                     </dictionary>
                                                                 </binding>
                                                             </connections>
@@ -160,12 +160,12 @@
                                                                 </menu>
                                                             </popUpButtonCell>
                                                             <connections>
+                                                                <binding destination="Lq9-Eq-hEc" name="selectedIndex" keyPath="objectValue.binningIndex" id="FIM-je-FNs"/>
                                                                 <binding destination="Lq9-Eq-hEc" name="enabled" keyPath="objectValue.sequenceRunning" id="Fjm-n4-AAd">
                                                                     <dictionary key="options">
                                                                         <string key="NSValueTransformerName">NSNegateBoolean</string>
                                                                     </dictionary>
                                                                 </binding>
-                                                                <binding destination="Lq9-Eq-hEc" name="selectedIndex" keyPath="objectValue.binningIndex" id="FIM-je-FNs"/>
                                                             </connections>
                                                         </popUpButton>
                                                     </subviews>
@@ -203,6 +203,13 @@
                                                                 <menu key="menu" id="jOv-yh-fkY"/>
                                                             </popUpButtonCell>
                                                             <connections>
+                                                                <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
+                                                                <binding destination="h7f-dd-7Rg" name="enabled" keyPath="objectValue.filterNames" id="FuL-qz-Ehr">
+                                                                    <dictionary key="options">
+                                                                        <string key="NSValueTransformerName">NSIsNotNil</string>
+                                                                    </dictionary>
+                                                                </binding>
+                                                                <binding destination="h7f-dd-7Rg" name="selectedValue" keyPath="objectValue.selectedFilter" previousBinding="AYg-dc-ZpI" id="K3u-bL-FJQ"/>
                                                                 <binding destination="h7f-dd-7Rg" name="enabled2" keyPath="objectValue.sequenceRunning" previousBinding="FuL-qz-Ehr" id="j7S-2S-t73">
                                                                     <dictionary key="options">
                                                                         <integer key="NSMultipleValuesPlaceholder" value="-1"/>
@@ -212,13 +219,6 @@
                                                                         <string key="NSValueTransformerName">NSNegateBoolean</string>
                                                                     </dictionary>
                                                                 </binding>
-                                                                <binding destination="h7f-dd-7Rg" name="contentValues" keyPath="objectValue.filterNames" id="AYg-dc-ZpI"/>
-                                                                <binding destination="h7f-dd-7Rg" name="enabled" keyPath="objectValue.filterNames" id="FuL-qz-Ehr">
-                                                                    <dictionary key="options">
-                                                                        <string key="NSValueTransformerName">NSIsNotNil</string>
-                                                                    </dictionary>
-                                                                </binding>
-                                                                <binding destination="h7f-dd-7Rg" name="selectedValue" keyPath="objectValue.selectedFilter" previousBinding="AYg-dc-ZpI" id="K3u-bL-FJQ"/>
                                                             </connections>
                                                         </popUpButton>
                                                     </subviews>
@@ -231,7 +231,7 @@
                                                 </tableCellView>
                                             </prototypeCellViews>
                                         </tableColumn>
-                                        <tableColumn width="35" minWidth="10" maxWidth="3.4028234663852886e+38" id="jk9-NS-CrP">
+                                        <tableColumn width="33" minWidth="10" maxWidth="3.4028234663852886e+38" id="jk9-NS-CrP">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -245,7 +245,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView id="imM-WG-tlc">
-                                                    <rect key="frame" x="445" y="3" width="35" height="17"/>
+                                                    <rect key="frame" x="445" y="3" width="33" height="17"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2dD-Zx-rOj">
@@ -257,7 +257,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <progressIndicator hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="jP1-SR-lzN">
-                                                            <rect key="frame" x="10" y="1" width="16" height="16"/>
+                                                            <rect key="frame" x="9" y="1" width="16" height="16"/>
                                                             <connections>
                                                                 <binding destination="imM-WG-tlc" name="animate" keyPath="objectValue.active" id="ncv-2P-swa"/>
                                                                 <binding destination="imM-WG-tlc" name="hidden" keyPath="objectValue.active" id="pHz-mb-78Z">
@@ -414,8 +414,18 @@ Gw
                             </connections>
                         </buttonCell>
                     </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n5x-Ed-FFK">
+                        <rect key="frame" x="-2" y="35" width="484" height="14"/>
+                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Temperature, dither and save location and name are taken from the camera window" id="lQf-l5-PwG">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="n5x-Ed-FFK" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="3" id="04i-uQ-FzZ"/>
+                    <constraint firstItem="0kq-Tx-Ixy" firstAttribute="top" secondItem="n5x-Ed-FFK" secondAttribute="bottom" constant="8" id="2NG-fI-Dsu"/>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="-1" id="3k5-Xy-YxX"/>
                     <constraint firstAttribute="bottom" secondItem="uLq-dk-P9Z" secondAttribute="bottom" constant="5" id="7YA-Zm-NXf"/>
                     <constraint firstAttribute="bottom" secondItem="90h-M2-bGc" secondAttribute="bottom" constant="6" id="9AO-B3-b2n"/>
@@ -424,18 +434,20 @@ Gw
                     <constraint firstAttribute="bottom" secondItem="14M-km-aak" secondAttribute="bottom" constant="6" id="PpN-jz-S6E"/>
                     <constraint firstAttribute="bottom" secondItem="DbS-ay-4mf" secondAttribute="bottom" constant="6" id="TeY-LZ-7XE"/>
                     <constraint firstItem="14M-km-aak" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="6" id="Xr3-lD-UM8"/>
+                    <constraint firstItem="n5x-Ed-FFK" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="dnj-rb-CAq"/>
                     <constraint firstItem="90h-M2-bGc" firstAttribute="leading" secondItem="0kq-Tx-Ixy" secondAttribute="trailing" constant="8" id="hrW-wi-Zm2"/>
                     <constraint firstAttribute="trailing" secondItem="OgJ-KU-VDA" secondAttribute="trailing" constant="-1" id="i0Q-hv-bj9"/>
                     <constraint firstAttribute="trailing" secondItem="jm5-Wb-FH0" secondAttribute="trailing" constant="20" id="j3l-lr-NEh"/>
-                    <constraint firstItem="DbS-ay-4mf" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="5" id="obE-WC-w2h"/>
+                    <constraint firstItem="DbS-ay-4mf" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="25" id="obE-WC-w2h"/>
                     <constraint firstItem="0kq-Tx-Ixy" firstAttribute="leading" secondItem="DbS-ay-4mf" secondAttribute="trailing" constant="8" id="pyo-Mr-C4J"/>
                     <constraint firstAttribute="bottom" secondItem="jm5-Wb-FH0" secondAttribute="bottom" constant="5" id="qWG-MI-j8c"/>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="-1" id="uu6-oq-Zef"/>
                     <constraint firstItem="DbS-ay-4mf" firstAttribute="leading" secondItem="14M-km-aak" secondAttribute="trailing" constant="8" id="vjh-lm-Ho3"/>
+                    <constraint firstAttribute="trailing" secondItem="n5x-Ed-FFK" secondAttribute="trailing" id="xfU-Tt-40w"/>
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-2441" y="-1364"/>
+            <point key="canvasLocation" x="-2921" y="-1390"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>
