@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOSequenceEditorWindowController">
             <connections>
+                <outlet property="startButton" destination="jm5-Wb-FH0" id="zdU-Ls-QPa"/>
                 <outlet property="stepsController" destination="gGE-tq-u0q" id="J9A-Xz-R39"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="6C1-gI-8rO"/>
             </connections>
@@ -359,15 +360,6 @@
                         <connections>
                             <action selector="start:" target="-2" id="de5-ik-eWJ"/>
                             <binding destination="-2" name="enabled" keyPath="canStart" id="ZhN-zN-HY2"/>
-                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="ZhN-zN-HY2" id="dfI-XS-7GZ">
-                                <dictionary key="options">
-                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                    <integer key="NSNullPlaceholder" value="-1"/>
-                                    <string key="NSValueTransformerName">NSIsNil</string>
-                                </dictionary>
-                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="90h-M2-bGc">
@@ -402,8 +394,8 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uLq-dk-P9Z">
-                        <rect key="frame" x="313" y="-2" width="83" height="32"/>
-                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bLu-93-uDS">
+                        <rect key="frame" x="320" y="-2" width="76" height="32"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bLu-93-uDS">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
@@ -447,7 +439,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-2921" y="-1390"/>
+            <point key="canvasLocation" x="-3091" y="-1443"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>

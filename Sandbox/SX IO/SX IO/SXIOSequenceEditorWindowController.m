@@ -437,8 +437,10 @@ static void* kvoContext;
 @end
 
 @interface SXIOSequenceEditorWindowController ()
+@property (nonatomic,strong) NSURL* sequenceURL;
 @property (nonatomic,strong) SXIOSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
+@property (nonatomic,weak) IBOutlet NSButton *startButton;
 @property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
 @end
 
@@ -492,6 +494,12 @@ static void* kvoContext;
 
 - (IBAction)start:(id)sender
 {
+    if (self.sequenceRunner){
+        [self.sequenceRunner stop];
+        self.sequenceRunner = nil;
+        return;
+    }
+    
     NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
     
@@ -502,6 +510,7 @@ static void* kvoContext;
     __typeof(self) weakSelf = self;
     self.sequenceRunner.completion = ^(){
         weakSelf.sequenceRunner = nil;
+        weakSelf.startButton.title = @"Start";
     };
     
     NSError* error;
@@ -510,7 +519,7 @@ static void* kvoContext;
         [NSApp presentError:error];
     }
     else {
-        // change start to stop
+        self.startButton.title = @"Stop";
     }
 }
 
@@ -558,6 +567,7 @@ static void* kvoContext;
 
 - (void)updateWindowRepresentedURL:(NSURL*)url
 {
+    self.sequenceURL = url;
     self.window.representedURL = url; // need scoped bookmark data ?
     NSString* name = [url isFileURL] ? [[NSFileManager defaultManager] displayNameAtPath:url.path] : [url lastPathComponent];
     [self.window setTitleWithRepresentedFilename:name];
@@ -571,8 +581,8 @@ static void* kvoContext;
         }
     };
     
-    if (self.window.representedURL){
-        archiveToURL(self.window.representedURL);
+    if (self.sequenceURL){
+        archiveToURL(self.sequenceURL);
     }
     else {
         NSSavePanel* save = [NSSavePanel savePanel];
