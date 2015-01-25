@@ -147,7 +147,6 @@
         self.cameraController.settings.captureCount = 1;
         self.cameraController.settings.exposureDuration = exposureTime;
         self.cameraController.settings.exposureUnits = exposureUnits;
-        self.cameraController.settings.binning = 1;
         self.cameraController.settings.subframe = CGRectZero;
         self.cameraController.guider = nil;
         self.cameraController.temperatureLock = temperatureLock;
