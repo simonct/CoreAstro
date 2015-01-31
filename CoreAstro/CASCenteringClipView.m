@@ -12,11 +12,6 @@
 
 @implementation CASScrollView
 
-//- (BOOL)translatesAutoresizingMaskIntoConstraints
-//{
-//    return NO;
-//}
-
 @end
 
 @interface CASCenteringClipView ()
@@ -44,12 +39,6 @@
     [self centerDocument];
 }
 
-//- (BOOL)translatesAutoresizingMaskIntoConstraints
-//{
-//    return NO;
-//}
-
-
 // ----------------------------------------
 // We need to override this so that the superclass doesn't override our new origin point.
 - (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin {
@@ -76,36 +65,6 @@
     mLookingAt.y = docRect.size.height ? NSMidY(clipRect) / docRect.size.height : 0;
 
     return p;
-
-//    clipRect.origin = proposedNewOrigin; // shift origin to proposed location
-//    
-//// If the clip view is wider than the doc, we can't scroll horizontally
-//    if (docRect.size.width < clipRect.size.width) {
-//        clipRect.origin.x = round( maxX / 2.0 );
-//    } else {
-//        clipRect.origin.x = round( MAX(0,MIN(clipRect.origin.x,maxX)) );
-//    }
-//    
-//// If the clip view is taller than the doc, we can't scroll vertically
-//    if (docRect.size.height < clipRect.size.height) {
-//        clipRect.origin.y = round( maxY / 2.0 );
-//    } else {
-//        const float yo = clipRect.origin.y;
-//        clipRect.origin.y = round( MAX(0,MIN(yo,maxY)) );
-//        NSLog(@"%f %f -> %f",yo,maxY,clipRect.origin.y);
-//    }
-//    
-//// Save center of view as proportions so we can later tell where the user was focused.
-//    mLookingAt.x = NSMidX(clipRect) / docRect.size.width;
-//    mLookingAt.y = NSMidY(clipRect) / docRect.size.height;
-//    
-//// The docRect isn't necessarily at (0, 0) so when it isn't, this correctly creates the correct scroll point
-//    
-//    NSPoint result = NSMakePoint(docRect.origin.x + clipRect.origin.x, docRect.origin.y + clipRect.origin.y);
-//    
-//    NSLog(@"constrainScrollPoint 2: %@",NSStringFromPoint(result));
-//
-//    return result;
 }
 
 // ----------------------------------------
@@ -127,33 +86,6 @@
     [self centerDocument];
 }
 
-// ----------------------------------------
-// We have some redundancy in the fact that setFrame: appears to call/send setFrameOrigin:
-// and setFrameSize: to do its work, but we need to override these individual methods in case
-// either one gets called independently. Because none of them explicitly cause a screen update,
-// it's ok to do a little extra work behind the scenes because it wastes very little time.
-// It's probably the result of a single UI action anyway so it's not like it's slowing
-// down a huge iteration by being called thousands of times.
-//- (void)setFrameOrigin:(NSPoint)newOrigin {
-//    if (!NSEqualPoints(self.frame.origin, newOrigin)) {
-//        [super setFrameOrigin:newOrigin];
-////        CGRect frame = ((NSView*)self.documentView).frame;
-////        frame.origin = newOrigin;
-////        ((NSView*)self.documentView).frame = frame;
-//        [self centerDocument];
-//    }
-//}
-//
-//- (void)setFrameSize:(NSSize)newSize {
-//    if (!NSEqualSizes(self.frame.size, newSize)) {
-//        [super setFrameSize:newSize];
-////        CGRect frame = ((NSView*)self.documentView).frame;
-////        frame.size = newSize;
-////        ((NSView*)self.documentView).frame = frame;
-//        [self centerDocument];
-//    }
-//}
-
 - (void)setFrame:(NSRect)frameRect
 {
     [super setFrame:frameRect];
@@ -170,26 +102,28 @@
     NSRect docRect = [[self documentView] frame];
     NSRect clipRect = [self bounds];
     
+    NSPoint origin = NSZeroPoint;
+    const CGSize docSize = docRect.size;
+    const CGSize clipSize = clipRect.size;
+    
     // The origin point should have integral values or drawing anomalies will occur.
     // We'll leave it to the constrainScrollPoint: method to do it for us.
-    if (docRect.size.width < clipRect.size.width) {
-        clipRect.origin.x = (docRect.size.width - clipRect.size.width) / 2.0;
+    if (docSize.width < clipSize.width) {
+        origin.x = (docSize.width - clipSize.width) / 2.0;
     } else {
-        clipRect.origin.x = mLookingAt.x; // ??
-        docRect.size.width -= (clipRect.size.width / 2.0);
+        origin.x = (docSize.width * (mLookingAt.x - 0.5)) + (docSize.width - clipSize.width) / 2.0;
     }
     
-    if (docRect.size.height < clipRect.size.height) {
-        clipRect.origin.y = (docRect.size.height - clipRect.size.height) / 2.0;
+    if (docSize.height < clipSize.height) {
+        origin.y = (docSize.height - clipSize.height) / 2.0;
     } else {
-        clipRect.origin.y = mLookingAt.y; // ??
-        docRect.size.height -= (clipRect.size.height / 2.0);
+        origin.y = (docSize.height * (mLookingAt.y - 0.5)) + (docSize.height - clipSize.height) / 2.0;
     }
     
     // Probably the best way to move the bounds origin.
     // Make sure that the scrollToPoint contains integer values
     // or the NSView will smear the drawing under certain circumstances.
-    const NSPoint p = [self constrainScrollPoint:clipRect.origin];
+    const NSPoint p = [self constrainScrollPoint:origin];
     [self scrollToPoint:p];
     [[self superview] reflectScrolledClipView:self];
 }
