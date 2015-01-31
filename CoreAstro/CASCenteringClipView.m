@@ -128,4 +128,14 @@
     [[self superview] reflectScrolledClipView:self];
 }
 
+- (void)magnifyWithEvent:(NSEvent *)event
+{
+    [[self documentView] magnifyWithEvent:event];
+}
+
+- (void)smartMagnifyWithEvent:(NSEvent *)event
+{
+    [[self documentView] smartMagnifyWithEvent:event];
+}
+
 @end

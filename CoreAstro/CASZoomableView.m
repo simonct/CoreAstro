@@ -51,6 +51,11 @@ static const NSSize unitSize = {1.0, 1.0};
 // Sets the scale in absolute terms.
 - (void)setZoom:(CGFloat)newZoom
 {
+    #define MAX_ZOOM_LEVEL 15.0
+
+    newZoom = MAX(newZoom, 1/MAX_ZOOM_LEVEL);
+    newZoom = MIN(newZoom, MAX_ZOOM_LEVEL);
+
     if (newZoom != self.zoom){
         
         [self resetScaling]; // First, match our scaling to the window's coordinate system
@@ -80,15 +85,11 @@ static const NSSize unitSize = {1.0, 1.0};
 - (IBAction)zoomIn:(id)sender
 {
     self.zoom = self.zoom * ZOOM_IN_FACTOR;
-
-    // todo; keep centred
 }
 
 - (IBAction)zoomOut:(id)sender
 {
     self.zoom = self.zoom / ZOOM_OUT_FACTOR;
-    
-    // todo; keep centred
 }
 
 - (IBAction)zoomImageToFit:(id)sender
