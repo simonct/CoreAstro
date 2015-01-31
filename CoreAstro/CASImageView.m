@@ -70,7 +70,10 @@
     NSMutableDictionary* _filterCache;
     CGRect _extent;
     BOOL _flipVertical, _flipHorizontal;
+    BOOL _observingDefaults;
 }
+
+static void* kvoContext;
 
 + (void)loadCIPluginWithName:(NSString*)name
 {
@@ -82,6 +85,7 @@
     if (self == [CASImageView class]){
         [self loadCIPluginWithName:@"Debayer.plugin"];
         [self loadCIPluginWithName:@"ContrastStretch.plugin"];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASImageViewEnableInterpolation":@YES}];
     }
 }
 
@@ -121,6 +125,9 @@
     if (_cgImage){
         CGImageRelease(_cgImage);
     }
+    if (_observingDefaults){
+        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"values.CASImageViewEnableInterpolation" context:&kvoContext];
+    }
 }
 
 - (void)awakeFromNib
@@ -145,6 +152,8 @@
             NSLog(@"Window's allowsConcurrentViewDrawing is NO");
         }
     }
+    
+    self.window.preferredBackingLocation = NSWindowBackingLocationVideoMemory;
     
     // todo; might need to sync on self to protect CIImage instance
     
@@ -275,6 +284,17 @@
     return [image imageByCroppingToRect:self.image.extent]; // this seems to be required to prevent the filtered image from having infinite extent
 }
 
+- (void)updateInterpolation
+{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASImageViewEnableInterpolation"]){
+        self.layer.magnificationFilter = kCAFilterLinear;
+    }
+    else {
+        self.layer.magnificationFilter = kCAFilterNearest;
+    }
+    [self.layer setNeedsDisplay];
+}
+
 - (void)setupImageLayer
 {
     if (self.CIImage){
@@ -288,8 +308,15 @@
     }
     
     self.layer.delegate = self;
-    [self.layer setNeedsDisplay];
-//    [self setNeedsDisplay:YES];
+    
+    if (!_observingDefaults){
+        _observingDefaults = YES;
+        [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self
+                                                                  forKeyPath:@"values.CASImageViewEnableInterpolation"
+                                                                     options:0
+                                                                     context:&kvoContext];
+    }
+    [self updateInterpolation];
 }
 
 - (void)setCIImage:(CIImage *)CIImage
@@ -434,6 +461,15 @@
         [self.layer addSublayer:_overlayLayer];
     }
     return _overlayLayer;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        [self updateInterpolation];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 @end

@@ -15,20 +15,20 @@
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="381" height="311"/>
+            <rect key="contentRect" x="196" y="240" width="381" height="331"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="381" height="311"/>
+                <rect key="frame" x="0.0" y="0.0" width="381" height="331"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <box autoresizesSubviews="NO" title="General" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Hvl-qu-FV9">
-                        <rect key="frame" x="17" y="224" width="347" height="77"/>
+                        <rect key="frame" x="17" y="224" width="347" height="97"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="345" height="61"/>
+                            <rect key="frame" x="1" y="1" width="345" height="81"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PUo-Dt-jeP">
-                                    <rect key="frame" x="16" y="35" width="313" height="18"/>
+                                    <rect key="frame" x="16" y="55" width="313" height="18"/>
                                     <buttonCell key="cell" type="check" title="Warn if no devices connected" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="7EA-zR-YJB">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -38,7 +38,7 @@
                                     </connections>
                                 </button>
                                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mvr-Pn-M3T">
-                                    <rect key="frame" x="16" y="13" width="313" height="18"/>
+                                    <rect key="frame" x="16" y="33" width="313" height="18"/>
                                     <buttonCell key="cell" type="check" title="Close camera windows when disconnected" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="HEP-7j-qSI">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -47,10 +47,20 @@
                                         <binding destination="idZ-j4-bsR" name="value" keyPath="values.SXIOCloseCameraWindowsOnDisconnect" id="XvH-k3-5TJ"/>
                                     </connections>
                                 </button>
+                                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9jM-oE-kMs">
+                                    <rect key="frame" x="16" y="12" width="313" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Interpolate zoomed images" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="PTL-Mq-4lb">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <binding destination="idZ-j4-bsR" name="value" keyPath="values.CASImageViewEnableInterpolation" id="yR1-Uf-97D"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <constraints>
-                            <constraint firstAttribute="height" constant="73" id="fw9-2O-ncY"/>
+                            <constraint firstAttribute="height" constant="93" id="fw9-2O-ncY"/>
                         </constraints>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -234,8 +244,8 @@
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="leading" secondItem="Se7-kA-RSO" secondAttribute="leading" id="FGg-UZ-ZgN"/>
                     <constraint firstItem="bxs-o6-ywP" firstAttribute="trailing" secondItem="Se7-kA-RSO" secondAttribute="trailing" id="Lq1-UF-bXK"/>
                     <constraint firstItem="Se7-kA-RSO" firstAttribute="top" secondItem="9HO-tb-tcW" secondAttribute="bottom" constant="8" symbolic="YES" id="LrT-b4-75I"/>
-                    <constraint firstItem="9HO-tb-tcW" firstAttribute="top" secondItem="Hvl-qu-FV9" secondAttribute="bottom" constant="8" symbolic="YES" id="Odm-aN-nhN"/>
-                    <constraint firstItem="9HO-tb-tcW" firstAttribute="top" secondItem="2" secondAttribute="top" constant="91" id="an6-W2-m8q"/>
+                    <constraint firstItem="9HO-tb-tcW" firstAttribute="top" secondItem="Hvl-qu-FV9" secondAttribute="bottom" constant="8" id="Odm-aN-nhN"/>
+                    <constraint firstItem="9HO-tb-tcW" firstAttribute="top" secondItem="2" secondAttribute="top" constant="111" id="an6-W2-m8q"/>
                     <constraint firstItem="bxs-o6-ywP" firstAttribute="leading" secondItem="Se7-kA-RSO" secondAttribute="leading" id="ddM-Gb-hCC"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="trailing" secondItem="Hvl-qu-FV9" secondAttribute="trailing" id="emg-d1-hZ7"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="leading" secondItem="Hvl-qu-FV9" secondAttribute="leading" id="f0D-dX-20t"/>
@@ -245,7 +255,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-156.5" y="313.5"/>
+            <point key="canvasLocation" x="-156.5" y="323.5"/>
         </window>
         <userDefaultsController id="wka-tB-REe"/>
         <userDefaultsController representsSharedInstance="YES" id="idZ-j4-bsR"/>
