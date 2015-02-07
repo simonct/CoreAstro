@@ -1,5 +1,5 @@
 //
-//  iEQWindowController.m
+//  CASMountWindowController.m
 //  ieq-test
 //
 //  Created by Simon Taylor on 1/26/14.

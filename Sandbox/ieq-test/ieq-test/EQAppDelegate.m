@@ -40,7 +40,7 @@
         return;
     }
     
-    self.windowController = [[CASMountWindowController alloc] initWithWindowNibName:@"iEQWindowController"];
+    self.windowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
     iEQMount* mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
     [self.windowController connectToMount:mount];
 }
