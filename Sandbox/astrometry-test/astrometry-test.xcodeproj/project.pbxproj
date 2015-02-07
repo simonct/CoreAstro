@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4034B971719547A00A73F9F /* CASEQMacClient.m */; };
-		F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572BF17636F8E009CEC05 /* CASLX200Commands.m */; };
 		F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C117636F8E009CEC05 /* CASLX200IPClient.m */; };
 		F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40572C9176399FB009CEC05 /* CASConfigureIPMountWindowController.m */; };
 		F40572CC176399FB009CEC05 /* CASConfigureIPMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40572CA176399FB009CEC05 /* CASConfigureIPMountWindowController.xib */; };
@@ -21,10 +20,6 @@
 		F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */; };
 		F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
 		F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F48BACFD18143447005788CC /* CASFolderWatcher.m */; };
-		F4A101C018E84F890071035B /* CASMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A101BD18E84F890071035B /* CASMount.m */; };
-		F4A101C118E84F890071035B /* iEQMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A101BF18E84F890071035B /* iEQMount.m */; };
-		F4A101F418E84FBB0071035B /* ORSSerialPort.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A101E518E84FBB0071035B /* ORSSerialPort.m */; };
-		F4A101F518E84FBB0071035B /* ORSSerialPortManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A101E718E84FBB0071035B /* ORSSerialPortManager.m */; };
 		F4A101FD18E84FD50071035B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A101FC18E84FD50071035B /* IOKit.framework */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
 		F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4A386C9168887FE00E77631 /* InfoPlist.strings */; };
@@ -33,7 +28,8 @@
 		F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386D3168887FE00E77631 /* MKOAppDelegate.m */; };
 		F4A386D7168887FF00E77631 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A386D5168887FF00E77631 /* MainMenu.xib */; };
 		F4BC427218141FF200EA439F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC427118141FF200EA439F /* Accelerate.framework */; };
-		F4E403941A6BEE3C003650FA /* CASCoordinateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */; };
+		F4E424C61A86774800C2A87E /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E424C41A86774800C2A87E /* CASMountWindowController.m */; };
+		F4E424C71A86774800C2A87E /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E424C51A86774800C2A87E /* CASMountWindowController.xib */; };
 		F4FAFB5C16A064CE00DBEAEA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -119,8 +115,6 @@
 /* Begin PBXFileReference section */
 		F4034B961719547A00A73F9F /* CASEQMacClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASEQMacClient.h; path = "../../eqmac-client/eqmac-client/CASEQMacClient.h"; sourceTree = "<group>"; };
 		F4034B971719547A00A73F9F /* CASEQMacClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASEQMacClient.m; path = "../../eqmac-client/eqmac-client/CASEQMacClient.m"; sourceTree = "<group>"; };
-		F40572BE17636F8E009CEC05 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200Commands.h; sourceTree = "<group>"; };
-		F40572BF17636F8E009CEC05 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200Commands.m; sourceTree = "<group>"; };
 		F40572C017636F8E009CEC05 /* CASLX200IPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200IPClient.h; sourceTree = "<group>"; };
 		F40572C117636F8E009CEC05 /* CASLX200IPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200IPClient.m; sourceTree = "<group>"; };
 		F40572C8176399FB009CEC05 /* CASConfigureIPMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASConfigureIPMountWindowController.h; sourceTree = "<group>"; };
@@ -407,14 +401,6 @@
 		F470AC2417C8CC1F007277F0 /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
 		F48BACFC18143447005788CC /* CASFolderWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFolderWatcher.h; sourceTree = "<group>"; };
 		F48BACFD18143447005788CC /* CASFolderWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFolderWatcher.m; sourceTree = "<group>"; };
-		F4A101BC18E84F890071035B /* CASMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASMount.h; path = "../../ieq-test/ieq-test/CASMount.h"; sourceTree = "<group>"; };
-		F4A101BD18E84F890071035B /* CASMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASMount.m; path = "../../ieq-test/ieq-test/CASMount.m"; sourceTree = "<group>"; };
-		F4A101BE18E84F890071035B /* iEQMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iEQMount.h; path = "../../ieq-test/ieq-test/iEQMount.h"; sourceTree = "<group>"; };
-		F4A101BF18E84F890071035B /* iEQMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iEQMount.m; path = "../../ieq-test/ieq-test/iEQMount.m"; sourceTree = "<group>"; };
-		F4A101E418E84FBB0071035B /* ORSSerialPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPort.h; sourceTree = "<group>"; };
-		F4A101E518E84FBB0071035B /* ORSSerialPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPort.m; sourceTree = "<group>"; };
-		F4A101E618E84FBB0071035B /* ORSSerialPortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPortManager.h; sourceTree = "<group>"; };
-		F4A101E718E84FBB0071035B /* ORSSerialPortManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPortManager.m; sourceTree = "<group>"; };
 		F4A101FC18E84FD50071035B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -739,8 +725,9 @@
 		F4A38A1716889B4E00E77631 /* astrometry_net.table */ = {isa = PBXFileReference; lastKnownFileType = text; path = astrometry_net.table; sourceTree = "<group>"; };
 		F4BC427118141FF200EA439F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F4BC428D1814214100EA439F /* CoreAstro.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CoreAstro.xcodeproj; path = ../../CoreAstro.xcodeproj; sourceTree = "<group>"; };
-		F4E403921A6BEE3C003650FA /* CASCoordinateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCoordinateUtils.h; sourceTree = "<group>"; };
-		F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCoordinateUtils.m; sourceTree = "<group>"; };
+		F4E424C31A86774800C2A87E /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountWindowController.h; sourceTree = "<group>"; };
+		F4E424C41A86774800C2A87E /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountWindowController.m; sourceTree = "<group>"; };
+		F4E424C51A86774800C2A87E /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
 		F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -772,12 +759,8 @@
 		F40572BD17636F8E009CEC05 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				F40572BE17636F8E009CEC05 /* CASLX200Commands.h */,
-				F40572BF17636F8E009CEC05 /* CASLX200Commands.m */,
 				F40572C017636F8E009CEC05 /* CASLX200IPClient.h */,
 				F40572C117636F8E009CEC05 /* CASLX200IPClient.m */,
-				F4E403921A6BEE3C003650FA /* CASCoordinateUtils.h */,
-				F4E403931A6BEE3C003650FA /* CASCoordinateUtils.m */,
 			);
 			name = Shared;
 			path = ../../Shared;
@@ -1082,38 +1065,6 @@
 			path = ../../External/astrometry.net/support;
 			sourceTree = "<group>";
 		};
-		F4A101B418E84F7C0071035B /* iEQ */ = {
-			isa = PBXGroup;
-			children = (
-				F4A101BE18E84F890071035B /* iEQMount.h */,
-				F4A101BF18E84F890071035B /* iEQMount.m */,
-				F4A101BC18E84F890071035B /* CASMount.h */,
-				F4A101BD18E84F890071035B /* CASMount.m */,
-				F4A101C218E84FBB0071035B /* ORSSerialPort */,
-			);
-			name = iEQ;
-			sourceTree = "<group>";
-		};
-		F4A101C218E84FBB0071035B /* ORSSerialPort */ = {
-			isa = PBXGroup;
-			children = (
-				F4A101E318E84FBB0071035B /* Source */,
-			);
-			name = ORSSerialPort;
-			path = "../../ieq-test/ieq-test/ORSSerialPort";
-			sourceTree = "<group>";
-		};
-		F4A101E318E84FBB0071035B /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				F4A101E418E84FBB0071035B /* ORSSerialPort.h */,
-				F4A101E518E84FBB0071035B /* ORSSerialPort.m */,
-				F4A101E618E84FBB0071035B /* ORSSerialPortManager.h */,
-				F4A101E718E84FBB0071035B /* ORSSerialPortManager.m */,
-			);
-			path = Source;
-			sourceTree = "<group>";
-		};
 		F4A386B4168887FE00E77631 = {
 			isa = PBXGroup;
 			children = (
@@ -1169,8 +1120,10 @@
 				F40572C8176399FB009CEC05 /* CASConfigureIPMountWindowController.h */,
 				F40572C9176399FB009CEC05 /* CASConfigureIPMountWindowController.m */,
 				F40572CA176399FB009CEC05 /* CASConfigureIPMountWindowController.xib */,
+				F4E424C31A86774800C2A87E /* CASMountWindowController.h */,
+				F4E424C41A86774800C2A87E /* CASMountWindowController.m */,
+				F4E424C51A86774800C2A87E /* CASMountWindowController.xib */,
 				F40572C717636F99009CEC05 /* Views */,
-				F4A101B418E84F7C0071035B /* iEQ */,
 				F4034B931719546300A73F9F /* EQMac */,
 				F42E1EA6181424CE00D04CB8 /* CoreAstro */,
 				F40572BD17636F8E009CEC05 /* Shared */,
@@ -1767,6 +1720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4A386CB168887FE00E77631 /* InfoPlist.strings in Resources */,
+				F4E424C71A86774800C2A87E /* CASMountWindowController.xib in Resources */,
 				F4A386D1168887FE00E77631 /* Credits.rtf in Resources */,
 				F4A386D7168887FF00E77631 /* MainMenu.xib in Resources */,
 				F40572CC176399FB009CEC05 /* CASConfigureIPMountWindowController.xib in Resources */,
@@ -1783,19 +1737,14 @@
 				F4A386CD168887FE00E77631 /* main.m in Sources */,
 				F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */,
 				F416C72B16D6D8E900C4C01D /* CASCenteringClipView.m in Sources */,
-				F4A101C018E84F890071035B /* CASMount.m in Sources */,
 				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
 				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
-				F4A101F418E84FBB0071035B /* ORSSerialPort.m in Sources */,
-				F4A101F518E84FBB0071035B /* ORSSerialPortManager.m in Sources */,
 				F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */,
-				F40572C417636F8E009CEC05 /* CASLX200Commands.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,
 				F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */,
-				F4A101C118E84F890071035B /* iEQMount.m in Sources */,
-				F4E403941A6BEE3C003650FA /* CASCoordinateUtils.m in Sources */,
+				F4E424C61A86774800C2A87E /* CASMountWindowController.m in Sources */,
 				F40572E617649318009CEC05 /* CASPlateSolveImageView.m in Sources */,
 				F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */,
 			);

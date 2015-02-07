@@ -7,7 +7,7 @@
 //
 
 #import "CASLX200IPClient.h"
-#import "CASLX200Commands.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASLX200IPClientClientRequest : CASSocketClientRequest
 @property (nonatomic) BOOL limitToReadCount;

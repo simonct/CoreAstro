@@ -9,9 +9,7 @@
 #import "CASPlateSolveImageView.h"
 #import "CASEQMacClient.h"
 #import "CASPlateSolvedObject+Drawing.h"
-#import "CASMount.h"
-#import "CASLX200Commands.h"
-#include <CoreAstro/CoreAstro.h>
+#import <CoreAstro/CoreAstro.h>
 
 @implementation CASPlateSolveImageView
 

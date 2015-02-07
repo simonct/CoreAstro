@@ -1,72 +1,34 @@
 //
-//  iEQWindowController.m
+//  CASMountWindowController.m
 //  ieq-test
 //
 //  Created by Simon Taylor on 1/26/14.
 //  Copyright (c) 2014 Simon Taylor. All rights reserved.
 //
 
-#import "iEQWindowController.h"
-#import "iEQMount.h"
-#import "CASLX200Commands.h"
+#import "CASMountWindowController.h"
 
-@interface iEQRATransformer : NSValueTransformer
-
-@end
-
-@implementation iEQRATransformer
-
-+ (BOOL)allowsReverseTransformation
-{
-    return NO;
-}
-
-- (id)transformedValue:(id)value
-{
-    return [CASLX200Commands highPrecisionRA:[value doubleValue]];
-}
-
-@end
-
-@interface iEQDecTransformer : NSValueTransformer
-
-@end
-
-@implementation iEQDecTransformer
-
-+ (BOOL)allowsReverseTransformation
-{
-    return NO;
-}
-
-- (id)transformedValue:(id)value
-{
-    return [CASLX200Commands highPrecisionDec:[value doubleValue]];
-}
-
-@end
-
-@interface iEQWindowController ()
-@property (nonatomic,strong) iEQMount* mount;
+@interface CASMountWindowController ()
+@property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @end
 
-@implementation iEQWindowController {
+@implementation CASMountWindowController {
     double _ra, _dec;
 }
 
 + (void)initialize
 {
-    [NSValueTransformer setValueTransformer:[iEQRATransformer new] forName:@"iEQRATransformer"];
-    [NSValueTransformer setValueTransformer:[iEQDecTransformer new] forName:@"iEQDecTransformer"];
+    [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
+    [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
 }
 
-- (void)connectToMount:(iEQMount*)mount
+- (void)connectToMount:(CASMount*)mount
 {
     self.mount = mount;
     
-    [self.mount connectWithCompletion:^{
+    [self.mount connectWithCompletion:^(NSError* _){
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
             self.guideDurationInMS = 1000;
@@ -187,7 +149,7 @@
 
 - (IBAction)dump:(id)sender
 {
-    [self.mount dumpInfo];
+//    [self.mount dumpInfo];
 }
 
 - (IBAction)slew:(id)sender

@@ -7,7 +7,6 @@
 //
 
 #import "CASEQMacClient.h"
-#import "CASLX200Commands.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASEQMacClient ()
