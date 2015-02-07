@@ -340,6 +340,8 @@
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
+		F4E424101A8630A700C2A87E /* CASObjectLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4E424111A8630A700C2A87E /* CASObjectLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */; };
 		F4E8B0EA18674573001A36EC /* CASDeviceController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E8B0E818674573001A36EC /* CASDeviceController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4E8B0EB18674573001A36EC /* CASDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E8B0E918674573001A36EC /* CASDeviceController.m */; };
 		F4E98F9916D90675005F9C5B /* CASGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E98F9816D90675005F9C5B /* CASGradientButton.m */; };
@@ -1369,6 +1371,8 @@
 		F4CA532F169CC9FD00832CFF /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
+		F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASObjectLookup.h; sourceTree = "<group>"; };
+		F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASObjectLookup.m; sourceTree = "<group>"; };
 		F4E8B0E818674573001A36EC /* CASDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASDeviceController.h; sourceTree = "<group>"; };
 		F4E8B0E918674573001A36EC /* CASDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASDeviceController.m; sourceTree = "<group>"; };
 		F4E979E4161F85470037ED1B /* CoreAstro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = CoreAstro.entitlements; sourceTree = "<group>"; };
@@ -1990,6 +1994,8 @@
 				F48F79B118818E5E00DFB0F2 /* CASExposureSettings.m */,
 				F43D311918A6A1FC00087C52 /* CASPHD2Client.h */,
 				F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */,
+				F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */,
+				F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */,
 			);
 			name = Core;
 			path = ../CoreAstro/libCoreAstro/Core;
@@ -2946,6 +2952,7 @@
 				F44EDF5215FCC754003B1B4C /* BusProbeDevice.h in Headers */,
 				F44EDF5315FCC754003B1B4C /* BusProberSharedFunctions.h in Headers */,
 				F44EDF5415FCC754003B1B4C /* DecodeDeviceDescriptor.h in Headers */,
+				F4E424101A8630A700C2A87E /* CASObjectLookup.h in Headers */,
 				F44EDF5C15FCC872003B1B4C /* CASScriptableObject.h in Headers */,
 				F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */,
 				F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */,
@@ -3557,6 +3564,7 @@
 				F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */,
 				F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */,
 				F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */,
+				F4E424111A8630A700C2A87E /* CASObjectLookup.m in Sources */,
 				F4EEF2C21604699600547009 /* HID_Queue_Utilities.c in Sources */,
 				F48DF047160EF83000190D3E /* CASCameraController.m in Sources */,
 				F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */,
