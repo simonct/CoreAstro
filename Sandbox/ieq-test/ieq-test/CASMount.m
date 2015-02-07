@@ -10,6 +10,16 @@
 
 @implementation CASMount
 
+- (void)connectWithCompletion:(void(^)(NSError*))completion {
+    if (completion){
+        completion([NSError errorWithDomain:@"CASMount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Not implemented"}]);
+    }
+}
+
+- (void)disconnect {
+    
+}
+
 - (BOOL) connected {
     return NO;
 }
@@ -27,6 +37,14 @@
 }
 
 - (NSNumber*) dec {
+    return nil;
+}
+
+- (NSNumber*) targetRa {
+    return nil;
+}
+
+- (NSNumber*) targetDec {
     return nil;
 }
 

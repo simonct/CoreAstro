@@ -27,7 +27,7 @@
 
 @property (nonatomic,strong) ORSSerialPort* port;
 @property (nonatomic,strong) NSMutableArray* completionStack;
-@property (nonatomic,copy) void(^connectCompletion)(void);
+@property (nonatomic,copy) void(^connectCompletion)(NSError*);
 
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,assign) BOOL slewing;
@@ -117,7 +117,7 @@
 {
     void (^complete)() = ^(){
         if (self.connectCompletion){
-            self.connectCompletion();
+            self.connectCompletion(nil);
             self.connectCompletion = nil;
         }
     };
@@ -209,10 +209,10 @@
     }];
 }
 
-- (void)connectWithCompletion:(void(^)(void))completion
+- (void)connectWithCompletion:(void(^)(NSError*))completion
 {
     if (self.connected){
-        completion();
+        completion(nil);
     }
     else {
         self.connectCompletion = completion;

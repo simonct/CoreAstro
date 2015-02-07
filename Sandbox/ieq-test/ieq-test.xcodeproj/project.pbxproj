@@ -23,9 +23,10 @@
 		F4DAA723189519EC00BAC143 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DAA722189519EC00BAC143 /* IOKit.framework */; };
 		F4DAA72618951A0500BAC143 /* CASMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72518951A0500BAC143 /* CASMount.m */; };
 		F4DAA72918951A6000BAC143 /* iEQMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72818951A6000BAC143 /* iEQMount.m */; };
-		F4DAA72D18951E1500BAC143 /* iEQWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72B18951E1500BAC143 /* iEQWindowController.m */; };
-		F4DAA72E18951E1500BAC143 /* iEQWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */; };
+		F4DAA72D18951E1500BAC143 /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA72B18951E1500BAC143 /* CASMountWindowController.m */; };
+		F4DAA72E18951E1500BAC143 /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DAA72C18951E1500BAC143 /* CASMountWindowController.xib */; };
 		F4DAA73A18952E6600BAC143 /* CASLX200Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DAA73918952E6600BAC143 /* CASLX200Commands.m */; };
+		F4E424161A86328100C2A87E /* CASCoordinateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E424151A86328100C2A87E /* CASCoordinateUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,11 +68,13 @@
 		F4DAA72518951A0500BAC143 /* CASMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMount.m; sourceTree = "<group>"; };
 		F4DAA72718951A6000BAC143 /* iEQMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iEQMount.h; sourceTree = "<group>"; };
 		F4DAA72818951A6000BAC143 /* iEQMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iEQMount.m; sourceTree = "<group>"; };
-		F4DAA72A18951E1500BAC143 /* iEQWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iEQWindowController.h; sourceTree = "<group>"; };
-		F4DAA72B18951E1500BAC143 /* iEQWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iEQWindowController.m; sourceTree = "<group>"; };
-		F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = iEQWindowController.xib; sourceTree = "<group>"; };
+		F4DAA72A18951E1500BAC143 /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountWindowController.h; sourceTree = "<group>"; };
+		F4DAA72B18951E1500BAC143 /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountWindowController.m; sourceTree = "<group>"; };
+		F4DAA72C18951E1500BAC143 /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
 		F4DAA73818952E6600BAC143 /* CASLX200Commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASLX200Commands.h; path = ../../Shared/CASLX200Commands.h; sourceTree = "<group>"; };
 		F4DAA73918952E6600BAC143 /* CASLX200Commands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASLX200Commands.m; path = ../../Shared/CASLX200Commands.m; sourceTree = "<group>"; };
+		F4E424141A86328100C2A87E /* CASCoordinateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCoordinateUtils.h; path = ../../Shared/CASCoordinateUtils.h; sourceTree = "<group>"; };
+		F4E424151A86328100C2A87E /* CASCoordinateUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCoordinateUtils.m; path = ../../Shared/CASCoordinateUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,15 +145,17 @@
 				F4DAA6C41895195D00BAC143 /* EQAppDelegate.h */,
 				F4DAA6C51895195D00BAC143 /* EQAppDelegate.m */,
 				F4DAA6C71895195D00BAC143 /* MainMenu.xib */,
-				F4DAA72A18951E1500BAC143 /* iEQWindowController.h */,
-				F4DAA72B18951E1500BAC143 /* iEQWindowController.m */,
-				F4DAA72C18951E1500BAC143 /* iEQWindowController.xib */,
+				F4DAA72A18951E1500BAC143 /* CASMountWindowController.h */,
+				F4DAA72B18951E1500BAC143 /* CASMountWindowController.m */,
+				F4DAA72C18951E1500BAC143 /* CASMountWindowController.xib */,
 				F4DAA72418951A0500BAC143 /* CASMount.h */,
 				F4DAA72518951A0500BAC143 /* CASMount.m */,
 				F4DAA72718951A6000BAC143 /* iEQMount.h */,
 				F4DAA72818951A6000BAC143 /* iEQMount.m */,
 				F4DAA73818952E6600BAC143 /* CASLX200Commands.h */,
 				F4DAA73918952E6600BAC143 /* CASLX200Commands.m */,
+				F4E424141A86328100C2A87E /* CASCoordinateUtils.h */,
+				F4E424151A86328100C2A87E /* CASCoordinateUtils.m */,
 				F4DAA6E61895199000BAC143 /* ORSSerialPort */,
 				F4DAA6CA1895195D00BAC143 /* Images.xcassets */,
 				F4DAA6B91895195D00BAC143 /* Supporting Files */,
@@ -287,7 +292,7 @@
 				F4DAA6BD1895195D00BAC143 /* InfoPlist.strings in Resources */,
 				F4DAA6CB1895195D00BAC143 /* Images.xcassets in Resources */,
 				F4DAA6C31895195D00BAC143 /* Credits.rtf in Resources */,
-				F4DAA72E18951E1500BAC143 /* iEQWindowController.xib in Resources */,
+				F4DAA72E18951E1500BAC143 /* CASMountWindowController.xib in Resources */,
 				F4DAA6C91895195D00BAC143 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -313,8 +318,9 @@
 				F4DAA72918951A6000BAC143 /* iEQMount.m in Sources */,
 				F4DAA73A18952E6600BAC143 /* CASLX200Commands.m in Sources */,
 				F4DAA6BF1895195D00BAC143 /* main.m in Sources */,
+				F4E424161A86328100C2A87E /* CASCoordinateUtils.m in Sources */,
 				F4DAA7191895199000BAC143 /* ORSSerialPortManager.m in Sources */,
-				F4DAA72D18951E1500BAC143 /* iEQWindowController.m in Sources */,
+				F4DAA72D18951E1500BAC143 /* CASMountWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

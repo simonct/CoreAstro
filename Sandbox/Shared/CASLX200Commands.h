@@ -57,3 +57,10 @@
 + (NSString*)raDegreesToHMS:(double)degrees; // use for converting RA expressed as decimal degrees to the high precision H:M:S string format
 
 @end
+
+@interface CASLX200RATransformer : NSValueTransformer
+@end
+
+@interface CASLX200DecTransformer : NSValueTransformer
+@end
+

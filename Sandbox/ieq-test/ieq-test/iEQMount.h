@@ -15,7 +15,7 @@
 
 - (id)initWithSerialPort:(ORSSerialPort*)port;
 
-- (void)connectWithCompletion:(void(^)(void))completion;
+- (void)connectWithCompletion:(void(^)(NSError*))completion;
 - (void)disconnect;
 
 @end

@@ -10,12 +10,12 @@
 #import "ORSSerialPort.h"
 #import "ORSSerialPortManager.h"
 #import "iEQMount.h"
-#import "iEQWindowController.h"
+#import "CASMountWindowController.h"
 
 @interface EQAppDelegate ()
 @property (nonatomic,weak) ORSSerialPort* selectedSerialPort;
 @property (nonatomic,strong) ORSSerialPortManager* serialPortManager;
-@property (nonatomic,strong) iEQWindowController* windowController;
+@property (nonatomic,strong) CASMountWindowController* windowController;
 @end
 
 @implementation EQAppDelegate
@@ -40,7 +40,7 @@
         return;
     }
     
-    self.windowController = [[iEQWindowController alloc] initWithWindowNibName:@"iEQWindowController"];
+    self.windowController = [[CASMountWindowController alloc] initWithWindowNibName:@"iEQWindowController"];
     iEQMount* mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
     [self.windowController connectToMount:mount];
 }

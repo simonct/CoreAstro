@@ -204,3 +204,32 @@
 }
 
 @end
+
+@implementation CASLX200RATransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [CASLX200Commands highPrecisionRA:[value doubleValue]];
+}
+
+@end
+
+@implementation CASLX200DecTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [CASLX200Commands highPrecisionDec:[value doubleValue]];
+}
+
+@end
+
