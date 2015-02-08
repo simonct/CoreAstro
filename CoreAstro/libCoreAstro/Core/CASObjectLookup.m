@@ -7,6 +7,7 @@
 //
 
 #import "CASObjectLookup.h"
+#import "CASLX200Commands.h"
 
 @implementation CASObjectLookup
 
@@ -48,6 +49,9 @@
                     
                     [scanner scanUpToCharactersFromSet:cs intoString:nil];
                     [scanner scanDouble:&ra];
+                    
+                    // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
+                    ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
                     
                     [scanner scanUpToCharactersFromSet:cs intoString:nil];
                     [scanner scanDouble:&dec];
