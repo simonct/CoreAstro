@@ -18,5 +18,5 @@
 @interface CASMountWindowController : NSWindowController
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
-- (void)startSlewTo:(double)ra dec:(double)dec;
+- (void)startSlewTo:(double)raDegs dec:(double)decDegs;
 @end

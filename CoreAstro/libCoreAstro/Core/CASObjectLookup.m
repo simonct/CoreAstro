@@ -51,7 +51,7 @@
                     [scanner scanDouble:&ra];
                     
                     // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
-                    ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
+                    ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:YES];
                     
                     [scanner scanUpToCharactersFromSet:cs intoString:nil];
                     [scanner scanDouble:&dec];

@@ -17,7 +17,7 @@
 
 @implementation CASMountWindowController {
     NSInteger _syncCount;
-    double _ra, _dec;
+    double _raDegs, _decDegs;
 }
 
 static void* kvoContext;
@@ -43,22 +43,21 @@ static void* kvoContext;
     }];
 }
 
-- (void)startSlewTo:(double)ra dec:(double)dec
+- (void)startSlewTo:(double)raDegs dec:(double)decDegs
 {
-    _ra = ra;
-    _dec = dec;
+    _raDegs = raDegs;
+    _decDegs = decDegs;
     
-    NSLog(@"startSlewTo RA: %f Dec: %f",_ra,_dec);
+    NSLog(@"startSlewTo RA: %f Dec: %f",_raDegs,_decDegs);
 
-    [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
-
-    [self.mount startSlewToRA:_ra dec:_dec completion:^(CASMountSlewError error) {
+    [self.mount startSlewToRA:_raDegs dec:_decDegs completion:^(CASMountSlewError error) {
         
         if (error != CASMountSlewErrorNone){
             [self presentAlertWithMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
         }
         else {
             NSLog(@"Slewing...");
+            [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
         }
     }];
 }
@@ -102,8 +101,9 @@ static void* kvoContext;
         };
         
         CASExposureSettings* settings = [CASExposureSettings new];
-        controller.settings.binning = captureBinning;
-        controller.settings.exposureDuration = captureSeconds;
+        settings.binning = captureBinning;
+        settings.exposureDuration = captureSeconds;
+        // set point 0 ?
         [controller pushSettings:settings];
         
         NSLog(@"Capturing from %@",controller.camera.deviceName);
@@ -137,12 +137,16 @@ static void* kvoContext;
                         else {
                             
                             CASPlateSolveSolution* solution = results[@"solution"];
-                            const double separation = CASAngularSeparation(solution.centreRA,_ra,solution.centreDec,_dec);
+                            const double separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raDegs,_decDegs);
                             NSLog(@"Solution RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,separation);
 
                             // set as current solution
                             [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
 
+                            if (separation > 10){
+                                // warn, confirm slew...
+                            }
+                            
                             if (separation < separationLimit){
                                 completeWithMessage([NSString stringWithFormat:@"Slew complete, separation is %0.3f°",separation]);
                             }
@@ -164,7 +168,7 @@ static void* kvoContext;
                                         else {
                                             completeWithMessage(nil); // pop the settings
                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                [self startSlewTo:_ra dec:_dec];
+                                                [self startSlewTo:_raDegs dec:_decDegs];
                                             });
                                         }
                                     }];
@@ -251,9 +255,8 @@ static void* kvoContext;
         }
         else{
 
-            // RA from SIMBAD searches is decimal degrees not HMS so we have to convert
-            _dec = dec;
-            _ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:ra] asDegrees:NO];
+            _raDegs = ra;
+            _decDegs = dec;
             
             // confirm slew before starting
             NSAlert* alert = [NSAlert alertWithMessageText:self.searchString defaultButton:@"Slew" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands raDegreesToHMS:ra],[CASLX200Commands highPrecisionDec:dec]];
@@ -267,7 +270,7 @@ static void* kvoContext;
 {
     if (returnCode == NSOKButton){
         
-        [self.mount startSlewToRA:_ra dec:_dec completion:^(CASMountSlewError result) {
+        [self.mount startSlewToRA:_raDegs dec:_decDegs completion:^(CASMountSlewError result) {
             
             if (result == CASMountSlewErrorNone){
                 NSLog(@"Starting slew");
