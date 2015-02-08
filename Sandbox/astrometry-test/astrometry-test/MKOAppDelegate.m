@@ -13,12 +13,11 @@
 #import "CASConfigureIPMountWindowController.h"
 #import "CASPlateSolveImageView.h"
 #import "CASFolderWatcher.h"
-#import "iEQMount.h"
-#import "ORSSerialPortManager.h"
-#import "CASLX200Commands.h"
+#import "CASMountWindowController.h"
 #import <CoreAstro/CoreAstro.h>
+#import <CoreAstro/ORSSerialPortManager.h>
 
-@interface MKOAppDelegate ()
+@interface MKOAppDelegate ()<CASMountWindowControllerDelegate>
 @property (nonatomic,strong) CASPlateSolveSolution* solution;
 @property (nonatomic,strong) CASLX200IPClient* ipMountClient;
 @property (nonatomic,strong) CASConfigureIPMountWindowController* configureIPController;
@@ -31,11 +30,14 @@
 @property (nonatomic,strong) CASPlateSolver* solver;
 @property (nonatomic,weak) ORSSerialPort* selectedSerialPort;
 @property (nonatomic,strong) ORSSerialPortManager* serialPortManager;
-@property (nonatomic,strong) iEQMount* ieqMount;
-@property (nonatomic,strong) IBOutlet NSWindow *ieqWindow;
+@property (nonatomic,strong) CASMount* mount;
+@property (nonatomic,strong) IBOutlet NSWindow *mountConnectWindow;
+@property (nonatomic,strong) CASMountWindowController* mountWindowController;
 @end
 
 @implementation MKOAppDelegate
+
+static void* kvoContext;
 
 + (void)initialize
 {
@@ -59,15 +61,15 @@
     self.imageView.acceptDrop = YES;
     [self.imageView bind:@"annotations" toObject:self withKeyPath:@"solution.objects" options:nil];
     
-    [self.imageView addObserver:self forKeyPath:@"url" options:0 context:(__bridge void *)(self)];
+    [self.imageView addObserver:self forKeyPath:@"url" options:0 context:&kvoContext];
     
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPixelSizeMicrometer" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASFocalLengthMillemeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASBinningFactor" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorWidthMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolderURL" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
-    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASEnablePlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:(__bridge void *)(self)];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPixelSizeMicrometer" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASFocalLengthMillemeter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASBinningFactor" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorWidthMillimeter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASEnablePlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:&kvoContext];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -78,7 +80,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == (__bridge void *)(self)) {
+    if (context == &kvoContext) {
         
         if (object == self.imageView){
             self.solution = nil;
@@ -99,6 +101,9 @@
             if ([@[@"values.CASPlateSolveWatchFolderURL",@"values.CASEnablePlateSolveWatchFolder"] containsObject:keyPath]){
                 [self updateWatchFolder];
             }
+        }
+        else {
+            NSLog(@"%@: %@ -> %@",object,keyPath,[object valueForKeyPath:keyPath]);
         }
         
     } else {
@@ -480,6 +485,18 @@
     return YES;
 }
 
+#pragma mark - Mount window delegate
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
+{
+    self.imageView.CGImage = exposure.newImage.CGImage;
+}
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    self.solution = solution;
+}
+
 @end
 
 @implementation MKOAppDelegate (MountSupport)
@@ -582,47 +599,37 @@
     [self.configureIPController beginSheetModalForWindow:self.window completionHandler:nil];
 }
 
-- (IBAction)goToIniEQ:(id)sender
+- (IBAction)goToInLX200:(id)sender
 {
-    if (!self.ieqMount){
+    if (!self.mount){
         if (!self.serialPortManager){
             self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
         }
         self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-        [self.ieqWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+        [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
         return;
     }
     
-    if (!self.ieqMount){
+    if (!self.mount){
         [self presentAlertWithMessage:@"No mount is conncted"];
     }
     else {
         
-        [self.ieqMount connectWithCompletion:^{
-            
-            if (!self.ieqMount.connected){
-                [self presentAlertWithMessage:@"Failed to connect to the mount"];
+        self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+        [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
+            if (error){
+                [self presentAlertWithMessage:[error localizedDescription]];
             }
             else {
-                
                 const double dec = self.solution.centreDec;
                 const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
-                
-                [self.ieqMount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
-                    
-                    if (error != CASMountSlewErrorNone){
-                        [self presentAlertWithMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
-                    }
-                    else {
-                        NSLog(@"Slewing...");
-                    }
-                }];
+                [self.mountWindowController startSlewTo:ra dec:dec];
             }
         }];
     }
 }
 
-- (IBAction)connectToiEQ:(id)sender
+- (IBAction)connectToLX200:(id)sender
 {
     if (!self.selectedSerialPort){
         [self presentAlertWithMessage:@"No selected serial port"];
@@ -634,11 +641,11 @@
         return;
     }
     
-    [self.ieqWindow orderOut:nil];
+    [self.mountConnectWindow orderOut:nil];
     
-    self.ieqMount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
     
-    [self goToIniEQ:nil];
+    [self goToInLX200:nil];
 }
 
 @end

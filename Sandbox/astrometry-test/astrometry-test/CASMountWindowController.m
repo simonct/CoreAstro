@@ -7,6 +7,7 @@
 //
 
 #import "CASMountWindowController.h"
+#import <CoreAstro/CoreAstro.h>
 
 @interface CASMountWindowController ()
 @property (nonatomic,strong) CASMount* mount;
@@ -15,8 +16,11 @@
 @end
 
 @implementation CASMountWindowController {
+    NSInteger _syncCount;
     double _ra, _dec;
 }
+
+static void* kvoContext;
 
 + (void)initialize
 {
@@ -24,75 +28,154 @@
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
 }
 
-- (void)connectToMount:(CASMount*)mount
+- (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion
 {
     self.mount = mount;
     
-    [self.mount connectWithCompletion:^(NSError* _){
+    [self.mount connectWithCompletion:^(NSError* error){
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
             self.guideDurationInMS = 1000;
         }
-        else {
-            NSLog(@"Failed to connect");
+        if (completion){
+            completion(error);
         }
     }];
 }
 
-// todo; put into its own class and cache results
-- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,double ra,double dec))completion
+- (void)startSlewTo:(double)ra dec:(double)dec
 {
-    NSParameterAssert(name);
-    NSParameterAssert(completion);
+    _ra = ra;
+    _dec = dec;
     
-    NSString* script = [NSString stringWithFormat:@"format object \"%%IDLIST(1) : %%COO(d;A D)\"\nset epoch JNOW\nset limit 1\nquery id %@\nformat display\n",name];
-    script = [script stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://simbad.u-strasbg.fr/simbad/sim-script?submit=submit+script&script=%@",script]];
-    
-    NSURLRequest* request = [NSURLRequest requestWithURL:url];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+    NSLog(@"startSlewTo RA: %f Dec: %f",_ra,_dec);
+
+    [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
+
+    [self.mount startSlewToRA:_ra dec:_dec completion:^(CASMountSlewError error) {
         
-        if (connectionError){
-            NSLog(@"%@",connectionError);
-            completion(NO,0,0);
+        if (error != CASMountSlewErrorNone){
+            [self presentAlertWithMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
         }
         else {
-            
-            BOOL foundIt = NO;
-            double ra, dec;
-            
-            NSString* responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            NSArray* responseLines = [responseString componentsSeparatedByString:@"\n"];
-            
-            for (NSString* line in [responseLines reverseObjectEnumerator]){
-                
-                NSScanner* scanner = [NSScanner scannerWithString:line];
-                
-                NSString* object;
-                if ([scanner scanUpToString:@":" intoString:&object]){
-                    
-                    NSMutableCharacterSet* cs = [NSMutableCharacterSet decimalDigitCharacterSet];
-                    [cs addCharactersInString:@"+-"];
-                    
-                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                    [scanner scanDouble:&ra];
-                    
-                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                    [scanner scanDouble:&dec];
-                    
-                    NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
-                    
-                    foundIt = YES;
-                    
-                    break;
-                }
-            };
-            
-            completion(foundIt,ra,dec);
+            NSLog(@"Slewing...");
         }
     }];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([@"slewing" isEqualToString:keyPath]){
+            if (!self.mount.slewing){
+                NSLog(@"Slew complete");
+                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self captureImageAndPlateSolve];
+                });
+            }
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)captureImageAndPlateSolve
+{
+    const NSInteger captureBinning = 4;
+    const NSInteger captureSeconds = 5;
+    const float focalLength = 430;
+    const float separationLimit = 0.25;
+    const NSInteger syncCountLimit = 4;
+
+    CASCameraController* controller = [[CASDeviceManager sharedManager].cameraControllers firstObject];
+    if (!controller){
+        [self presentAlertWithMessage:@"There are no connected cameras"];
+    }
+    else {
+        
+        void (^completeWithMessage)(NSString*) = ^(NSString* message){
+            if (message){
+                [self presentAlertWithMessage:message];
+            }
+            [controller popSettings];
+        };
+        
+        CASExposureSettings* settings = [CASExposureSettings new];
+        controller.settings.binning = captureBinning;
+        controller.settings.exposureDuration = captureSeconds;
+        [controller pushSettings:settings];
+        
+        NSLog(@"Capturing from %@",controller.camera.deviceName);
+        [controller captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
+            
+            if (error){
+                completeWithMessage([NSString stringWithFormat:@"Capture failed: %@",[error localizedDescription]]);
+            }
+            else {
+                
+                // set this as the current exposure
+                [self.mountWindowDelegate mountWindowController:self didCaptureExposure:exposure];
+
+                NSLog(@"Capture complete, solving");
+                CASPlateSolver* plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+                if (![plateSolver canSolveExposure:exposure error:&error]){
+                    completeWithMessage([NSString stringWithFormat:@"Can't solve exposure: %@",[error localizedDescription]]);
+                }
+                else {
+                    
+                    plateSolver.fieldSizeDegrees = [controller fieldSizeForFocalLength:focalLength];
+                    plateSolver.arcsecsPerPixel = [controller arcsecsPerPixelForFocalLength:focalLength].width;
+                    
+                    // can also set expected ra and dec of field
+                    
+                    [plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
+                        
+                        if (error){
+                            completeWithMessage([NSString stringWithFormat:@"Plate solve failed: %@",[error localizedDescription]]);
+                        }
+                        else {
+                            
+                            CASPlateSolveSolution* solution = results[@"solution"];
+                            const double separation = CASAngularSeparation(solution.centreRA,_ra,solution.centreDec,_dec);
+                            NSLog(@"Solution RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,separation);
+
+                            // set as current solution
+                            [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
+
+                            if (separation < separationLimit){
+                                completeWithMessage([NSString stringWithFormat:@"Slew complete, separation is %0.3f°",separation]);
+                            }
+                            else {
+                                
+                                NSLog(@"Separation is %0.3f°, synching mount and re-slewing",separation);
+
+                                if (++_syncCount > syncCountLimit){
+                                    completeWithMessage([NSString stringWithFormat:@"Slew failed, exceeded max sync count. Current separation is  %0.3f°",separation]);
+                                }
+                                else {
+                                    
+                                    // sync scope to solution co-ordinates, repeat slew
+                                    [self.mount syncToRA:solution.centreRA dec:solution.centreDec completion:^(CASMountSlewError slewError) {
+                                        
+                                        if (slewError != CASMountSlewErrorNone){
+                                            completeWithMessage([NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]);
+                                        }
+                                        else {
+                                            completeWithMessage(nil); // pop the settings
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                [self startSlewTo:_ra dec:_dec];
+                                            });
+                                        }
+                                    }];
+                                }
+                            }
+                        }
+                    }];
+                }
+            }
+        }];
+    }
 }
 
 - (void)startMoving:(CASMountDirection)direction
@@ -158,7 +241,8 @@
         return;
     }
     
-    [self lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
+    CASObjectLookup* lookup = [CASObjectLookup new];
+    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
         
         NSLog(@"Lookup ra=%f (raDegreesToHMS %@), dec=%f (highPrecisionDec %@)",ra,[CASLX200Commands raDegreesToHMS:ra],dec,[CASLX200Commands highPrecisionDec:dec]);
         
@@ -201,19 +285,9 @@
     [self.mount halt];
 }
 
+- (void)presentAlertWithMessage:(NSString*)message
+{
+    [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+}
+
 @end
-
-#if 0
-
-format object "%IDLIST(1) : %COO(d;A D)"
-set epoch J2000
-set limit 1
-query id arcturus
-query id ic405
-format display
-
-http://simbad.u-strasbg.fr/simbad/sim-script?submit=submit+script&script=format+object+%22%25IDLIST%281%29+%3A+%25COO%28d%3BA+D%29%22%0D%0Aset+epoch+J2000%0D%0Aset+limit+1%0D%0Aquery+id+ic410%0D%0Aquery+id+ic405%0D%0Aformat+display%0D%0A
-
-https://maps.google.co.uk/maps?q=Amersham&hl=en&ll=51.675536,-0.607252&spn=0.057217,0.111408&sll=52.8382,-2.327815&sspn=14.291495,28.520508&oq=amersham&hnear=Amersham,+Buckinghamshire,+United+Kingdom&t=m&z=14
-
-#endif

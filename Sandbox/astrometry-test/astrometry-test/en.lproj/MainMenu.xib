@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5053" systemVersion="12F45" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6221" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5053"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6221"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -11,7 +10,7 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <menu title="AMainMenu" systemMenu="main" id="29">
             <items>
                 <menuItem title="astrometry-test" id="56">
@@ -657,10 +656,10 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="cCE-FD-fv7"/>
-                            <menuItem title="GoTo in iEQ" id="lA6-ot-MMS">
+                            <menuItem title="GoTo in LX200 Mount" id="lA6-ot-MMS">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="goToIniEQ:" target="494" id="VtA-EX-hEE"/>
+                                    <action selector="goToInLX200:" target="494" id="Vdh-Ub-MkJ"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -896,7 +895,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="613">
-                                                <rect key="frame" x="0.0" y="0.0" width="169" height="138"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="169" height="19"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
@@ -966,11 +965,11 @@ DQ
                                 </imageView>
                             </subviews>
                         </clipView>
-                        <scroller key="horizontalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="631">
+                        <scroller key="horizontalScroller" verticalHuggingPriority="750" doubleValue="0.53333333333333333" horizontal="YES" id="631">
                             <rect key="frame" x="1" y="637" width="745" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="632">
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.5" horizontal="NO" id="632">
                             <rect key="frame" x="746" y="1" width="15" height="636"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -1019,8 +1018,8 @@ DQ
             <connections>
                 <outlet property="fieldHeightLabel" destination="605" id="610"/>
                 <outlet property="fieldWidthLabel" destination="601" id="609"/>
-                <outlet property="ieqWindow" destination="iY2-3x-qsG" id="yiq-Of-oEP"/>
                 <outlet property="imageView" destination="536" id="548"/>
+                <outlet property="mountConnectWindow" destination="iY2-3x-qsG" id="a4P-KK-JAL"/>
                 <outlet property="outputLogPanel" destination="555" id="561"/>
                 <outlet property="outputLogTextView" destination="558" id="562"/>
                 <outlet property="pixelScaleLabel" destination="597" id="608"/>
@@ -1320,7 +1319,7 @@ DQ
                 </subviews>
             </view>
         </window>
-        <window title="iEQ Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="iEQ Mount" animationBehavior="default" id="iY2-3x-qsG">
+        <window title="Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Mount" animationBehavior="default" id="iY2-3x-qsG">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="1107" width="369" height="58"/>
@@ -1344,9 +1343,9 @@ DQ
                             </menu>
                         </popUpButtonCell>
                         <connections>
+                            <binding destination="494" name="selectedObject" keyPath="selectedSerialPort" previousBinding="dNl-C7-FbC" id="lKj-AX-AQv"/>
                             <binding destination="494" name="content" keyPath="serialPortManager.availablePorts" id="DJf-OF-Wsv"/>
                             <binding destination="494" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="DJf-OF-Wsv" id="dNl-C7-FbC"/>
-                            <binding destination="494" name="selectedObject" keyPath="selectedSerialPort" previousBinding="dNl-C7-FbC" id="lKj-AX-AQv"/>
                         </connections>
                     </popUpButton>
                     <button verticalHuggingPriority="750" id="0eT-tj-uFC">
@@ -1357,7 +1356,7 @@ DQ
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="connectToiEQ:" target="494" id="Spv-KG-Ej5"/>
+                            <action selector="connectToLX200:" target="494" id="c0V-VR-A8H"/>
                         </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="pyw-gA-gmX">
@@ -1371,6 +1370,7 @@ DQ
                     </textField>
                 </subviews>
             </view>
+            <point key="canvasLocation" x="865.5" y="-28"/>
         </window>
     </objects>
 </document>

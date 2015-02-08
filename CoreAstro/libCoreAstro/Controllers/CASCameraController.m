@@ -55,6 +55,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _cancelled:1;
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
+    NSMutableArray* _settingsStack;
 }
 
 - (id)initWithCamera:(CASCCDDevice*)camera
@@ -528,6 +529,50 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         return;
     }
     [super setNilValueForKey:key];
+}
+
+- (void)pushSettings:(CASExposureSettings*)settings
+{
+    NSParameterAssert(settings);
+    
+    if (!_settingsStack){
+        _settingsStack = [NSMutableArray arrayWithCapacity:3];
+    }
+    [_settingsStack addObject:self.settings];
+    self.settings = settings; // does this trigger kvo ?
+}
+
+- (void)popSettings
+{
+    NSParameterAssert(_settingsStack);
+    
+    self.settings = [_settingsStack lastObject];  // does this trigger kvo ?
+    [_settingsStack removeLastObject];
+}
+
+- (CGSize)arcsecsPerPixelForFocalLength:(float)focalLength
+{
+    NSParameterAssert(focalLength > 0);
+    
+    const NSInteger binning = self.settings.binning;
+    const CGSize pixelSize = self.camera.sensor.pixelSize;
+    const CGSize size = {
+        .width = binning*(206.3*pixelSize.width/focalLength),
+        .height = binning*(206.3*pixelSize.height/focalLength)
+    };
+    return size;
+}
+
+- (CGSize)fieldSizeForFocalLength:(float)focalLength
+{
+    NSParameterAssert(focalLength > 0);
+    
+    const CGSize sensorSize = self.camera.sensor.sensorSize;
+    const CGSize size = {
+        .width = 3438*sensorSize.width/focalLength/60.0,
+        .height = 3438*sensorSize.height/focalLength/60.0
+    };
+    return size;
 }
 
 @end

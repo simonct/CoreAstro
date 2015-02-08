@@ -90,6 +90,12 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 - (void)cancelCapture;
 
+- (void)pushSettings:(CASExposureSettings*)settings;
+- (void)popSettings;
+
+- (CGSize)arcsecsPerPixelForFocalLength:(float)focalLength;
+- (CGSize)fieldSizeForFocalLength:(float)focalLength;
+
 @end
 
 extern NSString* const kCASCameraControllerGuideErrorNotification;
