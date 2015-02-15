@@ -76,6 +76,8 @@ static void* kvoContext;
 {
     [[NSColorPanel sharedColorPanel] orderOut:nil];
     [[NSColorPanel sharedColorPanel] setHidesOnDeactivate:YES];
+    [[CASDeviceManager sharedManager] scan]; // need to clean up on quit as well
+    NSLog(@"todo; cleanup devices on quit");
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
