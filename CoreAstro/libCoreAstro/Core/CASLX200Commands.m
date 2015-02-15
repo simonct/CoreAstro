@@ -198,21 +198,6 @@
     return dec;
 }
 
-+ (NSString*)raDegreesToHMS:(double)degrees {
-
-    const double hours = 24.0*degrees/360.0;
-    const double h = trunc(hours);
-
-    const double minutes = (hours-h)*60.0;
-    const double m = trunc(minutes);
-    
-    const double s = (minutes-m)*60.0; // round ?
-
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
-    
-    return formattedRA;
-}
-
 @end
 
 @implementation CASLX200RATransformer
