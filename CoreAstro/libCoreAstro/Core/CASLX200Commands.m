@@ -151,26 +151,26 @@
 
 + (NSString*)highPrecisionDec:(double)dec {
     
-    const CASHMSAngle hms = CASHMSAngleFromDegrees(dec);
+    const CASDMSAngle dms = CASDMSAngleFromDegrees(dec);
     
-    NSString* formattedRA;
+    NSString* formattedDec;
     if (dec < 0){
-        formattedRA = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
+        formattedDec = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
     }
     else {
-        formattedRA = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
+        formattedDec = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
     }
 
-    return formattedRA;
+    return formattedDec;
 }
 
 + (NSString*)lowPrecisionDec:(double)dec {
     
-    const CASHMAngle hm = CASHMAngleFromDegrees(dec);
+    const CASDMAngle dm = CASDMAngleFromDegrees(dec);
     
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)hm.h,(int)hm.m];
+    NSString* formattedDec = [NSString stringWithFormat:@"%02d*%02d",(int)dm.d,(int)dm.m];
     
-    return formattedRA;
+    return formattedDec;
 }
 
 + (double)fromDecString:(NSString*)decs {
