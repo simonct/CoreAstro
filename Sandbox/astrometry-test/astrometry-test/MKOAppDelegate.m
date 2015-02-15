@@ -623,6 +623,7 @@ static void* kvoContext;
                 [self presentAlertWithMessage:[error localizedDescription]];
             }
             else {
+                self.mountWindowController.mountWindowDelegate = self;
                 [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
             }
         }];
