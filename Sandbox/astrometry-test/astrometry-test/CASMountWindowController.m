@@ -15,9 +15,14 @@
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @end
 
+#define CAS_SLEW_AND_SYNC_TEST 0
+
 @implementation CASMountWindowController {
     NSInteger _syncCount;
     double _raDegs, _decDegs;
+#if CAS_SLEW_AND_SYNC_TEST
+    double _testError;
+#endif
 }
 
 static void* kvoContext;
@@ -32,6 +37,10 @@ static void* kvoContext;
 {
     self.mount = mount;
     
+#if CAS_SLEW_AND_SYNC_TEST
+    _testError = 1;
+#endif
+
     [self.mount connectWithCompletion:^(NSError* error){
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
@@ -70,7 +79,36 @@ static void* kvoContext;
                 NSLog(@"Slew complete");
                 [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
+#if !CAS_SLEW_AND_SYNC_TEST
                     [self captureImageAndPlateSolve];
+#else
+                    NSLog(@"_testError: %f",_testError);
+                    
+                    if (_testError < 0.125){
+                        [self.mountWindowDelegate mountWindowControllerDidSync:nil];
+                    }
+                    else{
+                    
+                        // sync to an imaginary position
+                        [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
+                            
+                            // reduce error
+                            _testError /= 2;
+                            
+                            if (slewError != CASMountSlewErrorNone){
+                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+                            }
+                            else {
+                                
+                                // slew
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [self startSlewToRA:_raDegs dec:_decDegs];
+                                });
+                            }
+                        }];
+                    }
+#endif
                 });
             }
         }
@@ -98,6 +136,9 @@ static void* kvoContext;
                 [self presentAlertWithMessage:message];
             }
             [controller popSettings];
+            [self.mountWindowDelegate mountWindowControllerDidSync:message ? [NSError errorWithDomain:@"CASMountWindowController"
+                                                                                                 code:1
+                                                                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]] : nil];
         };
         
         CASExposureSettings* settings = [CASExposureSettings new];

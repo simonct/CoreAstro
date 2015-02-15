@@ -13,7 +13,7 @@
 @protocol CASMountWindowControllerDelegate <NSObject>
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure;
 - (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution;
-// todo; -mountWindowControllerDidSync: when it successfully iterates to the intended location
+- (void)mountWindowControllerDidSync:(NSError*)error;
 @end
 
 @interface CASMountWindowController : NSWindowController

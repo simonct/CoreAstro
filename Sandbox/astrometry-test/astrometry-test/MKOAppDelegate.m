@@ -499,6 +499,16 @@ static void* kvoContext;
     self.solution = solution;
 }
 
+- (void)mountWindowControllerDidSync:(NSError*)error
+{
+    if (!error){
+        [self presentAlertWithMessage:@"Slew complete"];
+    }
+    else {
+        [NSApp presentError:error];
+    }
+}
+
 @end
 
 @implementation MKOAppDelegate (MountSupport)

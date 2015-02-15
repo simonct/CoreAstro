@@ -170,7 +170,7 @@
                 
                 [self sendCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *response) {
                     
-                    self.ra = @([CASLX200Commands fromRAString:response asDegrees:NO]);
+                    self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
                     
                     // NSLog(@"RA: %@ -> %@",response,self.ra); // HH:MM:SS#
                     
