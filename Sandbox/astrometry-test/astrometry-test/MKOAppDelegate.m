@@ -499,6 +499,16 @@ static void* kvoContext;
     self.solution = solution;
 }
 
+- (void)mountWindowControllerDidSync:(NSError*)error
+{
+    if (!error){
+        [self presentAlertWithMessage:@"Slew complete"];
+    }
+    else {
+        [NSApp presentError:error];
+    }
+}
+
 @end
 
 @implementation MKOAppDelegate (MountSupport)
@@ -623,6 +633,7 @@ static void* kvoContext;
                 [self presentAlertWithMessage:[error localizedDescription]];
             }
             else {
+                self.mountWindowController.mountWindowDelegate = self;
                 [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
             }
         }];
