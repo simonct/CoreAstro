@@ -13,13 +13,14 @@
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,assign) NSInteger guideDurationInMS;
+@property (nonatomic) double separation;
 @end
 
 #define CAS_SLEW_AND_SYNC_TEST 0
 
 @implementation CASMountWindowController {
     NSInteger _syncCount;
-    double _raDegs, _decDegs;
+    double _raInDegrees, _decInDegrees;
 #if CAS_SLEW_AND_SYNC_TEST
     double _testError;
 #endif
@@ -52,20 +53,20 @@ static void* kvoContext;
     }];
 }
 
-- (void)startSlewToRA:(double)raDegs dec:(double)decDegs // ra and dec are in decimal degrees
+- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
-    _raDegs = raDegs;
-    _decDegs = decDegs;
+    _raInDegrees = raInDegrees;
+    _decInDegrees = decInDegrees;
     
-    NSLog(@"startSlewTo RA: %f Dec: %f",_raDegs,_decDegs);
-
-    [self.mount startSlewToRA:_raDegs dec:_decDegs completion:^(CASMountSlewError error) {
+    // todo; validate, don't depend on the mount
+    
+    [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error) {
         
         if (error != CASMountSlewErrorNone){
             [self presentAlertWithMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
         }
         else {
-            NSLog(@"Slewing...");
+            NSLog(@"Slewing to %@, %@...",[CASLX200Commands highPrecisionRA:_raInDegrees],[CASLX200Commands highPrecisionDec:_decInDegrees]);
             [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
         }
     }];
@@ -74,10 +75,14 @@ static void* kvoContext;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
+        
         if ([@"slewing" isEqualToString:keyPath]){
+            
             if (!self.mount.slewing){
+                
                 NSLog(@"Slew complete");
                 [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
 #if !CAS_SLEW_AND_SYNC_TEST
@@ -123,6 +128,7 @@ static void* kvoContext;
     const NSInteger captureSeconds = 5;
     const float focalLength = 430;
     const float separationLimit = 0.25;
+    const float maxSeparationLimit = 10;
     const NSInteger syncCountLimit = 4;
 
     CASCameraController* controller = [[CASDeviceManager sharedManager].cameraControllers firstObject];
@@ -131,14 +137,13 @@ static void* kvoContext;
     }
     else {
         
-        void (^completeWithMessage)(NSString*) = ^(NSString* message){
-            if (message){
-                [self presentAlertWithMessage:message];
-            }
+        void (^completeWithMessage)(NSString*,BOOL) = ^(NSString* message,BOOL callDelegate){
             [controller popSettings];
-            [self.mountWindowDelegate mountWindowControllerDidSync:message ? [NSError errorWithDomain:@"CASMountWindowController"
-                                                                                                 code:1
-                                                                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]] : nil];
+            if (callDelegate){
+                [self.mountWindowDelegate mountWindowControllerDidSync:message ? [NSError errorWithDomain:@"CASMountWindowController"
+                                                                                                     code:1
+                                                                                                 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]] : nil];
+            }
         };
         
         CASExposureSettings* settings = [CASExposureSettings new];
@@ -151,65 +156,65 @@ static void* kvoContext;
         [controller captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
             
             if (error){
-                completeWithMessage([NSString stringWithFormat:@"Capture failed: %@",[error localizedDescription]]);
+                completeWithMessage([NSString stringWithFormat:@"Capture failed: %@",[error localizedDescription]],YES);
             }
             else {
                 
                 // set this as the current exposure
                 [self.mountWindowDelegate mountWindowController:self didCaptureExposure:exposure];
 
-                NSLog(@"Capture complete, solving");
+                NSLog(@"Capture complete, solving...");
                 CASPlateSolver* plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
                 if (![plateSolver canSolveExposure:exposure error:&error]){
-                    completeWithMessage([NSString stringWithFormat:@"Can't solve exposure: %@",[error localizedDescription]]);
+                    completeWithMessage([NSString stringWithFormat:@"Can't solve exposure: %@",[error localizedDescription]],YES);
                 }
                 else {
                     
                     plateSolver.fieldSizeDegrees = [controller fieldSizeForFocalLength:focalLength];
                     plateSolver.arcsecsPerPixel = [controller arcsecsPerPixelForFocalLength:focalLength].width;
                     
-                    // can also set expected ra and dec of field
+                    // todo; can also set expected ra and dec of field
                     
                     [plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                         
                         if (error){
-                            completeWithMessage([NSString stringWithFormat:@"Plate solve failed: %@",[error localizedDescription]]);
+                            completeWithMessage([NSString stringWithFormat:@"Plate solve failed: %@",[error localizedDescription]],YES);
                         }
                         else {
                             
                             CASPlateSolveSolution* solution = results[@"solution"];
-                            const double separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raDegs,_decDegs);
-                            NSLog(@"Solution RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,separation);
+                            self.separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raInDegrees,_decInDegrees);
+                            NSLog(@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation);
 
                             // set as current solution
                             [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
 
-                            if (separation > 10){
+                            if (self.separation > maxSeparationLimit){
                                 // warn, confirm slew...
+                                completeWithMessage([NSString stringWithFormat:@"Slew failed, separation of %0.3f° exceeds maximum",self.separation],YES);
                             }
-                            
-                            if (separation < separationLimit){
-                                completeWithMessage([NSString stringWithFormat:@"Slew complete, separation is %0.3f°",separation]);
+                            else if (self.separation < separationLimit){
+                                completeWithMessage(nil,YES);
                             }
                             else {
                                 
-                                NSLog(@"Separation is %0.3f°, synching mount and re-slewing",separation);
-
                                 if (++_syncCount > syncCountLimit){
-                                    completeWithMessage([NSString stringWithFormat:@"Slew failed, exceeded max sync count. Current separation is  %0.3f°",separation]);
+                                    completeWithMessage([NSString stringWithFormat:@"Slew failed, exceeded max sync count. Current separation is %0.3f°",self.separation],YES);
                                 }
                                 else {
-                                    
+                                
+                                    NSLog(@"Separation is %0.3f°, synching mount and re-slewing",self.separation);
+
                                     // sync scope to solution co-ordinates, repeat slew
                                     [self.mount syncToRA:solution.centreRA dec:solution.centreDec completion:^(CASMountSlewError slewError) {
                                         
                                         if (slewError != CASMountSlewErrorNone){
-                                            completeWithMessage([NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]);
+                                            completeWithMessage([NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError],YES);
                                         }
                                         else {
-                                            completeWithMessage(nil); // pop the settings
+                                            completeWithMessage(nil,NO); // pop the settings
                                             dispatch_async(dispatch_get_main_queue(), ^{
-                                                [self startSlewToRA:_raDegs dec:_decDegs];
+                                                [self startSlewToRA:_raInDegrees dec:_decInDegrees];
                                             });
                                         }
                                     }];
@@ -294,8 +299,8 @@ static void* kvoContext;
         }
         else{
 
-            _raDegs = ra;
-            _decDegs = dec;
+            _raInDegrees = ra;
+            _decInDegrees = dec;
             
             // confirm slew before starting
             NSAlert* alert = [NSAlert alertWithMessageText:self.searchString
@@ -312,17 +317,7 @@ static void* kvoContext;
 - (void) slewAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if (returnCode == NSOKButton){
-        
-        [self.mount startSlewToRA:_raDegs dec:_decDegs completion:^(CASMountSlewError result) {
-            
-            if (result == CASMountSlewErrorNone){
-                NSLog(@"Starting slew");
-            }
-            else {
-                NSBeep();
-                NSLog(@"Start failed: %ld",result);
-            }
-        }];
+        [self startSlewToRA:_raInDegrees dec:_decInDegrees];
     }
 }
 

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6221" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7515.2" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6221"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7515.2"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -636,30 +637,16 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="674">
                         <items>
-                            <menuItem title="GoTo in EQMac" id="675">
+                            <menuItem title="Connect to LX200-compatible mount" id="lA6-ot-MMS">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="goToInEQMac:" target="494" id="678"/>
+                                    <action selector="showMountConnectWindow:" target="494" id="CN3-vG-Xgs"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="681"/>
-                            <menuItem title="GoTo in IP Mount" id="682">
+                            <menuItem title="GoTo with LX200-compatible mount" id="lIE-4s-vsQ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="goToInIPMount:" target="494" id="686"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Configure IP Mount..." id="683">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="configureIPMount:" target="494" id="685"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="cCE-FD-fv7"/>
-                            <menuItem title="GoTo in LX200 Mount" id="lA6-ot-MMS">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="goToInLX200:" target="494" id="Vdh-Ub-MkJ"/>
+                                    <action selector="goToInLX200:" target="494" id="pPK-Xa-ndI"/>
                                 </connections>
                             </menuItem>
                         </items>

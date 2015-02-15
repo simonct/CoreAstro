@@ -9,8 +9,6 @@
 //
 
 #import "MKOAppDelegate.h"
-#import "CASEQMacClient.h"
-#import "CASConfigureIPMountWindowController.h"
 #import "CASPlateSolveImageView.h"
 #import "CASFolderWatcher.h"
 #import "CASMountWindowController.h"
@@ -19,8 +17,6 @@
 
 @interface MKOAppDelegate ()<CASMountWindowControllerDelegate>
 @property (nonatomic,strong) CASPlateSolveSolution* solution;
-@property (nonatomic,strong) CASLX200IPClient* ipMountClient;
-@property (nonatomic,strong) CASConfigureIPMountWindowController* configureIPController;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,assign) float arcsecsPerPixel;
 @property (nonatomic,assign) CGSize fieldSizeDegrees;
@@ -502,7 +498,8 @@ static void* kvoContext;
 - (void)mountWindowControllerDidSync:(NSError*)error
 {
     if (!error){
-        [self presentAlertWithMessage:@"Slew complete"];
+        const CASDMSAngle dms = CASDMSAngleFromDegrees(self.mountWindowController.separation);
+        [self presentAlertWithMessage:[NSString stringWithFormat:@"Slew complete, separation is %0.3f° (%d° %d\" %ds\')",self.mountWindowController.separation,dms.d,dms.m,dms.s]];
     }
     else {
         [NSApp presentError:error];
@@ -513,134 +510,40 @@ static void* kvoContext;
 
 @implementation MKOAppDelegate (MountSupport)
 
-- (void)slewToSolutionCentre
+- (IBAction)showMountConnectWindow:(id)sender
 {
-    [self.ipMountClient startSlewToRA:self.solution.centreRA dec:self.solution.centreDec completion:^(BOOL ok) {
-        
-        if (!ok){
-            [self presentAlertWithMessage:@"Failed to slew to the target"];
-            // hide current ra/dec
-        }
-        else {
-            // show current ra/dec
-        }
-    }];
-}
-
-- (void)disconnectMount
-{
-    if (self.ipMountClient){
-        [self.ipMountClient disconnect];
-        self.ipMountClient = nil;
+    if (!self.serialPortManager){
+        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
     }
-}
-
-- (void)slewMountCommon
-{
-    if (self.ipMountClient.connected){
-        [self slewToSolutionCentre];
-    }
-    else {
-        
-        [self.ipMountClient connectWithCompletion:^{
-            
-            if (self.ipMountClient.connected){
-                [self slewToSolutionCentre];
-            }
-            else {
-                if ([self.ipMountClient isKindOfClass:[CASEQMacClient class]]){
-                    [self presentAlertWithMessage:@"Failed to connect to EQMac."];
-                }
-                else{
-                    [self presentAlertWithMessage:@"Failed to connect to mount."];
-                }
-            }
-        }];
-    }
-}
-
-- (IBAction)goToInEQMac:(id)sender
-{
-    if (!self.solution){
-        return;
-    }
-    
-    [self disconnectMount];
-    
-    if (!self.ipMountClient){
-        self.ipMountClient = [CASEQMacClient standardClient];
-    }
-    
-    if (![[NSRunningApplication runningApplicationsWithBundleIdentifier:@"au.id.hulse.Mount"] count]){
-        [self presentAlertWithMessage:@"EQMac is not running. Please start it, connect to your mount and try again"]; // todo; offer to launch it
-    }
-    else {
-        [self slewMountCommon];
-    }
-}
-
-- (IBAction)goToInIPMount:(id)sender {
-    
-    if (!self.solution){
-        return;
-    }
-
-    NSString* host = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASIPMountHost"];
-    NSString* port = [[NSUserDefaults standardUserDefaults] stringForKey:@"CASIPMountPort"];
-    if (![host length] || ![port integerValue]){
-        [self configureIPMount:nil];
-    }
-    else {
-        
-        [self disconnectMount];
-
-        if (!self.ipMountClient){
-            self.ipMountClient = [CASLX200IPClient clientWithHost:[NSHost hostWithName:host] port:[port integerValue]];
-        }
-        
-        [self slewMountCommon];
-    }
-}
-
-- (IBAction)configureIPMount:(id)sender {
-    
-    if (!self.configureIPController){
-        self.configureIPController = [[CASConfigureIPMountWindowController alloc] initWithWindowNibName:@"CASConfigureIPMountWindowController"];
-    }
-    
-    [self.configureIPController beginSheetModalForWindow:self.window completionHandler:nil];
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
 }
 
 - (IBAction)goToInLX200:(id)sender
 {
     if (!self.mount){
-        if (!self.serialPortManager){
-            self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
-        }
-        self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-        [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+        [self showMountConnectWindow:nil];
         return;
     }
     
-    if (!self.mount){
-        [self presentAlertWithMessage:@"No mount is conncted"];
+    if (self.mount.slewing){
+        [self presentAlertWithMessage:@"Mount is slewing. Please try again when it's stopped"];
+        return;
     }
-    else {
-        
-        self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
-        [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
-            if (error){
-                [self presentAlertWithMessage:[error localizedDescription]];
-            }
-            else {
-                self.mountWindowController.mountWindowDelegate = self;
-                [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
-            }
-        }];
-    }
+
+    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
+        if (error){
+            [self presentAlertWithMessage:[error localizedDescription]];
+        }
+        else {
+            self.mountWindowController.mountWindowDelegate = self;
+            [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
+        }
+    }];
 }
 
-- (IBAction)connectToLX200:(id)sender
+- (IBAction)connectToLX200:(id)sender // called from Connect button in mount connect window
 {
     if (!self.selectedSerialPort){
         [self presentAlertWithMessage:@"No selected serial port"];
