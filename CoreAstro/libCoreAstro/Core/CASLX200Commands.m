@@ -155,7 +155,7 @@
     
     NSString* formattedDec;
     if (dec < 0){
-        formattedDec = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
+        formattedDec = [NSString stringWithFormat:@"%03d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
     }
     else {
         formattedDec = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
@@ -176,15 +176,25 @@
 + (double)fromDecString:(NSString*)decs {
     
     double dec = -1;
+    double fraction = 0;
     
     NSArray* comps = [decs componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"*':"]];
     if ([comps count] == 3){
-        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
+        dec = [comps[0] doubleValue];
+        fraction = ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
     }
     else if ([comps count] == 2){
-        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0);
+        dec = [comps[0] doubleValue];
+        fraction = ([comps[1] doubleValue]/60.0);
     }
     
+    if (dec < 0){
+        dec -= fraction;
+    }
+    else {
+        dec += fraction;
+    }
+
     return dec;
 }
 

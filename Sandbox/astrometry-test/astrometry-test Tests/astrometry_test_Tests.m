@@ -177,6 +177,24 @@
     XCTAssertEqualWithAccuracy(dec,dec2,0.003); // not sure if this rounding error is justifiable or not
 }
 
+- (void)testHighPrecisionFormatting2 {
+    
+    const double ra = 274.633525;
+    const double dec = -45.983797;
+    
+    NSString* hpra = [CASLX200Commands highPrecisionRA:ra];
+    XCTAssertEqualObjects(hpra,@"18:18:32");
+    
+    NSString* hpdec = [CASLX200Commands highPrecisionDec:dec];
+    XCTAssertEqualObjects(hpdec,@"-45*59:01");
+    
+    const double ra2 = [CASLX200Commands fromRAString:hpra asDegrees:YES];
+    XCTAssertEqualWithAccuracy(ra,ra2,0.003); // not sure if this rounding error is justifiable or not
+    
+    const double dec2 = [CASLX200Commands fromDecString:hpdec];
+    XCTAssertEqualWithAccuracy(dec,dec2,0.003); // not sure if this rounding error is justifiable or not
+}
+
 - (void)testLowPrecisionFormatting {
     
     const double ra = 94.511300;
