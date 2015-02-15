@@ -143,7 +143,7 @@
     
     if (asDegrees){
         const double trunc_ra = trunc(ra);
-        ra = (trunc_ra * (360.0/24.0)) + (ra - trunc_ra);
+        ra = (trunc_ra + (ra - trunc_ra)) * CASDegreesPerHour;
     }
     
     return ra;

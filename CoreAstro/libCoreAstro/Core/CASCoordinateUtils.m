@@ -38,7 +38,7 @@ CASHMAngle CASHMAngleFromDegrees(double degrees)
         degrees -= 360.0;
     }
     
-    const double hrs = fabs(degrees)/(360.0/24.0);
+    const double hrs = fabs(degrees)/CASDegreesPerHour;
     
     const double h = trunc(hrs);
     const double s = (hrs-h)*3600.0;
@@ -73,7 +73,7 @@ CASHMSAngle CASHMSAngleFromDegrees(double degrees)
         degrees -= 360.0;
     }
 
-    const double hrs = fabs(degrees)/(360.0/24.0);
+    const double hrs = fabs(degrees)/CASDegreesPerHour;
     
     const double h = trunc(hrs);
     const double m = trunc((hrs-h)*60.0);

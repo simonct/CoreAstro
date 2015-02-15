@@ -37,3 +37,5 @@ typedef struct {
 extern CASHMSAngle CASHMSAngleFromDegrees(double degrees);
 
 extern double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2);
+
+#define CASDegreesPerHour (360.0/24.0)
