@@ -207,4 +207,16 @@
     XCTAssertEqualObjects(lpdec,@"22*40");
 }
 
+- (void)testLowPrecisionFormatting2 {
+    
+    const double ra = 274.633525;
+    const double dec = -45.983797;
+    
+    NSString* lpra = [CASLX200Commands lowPrecisionRA:ra];
+    XCTAssertEqualObjects(lpra,@"18:19.0");
+    
+    NSString* lpdec = [CASLX200Commands lowPrecisionDec:dec];
+    XCTAssertEqualObjects(lpdec,@"-45*59");
+}
+
 @end
