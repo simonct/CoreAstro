@@ -621,9 +621,7 @@ static void* kvoContext;
                 [self presentAlertWithMessage:[error localizedDescription]];
             }
             else {
-                const double dec = self.solution.centreDec;
-                const double ra = [CASLX200Commands fromRAString:[CASLX200Commands raDegreesToHMS:self.solution.centreRA] asDegrees:NO];
-                [self.mountWindowController startSlewTo:ra dec:dec];
+                [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
             }
         }];
     }
