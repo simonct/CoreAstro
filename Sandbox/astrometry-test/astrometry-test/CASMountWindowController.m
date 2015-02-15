@@ -248,8 +248,6 @@ static void* kvoContext;
     CASObjectLookup* lookup = [CASObjectLookup new];
     [lookup lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
         
-        NSLog(@"Lookup ra=%f (raDegreesToHMS %@), dec=%f (highPrecisionDec %@)",ra,[CASLX200Commands raDegreesToHMS:ra],dec,[CASLX200Commands highPrecisionDec:dec]);
-        
         if (!success){
             [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
         }
@@ -259,7 +257,11 @@ static void* kvoContext;
             _decDegs = dec;
             
             // confirm slew before starting
-            NSAlert* alert = [NSAlert alertWithMessageText:self.searchString defaultButton:@"Slew" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands raDegreesToHMS:ra],[CASLX200Commands highPrecisionDec:dec]];
+            NSAlert* alert = [NSAlert alertWithMessageText:self.searchString
+                                             defaultButton:@"Slew"
+                                           alternateButton:@"Cancel"
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands highPrecisionRA:ra],[CASLX200Commands highPrecisionDec:dec]];
             
             [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(slewAlertDidEnd:returnCode:contextInfo:) contextInfo:nil];
         }
