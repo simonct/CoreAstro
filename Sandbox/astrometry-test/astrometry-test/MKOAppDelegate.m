@@ -538,7 +538,7 @@ static void* kvoContext;
         }
         else {
             self.mountWindowController.mountWindowDelegate = self;
-            [self.mountWindowController startSlewToRA:self.solution.centreRA dec:self.solution.centreDec];
+            [self.mountWindowController setTargetRA:self.solution.centreRA dec:self.solution.centreDec];
         }
     }];
 }

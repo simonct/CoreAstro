@@ -20,5 +20,5 @@
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
-- (void)startSlewToRA:(double)raDegs dec:(double)decDegs;
+- (void)setTargetRA:(double)raDegs dec:(double)decDegs;
 @end

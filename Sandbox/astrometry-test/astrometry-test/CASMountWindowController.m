@@ -14,13 +14,14 @@
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @property (nonatomic) double separation;
+@property BOOL usePlateSolvng;
 @end
 
 #define CAS_SLEW_AND_SYNC_TEST 0
 
 @implementation CASMountWindowController {
     NSInteger _syncCount;
-    double _raInDegrees, _decInDegrees;
+    double _raInDegrees, _decInDegrees; // still need these ?
 #if CAS_SLEW_AND_SYNC_TEST
     double _testError;
 #endif
@@ -32,6 +33,11 @@ static void* kvoContext;
 {
     [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
+}
+
+- (void)presentAlertWithMessage:(NSString*)message
+{
+    [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion
@@ -53,8 +59,22 @@ static void* kvoContext;
     }];
 }
 
+- (void)setTargetRA:(double)raDegs dec:(double)decDegs
+{
+    NSParameterAssert(self.mount.connected);
+    
+    __weak __typeof (self) weakSelf = self;
+    [self.mount setTargetRA:raDegs dec:decDegs completion:^(CASMountSlewError error) {
+        if (error != CASMountSlewErrorNone){
+            [weakSelf presentAlertWithMessage:[NSString stringWithFormat:@"Set target failed with error %ld",error]];
+        }
+    }];
+}
+
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
+    NSParameterAssert(self.mount.connected);
+
     _raInDegrees = raInDegrees;
     _decInDegrees = decInDegrees;
     
@@ -83,38 +103,42 @@ static void* kvoContext;
                 NSLog(@"Slew complete");
                 [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                // if we're using plate solving, iterate towards the location
+                if (self.usePlateSolvng){
                     
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
 #if !CAS_SLEW_AND_SYNC_TEST
-                    [self captureImageAndPlateSolve];
+                        [self captureImageAndPlateSolve];
 #else
-                    NSLog(@"_testError: %f",_testError);
-                    
-                    if (_testError < 0.125){
-                        [self.mountWindowDelegate mountWindowControllerDidSync:nil];
-                    }
-                    else{
-                    
-                        // sync to an imaginary position
-                        [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
+                        NSLog(@"_testError: %f",_testError);
+                        
+                        if (_testError < 0.125){
+                            [self.mountWindowDelegate mountWindowControllerDidSync:nil];
+                        }
+                        else{
                             
-                            // reduce error
-                            _testError /= 2;
-                            
-                            if (slewError != CASMountSlewErrorNone){
-                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
-                            }
-                            else {
+                            // sync to an imaginary position
+                            [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
                                 
-                                // slew
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self startSlewToRA:_raDegs dec:_decDegs];
-                                });
-                            }
-                        }];
-                    }
+                                // reduce error
+                                _testError /= 2;
+                                
+                                if (slewError != CASMountSlewErrorNone){
+                                    [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+                                }
+                                else {
+                                    
+                                    // slew
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [self startSlewToRA:_raDegs dec:_decDegs];
+                                    });
+                                }
+                            }];
+                        }
 #endif
-                });
+                    });
+                }
             }
         }
     } else {
@@ -203,7 +227,7 @@ static void* kvoContext;
                                 }
                                 else {
                                 
-                                    NSLog(@"Separation is %0.3f°, synching mount and re-slewing",self.separation);
+                                    NSLog(@"Separation is %0.3f°, syncing mount and re-slewing",self.separation);
 
                                     // sync scope to solution co-ordinates, repeat slew
                                     [self.mount syncToRA:solution.centreRA dec:solution.centreDec completion:^(CASMountSlewError slewError) {
@@ -235,6 +259,8 @@ static void* kvoContext;
     [self.mount startMoving:direction];
 }
 
+#pragma mark - Actions
+
 - (IBAction)north:(id)sender
 {
     [self startMoving:CASMountDirectionNorth];
@@ -255,70 +281,13 @@ static void* kvoContext;
     [self startMoving:CASMountDirectionEast];
 }
 
-- (IBAction)guideNorth:(id)sender
-{
-    [self.mount pulseInDirection:CASMountDirectionNorth ms:self.guideDurationInMS];
-}
-
-- (IBAction)guideEast:(id)sender
-{
-    [self.mount pulseInDirection:CASMountDirectionEast ms:self.guideDurationInMS];
-}
-
-- (IBAction)guideSouth:(id)sender
-{
-    [self.mount pulseInDirection:CASMountDirectionSouth ms:self.guideDurationInMS];
-}
-
-- (IBAction)guideWest:(id)sender
-{
-    [self.mount pulseInDirection:CASMountDirectionWest ms:self.guideDurationInMS];
-}
-
-- (void)stopMoving:sender
-{
-    [self.mount stopMoving];
-}
-
-- (IBAction)dump:(id)sender
-{
-//    [self.mount dumpInfo];
-}
-
 - (IBAction)slew:(id)sender
 {
-    if (![self.searchString length]){
+    if (!self.mount.targetRa || !self.mount.targetDec){
         return;
     }
     
-    CASObjectLookup* lookup = [CASObjectLookup new];
-    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
-        
-        if (!success){
-            [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
-        }
-        else{
-
-            _raInDegrees = ra;
-            _decInDegrees = dec;
-            
-            // confirm slew before starting
-            NSAlert* alert = [NSAlert alertWithMessageText:self.searchString
-                                             defaultButton:@"Slew"
-                                           alternateButton:@"Cancel"
-                                               otherButton:nil
-                                 informativeTextWithFormat:@"Slew to target ? RA: %@, DEC: %@",[CASLX200Commands highPrecisionRA:ra],[CASLX200Commands highPrecisionDec:dec]];
-            
-            [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(slewAlertDidEnd:returnCode:contextInfo:) contextInfo:nil];
-        }
-    }];
-}
-
-- (void) slewAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
-{
-    if (returnCode == NSOKButton){
-        [self startSlewToRA:_raInDegrees dec:_decInDegrees];
-    }
+    [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
 }
 
 - (IBAction)stop:(id)sender
@@ -326,9 +295,24 @@ static void* kvoContext;
     [self.mount halt];
 }
 
-- (void)presentAlertWithMessage:(NSString*)message
+- (IBAction)lookup:(id)sender
 {
-    [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+    if (![self.searchString length]){
+        NSBeep();
+        return;
+    }
+    
+    __weak __typeof (self) weakSelf = self;
+    
+    CASObjectLookup* lookup = [CASObjectLookup new];
+    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
+        if (!success){
+            [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
+        }
+        else{
+            [weakSelf setTargetRA:ra dec:dec];
+        }
+    }];
 }
 
 @end
