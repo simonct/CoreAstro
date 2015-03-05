@@ -292,6 +292,9 @@
     NSParameterAssert(ra_ >= 0 && ra_ <= 360);
     NSParameterAssert(dec_ >= -90 && dec_ <= 90);
 
+    self.targetRa = @(ra_);
+    self.targetDec = @(dec_);
+    
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
     
