@@ -15,6 +15,8 @@
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @property (nonatomic) double separation;
 @property BOOL usePlateSolvng;
+// have camera popup in the mount window to allow camera selection
+// can't close mount window...
 @end
 
 #define CAS_SLEW_AND_SYNC_TEST 0
@@ -151,7 +153,7 @@ static void* kvoContext;
     const NSInteger captureBinning = 4;
     const NSInteger captureSeconds = 5;
     const float focalLength = 430;
-    const float separationLimit = 0.25;
+    const float separationLimit = 0.02;
     const float maxSeparationLimit = 10;
     const NSInteger syncCountLimit = 4;
 
