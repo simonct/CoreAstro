@@ -74,6 +74,12 @@ static void* kvoContext;
     [[NSColorPanel sharedColorPanel] setHidesOnDeactivate:YES];
     [[CASDeviceManager sharedManager] scan]; // need to clean up on quit as well
     NSLog(@"todo; cleanup devices on quit");
+    {
+        CASObjectLookup* lookup = [CASObjectLookup new];
+        [lookup lookupObject:@"IC443" withCompletion:^(BOOL success, double ra, double dec) {
+            NSLog(@"%d",success);
+        }];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
