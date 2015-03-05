@@ -50,14 +50,13 @@
                         [cs addCharactersInString:@"+-"];
                         
                         [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                        [scanner scanDouble:&ra];
-                        
-                        [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                        [scanner scanDouble:&dec];
-                        
-                        // NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
-                        
-                        foundIt = YES;
+                        if ([scanner scanDouble:&ra]){
+                            [scanner scanUpToCharactersFromSet:cs intoString:nil];
+                            foundIt = [scanner scanDouble:&dec];
+                            if (foundIt){
+                                // NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
+                            }
+                        }
                         
                         break;
                     }
