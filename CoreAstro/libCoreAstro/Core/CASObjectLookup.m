@@ -26,41 +26,43 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         
         if (connectionError){
-            NSLog(@"%@",connectionError);
+            NSLog(@"connectionError: %@",connectionError);
             completion(NO,0,0);
         }
         else {
             
             BOOL foundIt = NO;
-            double ra, dec;
+            double ra = 0, dec = 0;
             
             NSString* responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            NSArray* responseLines = [responseString componentsSeparatedByString:@"\n"];
-            
-            for (NSString* line in [responseLines reverseObjectEnumerator]){
+            if (![responseString containsString:@"::error"]){
+
+                NSArray* responseLines = [responseString componentsSeparatedByString:@"\n"];
                 
-                NSScanner* scanner = [NSScanner scannerWithString:line];
-                
-                NSString* object;
-                if ([scanner scanUpToString:@":" intoString:&object]){
+                for (NSString* line in [responseLines reverseObjectEnumerator]){
                     
-                    NSMutableCharacterSet* cs = [NSMutableCharacterSet decimalDigitCharacterSet];
-                    [cs addCharactersInString:@"+-"];
+                    NSScanner* scanner = [NSScanner scannerWithString:line];
                     
-                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                    [scanner scanDouble:&ra];
-                    
-                    [scanner scanUpToCharactersFromSet:cs intoString:nil];
-                    [scanner scanDouble:&dec];
-                    
-                    NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
-                    
-                    foundIt = YES;
-                    
-                    break;
-                }
-            };
-            
+                    NSString* object;
+                    if ([scanner scanUpToString:@":" intoString:&object]){
+                        
+                        NSMutableCharacterSet* cs = [NSMutableCharacterSet decimalDigitCharacterSet];
+                        [cs addCharactersInString:@"+-"];
+                        
+                        [scanner scanUpToCharactersFromSet:cs intoString:nil];
+                        [scanner scanDouble:&ra];
+                        
+                        [scanner scanUpToCharactersFromSet:cs intoString:nil];
+                        [scanner scanDouble:&dec];
+                        
+                        // NSLog(@"object: %@, ra: %f, dec: %f",object,ra,dec);
+                        
+                        foundIt = YES;
+                        
+                        break;
+                    }
+                };
+            }
             completion(foundIt,ra,dec);
         }
     }];
