@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7519.1" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7519.1"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -637,13 +637,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="674">
                         <items>
-                            <menuItem title="Connect to LX200-compatible mount" id="lA6-ot-MMS">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="showMountConnectWindow:" target="494" id="CN3-vG-Xgs"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="GoTo with LX200-compatible mount" id="lIE-4s-vsQ">
+                            <menuItem title="Connect to LX200-compatible mount" id="lIE-4s-vsQ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="goToInLX200:" target="494" id="pPK-Xa-ndI"/>
@@ -1307,7 +1301,7 @@ DQ
             </view>
         </window>
         <window title="Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Mount" animationBehavior="default" id="iY2-3x-qsG">
-            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="1107" width="369" height="58"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
@@ -1357,7 +1351,7 @@ DQ
                     </textField>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="865.5" y="-28"/>
+            <point key="canvasLocation" x="856.5" y="108"/>
         </window>
     </objects>
 </document>

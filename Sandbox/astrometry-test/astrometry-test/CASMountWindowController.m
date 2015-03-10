@@ -15,8 +15,13 @@
 @property (nonatomic,assign) NSInteger guideDurationInMS;
 @property (nonatomic) double separation;
 @property BOOL usePlateSolvng;
-// have camera popup in the mount window to allow camera selection
-// can't close mount window...
+@property (weak) IBOutlet NSTextField *statusLabel;
+@property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
+@property (nonatomic,readonly) NSArrayController* cameraControllers;
+@property (nonatomic,strong) CASCameraController* selectedCameraController;
+@property (nonatomic,strong) CASPlateSolver* plateSolver;
+@property BOOL solving;
+@property float focalLength;
 @end
 
 #define CAS_SLEW_AND_SYNC_TEST 0
@@ -29,12 +34,57 @@
 #endif
 }
 
+@synthesize cameraControllers = _cameraControllers;
+
 static void* kvoContext;
 
 + (void)initialize
 {
     [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
+    
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountWindowControllerBinning":@(4),
+                                                              @"CASMountWindowControllerDuration":@(5),
+                                                              @"CASMountWindowControllerConvergence":@(0.02)}];
+}
+
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    
+    self.focalLength = 0;
+    
+    NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
+    [close setTarget:self];
+    [close setAction:@selector(closeWindow:)];
+}
+
+- (void)closeWindow:sender
+{
+    if (self.solving){
+        // need a way of cancelling a solve
+        NSLog(@"Currently solving...");
+        return;
+    }
+    
+    [self.plateSolver cancel];
+    [self.mount disconnect];
+    [self.selectedCameraController cancelCapture];
+    
+    [self close];
+}
+
+- (NSArrayController*)cameraControllers
+{
+    if (!_cameraControllers){
+        _cameraControllers = [[NSArrayController alloc] initWithContent:[CASDeviceManager sharedManager].cameraControllers];
+    }
+    return _cameraControllers;
+}
+
+- (NSArray*)cameraControllersValues
+{
+    return [self.cameraControllers.arrangedObjects valueForKeyPath:@"device.deviceName"];
 }
 
 - (void)presentAlertWithMessage:(NSString*)message
@@ -150,21 +200,24 @@ static void* kvoContext;
 
 - (void)captureImageAndPlateSolve
 {
-    const NSInteger captureBinning = 4;
-    const NSInteger captureSeconds = 5;
-    const float focalLength = 430;
-    const float separationLimit = 0.02;
+    const float separationLimit = [[NSUserDefaults standardUserDefaults] floatForKey:@"CASMountWindowControllerConvergence"];
+    const NSInteger captureBinning = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountWindowControllerBinning"];
+    const NSInteger captureSeconds = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountWindowControllerDuration"];
+    
     const float maxSeparationLimit = 10;
     const NSInteger syncCountLimit = 4;
 
-    CASCameraController* controller = [[CASDeviceManager sharedManager].cameraControllers firstObject];
-    if (!controller){
+    self.solving = YES;
+    
+    if (!self.selectedCameraController){
         [self presentAlertWithMessage:@"There are no connected cameras"];
     }
     else {
         
         void (^completeWithMessage)(NSString*,BOOL) = ^(NSString* message,BOOL callDelegate){
-            [controller popSettings];
+            self.solving = NO;
+            self.statusLabel.stringValue = @"";
+            [self.selectedCameraController popSettings];
             if (callDelegate){
                 [self.mountWindowDelegate mountWindowControllerDidSync:message ? [NSError errorWithDomain:@"CASMountWindowController"
                                                                                                      code:1
@@ -176,10 +229,10 @@ static void* kvoContext;
         settings.binning = captureBinning;
         settings.exposureDuration = captureSeconds;
         // set point 0 ?
-        [controller pushSettings:settings];
+        [self.selectedCameraController pushSettings:settings];
         
-        NSLog(@"Capturing from %@",controller.camera.deviceName);
-        [controller captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
+        self.statusLabel.stringValue = [NSString stringWithFormat:@"Capturing from %@",self.selectedCameraController.camera.deviceName];
+        [self.selectedCameraController captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
             
             if (error){
                 completeWithMessage([NSString stringWithFormat:@"Capture failed: %@",[error localizedDescription]],YES);
@@ -189,19 +242,21 @@ static void* kvoContext;
                 // set this as the current exposure
                 [self.mountWindowDelegate mountWindowController:self didCaptureExposure:exposure];
 
-                NSLog(@"Capture complete, solving...");
-                CASPlateSolver* plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
-                if (![plateSolver canSolveExposure:exposure error:&error]){
+                self.statusLabel.stringValue = @"Capture complete, solving...";
+                self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+                if (![self.plateSolver canSolveExposure:exposure error:&error]){
                     completeWithMessage([NSString stringWithFormat:@"Can't solve exposure: %@",[error localizedDescription]],YES);
                 }
                 else {
                     
-                    plateSolver.fieldSizeDegrees = [controller fieldSizeForFocalLength:focalLength];
-                    plateSolver.arcsecsPerPixel = [controller arcsecsPerPixelForFocalLength:focalLength].width;
+                    if (self.focalLength > 0){
+                        self.plateSolver.fieldSizeDegrees = [self.selectedCameraController fieldSizeForFocalLength:self.focalLength];
+                        self.plateSolver.arcsecsPerPixel = [self.selectedCameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
+                    }
                     
                     // todo; can also set expected ra and dec of field
                     
-                    [plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
+                    [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                         
                         if (error){
                             completeWithMessage([NSString stringWithFormat:@"Plate solve failed: %@",[error localizedDescription]],YES);
@@ -210,7 +265,7 @@ static void* kvoContext;
                             
                             CASPlateSolveSolution* solution = results[@"solution"];
                             self.separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raInDegrees,_decInDegrees);
-                            NSLog(@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation);
+                            self.statusLabel.stringValue = [NSString stringWithFormat:@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation];
 
                             // set as current solution
                             [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
@@ -229,7 +284,7 @@ static void* kvoContext;
                                 }
                                 else {
                                 
-                                    NSLog(@"Separation is %0.3f°, syncing mount and re-slewing",self.separation);
+                                    self.statusLabel.stringValue = [NSString stringWithFormat:@"Separation is %0.3f°, syncing mount and re-slewing",self.separation];
 
                                     // sync scope to solution co-ordinates, repeat slew
                                     [self.mount syncToRA:solution.centreRA dec:solution.centreDec completion:^(CASMountSlewError slewError) {
