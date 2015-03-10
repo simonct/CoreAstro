@@ -62,6 +62,8 @@
 - (void)solveExposure:(CASCCDExposure*)exposure completion:(void(^)(NSError*,NSDictionary*))block;
 - (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block;
 
+- (void)cancel;
+
 @end
 
 @interface CASPlateSolver : NSObject<CASPlateSolver>

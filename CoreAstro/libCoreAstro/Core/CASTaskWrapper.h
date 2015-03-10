@@ -31,6 +31,7 @@
 - (id)initWithTool:(NSString*)tool root:(NSString*)root iomask:(NSInteger)iomask;
 - (void)setArguments:(NSArray *)arguments;
 - (void)launchWithOutputBlock:(void(^)(NSString*))block terminationBlock:(void(^)(int))block2;
+- (void)terminate;
 @end
 
 @interface CASSyncTaskWrapper : CASTaskWrapper

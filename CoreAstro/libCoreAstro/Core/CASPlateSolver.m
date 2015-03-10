@@ -240,6 +240,7 @@
 @property (nonatomic,strong) CASTaskWrapper* solverTask;
 @property (nonatomic,strong) NSMutableString* logOutput;
 @property (nonatomic,assign) NSTimeInterval solveStartTime;
+@property BOOL cancelled;
 @end
 
 @implementation CASPlateSolver
@@ -394,7 +395,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         // close the sandbox
         [self.indexDirectoryURL stopAccessingSecurityScopedResource];
 
-        if (block){
+        if (!self.cancelled && block){
             block(error,results);
         }
     };
@@ -584,6 +585,12 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             complete(error,results);
         }];
     });
+}
+
+- (void)cancel
+{
+    self.cancelled = YES;
+    [self.solverTask terminate];
 }
 
 @end
