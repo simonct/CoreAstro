@@ -188,11 +188,20 @@
                                 
                                 self.az = @([CASLX200Commands fromDecString:response]);
                                 
+                                
+                                //
+                                [self sendCommand:@":pS#" completion:^(NSString * response) {
+                                    
+                                    NSLog(@"pier side: %@",response);
+                                    
+                                    // just do this at the end of the selector rather than in the completion block ?
+                                    [self performSelector:_cmd withObject:nil afterDelay:1];
+
+                                }];
+                                
                                 // doesn't always seem to complete when combined with a slew ?
                                 // probably if a stop command is issued you don't get a response to one of these ?
                                 
-                                // just do this at the end of the selector rather than in the completion block ?
-                                [self performSelector:_cmd withObject:nil afterDelay:1];
 
 //                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
 //                                    
