@@ -1,0 +1,428 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F4A736AB1AB5B7AE00E9835E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A736AA1AB5B7AE00E9835E /* AppDelegate.m */; };
+		F4A736AD1AB5B7AE00E9835E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A736AC1AB5B7AE00E9835E /* main.m */; };
+		F4A736B01AB5B7AE00E9835E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A736AF1AB5B7AE00E9835E /* ViewController.m */; };
+		F4A736B21AB5B7AE00E9835E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4A736B11AB5B7AE00E9835E /* Images.xcassets */; };
+		F4A736B51AB5B7AE00E9835E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4A736B31AB5B7AE00E9835E /* Main.storyboard */; };
+		F4A736C11AB5B7AE00E9835E /* indi_clientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A736C01AB5B7AE00E9835E /* indi_clientTests.m */; };
+		F4A736CE1AB5B7D500E9835E /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A736CD1AB5B7D500E9835E /* CASSocketClient.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F4A736BB1AB5B7AE00E9835E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4A7369C1AB5B7AE00E9835E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4A736A31AB5B7AE00E9835E;
+			remoteInfo = "indi-client";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F4A736A41AB5B7AE00E9835E /* indi-client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "indi-client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4A736A81AB5B7AE00E9835E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4A736A91AB5B7AE00E9835E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F4A736AA1AB5B7AE00E9835E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F4A736AC1AB5B7AE00E9835E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4A736AE1AB5B7AE00E9835E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		F4A736AF1AB5B7AE00E9835E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		F4A736B11AB5B7AE00E9835E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F4A736B41AB5B7AE00E9835E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F4A736BA1AB5B7AE00E9835E /* indi-clientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "indi-clientTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4A736BF1AB5B7AE00E9835E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4A736C01AB5B7AE00E9835E /* indi_clientTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = indi_clientTests.m; sourceTree = "<group>"; };
+		F4A736CC1AB5B7D500E9835E /* CASSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSocketClient.h; path = ../../../CoreAstro/libCoreAstro/Core/CASSocketClient.h; sourceTree = "<group>"; };
+		F4A736CD1AB5B7D500E9835E /* CASSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSocketClient.m; path = ../../../CoreAstro/libCoreAstro/Core/CASSocketClient.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4A736A11AB5B7AE00E9835E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4A736B71AB5B7AE00E9835E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4A7369B1AB5B7AE00E9835E = {
+			isa = PBXGroup;
+			children = (
+				F4A736A61AB5B7AE00E9835E /* indi-client */,
+				F4A736BD1AB5B7AE00E9835E /* indi-clientTests */,
+				F4A736A51AB5B7AE00E9835E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4A736A51AB5B7AE00E9835E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4A736A41AB5B7AE00E9835E /* indi-client.app */,
+				F4A736BA1AB5B7AE00E9835E /* indi-clientTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4A736A61AB5B7AE00E9835E /* indi-client */ = {
+			isa = PBXGroup;
+			children = (
+				F4A736A91AB5B7AE00E9835E /* AppDelegate.h */,
+				F4A736AA1AB5B7AE00E9835E /* AppDelegate.m */,
+				F4A736AE1AB5B7AE00E9835E /* ViewController.h */,
+				F4A736AF1AB5B7AE00E9835E /* ViewController.m */,
+				F4A736CC1AB5B7D500E9835E /* CASSocketClient.h */,
+				F4A736CD1AB5B7D500E9835E /* CASSocketClient.m */,
+				F4A736B11AB5B7AE00E9835E /* Images.xcassets */,
+				F4A736B31AB5B7AE00E9835E /* Main.storyboard */,
+				F4A736A71AB5B7AE00E9835E /* Supporting Files */,
+			);
+			path = "indi-client";
+			sourceTree = "<group>";
+		};
+		F4A736A71AB5B7AE00E9835E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4A736A81AB5B7AE00E9835E /* Info.plist */,
+				F4A736AC1AB5B7AE00E9835E /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F4A736BD1AB5B7AE00E9835E /* indi-clientTests */ = {
+			isa = PBXGroup;
+			children = (
+				F4A736C01AB5B7AE00E9835E /* indi_clientTests.m */,
+				F4A736BE1AB5B7AE00E9835E /* Supporting Files */,
+			);
+			path = "indi-clientTests";
+			sourceTree = "<group>";
+		};
+		F4A736BE1AB5B7AE00E9835E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4A736BF1AB5B7AE00E9835E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4A736A31AB5B7AE00E9835E /* indi-client */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4A736C41AB5B7AE00E9835E /* Build configuration list for PBXNativeTarget "indi-client" */;
+			buildPhases = (
+				F4A736A01AB5B7AE00E9835E /* Sources */,
+				F4A736A11AB5B7AE00E9835E /* Frameworks */,
+				F4A736A21AB5B7AE00E9835E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "indi-client";
+			productName = "indi-client";
+			productReference = F4A736A41AB5B7AE00E9835E /* indi-client.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F4A736B91AB5B7AE00E9835E /* indi-clientTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4A736C71AB5B7AE00E9835E /* Build configuration list for PBXNativeTarget "indi-clientTests" */;
+			buildPhases = (
+				F4A736B61AB5B7AE00E9835E /* Sources */,
+				F4A736B71AB5B7AE00E9835E /* Frameworks */,
+				F4A736B81AB5B7AE00E9835E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4A736BC1AB5B7AE00E9835E /* PBXTargetDependency */,
+			);
+			name = "indi-clientTests";
+			productName = "indi-clientTests";
+			productReference = F4A736BA1AB5B7AE00E9835E /* indi-clientTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4A7369C1AB5B7AE00E9835E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4A736A31AB5B7AE00E9835E = {
+						CreatedOnToolsVersion = 6.3;
+					};
+					F4A736B91AB5B7AE00E9835E = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = F4A736A31AB5B7AE00E9835E;
+					};
+				};
+			};
+			buildConfigurationList = F4A7369F1AB5B7AE00E9835E /* Build configuration list for PBXProject "indi-client" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F4A7369B1AB5B7AE00E9835E;
+			productRefGroup = F4A736A51AB5B7AE00E9835E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4A736A31AB5B7AE00E9835E /* indi-client */,
+				F4A736B91AB5B7AE00E9835E /* indi-clientTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4A736A21AB5B7AE00E9835E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A736B21AB5B7AE00E9835E /* Images.xcassets in Resources */,
+				F4A736B51AB5B7AE00E9835E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4A736B81AB5B7AE00E9835E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4A736A01AB5B7AE00E9835E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A736B01AB5B7AE00E9835E /* ViewController.m in Sources */,
+				F4A736AD1AB5B7AE00E9835E /* main.m in Sources */,
+				F4A736AB1AB5B7AE00E9835E /* AppDelegate.m in Sources */,
+				F4A736CE1AB5B7D500E9835E /* CASSocketClient.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4A736B61AB5B7AE00E9835E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4A736C11AB5B7AE00E9835E /* indi_clientTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4A736BC1AB5B7AE00E9835E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4A736A31AB5B7AE00E9835E /* indi-client */;
+			targetProxy = F4A736BB1AB5B7AE00E9835E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4A736B31AB5B7AE00E9835E /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4A736B41AB5B7AE00E9835E /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F4A736C21AB5B7AE00E9835E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F4A736C31AB5B7AE00E9835E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4A736C51AB5B7AE00E9835E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "indi-client/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F4A736C61AB5B7AE00E9835E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "indi-client/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		F4A736C81AB5B7AE00E9835E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "indi-clientTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/indi-client.app/Contents/MacOS/indi-client";
+			};
+			name = Debug;
+		};
+		F4A736C91AB5B7AE00E9835E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "indi-clientTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/indi-client.app/Contents/MacOS/indi-client";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4A7369F1AB5B7AE00E9835E /* Build configuration list for PBXProject "indi-client" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4A736C21AB5B7AE00E9835E /* Debug */,
+				F4A736C31AB5B7AE00E9835E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4A736C41AB5B7AE00E9835E /* Build configuration list for PBXNativeTarget "indi-client" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4A736C51AB5B7AE00E9835E /* Debug */,
+				F4A736C61AB5B7AE00E9835E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		F4A736C71AB5B7AE00E9835E /* Build configuration list for PBXNativeTarget "indi-clientTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4A736C81AB5B7AE00E9835E /* Debug */,
+				F4A736C91AB5B7AE00E9835E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4A7369C1AB5B7AE00E9835E /* Project object */;
+}
