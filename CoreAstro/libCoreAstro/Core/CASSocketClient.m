@@ -434,3 +434,77 @@ static const char CRLF[] = "\r\n";
 }
 
 @end
+
+@interface CASXMLSocketClient ()
+@property (nonatomic,strong) NSMutableData* buffer;
+@property (nonatomic,strong) NSMutableData* readBuffer;
+@end
+
+@implementation CASXMLSocketClient
+
+static const char LF[] = "\n";
+
+- (void)read
+{
+    while ([self hasBytesAvailable]){
+        
+        // create the persistent read buffer
+        if (!self.buffer){
+            self.buffer = [NSMutableData dataWithCapacity:1024];
+        }
+        
+        // create a transient read buffer
+        if (!self.readBuffer){
+            self.readBuffer = [NSMutableData dataWithLength:1024];
+        }
+        
+        // read a buffer's worth of data from the stream
+        const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
+        if (count > 0){
+            
+            // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
+            [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
+            [self.readBuffer resetBytesInRange:NSMakeRange(0, [self.readBuffer length])];
+            
+            NSInteger start = 0;
+            while (1) {
+                
+                // search the persistent buffer linefeeds, keeping going until we run out of data or find a complete xml document
+                const NSInteger length = MIN(count, [self.buffer length]) - start;
+                if (length < 1){
+                    break;
+                }
+                const NSRange search = NSMakeRange(start,length);
+                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:search];
+                if (range.location == NSNotFound){
+                    break;
+                }
+                
+                // attempt to deserialise up to the LF
+                NSError* error;
+                NSRange xmlRange = NSMakeRange(0, range.location);
+                NSXMLDocument* xml = [[NSXMLDocument alloc] initWithData:[self.buffer subdataWithRange:xmlRange] options:0 error:&error];
+                if (error){
+                    start = range.location + 1;
+                }
+                else if (xml){
+                    
+                    // remove the xml + LF from the front of the persistent buffer
+                    xmlRange.length += 1;
+                    [self.buffer replaceBytesInRange:xmlRange withBytes:nil length:0];
+                    
+                    [self.delegate client:self receivedDocument:xml];
+                }
+            }
+        }
+    }
+}
+
+- (void)enqueue:(NSData *)data
+{
+    CASSocketClientRequest* request = [CASSocketClientRequest new];
+    request.data = data;
+    [self enqueueRequest:request];
+}
+
+@end
