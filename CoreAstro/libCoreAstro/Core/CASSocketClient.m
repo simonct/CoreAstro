@@ -470,12 +470,12 @@ static const char LF[] = "\n";
             while (1) {
                 
                 // search the persistent buffer linefeeds, keeping going until we run out of data or find a complete xml document
-                const NSInteger length = MIN(count, [self.buffer length]) - start;
+                const NSInteger length = [self.buffer length] - start;
                 if (length < 1){
                     break;
                 }
                 const NSRange search = NSMakeRange(start,length);
-                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:search];
+                NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:search];
                 if (range.location == NSNotFound){
                     break;
                 }
@@ -483,17 +483,20 @@ static const char LF[] = "\n";
                 // attempt to deserialise up to the LF
                 NSError* error;
                 NSRange xmlRange = NSMakeRange(0, range.location);
-                NSXMLDocument* xml = [[NSXMLDocument alloc] initWithData:[self.buffer subdataWithRange:xmlRange] options:0 error:&error];
-                if (error){
-                    start = range.location + 1;
-                }
-                else if (xml){
+                NSData* data = [self.buffer subdataWithRange:xmlRange];
+                NSXMLDocument* xml = [[NSXMLDocument alloc] initWithData:data options:0 error:&error];
+                if (xml){
                     
+                    start = 0;
+
                     // remove the xml + LF from the front of the persistent buffer
                     xmlRange.length += 1;
                     [self.buffer replaceBytesInRange:xmlRange withBytes:nil length:0];
                     
                     [self.delegate client:self receivedDocument:xml];
+                }
+                else {
+                    start = range.location + range.length;
                 }
             }
         }
