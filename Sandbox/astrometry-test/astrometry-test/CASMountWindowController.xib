@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7519.1" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6751" systemVersion="14C2513" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7519.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6751"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
             <connections>
                 <outlet property="cameraPopupButton" destination="bSK-Fq-et0" id="h4t-JG-LqQ"/>
+                <outlet property="camerasArrayController" destination="Ps5-ee-7o7" id="Nyv-nW-e4F"/>
                 <outlet property="statusLabel" destination="XlS-17-G0Y" id="kCP-yQ-8tJ"/>
                 <outlet property="window" destination="1" id="3"/>
             </connections>
@@ -18,12 +19,12 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="423" height="425"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="423" height="425"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <box autoresizesSubviews="NO" fixedFrame="YES" title="Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="PuF-mb-lQZ">
+                    <box autoresizesSubviews="NO" fixedFrame="YES" title="Current Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="PuF-mb-lQZ">
                         <rect key="frame" x="17" y="322" width="389" height="83"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="67"/>
@@ -126,7 +127,7 @@
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
-                    <box autoresizesSubviews="NO" fixedFrame="YES" title="Target" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Loc-Zz-t5b">
+                    <box autoresizesSubviews="NO" fixedFrame="YES" title="Target Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Loc-Zz-t5b">
                         <rect key="frame" x="17" y="189" width="389" height="129"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="113"/>
@@ -175,7 +176,6 @@
                                     </buttonCell>
                                     <connections>
                                         <action selector="stop:" target="-2" id="gn7-yV-ceb"/>
-                                        <binding destination="83E-JI-oE9" name="enabled" keyPath="values.mount.slewing" id="o5W-WS-drJ"/>
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ede-HG-ABr">
@@ -277,12 +277,24 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                     <connections>
+                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="xxR-eb-Odc" id="4F6-ZY-d9Z">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="xxR-eb-Odc">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="value" keyPath="focalLength" id="y1p-qE-Qi1"/>
+                                        <binding destination="-2" name="value" keyPath="focalLength" id="e9c-Qa-fwe">
+                                            <dictionary key="options">
+                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                            </dictionary>
+                                        </binding>
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eti-r6-dmf">
@@ -301,14 +313,22 @@
                                         <menu key="menu" id="egc-oR-eXK"/>
                                     </popUpButtonCell>
                                     <connections>
-                                        <binding destination="-2" name="content" keyPath="cameraControllers" id="uVM-Qd-0QS"/>
-                                        <binding destination="-2" name="contentValues" keyPath="cameraControllersValues" previousBinding="uVM-Qd-0QS" id="ST7-hn-dPX"/>
+                                        <binding destination="Ps5-ee-7o7" name="content" keyPath="arrangedObjects" id="Cnc-Vp-JhS"/>
+                                        <binding destination="Ps5-ee-7o7" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="Cnc-Vp-JhS" id="9Jb-Ad-H5d"/>
+                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="UJf-Da-lz9" id="eqF-nn-CoL">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="UJf-Da-lz9">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="selectedObject" keyPath="selectedCameraController" previousBinding="ST7-hn-dPX" id="hNw-Of-W1n"/>
+                                        <binding destination="-2" name="selectedObject" keyPath="selectedCameraController" previousBinding="9Jb-Ad-H5d" id="sN8-sQ-b63"/>
                                     </connections>
                                 </popUpButton>
                             </subviews>
@@ -362,12 +382,12 @@
                                         </menu>
                                     </popUpButtonCell>
                                     <connections>
+                                        <binding destination="-2" name="selectedIndex" keyPath="mount.slewRate" id="4lO-NJ-DGE"/>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="wOB-DN-0Ui">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="selectedIndex" keyPath="mount.slewRate" id="4lO-NJ-DGE"/>
                                     </connections>
                                 </popUpButton>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y7m-jC-Wmh">
@@ -441,8 +461,13 @@
                 <binding destination="-2" name="title" keyPath="mount.name" id="TDL-zs-9nR"/>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-1002.5" y="25.5"/>
+            <point key="canvasLocation" x="-1190.5" y="-58.5"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
+        <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">
+            <connections>
+                <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="N8z-Ha-l7V"/>
+            </connections>
+        </arrayController>
     </objects>
 </document>

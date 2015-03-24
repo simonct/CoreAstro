@@ -17,11 +17,12 @@
 @property BOOL usePlateSolvng;
 @property (weak) IBOutlet NSTextField *statusLabel;
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
-@property (nonatomic,readonly) NSArrayController* cameraControllers;
-@property (nonatomic,strong) CASCameraController* selectedCameraController;
+@property (nonatomic,readonly) NSArray* cameraControllers;
+@property (nonatomic,readonly) CASCameraController* selectedCameraController;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property BOOL solving;
 @property float focalLength;
+@property (strong) IBOutlet NSArrayController *camerasArrayController;
 @end
 
 #define CAS_SLEW_AND_SYNC_TEST 0
@@ -74,17 +75,14 @@ static void* kvoContext;
     [self close];
 }
 
-- (NSArrayController*)cameraControllers
+- (NSArray*)cameraControllers
 {
-    if (!_cameraControllers){
-        _cameraControllers = [[NSArrayController alloc] initWithContent:[CASDeviceManager sharedManager].cameraControllers];
-    }
-    return _cameraControllers;
+    return [CASDeviceManager sharedManager].cameraControllers;
 }
 
-- (NSArray*)cameraControllersValues
+- (CASCameraController*) selectedCameraController
 {
-    return [self.cameraControllers.arrangedObjects valueForKeyPath:@"device.deviceName"];
+    return self.camerasArrayController.selectedObjects.firstObject;
 }
 
 - (void)presentAlertWithMessage:(NSString*)message
@@ -265,7 +263,9 @@ static void* kvoContext;
                             
                             CASPlateSolveSolution* solution = results[@"solution"];
                             self.separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raInDegrees,_decInDegrees);
-                            self.statusLabel.stringValue = [NSString stringWithFormat:@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation];
+                            NSString* status = [NSString stringWithFormat:@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation];
+                            NSLog(@"%@",status);
+                            self.statusLabel.stringValue = status;
 
                             // set as current solution
                             [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
@@ -275,6 +275,7 @@ static void* kvoContext;
                                 completeWithMessage([NSString stringWithFormat:@"Slew failed, separation of %0.3f° exceeds maximum",self.separation],YES);
                             }
                             else if (self.separation < separationLimit){
+                                NSLog(@"Slew and sync complete");
                                 completeWithMessage(nil,YES);
                             }
                             else {
@@ -362,12 +363,12 @@ static void* kvoContext;
     __weak __typeof (self) weakSelf = self;
     
     CASObjectLookup* lookup = [CASObjectLookup new];
-    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,double ra, double dec) {
+    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,NSString*objectName,double ra, double dec) {
         if (!success){
             [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
         }
         else{
-            [weakSelf setTargetRA:ra dec:dec];
+            [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
     }];
 }

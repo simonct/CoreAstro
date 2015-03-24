@@ -11,7 +11,7 @@
 
 @implementation CASObjectLookup
 
-- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,double ra,double dec))completion
+- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,NSString*objectName,double ra,double dec))completion
 {
     NSParameterAssert(name);
     NSParameterAssert(completion);
@@ -27,11 +27,12 @@
         
         if (connectionError){
             NSLog(@"connectionError: %@",connectionError);
-            completion(NO,0,0);
+            completion(NO,nil,0,0);
         }
         else {
             
             BOOL foundIt = NO;
+            NSString* object;
             double ra = 0, dec = 0;
             
             NSString* responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -43,7 +44,6 @@
                     
                     NSScanner* scanner = [NSScanner scannerWithString:line];
                     
-                    NSString* object;
                     if ([scanner scanUpToString:@":" intoString:&object]){
                         
                         NSMutableCharacterSet* cs = [NSMutableCharacterSet decimalDigitCharacterSet];
@@ -62,7 +62,7 @@
                     }
                 };
             }
-            completion(foundIt,ra,dec);
+            completion(foundIt,object,ra,dec);
         }
     }];
 }
