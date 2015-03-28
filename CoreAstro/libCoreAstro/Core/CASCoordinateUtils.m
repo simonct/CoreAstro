@@ -10,12 +10,12 @@
 
 static inline double toRadians(double degrees)
 {
-    return degrees * M_PI/180.0;
+    return degrees * (M_PI/180.0);
 }
 
 static inline double toDegrees(double radians)
 {
-    return radians / M_PI/180.0;
+    return radians / (M_PI/180.0);
 }
 
 CASHMAngle CASHMAngleFromDegrees(double degrees)
@@ -50,6 +50,5 @@ CASHMSAngle CASHMSAngleFromDegrees(double degrees)
 
 extern double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2)
 {
-    NSCAssert(NO, @"CASAngularSeparation not implememted");
-    return 0;
+    return toDegrees(acos(sin(toRadians(dec1))*sin(toRadians(dec2)) + cos(toRadians(dec1))*cos(toRadians(dec2))*cos(toRadians(ra1 - ra2))));
 }
