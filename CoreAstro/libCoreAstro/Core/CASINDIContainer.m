@@ -11,7 +11,7 @@
 @interface CASINDIDevice ()
 @property (copy) NSString* name;
 @property (nonatomic,strong) NSMutableDictionary* vectors;
-// CASXMLSocketClient ?
+@property (weak) CASINDIContainer* container;
 @end
 
 @implementation CASINDIDevice
@@ -56,6 +56,7 @@
 @property (copy) NSString* state;
 @property (weak) CASINDIDevice* device;
 @property (copy) NSString* type;
+@property (copy) NSString* perm;
 @property (copy) NSString* rule;
 @property (nonatomic,strong) NSMutableDictionary* items; // CASINDIValue
 @end
@@ -101,12 +102,13 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
     self.group = [root attributeForName:@"group"].stringValue; // lookup/create group
     self.state = [root attributeForName:@"state"].stringValue;
     self.rule = [root attributeForName:@"rule"].stringValue;
-    
+    self.perm = [root attributeForName:@"perm"].stringValue;
+
+    // extract the type from the xml element name
     NSMutableString* type = [root.name mutableCopy];
     [type deleteCharactersInRange:[type rangeOfString:@"def"]];
     [type deleteCharactersInRange:[type rangeOfString:@"Vector"]];
     self.type = type;
-    // perm, rule, type, etc
     
     [root.children enumerateObjectsUsingBlock:^(NSXMLElement* child, NSUInteger idx, BOOL *stop) {
         CASINDIValue* value = [CASINDIValue new];
@@ -136,27 +138,43 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
     }];
 }
 
-// we're sending a value to the server to change the value of a vector - currently the caller does this but we should probably let our contaning device do it
-- (NSString*)setVector:(NSString*)name to:(id)newValue
+- (NSString*)stringForValue:(id)value
 {
-    NSString* result;
-    CASINDIValue* value = self.items[name];
-    if (!value){
-        
+    NSString* valueString;
+    if ([self.type isEqualToString:@"Switch"]){
+        valueString = [value boolValue] ? @"On" : @"Off";
     }
     else {
-        
-        NSString* const valueOn = [newValue boolValue] ? @"On" : @"Off";
-        NSString* const valueOff = [newValue boolValue] ? @"Off" : @"On";
-        NSMutableString* command = [[NSString stringWithFormat:@"<new%@Vector device='%@' name='%@'>",self.type,self.device.name,self.name] mutableCopy];
-        [self.items enumerateKeysAndObjectsUsingBlock:^(id key, CASINDIValue* obj, BOOL *stop) {
-            NSString* onOff = ([name isEqualToString:obj.name]) ? valueOn : valueOff;
-            [command appendFormat:@"<one%@ name='%@'>%@</oneSwitch>",self.type,obj.name,onOff];
-        }];
-        [command appendString:[NSString stringWithFormat:@"</new%@Vector>",self.type]];
-        result = [command copy];
+        valueString = [value description];
     }
-    return result;
+    return valueString;
+}
+
+// we're sending a value to the server to change the value of a vector - currently the caller does this but we should probably let our contaning device do it
+- (void)setValue:(NSString*)name to:(id)newValue
+{
+    CASINDIValue* value = self.items[name];
+    if (!value){
+        NSLog(@"No such value '%@'",name);
+    }
+    else {
+        const BOOL isSwitch = [self.type isEqualToString:@"Switch"];
+        NSMutableString* command = [[NSString stringWithFormat:@"<new%@Vector device='%@' name='%@'>",self.type,self.device.name,self.name] mutableCopy];
+        if (!isSwitch || [self.rule isEqualToString:@"OneOfMany"]){
+            [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,value.name,[self stringForValue:newValue],self.type];
+        }
+        else {
+            NSString* const valueOn = [newValue boolValue] ? @"On" : @"Off";
+            NSString* const valueOff = [newValue boolValue] ? @"Off" : @"On";
+            [self.items enumerateKeysAndObjectsUsingBlock:^(id key, CASINDIValue* obj, BOOL *stop) {
+                NSString* onOff = ([name isEqualToString:obj.name]) ? valueOn : valueOff;
+                [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,obj.name,onOff,self.type];
+            }];
+        }
+        [command appendString:[NSString stringWithFormat:@"</new%@Vector>",self.type]];
+        
+        [self.device.container.client enqueue:[command dataUsingEncoding:NSASCIIStringEncoding]];
+    }
 }
 
 @end
@@ -195,6 +213,23 @@ NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAd
         self.client.port = service.port;
     }
     return self;
+}
+
+- (BOOL)connect
+{
+    const BOOL connected = [self.client connect];
+    if (!connected){
+        NSLog(@"Failed to connect to %@",self.client);
+    }
+    else {
+        [self getProperties];
+    }
+    return connected;
+}
+
+- (void)getProperties
+{
+    [self.client enqueue:[@"<getProperties version='1.7'/>\n" dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 - (NSString*)description
@@ -236,6 +271,7 @@ NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAd
     if (!device){
         device = [CASINDIDevice new];
         device.name = deviceName;
+        device.container = self;
         [self.devices addObject:device];
         [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIContainerAddedDeviceNotification object:self userInfo:@{@"device":device}];
     }
