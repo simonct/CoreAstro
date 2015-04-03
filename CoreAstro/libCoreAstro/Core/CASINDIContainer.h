@@ -44,9 +44,10 @@ extern NSString* const kCASINDIUpdatedVectorNotification;
 @interface CASINDIContainer : NSObject<CASXMLSocketClientDelegate>
 - (instancetype)init;
 - (instancetype)initWithService:(NSNetService*)service;
-@property (strong) CASXMLSocketClient* client;
-@property (strong) NSMutableArray* devices;
-@property BOOL connected;
+@property (strong,readonly) NSNetService* service;
+@property (strong,readonly) CASXMLSocketClient* client;
+@property (strong,readonly) NSMutableArray* devices;
+@property (readonly) BOOL connected;
 extern NSString* const kCASINDIContainerAddedDeviceNotification;
 @end
 
@@ -54,6 +55,7 @@ extern NSString* const kCASINDIContainerAddedDeviceNotification;
 
 @protocol CASINDIServiceBrowserDelegate <NSObject>
 - (void)serviceBrowser:(CASINDIServiceBrowser*)browser didResolveService:(NSNetService*)service;
+- (void)serviceBrowser:(CASINDIServiceBrowser*)browser didRemoveService:(NSNetService*)service;
 @end
 
 @interface CASINDIServiceBrowser : NSObject

@@ -135,6 +135,12 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
 
 @end
 
+@interface CASINDIContainer ()
+@property (strong) NSNetService* service;
+@property (strong) CASXMLSocketClient* client;
+@property (strong) NSMutableArray* devices;
+@property BOOL connected;
+@end
 
 @implementation CASINDIContainer
 
@@ -156,6 +162,7 @@ NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAd
 {
     self = [super init];
     if (self) {
+        self.service = service;
         self.client = [CASXMLSocketClient new];
         self.client.delegate = self;
         self.client.host = [NSHost hostWithName:service.hostName ];
@@ -282,8 +289,8 @@ NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAd
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveService:(NSNetService *)aNetService moreComing:(BOOL)moreComing
 {
+    [self.delegate serviceBrowser:self didRemoveService:aNetService];
     [self.services removeObject:aNetService];
-    // notification
 }
 
 - (void)netServiceDidResolveAddress:(NSNetService *)sender

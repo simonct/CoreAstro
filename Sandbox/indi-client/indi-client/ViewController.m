@@ -53,6 +53,14 @@
     }
 }
 
+- (void)serviceBrowser:(CASINDIServiceBrowser*)browser didRemoveService:(NSNetService*)service
+{
+    if ([service isEqual:self.container.service]){
+        self.container = nil;
+        self.view.window.title = @"Disconnected";
+    }
+}
+
 - (void)deviceAdded:(NSNotification*)note
 {
     CASINDIDevice* device = note.userInfo[@"device"];
