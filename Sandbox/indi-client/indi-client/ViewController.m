@@ -79,12 +79,12 @@
     CASINDIValue* value = note.userInfo[@"value"];
     if ([vector.type isEqualToString:@"BLOB"]){
         NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
-        if ([vector.state isEqualToString:@"Ok"]){
+        //if ([vector.state isEqualToString:@"Ok"]){
             NSData* encodedData = [value.value dataUsingEncoding:NSASCIIStringEncoding];
             NSData* exposureData = [[NSData alloc] initWithBase64EncodedData:encodedData options:NSDataBase64DecodingIgnoreUnknownCharacters];
             NSLog(@"read %ld bytes, decoded to %ld bytes",encodedData.length,exposureData.length);
             [exposureData writeToFile:[@"~/Desktop/indi-image.fit" stringByExpandingTildeInPath] atomically:YES];
-        }
+        //}
     }
     else {
         NSLog(@"vectorUpdated: %@.%@[%@=%@]",vector.device.name,vector.name,value.name,value.value);
