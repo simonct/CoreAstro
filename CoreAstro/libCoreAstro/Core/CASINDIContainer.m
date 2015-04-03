@@ -8,6 +8,12 @@
 
 #import "CASINDIContainer.h"
 
+@interface CASINDIDevice ()
+@property (copy) NSString* name;
+@property (nonatomic,strong) NSMutableDictionary* vectors;
+// CASXMLSocketClient ?
+@end
+
 @implementation CASINDIDevice
 
 - (NSMutableDictionary*)vectors
@@ -31,7 +37,27 @@
 
 @class CASINDIVector;
 
+@interface CASINDIValue ()
+@property (copy) NSString* name;
+@property (copy) NSString* label;
+@property (copy) NSString* value;
+@property (weak) CASINDIVector* vector;
+// state, perm, etc
+@end
+
 @implementation CASINDIValue
+@end
+
+@interface CASINDIVector ()
+// type eg. text. number, etc
+@property (copy) NSString* name;
+@property (copy) NSString* label;
+@property (copy) NSString* group;
+@property (copy) NSString* state;
+@property (weak) CASINDIDevice* device;
+@property (copy) NSString* type;
+@property (copy) NSString* rule;
+@property (nonatomic,strong) NSMutableDictionary* items; // CASINDIValue
 @end
 
 @implementation CASINDIVector

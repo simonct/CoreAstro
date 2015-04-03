@@ -9,22 +9,21 @@
 #import "CASSocketClient.h"
 
 @interface CASINDIDevice : NSObject
-@property (copy) NSString* name;
-@property (nonatomic,strong) NSMutableDictionary* vectors;
+@property (copy,readonly) NSString* name;
+@property (nonatomic,strong,readonly) NSMutableDictionary* vectors;
 // CASXMLSocketClient ?
 @end
 
 @interface CASINDIVector : NSObject
 // type eg. text. number, etc
-@property (copy) NSString* name;
-@property (copy) NSString* label;
-@property (copy) NSString* group;
-@property (copy) NSString* state;
-@property (weak) CASINDIDevice* device;
-@property (copy) NSString* type;
-@property (copy) NSString* rule;
-@property (nonatomic,strong) NSMutableDictionary* items; // CASINDIValue
-@property (nonatomic,readonly) NSArray* switches;
+@property (copy,readonly) NSString* name;
+@property (copy,readonly) NSString* label;
+@property (copy,readonly) NSString* group;
+@property (copy,readonly) NSString* state;
+@property (weak,readonly) CASINDIDevice* device;
+@property (copy,readonly) NSString* type;
+@property (copy,readonly) NSString* rule;
+@property (nonatomic,strong,readonly) NSMutableDictionary* items; // CASINDIValue
 - (instancetype)initWithXMLElement:(NSXMLElement*)xmlElement device:(CASINDIDevice*)device;
 - (NSString*)setVector:(NSString*)name to:(id)newValue;
 // delegate ?
@@ -34,10 +33,10 @@ extern NSString* const kCASINDIUpdatedVectorNotification;
 @end
 
 @interface CASINDIValue : NSObject
-@property (copy) NSString* name;
-@property (copy) NSString* label;
-@property (copy) NSString* value;
-@property (weak) CASINDIVector* vector;
+@property (copy,readonly) NSString* name;
+@property (copy,readonly) NSString* label;
+@property (copy,readonly) NSString* value;
+@property (weak,readonly) CASINDIVector* vector;
 // state, perm, etc
 @end
 
