@@ -8,10 +8,12 @@
 
 #import "CASSocketClient.h"
 
+@class CASINDIContainer;
+
 @interface CASINDIDevice : NSObject
 @property (copy,readonly) NSString* name;
 @property (nonatomic,strong,readonly) NSMutableDictionary* vectors;
-// CASXMLSocketClient ?
+@property (weak,readonly) CASINDIContainer* container;
 @end
 
 @interface CASINDIVector : NSObject
@@ -25,9 +27,7 @@
 @property (copy,readonly) NSString* rule;
 @property (nonatomic,strong,readonly) NSMutableDictionary* items; // CASINDIValue
 - (instancetype)initWithXMLElement:(NSXMLElement*)xmlElement device:(CASINDIDevice*)device;
-- (NSString*)setVector:(NSString*)name to:(id)newValue;
-// delegate ?
-// kvo for values ?
+- (void)setValue:(NSString*)name to:(id)newValue;
 extern NSString* const kCASINDIDefinedVectorNotification;
 extern NSString* const kCASINDIUpdatedVectorNotification;
 @end
@@ -47,6 +47,7 @@ extern NSString* const kCASINDIUpdatedVectorNotification;
 @property (strong,readonly) CASXMLSocketClient* client;
 @property (strong,readonly) NSMutableArray* devices;
 @property (readonly) BOOL connected;
+- (BOOL)connect;
 extern NSString* const kCASINDIContainerAddedDeviceNotification;
 @end
 

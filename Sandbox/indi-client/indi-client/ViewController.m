@@ -43,13 +43,12 @@
     }
     
     self.container = [[CASINDIContainer alloc] initWithService:service];
-    if (![self.container.client connect]){
+    if (![self.container connect]){
         NSLog(@"Failed to connect to %@",service);
     }
     else {
         NSLog(@"Added INDI container: %@",self.container);
         self.view.window.title = [NSString stringWithFormat:@"%@:%ld",service.hostName,service.port];
-        [self getProperties:nil];
     }
 }
 
@@ -100,15 +99,10 @@
     [super setNilValueForKey:key];
 }
 
-- (IBAction)getProperties:(id)sender
-{
-    [self.container.client enqueue:[@"<getProperties version='1.7'/>\n" dataUsingEncoding:NSUTF8StringEncoding]];
-}
-
 - (IBAction)connect:(id)sender
 {
     CASINDIVector* vector = ((CASINDIDevice*)self.container.devices.firstObject).vectors[@"CONNECTION"];
-    [self.container.client enqueue:[[vector setVector:@"CONNECT" to:@YES] dataUsingEncoding:NSUTF8StringEncoding]];
+    [vector setValue:@"CONNECT" to:@YES];
 }
 
 - (IBAction)exposure:sender
