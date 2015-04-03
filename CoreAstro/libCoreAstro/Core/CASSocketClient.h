@@ -39,3 +39,14 @@
 @property (nonatomic,weak) id<CASJSONRPCSocketClientDelegate> delegate;
 - (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id))completion;
 @end
+
+@class CASXMLSocketClient;
+
+@protocol CASXMLSocketClientDelegate <NSObject>
+- (void)client:(CASXMLSocketClient*)client receivedDocument:(NSXMLDocument*)document;
+@end
+
+@interface CASXMLSocketClient : CASSocketClient
+@property (nonatomic,weak) id<CASXMLSocketClientDelegate> delegate;
+- (void)enqueue:(NSData *)data;
+@end
