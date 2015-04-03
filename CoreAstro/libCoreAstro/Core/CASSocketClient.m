@@ -8,6 +8,8 @@
 
 #import "CASSocketClient.h"
 
+#define CAS_DEBUG_XML 0
+
 @implementation CASSocketClientRequest
 
 - (NSMutableData*) response
@@ -62,7 +64,10 @@
         [NSStream getStreamsToHostWithName:host.name port:self.port inputStream:&is outputStream:&os];
     }
     else {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [NSStream getStreamsToHost:host port:self.port inputStream:&is outputStream:&os];
+        #pragma clang diagnostic pop
     }
     
     BOOL success = NO;
@@ -431,6 +436,107 @@ static const char CRLF[] = "\r\n";
             }
         }
     }
+}
+
+@end
+
+@interface CASXMLSocketClient ()
+@property (nonatomic,strong) NSMutableData* buffer;
+@property (nonatomic,strong) NSMutableData* readBuffer;
+@property (nonatomic,strong) NSMutableData* xmlBuffer;
+@end
+
+@implementation CASXMLSocketClient {
+    BOOL _inBlob;
+}
+
+static const char LF[] = "\n";
+
+- (void)read
+{
+    while ([self hasBytesAvailable]){
+        
+        // create the persistent read buffer
+        if (!self.buffer){
+            self.buffer = [NSMutableData dataWithCapacity:128*1024];
+        }
+        
+        // create a transient read buffer
+        if (!self.readBuffer){
+            self.readBuffer = [NSMutableData dataWithLength:8*1024];
+        }
+        
+        // read a buffer's worth of data from the stream
+        const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
+        if (count > 0){
+            
+            // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
+            [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
+            [self.readBuffer resetBytesInRange:NSMakeRange(0, count)];
+            
+            // search the persistent buffer linefeeds, passing them on to -processLine: as we find them and removing them from the buffer
+            while (self.buffer.length > 0) {
+
+                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
+                if (range.location == NSNotFound){
+                    break;
+                }
+                
+                // got a line, splice it out, process it and remove from the front of the persistent buffer
+                const NSRange lineRange = NSMakeRange(0, range.location);
+                [self processLine:[self.buffer subdataWithRange:lineRange]];
+                [self.buffer replaceBytesInRange:NSMakeRange(lineRange.location, lineRange.length + 1) withBytes:nil length:0];
+            }
+        }
+    }
+}
+
+- (void)processLine:(NSData*)line
+{
+#if CAS_DEBUG_XML
+        NSLog(@"processLine: '%@'",[[NSString alloc] initWithData:line encoding:NSASCIIStringEncoding]);
+#endif
+    
+    // look for blob start
+    const NSRange startBlobRange = [line rangeOfData:[@"<setBLOBVector " dataUsingEncoding:NSASCIIStringEncoding] options:0 range:NSMakeRange(0, line.length)];
+    if (startBlobRange.location != NSNotFound){
+        _inBlob = YES;
+    }
+    else if (_inBlob) {
+        
+        // look for blob end
+        const NSRange endBlobRange = [line rangeOfData:[@"</setBLOBVector>" dataUsingEncoding:NSASCIIStringEncoding] options:0 range:NSMakeRange(0, line.length)];
+        if (endBlobRange.location != NSNotFound){
+            _inBlob = NO;
+        }
+    }
+    
+    // accumulate lines until we can parse an xml document
+    if (!self.xmlBuffer){
+        self.xmlBuffer = [NSMutableData dataWithCapacity:8*1024];
+    }
+    [self.xmlBuffer appendData:line];
+
+    // check for an xml document unless we're processing a blob - if we get one pass it onto the delegate and reset the xml buffer
+    if (!_inBlob){
+
+        NSError* error;
+        NSXMLDocument* xml = [[NSXMLDocument alloc] initWithData:self.xmlBuffer options:0 error:&error];
+        if (xml){
+#if CAS_DEBUG_XML
+            NSLog(@"xml: %@",xml);
+#endif
+            [self.delegate client:self receivedDocument:xml];
+            self.xmlBuffer = nil;
+        }
+    }
+}
+
+- (void)enqueue:(NSData *)data
+{
+    CASSocketClientRequest* request = [CASSocketClientRequest new];
+    request.data = data;
+    [self enqueueRequest:request];
 }
 
 @end
