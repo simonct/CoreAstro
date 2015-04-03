@@ -39,6 +39,13 @@
 @property (nonatomic,strong) NSNumber* alt;
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,copy) NSString* name;
+
+typedef NS_ENUM(NSInteger, iEQMountPierSide){
+    iEQMountPierSideEast,
+    iEQMountPierSideWest
+};
+@property iEQMountPierSide pierSide;
+
 @end
 
 @interface iEQMount (ORSSerialPortDelegate)<ORSSerialPortDelegate>
@@ -188,11 +195,9 @@
                                 
                                 self.az = @([CASLX200Commands fromDecString:response]);
                                 
-                                
-                                //
-                                [self sendCommand:@":pS#" completion:^(NSString * response) {
+                                [self sendCommand:@":pS#" readCount:1 completion:^(NSString * response) {
                                     
-                                    NSLog(@"pier side: %@",response);
+                                    self.pierSide = response.integerValue;
                                     
                                     // just do this at the end of the selector rather than in the completion block ?
                                     [self performSelector:_cmd withObject:nil afterDelay:1];
