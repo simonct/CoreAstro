@@ -33,6 +33,7 @@
 		F4BC427218141FF200EA439F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC427118141FF200EA439F /* Accelerate.framework */; };
 		F4E424C61A86774800C2A87E /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E424C41A86774800C2A87E /* CASMountWindowController.m */; };
 		F4E424C71A86774800C2A87E /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E424C51A86774800C2A87E /* CASMountWindowController.xib */; };
+		F4EDB4691AD1308E00EC5501 /* CASMountSynchroniser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */; };
 		F4FAFB5C16A064CE00DBEAEA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -751,6 +752,8 @@
 		F4E424C31A86774800C2A87E /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountWindowController.h; sourceTree = "<group>"; };
 		F4E424C41A86774800C2A87E /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountWindowController.m; sourceTree = "<group>"; };
 		F4E424C51A86774800C2A87E /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
+		F4EDB4671AD1308E00EC5501 /* CASMountSynchroniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountSynchroniser.h; sourceTree = "<group>"; };
+		F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountSynchroniser.m; sourceTree = "<group>"; };
 		F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -1173,6 +1176,8 @@
 				F4E424C31A86774800C2A87E /* CASMountWindowController.h */,
 				F4E424C41A86774800C2A87E /* CASMountWindowController.m */,
 				F4E424C51A86774800C2A87E /* CASMountWindowController.xib */,
+				F4EDB4671AD1308E00EC5501 /* CASMountSynchroniser.h */,
+				F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */,
 				F40572C717636F99009CEC05 /* Views */,
 				F4034B931719546300A73F9F /* EQMac */,
 				F42E1EA6181424CE00D04CB8 /* CoreAstro */,
@@ -1829,6 +1834,7 @@
 				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
 				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
+				F4EDB4691AD1308E00EC5501 /* CASMountSynchroniser.m in Sources */,
 				F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,
