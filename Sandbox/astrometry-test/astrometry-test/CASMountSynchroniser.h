@@ -10,11 +10,10 @@
 
 @class CASMountSynchroniser;
 
-@protocol CASMountSlewControllerDelegate <NSObject>
-- (void)slewController:(CASMountSynchroniser*)slewController didCaptureExposure:(CASCCDExposure*)exposure;
-- (void)slewController:(CASMountSynchroniser*)slewController didSolveExposure:(CASPlateSolveSolution*)solution;
-- (void)slewController:(CASMountSynchroniser*)slewController didCompleteWithError:(NSError*)error;
-- (void)slewController:(NSError*)error;
+@protocol CASMountMountSynchroniserDelegate <NSObject>
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure;
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution;
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error;
 @end
 
 @interface CASMountSynchroniser : NSObject
@@ -24,7 +23,7 @@
 @property (readonly,nonatomic,copy) NSString* status;
 @property (strong) CASMount* mount;
 @property (strong) CASCameraController* cameraController;
-@property (weak) id<CASMountSlewControllerDelegate> delegate;
+@property (weak) id<CASMountMountSynchroniserDelegate> delegate;
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)cancel;
 @end

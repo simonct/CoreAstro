@@ -125,7 +125,7 @@ static void* kvoContext;
     if (message){
         [self setErrorWithCode:1 message:message];
     }
-    [self.delegate slewController:self didCompleteWithError:self.error];
+    [self.delegate mountSynchroniser:self didCompleteWithError:self.error];
 }
 
 - (void)setErrorWithCode:(NSInteger)code message:(NSString*)message
@@ -168,7 +168,7 @@ static void* kvoContext;
             }
             else {
                 
-                [self.delegate slewController:self didCaptureExposure:exposure];
+                [self.delegate mountSynchroniser:self didCaptureExposure:exposure];
                 
                 // plate solve the exposure
                 self.status = @"Capture complete, solving...";
@@ -194,7 +194,7 @@ static void* kvoContext;
                             // got a solution, calculate separation and see if it's converging on the intended location
                             CASPlateSolveSolution* solution = results[@"solution"];
 
-                            [self.delegate slewController:self didSolveExposure:solution];
+                            [self.delegate mountSynchroniser:self didSolveExposure:solution];
 
                             self.separation = CASAngularSeparation(solution.centreRA,solution.centreDec,_raInDegrees,_decInDegrees);
                             self.status = [NSString stringWithFormat:@"Solved, RA: %f Dec: %f, separation: %f",solution.centreRA,solution.centreDec,self.separation];

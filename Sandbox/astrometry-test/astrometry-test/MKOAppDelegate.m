@@ -494,6 +494,7 @@ static void* kvoContext;
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
 {
     self.imageView.CGImage = exposure.newImage.CGImage;
+    [self.imageView zoomImageToFit:nil];
 }
 
 - (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution
@@ -501,7 +502,7 @@ static void* kvoContext;
     self.solution = solution;
 }
 
-- (void)mountWindowControllerDidSync:(NSError*)error
+- (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error;
 {
     if (!error){
         const CASDMSAngle dms = CASDMSAngleFromDegrees(self.mountWindowController.separation);

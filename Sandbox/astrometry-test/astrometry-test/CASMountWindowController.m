@@ -10,7 +10,7 @@
 #import "CASMountSynchroniser.h"
 #import <CoreAstro/CoreAstro.h>
 
-@interface CASMountWindowController ()
+@interface CASMountWindowController ()<CASMountMountSynchroniserDelegate>
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,assign) NSInteger guideDurationInMS;
@@ -136,7 +136,8 @@
         self.mountSynchroniser.mount = self.mount;
         self.mountSynchroniser.focalLength = self.focalLength;
         self.mountSynchroniser.cameraController = self.selectedCameraController;
-        
+        self.mountSynchroniser.delegate = self;
+
         [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees];
     }
 }
@@ -202,6 +203,23 @@
             [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
     }];
+}
+
+#pragma mark - Mount Synchroniser delegate
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
+{
+    [self.mountWindowDelegate mountWindowController:self didCaptureExposure:exposure];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    [self.mountWindowDelegate mountWindowController:self didSolveExposure:solution];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
+{
+    [self.mountWindowDelegate mountWindowController:self didCompleteWithError:error];
 }
 
 @end
