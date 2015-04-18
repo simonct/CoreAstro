@@ -218,6 +218,7 @@ static void* kvoContext;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Dithering %.1f pixels...",pixels);
+            // todo; start a failsafe timer that resumes exposures if we never hear back from PHD2
         }
         else {
             NSLog(@"Dither failed: %@",result);
