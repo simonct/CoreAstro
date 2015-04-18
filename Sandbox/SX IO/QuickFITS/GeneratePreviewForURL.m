@@ -25,8 +25,15 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
     }
     else{
         
-        const CGSize previewSize = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
-        
+        // QL now imposes a 120MB max usage limit so we need to reduce the size of the preview of large images
+        size_t imageWidth = CGImageGetWidth(image);
+        size_t imageHeight = CGImageGetHeight(image);
+        while (imageWidth > 2048 || imageHeight > 2048){
+            imageWidth /= 2;
+            imageHeight /= 2;
+        }
+        const CGSize previewSize = CGSizeMake(imageWidth, imageHeight);
+
         CGContextRef cgContext = QLPreviewRequestCreateContext(preview, *(CGSize *)&previewSize,true,NULL);
         if (!cgContext){
             NSLog(@"QuickFITS: GeneratePreviewForURL: QLPreviewRequestCreateContext returned nil");
