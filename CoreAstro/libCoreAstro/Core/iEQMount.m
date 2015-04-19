@@ -39,6 +39,13 @@
 @property (nonatomic,strong) NSNumber* alt;
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,copy) NSString* name;
+
+typedef NS_ENUM(NSInteger, iEQMountPierSide){
+    iEQMountPierSideEast,
+    iEQMountPierSideWest
+};
+@property iEQMountPierSide pierSide;
+
 @end
 
 @interface iEQMount (ORSSerialPortDelegate)<ORSSerialPortDelegate>
@@ -170,7 +177,7 @@
                 
                 [self sendCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *response) {
                     
-                    self.ra = @([CASLX200Commands fromRAString:response asDegrees:NO]);
+                    self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
                     
                     // NSLog(@"RA: %@ -> %@",response,self.ra); // HH:MM:SS#
                     
@@ -188,11 +195,18 @@
                                 
                                 self.az = @([CASLX200Commands fromDecString:response]);
                                 
+                                [self sendCommand:@":pS#" readCount:1 completion:^(NSString * response) {
+                                    
+                                    self.pierSide = response.integerValue;
+                                    
+                                    // just do this at the end of the selector rather than in the completion block ?
+                                    [self performSelector:_cmd withObject:nil afterDelay:1];
+
+                                }];
+                                
                                 // doesn't always seem to complete when combined with a slew ?
                                 // probably if a stop command is issued you don't get a response to one of these ?
                                 
-                                // just do this at the end of the selector rather than in the completion block ?
-                                [self performSelector:_cmd withObject:nil afterDelay:1];
 
 //                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
 //                                    
@@ -292,6 +306,9 @@
     NSParameterAssert(ra_ >= 0 && ra_ <= 360);
     NSParameterAssert(dec_ >= -90 && dec_ <= 90);
 
+    self.targetRa = @(ra_);
+    self.targetDec = @(dec_);
+    
     // :SdsDD*MM#, :SdsDD*MM:SS
     // :SrHH:MM.T#, :SrHH:MM:SS#
     

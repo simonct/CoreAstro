@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+// all function expect RA as 0-360, Dec -90-90
+
+typedef struct {
+    int d;
+    double m;
+} CASDMAngle;
+
+extern CASDMAngle CASDMAngleFromDegrees(double degrees);
+
 typedef struct {
     int h;
     double m;
@@ -16,9 +25,17 @@ typedef struct {
 extern CASHMAngle CASHMAngleFromDegrees(double degrees);
 
 typedef struct {
+    int d, m, s;
+} CASDMSAngle;
+
+extern CASDMSAngle CASDMSAngleFromDegrees(double degrees);
+
+typedef struct {
     int h, m, s;
 } CASHMSAngle;
 
 extern CASHMSAngle CASHMSAngleFromDegrees(double degrees);
 
 extern double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2);
+
+#define CASDegreesPerHour (360.0/24.0)

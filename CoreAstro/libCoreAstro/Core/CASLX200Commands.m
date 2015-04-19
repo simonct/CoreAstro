@@ -143,7 +143,7 @@
     
     if (asDegrees){
         const double trunc_ra = trunc(ra);
-        ra = (trunc_ra * (360.0/24.0)) + (ra - trunc_ra);
+        ra = (trunc_ra + (ra - trunc_ra)) * CASDegreesPerHour;
     }
     
     return ra;
@@ -151,56 +151,51 @@
 
 + (NSString*)highPrecisionDec:(double)dec {
     
-    const CASHMSAngle hms = CASHMSAngleFromDegrees(dec);
+    const CASDMSAngle dms = CASDMSAngleFromDegrees(dec);
     
-    NSString* formattedRA;
+    NSString* formattedDec;
     if (dec < 0){
-        formattedRA = [NSString stringWithFormat:@"-%03d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
+        formattedDec = [NSString stringWithFormat:@"%03d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
     }
     else {
-        formattedRA = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)hms.h,(int)hms.m,(int)hms.s];
+        formattedDec = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
     }
 
-    return formattedRA;
+    return formattedDec;
 }
 
 + (NSString*)lowPrecisionDec:(double)dec {
     
-    const CASHMAngle hm = CASHMAngleFromDegrees(dec);
+    const CASDMAngle dm = CASDMAngleFromDegrees(dec);
     
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d*%02d",(int)hm.h,(int)hm.m];
+    NSString* formattedDec = [NSString stringWithFormat:@"%02d*%02d",(int)dm.d,(int)dm.m];
     
-    return formattedRA;
+    return formattedDec;
 }
 
 + (double)fromDecString:(NSString*)decs {
     
     double dec = -1;
+    double fraction = 0;
     
     NSArray* comps = [decs componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"*':"]];
     if ([comps count] == 3){
-        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
+        dec = [comps[0] doubleValue];
+        fraction = ([comps[1] doubleValue]/60.0) + ([comps[2] doubleValue]/3600.0);
     }
     else if ([comps count] == 2){
-        dec = [comps[0] doubleValue] + ([comps[1] doubleValue]/60.0);
+        dec = [comps[0] doubleValue];
+        fraction = ([comps[1] doubleValue]/60.0);
     }
     
+    if (dec < 0){
+        dec -= fraction;
+    }
+    else {
+        dec += fraction;
+    }
+
     return dec;
-}
-
-+ (NSString*)raDegreesToHMS:(double)degrees {
-
-    const double hours = 24.0*degrees/360.0;
-    const double h = trunc(hours);
-
-    const double minutes = (hours-h)*60.0;
-    const double m = trunc(minutes);
-    
-    const double s = (minutes-m)*60.0; // round ?
-
-    NSString* formattedRA = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)h,(int)m,(int)s];
-    
-    return formattedRA;
 }
 
 @end

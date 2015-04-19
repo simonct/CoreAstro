@@ -10,6 +10,6 @@
 
 @interface CASObjectLookup : NSObject
 
-- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,double ra,double dec))completion;
+- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,NSString*objectName,double ra,double dec))completion;
 
 @end

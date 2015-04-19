@@ -19,6 +19,8 @@
 		F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1E9F181422F200D04CB8 /* CASAuxWindowController.m */; };
 		F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */; };
 		F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
+		F4883D7A1A908BC10004F87F /* astrometry_test_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4883D791A908BC10004F87F /* astrometry_test_Tests.m */; };
+		F4883D891A908CB70004F87F /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
 		F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F48BACFD18143447005788CC /* CASFolderWatcher.m */; };
 		F4A101FD18E84FD50071035B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A101FC18E84FD50071035B /* IOKit.framework */; };
 		F4A386C1168887FE00E77631 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A386C0168887FE00E77631 /* Cocoa.framework */; };
@@ -27,9 +29,11 @@
 		F4A386D1168887FE00E77631 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4A386CF168887FE00E77631 /* Credits.rtf */; };
 		F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386D3168887FE00E77631 /* MKOAppDelegate.m */; };
 		F4A386D7168887FF00E77631 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A386D5168887FF00E77631 /* MainMenu.xib */; };
+		F4B579971A87E4BD00480C13 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC42A01814214100EA439F /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F4BC427218141FF200EA439F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC427118141FF200EA439F /* Accelerate.framework */; };
 		F4E424C61A86774800C2A87E /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E424C41A86774800C2A87E /* CASMountWindowController.m */; };
 		F4E424C71A86774800C2A87E /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E424C51A86774800C2A87E /* CASMountWindowController.xib */; };
+		F4EDB4691AD1308E00EC5501 /* CASMountSynchroniser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */; };
 		F4FAFB5C16A064CE00DBEAEA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +51,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = F40D5BC9184A912600977FA9;
 			remoteInfo = FLIDevicesPlugin;
+		};
+		F4883D871A908CB20004F87F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4BC428D1814214100EA439F /* CoreAstro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F44EDEF915FCC385003B1B4C;
+			remoteInfo = "CoreAstro Framework";
 		};
 		F4BC42971814214100EA439F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -107,6 +118,16 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4B5798F1A87E4A900480C13 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
+			dstSubfolderSpec = 10;
+			files = (
+				F4B579971A87E4BD00480C13 /* SXDevicesPlugin.casPlugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +420,9 @@
 		F470AC2217C8CC1F007277F0 /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
 		F470AC2317C8CC1F007277F0 /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F470AC2417C8CC1F007277F0 /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
+		F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "astrometry-test Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4883D781A908BC10004F87F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4883D791A908BC10004F87F /* astrometry_test_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = astrometry_test_Tests.m; sourceTree = "<group>"; };
 		F48BACFC18143447005788CC /* CASFolderWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFolderWatcher.h; sourceTree = "<group>"; };
 		F48BACFD18143447005788CC /* CASFolderWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFolderWatcher.m; sourceTree = "<group>"; };
 		F4A101FC18E84FD50071035B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -728,10 +752,20 @@
 		F4E424C31A86774800C2A87E /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountWindowController.h; sourceTree = "<group>"; };
 		F4E424C41A86774800C2A87E /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountWindowController.m; sourceTree = "<group>"; };
 		F4E424C51A86774800C2A87E /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
+		F4EDB4671AD1308E00EC5501 /* CASMountSynchroniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountSynchroniser.h; sourceTree = "<group>"; };
+		F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountSynchroniser.m; sourceTree = "<group>"; };
 		F4FAFB5B16A064CE00DBEAEA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F4883D721A908BC10004F87F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4883D891A908CB70004F87F /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4A386BA168887FE00E77631 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1065,6 +1099,23 @@
 			path = ../../External/astrometry.net/support;
 			sourceTree = "<group>";
 		};
+		F4883D761A908BC10004F87F /* astrometry-test Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F4883D791A908BC10004F87F /* astrometry_test_Tests.m */,
+				F4883D771A908BC10004F87F /* Supporting Files */,
+			);
+			path = "astrometry-test Tests";
+			sourceTree = "<group>";
+		};
+		F4883D771A908BC10004F87F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F4883D781A908BC10004F87F /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F4A386B4168887FE00E77631 = {
 			isa = PBXGroup;
 			children = (
@@ -1072,6 +1123,7 @@
 				F4A388D516889B4E00E77631 /* astrometry */,
 				F470AB1917C8CC1E007277F0 /* support */,
 				F4A386C6168887FE00E77631 /* astrometry-test */,
+				F4883D761A908BC10004F87F /* astrometry-test Tests */,
 				F4A386BF168887FE00E77631 /* Frameworks */,
 				F4A386BE168887FE00E77631 /* Products */,
 			);
@@ -1081,6 +1133,7 @@
 			isa = PBXGroup;
 			children = (
 				F4A386BD168887FE00E77631 /* astrometry-test.app */,
+				F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1123,6 +1176,8 @@
 				F4E424C31A86774800C2A87E /* CASMountWindowController.h */,
 				F4E424C41A86774800C2A87E /* CASMountWindowController.m */,
 				F4E424C51A86774800C2A87E /* CASMountWindowController.xib */,
+				F4EDB4671AD1308E00EC5501 /* CASMountSynchroniser.h */,
+				F4EDB4681AD1308E00EC5501 /* CASMountSynchroniser.m */,
 				F40572C717636F99009CEC05 /* Views */,
 				F4034B931719546300A73F9F /* EQMac */,
 				F42E1EA6181424CE00D04CB8 /* CoreAstro */,
@@ -1598,6 +1653,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F4883D741A908BC10004F87F /* astrometry-test Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "astrometry-test Tests" */;
+			buildPhases = (
+				F4883D711A908BC10004F87F /* Sources */,
+				F4883D721A908BC10004F87F /* Frameworks */,
+				F4883D731A908BC10004F87F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4883D881A908CB20004F87F /* PBXTargetDependency */,
+			);
+			name = "astrometry-test Tests";
+			productName = "astrometry-test Tests";
+			productReference = F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F4A386BC168887FE00E77631 /* astrometry-test */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F4A386DA168887FF00E77631 /* Build configuration list for PBXNativeTarget "astrometry-test" */;
@@ -1606,6 +1679,7 @@
 				F4A386BA168887FE00E77631 /* Frameworks */,
 				F4A386BB168887FE00E77631 /* Resources */,
 				F42E1EA81814252300D04CB8 /* CopyFiles */,
+				F4B5798F1A87E4A900480C13 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1627,6 +1701,10 @@
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Simon Taylor";
 				TargetAttributes = {
+					F4883D741A908BC10004F87F = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = F4A386BC168887FE00E77631;
+					};
 					F4A386BC168887FE00E77631 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 					};
@@ -1651,6 +1729,7 @@
 			projectRoot = "";
 			targets = (
 				F4A386BC168887FE00E77631 /* astrometry-test */,
+				F4883D741A908BC10004F87F /* astrometry-test Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1715,6 +1794,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F4883D731A908BC10004F87F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4A386BB168887FE00E77631 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1730,6 +1816,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F4883D711A908BC10004F87F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4883D7A1A908BC10004F87F /* astrometry_test_Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F4A386B9168887FE00E77631 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1740,6 +1834,7 @@
 				F416C72E16D6D8F500C4C01D /* CASImageView.m in Sources */,
 				F416C73116D6D8FE00C4C01D /* CASZoomableView.m in Sources */,
 				F4034B9B1719547A00A73F9F /* CASEQMacClient.m in Sources */,
+				F4EDB4691AD1308E00EC5501 /* CASMountSynchroniser.m in Sources */,
 				F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,
@@ -1757,6 +1852,11 @@
 			isa = PBXTargetDependency;
 			name = "CoreAstro Framework";
 			targetProxy = F42E1E931814215500D04CB8 /* PBXContainerItemProxy */;
+		};
+		F4883D881A908CB20004F87F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "CoreAstro Framework";
+			targetProxy = F4883D871A908CB20004F87F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1788,6 +1888,69 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		F4883D7D1A908BC10004F87F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "astrometry-test Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/astrometry-test.app/Contents/MacOS/astrometry-test";
+			};
+			name = Debug;
+		};
+		F4883D7E1A908BC10004F87F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "astrometry-test Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/astrometry-test.app/Contents/MacOS/astrometry-test";
+			};
+			name = Release;
+		};
 		F4A386D8168887FF00E77631 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1894,6 +2057,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "astrometry-test Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4883D7D1A908BC10004F87F /* Debug */,
+				F4883D7E1A908BC10004F87F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F4A386B8168887FE00E77631 /* Build configuration list for PBXProject "astrometry-test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
