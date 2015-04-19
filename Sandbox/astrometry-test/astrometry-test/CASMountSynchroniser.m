@@ -67,6 +67,16 @@ static void* kvoContext;
     }
 }
 
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([@"focalLength" isEqualToString:key]){
+        self.focalLength = 0;
+    }
+    else {
+        [super setNilValueForKey:key];
+    }
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
