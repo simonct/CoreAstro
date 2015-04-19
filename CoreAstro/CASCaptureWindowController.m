@@ -194,7 +194,15 @@
                 else{
                 
                     // add the exposure
-                    [exposures addObject:exposure];
+                    if (exposure){
+                        [exposures addObject:exposure];
+                    }
+                    else {
+                        if (_cancelled){
+                            complete(nil,nil);
+                            return;
+                        }
+                    }
                     
                     // check to see if we're done
                     if ([exposures count] < self.model.captureCount){
