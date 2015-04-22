@@ -18,6 +18,7 @@
 
 @implementation CASMountSynchroniser {
     int _syncCount;
+    BOOL _saveTempLock;
     float _raInDegrees,_decInDegrees;
 }
 
@@ -27,7 +28,7 @@ static void* kvoContext;
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountSlewControllerBinning":@(4),
                                                               @"CASMountSlewControllerDuration":@(5),
-                                                              @"CASMountSlewControllerConvergence":@(0.02)}];
+                                                              @"CASMountSlewControllerConvergence":@(0.005)}];
 }
 
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
@@ -132,6 +133,7 @@ static void* kvoContext;
     self.solving = NO;
     self.status = @"";
     [self.cameraController popSettings];
+    self.cameraController.temperatureLock = _saveTempLock;
     if (message){
         [self setErrorWithCode:1 message:message];
     }
@@ -161,11 +163,14 @@ static void* kvoContext;
     }
     else {
         
+        // temperatureLock is not part of settings so need to save and restore manually
+        _saveTempLock = self.cameraController.temperatureLock;
+        
         // set up the camera
         CASExposureSettings* settings = [CASExposureSettings new];
         settings.binning = captureBinning;
         settings.exposureDuration = captureSeconds;
-        // set point 0 ?
+        self.cameraController.temperatureLock = NO;
         [self.cameraController pushSettings:settings];
         
         self.status = [NSString stringWithFormat:@"Capturing from %@",self.cameraController.camera.deviceName];
@@ -236,6 +241,7 @@ static void* kvoContext;
                                         else {
                                             
                                             [self.cameraController popSettings];
+                                            self.cameraController.temperatureLock = _saveTempLock;
                                             
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 [self startSlewToRA:_raInDegrees dec:_decInDegrees];
