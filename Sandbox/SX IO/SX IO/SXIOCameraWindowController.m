@@ -405,6 +405,7 @@ static void* kvoContext;
     CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
     if (exposure){
         self.currentExposure = exposure;
+        [self.cameraController updateSettingsWithExposure:exposure];
         [self updateWindowTitleWithExposurePath:path];
         [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:path]];
     }

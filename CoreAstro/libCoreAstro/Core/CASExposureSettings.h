@@ -21,7 +21,12 @@
 @property (nonatomic,readonly) NSInteger currentCaptureIndex;
 
 @property (nonatomic,assign) NSInteger exposureDuration;
-@property (nonatomic,assign) NSInteger exposureUnits;
+
+typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
+    CASExposureDurationSeconds = 0,
+    CASExposureDurationMilliseconds = 1
+};
+@property (nonatomic,assign) CASExposureDurationUnits exposureUnits;
 @property (nonatomic,assign) NSInteger exposureInterval;
 
 @property (nonatomic,assign) CGRect subframe;
