@@ -444,8 +444,6 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             // run the solver task
             [self.solverTask launchWithOutputBlock:^(NSString* string) {
                 
-                NSLog(@"solve-field: %@",string);
-                
                 // accumulate the log output
                 if (!self.logOutput){
                     self.logOutput = [NSMutableString stringWithCapacity:1024];
@@ -460,7 +458,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             } terminationBlock:^(int terminationStatus) {
                 
                 if (terminationStatus){
-                    NSLog(@"solve-field: %@",[self.solverTask taskOutput]);
+                    // NSLog(@"solve-field: %@",[self.solverTask taskOutput]);
                     complete([self errorWithCode:3 reason:@"Plate solve failed"],nil);
                 }
                 else {
@@ -480,10 +478,10 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                             NSString* name = [[imagePath lastPathComponent] stringByDeletingPathExtension];
                             [self.solverTask setArguments:@[[[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"]]];
                             
-                            [self.solverTask launchWithOutputBlock:^(NSString* string) { NSLog(@"wcsinfo: %@",string); } terminationBlock:^(int terminationStatus) {
+                            [self.solverTask launchWithOutputBlock:^(NSString* string) { /*NSLog(@"wcsinfo: %@",string);*/ } terminationBlock:^(int terminationStatus) {
                                 
                                 if (terminationStatus){
-                                    NSLog(@"wcsinfo: %@",[self.solverTask taskOutput]);
+                                    // NSLog(@"wcsinfo: %@",[self.solverTask taskOutput]);
                                     complete([self errorWithCode:5 reason:@"Failed to get solution info"],nil);
                                 }
                                 else {
@@ -508,7 +506,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                                             NSString* path = [[self.cacheDirectory stringByAppendingPathComponent:name] stringByAppendingPathExtension:@"wcs"];
                                             [self.solverTask setArguments:@[@"-w",path,@"-NCBJL"]];
                                             
-                                            [self.solverTask launchWithOutputBlock:^(NSString* string) { NSLog(@"plot-constellations: %@",string); } terminationBlock:^(int terminationStatus) {
+                                            [self.solverTask launchWithOutputBlock:^(NSString* string) { /*NSLog(@"plot-constellations: %@",string);*/ } terminationBlock:^(int terminationStatus) {
                                                 
                                                 if (terminationStatus){
                                                     complete([self errorWithCode:7 reason:@"Failed to get annotations"],nil);
