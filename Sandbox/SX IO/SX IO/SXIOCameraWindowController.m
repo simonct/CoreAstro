@@ -405,6 +405,7 @@ static void* kvoContext;
     CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
     if (exposure){
         self.currentExposure = exposure;
+        [self.cameraController updateSettingsWithExposure:exposure];
         [self updateWindowTitleWithExposurePath:path];
         [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:path]];
     }
@@ -1174,7 +1175,18 @@ static void* kvoContext;
         // grab any solution data before we start reusing the exposure variable
         NSData* solutionData = nil;
         if (self.showPlateSolution){
+            
+            // first try the cache
             solutionData = [NSData dataWithContentsOfURL:[self plateSolutionURLForExposure:exposure]];
+            if (!solutionData){
+                
+                // then look for a solution file alongside the exposure
+                NSURL* exposureUrl = exposure.io.url;
+                if (exposureUrl){
+                    NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
+                    solutionData = [NSData dataWithContentsOfURL:solutionUrl];
+                }
+            }
         }
         
         // live calibrate using saved bias and flat frames

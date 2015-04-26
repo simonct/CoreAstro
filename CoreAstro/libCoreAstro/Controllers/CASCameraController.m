@@ -667,3 +667,37 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 }
 
 @end
+
+@implementation CASCameraController (CASCCDExposure)
+
+- (void)updateSettingsWithExposure:(CASCCDExposure*)exposure
+{
+    if (exposure.exposureMS < 1000){
+        self.settings.exposureDuration = exposure.exposureMS;
+        self.settings.exposureUnits = CASExposureDurationMilliseconds;
+    }
+    else {
+        self.settings.exposureDuration = exposure.exposureMS/1000;
+        self.settings.exposureUnits = CASExposureDurationSeconds;
+    }
+    
+    if ([self.camera.binningModes containsObject:@(exposure.params.bin.width)]){
+        self.settings.binning = exposure.params.bin.width;
+    }
+    
+    if (self.camera.hasCooler){
+        NSNumber* setPoint = [exposure valueForKeyPath:@"meta.temperature.setpoint"];
+        if (setPoint){
+            self.targetTemperature = setPoint.integerValue;
+            self.temperatureLock = YES;
+        }
+        else {
+            self.temperatureLock = NO;
+        }
+    }
+    
+    // filter, subframe ?
+}
+
+@end
+
