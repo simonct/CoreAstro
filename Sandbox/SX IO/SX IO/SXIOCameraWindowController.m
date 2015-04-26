@@ -17,6 +17,8 @@
 #import "CASCaptureWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
+#import "CASMountWindowController.h"
+#import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
@@ -33,7 +35,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @implementation SXIOExposureView
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASMountWindowControllerDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
@@ -66,6 +68,12 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,readonly) NSString* cachesDirectory;
 
 @property (nonatomic,copy) NSString* cameraDeviceID;
+
+@property (strong) CASMount* mount;
+@property (weak) ORSSerialPort* selectedSerialPort;
+@property (strong) ORSSerialPortManager* serialPortManager;
+@property (strong) IBOutlet NSWindow *mountConnectWindow;
+@property (strong) CASMountWindowController* mountWindowController;
 
 @end
 
@@ -698,6 +706,70 @@ static void* kvoContext;
     [self.sequenceEditorWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         self.sequenceEditorWindowController = nil;
     }];
+}
+
+#pragma mark - Mount Control
+
+- (IBAction)connectToMount:(id)sender
+{
+    if (!self.serialPortManager){
+        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    }
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+}
+
+- (IBAction)connectButtonPressed:(id)sender
+{
+    if (!self.selectedSerialPort){
+        return;
+    }
+    
+    if (self.selectedSerialPort.isOpen){
+        [self presentAlertWithTitle:nil message:@"Selected serial port is already open"];
+        return;
+    }
+    
+    [self.mountConnectWindow orderOut:nil];
+    
+    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    
+    if (self.mount.slewing){
+        [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
+        return;
+    }
+    
+    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
+        if (error){
+            [self presentAlertWithTitle:nil message:[error localizedDescription]];
+        }
+        else {
+            self.mountWindowController.cameraController = self.cameraController;
+            self.mountWindowController.mountWindowDelegate = self;
+            CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
+            if (solution){
+                [self.mountWindowController setTargetRA:solution.centreRA dec:solution.centreDec];
+            }
+        }
+    }];
+}
+
+#pragma mark - Mount Window Controller Delegate
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
+{
+    [self setCurrentExposure:exposure resetDisplay:YES];
+}
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    self.exposureView.plateSolveSolution = solution;
+}
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error
+{
+    [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
 }
 
 #pragma mark - Plate Solving
@@ -1634,7 +1706,10 @@ static void* kvoContext;
         case 11105: // Sequence...
             enabled = !self.cameraController.capturing;
             break;
-
+            
+        case 11106: // Connect to Mount...
+            enabled = YES;
+            break;
     }
     return enabled;
 }

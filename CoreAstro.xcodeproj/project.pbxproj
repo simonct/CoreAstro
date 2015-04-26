@@ -388,6 +388,10 @@
 		F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
 		F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
+		F4F2A4C11AED0EB200CCC40F /* CASMountSynchroniser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4F2A4C21AED0EB200CCC40F /* CASMountSynchroniser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */; };
+		F4F2A4C61AED0EDA00CCC40F /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F2A4C31AED0EDA00CCC40F /* CASMountWindowController.xib */; };
+		F4F2A4C71AED0EDA00CCC40F /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A4C41AED0EDA00CCC40F /* CASMountWindowController.m */; };
 		F4F5150315BB2E75000CD9E0 /* CASCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */; };
 		F4F5150415BB2E75000CD9E0 /* CASCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */; };
 		F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F59BA4183C0184006331E3 /* CASFITSUtilities.h */; };
@@ -1436,6 +1440,11 @@
 		F4EEF3091606233000547009 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = SOURCE_ROOT; };
 		F4EEF321160629D800547009 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHGPUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.h; sourceTree = SOURCE_ROOT; };
 		F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHGPUSBDevice.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.m; sourceTree = SOURCE_ROOT; };
+		F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountSynchroniser.h; sourceTree = "<group>"; };
+		F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountSynchroniser.m; sourceTree = "<group>"; };
+		F4F2A4C31AED0EDA00CCC40F /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
+		F4F2A4C41AED0EDA00CCC40F /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountWindowController.m; sourceTree = "<group>"; };
+		F4F2A4C51AED0EDA00CCC40F /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountWindowController.h; sourceTree = "<group>"; };
 		F4F5150015BB2E74000CD9E0 /* CASCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraWindowController.h; sourceTree = "<group>"; };
 		F4F5150115BB2E75000CD9E0 /* CASCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraWindowController.m; sourceTree = "<group>"; };
 		F4F5150215BB2E75000CD9E0 /* CASCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraWindowController.xib; sourceTree = "<group>"; };
@@ -2028,6 +2037,8 @@
 				F4E4241D1A86741F00C2A87E /* CASLX200Commands.m */,
 				F4E424261A86746C00C2A87E /* iEQMount.h */,
 				F4E424271A86746C00C2A87E /* iEQMount.m */,
+				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
+				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
 				F4E424791A86757700C2A87E /* ORSSerialPort */,
 			);
 			name = Core;
@@ -2091,6 +2102,9 @@
 				F40093201698884400E96DBE /* CASPreferencesWindowController.h */,
 				F40093211698884400E96DBE /* CASPreferencesWindowController.m */,
 				F40093221698884500E96DBE /* CASPreferencesWindowController.xib */,
+				F4F2A4C51AED0EDA00CCC40F /* CASMountWindowController.h */,
+				F4F2A4C41AED0EDA00CCC40F /* CASMountWindowController.m */,
+				F4F2A4C31AED0EDA00CCC40F /* CASMountWindowController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -3013,6 +3027,7 @@
 				F4EEF2721604662100547009 /* CASIOHIDTransport.h in Headers */,
 				F4EEF2AB1604692600547009 /* HID_Utilities_External.h in Headers */,
 				F4EEF2AE1604692600547009 /* ImmrHIDUtilAddOn.h in Headers */,
+				F4F2A4C11AED0EB200CCC40F /* CASMountSynchroniser.h in Headers */,
 				F4E424241A86744800C2A87E /* CASMount.h in Headers */,
 				F4EEF2B01604692600547009 /* IOHIDDevice_.h in Headers */,
 				F4E424281A86746C00C2A87E /* iEQMount.h in Headers */,
@@ -3449,6 +3464,7 @@
 				F4EAFCA715D7E512001B7993 /* CoreAstro.sdef in Resources */,
 				F412975915FCA977009C215E /* move.pdf in Resources */,
 				F412975A15FCA977009C215E /* selection.pdf in Resources */,
+				F4F2A4C61AED0EDA00CCC40F /* CASMountWindowController.xib in Resources */,
 				F412975C15FCA977009C215E /* zoom1.pdf in Resources */,
 				F412975D15FCA977009C215E /* zoomin.pdf in Resources */,
 				F412975E15FCA977009C215E /* zoomout.pdf in Resources */,
@@ -3641,6 +3657,7 @@
 				F4CA50DE169CB62F00832CFF /* CASTaskWrapper.m in Sources */,
 				F4CA53B2169CC9FD00832CFF /* bl-nl.inc in Sources */,
 				F458725A183EACFC00CB53D1 /* CASFocusMetric.m in Sources */,
+				F4F2A4C21AED0EB200CCC40F /* CASMountSynchroniser.m in Sources */,
 				F4F6E105182F884600ACBFB4 /* CASPowerMonitor.m in Sources */,
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
@@ -3699,6 +3716,7 @@
 				F4849CC31659570B0069647F /* CASLibraryBrowserViewController.m in Sources */,
 				F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */,
 				F44791E816806BB2007A6815 /* CASProgressHUDView.m in Sources */,
+				F4F2A4C71AED0EDA00CCC40F /* CASMountWindowController.m in Sources */,
 				F44791EB16806D42007A6815 /* CASHUDView.m in Sources */,
 				F44791EE1680C1D8007A6815 /* CASStarInfoHUDView.m in Sources */,
 				F44791F31680DB78007A6815 /* CASHistogramHUDView.m in Sources */,
