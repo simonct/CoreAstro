@@ -36,7 +36,7 @@
 		F412976315FCAD16009C215E /* moon.icns in Resources */ = {isa = PBXBuildFile; fileRef = F412976215FCAD16009C215E /* moon.icns */; };
 		F4175A6116A749550032954F /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4175A6016A749550032954F /* loop.png */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
-		F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */ = {isa = PBXBuildFile; fileRef = F43D311918A6A1FC00087C52 /* CASPHD2Client.h */; };
+		F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */ = {isa = PBXBuildFile; fileRef = F43D311918A6A1FC00087C52 /* CASPHD2Client.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */; };

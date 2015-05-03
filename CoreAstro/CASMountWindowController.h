@@ -21,6 +21,7 @@
 @property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
+@property (nonatomic,strong,readonly) CASMountSynchroniser* mountSynchroniser; // tmp for flipping
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs;
 @end

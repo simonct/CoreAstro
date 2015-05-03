@@ -72,6 +72,8 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 @interface CASMount : NSObject<CASMount> // todo CASDevice subclass
 @end
 
+extern NSString* const CASMountFlippedNotification;
+
 // CASMount < CASLX200Mount (defines command set + serial connection) < CASIEQMount (defines command variations)
 // or mount is simply a composite of transport and command set ?
 // or is this just over-abstracting ? although things like slewing look pretty common

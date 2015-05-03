@@ -8,6 +8,8 @@
 
 #import "CASMount.h"
 
+NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
+
 @implementation CASMount
 
 - (void)connectWithCompletion:(void(^)(NSError*))completion {

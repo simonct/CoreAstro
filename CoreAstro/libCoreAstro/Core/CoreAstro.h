@@ -62,3 +62,4 @@
 #import <CoreAstro/CASLX200Commands.h>
 #import <CoreAstro/CASCoordinateUtils.h>
 #import <CoreAstro/CASMountSynchroniser.h>
+#import <CoreAstro/CASPHD2Client.h>

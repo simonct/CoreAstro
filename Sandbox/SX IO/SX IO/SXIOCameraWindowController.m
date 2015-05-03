@@ -75,6 +75,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (strong) CASMountWindowController* mountWindowController;
 
+@property (strong) CASProgressWindowController* mountFlipProgress;
+
 @end
 
 @implementation SXIOCameraWindowController {
@@ -147,6 +149,9 @@ static void* kvoContext;
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
     [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
     
+    // listen to mount flipped notifications (todo; put in camera controller/capture controller?)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountFlipped:) name:CASMountFlippedNotification object:nil];
+    
     // map close button to hide window
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -158,6 +163,7 @@ static void* kvoContext;
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)hideWindow:sender
@@ -755,6 +761,58 @@ static void* kvoContext;
     }];
 }
 
+- (void)mountFlipped
+{
+    // stop phd2 guiding whether we're capturing or not
+    [self.cameraController.phd2Client stop];
+
+    if (!self.cameraController.capturing){
+        return;
+    }
+    
+    // cancel any current capture
+    [self.cameraController cancelCapture];
+    
+    // if we've got a locked solution, attempt to recover after the flip
+    if (!self.exposureView.lockedPlateSolveSolution){
+        [self presentAlertWithTitle:@"Exposure Cancelled" message:@"A mount flip was detected without a locked solution."];
+    }
+    else {
+        
+        // present a sheet with some status info
+        self.mountFlipProgress = [CASProgressWindowController createWindowController];
+        [self.mountFlipProgress beginSheetModalForWindow:self.window];
+        self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Waiting for mount to flip...", @"Progress sheet status label");
+        [self.mountFlipProgress.progressBar setIndeterminate:YES];
+        self.mountFlipProgress.canCancel = NO;
+        
+        // wait for the mount to complete flipping
+        [self checkMountFinishedFlip];
+    }
+}
+
+- (void)checkMountFinishedFlip
+{
+    if (self.mount.slewing){
+        
+        NSLog(@"Mount still slewing, waiting 5s...");
+        [self performSelector:_cmd withObject:nil afterDelay:5];
+    }
+    else {
+        
+        CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
+        if (solution){
+            
+            NSLog(@"Mount slew complete, re-syncing to locked solution");
+            
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
+            
+            // slew and solve to target
+            [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+        }
+    }
+}
+
 #pragma mark - Mount Window Controller Delegate
 
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
@@ -769,7 +827,41 @@ static void* kvoContext;
 
 - (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error
 {
-    [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+    if (error){
+        [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+    }
+    
+    // looks like we were syncing after a flip
+    if (self.mountFlipProgress){
+        
+        void (^dismissSheet)() = ^(){
+            [self.mountFlipProgress endSheetWithCode:NSOKButton];
+            self.mountFlipProgress = nil;
+        };
+        
+        if (error){
+            dismissSheet();
+        }
+        else{
+        
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Restarting guiding...", @"Progress sheet status label");
+
+            // flip and restart guiding
+            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+                
+                dismissSheet();
+
+                if (!success){
+                    [self presentAlertWithTitle:@"Guide Failed" message:@"PHD2 failed to restart guiding"];
+                }
+                else {
+                    
+                    // restart capture
+                    [self capture:nil];
+                }
+            }];
+        }
+    }
 }
 
 #pragma mark - Plate Solving
@@ -1793,6 +1885,15 @@ static void* kvoContext;
 - (void)endSequence
 {
     [self cancelCapture:nil];
+}
+
+#pragma mark - Notifications
+
+- (void)mountFlipped:(NSNotification*)note
+{
+    if (note.object == self.mount){
+        [self mountFlipped];
+    }
 }
 
 @end

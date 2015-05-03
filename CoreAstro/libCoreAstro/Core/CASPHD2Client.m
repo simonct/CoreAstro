@@ -181,6 +181,13 @@ static void* kvoContext;
     }];
 }
 
+- (void)flipWithCompletion:(void(^)(BOOL))completion
+{
+    [self.client enqueueCommand:@{@"method":@"flip_calibration"} completion:^(id _) {
+        [self guideWithCompletion:completion];
+    }];
+}
+
 - (void)stop
 {
     [self setupClient];
@@ -218,7 +225,8 @@ static void* kvoContext;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Dithering %.1f pixels...",pixels);
-            // todo; start a failsafe timer that resumes exposures if we never hear back from PHD2
+            // start a timer that resumes exposures if we never hear back from PHD2
+            [self performSelector:@selector(ditherTimeout) withObject:nil afterDelay:120];
         }
         else {
             NSLog(@"Dither failed: %@",result);
@@ -227,6 +235,12 @@ static void* kvoContext;
             }
         }
     }];
+}
+
+- (void)ditherTimeout
+{
+    NSLog(@"ditherTimeout");
+    // stop/start phd client ?
 }
 
 - (void)cancel

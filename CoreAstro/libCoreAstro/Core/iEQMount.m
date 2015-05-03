@@ -639,7 +639,7 @@
         const BOOL flipped = (_pierSide != 0);
         _pierSide = pierSide;
         if (flipped){
-            NSLog(@"Flipped"); // post notification
+            [[NSNotificationCenter defaultCenter] postNotificationName:CASMountFlippedNotification object:self];
         }
     }
 }
