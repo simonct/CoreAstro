@@ -60,6 +60,18 @@
     NSAssert(NO, @"Not implemented");
 }
 
+- (void)park {
+    NSAssert(NO, @"Not implemented");
+}
+
+- (void)unpark {
+    NSAssert(NO, @"Not implemented");
+}
+
+- (void)gotoHomePosition {
+    NSAssert(NO, @"Not implemented");
+}
+
 - (void)halt {
     NSAssert(NO, @"Not implemented");
 }

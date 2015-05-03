@@ -393,12 +393,12 @@
                                         </menu>
                                     </popUpButtonCell>
                                     <connections>
+                                        <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" id="GEQ-pY-yOn"/>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="wOB-DN-0Ui">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" id="GEQ-pY-yOn"/>
                                     </connections>
                                 </popUpButton>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y7m-jC-Wmh">
@@ -455,6 +455,21 @@
                                     <connections>
                                         <action selector="west:" target="-2" id="yog-Wi-HWi"/>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="T2q-yv-Z8E">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5pa-IW-QlU">
+                                    <rect key="frame" x="12" y="27" width="77" height="32"/>
+                                    <buttonCell key="cell" type="push" title="Home" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iQ8-yE-HS0">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="home:" target="-2" id="JdX-Lg-BT6"/>
+                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="z5s-iu-blf">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>

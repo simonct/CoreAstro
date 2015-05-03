@@ -287,6 +287,24 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
     }];
 }
 
+- (void)park {
+    [self sendCommand:@":MP1#" readCount:1 completion:^(NSString* response) {
+        NSLog(@"Park command response: %@",response);
+    }];
+}
+
+- (void)unpark {
+    [self sendCommand:@":MP0#" readCount:1 completion:^(NSString* response) {
+        NSLog(@"Unpark command response: %@",response);
+    }];
+}
+
+- (void)gotoHomePosition {
+    [self sendCommand:@":MH#" readCount:1 completion:^(NSString* response) {
+        NSLog(@"Home command response: %@",response);
+    }];
+}
+
 - (void)halt
 {
     if (_direction == CASMountDirectionNone){

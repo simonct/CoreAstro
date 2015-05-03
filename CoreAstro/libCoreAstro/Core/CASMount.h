@@ -57,6 +57,10 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 
+- (void)park;
+- (void)unpark;
+- (void)gotoHomePosition;
+
 @end
 
 @interface CASMount : NSObject<CASMount> // todo CASDevice subclass

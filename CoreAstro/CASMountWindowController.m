@@ -240,6 +240,16 @@ static void* kvoContext;
     [self.mount halt];
 }
 
+- (IBAction)home:(id)sender
+{
+    [self.mount gotoHomePosition];
+}
+
+- (IBAction)park:(id)sender
+{
+    [self.mount park];
+}
+
 - (IBAction)lookup:(id)sender
 {
     if (![self.searchString length]){
