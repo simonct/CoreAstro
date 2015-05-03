@@ -476,6 +476,21 @@
                                         </binding>
                                     </connections>
                                 </button>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LIu-U6-GWM">
+                                    <rect key="frame" x="16" y="14" width="67" height="17"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="BbG-RE-a6g">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="-2" name="value" keyPath="mount.pierSide" id="L8A-G3-rMW">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">CASPierSideTransformer</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -487,7 +502,7 @@
                 <binding destination="-2" name="title" keyPath="mount.name" id="TDL-zs-9nR"/>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-1190.5" y="-58.5"/>
+            <point key="canvasLocation" x="-1329.5" y="-80.5"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
         <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">

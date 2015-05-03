@@ -61,6 +61,12 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 - (void)unpark;
 - (void)gotoHomePosition;
 
+typedef NS_ENUM(NSInteger, CASMountPierSide) {
+    CASMountPierSideEast = 1,
+    CASMountPierSideWest = 2
+};
+@property (nonatomic,readonly) CASMountPierSide pierSide;
+
 @end
 
 @interface CASMount : NSObject<CASMount> // todo CASDevice subclass

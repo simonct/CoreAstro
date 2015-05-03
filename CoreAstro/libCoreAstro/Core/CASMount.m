@@ -72,6 +72,10 @@
     NSAssert(NO, @"Not implemented");
 }
 
+- (CASMountPierSide) pierSide {
+    return 0;
+}
+
 - (void)halt {
     NSAssert(NO, @"Not implemented");
 }

@@ -10,6 +10,29 @@
 #import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASPierSideTransformer : NSValueTransformer
+@end
+
+@implementation CASPierSideTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    switch ([value integerValue]) {
+        case CASMountPierSideEast:
+            return @"East";
+        case CASMountPierSideWest:
+            return @"West";
+    }
+    return @"";
+}
+
+@end
+
 @interface CASMountWindowController ()<CASMountMountSynchroniserDelegate>
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,copy) NSString* searchString;
@@ -22,6 +45,7 @@
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic) CASCameraController* selectedCameraController;
 @property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
+@property (weak) IBOutlet NSTextField *pierSideLabel;
 @end
 
 // todo;
@@ -38,6 +62,7 @@ static void* kvoContext;
 {
     [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
+    [NSValueTransformer setValueTransformer:[CASPierSideTransformer new] forName:@"CASPierSideTransformer"];
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountWindowControllerBinning":@(4),
                                                               @"CASMountWindowControllerDuration":@(5),

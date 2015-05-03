@@ -40,11 +40,7 @@
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,copy) NSString* name;
 
-typedef NS_ENUM(NSInteger, iEQMountPierSide){
-    iEQMountPierSideEast,
-    iEQMountPierSideWest
-};
-@property iEQMountPierSide pierSide;
+@property (readwrite) CASMountPierSide pierSide;
 
 @end
 
@@ -59,6 +55,7 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
 
 @synthesize connected,slewing;
 @synthesize ra,dec,alt,az,targetRa,targetDec;
+@synthesize pierSide = _pierSide;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port
 {
@@ -213,8 +210,18 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
                                     self.az = @([CASLX200Commands fromDecString:response]);
                                     
                                     [self sendCommand:@":pS#" readCount:1 completion:^(NSString * response) {
-                                        
-                                        self.pierSide = response.integerValue;
+
+                                        switch (response.integerValue) {
+                                            case 0:
+                                                self.pierSide = CASMountPierSideEast;
+                                                break;
+                                            case 1:
+                                                self.pierSide = CASMountPierSideWest;
+                                                break;
+                                            default:
+                                                self.pierSide = 0;
+                                                break;
+                                        }
                                         
                                         // just do this at the end of the selector rather than in the completion block ?
                                         [self performSelector:_cmd withObject:nil afterDelay:1];
@@ -623,6 +630,17 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
         [self sendCommand:command readCount:1 completion:^(NSString* response) {
             NSLog(@"Set rate response: %@",response);
         }];
+    }
+}
+
+- (void)setPierSide:(CASMountPierSide)pierSide
+{
+    if (pierSide != _pierSide){
+        const BOOL flipped = (_pierSide != 0);
+        _pierSide = pierSide;
+        if (flipped){
+            NSLog(@"Flipped"); // post notification
+        }
     }
 }
 
