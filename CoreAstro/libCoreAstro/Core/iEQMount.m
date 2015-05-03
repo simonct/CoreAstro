@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
 @end
 
 @implementation iEQMount {
-    NSInteger _slewRate;
+    NSInteger _movingRate;
     CASMountDirection _direction;
     NSMutableString* _input;
 }
@@ -92,6 +92,11 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
             [self.completionStack removeObject:responseObject];
         }
     }
+    else {
+        if (responseObject.command){
+//            NSLog(@"%@ is in progress",responseObject.command);
+        }
+    }
 }
 
 - (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion
@@ -120,24 +125,37 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
     [self sendCommand:command readCount:0 completion:completion];
 }
 
+- (void)sendCommand:(NSString*)command
+{
+    [self sendCommand:command readCount:0 completion:nil];
+}
+
 - (void)initialiseMount
 {
-    void (^complete)() = ^(){
+    void (^complete)(NSError*) = ^(NSError* error){
         if (self.connectCompletion){
-            self.connectCompletion(nil);
+            self.connectCompletion(error);
             self.connectCompletion = nil;
         }
     };
     
     [self sendCommand:@":V#" completion:^(NSString *response) {
         if (![@"V1.00" isEqualToString:response]){
-            complete();
+            NSString* message = [NSString stringWithFormat:@"Unrecognised response when connecting to mount. Expected V1.00 but got '%@'",response];
+            complete([NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:1
+                                     userInfo:@{NSLocalizedFailureReasonErrorKey:message}]);
         }
         else {
             [self sendCommand:@":MountInfo#" readCount:4 completion:^(NSString *response) {
                 self.connected = YES;
-                self.name = response;
-                complete();
+                static NSDictionary* lookup = nil;
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    lookup = @{@"8407":@"iEQ45 EQ/iEQ30",@"8497":@"iEQ45 AltAz",@"8408":@"ZEQ25",@"8498":@"SmartEQ"};
+                });
+                self.name = lookup[response] ?: response;
+                complete(nil);
                 [self pollMountStatus];
             }];
         }
@@ -156,64 +174,64 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
         
         self.slewing = [response boolValue];
         
-//        [self sendCommand:@":Gr#" completion:^(NSString *response) {
-//            
-//            NSLog(@"Slew rate: %@",response);
-//            
-//            self.slewRate = [response integerValue]; // no, it's the moving rate
-//            
-//        }];
-        
-        
-        [self sendCommand:@":AG#" completion:^(NSString *response) {
+        [self sendCommand:@":Gr#" completion:^(NSString *response) {
             
-            // NSLog(@"Guide rate: %@",response);
+//            NSLog(@"Moving rate: %@",response);
 
-            [self sendCommand:@":AT#" readCount:1 completion:^(NSString *response) {
+            [self willChangeValueForKey:@"movingRate"];
+            _movingRate = [response integerValue] - 1;
+            [self didChangeValueForKey:@"movingRate"];
+            
+            [self sendCommand:@":AG#" completion:^(NSString *response) {
                 
-                //            NSLog(@"Tracking: %@",response);
+//                NSLog(@"Guide rate: %@",response);
                 
-                self.tracking = [response boolValue];
-                
-                [self sendCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *response) {
+                [self sendCommand:@":AT#" readCount:1 completion:^(NSString *response) {
                     
-                    self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
+//                    NSLog(@"Tracking: %@",response);
                     
-                    // NSLog(@"RA: %@ -> %@",response,self.ra); // HH:MM:SS#
+                    self.tracking = [response boolValue];
                     
-                    [self sendCommand:[CASLX200Commands getTelescopeDeclination] completion:^(NSString *response) {
+                    [self sendCommand:[CASLX200Commands getTelescopeRightAscension] completion:^(NSString *response) {
                         
-                        self.dec = @([CASLX200Commands fromDecString:response]);
+                        self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
                         
-                        // NSLog(@"Dec: %@ -> %@",response,self.dec); // sDD*MM:SS#
+//                        NSLog(@"RA: %@ -> %@",response,self.ra); // HH:MM:SS#
                         
-                        [self sendCommand:[CASLX200Commands getTelescopeAltitude] completion:^(NSString *response) {
+                        [self sendCommand:[CASLX200Commands getTelescopeDeclination] completion:^(NSString *response) {
                             
-                            self.alt = @([CASLX200Commands fromDecString:response]);
+                            self.dec = @([CASLX200Commands fromDecString:response]);
                             
-                            [self sendCommand:[CASLX200Commands getTelescopeAzimuth] completion:^(NSString *response) {
+//                            NSLog(@"Dec: %@ -> %@",response,self.dec); // sDD*MM:SS#
+                            
+                            [self sendCommand:[CASLX200Commands getTelescopeAltitude] completion:^(NSString *response) {
                                 
-                                self.az = @([CASLX200Commands fromDecString:response]);
+                                self.alt = @([CASLX200Commands fromDecString:response]);
                                 
-                                [self sendCommand:@":pS#" readCount:1 completion:^(NSString * response) {
+                                [self sendCommand:[CASLX200Commands getTelescopeAzimuth] completion:^(NSString *response) {
                                     
-                                    self.pierSide = response.integerValue;
+                                    self.az = @([CASLX200Commands fromDecString:response]);
                                     
-                                    // just do this at the end of the selector rather than in the completion block ?
-                                    [self performSelector:_cmd withObject:nil afterDelay:1];
-
+                                    [self sendCommand:@":pS#" readCount:1 completion:^(NSString * response) {
+                                        
+                                        self.pierSide = response.integerValue;
+                                        
+                                        // just do this at the end of the selector rather than in the completion block ?
+                                        [self performSelector:_cmd withObject:nil afterDelay:1];
+                                        
+                                    }];
+                                    
+                                    // doesn't always seem to complete when combined with a slew ?
+                                    // probably if a stop command is issued you don't get a response to one of these ?
+                                    
+                                    
+                                    //                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
+                                    //
+                                    //                                    NSLog(@"Moving rate: %@",response);
+                                    //                                    
+                                    //                                    [self performSelector:_cmd withObject:nil afterDelay:1];
+                                    //                                }];
                                 }];
-                                
-                                // doesn't always seem to complete when combined with a slew ?
-                                // probably if a stop command is issued you don't get a response to one of these ?
-                                
-
-//                                [self sendCommand:@":Gr#" completion:^(NSString *response) {
-//                                    
-//                                    NSLog(@"Moving rate: %@",response);
-//                                    
-//                                    [self performSelector:_cmd withObject:nil afterDelay:1];
-//                                }];
                             }];
                         }];
                     }];
@@ -271,9 +289,15 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
 
 - (void)halt
 {
-    [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
-        NSLog(@"Halt command response: %@",response);
-    }];
+    if (_direction == CASMountDirectionNone){
+        [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
+            NSLog(@"Halt command response: %@",response);
+        }];
+    }
+    else {
+        [self sendCommand:@":q#"];
+        [self pollMountStatus];
+    }
 }
 
 - (void)syncToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
@@ -394,7 +418,7 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
             //NSLog(@"%ld bytes remaining to read",responseObject.readCount);
             return;
         }
-        [_input deleteCharactersInRange:NSMakeRange(0,[_input length])];
+        response = _input;
     }
     else if (responseObject.useTerminator) {
         const NSRange range = [_input rangeOfString:@"#" options:NSBackwardsSearch];
@@ -408,10 +432,12 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
     
 //    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
     
-    if (responseObject.completion){
-        responseObject.completion(response);
-    }
+    void (^completion)(NSString*) = responseObject.completion;
     [self.completionStack removeObject:responseObject];
+    if (completion){
+        completion(response);
+    }
+    _input = nil;
     
     [self sendNextCommand];
 }
@@ -426,6 +452,11 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
 - (void)serialPort:(ORSSerialPort *)serialPort didEncounterError:(NSError *)error
 {
     NSLog(@"didEncounterError: %@",error);
+    
+    if (self.connectCompletion){
+        self.connectCompletion(error);
+        self.connectCompletion = nil;
+    }
     
     self.connected = NO;
 }
@@ -495,20 +526,24 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
     
     if (_direction != direction){
         
+        if (_direction != CASMountDirectionNone){
+            [self stopMoving];
+        }
+        
         _direction = direction;
         
         switch (_direction) {
             case CASMountDirectionNorth:
-                [self sendCommand:@":mn#" completion:nil];
+                [self sendCommand:@":mn#"];
                 break;
             case CASMountDirectionEast:
-                [self sendCommand:@":me#" completion:nil];
+                [self sendCommand:@":me#"];
                 break;
             case CASMountDirectionSouth:
-                [self sendCommand:@":ms#" completion:nil];
+                [self sendCommand:@":ms#"];
                 break;
             case CASMountDirectionWest:
-                [self sendCommand:@":mw#" completion:nil];
+                [self sendCommand:@":mw#"];
                 break;
             default:
                 break;
@@ -520,7 +555,7 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
 - (void)stopMoving
 {
     _direction = CASMountDirectionNone;
-    [self sendCommand:@":q#" completion:nil];
+    [self sendCommand:@":q#"];
 }
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
@@ -552,21 +587,21 @@ typedef NS_ENUM(NSInteger, iEQMountPierSide){
     [self sendCommand:command completion:nil];
 }
 
-- (NSInteger)slewRate
+- (NSInteger)movingRate
 {
-    return _slewRate;
+    return _movingRate;
 }
 
-- (void)setSlewRate:(NSInteger)slewRate
+- (void)setMovingRate:(NSInteger)movingRate
 {
-    if (slewRate < 0 || slewRate > 9){
+    if (movingRate < 0 || movingRate > 9){
         return;
     }
-    if (_slewRate != slewRate){
+    if (_movingRate != movingRate){
         
-        _slewRate = slewRate;
+        _movingRate = movingRate;
         
-        NSString* command = [NSString stringWithFormat:@":SR%ld#",(long)_slewRate+1];
+        NSString* command = [NSString stringWithFormat:@":SR%ld#",(long)_movingRate+1];
         [self sendCommand:command readCount:1 completion:^(NSString* response) {
             NSLog(@"Set rate response: %@",response);
         }];

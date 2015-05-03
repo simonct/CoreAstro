@@ -32,6 +32,6 @@ typedef NS_ENUM(NSInteger, iEQMountTrackingRate) {
 
 - (void)dumpInfo;
 
-@property (nonatomic,assign) NSInteger slewRate;
+@property (nonatomic) NSInteger movingRate;
 
 @end
