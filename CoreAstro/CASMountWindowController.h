@@ -18,7 +18,7 @@
 @end
 
 @interface CASMountWindowController : NSWindowController
-@property (nonatomic,weak) CASCameraController* cameraController;
+@property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;

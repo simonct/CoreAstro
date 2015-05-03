@@ -7,6 +7,7 @@
 //
 
 #import "CASMountWindowController.h"
+#import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASMountWindowController ()<CASMountMountSynchroniserDelegate>
@@ -17,15 +18,21 @@
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property BOOL usePlateSolvng;
-@property float focalLength;
+@property (nonatomic) float focalLength;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic) CASCameraController* selectedCameraController;
-@property (strong) CASMountSynchroniser* mountSynchroniser;
+@property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
 @end
+
+// todo;
+// not reflecting initial slew state
+// ra/dec all zeros ?
 
 @implementation CASMountWindowController
 
 @synthesize cameraControllers = _cameraControllers;
+
+static void* kvoContext;
 
 + (void)initialize
 {
@@ -37,11 +44,16 @@
                                                               @"CASMountWindowControllerConvergence":@(0.02)}];
 }
 
+- (void)dealloc
+{
+    self.mountSynchroniser = nil;
+}
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];
     
-    self.focalLength = 0;
+    self.mountSynchroniser = [CASMountSynchroniser new];
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -85,6 +97,41 @@
 + (NSSet*)keyPathsForValuesAffectingSelectedCameraController
 {
     return [NSSet setWithObject:@"cameraController"];
+}
+
+- (void)setCameraController:(CASCameraController *)cameraController
+{
+    if (cameraController != _cameraController){
+        _cameraController = cameraController;
+        if (_cameraController){
+            NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
+            NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:focalLengthKey];
+            if ([focalLength isKindOfClass:[NSNumber class]]){
+                self.mountSynchroniser.focalLength = [focalLength floatValue];
+            }
+        }
+    }
+}
+
+- (void)setMountSynchroniser:(CASMountSynchroniser *)mountSynchroniser
+{
+    if (mountSynchroniser != _mountSynchroniser){
+        [_mountSynchroniser removeObserver:self forKeyPath:@"focalLength" context:&kvoContext];
+        _mountSynchroniser = mountSynchroniser;
+        [_mountSynchroniser addObserver:self forKeyPath:@"focalLength" options:0 context:&kvoContext];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if (_cameraController && [keyPath isEqualToString:@"focalLength"]){
+            NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
+            [[NSUserDefaults standardUserDefaults] setObject:@(self.mountSynchroniser.focalLength) forKey:focalLengthKey];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion
@@ -136,10 +183,6 @@
             return;
         }
         
-        if (!self.mountSynchroniser){
-            self.mountSynchroniser = [CASMountSynchroniser new];
-        }
-        
         self.mountSynchroniser.mount = self.mount;
         self.mountSynchroniser.focalLength = self.focalLength;
         self.mountSynchroniser.cameraController = self.selectedCameraController;
@@ -151,29 +194,34 @@
 
 - (void)startMoving:(CASMountDirection)direction
 {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving:) object:nil];
-    [self performSelector:@selector(stopMoving:) withObject:nil afterDelay:0.25];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
+    [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25];
     [self.mount startMoving:direction];
+}
+
+- (void)stopMoving
+{
+    [self.mount stopMoving];
 }
 
 #pragma mark - Actions
 
-- (IBAction)north:(id)sender
+- (IBAction)north:(id)sender // called continuously while the button is held down
 {
     [self startMoving:CASMountDirectionNorth];
 }
 
-- (IBAction)soutgh:(id)sender
+- (IBAction)soutgh:(id)sender // called continuously while the button is held down
 {
     [self startMoving:CASMountDirectionSouth];
 }
 
-- (IBAction)west:(id)sender
+- (IBAction)west:(id)sender // called continuously while the button is held down
 {
     [self startMoving:CASMountDirectionWest];
 }
 
-- (IBAction)east:(id)sender
+- (IBAction)east:(id)sender // called continuously while the button is held down
 {
     [self startMoving:CASMountDirectionEast];
 }
