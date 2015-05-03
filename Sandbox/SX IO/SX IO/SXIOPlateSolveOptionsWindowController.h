@@ -23,5 +23,7 @@
 
 @property (nonatomic,weak) CASCCDExposure* exposure;
 @property (nonatomic,weak) CASCameraController* cameraController;
-//@property (nonatomic,copy) void (^completion)(BOOL);
+
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController;
+
 @end
