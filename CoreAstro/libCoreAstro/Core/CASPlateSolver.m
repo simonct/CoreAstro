@@ -294,6 +294,17 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     return nil;
 }
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.searchRA = -1000;
+        self.searchDec = -1000;
+        self.searchRadius = -1000;
+    }
+    return self;
+}
+
 - (NSURL*)indexDirectoryURL
 {
     NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
@@ -436,6 +447,12 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                 const float minw = floorf(self.fieldSizeDegrees.width);
                 const float maxw = ceilf(self.fieldSizeDegrees.width);
                 [args addObjectsFromArray:@[@"--scale-units",@"degwidth",@"--scale-low",[@(minw) description],@"--scale-high",[@(maxw) description]]];
+            }
+            if (self.searchDec != -1000 && self.searchRA != -1000){
+                [args addObjectsFromArray:@[@"--ra",@(self.searchRA),@"--dec",@(self.searchDec)]];
+                if (self.searchRadius != -1000){
+                    [args addObjectsFromArray:@[@"--radius",@(self.searchRadius)]];
+                }
             }
             [args addObjectsFromArray:@[@"-D",self.cacheDirectory,@"-b",configPath]];
             // NSLog(@"args: %@",args);

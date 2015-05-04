@@ -27,7 +27,8 @@ static void* kvoContext;
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountSlewControllerBinning":@(4),
                                                               @"CASMountSlewControllerDuration":@(5),
-                                                              @"CASMountSlewControllerConvergence":@(0.02)}];
+                                                              @"CASMountSlewControllerConvergence":@(0.02),
+                                                              @"CASMountSlewControllerSearchRadius":@(5)}];
 }
 
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
@@ -188,11 +189,20 @@ static void* kvoContext;
                 }
                 else {
                     
+                    // set optical params
                     if (self.focalLength > 0){
                         self.plateSolver.fieldSizeDegrees = [self.cameraController fieldSizeForFocalLength:self.focalLength];
                         self.plateSolver.arcsecsPerPixel = [self.cameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
                     }
-                    // todo; can also set expected ra and dec of field
+                    
+                    // set mount params
+                    NSNumber* ra = self.mount.ra;
+                    NSNumber* dec = self.mount.dec;
+                    if (ra && dec){
+                        self.plateSolver.searchRA = ra.floatValue;
+                        self.plateSolver.searchDec = dec.floatValue;
+                        self.plateSolver.searchRadius = [[NSUserDefaults standardUserDefaults] floatForKey:@"CASMountSlewControllerSearchRadius"];
+                    }
                     
                     [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                         
