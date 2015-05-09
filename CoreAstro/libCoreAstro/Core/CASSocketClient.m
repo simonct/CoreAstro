@@ -333,7 +333,7 @@
 
 static const char CRLF[] = "\r\n";
 
-- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id))completion
+- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id,NSError*))completion
 {
     NSMutableDictionary* mcmd = [command mutableCopy];
     id msgID = @(++_id);
@@ -421,13 +421,20 @@ static const char CRLF[] = "\r\n";
         }
         else{
             id msgID = message[@"id"];
-            void(^callback)(id) = self.callbacks[msgID];
+            void(^callback)(id,NSError*) = self.callbacks[msgID];
             if (!callback){
                 NSLog(@"No callback for id %@",msgID);
             }
             else {
                 @try {
-                    callback(message[@"result"]);
+                    NSError* error;
+                    id result = message[@"result"];
+                    NSDictionary* errorDict = message[@"error"];
+                    if ([errorDict isKindOfClass:[NSDictionary class]]){
+                        NSString* message = errorDict[@"message"] ?: @"";
+                        error = [NSError errorWithDomain:@"PHD2" code:[errorDict[@"code"] integerValue] userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]];
+                    }
+                    callback(result,error);
                 }
                 @catch (NSException *exception) {
                     NSLog(@"*** %@",exception);

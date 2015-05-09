@@ -173,35 +173,50 @@ static void* kvoContext;
     
     self.settleCompletion = completion;
     
-    // set_connected ?
-    
-    [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result) {
-        if ([result integerValue] == 0){
-            NSLog(@"Started");
+    // connect everything up, assume profile is set on the app
+    [self.client enqueueCommand:@{@"method":@"set_connected",@"params":@[@YES]} completion:^(id result,NSError* error) {
+        if (error){
+            NSLog(@"Connect failed: %@",error);
+            completion(NO);
         }
         else{
-            NSLog(@"Start failed: %@",result);
+            NSLog(@"Connected");
+            [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+                if (error){
+                    NSLog(@"Start failed: %@",error);
+                    completion(NO);
+                }
+                else{
+                    NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
+                }
+            }];
         }
     }];
 }
 
 - (void)flipWithCompletion:(void(^)(BOOL))completion
 {
-    [self.client enqueueCommand:@{@"method":@"flip_calibration"} completion:^(id _) {
-        [self guideWithCompletion:completion];
+    [self.client enqueueCommand:@{@"method":@"flip_calibration"} completion:^(id _,NSError* error) {
+        if (error){
+            NSLog(@"Flip failed %@",error);
+            completion(NO);
+        }
+        else {
+            [self guideWithCompletion:completion];
+        }
     }];
 }
 
 - (void)stop
 {
     [self setupClient];
-    [self.client enqueueCommand:@{@"method":@"stop_capture"} completion:^(id result) {
-        if ([result integerValue] == 0){
-            NSLog(@"Stopped");
-            self.guiding = NO;
+    [self.client enqueueCommand:@{@"method":@"stop_capture"} completion:^(id result,NSError* error) {
+        if (error){
+            NSLog(@"Stop failed: %@",error);
         }
         else {
-            NSLog(@"Stop failed: %@",result);
+            NSLog(@"Stopped");
+            self.guiding = NO;
         }
     }];
 }
@@ -226,17 +241,17 @@ static void* kvoContext;
     }
     self.guiding = NO;
     self.settleCompletion = completion;
-    [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result) {
-        if ([result integerValue] == 0){
-            NSLog(@"Dithering %.1f pixels...",pixels);
-            // start a timer that resumes exposures if we never hear back from PHD2
-            [self performSelector:@selector(ditherTimeout) withObject:nil afterDelay:120];
-        }
-        else {
+    [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result,NSError* error) {
+        if (error){
             NSLog(@"Dither failed: %@",result);
             if (completion){
                 completion(NO);
             }
+        }
+        else {
+            NSLog(@"Dithering %.1f pixels...",pixels);
+            // start a timer that resumes exposures if we never hear back from PHD2
+            [self performSelector:@selector(ditherTimeout) withObject:nil afterDelay:120];
         }
     }];
 }
