@@ -571,6 +571,11 @@
         }
             break;
             
+        case CASCameraControllerStateWaitingForGuider:{
+            commonShowProgressSetup(@"Waiting for PHD2...",NO);
+        }
+            break;
+
         case CASCameraControllerStateWaitingForNextExposure:{
             commonShowProgressSetup(@"Waiting...",NO);
         }

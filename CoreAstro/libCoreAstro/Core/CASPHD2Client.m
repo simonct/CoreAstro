@@ -164,13 +164,17 @@ static void* kvoContext;
 
 - (NSDictionary*)settleParam
 {
-    return @{@"pixels":@(1.5),@"time":@(10),@"timeout":@(60)};
+    return @{@"pixels":@(2),@"time":@(10),@"timeout":@(300)};
 }
 
 - (void)guideWithCompletion:(void(^)(BOOL))completion
 {
     [self setupClient];
+    
     self.settleCompletion = completion;
+    
+    // set_connected ?
+    
     [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result) {
         if ([result integerValue] == 0){
             NSLog(@"Started");

@@ -46,6 +46,7 @@
 typedef NS_ENUM(NSInteger, CASCameraControllerState) {
     CASCameraControllerStateNone,
     CASCameraControllerStateWaitingForTemperature,
+    CASCameraControllerStateWaitingForGuider,
     CASCameraControllerStateExposing, // or downloading
     CASCameraControllerStateWaitingForNextExposure,
     CASCameraControllerStateDithering
