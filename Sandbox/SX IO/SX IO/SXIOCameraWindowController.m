@@ -25,9 +25,13 @@
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
-@interface CASControlsContainerView : NSView
+@interface CASControlsInnerContainerView : NSView
 @end
-@implementation CASControlsContainerView
+@implementation CASControlsInnerContainerView
+- (BOOL)isFlipped
+{
+    return YES;
+}
 @end
 
 @interface SXIOExposureView : CASExposureView
@@ -38,7 +42,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASMountWindowControllerDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
-@property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
+@property (weak) IBOutlet NSScrollView *containerScrollView;
 @property (weak) IBOutlet NSTextField *progressStatusText;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (weak) IBOutlet NSButton *captureButton;
@@ -104,38 +108,47 @@ static void* kvoContext;
     // drop shadow
     [CASShadowView attachToView:self.exposureView.enclosingScrollView.superview edge:NSMaxXEdge];
 
+    NSView* container = [[CASControlsInnerContainerView alloc] initWithFrame:CGRectZero];
+    
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
     self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.cameraControlsViewController.view];
+    [container addSubview:self.cameraControlsViewController.view];
     
     // layout camera controls
     id cameraControlsViewController1 = self.cameraControlsViewController.view;
     NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
-    
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
+
     // filter wheel controls
     self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
     self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.filterWheelControlsViewController.view];
+    [container addSubview:self.filterWheelControlsViewController.view];
     
     // layout filter wheel controls
     id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
 
     // save target controls
     self.saveTargetControlsViewController = [[SXIOSaveTargetViewController alloc] initWithNibName:@"SXIOSaveTargetViewController" bundle:nil];
     self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.saveTargetControlsViewController.view];
+    [container addSubview:self.saveTargetControlsViewController.view];
     
     // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,saveTargetControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    
+    CGFloat height = 0;
+    for (NSView* view in container.subviews){
+        height += CGRectGetHeight(view.frame);
+    }
+    container.frame = CGRectMake(0, 0, CGRectGetWidth(self.containerScrollView.frame) - 2, height); // -2 prevents horizontal scrolling
+    self.containerScrollView.documentView = container;
     
     // bind the controllers
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
