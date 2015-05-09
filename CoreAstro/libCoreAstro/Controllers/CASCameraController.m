@@ -468,6 +468,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     }
     else {
         
+        self.capturing = YES;
+        self.state = CASCameraControllerStateWaitingForGuider;
+
         // connect to PHD2 and start guiding before kicking off the capture
         [self.phd2Client connectWithCompletion:^{
             
@@ -481,21 +484,30 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             }
             else {
                 
-                if (!self.cancelled && !self.phd2Client.guiding){
+                if (!self.cancelled){
                     
-                    [self.phd2Client guideWithCompletion:^(BOOL guiding) {
+                    if (self.phd2Client.guiding){
+                        startCapture();
+                    }
+                    else {
                         
-                        if (!guiding){
-                            NSString* const message = @"Guiding failed";
-                            [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle")];
-                            if (block){
-                                block([self errorWithCode:4 message:message],nil);
+                        [self.phd2Client guideWithCompletion:^(BOOL guiding) {
+                            
+                            if (!self.cancelled){
+                                
+                                if (!guiding){
+                                    NSString* const message = @"Guiding failed";
+                                    [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle")];
+                                    if (block){
+                                        block([self errorWithCode:4 message:message],nil);
+                                    }
+                                }
+                                else {
+                                    startCapture();
+                                }
                             }
-                        }
-                        else {
-                            startCapture();
-                        }
-                    }];
+                        }];
+                    }
                 }
             }
         }];
