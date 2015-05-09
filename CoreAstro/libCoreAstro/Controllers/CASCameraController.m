@@ -180,11 +180,21 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
 }
 
+- (NSError*)errorWithCode:(NSInteger)code message:(NSString*)message recovery:(NSString*)recovery
+{
+    NSMutableDictionary* errorDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    if (message){
+        errorDict[NSLocalizedFailureReasonErrorKey] = message;
+    }
+    if (recovery){
+        errorDict[NSLocalizedRecoverySuggestionErrorKey] = recovery;
+    }
+    return [NSError errorWithDomain:@"CASCameraController" code:code userInfo:errorDict];
+}
+
 - (NSError*)errorWithCode:(NSInteger)code message:(NSString*)message
 {
-    return [NSError errorWithDomain:@"CASCameraController"
-                               code:code
-                           userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]];
+    return [self errorWithCode:code message:message recovery:nil];
 }
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
@@ -476,10 +486,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             
             if (!self.phd2Client.connected){
                 
+                self.capturing = NO;
+                self.state = CASCameraControllerStateNone;
+
                 NSString* const message = @"PHD2 connection failed";
-                [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:NSLocalizedString(@"Check PHD2 is running and Tools->Enable Server is on", @"Notification subtitle")];
+                NSString* const recovery = NSLocalizedString(@"Check PHD2 is running and Tools->Enable Server is on", @"Notification subtitle");
+                [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:recovery];
                 if (block){
-                    block([self errorWithCode:3 message:message],nil);
+                    block([self errorWithCode:3 message:message recovery:recovery],nil);
                 }
             }
             else {
@@ -496,10 +510,15 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                             if (!self.cancelled){
                                 
                                 if (!guiding){
-                                    NSString* const message = @"Guiding failed";
-                                    [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle")];
+                                    
+                                    self.capturing = NO;
+                                    self.state = CASCameraControllerStateNone;
+
+                                    NSString* const message = NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle");
+                                    NSString* const recovery = NSLocalizedString(@"Check all equipment is connected in PHD2 and that it can aquire a guide star", @"Notification subtitle");
+                                    [self postLocalNotificationWithTitle:NSLocalizedString(@"Guiding failed", @"Notification title") subtitle:NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle")];
                                     if (block){
-                                        block([self errorWithCode:4 message:message],nil);
+                                        block([self errorWithCode:4 message:message recovery:recovery],nil);
                                     }
                                 }
                                 else {

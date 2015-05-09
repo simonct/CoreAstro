@@ -17,7 +17,7 @@
 @property (nonatomic,readonly) CASCameraController* sequenceCameraController;
 @property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
-- (void)captureWithCompletion:(void(^)())completion;
+- (void)captureWithCompletion:(void(^)(NSError*))completion;
 - (void)endSequence;
 @end
 

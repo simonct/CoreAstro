@@ -329,7 +329,11 @@ static void* kvoContext;
         }
     }
 
-    [self captureWithCompletion:nil];
+    [self captureWithCompletion:^(NSError* error) {
+        if (error){
+            [NSApp presentError:error];
+        }
+    }];
 }
 
 - (IBAction)cancelCapture:(id)sender
@@ -1847,7 +1851,7 @@ static void* kvoContext;
     return YES;
 }
 
-- (void)captureWithCompletion:(void(^)())completion
+- (void)captureWithCompletion:(void(^)(NSError*))completion
 {
     // disable idle sleep
     [CASPowerMonitor sharedInstance].disableSleep = YES;
@@ -1859,6 +1863,9 @@ static void* kvoContext;
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
         if (!self.cameraController.capturing){
+            
+            // might be flipping in which case this will be called again but with a nil completion block which
+            // means the sequence controller will never hear about the completed exposures and be stuck
             
             // re-enable idle sleep
             [CASPowerMonitor sharedInstance].disableSleep = NO;
@@ -1881,7 +1888,7 @@ static void* kvoContext;
             [self endSequence];
             
             if (completion){
-                completion();
+                completion(error);
             }
         }
     }];

@@ -305,12 +305,17 @@ static void* kvoContext;
 
 - (void)capture
 {
-    [self.target captureWithCompletion:^(){
-        if (!_stopped){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self advanceToNextStep];
-            });
-        }
+    [self.target captureWithCompletion:^(NSError* error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error){
+                [NSApp presentError:error];
+            }
+            else {
+                if (!_stopped){
+                    [self advanceToNextStep];
+                }
+            }
+        });
     }];
 }
 
@@ -332,6 +337,8 @@ static void* kvoContext;
         [self advanceToNextStep];
     }
     else {
+        
+        // todo; slew step, new methods on target
         
         SXIOSequenceExposureStep* sequenceStep = (SXIOSequenceExposureStep*)self.currentStep;
         CASExposureSettings* settings = self.target.sequenceCameraController.settings;
