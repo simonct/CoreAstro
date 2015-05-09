@@ -124,7 +124,8 @@ static void* kvoContext;
         NSDateFormatter* formatter = [NSDateFormatter new];
         formatter.dateStyle = NSDateFormatterMediumStyle;
         formatter.timeStyle = NSDateFormatterShortStyle;
-        self.exposureCompletionLabel.stringValue = [NSString stringWithFormat:@"approx. %@",[formatter stringFromDate:completionDate]];
+        formatter.doesRelativeDateFormatting = YES;
+        self.exposureCompletionLabel.stringValue = [NSString stringWithFormat:@"ends ~ %@",[formatter stringFromDate:completionDate]];
         [self performSelector:_cmd withObject:nil afterDelay:60]; // actually want to try an update on the minute...
     }
 }
