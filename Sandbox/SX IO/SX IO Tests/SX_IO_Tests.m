@@ -224,7 +224,7 @@
 }
 
 - (void)testLatitideLongitide {
-
+    XCTFail(@"testLatitideLongitide");
 }
 
 @end
