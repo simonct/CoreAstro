@@ -149,14 +149,47 @@
                 static NSDictionary* lookup = nil;
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
-                    lookup = @{@"8407":@"iEQ45 EQ/iEQ30",@"8497":@"iEQ45 AltAz",@"8408":@"ZEQ25",@"8498":@"SmartEQ"};
+                    lookup = @{@"8407":@"iEQ45 EQ/iEQ30",
+                               @"8497":@"iEQ45 AltAz",
+                               @"8408":@"ZEQ25",
+                               @"8498":@"SmartEQ",
+                               @"0060":@"CEM60",
+                               @"0061":@"CEM60-EC",
+                               @"0045":@"iEQ45 Pro EQ",
+                               @"0046":@"iEQ45 Pro AltAz"};
                 });
                 self.name = lookup[response] ?: response;
                 complete(nil);
+                if (1){ // make a default
+                    [self setupMountTimeAndLocation];
+                }
                 [self pollMountStatus];
             }];
         }
     }];
+}
+
+- (void)setupMountTimeAndLocation
+{
+    // location
+    NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+    NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+    if (latitude && longitude){
+        [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){ NSLog(@"set lat: %@",response); }];
+        [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){ NSLog(@"set lon: %@",response); }];
+    }
+
+    // local date/time
+    NSDate* date = [NSDate date];
+    [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:1 completion:^(NSString* response){ NSLog(@"set local date: %@",response); }];
+    [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){ NSLog(@"set local time: %@",response); }];
+
+    // gmt offset
+    NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
+    [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){ NSLog(@"set gmt off: %@",response); }];
+
+    // daylight savings flag
+    [self sendCommand:[CASLX200Commands setTelescopeDaylightSavings:tz] readCount:1 completion:^(NSString* response){ NSLog(@"set dst: %@",response); }];
 }
 
 - (void)pollMountStatus
