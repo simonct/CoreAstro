@@ -796,15 +796,22 @@ static void* kvoContext;
     }
     else {
         
-        // present a sheet with some status info
-        self.mountFlipProgress = [CASProgressWindowController createWindowController];
-        [self.mountFlipProgress beginSheetModalForWindow:self.window];
-        self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Waiting for mount to flip...", @"Progress sheet status label");
-        [self.mountFlipProgress.progressBar setIndeterminate:YES];
-        self.mountFlipProgress.canCancel = NO;
-        
-        // wait for the mount to complete flipping
-        [self checkMountFinishedFlip];
+        // check for the mount window as that currently handles slew and sync (job for a mount controller class probably)
+        if (!self.mountWindowController){
+            [self presentAlertWithTitle:@"Exposure Cancelled" message:@"A mount flip was detected without a connected mount."];
+        }
+        else {
+            
+            // present a sheet with some status info
+            self.mountFlipProgress = [CASProgressWindowController createWindowController];
+            [self.mountFlipProgress beginSheetModalForWindow:self.window];
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Waiting for mount to flip...", @"Progress sheet status label");
+            [self.mountFlipProgress.progressBar setIndeterminate:YES];
+            self.mountFlipProgress.canCancel = NO;
+            
+            // wait for the mount to complete flipping
+            [self checkMountFinishedFlip];
+        }
     }
 }
 
@@ -825,6 +832,9 @@ static void* kvoContext;
             self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
             
             // slew and solve to target
+            self.mountWindowController.cameraController = self.cameraController;
+            self.mountWindowController.mountWindowDelegate = self;
+            self.mountWindowController.usePlateSolvng = YES;
             [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
         }
     }

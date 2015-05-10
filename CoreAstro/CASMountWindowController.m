@@ -40,7 +40,6 @@
 @property (weak) IBOutlet NSTextField *statusLabel;
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
-@property BOOL usePlateSolvng;
 @property (nonatomic) float focalLength;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic) CASCameraController* selectedCameraController;
