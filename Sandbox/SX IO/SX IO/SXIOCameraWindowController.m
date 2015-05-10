@@ -1916,8 +1916,10 @@ static void* kvoContext;
 
 - (void)mountFlipped:(NSNotification*)note
 {
-    if (note.object == self.mount){
-        [self mountFlipped];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){
+        if (note.object == self.mount){
+            [self mountFlipped];
+        }
     }
 }
 

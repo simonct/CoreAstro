@@ -160,7 +160,7 @@
                 });
                 self.name = lookup[response] ?: response;
                 complete(nil);
-                if (1){ // make a default
+                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOSetMountLocationAndDateTimeOnConnect"]){
                     [self setupMountTimeAndLocation];
                 }
                 [self pollMountStatus];
