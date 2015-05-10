@@ -89,6 +89,8 @@
 		F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */; };
 		F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
 		F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
+		F40EC1021AFF46E700DC7EE4 /* SX_IO_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */; };
+		F40EC10E1AFF475700DC7EE4 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53517C95B7C001C42F1 /* QuickLook.framework */; };
 		F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53817C95B7C001C42F1 /* CoreServices.framework */; };
@@ -269,6 +271,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = F40D5BC9184A912600977FA9;
 			remoteInfo = FLIDevicesPlugin;
+		};
+		F40EC1031AFF46E700DC7EE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4FD22FE179B30D60049F5B5;
+			remoteInfo = "SX IO";
 		};
 		F415C54B17C95BD3001C42F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -451,6 +460,9 @@
 		F40D5CA91851283E00977FA9 /* SXIOExportMovieWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExportMovieWindowController.h; sourceTree = "<group>"; };
 		F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExportMovieWindowController.m; sourceTree = "<group>"; };
 		F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOExportMovieWindowController.xib; sourceTree = "<group>"; };
+		F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SX IO Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40EC1001AFF46E700DC7EE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SX_IO_Tests.m; sourceTree = "<group>"; };
 		F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickFITS.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		F415C53517C95B7C001C42F1 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		F415C53817C95B7C001C42F1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -636,6 +648,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F40EC0FA1AFF46E700DC7EE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40EC10E1AFF475700DC7EE4 /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C52F17C95B7C001C42F1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -690,6 +710,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F40EC0FE1AFF46E700DC7EE4 /* SX IO Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */,
+				F40EC0FF1AFF46E700DC7EE4 /* Supporting Files */,
+			);
+			path = "SX IO Tests";
+			sourceTree = "<group>";
+		};
+		F40EC0FF1AFF46E700DC7EE4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40EC1001AFF46E700DC7EE4 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F415C53B17C95B7C001C42F1 /* QuickFITS */ = {
 			isa = PBXGroup;
 			children = (
@@ -913,6 +950,7 @@
 				F4F9B20617B15A9A0063DD0D /* ContrastStretch */,
 				F48F465717C409E6008FCEBE /* Debayer */,
 				F415C53B17C95B7C001C42F1 /* QuickFITS */,
+				F40EC0FE1AFF46E700DC7EE4 /* SX IO Tests */,
 				F4FD2301179B30D60049F5B5 /* Frameworks */,
 				F4FD2300179B30D60049F5B5 /* Products */,
 			);
@@ -926,6 +964,7 @@
 				F48F465017C40971008FCEBE /* Debayer.plugin */,
 				F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */,
 				F40D5B811849EC5E00977FA9 /* CCD IO.app */,
+				F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1113,6 +1152,24 @@
 			productReference = F40D5B811849EC5E00977FA9 /* CCD IO.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F40EC0FC1AFF46E700DC7EE4 /* SX IO Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40EC10D1AFF46E800DC7EE4 /* Build configuration list for PBXNativeTarget "SX IO Tests" */;
+			buildPhases = (
+				F40EC0F91AFF46E700DC7EE4 /* Sources */,
+				F40EC0FA1AFF46E700DC7EE4 /* Frameworks */,
+				F40EC0FB1AFF46E700DC7EE4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40EC1041AFF46E700DC7EE4 /* PBXTargetDependency */,
+			);
+			name = "SX IO Tests";
+			productName = "SX IO Tests";
+			productReference = F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F415C53317C95B7C001C42F1 /* QuickFITS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */;
@@ -1210,6 +1267,10 @@
 					F40D5B221849EC5E00977FA9 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 					};
+					F40EC0FC1AFF46E700DC7EE4 = {
+						CreatedOnToolsVersion = 6.3.1;
+						TestTargetID = F4FD22FE179B30D60049F5B5;
+					};
 					F4FD22FE179B30D60049F5B5 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 						SystemCapabilities = {
@@ -1243,6 +1304,7 @@
 				F48F463C17C40971008FCEBE /* Debayer */,
 				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
 				F415C53317C95B7C001C42F1 /* QuickFITS */,
+				F40EC0FC1AFF46E700DC7EE4 /* SX IO Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1345,6 +1407,13 @@
 				F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */,
 				F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */,
 				F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40EC0FB1AFF46E700DC7EE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1527,6 +1596,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F40EC0F91AFF46E700DC7EE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40EC1021AFF46E700DC7EE4 /* SX_IO_Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F415C52E17C95B7C001C42F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1633,6 +1710,11 @@
 			isa = PBXTargetDependency;
 			name = "CoreAstro Framework";
 			targetProxy = F40D5B2C1849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40EC1041AFF46E700DC7EE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4FD22FE179B30D60049F5B5 /* SX IO */;
+			targetProxy = F40EC1031AFF46E700DC7EE4 /* PBXContainerItemProxy */;
 		};
 		F415C54C17C95BD3001C42F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1762,6 +1844,71 @@
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F40EC1051AFF46E800DC7EE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "SX IO Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
+			};
+			name = Debug;
+		};
+		F40EC1061AFF46E800DC7EE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "SX IO Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
 			};
 			name = Release;
 		};
@@ -1959,6 +2106,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		F40EC10D1AFF46E800DC7EE4 /* Build configuration list for PBXNativeTarget "SX IO Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40EC1051AFF46E800DC7EE4 /* Debug */,
+				F40EC1061AFF46E800DC7EE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */ = {
 			isa = XCConfigurationList;
