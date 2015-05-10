@@ -249,7 +249,7 @@ static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDirectoryBookmark";
 
-@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees;
+@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees, searchRA, searchDec, searchRadius;
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
