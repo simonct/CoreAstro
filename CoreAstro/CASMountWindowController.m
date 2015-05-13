@@ -41,7 +41,6 @@
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property BOOL usePlateSolvng;
-@property (nonatomic) float focalLength;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic) CASCameraController* selectedCameraController;
 @property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
@@ -209,7 +208,6 @@ static void* kvoContext;
         }
         
         self.mountSynchroniser.mount = self.mount;
-        self.mountSynchroniser.focalLength = self.focalLength;
         self.mountSynchroniser.cameraController = self.selectedCameraController;
         self.mountSynchroniser.delegate = self;
 
