@@ -53,6 +53,8 @@
 @property (nonatomic,copy) NSURL* indexDirectoryURL;
 @property (nonatomic,assign) float arcsecsPerPixel;
 @property (nonatomic,assign) CGSize fieldSizeDegrees;
+@property (nonatomic,assign) float searchRA, searchDec, searchRadius;
+@property BOOL solveCentre;
 
 - (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure;
 
@@ -60,7 +62,6 @@
 
 // results dictionary is @{"solution":<CASPlateSolveSolution>, "image":<path to solved image>}
 - (void)solveExposure:(CASCCDExposure*)exposure completion:(void(^)(NSError*,NSDictionary*))block;
-- (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block;
 
 - (void)cancel;
 

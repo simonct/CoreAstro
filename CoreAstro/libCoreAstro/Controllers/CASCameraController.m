@@ -83,7 +83,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
+    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
 }
 
 - (void)registerDeviceDefaults
@@ -145,7 +145,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)updateProgress
 {
-    if (self.state == CASCameraControllerStateNone || self.state == CASCameraControllerStateWaitingForTemperature){
+    if (self.state == CASCameraControllerStateNone ||
+        self.state == CASCameraControllerStateWaitingForTemperature ||
+        self.state == CASCameraControllerStateWaitingForGuider){
         self.progress = 0;
         return;
     }
@@ -167,6 +169,32 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     const NSTimeInterval updateInterval = MAX(0.25,_expParams.ms/1000.0/100.0); // reduce further on battery ?
     [self performSelector:_cmd withObject:nil afterDelay:updateInterval];
+}
+
+- (void)postLocalNotificationWithTitle:(NSString*)title subtitle:(NSString*)subtitle
+{
+    NSUserNotification* note = [[NSUserNotification alloc] init];
+    note.title = title;
+    note.subtitle = subtitle;
+    note.soundName = NSUserNotificationDefaultSoundName;
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+}
+
+- (NSError*)errorWithCode:(NSInteger)code message:(NSString*)message recovery:(NSString*)recovery
+{
+    NSMutableDictionary* errorDict = [NSMutableDictionary dictionaryWithCapacity:2];
+    if (message){
+        errorDict[NSLocalizedFailureReasonErrorKey] = message;
+    }
+    if (recovery){
+        errorDict[NSLocalizedRecoverySuggestionErrorKey] = recovery;
+    }
+    return [NSError errorWithDomain:@"CASCameraController" code:code userInfo:errorDict];
+}
+
+- (NSError*)errorWithCode:(NSInteger)code message:(NSString*)message
+{
+    return [self errorWithCode:code message:message recovery:nil];
 }
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
@@ -389,11 +417,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                     }
                     else {
                         NSLog(@"*** Dither failed"); // an alert might be too intrusive - need a sequence log this can go into perhaps plus a non-blocking ui feature e.g. log window
-                        NSUserNotification* note = [[NSUserNotification alloc] init];
-                        note.title = NSLocalizedString(@"Dither failed", @"Notification title");
-                        note.subtitle = NSLocalizedString(@"Check PHD2 is guiding successfully", @"Notification subtitle");
-                        note.soundName = NSUserNotificationDefaultSoundName;
-                        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+                        [self postLocalNotificationWithTitle:NSLocalizedString(@"Dither failed", @"Notification title") subtitle:NSLocalizedString(@"Check PHD2 is guiding successfully", @"Notification subtitle")];
                     }
                     if (!_cancelled){
                         startExposure(); // expose anyway as long as we haven't been cancelled
@@ -408,63 +432,105 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block
 {
     if (self.capturing){
-        block([NSError errorWithDomain:@"CASCameraController"
-                                  code:1
-                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,@"Can't have multiple capture sessions",nil]],nil);
+        block([self errorWithCode:1 message:@"Can't have multiple capture sessions"],nil);
         return;
     }
     
     if (self.filterWheel.filterWheel.moving){
-        block([NSError errorWithDomain:@"CASCameraController"
-                                  code:2
-                              userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,@"The associated filter wheel is moving",nil]],nil);
+        block([self errorWithCode:2 message:@"The associated filter wheel is moving"],nil);
         return;
     }
-    
 
     _cancelled = NO;
 
     self.settings.currentCaptureIndex = 0;
     
+    void (^startCapture)() = ^{
+        
+        // todo; check focus - again, something better handled in a capture co-ordinator
+        
+        __block id activity;
+        NSProcessInfo* proc = [NSProcessInfo processInfo];
+        if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
+            const NSActivityOptions options = NSActivityIdleSystemSleepDisabled|NSActivitySuddenTerminationDisabled|NSActivityAutomaticTerminationDisabled|NSActivityUserInitiated;
+            activity = [proc beginActivityWithOptions:options reason:@"Capturing exposures"];
+        }
+        
+        [self captureWithBlockImpl:^(NSError *error, CASCCDExposure *exposure) {
+            
+            if (block){
+                block(error,exposure);
+            }
+            if (activity){
+                [proc endActivity:activity];
+                activity = nil;
+            }
+        }];
+    };
+    
     // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
-    if (self.settings.ditherEnabled){
+    if (self.settings.ditherEnabled || self.settings.startGuiding){
         self.phd2Client = [CASPHD2Client new];
     }
-
-    [self.phd2Client connectWithCompletion:^{
-        if (!self.phd2Client.connected){
-            NSLog(@"PHD2 not connected");
-            NSUserNotification* note = [[NSUserNotification alloc] init];
-            note.title = NSLocalizedString(@"PHD2 connection failed", @"Notification title");
-            note.subtitle = NSLocalizedString(@"Check PHD2 is running and Tools->Enable Server is on", @"Notification subtitle");
-            note.soundName = NSUserNotificationDefaultSoundName;
-            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
-        }
-        else {
-            NSLog(@"PHD2 connected, guiding = %hhd",self.phd2Client.guiding);
-        }
-        // start capture in here ?
-    }];
     
-    // todo; check focus - again, something better handled in a capture co-ordinator
-    
-    __block id activity;
-    NSProcessInfo* proc = [NSProcessInfo processInfo];
-    if ([proc respondsToSelector:@selector(beginActivityWithOptions:reason:)]){
-        const NSActivityOptions options = NSActivityIdleSystemSleepDisabled|NSActivitySuddenTerminationDisabled|NSActivityAutomaticTerminationDisabled|NSActivityUserInitiated;
-        activity = [proc beginActivityWithOptions:options reason:@"Capturing exposures"];
+    if (!self.phd2Client || !self.settings.startGuiding){
+        startCapture();
     }
-    
-    [self captureWithBlockImpl:^(NSError *error, CASCCDExposure *exposure) {
+    else {
         
-        if (block){
-            block(error,exposure);
-        }
-        if (activity){
-            [proc endActivity:activity];
-            activity = nil;
-        }
-    }];
+        self.capturing = YES;
+        self.state = CASCameraControllerStateWaitingForGuider;
+
+        // connect to PHD2 and start guiding before kicking off the capture
+        [self.phd2Client connectWithCompletion:^{
+            
+            if (!self.phd2Client.connected){
+                
+                self.capturing = NO;
+                self.state = CASCameraControllerStateNone;
+
+                NSString* const message = @"PHD2 connection failed";
+                NSString* const recovery = NSLocalizedString(@"Check PHD2 is running and Tools->Enable Server is on", @"Notification subtitle");
+                [self postLocalNotificationWithTitle:NSLocalizedString(message, @"Notification title") subtitle:recovery];
+                if (block){
+                    block([self errorWithCode:3 message:message recovery:recovery],nil);
+                }
+            }
+            else {
+                
+                if (!self.cancelled){
+                    
+                    if (self.phd2Client.guiding){
+                        startCapture();
+                    }
+                    else {
+                        
+                        [self.phd2Client guideWithCompletion:^(BOOL guiding) {
+                            
+                            if (!self.cancelled){
+                                
+                                if (!guiding){
+                                    
+                                    self.capturing = NO;
+                                    self.state = CASCameraControllerStateNone;
+
+                                    NSString* const message = NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle");
+                                    NSString* const recovery = NSLocalizedString(@"Check all equipment is connected in PHD2 and that it can aquire a guide star", @"Notification subtitle");
+                                    [self postLocalNotificationWithTitle:NSLocalizedString(@"Guiding failed", @"Notification title") subtitle:NSLocalizedString(@"Looks like PHD2 failed to start guiding", @"Notification subtitle")];
+                                    if (block){
+                                        block([self errorWithCode:4 message:message recovery:recovery],nil);
+                                    }
+                                }
+                                else {
+                                    startCapture();
+                                }
+                            }
+                        }];
+                    }
+                }
+            }
+        }];
+    }
 }
 
 - (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block

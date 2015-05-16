@@ -152,16 +152,8 @@
 + (NSString*)highPrecisionDec:(double)dec {
     
     const CASDMSAngle dms = CASDMSAngleFromDegrees(dec);
-    
-    NSString* formattedDec;
-    if (dec < 0){
-        formattedDec = [NSString stringWithFormat:@"%03d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
-    }
-    else {
-        formattedDec = [NSString stringWithFormat:@"+%02d*%02d:%02d",(int)dms.d,(int)dms.m,(int)dms.s];
-    }
-
-    return formattedDec;
+    const char sign = dec < 0 ? '-' : '+';
+    return [NSString stringWithFormat:@"%c%02d*%02d:%02d",sign,(int)labs(dms.d),(int)dms.m,(int)dms.s];
 }
 
 + (NSString*)lowPrecisionDec:(double)dec {
@@ -196,6 +188,58 @@
     }
 
     return dec;
+}
+
++ (NSDateFormatter*)dateFormatter
+{
+    static NSDateFormatter* _dateFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _dateFormatter = [NSDateFormatter new];
+    });
+    return _dateFormatter;
+}
+
++ (NSString*)setTelescopeLatitude:(double)latitude
+{
+    const CASDMSAngle dms = CASDMSAngleFromDegrees(latitude);
+    const char sign = latitude < 0 ? '-' : '+';
+    return [NSString stringWithFormat:@":St %c%02ld*%02ld:%02ld#",sign,(long)labs(dms.d),(long)dms.m,(long)dms.s];
+}
+
++ (NSString*)setTelescopeLongitude:(double)longitude
+{
+    const CASDMSAngle dms = CASDMSAngleFromDegrees(longitude);
+    const char sign = longitude < 0 ? '-' : '+';
+    return [NSString stringWithFormat:@":Sg %c%03ld*%02ld:%02ld#",sign,(long)labs(dms.d),(long)dms.m,(long)dms.s];
+}
+
++ (NSString*)setTelescopeLocalTime:(NSDate*)date
+{
+    NSDateFormatter* formatter = [self dateFormatter];
+    formatter.dateFormat = @"HH:mm:ss";
+    return [NSString stringWithFormat:@":SL %@#",[formatter stringFromDate:date]];
+}
+            
++ (NSString*)setTelescopeLocalDate:(NSDate*)date
+{
+    NSDateFormatter* formatter = [self dateFormatter];
+    formatter.dateFormat = @"MM/dd/yy";
+    return [NSString stringWithFormat:@":SC %@#",[formatter stringFromDate:date]];
+}
+
++ (NSString*)setTelescopeGMTOffset:(NSTimeZone*)tz
+{
+    const NSInteger gmtOffset = tz.secondsFromGMT - tz.daylightSavingTimeOffset;
+    const NSInteger hours = labs(gmtOffset/3600);
+    const NSInteger minutes = (labs(gmtOffset) - hours*3600)/60;
+    const char sign = gmtOffset < 0 ? '-' : '+';
+    return [NSString stringWithFormat:@":SG %c%02ld:%02ld#",sign,(long)hours,(long)minutes];
+}
+
++ (NSString*)setTelescopeDaylightSavings:(NSTimeZone*)tz
+{
+    return tz.daylightSavingTime ? @":SDS1#" : @":SDS0#";
 }
 
 @end

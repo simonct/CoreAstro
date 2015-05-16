@@ -37,7 +37,7 @@
 
 @interface CASJSONRPCSocketClient : CASSocketClient
 @property (nonatomic,weak) id<CASJSONRPCSocketClientDelegate> delegate;
-- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id))completion;
+- (void)enqueueCommand:(NSDictionary*)command completion:(void (^)(id,NSError*))completion;
 @end
 
 @class CASXMLSocketClient;

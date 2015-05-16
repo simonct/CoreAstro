@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,assign) BOOL ditherEnabled;
 @property (nonatomic,assign) float ditherPixels;
 
+@property (nonatomic,assign) BOOL startGuiding;
+
 @end
 
 @interface CASExposureSettings (Bindings)

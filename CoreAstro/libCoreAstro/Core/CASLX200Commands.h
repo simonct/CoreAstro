@@ -54,6 +54,15 @@
 + (NSString*)lowPrecisionDec:(double)dec;
 + (double)fromDecString:(NSString*)dec;
 
+// Location/Time
++ (NSString*)setTelescopeLatitude:(double)latitude;
++ (NSString*)setTelescopeLongitude:(double)longitude;
+
++ (NSString*)setTelescopeLocalTime:(NSDate*)date;
++ (NSString*)setTelescopeLocalDate:(NSDate*)date;
++ (NSString*)setTelescopeGMTOffset:(NSTimeZone*)tz;
++ (NSString*)setTelescopeDaylightSavings:(NSTimeZone*)tz;
+
 @end
 
 @interface CASLX200RATransformer : NSValueTransformer

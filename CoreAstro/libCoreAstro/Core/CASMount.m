@@ -8,6 +8,8 @@
 
 #import "CASMount.h"
 
+NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
+
 @implementation CASMount
 
 - (void)connectWithCompletion:(void(^)(NSError*))completion {
@@ -58,6 +60,22 @@
 
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
     NSAssert(NO, @"Not implemented");
+}
+
+- (void)park {
+    NSAssert(NO, @"Not implemented");
+}
+
+- (void)unpark {
+    NSAssert(NO, @"Not implemented");
+}
+
+- (void)gotoHomePosition {
+    NSAssert(NO, @"Not implemented");
+}
+
+- (CASMountPierSide) pierSide {
+    return 0;
 }
 
 - (void)halt {

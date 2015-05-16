@@ -62,7 +62,8 @@ static void* kvoContext;
          @"SXIODefaultExposureFileTypes":@[@"fits",@"fit"],
          @"SXIONoDevicesAlertOnStartup":@YES,
          @"SXIOAutoContrastStretch":@NO,
-         @"SXIOCloseCameraWindowsOnDisconnect":@YES
+         @"SXIOCloseCameraWindowsOnDisconnect":@YES,
+         @"SXIOSetMountLocationAndDateTimeOnConnect":@YES
          }];
     }
 }

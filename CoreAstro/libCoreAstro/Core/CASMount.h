@@ -57,10 +57,22 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 
+- (void)park;
+- (void)unpark;
+- (void)gotoHomePosition;
+
+typedef NS_ENUM(NSInteger, CASMountPierSide) {
+    CASMountPierSideEast = 1,
+    CASMountPierSideWest = 2
+};
+@property (nonatomic,readonly) CASMountPierSide pierSide;
+
 @end
 
 @interface CASMount : NSObject<CASMount> // todo CASDevice subclass
 @end
+
+extern NSString* const CASMountFlippedNotification;
 
 // CASMount < CASLX200Mount (defines command set + serial connection) < CASIEQMount (defines command variations)
 // or mount is simply a composite of transport and command set ?

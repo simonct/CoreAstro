@@ -249,7 +249,7 @@ static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDirectoryBookmark";
 
-@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees;
+@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees, searchRA, searchDec, searchRadius;
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
@@ -292,6 +292,17 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         }
     }
     return nil;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.searchRA = -1000;
+        self.searchDec = -1000;
+        self.searchRadius = -1000;
+    }
+    return self;
 }
 
 - (NSURL*)indexDirectoryURL
@@ -426,7 +437,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
             // todo; target ra/dec + search radius
-            NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
+            NSMutableArray* args = [@[@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"10,20,30,40,50,60,70,80,90,100",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
             if (self.arcsecsPerPixel > 0){
                 const float low = (self.arcsecsPerPixel-0.5); // += %age ?
                 const float high = (self.arcsecsPerPixel+0.5);
@@ -437,7 +448,14 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                 const float maxw = ceilf(self.fieldSizeDegrees.width);
                 [args addObjectsFromArray:@[@"--scale-units",@"degwidth",@"--scale-low",[@(minw) description],@"--scale-high",[@(maxw) description]]];
             }
+            if (self.searchDec != -1000 && self.searchRA != -1000){
+                [args addObjectsFromArray:@[@"--ra",[@(self.searchRA) description],@"--dec",[@(self.searchDec) description]]];
+                if (self.searchRadius != -1000){
+                    [args addObjectsFromArray:@[@"--radius",[@(self.searchRadius) description]]];
+                }
+            }
             [args addObjectsFromArray:@[@"-D",self.cacheDirectory,@"-b",configPath]];
+            [args addObject:imagePath];
             // NSLog(@"args: %@",args);
             [self.solverTask setArguments:args];
             
@@ -549,8 +567,6 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             block(error,results);
         }
     };
-        
-    self.exposure = exposure;
     
     // check we're configured
     __block NSError* error = nil;
@@ -559,11 +575,24 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         return;
     }
     
+    if (self.solveCentre){
+        const CASSize size = exposure.actualSize;
+        self.exposure = [exposure subframeWithRect:CASRectMake2(size.width/4, size.height/4, size.width/2, size.height/2)];
+        const CGSize halfFieldSize = {
+            .width = self.fieldSizeDegrees.width/2,
+            .height = self.fieldSizeDegrees.height/2
+        };
+        self.fieldSizeDegrees = halfFieldSize;
+    }
+    else {
+        self.exposure = exposure;
+    }
+
     // run image export async as it can take a while
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         // export the exposure we want to solve to a png
-        NSData* data = [[exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
+        NSData* data = [[self.exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
         if (!data){
             complete([self errorWithCode:9 reason:@"Failed to export exposure to an image"],nil);
             return;
@@ -578,7 +607,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
             
             // delete the cache
-//            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
             
             complete(error,results);
         }];

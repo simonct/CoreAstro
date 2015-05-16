@@ -33,6 +33,7 @@
 @class CASGuiderController;
 @class CASFilterWheelController;
 @class CASCameraController;
+@class CASPHD2Client; // tmp for flipping
 
 @protocol CASCameraControllerSink <NSObject>
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error;
@@ -45,6 +46,7 @@
 typedef NS_ENUM(NSInteger, CASCameraControllerState) {
     CASCameraControllerStateNone,
     CASCameraControllerStateWaitingForTemperature,
+    CASCameraControllerStateWaitingForGuider,
     CASCameraControllerStateExposing, // or downloading
     CASCameraControllerStateWaitingForNextExposure,
     CASCameraControllerStateDithering
@@ -77,6 +79,8 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
 
 @property (nonatomic,strong) id<CASCameraControllerSink> sink;
+
+@property (nonatomic,strong,readonly) CASPHD2Client* phd2Client; // tmp for flipping
 
 @property (nonatomic,readonly) BOOL cancelled;
 

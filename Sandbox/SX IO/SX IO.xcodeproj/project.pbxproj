@@ -89,6 +89,8 @@
 		F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */; };
 		F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
 		F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */; };
+		F40EC1021AFF46E700DC7EE4 /* SX_IO_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */; };
+		F40EC10E1AFF475700DC7EE4 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F415C53617C95B7C001C42F1 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53517C95B7C001C42F1 /* QuickLook.framework */; };
 		F415C53717C95B7C001C42F1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F415C53917C95B7C001C42F1 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F415C53817C95B7C001C42F1 /* CoreServices.framework */; };
@@ -202,6 +204,10 @@
 		F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F4E8B0DA18674444001A36EC /* CCD-IO.sdef */; };
 		F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */; };
 		F4EF194217C1428400B8AD23 /* SXIOFilterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */; };
+		F4F2A4D31AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F2A4D01AED0FBF00CCC40F /* CASMountWindowController.xib */; };
+		F4F2A4D41AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F2A4D01AED0FBF00CCC40F /* CASMountWindowController.xib */; };
+		F4F2A4D51AED0FBF00CCC40F /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A4D11AED0FBF00CCC40F /* CASMountWindowController.m */; };
+		F4F2A4D61AED0FBF00CCC40F /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A4D11AED0FBF00CCC40F /* CASMountWindowController.m */; };
 		F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */; };
 		F4F9B20017B15A9A0063DD0D /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
 		F4F9B20217B15A9A0063DD0D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B20117B15A9A0063DD0D /* Foundation.framework */; };
@@ -265,6 +271,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = F40D5BC9184A912600977FA9;
 			remoteInfo = FLIDevicesPlugin;
+		};
+		F40EC1031AFF46E700DC7EE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FD22F7179B30D60049F5B5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4FD22FE179B30D60049F5B5;
+			remoteInfo = "SX IO";
 		};
 		F415C54B17C95BD3001C42F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -447,6 +460,9 @@
 		F40D5CA91851283E00977FA9 /* SXIOExportMovieWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExportMovieWindowController.h; sourceTree = "<group>"; };
 		F40D5CAA1851283E00977FA9 /* SXIOExportMovieWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExportMovieWindowController.m; sourceTree = "<group>"; };
 		F40D5CAB1851283E00977FA9 /* SXIOExportMovieWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOExportMovieWindowController.xib; sourceTree = "<group>"; };
+		F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SX IO Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40EC1001AFF46E700DC7EE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SX_IO_Tests.m; sourceTree = "<group>"; };
 		F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickFITS.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		F415C53517C95B7C001C42F1 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		F415C53817C95B7C001C42F1 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -582,6 +598,9 @@
 		F4EF193E17C1428400B8AD23 /* SXIOFilterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFilterWindowController.h; sourceTree = "<group>"; };
 		F4EF193F17C1428400B8AD23 /* SXIOFilterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFilterWindowController.m; sourceTree = "<group>"; };
 		F4EF194017C1428400B8AD23 /* SXIOFilterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFilterWindowController.xib; sourceTree = "<group>"; };
+		F4F2A4D01AED0FBF00CCC40F /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASMountWindowController.xib; path = ../../../CoreAstro/CASMountWindowController.xib; sourceTree = "<group>"; };
+		F4F2A4D11AED0FBF00CCC40F /* CASMountWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASMountWindowController.m; path = ../../../CoreAstro/CASMountWindowController.m; sourceTree = "<group>"; };
+		F4F2A4D21AED0FBF00CCC40F /* CASMountWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASMountWindowController.h; path = ../../../CoreAstro/CASMountWindowController.h; sourceTree = "<group>"; };
 		F4F6E11A182F8F6B00ACBFB4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContrastStretch.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -626,6 +645,14 @@
 				F40D5B561849EC5E00977FA9 /* QuartzCore.framework in Frameworks */,
 				F40D5B571849EC5E00977FA9 /* Cocoa.framework in Frameworks */,
 				F40D5B581849EC5E00977FA9 /* CoreAstro.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40EC0FA1AFF46E700DC7EE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40EC10E1AFF475700DC7EE4 /* CoreAstro.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,6 +710,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F40EC0FE1AFF46E700DC7EE4 /* SX IO Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F40EC1011AFF46E700DC7EE4 /* SX_IO_Tests.m */,
+				F40EC0FF1AFF46E700DC7EE4 /* Supporting Files */,
+			);
+			path = "SX IO Tests";
+			sourceTree = "<group>";
+		};
+		F40EC0FF1AFF46E700DC7EE4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40EC1001AFF46E700DC7EE4 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F415C53B17C95B7C001C42F1 /* QuickFITS */ = {
 			isa = PBXGroup;
 			children = (
@@ -864,6 +908,9 @@
 				F4415B4817CBAF7D00D1233C /* CASCaptureWindowController.h */,
 				F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */,
 				F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */,
+				F4F2A4D21AED0FBF00CCC40F /* CASMountWindowController.h */,
+				F4F2A4D11AED0FBF00CCC40F /* CASMountWindowController.m */,
+				F4F2A4D01AED0FBF00CCC40F /* CASMountWindowController.xib */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -903,6 +950,7 @@
 				F4F9B20617B15A9A0063DD0D /* ContrastStretch */,
 				F48F465717C409E6008FCEBE /* Debayer */,
 				F415C53B17C95B7C001C42F1 /* QuickFITS */,
+				F40EC0FE1AFF46E700DC7EE4 /* SX IO Tests */,
 				F4FD2301179B30D60049F5B5 /* Frameworks */,
 				F4FD2300179B30D60049F5B5 /* Products */,
 			);
@@ -916,6 +964,7 @@
 				F48F465017C40971008FCEBE /* Debayer.plugin */,
 				F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */,
 				F40D5B811849EC5E00977FA9 /* CCD IO.app */,
+				F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1103,6 +1152,24 @@
 			productReference = F40D5B811849EC5E00977FA9 /* CCD IO.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F40EC0FC1AFF46E700DC7EE4 /* SX IO Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40EC10D1AFF46E800DC7EE4 /* Build configuration list for PBXNativeTarget "SX IO Tests" */;
+			buildPhases = (
+				F40EC0F91AFF46E700DC7EE4 /* Sources */,
+				F40EC0FA1AFF46E700DC7EE4 /* Frameworks */,
+				F40EC0FB1AFF46E700DC7EE4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40EC1041AFF46E700DC7EE4 /* PBXTargetDependency */,
+			);
+			name = "SX IO Tests";
+			productName = "SX IO Tests";
+			productReference = F40EC0FD1AFF46E700DC7EE4 /* SX IO Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F415C53317C95B7C001C42F1 /* QuickFITS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */;
@@ -1200,6 +1267,10 @@
 					F40D5B221849EC5E00977FA9 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 					};
+					F40EC0FC1AFF46E700DC7EE4 = {
+						CreatedOnToolsVersion = 6.3.1;
+						TestTargetID = F4FD22FE179B30D60049F5B5;
+					};
 					F4FD22FE179B30D60049F5B5 = {
 						DevelopmentTeam = D8EQ3MVHHB;
 						SystemCapabilities = {
@@ -1233,6 +1304,7 @@
 				F48F463C17C40971008FCEBE /* Debayer */,
 				F4F9B1FD17B15A9A0063DD0D /* ContrastStretch */,
 				F415C53317C95B7C001C42F1 /* QuickFITS */,
+				F40EC0FC1AFF46E700DC7EE4 /* SX IO Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1320,6 +1392,7 @@
 				F40D5B651849EC5E00977FA9 /* SXIOCameraWindowController.xib in Resources */,
 				F40D5B661849EC5E00977FA9 /* loop.png in Resources */,
 				F40D5B671849EC5E00977FA9 /* SXIOSaveTargetViewController.xib in Resources */,
+				F4F2A4D41AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F40D5B681849EC5E00977FA9 /* moon.icns in Resources */,
 				F40D5B691849EC5E00977FA9 /* zoomout.pdf in Resources */,
 				F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
@@ -1334,6 +1407,13 @@
 				F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */,
 				F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */,
 				F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40EC0FB1AFF46E700DC7EE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1389,6 +1469,7 @@
 				F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */,
 				F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */,
 				F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */,
+				F4F2A4D31AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F4E6422E179BDF8F0044B349 /* loop.png in Resources */,
 				F4E6424D179BEE540044B349 /* SXIOSaveTargetViewController.xib in Resources */,
@@ -1478,6 +1559,7 @@
 				F40D5B321849EC5E00977FA9 /* CASCenteringClipView.m in Sources */,
 				F40D5B331849EC5E00977FA9 /* CASZoomableView.m in Sources */,
 				F40D5B341849EC5E00977FA9 /* CASExposureView.m in Sources */,
+				F4F2A4D61AED0FBF00CCC40F /* CASMountWindowController.m in Sources */,
 				F40D5B351849EC5E00977FA9 /* CASHUDView.m in Sources */,
 				F40D5B361849EC5E00977FA9 /* CASExposureInfoView.m in Sources */,
 				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
@@ -1511,6 +1593,14 @@
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40EC0F91AFF46E700DC7EE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40EC1021AFF46E700DC7EE4 /* SX_IO_Tests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1556,6 +1646,7 @@
 				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
 				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,
 				F4A25873179BC0100013D220 /* CASExposureView.m in Sources */,
+				F4F2A4D51AED0FBF00CCC40F /* CASMountWindowController.m in Sources */,
 				F4A25889179BC0990013D220 /* CASHUDView.m in Sources */,
 				F4A2588A179BC0990013D220 /* CASExposureInfoView.m in Sources */,
 				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
@@ -1619,6 +1710,11 @@
 			isa = PBXTargetDependency;
 			name = "CoreAstro Framework";
 			targetProxy = F40D5B2C1849EC5E00977FA9 /* PBXContainerItemProxy */;
+		};
+		F40EC1041AFF46E700DC7EE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4FD22FE179B30D60049F5B5 /* SX IO */;
+			targetProxy = F40EC1031AFF46E700DC7EE4 /* PBXContainerItemProxy */;
 		};
 		F415C54C17C95BD3001C42F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1748,6 +1844,71 @@
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F40EC1051AFF46E800DC7EE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "SX IO Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
+			};
+			name = Debug;
+		};
+		F40EC1061AFF46E800DC7EE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "SX IO Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
 			};
 			name = Release;
 		};
@@ -1945,6 +2106,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		F40EC10D1AFF46E800DC7EE4 /* Build configuration list for PBXNativeTarget "SX IO Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40EC1051AFF46E800DC7EE4 /* Debug */,
+				F40EC1061AFF46E800DC7EE4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */ = {
 			isa = XCConfigurationList;

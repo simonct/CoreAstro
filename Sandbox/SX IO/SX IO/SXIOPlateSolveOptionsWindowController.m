@@ -108,10 +108,15 @@ static void* kvoContext;
     }
 }
 
-- (NSString*)focalLengthKey
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController
 {
     NSString* const key = @"SXIOPlateSolverFocalLength";
-    return [NSString stringWithFormat:@"%@%@",key,self.cameraController.camera.uniqueID];
+    return [NSString stringWithFormat:@"%@%@",key,cameraController.camera.uniqueID];
+}
+
+- (NSString*)focalLengthKey
+{
+    return [[self class] focalLengthWithCameraKey:self.cameraController];
 }
 
 - (float)focalLength

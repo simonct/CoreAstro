@@ -17,15 +17,21 @@
 #import "CASCaptureWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
+#import "CASMountWindowController.h"
+#import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
-@interface CASControlsContainerView : NSView
+@interface CASControlsInnerContainerView : NSView
 @end
-@implementation CASControlsContainerView
+@implementation CASControlsInnerContainerView
+- (BOOL)isFlipped
+{
+    return YES;
+}
 @end
 
 @interface SXIOExposureView : CASExposureView
@@ -33,10 +39,10 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @implementation SXIOExposureView
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASMountWindowControllerDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
-@property (weak) IBOutlet CASControlsContainerView *controlsContainerView;
+@property (weak) IBOutlet NSScrollView *containerScrollView;
 @property (weak) IBOutlet NSTextField *progressStatusText;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 @property (weak) IBOutlet NSButton *captureButton;
@@ -67,6 +73,14 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (nonatomic,copy) NSString* cameraDeviceID;
 
+@property (strong) CASMount* mount;
+@property (weak) ORSSerialPort* selectedSerialPort;
+@property (strong) ORSSerialPortManager* serialPortManager;
+@property (strong) IBOutlet NSWindow *mountConnectWindow;
+@property (strong) CASMountWindowController* mountWindowController;
+
+@property (strong) CASProgressWindowController* mountFlipProgress;
+
 @end
 
 @implementation SXIOCameraWindowController {
@@ -94,38 +108,47 @@ static void* kvoContext;
     // drop shadow
     [CASShadowView attachToView:self.exposureView.enclosingScrollView.superview edge:NSMaxXEdge];
 
+    NSView* container = [[CASControlsInnerContainerView alloc] initWithFrame:CGRectZero];
+    
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
     self.cameraControlsViewController = [[CASCameraControlsViewController alloc] initWithNibName:@"CASCameraControlsViewController" bundle:nil];
     self.cameraControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.cameraControlsViewController.view];
+    [container addSubview:self.cameraControlsViewController.view];
     
     // layout camera controls
     id cameraControlsViewController1 = self.cameraControlsViewController.view;
     NSDictionary* viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
-    
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[cameraControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[cameraControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.cameraControlsViewController.view.frame.size.height)} views:viewNames]];
+
     // filter wheel controls
     self.filterWheelControlsViewController = [[CASFilterWheelControlsViewController alloc] initWithNibName:@"CASFilterWheelControlsViewController" bundle:nil];
     self.filterWheelControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.filterWheelControlsViewController.view];
+    [container addSubview:self.filterWheelControlsViewController.view];
     
     // layout filter wheel controls
     id filterWheelControlsViewController1 = self.filterWheelControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(cameraControlsViewController1,filterWheelControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[filterWheelControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cameraControlsViewController1][filterWheelControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.filterWheelControlsViewController.view.frame.size.height)} views:viewNames]];
 
     // save target controls
     self.saveTargetControlsViewController = [[SXIOSaveTargetViewController alloc] initWithNibName:@"SXIOSaveTargetViewController" bundle:nil];
     self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.controlsContainerView addSubview:self.saveTargetControlsViewController.view];
+    [container addSubview:self.saveTargetControlsViewController.view];
     
     // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,saveTargetControlsViewController1);
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [self.controlsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    
+    CGFloat height = 0;
+    for (NSView* view in container.subviews){
+        height += CGRectGetHeight(view.frame);
+    }
+    container.frame = CGRectMake(0, 0, CGRectGetWidth(self.containerScrollView.frame) - 2, height); // -2 prevents horizontal scrolling
+    self.containerScrollView.documentView = container;
     
     // bind the controllers
     [self.cameraControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
@@ -139,6 +162,9 @@ static void* kvoContext;
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
     [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
     
+    // listen to mount flipped notifications (todo; put in camera controller/capture controller?)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountFlipped:) name:CASMountFlippedNotification object:nil];
+    
     // map close button to hide window
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -150,6 +176,7 @@ static void* kvoContext;
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)hideWindow:sender
@@ -315,7 +342,11 @@ static void* kvoContext;
         }
     }
 
-    [self captureWithCompletion:nil];
+    [self captureWithCompletion:^(NSError* error) {
+        if (error){
+            [NSApp presentError:error];
+        }
+    }];
 }
 
 - (IBAction)cancelCapture:(id)sender
@@ -698,6 +729,170 @@ static void* kvoContext;
     [self.sequenceEditorWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         self.sequenceEditorWindowController = nil;
     }];
+}
+
+#pragma mark - Mount Control
+
+- (IBAction)connectToMount:(id)sender
+{
+    if (!self.serialPortManager){
+        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    }
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+}
+
+- (IBAction)connectButtonPressed:(id)sender
+{
+    if (!self.selectedSerialPort){
+        return;
+    }
+    
+    if (self.selectedSerialPort.isOpen){
+        [self presentAlertWithTitle:nil message:@"Selected serial port is already open"];
+        return;
+    }
+    
+    [self.mountConnectWindow orderOut:nil];
+    
+    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    
+    if (self.mount.slewing){
+        [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
+        return;
+    }
+    
+    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
+        if (error){
+            [self presentAlertWithTitle:nil message:[error localizedDescription]];
+        }
+        else {
+            self.mountWindowController.cameraController = self.cameraController;
+            self.mountWindowController.mountWindowDelegate = self;
+            CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
+            if (solution){
+                [self.mountWindowController setTargetRA:solution.centreRA dec:solution.centreDec];
+            }
+        }
+    }];
+}
+
+- (void)mountFlipped
+{
+    // stop phd2 guiding whether we're capturing or not
+    [self.cameraController.phd2Client stop];
+
+    if (!self.cameraController.capturing){
+        return;
+    }
+    
+    // cancel any current capture
+    [self.cameraController cancelCapture];
+    
+    // if we've got a locked solution, attempt to recover after the flip
+    if (!self.exposureView.lockedPlateSolveSolution){
+        [self presentAlertWithTitle:@"Exposure Cancelled" message:@"A mount flip was detected without a locked solution."];
+    }
+    else {
+        
+        // check for the mount window as that currently handles slew and sync (job for a mount controller class probably)
+        if (!self.mountWindowController){
+            [self presentAlertWithTitle:@"Exposure Cancelled" message:@"A mount flip was detected without a connected mount."];
+        }
+        else {
+            
+            // present a sheet with some status info
+            self.mountFlipProgress = [CASProgressWindowController createWindowController];
+            [self.mountFlipProgress beginSheetModalForWindow:self.window];
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Waiting for mount to flip...", @"Progress sheet status label");
+            [self.mountFlipProgress.progressBar setIndeterminate:YES];
+            self.mountFlipProgress.canCancel = NO;
+            
+            // wait for the mount to complete flipping
+            [self checkMountFinishedFlip];
+        }
+    }
+}
+
+- (void)checkMountFinishedFlip
+{
+    if (self.mount.slewing){
+        
+        NSLog(@"Mount still slewing, waiting 5s...");
+        [self performSelector:_cmd withObject:nil afterDelay:5];
+    }
+    else {
+        
+        CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
+        if (solution){
+            
+            NSLog(@"Mount slew complete, re-syncing to locked solution");
+            
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
+            
+            // slew and solve to target
+            self.mountWindowController.cameraController = self.cameraController;
+            self.mountWindowController.mountWindowDelegate = self;
+            self.mountWindowController.usePlateSolvng = YES;
+            [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+        }
+    }
+}
+
+#pragma mark - Mount Window Controller Delegate
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
+{
+    [self setCurrentExposure:exposure resetDisplay:YES];
+}
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    self.exposureView.plateSolveSolution = solution;
+}
+
+- (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error
+{
+    if (error){
+        [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+        return;
+    }
+    
+    if (!self.mountFlipProgress){
+        [self presentAlertWithTitle:@"Slew Complete" message:@"The mount is now on the selected target"];
+    }
+    else{
+        
+        // looks like we were syncing after a flip
+        void (^dismissSheet)() = ^(){
+            [self.mountFlipProgress endSheetWithCode:NSOKButton];
+            self.mountFlipProgress = nil;
+        };
+        
+        if (error){
+            dismissSheet();
+        }
+        else{
+        
+            self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Restarting guiding...", @"Progress sheet status label");
+
+            // flip and restart guiding
+            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+                
+                dismissSheet();
+
+                if (!success){
+                    [self presentAlertWithTitle:@"Guide Failed" message:@"PHD2 failed to restart guiding"];
+                }
+                else {
+                    
+                    // restart capture
+                    [self capture:nil];
+                }
+            }];
+        }
+    }
 }
 
 #pragma mark - Plate Solving
@@ -1098,6 +1293,11 @@ static void* kvoContext;
         }
             break;
             
+        case CASCameraControllerStateWaitingForGuider:{
+            commonShowProgressSetup(@"Waiting for PHD2...",NO);
+        }
+            break;
+
         case CASCameraControllerStateWaitingForNextExposure:{
             commonShowProgressSetup(@"Waiting...",NO);
         }
@@ -1634,7 +1834,10 @@ static void* kvoContext;
         case 11105: // Sequence...
             enabled = !self.cameraController.capturing;
             break;
-
+            
+        case 11106: // Connect to Mount...
+            enabled = YES;
+            break;
     }
     return enabled;
 }
@@ -1675,7 +1878,7 @@ static void* kvoContext;
     return YES;
 }
 
-- (void)captureWithCompletion:(void(^)())completion
+- (void)captureWithCompletion:(void(^)(NSError*))completion
 {
     // disable idle sleep
     [CASPowerMonitor sharedInstance].disableSleep = YES;
@@ -1687,6 +1890,9 @@ static void* kvoContext;
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
         
         if (!self.cameraController.capturing){
+            
+            // might be flipping in which case this will be called again but with a nil completion block which
+            // means the sequence controller will never hear about the completed exposures and be stuck
             
             // re-enable idle sleep
             [CASPowerMonitor sharedInstance].disableSleep = NO;
@@ -1709,7 +1915,7 @@ static void* kvoContext;
             [self endSequence];
             
             if (completion){
-                completion();
+                completion(error);
             }
         }
     }];
@@ -1718,6 +1924,17 @@ static void* kvoContext;
 - (void)endSequence
 {
     [self cancelCapture:nil];
+}
+
+#pragma mark - Notifications
+
+- (void)mountFlipped:(NSNotification*)note
+{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){
+        if (note.object == self.mount){
+            [self mountFlipped];
+        }
+    }
 }
 
 @end
