@@ -253,6 +253,9 @@
 
 - (id)transformedValue:(id)value
 {
+    if (!value){
+        return @"--:--:--";
+    }
     return [CASLX200Commands highPrecisionRA:[value doubleValue]];
 }
 
@@ -267,6 +270,9 @@
 
 - (id)transformedValue:(id)value
 {
+    if (!value){
+        return @"--*--:--";
+    }
     return [CASLX200Commands highPrecisionDec:[value doubleValue]];
 }
 
