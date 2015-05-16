@@ -567,8 +567,6 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             block(error,results);
         }
     };
-        
-    self.exposure = exposure;
     
     // check we're configured
     __block NSError* error = nil;
@@ -577,11 +575,24 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         return;
     }
     
+    if (self.solveCentre){
+        const CASSize size = exposure.actualSize;
+        self.exposure = [exposure subframeWithRect:CASRectMake2(size.width/4, size.height/4, size.width/2, size.height/2)];
+        const CGSize halfFieldSize = {
+            .width = self.fieldSizeDegrees.width/2,
+            .height = self.fieldSizeDegrees.height/2
+        };
+        self.fieldSizeDegrees = halfFieldSize;
+    }
+    else {
+        self.exposure = exposure;
+    }
+
     // run image export async as it can take a while
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         // export the exposure we want to solve to a png
-        NSData* data = [[exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
+        NSData* data = [[self.exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
         if (!data){
             complete([self errorWithCode:9 reason:@"Failed to export exposure to an image"],nil);
             return;
@@ -596,7 +607,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
             
             // delete the cache
-//            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
             
             complete(error,results);
         }];
