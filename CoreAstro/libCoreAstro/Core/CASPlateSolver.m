@@ -437,7 +437,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
             // todo; target ra/dec + search radius
-            NSMutableArray* args = [@[imagePath,@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"500",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
+            NSMutableArray* args = [@[@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"10,20,30,40,50,60,70,80,90,100",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
             if (self.arcsecsPerPixel > 0){
                 const float low = (self.arcsecsPerPixel-0.5); // += %age ?
                 const float high = (self.arcsecsPerPixel+0.5);
@@ -449,12 +449,13 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
                 [args addObjectsFromArray:@[@"--scale-units",@"degwidth",@"--scale-low",[@(minw) description],@"--scale-high",[@(maxw) description]]];
             }
             if (self.searchDec != -1000 && self.searchRA != -1000){
-                [args addObjectsFromArray:@[@"--ra",@(self.searchRA),@"--dec",@(self.searchDec)]];
+                [args addObjectsFromArray:@[@"--ra",[@(self.searchRA) description],@"--dec",[@(self.searchDec) description]]];
                 if (self.searchRadius != -1000){
-                    [args addObjectsFromArray:@[@"--radius",@(self.searchRadius)]];
+                    [args addObjectsFromArray:@[@"--radius",[@(self.searchRadius) description]]];
                 }
             }
             [args addObjectsFromArray:@[@"-D",self.cacheDirectory,@"-b",configPath]];
+            [args addObject:imagePath];
             // NSLog(@"args: %@",args);
             [self.solverTask setArguments:args];
             
