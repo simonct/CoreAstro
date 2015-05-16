@@ -249,7 +249,7 @@ static NSString* const kSolutionArchiveName = @"solution.plist";
 NSString* const kCASAstrometryIndexDirectoryURLKey = @"CASAstrometryIndexDirectoryURL";
 NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDirectoryBookmark";
 
-@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees, searchRA, searchDec, searchRadius;
+@synthesize outputBlock, arcsecsPerPixel, fieldSizeDegrees, searchRA, searchDec, searchRadius, solveCentre;
 
 + (id<CASPlateSolver>)plateSolverWithIdentifier:(NSString*)ident
 {
@@ -305,11 +305,18 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     return self;
 }
 
+- (BOOL)codeSigned
+{
+    NSURL* signatureDirectory = [[[NSBundle mainBundle] bundleURL] URLByAppendingPathComponent:@"Contents/_CodeSignature"];
+    return [signatureDirectory checkResourceIsReachableAndReturnError:nil];
+}
+
 - (NSURL*)indexDirectoryURL
 {
     NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
     if ([bookmark length]){
-        NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+        const NSURLBookmarkResolutionOptions options = [self codeSigned] ? NSURLBookmarkResolutionWithSecurityScope : 0;
+        NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:options relativeToURL:nil bookmarkDataIsStale:nil error:nil];
         if (url){
             return url;
         }
@@ -320,7 +327,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 - (void)setIndexDirectoryURL:(NSURL*)url
 {
     NSError* error;
-    NSData* bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    const NSURLBookmarkCreationOptions options = [self codeSigned] ? NSURLBookmarkCreationWithSecurityScope : 0;
+    NSData* bookmark = [url bookmarkDataWithOptions:options includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
     if (bookmark){
         [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kCASAstrometryIndexDirectoryBookmarkKey];
     }
@@ -436,7 +444,6 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             NSString* configPath = [self.cacheDirectory stringByAppendingPathComponent:@"backend.cfg"];
             [config writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
             
-            // todo; target ra/dec + search radius
             NSMutableArray* args = [@[@"--no-plots",@"-z",@"2",@"--overwrite",@"-d",@"10,20,30,40,50,60,70,80,90,100",@"-l",@"20",@"-r",@"--objs",@"100"] mutableCopy];
             if (self.arcsecsPerPixel > 0){
                 const float low = (self.arcsecsPerPixel-0.5); // += %age ?
