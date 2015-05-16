@@ -18,7 +18,6 @@
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property BOOL usePlateSolvng;
-@property float focalLength;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic,readonly) CASCameraController* selectedCameraController;
 @property (strong) CASMountSynchroniser* mountSynchroniser;
@@ -41,8 +40,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    
-    self.focalLength = 0;
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -69,6 +66,11 @@
 }
 
 #pragma mark - Mount/Camera
+
+- (double)separation
+{
+    return self.mountSynchroniser.separation;
+}
 
 - (NSArray*)cameraControllers
 {
@@ -134,7 +136,7 @@
         }
         
         self.mountSynchroniser.mount = self.mount;
-        self.mountSynchroniser.focalLength = self.focalLength;
+        self.mountSynchroniser.focalLength = [[NSUserDefaults standardUserDefaults] floatForKey:@"CASFocalLengthMillemeter"];
         self.mountSynchroniser.cameraController = self.selectedCameraController;
         self.mountSynchroniser.delegate = self;
 
