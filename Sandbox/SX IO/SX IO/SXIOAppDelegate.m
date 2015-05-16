@@ -68,6 +68,11 @@ static void* kvoContext;
     }
 }
 
++ (instancetype)sharedInstance
+{
+    return (SXIOAppDelegate*)[NSApplication sharedApplication].delegate;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // HACK; swizzle - (NSArray*)exposures
@@ -262,14 +267,7 @@ static void* kvoContext;
                             [windowController.window makeKeyAndOrderFront:nil];
                             [_windows addObject:windowController];
                             
-                            // add to Window menu
-                            if ([_windows count] == 1){
-                                [self.windowMenu addItem:[NSMenuItem separatorItem]];
-                            }
-                            NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
-                            windowControllerItem.target = self;
-                            windowControllerItem.representedObject = windowController;
-                            [self.windowMenu addItem:windowControllerItem];
+                            [self addWindowToWindowMenu:windowController];
                         }
                     }
                 }];
@@ -296,21 +294,9 @@ static void* kvoContext;
                         }
                         
                         if (closeWindow){
-                            
-                            // remove from Window menu
-                            for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
-                                if (item.representedObject == window){
-                                    [self.windowMenu removeItem:item];
-                                }
-                            }
-                            
+                            [self removeWindowFromWindowMenu:window];
                             [window close];
                             [_windows removeObject:window];
-                            
-                            // remove trailing separator
-                            if ([_windows count] == 0){
-                                [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
-                            }
                         }
                     }
                 }];
@@ -330,6 +316,33 @@ static void* kvoContext;
     NSWindowController* window = sender.representedObject;
     if ([window isKindOfClass:[NSWindowController class]]){
         [window.window makeKeyAndOrderFront:nil];
+    }
+}
+
+- (void)addWindowToWindowMenu:(NSWindowController*)windowController
+{
+    // add to Window menu
+    if ([_windows count] == 1){
+        [self.windowMenu addItem:[NSMenuItem separatorItem]];
+    }
+    NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
+    windowControllerItem.target = self;
+    windowControllerItem.representedObject = windowController;
+    [self.windowMenu addItem:windowControllerItem];
+}
+
+- (void)removeWindowFromWindowMenu:(NSWindowController*)windowController
+{
+    // remove from Window menu
+    for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
+        if (item.representedObject == windowController){
+            [self.windowMenu removeItem:item];
+        }
+    }
+    
+    // remove trailing separator
+    if ([_windows count] == 0){
+        [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
     }
 }
 

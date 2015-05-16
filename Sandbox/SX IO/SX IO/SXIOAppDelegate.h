@@ -10,4 +10,9 @@
 
 @interface SXIOAppDelegate : NSObject <NSApplicationDelegate>
 
+- (void)addWindowToWindowMenu:(NSWindowController*)windowController;
+- (void)removeWindowFromWindowMenu:(NSWindowController*)windowController;
+
++ (instancetype)sharedInstance;
+
 @end

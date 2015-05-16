@@ -8,6 +8,7 @@
 
 #import "CASMountWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
+#import "SXIOAppDelegate.h"
 #import <CoreAstro/CoreAstro.h>
 
 @interface CASPierSideTransformer : NSValueTransformer
@@ -76,6 +77,8 @@ static void* kvoContext;
 {
     [super windowDidLoad];
     
+    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
+
     self.mountSynchroniser = [CASMountSynchroniser new];
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
@@ -94,6 +97,8 @@ static void* kvoContext;
     [self.mountSynchroniser cancel];
     [self.mount disconnect];
     
+    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+
     [self close];
 }
 
