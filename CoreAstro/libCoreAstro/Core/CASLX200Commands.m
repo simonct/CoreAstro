@@ -230,7 +230,7 @@
 
 + (NSString*)setTelescopeGMTOffset:(NSTimeZone*)tz
 {
-    const NSInteger gmtOffset = tz.secondsFromGMT;
+    const NSInteger gmtOffset = tz.secondsFromGMT - tz.daylightSavingTimeOffset;
     const NSInteger hours = labs(gmtOffset/3600);
     const NSInteger minutes = (labs(gmtOffset) - hours*3600)/60;
     const char sign = gmtOffset < 0 ? '-' : '+';
