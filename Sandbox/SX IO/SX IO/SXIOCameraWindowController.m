@@ -856,11 +856,15 @@ static void* kvoContext;
 {
     if (error){
         [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+        return;
     }
     
-    // looks like we were syncing after a flip
-    if (self.mountFlipProgress){
+    if (!self.mountFlipProgress){
+        [self presentAlertWithTitle:@"Slew Complete" message:@"The mount is now on the selected target"];
+    }
+    else{
         
+        // looks like we were syncing after a flip
         void (^dismissSheet)() = ^(){
             [self.mountFlipProgress endSheetWithCode:NSOKButton];
             self.mountFlipProgress = nil;
