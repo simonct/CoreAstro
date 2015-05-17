@@ -265,8 +265,6 @@ static void* kvoContext;
                             [self.noDevicesHUD orderOut:nil];
                             [windowController setShouldCascadeWindows:YES];
                             [windowController.window makeKeyAndOrderFront:nil];
-                            [_windows addObject:windowController];
-                            
                             [self addWindowToWindowMenu:windowController];
                         }
                     }
@@ -294,9 +292,8 @@ static void* kvoContext;
                         }
                         
                         if (closeWindow){
-                            [self removeWindowFromWindowMenu:window];
                             [window close];
-                            [_windows removeObject:window];
+                            [self removeWindowFromWindowMenu:window];
                         }
                     }
                 }];
@@ -321,10 +318,15 @@ static void* kvoContext;
 
 - (void)addWindowToWindowMenu:(NSWindowController*)windowController
 {
+    NSParameterAssert(windowController);
+    
+    [_windows addObject:windowController];
+
     // add to Window menu
     if ([_windows count] == 1){
         [self.windowMenu addItem:[NSMenuItem separatorItem]];
     }
+    
     NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
     windowControllerItem.target = self;
     windowControllerItem.representedObject = windowController;
@@ -333,6 +335,8 @@ static void* kvoContext;
 
 - (void)removeWindowFromWindowMenu:(NSWindowController*)windowController
 {
+    NSParameterAssert(windowController);
+
     // remove from Window menu
     for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
         if (item.representedObject == windowController){
@@ -340,6 +344,8 @@ static void* kvoContext;
         }
     }
     
+    [_windows removeObject:windowController];
+
     // remove trailing separator
     if ([_windows count] == 0){
         [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
