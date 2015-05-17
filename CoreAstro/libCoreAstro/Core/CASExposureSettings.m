@@ -43,6 +43,10 @@
     if ([@"exposureDuration" isEqualToString:key]){
         return;
     }
+    if ([@"ditherPixels" isEqualToString:key]){
+        self.ditherPixels = 0;
+        return;
+    }
     [super setNilValueForKey:key];
 }
 
