@@ -22,9 +22,12 @@
 		<string>/usr/local/Cellar/</string>
 		<string>/opt/X11/lib/</string>
 	</array>
-	<key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
-	<array>
-		<string>/private/tmp/</string>
-	</array>
+    <key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
+    <array>
+        <string>/private/tmp/</string>
+        <string>/dev/</string>
+    </array>
+    <key>com.apple.security.device.serial</key>
+    <true/>
 </dict>
 </plist>
