@@ -15,6 +15,7 @@
 
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL slewing;
+@property (nonatomic,readonly) BOOL tracking;
 
 @property (nonatomic,strong,readonly) NSNumber* ra;
 @property (nonatomic,strong,readonly) NSNumber* dec;
@@ -51,6 +52,8 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 @property (nonatomic,readonly) CASMountDirection direction;
 - (void)startMoving:(CASMountDirection)direction;
 - (void)stopMoving;
+- (void)stopTracking;
+- (void)stopSlewing;
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;

@@ -53,7 +53,7 @@
     NSMutableString* _input;
 }
 
-@synthesize connected,slewing;
+@synthesize connected,slewing,tracking;
 @synthesize ra,dec,alt,az,targetRa,targetDec;
 @synthesize pierSide = _pierSide;
 
@@ -347,15 +347,13 @@
 
 - (void)halt
 {
-    if (_direction == CASMountDirectionNone){
-        [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) {
-            NSLog(@"Halt command response: %@",response);
-        }];
+    if (_direction != CASMountDirectionNone){
+        [self stopMoving];
     }
     else {
-        [self sendCommand:@":q#"];
-        [self pollMountStatus];
+        [self stopSlewing];
     }
+    [self pollMountStatus];
 }
 
 - (void)syncToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
@@ -613,7 +611,21 @@
 - (void)stopMoving
 {
     _direction = CASMountDirectionNone;
-    [self sendCommand:@":q#"];
+    [self sendCommand:@":q#"]; // This commands will stop moving by arrow keys or “:mn#”, “:me#”, “:ms#”, “:mw#” command. Slewing and tracking will not be affected.
+}
+
+- (void)stopTracking
+{
+    [self sendCommand:@":ST0#" readCount:1 completion:^(NSString* response) { // These command sets tracking state. “:ST0#” indicates stop tracking, “:ST1#” indicates start tracking.
+        NSLog(@"Stop tracking command response: %@",response);
+    }];
+}
+
+- (void)stopSlewing
+{
+    [self sendCommand:@":Q#" readCount:1 completion:^(NSString* response) { // This command will stop slewing. Tracking and moving by arrow keys will not be affected.
+        NSLog(@"Stop slewing command response: %@",response);
+    }];
 }
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
