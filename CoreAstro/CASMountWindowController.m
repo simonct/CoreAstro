@@ -211,6 +211,8 @@ static void* kvoContext;
             return;
         }
         
+        [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
+        
         self.mountSynchroniser.mount = self.mount;
         self.mountSynchroniser.cameraController = self.selectedCameraController;
         self.mountSynchroniser.delegate = self;
