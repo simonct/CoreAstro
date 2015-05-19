@@ -24,11 +24,7 @@
 //
 
 #import "CASDevice.h"
-
-typedef NS_ENUM(NSUInteger, CASFocuserDirection) {
-    CASFocuserForward,
-    CASFocuserReverse
-};
+#import "CASFocuser.h"
 
 typedef NS_ENUM(NSUInteger, CASFocuserPMWFreq) {
     CASFocuserPMWFreq1x,
@@ -36,7 +32,7 @@ typedef NS_ENUM(NSUInteger, CASFocuserPMWFreq) {
     CASFocuserPMWFreq16x
 };
 
-@protocol CASFocuserDevice <NSObject>
+@protocol CASFocuserDevice <CASFocuser>
 @property (nonatomic,assign) BOOL ledOn;
 @property (nonatomic,assign) BOOL ledRed;
 @property (nonatomic,assign) CGFloat motorSpeed; // 0 -> 1

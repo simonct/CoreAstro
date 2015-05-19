@@ -339,6 +339,7 @@
 		F4CA5425169CC9FD00832CFF /* wcs-rd2xy.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DD169CC9FB00832CFF /* wcs-rd2xy.h */; };
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
+		F4CA81A71B0915BB00BEEAA3 /* CASFocuser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
 		F4E424101A8630A700C2A87E /* CASObjectLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4E424111A8630A700C2A87E /* CASObjectLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */; };
@@ -1385,6 +1386,7 @@
 		F4CA532D169CC9FD00832CFF /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
 		F4CA532E169CC9FD00832CFF /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F4CA532F169CC9FD00832CFF /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
+		F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFocuser.h; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
 		F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASObjectLookup.h; sourceTree = "<group>"; };
@@ -2039,6 +2041,7 @@
 				F4E424271A86746C00C2A87E /* iEQMount.m */,
 				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
 				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
+				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
 				F4E424791A86757700C2A87E /* ORSSerialPort */,
 			);
 			name = Core;
@@ -3075,6 +3078,7 @@
 				F4CA53C3169CC9FD00832CFF /* constellations.h in Headers */,
 				F4CA53C4169CC9FD00832CFF /* convolve-image.h in Headers */,
 				F4CA53C5169CC9FD00832CFF /* ctmf.h in Headers */,
+				F4CA81A71B0915BB00BEEAA3 /* CASFocuser.h in Headers */,
 				F4CA53C6169CC9FD00832CFF /* dimage.h in Headers */,
 				F4CA53C7169CC9FD00832CFF /* dualtree.h in Headers */,
 				F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */,
