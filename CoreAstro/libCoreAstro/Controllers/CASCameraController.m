@@ -184,7 +184,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 {
     NSMutableDictionary* errorDict = [NSMutableDictionary dictionaryWithCapacity:2];
     if (message){
-        errorDict[NSLocalizedFailureReasonErrorKey] = message;
+        errorDict[NSLocalizedDescriptionKey] = message;
     }
     if (recovery){
         errorDict[NSLocalizedRecoverySuggestionErrorKey] = recovery;

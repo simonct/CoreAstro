@@ -365,7 +365,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 
 - (NSError*)errorWithCode:(NSInteger)code reason:(NSString*)reason
 {
-    return [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:@{NSLocalizedFailureReasonErrorKey:reason}];
+    return [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:@{NSLocalizedDescriptionKey:reason}];
 }
 
 - (CASPlateSolveSolution*)cachedSolutionForExposure:(CASCCDExposure*)exposure

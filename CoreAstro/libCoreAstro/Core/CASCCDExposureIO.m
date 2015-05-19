@@ -331,7 +331,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     }
     return [NSError errorWithDomain:@"CASCCDExposureFITS"
                                code:status
-                           userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedFailureReasonErrorKey]];
+                           userInfo:[NSDictionary dictionaryWithObject:msg forKey:NSLocalizedDescriptionKey]];
 };
 
 - (NSDateFormatter*)utcDateFormatter

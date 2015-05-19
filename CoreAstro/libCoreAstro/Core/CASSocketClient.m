@@ -432,7 +432,7 @@ static const char CRLF[] = "\r\n";
                     NSDictionary* errorDict = message[@"error"];
                     if ([errorDict isKindOfClass:[NSDictionary class]]){
                         NSString* message = errorDict[@"message"] ?: @"";
-                        error = [NSError errorWithDomain:@"PHD2" code:[errorDict[@"code"] integerValue] userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]];
+                        error = [NSError errorWithDomain:@"PHD2" code:[errorDict[@"code"] integerValue] userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedDescriptionKey,message,nil]];
                     }
                     callback(result,error);
                 }

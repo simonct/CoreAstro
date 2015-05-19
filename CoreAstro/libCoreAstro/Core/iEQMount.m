@@ -141,7 +141,7 @@
             NSString* message = [NSString stringWithFormat:@"Unrecognised response when connecting to mount. Expected V1.00 but got '%@'",response];
             complete([NSError errorWithDomain:NSStringFromClass([self class])
                                          code:1
-                                     userInfo:@{NSLocalizedFailureReasonErrorKey:message}]);
+                                     userInfo:@{NSLocalizedDescriptionKey:message}]);
         }
         else {
             [self sendCommand:@":MountInfo#" readCount:4 completion:^(NSString *response) {

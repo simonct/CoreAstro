@@ -414,7 +414,7 @@
     // can only have one exposure active at a time
     if (self.exposureCommand){
         if (block){
-            block([NSError errorWithDomain:NSStringFromClass([self class]) code:1 userInfo:@{NSLocalizedFailureReasonErrorKey:@"Exposure already in progress"}],nil);
+            block([NSError errorWithDomain:NSStringFromClass([self class]) code:1 userInfo:@{NSLocalizedDescriptionKey:@"Exposure already in progress"}],nil);
         }
         return;
     }
