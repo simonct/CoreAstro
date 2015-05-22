@@ -18,7 +18,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="423" height="425"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="423" height="425"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -160,7 +160,7 @@
                                     </buttonCell>
                                     <connections>
                                         <action selector="slew:" target="-2" id="cj0-Rd-8mv"/>
-                                        <binding destination="-2" name="enabled2" keyPath="mount.targetRA" previousBinding="vjK-Ix-Mwz" id="t99-Ls-5s9">
+                                        <binding destination="-2" name="enabled2" keyPath="mount.targetRa" previousBinding="vjK-Ix-Mwz" id="24M-CM-uHC">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -169,7 +169,7 @@
                                                 <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled3" keyPath="mount.targetDec" previousBinding="t99-Ls-5s9" id="aNk-PQ-8cb">
+                                        <binding destination="-2" name="enabled3" keyPath="mount.targetDec" previousBinding="24M-CM-uHC" id="Vqd-oO-U6T">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
