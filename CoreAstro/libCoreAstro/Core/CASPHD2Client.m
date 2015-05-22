@@ -116,7 +116,7 @@ static void* kvoContext;
     // Paused
     // Resumed
     // GuidingDithered
-    NSLog(@"%@",message[@"Event"]);
+    NSLog(@"receivedNotification: %@",message[@"Event"]);
     
     NSString* event = message[@"Event"];
     
