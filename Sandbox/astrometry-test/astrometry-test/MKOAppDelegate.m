@@ -193,7 +193,10 @@ static void* kvoContext;
 
 - (void)presentAlertWithMessage:(NSString*)message
 {
-    [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+    NSAlert* alert = [[NSAlert alloc] init];
+    alert.informativeText = message;
+    [alert addButtonWithTitle:@"OK"];
+    [alert runModal];
 }
 
 - (void)setSolution:(CASPlateSolveSolution *)solution
@@ -245,8 +248,7 @@ static void* kvoContext;
     }
     
     if (!self.plateSolver){
-        self.imageView.url = [NSURL fileURLWithPath:path];
-        if (self.imageView.url){
+        if ([self.imageView setImageWithURL:[NSURL fileURLWithPath:path]]){
             [self solve:nil];
         }
         else {
@@ -387,19 +389,21 @@ static void* kvoContext;
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
     
-    open.allowedFileTypes = [[NSImage imageFileTypes] arrayByAddingObjectsFromArray:@[@"fits",@"fts",@"fit"]];
+    open.allowedFileTypes = [[NSImage imageTypes] arrayByAddingObjectsFromArray:@[@"fits",@"fts",@"fit"]];
     open.allowsMultipleSelection = NO;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        
         if (result == NSFileHandlingPanelOKButton){
-            
-            self.imageView.url = open.URL;
-            if (self.imageView.url){
-                // self.solution = nil;
+            if ([self.imageView setImageWithURL:open.URL]){
+                [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:self.imageView.url];
             }
         }
     }];
+}
+
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
+{
+    return [self.imageView setImageWithURL:[NSURL fileURLWithPath:filename]];
 }
 
 - (IBAction)saveDocument:(id)sender

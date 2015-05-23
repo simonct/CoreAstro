@@ -83,7 +83,11 @@
 
 - (void)setUrl:(NSURL *)url
 {
-    // check to see if it's an exposure object and create a tmp image if it is
+    [self setImageWithURL:url];
+}
+
+- (BOOL)setImageWithURL:(NSURL*)url
+{
     NSError* error;
     NSData* data = [[self class] imageDataFromExposurePath:url.path error:&error];
     if ([data length]){
@@ -98,9 +102,12 @@
     else if (error){
         url = nil;
     }
-    [super setUrl:url];
-    self.annotations = nil;
-    [self zoomImageToFit:nil];
+    if (url){
+        [super setUrl:url];
+        self.annotations = nil;
+        [self zoomImageToFit:nil];
+    }
+    return (url != nil);
 }
 
 - (void)setAnnotations:(NSArray *)annotations

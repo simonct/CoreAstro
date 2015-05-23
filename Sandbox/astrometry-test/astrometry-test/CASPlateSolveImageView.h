@@ -23,4 +23,5 @@
 + (NSData*)imageDataFromExposurePath:(NSString*)path error:(NSError**)error;
 - (void)createAnnotations;
 - (void)updateAnnotations;
+- (BOOL)setImageWithURL:(NSURL*)url;
 @end
