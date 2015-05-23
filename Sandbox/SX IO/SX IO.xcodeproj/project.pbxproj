@@ -2068,6 +2068,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"SXIO=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -2086,6 +2090,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = "SXIO=1";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -2114,6 +2119,7 @@
 				F40EC1061AFF46E800DC7EE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F415C54817C95B7D001C42F1 /* Build configuration list for PBXNativeTarget "QuickFITS" */ = {
 			isa = XCConfigurationList;
