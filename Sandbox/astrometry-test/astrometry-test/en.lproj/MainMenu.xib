@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7519.1" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7519.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -994,6 +993,14 @@ DQ
                     </box>
                 </subviews>
             </view>
+            <toolbar key="toolbar" implicitIdentifier="2F7CE379-2BB2-46BE-841D-4AAF3744FCB9" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="qrt-HE-i81">
+                <allowedToolbarItems/>
+                <defaultToolbarItems/>
+                <connections>
+                    <outlet property="delegate" destination="494" id="sDT-Wc-o94"/>
+                </connections>
+            </toolbar>
+            <point key="canvasLocation" x="598.5" y="537.5"/>
         </window>
         <customObject id="494" customClass="MKOAppDelegate">
             <connections>
@@ -1009,7 +1016,10 @@ DQ
                 <outlet property="solutionRALabel" destination="582" id="592"/>
                 <outlet property="solveButton" destination="549" id="554"/>
                 <outlet property="spinner" destination="552" id="553"/>
+                <outlet property="toolbar" destination="qrt-HE-i81" id="dan-Qt-Mdj"/>
                 <outlet property="window" destination="371" id="532"/>
+                <outlet property="zoomInControl" destination="esk-EZ-B96" id="nHz-hh-MeS"/>
+                <outlet property="zoomToFitControl" destination="76b-gd-RoH" id="Eu5-BI-8Ug"/>
             </connections>
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
@@ -1353,5 +1363,41 @@ DQ
             </view>
             <point key="canvasLocation" x="856.5" y="108"/>
         </window>
+        <segmentedControl verticalHuggingPriority="750" id="esk-EZ-B96">
+            <rect key="frame" x="0.0" y="0.0" width="67" height="28"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="selectAny" id="ovJ-Rv-PxV">
+                <font key="font" metaFont="system"/>
+                <segments>
+                    <segment image="zoomin" width="32"/>
+                    <segment image="zoomout" width="32" selected="YES" tag="1"/>
+                </segments>
+            </segmentedCell>
+            <connections>
+                <action selector="zoomInOut:" target="494" id="wHd-8e-G7o"/>
+            </connections>
+            <point key="canvasLocation" x="-91.5" y="360.5"/>
+        </segmentedControl>
+        <segmentedControl verticalHuggingPriority="750" id="76b-gd-RoH">
+            <rect key="frame" x="0.0" y="0.0" width="67" height="28"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="selectAny" id="aLs-2R-LUH">
+                <font key="font" metaFont="system"/>
+                <segments>
+                    <segment image="zoomtofit" width="32"/>
+                    <segment image="zoom1" width="32" selected="YES" tag="1"/>
+                </segments>
+            </segmentedCell>
+            <connections>
+                <action selector="zoomToFit:" target="494" id="vNQ-3f-TtE"/>
+            </connections>
+            <point key="canvasLocation" x="-91.5" y="298.5"/>
+        </segmentedControl>
     </objects>
+    <resources>
+        <image name="zoom1" width="18" height="18"/>
+        <image name="zoomin" width="18" height="18"/>
+        <image name="zoomout" width="18" height="18"/>
+        <image name="zoomtofit" width="20" height="18"/>
+    </resources>
 </document>

@@ -29,6 +29,9 @@
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,strong) IBOutlet NSWindow *mountConnectWindow;
 @property (nonatomic,strong) CASMountWindowController* mountWindowController;
+@property (weak) IBOutlet NSToolbar *toolbar;
+@property (weak) IBOutlet NSSegmentedControl *zoomInControl;
+@property (weak) IBOutlet NSSegmentedControl *zoomToFitControl;
 @end
 
 @implementation MKOAppDelegate
@@ -493,6 +496,26 @@ static void* kvoContext;
     return YES;
 }
 
+- (IBAction)zoomInOut:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 0){
+        [self.imageView zoomIn:self];
+    }
+    else {
+        [self.imageView zoomOut:self];
+    }
+}
+
+- (IBAction)zoomToFit:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 0){
+        [self.imageView zoomImageToFit:self];
+    }
+    else {
+        [self.imageView zoomImageToActualSize:self];
+    }
+}
+
 #pragma mark - Mount window delegate
 
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
@@ -571,6 +594,89 @@ static void* kvoContext;
     self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
     
     [self goToInLX200:nil];
+}
+
+#pragma mark - NSToolbar delegate
+
+- (NSToolbarItem *)toolbarItemWithIdentifier:(NSString *)identifier
+                                       label:(NSString *)label
+                                 paleteLabel:(NSString *)paletteLabel
+                                     toolTip:(NSString *)toolTip
+                                      target:(id)target
+                                 itemContent:(id)imageOrView
+                                      action:(SEL)action
+                                        menu:(NSMenu *)menu
+{
+    // here we create the NSToolbarItem and setup its attributes in line with the parameters
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    
+    [item setLabel:label];
+    [item setPaletteLabel:paletteLabel];
+    [item setToolTip:toolTip];
+    [item setTarget:target];
+    [item setAction:action];
+    
+    // Set the right attribute, depending on if we were given an image or a view
+    if([imageOrView isKindOfClass:[NSImage class]]){
+        [item setImage:imageOrView];
+    } else if ([imageOrView isKindOfClass:[NSView class]]){
+        [item setView:imageOrView];
+    }else {
+        assert(!"Invalid itemContent: object");
+    }
+    
+    
+    // If this NSToolbarItem is supposed to have a menu "form representation" associated with it
+    // (for text-only mode), we set it up here.  Actually, you have to hand an NSMenuItem
+    // (not a complete NSMenu) to the toolbar item, so we create a dummy NSMenuItem that has our real
+    // menu as a submenu.
+    //
+    if (menu != nil)
+    {
+        // we actually need an NSMenuItem here, so we construct one
+        NSMenuItem *mItem = [[NSMenuItem alloc] init];
+        [mItem setSubmenu:menu];
+        [mItem setTitle:label];
+        [item setMenuFormRepresentation:mItem];
+    }
+    
+    return item;
+}
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag;
+{
+    NSToolbarItem* item = nil;
+    
+    if ([@"ZoomInOut" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Zoom"
+                                   paleteLabel:@"Zoom"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.zoomInControl
+                                        action:@selector(zoomInOut:)
+                                          menu:nil];
+    }
+    
+    if ([@"ZoomFit" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Fit"
+                                   paleteLabel:@"Fit"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.zoomToFitControl
+                                        action:@selector(zoomToFit:)
+                                          menu:nil];
+    }
+    
+    return item;
+}
+
+- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
+{
+    return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",nil];
 }
 
 @end
