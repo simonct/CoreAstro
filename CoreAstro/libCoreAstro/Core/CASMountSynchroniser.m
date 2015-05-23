@@ -19,6 +19,7 @@
 @implementation CASMountSynchroniser {
     int _syncCount;
     float _raInDegrees,_decInDegrees;
+    BOOL _pushedSettings;
     BOOL _saveTemperatureLock;
 }
 
@@ -134,8 +135,11 @@ static void* kvoContext;
     self.solving = NO;
     self.status = @"";
     
-    [self.cameraController popSettings];
-    self.cameraController.temperatureLock = _saveTemperatureLock;
+    if (_pushedSettings){
+        _pushedSettings = NO;
+        [self.cameraController popSettings];
+        self.cameraController.temperatureLock = _saveTemperatureLock;
+    }
     
     if (message){
         [self setErrorWithCode:1 message:message];
@@ -170,11 +174,12 @@ static void* kvoContext;
         CASExposureSettings* settings = [CASExposureSettings new];
         settings.binning = captureBinning;
         settings.exposureDuration = captureSeconds;
-        [self.cameraController pushSettings:settings];
 
         // turn off temp lock, not stored in settings so we have to stash it in an ivar
+        _pushedSettings = YES;
         _saveTemperatureLock = self.cameraController.temperatureLock;
         self.cameraController.temperatureLock = NO;
+        [self.cameraController pushSettings:settings];
         
         self.status = [NSString stringWithFormat:@"Capturing from %@",self.cameraController.camera.deviceName];
         
@@ -252,6 +257,7 @@ static void* kvoContext;
                                         }
                                         else {
                                             
+                                            _pushedSettings = NO;
                                             [self.cameraController popSettings];
                                             self.cameraController.temperatureLock = _saveTemperatureLock;
 

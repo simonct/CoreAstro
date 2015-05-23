@@ -305,17 +305,16 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     return self;
 }
 
-- (BOOL)codeSigned
+- (BOOL)runningInSandbox
 {
-    NSURL* signatureDirectory = [[[NSBundle mainBundle] bundleURL] URLByAppendingPathComponent:@"Contents/_CodeSignature"];
-    return [signatureDirectory checkResourceIsReachableAndReturnError:nil];
+    return [[[NSProcessInfo processInfo] environment] objectForKey:@"APP_SANDBOX_CONTAINER_ID"] != nil;
 }
 
 - (NSURL*)indexDirectoryURL
 {
     NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
     if ([bookmark length]){
-        const NSURLBookmarkResolutionOptions options = [self codeSigned] ? NSURLBookmarkResolutionWithSecurityScope : 0;
+        const NSURLBookmarkResolutionOptions options = [self runningInSandbox] ? NSURLBookmarkResolutionWithSecurityScope : 0;
         NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:options relativeToURL:nil bookmarkDataIsStale:nil error:nil];
         if (url){
             return url;
@@ -327,7 +326,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 - (void)setIndexDirectoryURL:(NSURL*)url
 {
     NSError* error;
-    const NSURLBookmarkCreationOptions options = [self codeSigned] ? NSURLBookmarkCreationWithSecurityScope : 0;
+    const NSURLBookmarkCreationOptions options = [self runningInSandbox] ? NSURLBookmarkCreationWithSecurityScope : 0;
     NSData* bookmark = [url bookmarkDataWithOptions:options includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
     if (bookmark){
         [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kCASAstrometryIndexDirectoryBookmarkKey];
