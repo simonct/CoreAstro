@@ -265,13 +265,6 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     return result;
 }
 
-+ (void)initialize
-{
-    if (self == [CASPlateSolver class]){
-//        [[NSUserDefaults standardUserDefaults] registerDefaults:@{kCASAstrometryIndexDirectoryURLKey:[@"~/Documents/CoreAstro/astrometry.net" stringByExpandingTildeInPath]}];
-    }
-}
-
 + (NSArray*)toolPaths
 {
     NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
