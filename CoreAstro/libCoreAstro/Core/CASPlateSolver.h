@@ -62,6 +62,7 @@
 
 // results dictionary is @{"solution":<CASPlateSolveSolution>, "image":<path to solved image>}
 - (void)solveExposure:(CASCCDExposure*)exposure completion:(void(^)(NSError*,NSDictionary*))block;
+- (void)solveImageAtPath:(NSString*)imagePath completion:(void(^)(NSError*,NSDictionary*))block;
 
 - (void)cancel;
 
