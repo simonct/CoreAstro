@@ -2045,7 +2045,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/lib\"",
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -2067,7 +2067,7 @@
 					"\"$(SRCROOT)/astrometry-test/astrometry/lib\"",
 					"\"$(SRCROOT)/astrometry-test/astrometry/python/astrometry/util\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
