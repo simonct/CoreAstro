@@ -590,7 +590,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
     // run image export async as it can take a while
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        // export the exposure we want to solve to a png
+        // export the exposure we want to solve to a png (todo; this is probably obsolete now since exposures use the fits format by default)
         NSData* data = [[self.exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
         if (!data){
             complete([self errorWithCode:9 reason:@"Failed to export exposure to an image"],nil);
