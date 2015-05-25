@@ -32,6 +32,7 @@
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet NSSegmentedControl *zoomInControl;
 @property (weak) IBOutlet NSSegmentedControl *zoomToFitControl;
+@property (weak) IBOutlet NSMenuItem *toolsMenuItem;
 @end
 
 @implementation MKOAppDelegate
@@ -69,6 +70,12 @@ static void* kvoContext;
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASSensorHeightMillimeter" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASPlateSolveWatchFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"values.CASEnablePlateSolveWatchFolder" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+    
+    // tmp
+    const NSInteger index = [[[[NSApplication sharedApplication] mainMenu] itemArray] indexOfObject:self.toolsMenuItem];
+    if (index != NSNotFound){
+        [[[NSApplication sharedApplication] mainMenu] removeItemAtIndex:index];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
