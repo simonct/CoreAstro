@@ -9,18 +9,18 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
-@interface SXIOSequenceStep : NSObject<NSCoding,NSCopying>
+@interface CASSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,readonly,copy) NSString* type;
 @property (nonatomic,readonly,getter=isValid) BOOL valid;
 @end
 
-@interface SXIOSequenceStep ()
+@interface CASSequenceStep ()
 @property (nonatomic,assign) BOOL active; // per-step flag
 @property (nonatomic,assign) BOOL sequenceRunning; // whole sequence flag
 @property (nonatomic,copy) NSString* type;
 @end
 
-@implementation SXIOSequenceStep
+@implementation CASSequenceStep
 
 - (id)initWithCoder:(NSCoder *)coder
 {
@@ -43,14 +43,14 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SXIOSequenceStep* copy = [[self class] new];
+    CASSequenceStep* copy = [[self class] new];
     copy.type = self.type;
     return copy;
 }
 
 @end
 
-@interface SXIOSequenceExposureStep : SXIOSequenceStep
+@interface CASSequenceExposureStep : CASSequenceStep
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,assign) NSInteger duration;
 @property (nonatomic,assign) NSInteger binning;
@@ -58,11 +58,11 @@
 @property (nonatomic,copy) NSString* filter;
 @end
 
-@interface SXIOSequenceExposureStep ()
+@interface CASSequenceExposureStep ()
 @property (nonatomic,strong) NSArray* filterNames;
 @end
 
-@implementation SXIOSequenceExposureStep
+@implementation CASSequenceExposureStep
 
 - (instancetype)init
 {
@@ -98,7 +98,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SXIOSequenceExposureStep* copy = [super copyWithZone:zone];
+    CASSequenceExposureStep* copy = [super copyWithZone:zone];
     
     copy.count = self.count;
     copy.duration = self.duration;
@@ -168,14 +168,14 @@
 
 @end
 
-@interface SXIOSequence : NSObject<NSCoding>
+@interface CASSequence : NSObject<NSCoding>
 @property (nonatomic,strong) NSMutableArray* steps;
 @property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
 @property (nonatomic,assign) NSInteger temperature;
 @end
 
-@implementation SXIOSequence
+@implementation CASSequence
 
 - (id)init
 {
@@ -212,16 +212,16 @@
 @end
 
 @interface SXIOSequenceRunner : NSObject // use an operation queue?
-@property (nonatomic,weak) SXIOSequence* sequence; // copy ?
+@property (nonatomic,weak) CASSequence* sequence; // copy ?
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
-@property (nonatomic,weak,readonly) SXIOSequenceStep* currentStep;
+@property (nonatomic,weak,readonly) CASSequenceStep* currentStep;
 @property (nonatomic,copy) void(^completion)();
 - (BOOL)startWithError:(NSError**)error;
 - (void)stop;
 @end
 
 @interface SXIOSequenceRunner ()
-@property (nonatomic,weak) SXIOSequenceStep* currentStep;
+@property (nonatomic,weak) CASSequenceStep* currentStep;
 @end
 
 @implementation SXIOSequenceRunner {
@@ -251,7 +251,7 @@ static void* kvoContext;
     // table cell subviews only seem to be able to bind to the container table view cell so
     // we need to set a property on its objectValue directly rather than going through the
     // File Owner proxy
-    for (SXIOSequenceStep* step in self.sequence.steps){
+    for (CASSequenceStep* step in self.sequence.steps){
         step.sequenceRunning = YES;
     }
     
@@ -264,7 +264,7 @@ static void* kvoContext;
     
     self.currentStep = nil;
     
-    for (SXIOSequenceStep* step in self.sequence.steps){
+    for (CASSequenceStep* step in self.sequence.steps){
         step.sequenceRunning = NO;
     }
 
@@ -291,7 +291,7 @@ static void* kvoContext;
     }
 }
 
-- (void)setCurrentStep:(SXIOSequenceStep *)currentStep
+- (void)setCurrentStep:(CASSequenceStep *)currentStep
 {
     if (_currentStep != currentStep){
         _currentStep.active = NO;
@@ -333,7 +333,7 @@ static void* kvoContext;
     }
     else {
         
-        SXIOSequenceExposureStep* sequenceStep = (SXIOSequenceExposureStep*)self.currentStep;
+        CASSequenceExposureStep* sequenceStep = (CASSequenceExposureStep*)self.currentStep;
         CASExposureSettings* settings = self.target.sequenceCameraController.settings;
 
         settings.captureCount = sequenceStep.count;
@@ -371,7 +371,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
         if ([@"moving" isEqualToString:keyPath]){
-            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:((SXIOSequenceExposureStep*)self.currentStep).filter]){
+            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:((CASSequenceExposureStep*)self.currentStep).filter]){
                 [self unobserveFilterWheel];
                 [self capture];
             }
@@ -391,7 +391,7 @@ static void* kvoContext;
 
 - (void)setFilterNameOnObject:(id)object
 {
-    SXIOSequenceExposureStep* step = object;
+    CASSequenceExposureStep* step = object;
     if ([step respondsToSelector:@selector(setFilterNames:)]){
         step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
             return [evaluatedObject length] > 0;
@@ -404,8 +404,8 @@ static void* kvoContext;
     [super setContent:content];
     
     // only supporting exposure types for now but in the future could have focus, slew, etc
-    self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(SXIOSequenceStep* step, NSDictionary *bindings) {
-        return [step isKindOfClass:[SXIOSequenceExposureStep class]];
+    self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(CASSequenceStep* step, NSDictionary *bindings) {
+        return [step isKindOfClass:[CASSequenceExposureStep class]];
     }];
     
     for (id object in self.content){
@@ -415,7 +415,7 @@ static void* kvoContext;
 
 - (id)newObject
 {
-    return [SXIOSequenceExposureStep new];
+    return [CASSequenceExposureStep new];
 }
 
 - (void)addObject:(id)object
@@ -438,7 +438,7 @@ static void* kvoContext;
 
 @interface SXIOSequenceEditorWindowController ()
 @property (nonatomic,strong) NSURL* sequenceURL;
-@property (nonatomic,strong) SXIOSequence* sequence;
+@property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
 @property (nonatomic,weak) IBOutlet NSButton *startButton;
 @property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
@@ -456,7 +456,7 @@ static void* kvoContext;
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    self.sequence = [SXIOSequence new];
+    self.sequence = [CASSequence new];
     
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -484,7 +484,7 @@ static void* kvoContext;
     [super close];
 }
 
-- (void)setSequence:(SXIOSequence *)sequence
+- (void)setSequence:(CASSequence *)sequence
 {
     if (_sequence != sequence){
         _sequence = sequence;
@@ -587,7 +587,7 @@ static void* kvoContext;
     else {
         NSSavePanel* save = [NSSavePanel savePanel];
         
-        save.allowedFileTypes = @[@"caSequence"];
+        save.allowedFileTypes = @[@"sxioSequence"];
         save.canCreateDirectories = YES;
         
         [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
@@ -612,18 +612,18 @@ static void* kvoContext;
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
     
-    open.allowedFileTypes = @[@"caSequence"];
+    open.allowedFileTypes = @[@"sxioSequence"];
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            SXIOSequence* sequence = nil;
+            CASSequence* sequence = nil;
             @try {
                 sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
             }
             @catch (NSException *exception) {
                 NSLog(@"Exception opening sequence archive: %@",exception);
             }
-            if ([sequence isKindOfClass:[SXIOSequence class]]){
+            if ([sequence isKindOfClass:[CASSequence class]]){
                 self.sequence = sequence;
                 [self updateWindowRepresentedURL:open.URL];
             }
