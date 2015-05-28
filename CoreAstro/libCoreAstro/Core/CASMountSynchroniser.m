@@ -21,6 +21,7 @@
     float _raInDegrees,_decInDegrees;
     BOOL _pushedSettings;
     BOOL _saveTemperatureLock;
+    id<CASCameraControllerSink> _savedSink;
 }
 
 static void* kvoContext;
@@ -139,6 +140,7 @@ static void* kvoContext;
         _pushedSettings = NO;
         [self.cameraController popSettings];
         self.cameraController.temperatureLock = _saveTemperatureLock;
+        self.cameraController.sink = _savedSink;
     }
     
     if (message){
@@ -151,7 +153,7 @@ static void* kvoContext;
 {
     self.error = [NSError errorWithDomain:NSStringFromClass([self class])
                                      code:code
-                                 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedFailureReasonErrorKey,message,nil]];
+                                 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSLocalizedDescriptionKey,message,nil]];
 }
 
 - (void)captureImageAndPlateSolve
@@ -179,6 +181,11 @@ static void* kvoContext;
         _pushedSettings = YES;
         _saveTemperatureLock = self.cameraController.temperatureLock;
         self.cameraController.temperatureLock = NO;
+        
+        // turn off the controller's sink
+        _savedSink = self.cameraController.sink;
+        self.cameraController.sink = nil;
+        
         [self.cameraController pushSettings:settings];
         
         self.status = [NSString stringWithFormat:@"Capturing from %@",self.cameraController.camera.deviceName];
@@ -260,7 +267,8 @@ static void* kvoContext;
                                             _pushedSettings = NO;
                                             [self.cameraController popSettings];
                                             self.cameraController.temperatureLock = _saveTemperatureLock;
-
+                                            self.cameraController.sink = _savedSink;
+                                            
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 [self startSlewToRA:_raInDegrees dec:_decInDegrees];
                                             });
