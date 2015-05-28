@@ -1861,7 +1861,7 @@ static void* kvoContext;
         if (error){
             *error = [NSError errorWithDomain:NSStringFromClass([self class])
                                          code:1
-                                     userInfo:@{NSLocalizedFailureReasonErrorKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
         }
         return NO;
     }
@@ -1870,7 +1870,7 @@ static void* kvoContext;
         if (error){
             *error = [NSError errorWithDomain:NSStringFromClass([self class])
                                          code:1
-                                     userInfo:@{NSLocalizedFailureReasonErrorKey:@"You need to specify a folder to save the images into"}];
+                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
         }
         return NO;
     }
