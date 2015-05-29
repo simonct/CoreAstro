@@ -12,10 +12,11 @@
 #import "CASPlateSolveImageView.h"
 #import "CASFolderWatcher.h"
 #import "CASMountWindowController.h"
+#import "CaptureWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 #import <CoreAstro/ORSSerialPortManager.h>
 
-@interface MKOAppDelegate ()<CASMountWindowControllerDelegate>
+@interface MKOAppDelegate ()<CASMountWindowControllerDelegate,CASINDIServiceBrowserDelegate>
 @property (nonatomic,strong) CASPlateSolveSolution* solution;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
 @property (nonatomic,assign) float arcsecsPerPixel;
@@ -33,6 +34,10 @@
 @property (weak) IBOutlet NSSegmentedControl *zoomInControl;
 @property (weak) IBOutlet NSSegmentedControl *zoomToFitControl;
 @property (weak) IBOutlet NSMenuItem *toolsMenuItem;
+@property (strong) CASINDIContainer* serviceContainer;
+@property (strong) CASINDIServiceBrowser* serviceBrowser;
+@property (weak) IBOutlet NSButton *captureButton;
+@property (strong) CaptureWindowController* captureWindow;
 @end
 
 @implementation MKOAppDelegate
@@ -76,6 +81,9 @@ static void* kvoContext;
     if (index != NSNotFound){
         [[[NSApplication sharedApplication] mainMenu] removeItemAtIndex:index];
     }
+    
+    self.serviceBrowser = [CASINDIServiceBrowser new];
+    self.serviceBrowser.delegate = self;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -376,6 +384,18 @@ static void* kvoContext;
     [self solveImageAtPath:self.imageView.url.path];
 }
 
+- (IBAction)capture:(id)sender
+{
+    if (!self.captureWindow){
+        self.captureWindow = [CaptureWindowController loadWindow];
+        self.captureWindow.container = self.serviceContainer;
+        self.captureWindow.captureDelegate = (id)self;
+    }
+    [self.captureWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+        NSLog(@"returnCode %ld",(long)returnCode);
+    }];
+}
+
 - (IBAction)showFontPanel:(id)sender
 {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
@@ -547,60 +567,29 @@ static void* kvoContext;
     }
 }
 
-@end
+#pragma mark - Browser delegate
 
-@implementation MKOAppDelegate (MountSupport)
-
-- (IBAction)showMountConnectWindow:(id)sender
+- (void)serviceBrowser:(CASINDIServiceBrowser*)browser didResolveService:(NSNetService*)service
 {
-    if (!self.serialPortManager){
-        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    if (self.serviceContainer){
+        NSLog(@"Found another INDI container but I've already got one so ignoring for now: %@",service);
+        return;
     }
-    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+    
+    self.serviceContainer = [[CASINDIContainer alloc] initWithService:service];
+    if (![self.serviceContainer connect]){
+        NSLog(@"Failed to connect to %@",service);
+    }
+    else {
+        NSLog(@"Added INDI container: %@",self.serviceContainer);
+    }
 }
 
-- (IBAction)goToInLX200:(id)sender
+- (void)serviceBrowser:(CASINDIServiceBrowser*)browser didRemoveService:(NSNetService*)service
 {
-    if (!self.mount){
-        [self showMountConnectWindow:nil];
-        return;
+    if ([service isEqual:self.serviceContainer.service]){
+        self.serviceContainer = nil;
     }
-    
-    if (self.mount.slewing){
-        [self presentAlertWithMessage:@"Mount is slewing. Please try again when it's stopped"];
-        return;
-    }
-
-    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
-    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
-        if (error){
-            [self presentAlertWithMessage:[error localizedDescription]];
-        }
-        else {
-            self.mountWindowController.mountWindowDelegate = self;
-            [self.mountWindowController setTargetRA:self.solution.centreRA dec:self.solution.centreDec];
-        }
-    }];
-}
-
-- (IBAction)connectToLX200:(id)sender // called from Connect button in mount connect window
-{
-    if (!self.selectedSerialPort){
-        [self presentAlertWithMessage:@"No selected serial port"];
-        return;
-    }
-    
-    if (self.selectedSerialPort.isOpen){
-        [self presentAlertWithMessage:@"Selected serial port is already open"];
-        return;
-    }
-    
-    [self.mountConnectWindow orderOut:nil];
-    
-    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
-    
-    [self goToInLX200:nil];
 }
 
 #pragma mark - NSToolbar delegate
@@ -684,6 +673,79 @@ static void* kvoContext;
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
 {
     return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",nil];
+}
+
+#pragma mark - Capture window delegate
+
+- (void)captureWindow:(CaptureWindowController*)captureWindow didCapture:(NSData*)exposure
+{
+    if (!exposure.length){
+        return;
+    }
+    
+    NSString* path = [NSTemporaryDirectory() stringByAppendingPathComponent:@"astrometry-test-exposure.fit"];
+    if (![exposure writeToFile:path atomically:YES]){
+        NSLog(@"Failed to write exposure to file");
+    }
+    else {
+        [self application:NSApp openFile:path];
+    }
+}
+
+@end
+
+@implementation MKOAppDelegate (MountSupport)
+
+- (IBAction)showMountConnectWindow:(id)sender
+{
+    if (!self.serialPortManager){
+        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    }
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+}
+
+- (IBAction)goToInLX200:(id)sender
+{
+    if (!self.mount){
+        [self showMountConnectWindow:nil];
+        return;
+    }
+    
+    if (self.mount.slewing){
+        [self presentAlertWithMessage:@"Mount is slewing. Please try again when it's stopped"];
+        return;
+    }
+
+    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
+        if (error){
+            [self presentAlertWithMessage:[error localizedDescription]];
+        }
+        else {
+            self.mountWindowController.mountWindowDelegate = self;
+            [self.mountWindowController setTargetRA:self.solution.centreRA dec:self.solution.centreDec];
+        }
+    }];
+}
+
+- (IBAction)connectToLX200:(id)sender // called from Connect button in mount connect window
+{
+    if (!self.selectedSerialPort){
+        [self presentAlertWithMessage:@"No selected serial port"];
+        return;
+    }
+    
+    if (self.selectedSerialPort.isOpen){
+        [self presentAlertWithMessage:@"Selected serial port is already open"];
+        return;
+    }
+    
+    [self.mountConnectWindow orderOut:nil];
+    
+    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    
+    [self goToInLX200:nil];
 }
 
 @end

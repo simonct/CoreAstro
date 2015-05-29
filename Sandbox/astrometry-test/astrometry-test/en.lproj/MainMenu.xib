@@ -992,6 +992,25 @@ DQ
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
+                    <button verticalHuggingPriority="750" id="Tgc-Uk-GNP">
+                        <rect key="frame" x="795" y="45" width="115" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Capture..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bGR-zL-zze">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="capture:" target="494" id="10P-Fq-naf"/>
+                            <binding destination="494" name="enabled" keyPath="serviceContainer" id="NeW-Dc-16Z">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <toolbar key="toolbar" implicitIdentifier="2F7CE379-2BB2-46BE-841D-4AAF3744FCB9" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="qrt-HE-i81">
@@ -1005,6 +1024,7 @@ DQ
         </window>
         <customObject id="494" customClass="MKOAppDelegate">
             <connections>
+                <outlet property="captureButton" destination="Tgc-Uk-GNP" id="GzA-7F-Ox4"/>
                 <outlet property="fieldHeightLabel" destination="605" id="610"/>
                 <outlet property="fieldWidthLabel" destination="601" id="609"/>
                 <outlet property="imageView" destination="536" id="548"/>

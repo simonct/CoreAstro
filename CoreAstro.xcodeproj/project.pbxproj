@@ -132,6 +132,8 @@
 		F45A2DF9166B835100A1D79C /* CASExposureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F45A2DF8166B835100A1D79C /* CASExposureView.m */; };
 		F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */; };
 		F45FE02E1764AFEB007FB6D7 /* CASCameraControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */; };
+		F46879D41B18A5E200C61449 /* CASINDIContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = F46879D21B18A5E200C61449 /* CASINDIContainer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F46879D51B18A5E200C61449 /* CASINDIContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F46879D31B18A5E200C61449 /* CASINDIContainer.m */; };
 		F46A3EF11854E16A00CD336C /* CASFilterPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = F46A3EEF1854E16A00CD336C /* CASFilterPipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F46A3EF21854E16A00CD336C /* CASFilterPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EF01854E16A00CD336C /* CASFilterPipeline.m */; };
 		F46BA59D15BDD75C0097532B /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59C15BDD75C0097532B /* Quartz.framework */; };
@@ -675,6 +677,8 @@
 		F45FE02A1764AFEB007FB6D7 /* CASCameraControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraControlsViewController.h; sourceTree = "<group>"; };
 		F45FE02B1764AFEB007FB6D7 /* CASCameraControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraControlsViewController.m; sourceTree = "<group>"; };
 		F45FE02C1764AFEB007FB6D7 /* CASCameraControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASCameraControlsViewController.xib; sourceTree = "<group>"; };
+		F46879D21B18A5E200C61449 /* CASINDIContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASINDIContainer.h; sourceTree = "<group>"; };
+		F46879D31B18A5E200C61449 /* CASINDIContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASINDIContainer.m; sourceTree = "<group>"; };
 		F46A3EEF1854E16A00CD336C /* CASFilterPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFilterPipeline.h; sourceTree = "<group>"; };
 		F46A3EF01854E16A00CD336C /* CASFilterPipeline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFilterPipeline.m; sourceTree = "<group>"; };
 		F46A3F0C185DF21D00CD336C /* libjpeg.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjpeg.9.dylib; sourceTree = "<group>"; };
@@ -2042,6 +2046,8 @@
 				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
 				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
 				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
+				F46879D21B18A5E200C61449 /* CASINDIContainer.h */,
+				F46879D31B18A5E200C61449 /* CASINDIContainer.m */,
 				F4E424791A86757700C2A87E /* ORSSerialPort */,
 			);
 			name = Core;
@@ -3003,6 +3009,7 @@
 				F44EDF2415FCC6D8003B1B4C /* CASCCDExposure.h in Headers */,
 				F44EDF2615FCC6D8003B1B4C /* CASCCDExposureIO.h in Headers */,
 				F44EDF2815FCC6D8003B1B4C /* CASCCDExposureLibrary.h in Headers */,
+				F46879D41B18A5E200C61449 /* CASINDIContainer.h in Headers */,
 				F4587250183EABE200CB53D1 /* CASAlgorithm.h in Headers */,
 				F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */,
 				F44EDF2A15FCC6D8003B1B4C /* CASAutoGuider.h in Headers */,
@@ -3621,6 +3628,7 @@
 				F44EDF3315FCC6D8003B1B4C /* CASIOCommand.m in Sources */,
 				F4E424B01A86757700C2A87E /* ORSSerialPort.m in Sources */,
 				F44EDF3515FCC6D8003B1B4C /* CASIOTransport.m in Sources */,
+				F46879D51B18A5E200C61449 /* CASINDIContainer.m in Sources */,
 				F46A3EF21854E16A00CD336C /* CASFilterPipeline.m in Sources */,
 				F44EDF3715FCC6D8003B1B4C /* CASPluginManager.m in Sources */,
 				F44EDF3915FCC6D8003B1B4C /* CASImageProcessor.mm in Sources */,

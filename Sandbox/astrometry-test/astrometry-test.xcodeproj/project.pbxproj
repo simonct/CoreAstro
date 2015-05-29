@@ -19,6 +19,8 @@
 		F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1E9F181422F200D04CB8 /* CASAuxWindowController.m */; };
 		F42E1EA51814246600D04CB8 /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */; };
 		F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
+		F46879E41B18E88900C61449 /* CaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46879E21B18E88900C61449 /* CaptureWindowController.m */; };
+		F46879E51B18E88900C61449 /* CaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46879E31B18E88900C61449 /* CaptureWindowController.xib */; };
 		F4883D7A1A908BC10004F87F /* astrometry_test_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F4883D791A908BC10004F87F /* astrometry_test_Tests.m */; };
 		F4883D891A908CB70004F87F /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC429C1814214100EA439F /* CoreAstro.framework */; };
 		F48A68171B10BCBC004BB936 /* zoom1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F48A68131B10BCBC004BB936 /* zoom1.pdf */; };
@@ -158,6 +160,9 @@
 		F42E1E9F181422F200D04CB8 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAuxWindowController.m; path = ../../../CoreAstro/CASAuxWindowController.m; sourceTree = "<group>"; };
 		F42E1EA11814234C00D04CB8 /* CASPlateSolvedObject+Drawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASPlateSolvedObject+Drawing.h"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.h"; sourceTree = "<group>"; };
 		F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
+		F46879E11B18E88900C61449 /* CaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureWindowController.h; sourceTree = "<group>"; };
+		F46879E21B18E88900C61449 /* CaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureWindowController.m; sourceTree = "<group>"; };
+		F46879E31B18E88900C61449 /* CaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptureWindowController.xib; sourceTree = "<group>"; };
 		F470AB1A17C8CC1E007277F0 /* anytopnm */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = anytopnm; sourceTree = "<group>"; };
 		F470AB1B17C8CC1E007277F0 /* asciitopgm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = asciitopgm; sourceTree = "<group>"; };
 		F470AB1C17C8CC1E007277F0 /* atktopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = atktopbm; sourceTree = "<group>"; };
@@ -1189,6 +1194,9 @@
 				F40572C8176399FB009CEC05 /* CASConfigureIPMountWindowController.h */,
 				F40572C9176399FB009CEC05 /* CASConfigureIPMountWindowController.m */,
 				F40572CA176399FB009CEC05 /* CASConfigureIPMountWindowController.xib */,
+				F46879E11B18E88900C61449 /* CaptureWindowController.h */,
+				F46879E21B18E88900C61449 /* CaptureWindowController.m */,
+				F46879E31B18E88900C61449 /* CaptureWindowController.xib */,
 				F40572C717636F99009CEC05 /* Views */,
 				F4034B931719546300A73F9F /* EQMac */,
 				F42E1EA6181424CE00D04CB8 /* CoreAstro */,
@@ -1820,6 +1828,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F46879E51B18E88900C61449 /* CaptureWindowController.xib in Resources */,
 				F48A68191B10BCBC004BB936 /* zoomout.pdf in Resources */,
 				F4B833E01B0F4E5A00A61152 /* SXIOPlateSolveOptionsWindowController.xib in Resources */,
 				F48A68171B10BCBC004BB936 /* zoom1.pdf in Resources */,
@@ -1857,6 +1866,7 @@
 				F48BACFE18143447005788CC /* CASFolderWatcher.m in Sources */,
 				F40572C517636F8E009CEC05 /* CASLX200IPClient.m in Sources */,
 				F4B833DF1B0F4E5A00A61152 /* SXIOPlateSolveOptionsWindowController.m in Sources */,
+				F46879E41B18E88900C61449 /* CaptureWindowController.m in Sources */,
 				F42E1EA0181422F300D04CB8 /* CASAuxWindowController.m in Sources */,
 				F40572CB176399FB009CEC05 /* CASConfigureIPMountWindowController.m in Sources */,
 				F4B833D41B0F4E2000A61152 /* CASMountWindowController.m in Sources */,
@@ -2033,7 +2043,6 @@
 		F4A386DB168887FF00E77631 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -2055,7 +2064,6 @@
 		F4A386DC168887FF00E77631 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";

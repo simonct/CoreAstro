@@ -12,9 +12,27 @@
 @property (copy) NSString* name;
 @property (nonatomic,strong) NSMutableDictionary* vectors;
 @property (weak) CASINDIContainer* container;
+@property (copy) void(^captureCompetion)(NSData* exposureData);
 @end
 
-@implementation CASINDIDevice
+@implementation CASINDIDevice {
+    NSInteger _binning;
+    NSInteger _exposureTime;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(vectorUpdated:) name:kCASINDIUpdatedVectorNotification object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (NSMutableDictionary*)vectors
 {
@@ -22,6 +40,84 @@
         _vectors = [NSMutableDictionary dictionaryWithCapacity:5];
     }
     return _vectors;
+}
+
+- (void)connect
+{
+    [self.vectors[@"CONNECTION"] setValue:@"CONNECT" to:@YES];
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
+    if (aProtocol == @protocol(CASINDICamera)){
+        return (self.vectors[@"CCD_EXPOSURE"] != nil);
+    }
+    return [super conformsToProtocol:aProtocol];
+}
+
+@end
+
+@implementation CASINDIDevice (Camera) // <CASINDICamera>
+
+- (NSInteger) exposureTime
+{
+    return _exposureTime;
+}
+
+- (void)setExposureTime:(NSInteger)exposureTime
+{
+    _exposureTime = exposureTime;
+}
+
+- (NSInteger) binning
+{
+    return _binning;
+}
+
+- (void)setBinning:(NSInteger)binning
+{
+    _binning = binning;
+}
+
+- (void)captureWithCompletion:(void(^)(NSData* exposureData))completion
+{
+    NSAssert(_binning > 0, @"_binning > 0");
+    NSAssert(_exposureTime > 0, @"_exposureTime > 0");
+    NSParameterAssert(completion);
+    
+    self.captureCompetion = completion;
+    
+    NSString* cmd = [NSString stringWithFormat:@"<enableBLOB device='%@'>Also</enableBLOB>",self.name];
+    [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
+    NSLog(@"cmd: %@",cmd);
+    
+    cmd = [NSString stringWithFormat:@"<newNumberVector device='%@' name='CCD_BINNING'><oneNumber name='HOR_BIN'>%ld</oneNumber><oneNumber name='VER_BIN'>%ld</oneNumber></newNumberVector>",self.name,(long)self.binning,(long)self.binning];
+    [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
+    NSLog(@"cmd: %@",cmd);
+
+    cmd = [NSString stringWithFormat:@"<newNumberVector device='%@' name='CCD_EXPOSURE'><oneNumber name='CCD_EXPOSURE_VALUE'>%ld</oneNumber></newNumberVector>",self.name,(long)self.exposureTime];
+    [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
+    NSLog(@"cmd: %@",cmd);
+}
+
+- (void)vectorUpdated:(NSNotification*)note
+{
+    CASINDIVector* vector = note.object;
+    CASINDIValue* value = note.userInfo[@"value"];
+    NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
+    if ([vector.type isEqualToString:@"BLOB"]){
+        //if ([vector.state isEqualToString:@"Ok"]){
+        NSData* encodedData = [value.value dataUsingEncoding:NSASCIIStringEncoding];
+        NSData* exposureData = [[NSData alloc] initWithBase64EncodedData:encodedData options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        NSLog(@"read %ld bytes, decoded to %ld bytes",encodedData.length,exposureData.length);
+        if (self.captureCompetion){
+            self.captureCompetion(exposureData);
+        }
+        //}
+    }
+    else {
+        NSLog(@"vectorUpdated: %@.%@[%@=%@]",vector.device.name,vector.name,value.name,value.value);
+    }
 }
 
 @end
@@ -318,6 +414,13 @@ NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAd
         }
     }
 #endif
+}
+
+- (NSArray*)cameras
+{
+    return [self.devices filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(CASINDIDevice* evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject conformsToProtocol:@protocol(CASINDICamera)];
+    }]];
 }
 
 @end

@@ -14,6 +14,13 @@
 @property (copy,readonly) NSString* name;
 @property (nonatomic,strong,readonly) NSMutableDictionary* vectors;
 @property (weak,readonly) CASINDIContainer* container;
+- (void)connect;
+@end
+
+@protocol CASINDICamera <NSObject>
+@property (nonatomic) NSInteger exposureTime;
+@property (nonatomic) NSInteger binning;
+- (void)captureWithCompletion:(void(^)(NSData* exposureData))completion;
 @end
 
 @interface CASINDIVector : NSObject
@@ -46,6 +53,7 @@ extern NSString* const kCASINDIUpdatedVectorNotification;
 @property (strong,readonly) NSNetService* service;
 @property (strong,readonly) CASXMLSocketClient* client;
 @property (strong,readonly) NSMutableArray* devices;
+@property (strong,readonly) NSArray* cameras;
 @property (readonly) BOOL connected;
 - (BOOL)connect;
 extern NSString* const kCASINDIContainerAddedDeviceNotification;
