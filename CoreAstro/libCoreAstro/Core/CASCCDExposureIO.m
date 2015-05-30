@@ -784,9 +784,6 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     }
                     else{
                         
-                        deviceParams[@"width"] = @(naxes[0]);
-                        deviceParams[@"height"] = @(naxes[1]);
-                        
                         int bps;
                         if (!fits_read_key(fptr,TINT,"BITPIX",(void*)&bps,NULL,&status)){
                             deviceParams[@"bitsPerPixel"] = @(bps);
@@ -802,9 +799,6 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         
                         CASExposeParams params;
                         bzero(&params, sizeof(params));
-                        
-                        params.size = params.frame = CASSizeMake(naxes[0], naxes[1]);
-                        params.bps = bps;
 
 //                        long orx = 0;
 //                        fits_update_key(fptr, TLONG, "XORGSUBF", (void*)&orx, "X origin of subframe", &status);
@@ -818,6 +812,12 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         else {
                             params.bin = CASSizeMake(1, 1);
                         }
+
+                        params.size = params.frame = CASSizeMake(naxes[0] * params.bin.width, naxes[1] * params.bin.height);
+                        params.bps = bps;
+
+                        deviceParams[@"width"] = @(params.size.width);
+                        deviceParams[@"height"] = @(params.size.height);
 
                         float ms;
                         if (!fits_read_key(fptr,TFLOAT,"EXPTIME",(void*)&ms,NULL,&status)){
