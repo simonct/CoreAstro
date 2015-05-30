@@ -691,7 +691,9 @@ static void* kvoContext;
         NSLog(@"Failed to write exposure to file");
     }
     else {
-        [self application:NSApp openFile:path];
+        if ([self application:NSApp openFile:path]){
+            [self.captureWindow endSheet];
+        }
     }
 }
 

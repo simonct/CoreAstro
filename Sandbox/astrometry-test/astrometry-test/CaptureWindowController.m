@@ -44,6 +44,11 @@
     [window beginSheet:self.window completionHandler:completion];
 }
 
+- (void)endSheet
+{
+    [self.parent endSheet:self.window returnCode:NSModalResponseContinue];
+}
+
 - (void)cameraAdded:(NSNotification*)note
 {
     id<CASINDICamera> camera = note.userInfo[@"camera"];

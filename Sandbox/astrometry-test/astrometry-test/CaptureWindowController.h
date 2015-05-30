@@ -21,6 +21,7 @@
 @property (weak) id<CaptureWindowControllerDelegate> captureDelegate;
 
 - (void)beginSheet:(NSWindow*)window completionHandler:(void(^)(NSModalResponse))completion;
+- (void)endSheet;
 
 + (instancetype)loadWindow;
 
