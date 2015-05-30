@@ -35,7 +35,6 @@
 		F4A386D1168887FE00E77631 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F4A386CF168887FE00E77631 /* Credits.rtf */; };
 		F4A386D4168887FE00E77631 /* MKOAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A386D3168887FE00E77631 /* MKOAppDelegate.m */; };
 		F4A386D7168887FF00E77631 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A386D5168887FF00E77631 /* MainMenu.xib */; };
-		F4B579971A87E4BD00480C13 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4BC42A01814214100EA439F /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F4B833D31B0F4E2000A61152 /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4B833D01B0F4E2000A61152 /* CASMountWindowController.xib */; };
 		F4B833D41B0F4E2000A61152 /* CASMountWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B833D11B0F4E2000A61152 /* CASMountWindowController.m */; };
 		F4B833DF1B0F4E5A00A61152 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B833DD1B0F4E5A00A61152 /* SXIOPlateSolveOptionsWindowController.m */; };
@@ -125,16 +124,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F42E1EA91814252C00D04CB8 /* CoreAstro.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F4B5798F1A87E4A900480C13 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
-			dstSubfolderSpec = 10;
-			files = (
-				F4B579971A87E4BD00480C13 /* SXDevicesPlugin.casPlugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1702,7 +1691,6 @@
 				F4A386BA168887FE00E77631 /* Frameworks */,
 				F4A386BB168887FE00E77631 /* Resources */,
 				F42E1EA81814252300D04CB8 /* CopyFiles */,
-				F4B5798F1A87E4A900480C13 /* CopyFiles */,
 				F4591A281B19AE2900DDC023 /* ShellScript */,
 			);
 			buildRules = (
