@@ -1037,7 +1037,6 @@ DQ
                 <outlet property="solutionRALabel" destination="582" id="592"/>
                 <outlet property="solveButton" destination="549" id="554"/>
                 <outlet property="spinner" destination="552" id="553"/>
-                <outlet property="toolMenu" destination="29" id="5SZ-2c-BrD"/>
                 <outlet property="toolbar" destination="qrt-HE-i81" id="dan-Qt-Mdj"/>
                 <outlet property="toolsMenuItem" destination="673" id="jc9-xL-63o"/>
                 <outlet property="window" destination="371" id="532"/>
