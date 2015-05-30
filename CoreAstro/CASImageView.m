@@ -123,7 +123,7 @@ static void* kvoContext;
 - (void)dealloc
 {
     if (_cgImage){
-        CGImageRelease(_cgImage);
+//        CGImageRelease(_cgImage);
     }
     if (_observingDefaults){
         [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"values.CASImageViewEnableInterpolation" context:&kvoContext];
