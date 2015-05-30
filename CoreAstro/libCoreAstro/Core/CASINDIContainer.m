@@ -12,6 +12,7 @@
 @property (copy) NSString* name;
 @property (nonatomic,strong) NSMutableDictionary* vectors;
 @property (weak) CASINDIContainer* container;
+@property BOOL isCamera;
 @property (copy) void(^captureCompetion)(NSData* exposureData);
 @end
 
@@ -24,6 +25,7 @@
 {
     self = [super init];
     if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(vectorDefined:) name:kCASINDIDefinedVectorNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(vectorUpdated:) name:kCASINDIUpdatedVectorNotification object:nil];
     }
     return self;
@@ -50,7 +52,7 @@
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol
 {
     if (aProtocol == @protocol(CASINDICamera)){
-        return (self.vectors[@"CCD_EXPOSURE"] != nil);
+        return self.isCamera;
     }
     return [super conformsToProtocol:aProtocol];
 }
@@ -58,6 +60,8 @@
 @end
 
 @implementation CASINDIDevice (Camera) // <CASINDICamera>
+
+NSString* const kCASINDIContainerAddedCameraNotification = @"kCASINDIContainerAddedCameraNotification";
 
 - (NSInteger) exposureTime
 {
@@ -100,12 +104,23 @@
     NSLog(@"cmd: %@",cmd);
 }
 
+- (void)vectorDefined:(NSNotification*)note
+{
+    CASINDIVector* vector = note.object;
+    if ([vector.name isEqualToString:@"CCD_EXPOSURE"]){
+        if (vector.device == self){
+            self.isCamera = YES;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIContainerAddedCameraNotification object:nil userInfo:@{@"camera":self}];
+        }
+    }
+}
+
 - (void)vectorUpdated:(NSNotification*)note
 {
     CASINDIVector* vector = note.object;
     CASINDIValue* value = note.userInfo[@"value"];
-    NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
     if ([vector.type isEqualToString:@"BLOB"]){
+        NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
         //if ([vector.state isEqualToString:@"Ok"]){
         NSData* encodedData = [value.value dataUsingEncoding:NSASCIIStringEncoding];
         NSData* exposureData = [[NSData alloc] initWithBase64EncodedData:encodedData options:NSDataBase64DecodingIgnoreUnknownCharacters];
@@ -114,6 +129,11 @@
             self.captureCompetion(exposureData);
         }
         //}
+    }
+    else if ([vector.name isEqualToString:@"CONNECTION"]){
+        if ([value.name isEqualToString:@"CONNECT"] && [value.value isEqualToString:@"On"]){
+            NSLog(@"Camera connected");
+        }
     }
     else {
         NSLog(@"vectorUpdated: %@.%@[%@=%@]",vector.device.name,vector.name,value.name,value.value);

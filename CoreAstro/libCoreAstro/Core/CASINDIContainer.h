@@ -10,17 +10,25 @@
 
 @class CASINDIContainer;
 
-@interface CASINDIDevice : NSObject
+@protocol CASINDIDevice <NSObject>
 @property (copy,readonly) NSString* name;
 @property (nonatomic,strong,readonly) NSMutableDictionary* vectors;
 @property (weak,readonly) CASINDIContainer* container;
 - (void)connect;
 @end
 
-@protocol CASINDICamera <NSObject>
+@interface CASINDIDevice : NSObject<CASINDIDevice>
+@property (copy,readonly) NSString* name;
+@property (nonatomic,strong,readonly) NSMutableDictionary* vectors;
+@property (weak,readonly) CASINDIContainer* container;
+- (void)connect;
+@end
+
+@protocol CASINDICamera <CASINDIDevice>
 @property (nonatomic) NSInteger exposureTime;
 @property (nonatomic) NSInteger binning;
 - (void)captureWithCompletion:(void(^)(NSData* exposureData))completion;
+extern NSString* const kCASINDIContainerAddedCameraNotification;
 @end
 
 @interface CASINDIVector : NSObject
