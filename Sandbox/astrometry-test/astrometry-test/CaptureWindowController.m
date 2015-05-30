@@ -11,9 +11,11 @@
 @interface CaptureWindowController ()
 @property NSInteger exposureTime;
 @property NSInteger binningIndex;
+@property NSInteger secondsRemaining;
 @property (weak) id<CASINDICamera> selectedCamera;
 @property (weak) NSWindow* parent;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
+@property BOOL capturing;
 @end
 
 @implementation CaptureWindowController
@@ -23,6 +25,7 @@
     self.exposureTime = 5;
     self.binningIndex = 2;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cameraAdded:) name:kCASINDIContainerAddedCameraNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(vectorUpdated:) name:kCASINDIUpdatedVectorNotification object:nil];
 }
 
 - (void)dealloc
@@ -50,6 +53,15 @@
     }
 }
 
+- (void)vectorUpdated:(NSNotification*)note
+{
+    CASINDIVector* vector = note.object;
+    CASINDIValue* value = note.userInfo[@"value"];
+    if ([vector.name isEqualToString:@"CCD_EXPOSURE"] && [value.name isEqualToString:@"CCD_EXPOSURE_VALUE"] && vector.device == self.selectedCamera){
+        self.secondsRemaining = [value.value integerValue];
+    }
+}
+
 - (IBAction)close:(id)sender
 {
     // cancel exposure ?
@@ -59,9 +71,17 @@
 
 - (IBAction)capture:(id)sender
 {
+    if (self.exposureTime < 1){
+        NSBeep();
+        return;
+    }
+    
+    self.capturing = YES;
+    
     self.selectedCamera.exposureTime = self.exposureTime;
     
     switch (self.binningIndex) {
+        default:
         case 0:
             self.selectedCamera.binning = 1;
             break;
@@ -74,11 +94,10 @@
     }
 
     [self.selectedCamera captureWithCompletion:^(NSData *exposureData) {
-        NSLog(@"Exposure read %ld bytes of data",exposureData.length);
         if (exposureData.length > 0){
-//            [exposureData writeToFile:[@"~/indi-camera.fit" stringByExpandingTildeInPath] atomically:YES];
             [self.captureDelegate captureWindow:self didCapture:exposureData];
         }
+        self.capturing = NO;
     }];
 }
 

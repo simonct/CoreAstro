@@ -105,6 +105,11 @@ DQ
                         </buttonCell>
                         <connections>
                             <action selector="capture:" target="-2" id="oCx-b6-Jfx"/>
+                            <binding destination="-2" name="enabled" keyPath="capturing" id="xDi-WN-pQg">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2gk-Lh-XTF">
@@ -120,12 +125,40 @@ Gw
                             <action selector="close:" target="-2" id="Oiu-aq-w82"/>
                         </connections>
                     </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0dm-QM-I3F">
+                        <rect key="frame" x="191" y="99" width="57" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="seconds" id="Vgf-Xq-Jbq">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UWZ-Vi-Jrs">
+                        <rect key="frame" x="23" y="22" width="60" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Label" id="KXc-Eb-9H5">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="displayPatternValue1" keyPath="secondsRemaining" id="eN5-2a-qSl">
+                                <dictionary key="options">
+                                    <string key="NSDisplayPattern">%{value1}@s</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="-2" name="hidden" keyPath="capturing" id="3EM-At-8lI">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textField>
                 </subviews>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="-424.5" y="118"/>
+            <point key="canvasLocation" x="-648.5" y="-43"/>
         </window>
         <arrayController id="ZpV-MB-eke" userLabel="Cameras">
             <connections>
