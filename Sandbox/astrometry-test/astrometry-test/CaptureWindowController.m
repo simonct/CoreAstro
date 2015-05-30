@@ -13,6 +13,7 @@
 @property NSInteger binningIndex;
 @property (weak) id<CASINDICamera> selectedCamera;
 @property (weak) NSWindow* parent;
+@property (strong) IBOutlet NSArrayController *camerasArrayController;
 @end
 
 @implementation CaptureWindowController
@@ -21,6 +22,12 @@
     [super windowDidLoad];
     self.exposureTime = 5;
     self.binningIndex = 2;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cameraAdded:) name:kCASINDIContainerAddedCameraNotification object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)beginSheet:(NSWindow*)window completionHandler:(void(^)(NSModalResponse))completion
@@ -32,6 +39,15 @@
     }
     self.selectedCamera = self.container.cameras.firstObject;
     [window beginSheet:self.window completionHandler:completion];
+}
+
+- (void)cameraAdded:(NSNotification*)note
+{
+    id<CASINDICamera> camera = note.userInfo[@"camera"];
+    if (camera && !self.selectedCamera){
+        [self.camerasArrayController rearrangeObjects];
+        self.selectedCamera = camera;
+    }
 }
 
 - (IBAction)close:(id)sender

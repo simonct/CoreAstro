@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CaptureWindowController">
             <connections>
+                <outlet property="camerasArrayController" destination="ZpV-MB-eke" id="IXs-lX-OpC"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
