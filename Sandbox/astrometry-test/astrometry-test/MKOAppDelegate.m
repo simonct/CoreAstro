@@ -436,10 +436,6 @@ static void* kvoContext;
 
 - (IBAction)saveDocument:(id)sender
 {
-    if (!self.solution){
-        return;
-    }
-    
     NSSavePanel* save = [NSSavePanel savePanel];
     
     save.allowedFileTypes = @[@"png"];
@@ -512,7 +508,10 @@ static void* kvoContext;
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem
 {
-    if (menuItem.action == @selector(saveDocument:) || menuItem.action == @selector(goToIniEQ:)){
+    if (menuItem.action == @selector(saveDocument:)){
+        return (self.imageView.url != nil);
+    }
+    if (menuItem.action == @selector(goToIniEQ:)){
         return (self.solution != nil);
     }
     if (menuItem.action == @selector(configureIPMount:) || menuItem.action == @selector(goToInEQMac:) || menuItem.action == @selector(goToInIPMount:)){
