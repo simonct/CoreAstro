@@ -90,7 +90,7 @@ static void* kvoContext;
 {
     [[NSColorPanel sharedColorPanel] orderOut:nil];
     [[NSColorPanel sharedColorPanel] setHidesOnDeactivate:YES];
-    [[CASDeviceManager sharedManager] scan]; // need to clean up on quit as well
+//    [[CASDeviceManager sharedManager] scan]; // need to clean up on quit as well
     NSLog(@"todo; cleanup devices on quit");
 //    {
 //        CASObjectLookup* lookup = [CASObjectLookup new];
@@ -388,12 +388,10 @@ static void* kvoContext;
 {
     if (!self.captureWindow){
         self.captureWindow = [CaptureWindowController loadWindow];
-        self.captureWindow.container = self.serviceContainer;
-        self.captureWindow.captureDelegate = (id)self;
     }
-    [self.captureWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
-        NSLog(@"returnCode %ld",(long)returnCode);
-    }];
+    self.captureWindow.container = self.serviceContainer;
+    self.captureWindow.captureDelegate = (id)self;
+    [self.captureWindow beginSheet:self.window completionHandler:nil];
 }
 
 - (IBAction)showFontPanel:(id)sender
