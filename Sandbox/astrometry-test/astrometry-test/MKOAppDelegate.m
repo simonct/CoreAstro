@@ -52,7 +52,6 @@ static void* kvoContext;
      @"CASPixelSizeMicrometer":@(9),
      @"CASFocalLengthMillemeter":@(540),
      @"CASBinningFactor":@(1),
-     @"CASPlateSolveSaveSolution":@YES
      }];
 }
 

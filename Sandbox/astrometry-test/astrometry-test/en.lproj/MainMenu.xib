@@ -1179,7 +1179,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="569" name="value" keyPath="values.CASPixelSizeMicrometer" id="711"/>
+                            <binding destination="569" name="value" keyPath="values.CASPixelSizeMicrometer" id="TRe-hX-jib">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="725">
@@ -1195,7 +1199,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="569" name="value" keyPath="values.CASSensorWidthMillimeter" id="748"/>
+                            <binding destination="569" name="value" keyPath="values.CASSensorWidthMillimeter" id="6No-u5-YUH">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="731">
@@ -1211,7 +1219,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="569" name="value" keyPath="values.CASSensorHeightMillimeter" id="749"/>
+                            <binding destination="569" name="value" keyPath="values.CASSensorHeightMillimeter" id="33p-5J-0xX">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="699">
@@ -1227,7 +1239,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="569" name="value" keyPath="values.CASFocalLengthMillemeter" id="712"/>
+                            <binding destination="569" name="value" keyPath="values.CASFocalLengthMillemeter" id="wqH-ik-8qe">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="701">
@@ -1243,7 +1259,11 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="569" name="value" keyPath="values.CASBinningFactor" id="710"/>
+                            <binding destination="569" name="value" keyPath="values.CASBinningFactor" id="vcD-x3-84C">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </textField>
                     <button id="720">
