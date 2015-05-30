@@ -149,6 +149,7 @@
 		F42E1E9F181422F200D04CB8 /* CASAuxWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASAuxWindowController.m; path = ../../../CoreAstro/CASAuxWindowController.m; sourceTree = "<group>"; };
 		F42E1EA11814234C00D04CB8 /* CASPlateSolvedObject+Drawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASPlateSolvedObject+Drawing.h"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.h"; sourceTree = "<group>"; };
 		F42E1EA21814234C00D04CB8 /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
+		F449DC2E1B1A341B004090F5 /* astrometry-test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "astrometry-test.entitlements"; sourceTree = "<group>"; };
 		F46879E11B18E88900C61449 /* CaptureWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureWindowController.h; sourceTree = "<group>"; };
 		F46879E21B18E88900C61449 /* CaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureWindowController.m; sourceTree = "<group>"; };
 		F46879E31B18E88900C61449 /* CaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptureWindowController.xib; sourceTree = "<group>"; };
@@ -1173,6 +1174,7 @@
 		F4A386C6168887FE00E77631 /* astrometry-test */ = {
 			isa = PBXGroup;
 			children = (
+				F449DC2E1B1A341B004090F5 /* astrometry-test.entitlements */,
 				F4A386D2168887FE00E77631 /* MKOAppDelegate.h */,
 				F4A386D3168887FE00E77631 /* MKOAppDelegate.m */,
 				F4A386D5168887FF00E77631 /* MainMenu.xib */,
@@ -1719,6 +1721,11 @@
 					};
 					F4A386BC168887FE00E77631 = {
 						DevelopmentTeam = D8EQ3MVHHB;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -2048,6 +2055,8 @@
 		F4A386DB168887FF00E77631 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "astrometry-test/astrometry-test.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -2069,6 +2078,8 @@
 		F4A386DC168887FF00E77631 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "astrometry-test/astrometry-test.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
