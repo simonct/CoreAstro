@@ -303,6 +303,7 @@ static void* kvoContext;
             }
             self.imageView.acceptDrop = YES;
             self.solveButton.enabled = YES;
+            self.captureButton.enabled = YES;
             self.imageView.alphaValue = 1;
             self.spinner.hidden = YES;
             [self.spinner stopAnimation:nil];
@@ -313,6 +314,7 @@ static void* kvoContext;
         
         self.imageView.acceptDrop = NO;
         self.solveButton.enabled = NO;
+        self.captureButton.enabled = NO;
         self.imageView.alphaValue = 0.5;
         self.spinner.hidden = NO;
         [self.spinner startAnimation:nil];
@@ -362,7 +364,7 @@ static void* kvoContext;
                     self.solution = results[@"solution"];
                     self.plateSolver = nil;
                     
-                    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"CASPlateSolveSaveSolution"]){
+                    if (!error && [[NSUserDefaults standardUserDefaults] boolForKey:@"CASPlateSolveSaveSolution"]){
                         if (![[self.solution solutionData] writeToFile:[self plateSolutionPathForImagePath:self.imageView.url.path] atomically:YES]){
                             [self presentAlertWithMessage:@"There was a problem saving the solution to the same folder as the image"];
                         }
@@ -431,7 +433,11 @@ static void* kvoContext;
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    return [self.imageView setImageWithURL:[NSURL fileURLWithPath:filename]];
+    const BOOL result = [self.imageView setImageWithURL:[NSURL fileURLWithPath:filename]];
+    if (result){
+        self.solution = nil;
+    }
+    return result;
 }
 
 - (IBAction)saveDocument:(id)sender
