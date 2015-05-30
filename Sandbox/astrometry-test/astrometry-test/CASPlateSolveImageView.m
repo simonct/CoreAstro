@@ -250,6 +250,9 @@
         shape.path = mpath;
         shape.fillRule = kCAFillRuleEvenOdd;
         objectLayer.mask = shape;
+        
+        CGPathRelease(mpath);
+        CGPathRelease(path);
     }
     
     if (!self.mount.connected){

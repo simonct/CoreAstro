@@ -53,6 +53,8 @@
         shape.path = mpath;
         shape.fillRule = kCAFillRuleEvenOdd;
         objectLayer.mask = shape;
+        CGPathRelease(mpath);
+        CGPathRelease(path);
     }
     
     return objectLayer;
