@@ -24,6 +24,7 @@
 @property (strong) CASMount* mount;
 @property (strong) CASCameraController* cameraController;
 @property (weak) id<CASMountMountSynchroniserDelegate> delegate;
+- (void)handleMountFlipCompletedWithRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)cancel;
 @end
