@@ -18,6 +18,7 @@
 #import "SXIOPlateSolveOptionsWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
 #import "CASMountWindowController.h"
+#import "SXIOFocuserWindowController.h"
 #import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
@@ -73,6 +74,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (nonatomic,copy) NSString* cameraDeviceID;
 
+// mount control
 @property (strong) CASMount* mount;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
@@ -80,6 +82,9 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) CASMountWindowController* mountWindowController;
 
 @property (strong) CASProgressWindowController* mountFlipProgress;
+
+// focusing
+@property (strong) SXIOFocuserWindowController* focuserWindowController;
 
 @end
 
@@ -893,6 +898,18 @@ static void* kvoContext;
             }];
         }
     }
+}
+
+#pragma mark - Focuser
+
+- (IBAction)showFocuserWindow:(id)sender
+{
+    if (!self.focuserWindowController){
+        self.focuserWindowController = [[SXIOFocuserWindowController alloc] initWithWindowNibName:@"SXIOFocuserWindowController"];
+    }
+    self.focuserWindowController.cameraController = self.cameraController;
+    // delegate
+    [self.focuserWindowController showWindow:nil];
 }
 
 #pragma mark - Plate Solving
@@ -1837,6 +1854,10 @@ static void* kvoContext;
             
         case 11106: // Connect to Mount...
             enabled = YES;
+            break;
+            
+        case 11107: // Show Focuser...
+            enabled = self.cameraController.settings && !self.cameraController.capturing && !CGRectEqualToRect(self.cameraController.settings.subframe, CGRectZero);
             break;
     }
     return enabled;

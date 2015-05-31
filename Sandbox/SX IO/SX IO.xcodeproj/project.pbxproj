@@ -177,6 +177,10 @@
 		F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
 		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F4AC8C5A1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
+		F4AC8C5B1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
+		F4AC8C5C1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */; };
+		F4AC8C5D1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */; };
 		F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC3CCD19AE644200401578 /* CoreLocation.framework */; };
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
@@ -567,6 +571,9 @@
 		F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPHDControlsViewController.h; path = ../../../CoreAstro/CASPHDControlsViewController.h; sourceTree = "<group>"; };
 		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
 		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
+		F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFocuserWindowController.h; sourceTree = "<group>"; };
+		F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFocuserWindowController.m; sourceTree = "<group>"; };
+		F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFocuserWindowController.xib; sourceTree = "<group>"; };
 		F4BC3CCD19AE644200401578 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSliderCell.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.m"; sourceTree = "<group>"; };
 		F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSlider.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.m"; sourceTree = "<group>"; };
@@ -1043,6 +1050,9 @@
 				F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */,
 				F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */,
 				F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */,
+				F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */,
+				F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */,
+				F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */,
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
@@ -1400,6 +1410,7 @@
 				F4F2A4D41AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F40D5B681849EC5E00977FA9 /* moon.icns in Resources */,
 				F40D5B691849EC5E00977FA9 /* zoomout.pdf in Resources */,
+				F4AC8C5D1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */,
 				F40D5CAF1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
 				F40D5B6A1849EC5E00977FA9 /* move.pdf in Resources */,
 				F40D5B6B1849EC5E00977FA9 /* zoomin.pdf in Resources */,
@@ -1483,6 +1494,7 @@
 				F4E64257179BFFBD0044B349 /* zoomout.pdf in Resources */,
 				F4E64258179BFFBD0044B349 /* move.pdf in Resources */,
 				F428D6221A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */,
+				F4AC8C5C1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */,
 				F4E64259179BFFBD0044B349 /* zoomin.pdf in Resources */,
 				F4E6425A179BFFBD0044B349 /* opendevices.pdf in Resources */,
 				F4E6425B179BFFBD0044B349 /* selection.pdf in Resources */,
@@ -1580,6 +1592,7 @@
 				F40D5B331849EC5E00977FA9 /* CASZoomableView.m in Sources */,
 				F40D5B341849EC5E00977FA9 /* CASExposureView.m in Sources */,
 				F4F2A4D61AED0FBF00CCC40F /* CASMountWindowController.m in Sources */,
+				F4AC8C5B1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */,
 				F40D5B351849EC5E00977FA9 /* CASHUDView.m in Sources */,
 				F40D5B361849EC5E00977FA9 /* CASExposureInfoView.m in Sources */,
 				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
@@ -1667,6 +1680,7 @@
 				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,
 				F4A25873179BC0100013D220 /* CASExposureView.m in Sources */,
 				F4F2A4D51AED0FBF00CCC40F /* CASMountWindowController.m in Sources */,
+				F4AC8C5A1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */,
 				F4A25889179BC0990013D220 /* CASHUDView.m in Sources */,
 				F4A2588A179BC0990013D220 /* CASExposureInfoView.m in Sources */,
 				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
