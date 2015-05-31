@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
 		<string key="IBDocument.SystemVersion">14D136</string>
-		<string key="IBDocument.InterfaceBuilderVersion">7702</string>
+		<string key="IBDocument.InterfaceBuilderVersion">7706</string>
 		<string key="IBDocument.AppKitVersion">1347.57</string>
 		<string key="IBDocument.HIToolboxVersion">758.70</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">7702</string>
+			<string key="NS.object.0">7706</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBNSLayoutConstraint</string>
@@ -1659,6 +1659,15 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11106</int>
 								</object>
+								<object class="NSMenuItem" id="187252653">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Show Focuser...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11107</int>
+								</object>
 							</array>
 						</object>
 					</object>
@@ -2730,6 +2739,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">showFocuserWindow:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="187252653"/>
+					</object>
+					<int key="connectionID">919</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -3786,6 +3803,7 @@
 							<reference ref="705784632"/>
 							<reference ref="452202085"/>
 							<reference ref="135985122"/>
+							<reference ref="187252653"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4284,6 +4302,11 @@
 						<reference key="object" ref="135985122"/>
 						<reference key="parent" ref="43874950"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">916</int>
+						<reference key="object" ref="187252653"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4515,13 +4538,14 @@
 				<string key="910.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="913.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="914.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="916.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">915</int>
+			<int key="maxID">919</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4792,14 +4816,6 @@
 					<string key="className">CASControlsContainerView</string>
 					<string key="superclassName">NSBox</string>
 					<reference key="sourceIdentifier" ref="332234738"/>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CASControlsContainerView</string>
-					<string key="superclassName">NSView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier" id="31444365">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">../SX IO/SXIOCameraWindowController.m</string>
-					</object>
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">CASExposureView</string>
@@ -5133,7 +5149,6 @@
 						<string key="captureFlats:">id</string>
 						<string key="connectButtonPressed:">id</string>
 						<string key="connectToMount:">id</string>
-						<string key="goToInLX200:">id</string>
 						<string key="openDocument:">id</string>
 						<string key="plateSolve:">id</string>
 						<string key="plateSolveWithOptions:">id</string>
@@ -5141,6 +5156,7 @@
 						<string key="saveToFITS:">id</string>
 						<string key="selection:">NSSegmentedControl</string>
 						<string key="sequence:">id</string>
+						<string key="showFocuserWindow:">id</string>
 						<string key="toggleCalibrate:">id</string>
 						<string key="toggleContrastStretch:">id</string>
 						<string key="toggleEqualiseHistogram:">id</string>
@@ -5193,10 +5209,6 @@
 							<string key="name">connectToMount:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="goToInLX200:">
-							<string key="name">goToInLX200:</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="openDocument:">
 							<string key="name">openDocument:</string>
 							<string key="candidateClassName">id</string>
@@ -5223,6 +5235,10 @@
 						</object>
 						<object class="IBActionInfo" key="sequence:">
 							<string key="name">sequence:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showFocuserWindow:">
+							<string key="name">showFocuserWindow:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleCalibrate:">
@@ -5300,7 +5316,7 @@
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="captureButton">NSButton</string>
-						<string key="controlsContainerView">CASControlsContainerView</string>
+						<string key="containerScrollView">NSScrollView</string>
 						<string key="mountConnectWindow">NSWindow</string>
 						<string key="progressIndicator">NSProgressIndicator</string>
 						<string key="progressStatusText">NSTextField</string>
@@ -5314,9 +5330,9 @@
 							<string key="name">captureButton</string>
 							<string key="candidateClassName">NSButton</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="controlsContainerView">
-							<string key="name">controlsContainerView</string>
-							<string key="candidateClassName">CASControlsContainerView</string>
+						<object class="IBToOneOutletInfo" key="containerScrollView">
+							<string key="name">containerScrollView</string>
+							<string key="candidateClassName">NSScrollView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="mountConnectWindow">
 							<string key="name">mountConnectWindow</string>
@@ -5347,7 +5363,10 @@
 							<string key="candidateClassName">NSSegmentedControl</string>
 						</object>
 					</dictionary>
-					<reference key="sourceIdentifier" ref="31444365"/>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">../SX IO/SXIOCameraWindowController.m</string>
+					</object>
 				</object>
 			</array>
 			<array class="NSMutableArray" key="referencedPartialClassDescriptionsV3.2+">
@@ -5677,6 +5696,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSResponder.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSScrollView</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">AppKit.framework/Headers/NSScrollView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
