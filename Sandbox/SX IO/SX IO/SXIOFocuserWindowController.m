@@ -16,7 +16,6 @@
 @property (weak) IBOutlet NSTextField *metricLabel;
 @property (weak) IBOutlet CASSimpleGraphView *graphView;
 @property (strong) id<CASFocuser> focuser;
-//@property (strong) CASGuideAlgorithm* guideAlgorithm;
 @end
 
 @implementation SXIOFocuserWindowController
@@ -32,8 +31,6 @@
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(closeWindow:)];
-    
-//    self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];
 }
 
 - (void)dealloc
@@ -93,14 +90,6 @@
             self.imageView.image = [[NSImage alloc] initWithCGImage:[exposure newImage].CGImage size:NSZeroSize];
             
             // calc and display metric
-//            NSValue* pointValue = [self.guideAlgorithm locateStars:exposure].firstObject;
-//            if (pointValue){
-//                const NSPoint point = [pointValue pointValue];
-//                self.metricLabel.stringValue = NSStringFromPoint(point);
-//            }
-//            else {
-//                self.metricLabel.stringValue = @"No star";
-//            }
             [self assessExposure:exposure];
             
             // inform delegate
@@ -111,8 +100,9 @@
     }];
 }
 
-- (NSInteger)_lineWithMaxValue:(CASCCDExposure*)exposure
+- (NSInteger)_lineWithMaxValue:(CASCCDExposure*)exposure maxValue:(float*)maxValue
 {
+    float max = 0;
     NSInteger maxY = NSNotFound;
     
     float* floatPixels = (float*)[exposure.floatPixels bytes];
@@ -120,7 +110,6 @@
         
         const CASSize size = exposure.actualSize;
         
-        float max = 0;
         for (NSInteger y = 0; y < size.height; ++y){
             
             float m = 0;
@@ -131,6 +120,10 @@
             }
             floatPixels += size.width;
         }
+    }
+    
+    if (maxValue){
+        *maxValue = max;
     }
     
     return maxY;
@@ -144,17 +137,40 @@
     if (pixelData){
         
         // find the max line (could just search around height/2)
-        const NSInteger y = [self _lineWithMaxValue:exposure];
+        float maxValue;
+        const NSInteger y = [self _lineWithMaxValue:exposure maxValue:&maxValue];
         if (y == NSNotFound){
             self.metricLabel.stringValue = @"No star";
             self.graphView.samples = nil;
         }
         else{
-            self.metricLabel.stringValue = [NSString stringWithFormat:@"Line %ld",(long)y];
+            
             pixels = pixels + exposure.actualSize.width * y;
             memcpy([pixelData mutableBytes], pixels, exposure.actualSize.width * sizeof(float));
             self.graphView.samples = pixelData;
             self.graphView.showLimits = YES;
+            
+            float left = -1, right = -1;
+            const float halfMax = maxValue/2.0;
+            for (int i = 0; i < exposure.actualSize.width; ++i){
+                if (pixels[i] >= halfMax && left == -1){
+                    const float slope = (pixels[i+1] - pixels[i]);
+                    left = i + (slope * (halfMax - pixels[i]));
+                }
+                if (left != -1 && right == -1 && pixels[i] <= halfMax && i > 0){
+                    const float slope = (pixels[i] - pixels[i-1]);
+                    right = i + (slope * (halfMax - pixels[i]));
+                }
+            }
+            
+            NSLog(@"left %f, right: %f",left,right);
+            if (left != -1 && right != -1){
+                const float fwhm = right - left;
+                self.metricLabel.stringValue = [NSString stringWithFormat:@"FWHM %0.1f",fwhm];
+            }
+            else {
+                self.metricLabel.stringValue = @"No FWHM";
+            }
         }
     }
 }
