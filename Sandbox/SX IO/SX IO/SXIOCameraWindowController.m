@@ -825,7 +825,7 @@ static void* kvoContext;
     if (self.mount.slewing){
         
         NSLog(@"Mount still slewing, waiting 5s...");
-        [self performSelector:_cmd withObject:nil afterDelay:5];
+        [self performSelector:_cmd withObject:nil afterDelay:5]; // todo; need to be able to cancel this
     }
     else {
         
@@ -840,7 +840,7 @@ static void* kvoContext;
             self.mountWindowController.cameraController = self.cameraController;
             self.mountWindowController.mountWindowDelegate = self;
             self.mountWindowController.usePlateSolvng = YES;
-            [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+            [self.mountWindowController.mountSynchroniser handleMountFlipCompletedWithRA:solution.centreRA dec:solution.centreDec];
         }
     }
 }
@@ -1615,6 +1615,15 @@ static void* kvoContext;
                     meta[@"longitude"] = longitude;
                     exposure.meta = [meta copy];
                 }
+                
+//                NSNumber* ra = self.mount.ra;
+//                NSNumber* dec = self.mount.dec;
+//                if (ra && dec){
+//                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+//                    meta[@"ra"] = ra;
+//                    meta[@"dec"] = dec;
+//                    exposure.meta = [meta copy];
+//                }
 
                 [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
             }
@@ -1951,9 +1960,13 @@ static void* kvoContext;
 
 - (void)mountFlipped:(NSNotification*)note
 {
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){
-        if (note.object == self.mount){
+    if (note.object == self.mount){
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){
+            NSLog(@"Handling mount flip");
             [self mountFlipped];
+        }
+        else {
+            NSLog(@"Ignoring mount flip");
         }
     }
 }
