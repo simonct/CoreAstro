@@ -99,7 +99,7 @@
 		F415C54217C95B7D001C42F1 /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54117C95B7D001C42F1 /* GenerateThumbnailForURL.m */; };
 		F415C54417C95B7D001C42F1 /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54317C95B7D001C42F1 /* GeneratePreviewForURL.m */; };
 		F415C54617C95B7D001C42F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C54517C95B7D001C42F1 /* main.m */; };
-		F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in CopyFiles */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; };
+		F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in Copy QuickFITS plugin */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
 		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
@@ -139,13 +139,13 @@
 		F48F466E17C409E6008FCEBE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F48F466217C409E6008FCEBE /* InfoPlist.strings */; };
 		F48F466F17C409E6008FCEBE /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = F48F466417C409E6008FCEBE /* index.html */; };
 		F48F467317C40B37008FCEBE /* Debayer-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F48F467217C40B37008FCEBE /* Debayer-Info.plist */; };
-		F48F467717C40C6E008FCEBE /* Debayer.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F48F465017C40971008FCEBE /* Debayer.plugin */; };
+		F48F467717C40C6E008FCEBE /* Debayer.plugin in Copy CoreImage plugins */ = {isa = PBXBuildFile; fileRef = F48F465017C40971008FCEBE /* Debayer.plugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F48F799D187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */; };
 		F48F799E187CB31100DFB0F2 /* SXIOPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48F799B187CB31100DFB0F2 /* SXIOPreferencesWindowController.m */; };
 		F48F799F187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */; };
 		F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48F799C187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib */; };
 		F4A25839179B31800013D220 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
-		F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
+		F4A2585D179BBF560013D220 /* CoreAstro.framework in Copy CoreAstro framework */ = {isa = PBXBuildFile; fileRef = F4FD2330179B31360049F5B5 /* CoreAstro.framework */; };
 		F4A25870179BC0100013D220 /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A25869179BC0100013D220 /* CASImageView.m */; };
 		F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586B179BC0100013D220 /* CASCenteringClipView.m */; };
 		F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A2586D179BC0100013D220 /* CASZoomableView.m */; };
@@ -181,7 +181,7 @@
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
 		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
-		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; };
+		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in Copy SXDevices plugin */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
 		F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
 		F4E6422E179BDF8F0044B349 /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4E6422D179BDF8F0044B349 /* loop.png */; };
@@ -220,7 +220,7 @@
 		F4F9B21517B15A9A0063DD0D /* Description.plist in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21417B15A9A0063DD0D /* Description.plist */; };
 		F4F9B21817B15A9A0063DD0D /* Description.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21617B15A9A0063DD0D /* Description.strings */; };
 		F4F9B21A17B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = F4F9B21917B15A9A0063DD0D /* ContrastStretchFilterKernel.cikernel */; };
-		F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */; };
+		F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in Copy CoreImage plugins */ = {isa = PBXBuildFile; fileRef = F4F9B1FE17B15A9A0063DD0D /* ContrastStretch.plugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F4FD2303179B30D60049F5B5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4FD2302179B30D60049F5B5 /* Cocoa.framework */; };
 		F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F4FD230B179B30D60049F5B5 /* InfoPlist.strings */; };
 		F4FD230F179B30D60049F5B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FD230E179B30D60049F5B5 /* main.m */; };
@@ -408,45 +408,49 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F415C54D17C95BDF001C42F1 /* CopyFiles */ = {
+		F415C54D17C95BDF001C42F1 /* Copy QuickFITS plugin */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = Contents/Library/QuickLook;
 			dstSubfolderSpec = 1;
 			files = (
-				F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in CopyFiles */,
+				F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in Copy QuickFITS plugin */,
 			);
+			name = "Copy QuickFITS plugin";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4A25838179B31760013D220 /* CopyFiles */ = {
+		F4A25838179B31760013D220 /* Copy CoreAstro framework */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F4A2585D179BBF560013D220 /* CoreAstro.framework in CopyFiles */,
+				F4A2585D179BBF560013D220 /* CoreAstro.framework in Copy CoreAstro framework */,
 			);
+			name = "Copy CoreAstro framework";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4D3CE01179BC54900B42D04 /* CopyFiles */ = {
+		F4D3CE01179BC54900B42D04 /* Copy SXDevices plugin */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = CoreAstro.framework/Versions/Current/PlugIns;
 			dstSubfolderSpec = 10;
 			files = (
-				F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in CopyFiles */,
+				F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in Copy SXDevices plugin */,
 			);
+			name = "Copy SXDevices plugin";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4F9B22617B15AC40063DD0D /* CopyFiles */ = {
+		F4F9B22617B15AC40063DD0D /* Copy CoreImage plugins */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				F48F467717C40C6E008FCEBE /* Debayer.plugin in CopyFiles */,
-				F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in CopyFiles */,
+				F48F467717C40C6E008FCEBE /* Debayer.plugin in Copy CoreImage plugins */,
+				F4F9B22717B15D430063DD0D /* ContrastStretch.plugin in Copy CoreImage plugins */,
 			);
+			name = "Copy CoreImage plugins";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1234,11 +1238,12 @@
 				F4FD22FB179B30D60049F5B5 /* Sources */,
 				F4FD22FC179B30D60049F5B5 /* Frameworks */,
 				F4FD22FD179B30D60049F5B5 /* Resources */,
-				F4A25838179B31760013D220 /* CopyFiles */,
-				F4D3CE01179BC54900B42D04 /* CopyFiles */,
-				F4F9B22617B15AC40063DD0D /* CopyFiles */,
-				F415C54D17C95BDF001C42F1 /* CopyFiles */,
-				F4CE97FB17AD58F2000F28C8 /* ShellScript */,
+				F4A25838179B31760013D220 /* Copy CoreAstro framework */,
+				F4CE97FB17AD58F2000F28C8 /* Remove astrometry.net binaries */,
+				F4D3CE01179BC54900B42D04 /* Copy SXDevices plugin */,
+				F4A931441B1B1D7800B09E8B /* Re-sign CoreAstro framework */,
+				F4F9B22617B15AC40063DD0D /* Copy CoreImage plugins */,
+				F415C54D17C95BDF001C42F1 /* Copy QuickFITS plugin */,
 			);
 			buildRules = (
 			);
@@ -1530,13 +1535,28 @@
 			shellPath = /bin/sh;
 			shellScript = "shared_support=\"${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Frameworks/CoreAstro.framework/SharedSupport/\"\nrm -rf \"${shared_support}/astrometry\"\nrm -rf \"${shared_support}/support\"\n";
 		};
-		F4CE97FB17AD58F2000F28C8 /* ShellScript */ = {
+		F4A931441B1B1D7800B09E8B /* Re-sign CoreAstro framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Re-sign CoreAstro framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LOCATION=\"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nIDENTITY=\"Developer ID Application: Simon Taylor (D8EQ3MVHHB)\"\ncodesign --verbose --force --sign \"$IDENTITY\" \"$LOCATION/CoreAstro.framework/Versions/A\"";
+		};
+		F4CE97FB17AD58F2000F28C8 /* Remove astrometry.net binaries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Remove astrometry.net binaries";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2075,7 +2095,6 @@
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2094,7 +2113,6 @@
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
