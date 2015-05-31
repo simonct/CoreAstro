@@ -56,7 +56,9 @@ static void* kvoContext;
         self.client.delegate = self;
         self.client.host = [NSHost hostWithAddress:@"127.0.0.1"];
         self.client.port = 4400;
+        NSLog(@"Opening socket to PHD2 on port %ld",(long)self.client.port);
         if (![self.client connect]){
+            NSLog(@"PHD2 client failed to connect");
             [self callConnectCompletion];
         }
     }
@@ -82,7 +84,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
         if (self.client.error){
-            NSLog(@"error: %@",self.client.error);
+            NSLog(@"PHD2 client error: %@",self.client.error);
             self.client = nil;
             [self callConnectCompletion];
         }
@@ -116,7 +118,7 @@ static void* kvoContext;
     // Paused
     // Resumed
     // GuidingDithered
-    NSLog(@"receivedNotification: %@",message[@"Event"]);
+    NSLog(@"PHD2 client event: %@",message[@"Event"]);
     
     NSString* event = message[@"Event"];
     
@@ -162,9 +164,14 @@ static void* kvoContext;
     }
 }
 
+- (NSInteger)defaultDitherTimeout
+{
+    return 300;
+}
+
 - (NSDictionary*)settleParam
 {
-    return @{@"pixels":@(2),@"time":@(10),@"timeout":@(300)};
+    return @{@"pixels":@(2),@"time":@(10),@"timeout":@([self defaultDitherTimeout])};
 }
 
 - (void)guideWithCompletion:(void(^)(BOOL))completion
@@ -212,10 +219,10 @@ static void* kvoContext;
     [self setupClient];
     [self.client enqueueCommand:@{@"method":@"stop_capture"} completion:^(id result,NSError* error) {
         if (error){
-            NSLog(@"Stop failed: %@",error);
+            NSLog(@"PHD2 stop failed: %@",error);
         }
         else {
-            NSLog(@"Stopped");
+            NSLog(@"PHD2 stopped");
             self.guiding = NO;
         }
     }];
@@ -251,7 +258,7 @@ static void* kvoContext;
         else {
             NSLog(@"Dithering %.1f pixels...",pixels);
             // start a timer that resumes exposures if we never hear back from PHD2
-            [self performSelector:@selector(ditherTimeout) withObject:nil afterDelay:120];
+            [self performSelector:@selector(ditherTimeout) withObject:nil afterDelay:[self defaultDitherTimeout] + 10];
         }
     }];
 }

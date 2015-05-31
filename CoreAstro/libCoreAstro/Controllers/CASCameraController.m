@@ -473,7 +473,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.phd2Client = [CASPHD2Client new];
     }
     
-    if (!self.phd2Client || !self.settings.startGuiding){
+    if (!self.phd2Client){
         startCapture();
     }
     else {
@@ -500,7 +500,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 
                 if (!self.cancelled){
                     
-                    if (self.phd2Client.guiding){
+                    if (self.phd2Client.guiding || !self.settings.startGuiding){
                         startCapture();
                     }
                     else {
