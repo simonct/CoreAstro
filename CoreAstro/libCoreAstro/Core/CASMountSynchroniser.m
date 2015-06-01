@@ -180,7 +180,7 @@ static void* kvoContext;
     
     if (_pushedSettings){
         _pushedSettings = NO;
-        [self.cameraController popSettings];
+        [self.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
         self.cameraController.temperatureLock = _saveTemperatureLock;
         self.cameraController.sink = _savedSink;
     }

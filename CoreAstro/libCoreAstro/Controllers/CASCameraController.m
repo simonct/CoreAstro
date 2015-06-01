@@ -614,6 +614,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     
     self.settings = [_settingsStack lastObject];  // does this trigger kvo ?
     [_settingsStack removeLastObject];
+    
+    if (!self.settings){
+        NSLog(@"Settings nil after popping the stack !");
+    }
 }
 
 - (CGSize)arcsecsPerPixelForFocalLength:(float)focalLength
