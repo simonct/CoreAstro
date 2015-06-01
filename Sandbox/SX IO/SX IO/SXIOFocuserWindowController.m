@@ -18,7 +18,9 @@
 @property (strong) id<CASFocuser> focuser;
 @end
 
-@implementation SXIOFocuserWindowController
+@implementation SXIOFocuserWindowController {
+    id<CASCameraControllerSink> _savedSink;
+}
 
 - (void)windowDidLoad
 {
@@ -43,6 +45,10 @@
 #if defined(SXIO)
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
+    
+    if (!self.cameraController.sink){
+        self.cameraController.sink = _savedSink;
+    }
     
     self.cameraController = nil;
 
@@ -73,13 +79,13 @@
     [self.cameraController cancelCapture];
 
     // turn off the controller's sink (this is only to stop it getting saved to file)
-    id<CASCameraControllerSink> savedSink = self.cameraController.sink;
+    _savedSink = self.cameraController.sink;
     self.cameraController.sink = nil;
     
     // grab an exposure
     [self.cameraController captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
         
-        self.cameraController.sink = savedSink;
+        self.cameraController.sink = _savedSink;
 
         if (error){
             // report
