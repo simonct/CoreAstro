@@ -88,7 +88,13 @@
         //NSLog(@"Observed property with keyPath %@ on %@ changed to %@",keyPath,object,[object valueForKeyPath:keyPath]);
         
         NSMutableDictionary* domain = [self.domain mutableCopy];
-        domain[keyPath] = [object valueForKeyPath:keyPath];
+        id value = [object valueForKeyPath:keyPath];
+        if (value){
+            domain[keyPath] = value;
+        }
+        else {
+            [domain removeObjectForKey:keyPath];
+        }
         self.domain = domain;
         
     } else {
