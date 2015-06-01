@@ -11,14 +11,35 @@
 #import "CASSimpleGraphView.h"
 #import <Accelerate/Accelerate.h>
 
+@interface MyImageView : NSImageView
+@property (nonatomic) CGFloat yLine;
+@property (nonatomic) CALayer* line;
+@end
+
+@implementation MyImageView
+
+- (void)setYLine:(CGFloat)yLine
+{
+    if (self.line){
+        [self.line removeFromSuperlayer];
+    }
+    self.line = [CALayer layer];
+    self.line.frame = CGRectMake(0, yLine, self.bounds.size.width, 1);
+    self.line.backgroundColor = [NSColor yellowColor].CGColor;
+    [self.layer addSublayer:self.line];
+}
+
+@end
+
 @interface SXIOFocuserWindowController ()
-@property (weak) IBOutlet NSImageView *imageView;
+@property (weak) IBOutlet MyImageView *imageView;
 @property (weak) IBOutlet NSTextField *metricLabel;
 @property (weak) IBOutlet CASSimpleGraphView *graphView;
 @property (strong) id<CASFocuser> focuser;
 @end
 
 @implementation SXIOFocuserWindowController {
+    NSInteger _i;
     id<CASCameraControllerSink> _savedSink;
 }
 
@@ -33,6 +54,26 @@
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(closeWindow:)];
+
+    _i = 1;
+    
+//    [self showTestExposure];
+}
+
+- (void)showTestExposure
+{
+    if (_i > 5){
+        _i = 1;
+    }
+    NSString* path = [[NSString stringWithFormat:@"~/Desktop/Star Images/focus%ld.fits",(long)_i] stringByExpandingTildeInPath];
+    CASCCDExposure* exposure = [CASCCDExposure new];
+    CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];
+    NSError* error;
+    [io readExposure:exposure readPixels:YES error:&error];
+    [self assessExposure:exposure];
+    self.imageView.image = [[NSImage alloc] initWithCGImage:[exposure newImage].CGImage size:NSZeroSize];
+    ++_i;
+    [self performSelector:_cmd withObject:nil afterDelay:1];
 }
 
 - (void)dealloc
@@ -106,9 +147,9 @@
     }];
 }
 
-- (NSInteger)_lineWithMaxValue:(CASCCDExposure*)exposure maxValue:(float*)maxValue
+- (NSInteger)_lineWithMaxValue:(CASCCDExposure*)exposure
 {
-    float max = 0;
+    float maxSum = 0;
     NSInteger maxY = NSNotFound;
     
     float* floatPixels = (float*)[exposure.floatPixels bytes];
@@ -118,18 +159,14 @@
         
         for (NSInteger y = 0; y < size.height; ++y){
             
-            float m = 0;
-            vDSP_maxmgv(floatPixels,1,&m,size.width);
-            if (m > max){
-                max = m;
+            float sum = 0;
+            vDSP_sve(floatPixels,1,&sum,size.width);
+            if (sum > maxSum && sum < size.width/4){
+                maxSum = sum;
                 maxY = y;
             }
             floatPixels += size.width;
         }
-    }
-    
-    if (maxValue){
-        *maxValue = max;
     }
     
     return maxY;
@@ -142,30 +179,45 @@
     NSMutableData* pixelData = [NSMutableData dataWithLength:exposure.actualSize.width * sizeof(float)];
     if (pixelData){
         
-        // find the max line (could just search around height/2)
-        float maxValue;
-        const NSInteger y = [self _lineWithMaxValue:exposure maxValue:&maxValue];
-        if (y == NSNotFound){
+        const NSInteger yLine = [self _lineWithMaxValue:exposure];
+        if (yLine == NSNotFound){
             self.metricLabel.stringValue = @"No star";
             self.graphView.samples = nil;
         }
-        else{
+        else {
             
-            pixels = pixels + exposure.actualSize.width * y;
+            const float scale = self.imageView.bounds.size.height/exposure.actualSize.height;
+            self.imageView.yLine = self.imageView.bounds.size.height - (yLine * scale);
+            
+            pixels = pixels + (exposure.actualSize.width * yLine);
             memcpy([pixelData mutableBytes], pixels, exposure.actualSize.width * sizeof(float));
             self.graphView.samples = pixelData;
             self.graphView.showLimits = YES;
             
+            float maxValue = 0;
             float left = -1, right = -1;
-            const float halfMax = maxValue/2.0;
-            for (int i = 0; i < exposure.actualSize.width; ++i){
-                if (pixels[i] >= halfMax && left == -1){
-                    const float slope = (pixels[i+1] - pixels[i]);
-                    left = i + (slope * (halfMax - pixels[i]));
-                }
-                if (left != -1 && right == -1 && pixels[i] <= halfMax && i > 0){
-                    const float slope = (pixels[i] - pixels[i-1]);
-                    right = i + (slope * (halfMax - pixels[i]));
+            {
+                float* floatPixels = (float*)[exposure.floatPixels bytes];
+                if (floatPixels){
+                    
+                    floatPixels += (exposure.actualSize.width * yLine);
+                    
+                    const CASSize size = exposure.actualSize;
+                    vDSP_maxmgv(floatPixels,1,&maxValue,size.width);
+                    
+                    // if max == 1, adjust exposure to get < 1 (hot pixels?)
+                    
+                    const float halfMax = maxValue/2.0;
+                    for (int i = 0; i < exposure.actualSize.width; ++i){
+                        if (floatPixels[i] >= halfMax && left == -1){
+                            const float slope = (floatPixels[i+1] - floatPixels[i]);
+                            left = i + (slope * (halfMax - floatPixels[i]));
+                        }
+                        if (left != -1 && right == -1 && pixels[i] <= halfMax && i > 0){
+                            const float slope = (floatPixels[i] - floatPixels[i-1]);
+                            right = i + (slope * (halfMax - floatPixels[i]));
+                        }
+                    }
                 }
             }
             

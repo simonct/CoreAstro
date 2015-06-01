@@ -24,7 +24,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="416" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UTx-zr-E28">
+                    <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UTx-zr-E28" customClass="MyImageView">
                         <rect key="frame" x="17" y="17" width="236" height="236"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" imageFrameStyle="groove" id="N0M-mf-xzJ"/>
                     </imageView>
