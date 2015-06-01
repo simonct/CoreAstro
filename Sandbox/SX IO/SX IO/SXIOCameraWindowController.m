@@ -788,6 +788,7 @@ static void* kvoContext;
     // stop phd2 guiding whether we're capturing or not
     [self.cameraController.phd2Client stop];
 
+    // could be a manual flip, only handle if we're capturing - possibly have a timeout alert?
     if (!self.cameraController.capturing){
         return;
     }
@@ -806,6 +807,8 @@ static void* kvoContext;
             [self presentAlertWithTitle:@"Exposure Cancelled" message:@"A mount flip was detected without a connected mount."];
         }
         else {
+            
+            // check to see if we're in a commanded slew before attempting to handle
             
             // present a sheet with some status info
             self.mountFlipProgress = [CASProgressWindowController createWindowController];
@@ -882,20 +885,27 @@ static void* kvoContext;
         
             self.mountFlipProgress.label.stringValue = NSLocalizedString(@"Restarting guiding...", @"Progress sheet status label");
 
-            // flip and restart guiding
-            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+            if (!self.cameraController.phd2Client.connected){
+                // restart capture
+                [self capture:nil];
+            }
+            else {
                 
-                dismissSheet();
-
-                if (!success){
-                    [self presentAlertWithTitle:@"Guide Failed" message:@"PHD2 failed to restart guiding"];
-                }
-                else {
+                // flip and restart guiding - no, only if we were guiding before the flip...
+                [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
                     
-                    // restart capture
-                    [self capture:nil];
-                }
-            }];
+                    dismissSheet();
+                    
+                    if (!success){
+                        [self presentAlertWithTitle:@"Guide Failed" message:@"PHD2 failed to restart guiding"];
+                    }
+                    else {
+                        
+                        // restart capture
+                        [self capture:nil];
+                    }
+                }];
+            }
         }
     }
 }
@@ -1962,7 +1972,7 @@ static void* kvoContext;
 {
     if (note.object == self.mount){
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){
-            NSLog(@"Handling mount flip");
+            NSLog(@"Detected mount flip");
             [self mountFlipped];
         }
         else {
