@@ -272,7 +272,12 @@ static void* kvoContext;
 
 - (IBAction)stop:(id)sender
 {
-    [self.mount halt];
+    if (self.mountSynchroniser.mount){
+        [self.mountSynchroniser cancel];
+    }
+    else {
+        [self.mount halt];
+    }
 }
 
 - (IBAction)home:(id)sender
