@@ -12,5 +12,6 @@
 @property (nonatomic,assign) CGFloat max;
 @property (nonatomic,strong) NSData* samples; // keep history, show older ones with diminishing alpha
 @property (nonatomic,assign) BOOL showLimits;
+- (void)drawSamples:(NSData*)samples;
 @end
 

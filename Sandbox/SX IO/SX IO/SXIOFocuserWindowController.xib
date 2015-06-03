@@ -10,6 +10,7 @@
                 <outlet property="graphView" destination="thn-ka-fWU" id="7qr-AO-TpM"/>
                 <outlet property="imageView" destination="UTx-zr-E28" id="alq-4c-4xm"/>
                 <outlet property="metricLabel" destination="zqb-sW-4Ni" id="pwN-p9-1Ld"/>
+                <outlet property="plotView" destination="1MR-7I-ygM" id="WUs-hB-tLi"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -39,12 +40,15 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1MR-7I-ygM" customClass="CASSimpleXYGraphView">
+                        <rect key="frame" x="258" y="19" width="138" height="100"/>
+                    </customView>
                 </subviews>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="18" y="288"/>
+            <point key="canvasLocation" x="-124" y="286"/>
         </window>
     </objects>
 </document>
