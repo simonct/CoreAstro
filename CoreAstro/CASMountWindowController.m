@@ -47,11 +47,34 @@
 @property (nonatomic) CASCameraController* selectedCameraController;
 @property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
 @property (weak) IBOutlet NSTextField *pierSideLabel;
+@property (strong) IBOutlet NSPanel *morePanel;
 @end
 
 // todo;
 // not reflecting initial slew state
 // ra/dec all zeros ?
+
+@interface CASNumberStringTransformer : NSValueTransformer
+
+@end
+@implementation CASNumberStringTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return YES;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [value description];
+}
+
+- (id)reverseTransformedValue:(id)value
+{
+    return @([value integerValue]);
+}
+
+@end
 
 @implementation CASMountWindowController
 
@@ -64,6 +87,7 @@ static void* kvoContext;
     [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
     [NSValueTransformer setValueTransformer:[CASPierSideTransformer new] forName:@"CASPierSideTransformer"];
+    [NSValueTransformer setValueTransformer:[CASNumberStringTransformer new] forName:@"CASNumberStringTransformer"];
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountWindowControllerBinning":@(4),
                                                               @"CASMountWindowControllerDuration":@(5),
@@ -309,6 +333,19 @@ static void* kvoContext;
             [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
     }];
+}
+
+- (IBAction)more:(id)sender
+{
+    [self.window beginSheet:self.morePanel completionHandler:^(NSModalResponse returnCode) {
+        NSLog(@"CASMountWindowControllerBinning %@",[[NSUserDefaultsController sharedUserDefaultsController].defaults objectForKey:@"CASMountWindowControllerBinning"]);
+        NSLog(@"CASMountWindowControllerDuration %@",[[NSUserDefaultsController sharedUserDefaultsController].defaults objectForKey:@"CASMountWindowControllerDuration"]);
+    }];
+}
+
+- (IBAction)moreDone:(id)sender
+{
+    [self.window endSheet:self.morePanel returnCode:NSModalResponseContinue];
 }
 
 #pragma mark - Mount Synchroniser delegate

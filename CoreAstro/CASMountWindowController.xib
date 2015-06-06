@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7702"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
             <connections>
                 <outlet property="cameraPopupButton" destination="bSK-Fq-et0" id="h4t-JG-LqQ"/>
                 <outlet property="camerasArrayController" destination="Ps5-ee-7o7" id="Nyv-nW-e4F"/>
+                <outlet property="morePanel" destination="9Jl-UB-2vZ" id="1nb-ZV-X5n"/>
                 <outlet property="statusLabel" destination="XlS-17-G0Y" id="kCP-yQ-8tJ"/>
                 <outlet property="window" destination="1" id="3"/>
             </connections>
@@ -18,7 +19,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="423" height="425"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="423" height="425"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -282,40 +283,8 @@
                                         <binding destination="-2" name="value" keyPath="usePlateSolvng" id="AZq-u1-w4y"/>
                                     </connections>
                                 </button>
-                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j60-Si-5CF">
-                                    <rect key="frame" x="306" y="10" width="63" height="22"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="aNV-Kz-yc7">
-                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Kci-fb-qqR">
-                                            <real key="minimum" value="0.0"/>
-                                            <real key="maximum" value="10000"/>
-                                        </numberFormatter>
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                    <connections>
-                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="xxR-eb-Odc">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="value" keyPath="mountSynchroniser.focalLength" id="jCq-EY-G6k">
-                                            <dictionary key="options">
-                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="xxR-eb-Odc" id="4F6-ZY-d9Z">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eti-r6-dmf">
-                                    <rect key="frame" x="220" y="13" width="80" height="17"/>
+                                    <rect key="frame" x="197" y="13" width="80" height="17"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Focal length" id="HT2-km-hX0">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -323,7 +292,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bSK-Fq-et0">
-                                    <rect key="frame" x="102" y="8" width="110" height="26"/>
+                                    <rect key="frame" x="102" y="8" width="91" height="26"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="28m-7P-K2d">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
@@ -357,6 +326,48 @@
                                         </binding>
                                     </connections>
                                 </popUpButton>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H2B-eS-fzk">
+                                    <rect key="frame" x="344" y="3" width="43" height="32"/>
+                                    <buttonCell key="cell" type="push" title="..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EDl-id-hEF">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="more:" target="-2" id="Sjg-yO-arM"/>
+                                    </connections>
+                                </button>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j60-Si-5CF">
+                                    <rect key="frame" x="279" y="10" width="63" height="22"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="aNV-Kz-yc7">
+                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Kci-fb-qqR">
+                                            <real key="minimum" value="0.0"/>
+                                            <real key="maximum" value="10000"/>
+                                        </numberFormatter>
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="xxR-eb-Odc">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="value" keyPath="mountSynchroniser.focalLength" id="jCq-EY-G6k">
+                                            <dictionary key="options">
+                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="xxR-eb-Odc" id="4F6-ZY-d9Z">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -528,5 +539,136 @@
                 <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="N8z-Ha-l7V"/>
             </connections>
         </arrayController>
+        <window title="More" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="9Jl-UB-2vZ" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="272" y="172" width="388" height="108"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <view key="contentView" id="t9Q-bh-yGD">
+                <rect key="frame" x="0.0" y="-1" width="388" height="108"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Quz-la-ogm">
+                        <rect key="frame" x="18" y="61" width="62" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="58" id="JkL-SS-h1G"/>
+                            <constraint firstAttribute="height" constant="17" id="KK7-Wc-WLG"/>
+                        </constraints>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exposure" id="wbx-YG-6cM">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4gr-AM-QMm">
+                        <rect key="frame" x="86" y="58" width="75" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="22" id="P9Q-qi-77K"/>
+                            <constraint firstAttribute="width" constant="75" id="V0q-nm-rQv"/>
+                        </constraints>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="mBd-Ya-luL">
+                            <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="wd7-A2-MhT">
+                                <real key="minimum" value="1"/>
+                            </numberFormatter>
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="83E-JI-oE9" name="value" keyPath="values.CASMountWindowControllerDuration" id="VqC-p6-bI8">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zyn-UQ-e9W">
+                        <rect key="frame" x="167" y="61" width="51" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="47" id="8zX-kE-GUb"/>
+                            <constraint firstAttribute="height" constant="17" id="ySh-J0-kJc"/>
+                        </constraints>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Binning" id="xdV-Mq-Mde">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" autorecalculatesCellSize="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oLf-Ow-iXg">
+                        <rect key="frame" x="224" y="49" width="144" height="27"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="144" id="CdN-2u-VeM"/>
+                            <constraint firstAttribute="height" constant="27" id="JBz-p1-h71"/>
+                        </constraints>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        <size key="cellSize" width="33" height="27"/>
+                        <size key="intercellSpacing" width="4" height="2"/>
+                        <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="h2C-sI-ePD">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <cells>
+                            <column>
+                                <buttonCell type="radio" title="1" imagePosition="left" alignment="left" state="on" tag="1" inset="2" id="Lzz-FR-4L1">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </column>
+                            <column>
+                                <buttonCell type="radio" title="2" imagePosition="left" alignment="left" inset="2" id="Zj9-yl-ZKq">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </column>
+                            <column>
+                                <buttonCell type="radio" title="3" imagePosition="left" alignment="left" inset="2" id="5Dk-T6-o1G">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </column>
+                            <column>
+                                <buttonCell type="radio" title="4" imagePosition="left" alignment="left" inset="2" id="qaO-gb-IEF">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </column>
+                        </cells>
+                        <connections>
+                            <binding destination="83E-JI-oE9" name="selectedValue" keyPath="values.CASMountWindowControllerBinning" id="prX-yz-dGN">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">CASNumberStringTransformer</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </matrix>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vG7-dk-w8X">
+                        <rect key="frame" x="301" y="13" width="73" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="OXL-YX-VQ8"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="kJa-so-J5E">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="moreDone:" target="-2" id="RwM-Go-Jzw"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="vG7-dk-w8X" secondAttribute="bottom" constant="20" id="05x-Cc-mVg"/>
+                    <constraint firstItem="Zyn-UQ-e9W" firstAttribute="leading" secondItem="4gr-AM-QMm" secondAttribute="trailing" constant="8" id="AT9-no-ZOg"/>
+                    <constraint firstItem="oLf-Ow-iXg" firstAttribute="leading" secondItem="Zyn-UQ-e9W" secondAttribute="trailing" constant="8" id="K5v-Tg-oWt"/>
+                    <constraint firstItem="oLf-Ow-iXg" firstAttribute="top" secondItem="t9Q-bh-yGD" secondAttribute="top" constant="32" id="SyE-Tx-FGJ"/>
+                    <constraint firstItem="Quz-la-ogm" firstAttribute="top" secondItem="t9Q-bh-yGD" secondAttribute="top" constant="30" id="cVC-Nj-nFc"/>
+                    <constraint firstItem="Quz-la-ogm" firstAttribute="leading" secondItem="t9Q-bh-yGD" secondAttribute="leading" constant="20" id="chA-06-KiC"/>
+                    <constraint firstItem="4gr-AM-QMm" firstAttribute="top" secondItem="t9Q-bh-yGD" secondAttribute="top" constant="28" id="gS1-x9-Jxa"/>
+                    <constraint firstItem="Zyn-UQ-e9W" firstAttribute="top" secondItem="t9Q-bh-yGD" secondAttribute="top" constant="30" id="t1p-lF-k2l"/>
+                    <constraint firstItem="4gr-AM-QMm" firstAttribute="leading" secondItem="Quz-la-ogm" secondAttribute="trailing" constant="8" id="wXb-VY-6SV"/>
+                    <constraint firstAttribute="trailing" secondItem="vG7-dk-w8X" secondAttribute="trailing" constant="20" id="zGY-zh-bvD"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="-1529" y="297"/>
+        </window>
     </objects>
 </document>
