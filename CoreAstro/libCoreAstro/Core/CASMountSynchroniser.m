@@ -22,6 +22,7 @@
     BOOL _pushedSettings;
     BOOL _saveTemperatureLock;
     id<CASCameraControllerSink> _savedSink;
+    BOOL _cancelled;
 }
 
 static void* kvoContext;
@@ -100,6 +101,7 @@ static void* kvoContext;
 
 - (void)cancel
 {
+    _cancelled = YES;
     [self.cameraController cancelCapture];
     [self.plateSolver cancel];
     [self.mount stopMoving];
@@ -178,12 +180,7 @@ static void* kvoContext;
     self.solving = NO;
     self.status = @"";
     
-    if (_pushedSettings){
-        _pushedSettings = NO;
-        [self.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
-        self.cameraController.temperatureLock = _saveTemperatureLock;
-        self.cameraController.sink = _savedSink;
-    }
+    [self restoreCameraSettings];
     
     self.error = error;
 
@@ -206,6 +203,16 @@ static void* kvoContext;
     return self.error;
 }
 
+- (void)restoreCameraSettings
+{
+    if (_pushedSettings){
+        _pushedSettings = NO;
+        [self.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
+        self.cameraController.temperatureLock = _saveTemperatureLock;
+        self.cameraController.sink = _savedSink;
+    }
+}
+
 - (void)captureAndSolveWithCompletion:(void(^)(NSError*,double ra,double dec))completion
 {
     NSParameterAssert(completion);
@@ -214,10 +221,7 @@ static void* kvoContext;
     const NSInteger captureSeconds = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountSlewControllerDuration"];
     
     void (^callCompletion)(NSError*,double,double) = ^(NSError* error,double ra,double dec){
-        
-        [self.cameraController popSettings];
-        self.cameraController.temperatureLock = _saveTemperatureLock;
-
+        [self restoreCameraSettings];
         completion(error,ra,dec);
     };
     
@@ -252,46 +256,60 @@ static void* kvoContext;
             }
             else {
                 
-                [self.delegate mountSynchroniser:self didCaptureExposure:exposure];
+                // check exposure intensity ?
                 
-                // plate solve the exposure
-                self.status = @"Capture complete, solving...";
-                self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
-                if (![self.plateSolver canSolveExposure:exposure error:&error]){
-                    callCompletion(error,0,0);
+                if (_cancelled || self.cameraController.cancelled){
+                    [self restoreCameraSettings];
                 }
                 else {
                     
-                    // set optical params
-                    if (self.focalLength > 0){
-                        self.plateSolver.fieldSizeDegrees = [self.cameraController fieldSizeForFocalLength:self.focalLength];
-                        self.plateSolver.arcsecsPerPixel = [self.cameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
-                    }
+                    [self.delegate mountSynchroniser:self didCaptureExposure:exposure];
                     
-                    // set mount params
-                    NSNumber* ra = self.mount.ra;
-                    NSNumber* dec = self.mount.dec;
-                    if (ra && dec){
-                        self.plateSolver.searchRA = ra.floatValue;
-                        self.plateSolver.searchDec = dec.floatValue;
-                        self.plateSolver.searchRadius = [[NSUserDefaults standardUserDefaults] floatForKey:@"CASMountSlewControllerSearchRadius"];
+                    // plate solve the exposure
+                    self.status = @"Capture complete, solving...";
+                    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
+                    if (![self.plateSolver canSolveExposure:exposure error:&error]){
+                        callCompletion(error,0,0);
                     }
-                    
-                    [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary* results) {
+                    else {
                         
-                        if (error){
-                            callCompletion(error,0,0);
+                        // set optical params
+                        if (self.focalLength > 0){
+                            self.plateSolver.fieldSizeDegrees = [self.cameraController fieldSizeForFocalLength:self.focalLength];
+                            self.plateSolver.arcsecsPerPixel = [self.cameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
                         }
-                        else {
-                            
-                            // got a solution, calculate separation and see if it's converging on the intended location
-                            CASPlateSolveSolution* solution = results[@"solution"];
-                            
-                            [self.delegate mountSynchroniser:self didSolveExposure:solution];
-                            
-                            callCompletion(nil,solution.centreRA,solution.centreDec);
+                        
+                        // set mount params
+                        NSNumber* ra = self.mount.ra;
+                        NSNumber* dec = self.mount.dec;
+                        if (ra && dec){
+                            self.plateSolver.searchRA = ra.floatValue;
+                            self.plateSolver.searchDec = dec.floatValue;
+                            self.plateSolver.searchRadius = [[NSUserDefaults standardUserDefaults] floatForKey:@"CASMountSlewControllerSearchRadius"];
                         }
-                    }];
+                        
+                        [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary* results) {
+                            
+                            if (error){
+                                callCompletion(error,0,0);
+                            }
+                            else {
+                                
+                                if (_cancelled){
+                                    [self restoreCameraSettings];
+                                }
+                                else{
+                                
+                                    // got a solution, calculate separation and see if it's converging on the intended location
+                                    CASPlateSolveSolution* solution = results[@"solution"];
+                                    
+                                    [self.delegate mountSynchroniser:self didSolveExposure:solution];
+                                    
+                                    callCompletion(nil,solution.centreRA,solution.centreDec);
+                                }
+                            }
+                        }];
+                    }
                 }
             }
         }];
@@ -341,8 +359,7 @@ static void* kvoContext;
                         }
                         else {
                             
-                            [self.cameraController popSettings];
-                            self.cameraController.temperatureLock = _saveTemperatureLock;
+                            [self restoreCameraSettings];
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [self startSlewToRA:_raInDegrees dec:_decInDegrees];
