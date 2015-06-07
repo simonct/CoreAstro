@@ -161,6 +161,7 @@ static void* kvoContext;
 {
     if (cameraController != _cameraController){
         _cameraController = cameraController;
+        self.mountSynchroniser.cameraController = cameraController;
         if (_cameraController){
             NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
             NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:focalLengthKey];
@@ -195,6 +196,7 @@ static void* kvoContext;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion
 {
     self.mount = mount;
+    self.mountSynchroniser.mount = mount;
     
 #if CAS_SLEW_AND_SYNC_TEST
     _testError = 1;
