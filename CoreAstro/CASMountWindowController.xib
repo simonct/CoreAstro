@@ -18,20 +18,20 @@
         <window title="Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" deferred="NO" oneShot="NO" releasedWhenClosed="NO" frameAutosaveName="ieq-test-mount" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="423" height="425"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="contentRect" x="196" y="240" width="423" height="472"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="423" height="425"/>
+                <rect key="frame" x="0.0" y="-2" width="423" height="472"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Current Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="PuF-mb-lQZ">
-                        <rect key="frame" x="17" y="322" width="389" height="83"/>
+                        <rect key="frame" x="17" y="369" width="389" height="83"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="67"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ad4-ba-Glf">
-                                    <rect key="frame" x="22" y="40" width="26" height="21"/>
+                                    <rect key="frame" x="16" y="40" width="32" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="RA:" id="Djg-iP-Jv9">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -54,7 +54,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Nq-Oc-w7G">
-                                    <rect key="frame" x="15" y="14" width="32" height="21"/>
+                                    <rect key="frame" x="7" y="14" width="40" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Dec:" id="Grr-95-dRT">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -128,7 +128,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Target Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Loc-Zz-t5b">
-                        <rect key="frame" x="17" y="189" width="389" height="129"/>
+                        <rect key="frame" x="17" y="236" width="389" height="129"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="113"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -154,7 +154,7 @@
                                     </connections>
                                 </textField>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kYE-P5-Y3t">
-                                    <rect key="frame" x="237" y="7" width="68" height="32"/>
+                                    <rect key="frame" x="288" y="41" width="87" height="32"/>
                                     <buttonCell key="cell" type="push" title="Slew" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cvK-5D-7Gn">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -187,7 +187,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DuN-rt-RHL">
-                                    <rect key="frame" x="307" y="7" width="68" height="32"/>
+                                    <rect key="frame" x="288" y="7" width="87" height="32"/>
                                     <buttonCell key="cell" type="push" title="Stop" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g3Q-Zf-Jsj">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -211,31 +211,8 @@
                                         </binding>
                                     </connections>
                                 </button>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKg-Zs-AWz">
-                                    <rect key="frame" x="195" y="48" width="32" height="21"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Dec:" id="gqi-hZ-Qy8">
-                                        <font key="font" metaFont="system" size="17"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2hX-Zg-al1">
-                                    <rect key="frame" x="230" y="48" width="146" height="21"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="avb-pp-3zo">
-                                        <font key="font" metaFont="systemBold" size="17"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                    <connections>
-                                        <binding destination="-2" name="value" keyPath="mount.targetDec" id="zd1-Uz-hlD">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">CASLX200DecTransformer</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BbH-oW-dr9">
-                                    <rect key="frame" x="16" y="48" width="26" height="21"/>
+                                    <rect key="frame" x="16" y="54" width="33" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="RA:" id="Jec-hp-YW2">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -243,7 +220,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aXc-Fx-QZr">
-                                    <rect key="frame" x="44" y="48" width="146" height="21"/>
+                                    <rect key="frame" x="51" y="54" width="231" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="FEG-oS-riM">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -257,13 +234,36 @@
                                         </binding>
                                     </connections>
                                 </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKg-Zs-AWz">
+                                    <rect key="frame" x="10" y="26" width="40" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Dec:" id="gqi-hZ-Qy8">
+                                        <font key="font" metaFont="system" size="17"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2hX-Zg-al1">
+                                    <rect key="frame" x="52" y="26" width="230" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="avb-pp-3zo">
+                                        <font key="font" metaFont="systemBold" size="17"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="-2" name="value" keyPath="mount.targetDec" id="zd1-Uz-hlD">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">CASLX200DecTransformer</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Camera" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Sng-gL-Xl5">
-                        <rect key="frame" x="17" y="130" width="389" height="55"/>
+                        <rect key="frame" x="17" y="177" width="389" height="55"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="39"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -326,16 +326,6 @@
                                         </binding>
                                     </connections>
                                 </popUpButton>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H2B-eS-fzk">
-                                    <rect key="frame" x="344" y="3" width="43" height="32"/>
-                                    <buttonCell key="cell" type="push" title="..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EDl-id-hEF">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="more:" target="-2" id="Sjg-yO-arM"/>
-                                    </connections>
-                                </button>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j60-Si-5CF">
                                     <rect key="frame" x="279" y="10" width="63" height="22"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="aNV-Kz-yc7">
@@ -368,13 +358,23 @@
                                         </binding>
                                     </connections>
                                 </textField>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H2B-eS-fzk">
+                                    <rect key="frame" x="342" y="4" width="43" height="32"/>
+                                    <buttonCell key="cell" type="push" title="..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EDl-id-hEF">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="more:" target="-2" id="Sjg-yO-arM"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XlS-17-G0Y">
-                        <rect key="frame" x="18" y="9" width="387" height="17"/>
+                        <rect key="frame" x="18" y="7" width="387" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="9cM-rP-swI">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -385,7 +385,7 @@
                         </connections>
                     </textField>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Move" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="t8k-Si-gol">
-                        <rect key="frame" x="17" y="30" width="389" height="96"/>
+                        <rect key="frame" x="17" y="77" width="389" height="96"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="80"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -525,13 +525,34 @@
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
+                    <box autoresizesSubviews="NO" fixedFrame="YES" title="Meridian Flip" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="qyq-Ac-Tj3">
+                        <rect key="frame" x="17" y="28" width="389" height="46"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="387" height="30"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIs-P7-y2M">
+                                    <rect key="frame" x="16" y="8" width="145" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Handle meridian flip" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="BRS-Q4-PFR">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <binding destination="83E-JI-oE9" name="value" keyPath="values.SXIOResyncAfterMeridianFlip" id="ah8-ar-e2Q"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
                 </subviews>
             </view>
             <connections>
                 <binding destination="-2" name="title" keyPath="mount.name" id="TDL-zs-9nR"/>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-1329.5" y="-80.5"/>
+            <point key="canvasLocation" x="-1329.5" y="-57"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
         <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">
@@ -543,7 +564,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="172" width="388" height="108"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="t9Q-bh-yGD">
                 <rect key="frame" x="0.0" y="-1" width="388" height="108"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -575,7 +596,7 @@
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                         <connections>
-                            <binding destination="83E-JI-oE9" name="value" keyPath="values.CASMountWindowControllerDuration" id="VqC-p6-bI8">
+                            <binding destination="83E-JI-oE9" name="value" keyPath="values.CASMountSlewControllerDuration" id="5RA-fC-5fL">
                                 <dictionary key="options">
                                     <bool key="NSContinuouslyUpdatesValue" value="YES"/>
                                 </dictionary>
@@ -601,7 +622,7 @@
                             <constraint firstAttribute="height" constant="27" id="JBz-p1-h71"/>
                         </constraints>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        <size key="cellSize" width="33" height="27"/>
+                        <size key="cellSize" width="30" height="18"/>
                         <size key="intercellSpacing" width="4" height="2"/>
                         <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="h2C-sI-ePD">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -634,7 +655,7 @@
                             </column>
                         </cells>
                         <connections>
-                            <binding destination="83E-JI-oE9" name="selectedValue" keyPath="values.CASMountWindowControllerBinning" id="prX-yz-dGN">
+                            <binding destination="83E-JI-oE9" name="selectedValue" keyPath="values.CASMountSlewControllerBinning" id="ADe-bR-tvW">
                                 <dictionary key="options">
                                     <string key="NSValueTransformerName">CASNumberStringTransformer</string>
                                 </dictionary>
