@@ -336,19 +336,24 @@ static void* kvoContext;
             
             // check the separation against our limits
             if (self.separation > maxSeparationLimit){
+                NSLog(@"Separation %f greater than limit of %f, sync failed",self.separation,maxSeparationLimit);
                 [self completeWithErrorMessage:[NSString stringWithFormat:@"Slew failed, separation of %0.3f° exceeds maximum",self.separation]];
             }
             else if (self.separation < separationLimit){
+                NSLog(@"Separation %f less than limit of %f, sync complete",self.separation,separationLimit);
                 [self completeWithError:nil];
             }
             else {
                 
                 // check to see if we're not converging
                 if (++_syncCount > syncCountLimit){
+                    NSLog(@"Sync count exceeded max of %ld",syncCountLimit);
                     [self completeWithErrorMessage:[NSString stringWithFormat:@"Slew failed, exceeded max sync count. Current separation is %0.3f°",self.separation]];
                 }
                 else {
                     
+                    NSLog(@"Slewing mount to sync position");
+
                     self.status = [NSString stringWithFormat:@"Separation is %0.3f°, syncing mount and re-slewing",self.separation];
                     
                     // close but not yet good enought, sync scope to solution co-ordinates, repeat slew
