@@ -790,6 +790,7 @@ static void* kvoContext;
 
     // could be a manual flip, only handle if we're capturing - possibly have a timeout alert?
     if (!self.cameraController.capturing){
+        NSLog(@"Not handling flip as the camera is not currently capturing");
         return;
     }
     
