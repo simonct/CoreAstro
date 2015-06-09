@@ -94,9 +94,21 @@ static void* kvoContext;
                                                               @"CASMountWindowControllerConvergence":@(0.02)}];
 }
 
+- (instancetype)initWithWindow:(NSWindow *)window
+{
+    self = [super initWithWindow:window];
+    if (self) {
+        self.mountSynchroniser = [CASMountSynchroniser new];
+        self.mountSynchroniser.delegate = self;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
-    self.mountSynchroniser = nil;
+    // check this is being called...
+    [self.mount disconnect];
+    self.mountSynchroniser = nil; // unbinds
 }
 
 - (void)windowDidLoad
@@ -106,8 +118,6 @@ static void* kvoContext;
 #if defined(SXIO)
     [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
 #endif
-    
-    self.mountSynchroniser = [CASMountSynchroniser new];
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -245,7 +255,7 @@ static void* kvoContext;
         
         [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
         
-        self.mountSynchroniser.mount = self.mount;
+        self.mountSynchroniser.mount = self.mount; // redundant ?
         self.mountSynchroniser.cameraController = self.selectedCameraController;
         self.mountSynchroniser.delegate = self;
 
