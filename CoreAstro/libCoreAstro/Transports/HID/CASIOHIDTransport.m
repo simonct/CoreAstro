@@ -133,20 +133,17 @@ static void CASIOHIDReportCallback (void *                  context,
     _device = nil;
 }
 
-- (NSError*)send:(NSData*)data {
+- (NSError*)send:(NSData*)data { // todo; needs a completion block
 
-    NSError* error = nil;
+    __block NSError* error = nil;
         
     if ([data length]){
         
-        error = [self connect];
-        if (!error){
+        // make sure HID calls are made on the main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-            // grim hack; since we usually connect on an operation queue thread this only seems to reliably work if some settle time is allowed
-            // (there is presumably something else going on here e.g. some state I need to wait for before sending data, etc)
-            double delayInSeconds = 0.1;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            error = [self connect];
+            if (!error){
                 
                 if (_device){
                     
@@ -157,11 +154,11 @@ static void CASIOHIDReportCallback (void *                  context,
                                                            [data length]);
                     if (result != kIOReturnSuccess){
                         NSLog(@"IOHIDDeviceSetReport: %x",result);
-                        //                    error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil];
+                        error = [NSError errorWithDomain:@"CASIOHIDTransport" code:result userInfo:nil]; // immediately discarded, -send: really needs a completion block
                     }
                 }
-            });
-        }
+            }
+        });
     }
     
     return error;
