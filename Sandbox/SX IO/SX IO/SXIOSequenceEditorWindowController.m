@@ -153,14 +153,14 @@
 
 - (NSString*)selectedFilter
 {
-    NSArray* filterNames = [self filterNames];
-    return [filterNames containsObject:self.filter] ? self.filter : [filterNames firstObject];
+    return self.filter;
 }
 
 - (void)setSelectedFilter:(NSString *)filter
 {
     NSArray* filterNames = [self filterNames];
-    if ([filter isEqualToString:[filterNames firstObject]] || ![filterNames containsObject:filter]){
+    if (![filterNames containsObject:filter]){
+        NSLog(@"Attempt to set unknown filter %@",filter);
         filter = nil;
     }
     self.filter = filter;
@@ -396,6 +396,9 @@ static void* kvoContext;
         step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
             return [evaluatedObject length] > 0;
         }]] sortedArrayUsingSelector:@selector(compare:)];
+        if (!step.selectedFilter){
+            step.selectedFilter = step.filterNames.firstObject;
+        }
     }
 }
 
@@ -492,6 +495,26 @@ static void* kvoContext;
     }
 }
 
+- (BOOL)preflightSequence
+{
+    for (CASSequenceExposureStep* step in self.sequence.steps){
+        if ([step.filter length]){
+            CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+            if (!filterWheel){
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
+                                                 defaultButton:@"OK"
+                                               alternateButton:nil
+                                                   otherButton:nil
+                                     informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
+                [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                return NO;
+            }
+        }
+    }
+    
+    return YES;
+}
+
 - (IBAction)start:(id)sender
 {
     if (self.sequenceRunner){
@@ -503,23 +526,26 @@ static void* kvoContext;
     NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
     
-    self.sequenceRunner = [SXIOSequenceRunner new];
-    self.sequenceRunner.target = self.target;
-    self.sequenceRunner.sequence = self.sequence;
-    
-    __typeof(self) weakSelf = self;
-    self.sequenceRunner.completion = ^(){
-        weakSelf.sequenceRunner = nil;
-        weakSelf.startButton.title = @"Start";
-    };
-    
-    NSError* error;
-    if (![self.sequenceRunner startWithError:&error]){
-        self.sequenceRunner = nil;
-        [NSApp presentError:error];
-    }
-    else {
-        self.startButton.title = @"Stop";
+    if ([self preflightSequence]){
+        
+        self.sequenceRunner = [SXIOSequenceRunner new];
+        self.sequenceRunner.target = self.target;
+        self.sequenceRunner.sequence = self.sequence;
+        
+        __typeof(self) weakSelf = self;
+        self.sequenceRunner.completion = ^(){
+            weakSelf.sequenceRunner = nil;
+            weakSelf.startButton.title = @"Start";
+        };
+        
+        NSError* error;
+        if (![self.sequenceRunner startWithError:&error]){
+            self.sequenceRunner = nil;
+            [NSApp presentError:error];
+        }
+        else {
+            self.startButton.title = @"Stop";
+        }
     }
 }
 
