@@ -104,6 +104,7 @@
     BOOL _connected;
     BOOL _settingFilter;
     BOOL _moving;
+    BOOL _polling;
     NSUInteger _filterCount;
     NSInteger _currentFilter;
     NSMutableArray* _completionStack;
@@ -152,19 +153,23 @@
 
 - (void)_pollCurrentFilter {
     
-    if (!_connected){
+    if (!_connected || _polling){
         return;
     }
 
+    _polling = YES;
+    
     [self getFilterIndex:^(NSError *error, NSInteger count, NSInteger index) {
         
+        _polling = NO;
+        
         if (error){
+            NSLog(@"_pollCurrentFilter: %@",error);
             _connected = NO;
         }
         else {
-            
             [self _updateCurrentFilterIndex:index];
-            
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:_cmd object:nil];
             [self performSelector:_cmd withObject:nil afterDelay:1]; // only while index == 0 ?
         }
     }];
@@ -197,7 +202,7 @@
                 }
             }
             else{
-                [self performSelector:_cmd withObject:nil afterDelay:0.5];
+                [self performSelector:_cmd withObject:nil afterDelay:1];
             }
         }
     }];
@@ -280,10 +285,9 @@
     [self.transport submit:getCount block:^(NSError* error){
         
         if (error){
-            block(error,0,0);
-        }
-        else {
-            block(nil,self.filterCount,self.currentFilter);
+            NSLog(@"Error %@ submitting get filter count command",error);
+            [_completionStack removeObject:callback];
+            if (block) block(error,0,0);
         }
     }];
 }
@@ -299,7 +303,9 @@
     [self.transport submit:getIndex block:^(NSError* error){
         
         if (error){
-            block(error,0,0);
+            NSLog(@"Error %@ submitting get filter index command",error);
+            [_completionStack removeObject:callback];
+            if (block) block(error,0,0);
         }
     }];
 }
