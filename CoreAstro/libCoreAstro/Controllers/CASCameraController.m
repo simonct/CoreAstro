@@ -37,6 +37,9 @@
 @property (nonatomic,assign) NSInteger currentCaptureIndex; // give the camera controller privileged access to this property
 @end
 
+NSString* const kCASCameraControllerExposureStartedNotification = @"kCASCameraControllerExposureStartedNotification";
+NSString* const kCASCameraControllerExposureCompletedNotification = @"kCASCameraControllerExposureCompletedNotification";
+
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
 
@@ -351,6 +354,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         
         NSString* filterName = [self.filterWheel.currentFilterName copy];
 
+        if (filterName){
+            NSLog(@"Starting exposure of %ldms, binning %ld, filter '%@'",_expParams.ms,_expParams.bin.width,filterName);
+        }
+        else {
+            NSLog(@"Starting exposure of %ldms, binning %ld",_expParams.ms,_expParams.bin.width);
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerExposureStartedNotification object:self];
+        
         [self.camera exposeWithParams:_expParams type:self.settings.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
             
             self.progress = 1;
@@ -458,6 +469,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         
         [self captureWithBlockImpl:^(NSError *error, CASCCDExposure *exposure) {
             
+            NSDictionary* userInfo;
+            if (error){
+                userInfo = @{@"error":error};
+            }
+            [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerExposureCompletedNotification object:self userInfo:userInfo];
+
             if (block){
                 block(error,exposure);
             }

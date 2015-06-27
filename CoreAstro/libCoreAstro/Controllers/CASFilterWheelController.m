@@ -106,6 +106,7 @@
 {
     NSArray* indexes = [self.filterNames allKeysForObject:currentFilterName];
     if ([indexes count]){
+        NSLog(@"Setting current filter to '%@'",currentFilterName);
         self.filterWheel.currentFilter = [indexes[0] integerValue];
     }
     else {

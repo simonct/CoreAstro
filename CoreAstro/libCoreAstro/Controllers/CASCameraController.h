@@ -106,5 +106,8 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 - (void)updateSettingsWithExposure:(CASCCDExposure*)exposure;
 @end
 
+extern NSString* const kCASCameraControllerExposureStartedNotification;
+extern NSString* const kCASCameraControllerExposureCompletedNotification;
+
 extern NSString* const kCASCameraControllerGuideErrorNotification;
 extern NSString* const kCASCameraControllerGuideCommandNotification;

@@ -34,6 +34,7 @@
 #import "SXIOPreferencesWindowController.h"
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
+#import "SX_IO-Swift.h"
 #import <CoreAstro/CoreAstro.h>
 #import <objc/runtime.h>
 
@@ -107,6 +108,8 @@ static void* kvoContext;
             }
         }
 #endif
+        
+        [CASLocalNotifier sharedInstance];
         
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];

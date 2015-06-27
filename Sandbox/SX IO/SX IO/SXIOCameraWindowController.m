@@ -1636,7 +1636,12 @@ static void* kvoContext;
 //                    exposure.meta = [meta copy];
 //                }
 
-                [CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error];
+                if (![CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error]){
+                    NSLog(@"Failed to write exposure to %@",[finalUrl path]);
+                }
+                else {
+                    NSLog(@"Wrote exposure to %@",[finalUrl path]);
+                }
             }
             
             [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
