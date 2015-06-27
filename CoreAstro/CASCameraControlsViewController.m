@@ -72,7 +72,9 @@ static void* kvoContext;
     [self.cameraController removeObserver:self forKeyPath:@"settings.exposureUnits" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"settings.exposureInterval" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
+    
     self.representedObject = cameraController;
+    
     if (self.cameraController){
         [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
         [self.cameraController addObserver:self forKeyPath:@"settings.captureCount" options:0 context:&kvoContext];
@@ -100,6 +102,7 @@ static void* kvoContext;
         }
         else if ([keyPath isEqualToString:@"capturing"]){
             [self configureBinningControls];
+            [self configureExposureCountMenu];
             [self updateCompletionLabel];
         }
         else {
@@ -144,6 +147,7 @@ static void* kvoContext;
     }
     
     [self configureBinningControls];
+    [self configureExposureCountMenu];
     [self updateCompletionLabel];
 }
 
@@ -163,6 +167,40 @@ static void* kvoContext;
         const BOOL enabled = hasCamera && !capturing && ([binningModes containsObject:@(i+1)]);
         [cell setEnabled:enabled];
     }
+}
+
+- (void)configureExposureCountMenu
+{
+    [self willChangeValueForKey:@"captureMenuSelectedIndex"];
+    
+    const NSInteger captureCount = self.cameraController.settings.captureCount;
+    switch (captureCount) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            _captureMenuSelectedIndex = captureCount - 1;
+            break;
+        case 10:
+            _captureMenuSelectedIndex = 5;
+            break;
+        case 25:
+            _captureMenuSelectedIndex = 6;
+            break;
+        case 50:
+            _captureMenuSelectedIndex = 7;
+            break;
+        case 75:
+            _captureMenuSelectedIndex = 8;
+            break;
+        default:
+            _captureMenuSelectedIndex = 10;
+            self.otherExposureCount = captureCount;
+            break;
+    }
+    
+    [self didChangeValueForKey:@"captureMenuSelectedIndex"];
 }
 
 - (void)setExposure:(CASCCDExposure *)exposure
