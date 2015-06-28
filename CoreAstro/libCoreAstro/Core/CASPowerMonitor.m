@@ -90,7 +90,7 @@ static void CASPowerMonitorCallback(void *context)
         NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
         NSString* assertionMessage = [NSString stringWithFormat:@"%@: capturing frames",appName];
         IOPMAssertionCreateWithName(kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, (__bridge CFStringRef)(assertionMessage), &_sleepAssertion);
-        NSLog(@"%@: Disabled idle sleep",NSStringFromClass([self class]));
+        NSLog(@"%@: Disabled idle system sleep",NSStringFromClass([self class]));
     }
 }
 
@@ -99,7 +99,7 @@ static void CASPowerMonitorCallback(void *context)
     if (_sleepAssertion){
         IOPMAssertionRelease(_sleepAssertion);
         _sleepAssertion = 0;
-        NSLog(@"%@: Enabled idle sleep",NSStringFromClass([self class]));
+        NSLog(@"%@: Enabled idle system sleep",NSStringFromClass([self class]));
     }
 }
 
