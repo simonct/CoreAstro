@@ -37,3 +37,6 @@ CAS_EXTERN NSTimeInterval CASTimeBlock(void(^)(void));
 CAS_EXTERN void CASWithSuddenTerminationDisabled(void(^)(void));
 CAS_EXTERN void CASThrowException(Class klass,NSString* message);
 CAS_EXTERN void CASThrowOOMException(Class klass);
+CAS_EXTERN BOOL CASRunningInSandbox();
+CAS_EXTERN BOOL CASSaveUrlToDefaults(NSURL* url,NSString* key);
+CAS_EXTERN NSURL* CASUrlFromDefaults(NSString* key);

@@ -9,6 +9,8 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
+static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
+
 @interface CASSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,readonly,copy) NSString* type;
 @property (nonatomic,readonly,getter=isValid) BOOL valid;
@@ -477,6 +479,11 @@ static void* kvoContext;
     
     // [NSSet setWithArray:@[@"stepsController.arrangedObjects"]] doesn't seem to work so trigger manually
     [self.stepsController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:&kvoContext];
+    
+    NSURL* sequenceUrl = CASUrlFromDefaults(kSXIOSequenceEditorWindowControllerBookmarkKey);
+    if (sequenceUrl){
+        [self openSequenceWithURL:sequenceUrl];
+    }
 }
 
 - (void)dealloc
@@ -643,6 +650,26 @@ static void* kvoContext;
     return [NSSet setWithArray:@[@"stepsController.arrangedObjects"]];
 }
 
+- (BOOL)openSequenceWithURL:(NSURL*)url
+{
+    BOOL success = NO;
+    if (url){
+        CASSequence* sequence = nil;
+        @try {
+            sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:url]];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Exception opening sequence archive: %@",exception);
+        }
+        if ([sequence isKindOfClass:[CASSequence class]]){
+            self.sequence = sequence;
+            [self updateWindowRepresentedURL:url];
+            success = YES;
+        }
+    }
+    return success;
+}
+
 - (IBAction)open:(id)sender
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
@@ -651,18 +678,10 @@ static void* kvoContext;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            CASSequence* sequence = nil;
-            @try {
-                sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
+            if ([self openSequenceWithURL:open.URL]){
+                CASSaveUrlToDefaults(open.URL,kSXIOSequenceEditorWindowControllerBookmarkKey);
             }
-            @catch (NSException *exception) {
-                NSLog(@"Exception opening sequence archive: %@",exception);
-            }
-            if ([sequence isKindOfClass:[CASSequence class]]){
-                self.sequence = sequence;
-                [self updateWindowRepresentedURL:open.URL];
-            }
-            else {
+            else{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
                                                      defaultButton:@"OK"
