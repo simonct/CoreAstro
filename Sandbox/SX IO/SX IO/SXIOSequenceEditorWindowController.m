@@ -158,10 +158,12 @@
 
 - (void)setSelectedFilter:(NSString *)filter
 {
-    NSArray* filterNames = [self filterNames];
-    if (![filterNames containsObject:filter]){
-        NSLog(@"Attempt to set unknown filter %@",filter);
-        filter = nil;
+    if (filter){
+        NSArray* filterNames = [self filterNames];
+        if (![filterNames containsObject:filter]){
+            NSLog(@"Attempt to set unknown filter %@",filter);
+            filter = nil;
+        }
     }
     self.filter = filter;
 }
@@ -524,6 +526,7 @@ static void* kvoContext;
 - (IBAction)start:(id)sender
 {
     if (self.sequenceRunner){
+        // button is in Stop mode
         [self.sequenceRunner stop];
         self.sequenceRunner = nil;
         return;
