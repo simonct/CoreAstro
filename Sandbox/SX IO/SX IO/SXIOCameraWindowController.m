@@ -320,7 +320,7 @@ static void* kvoContext;
 
 - (IBAction)cancelCapture:(id)sender
 {
-    self.captureButton.enabled = NO;
+    self.captureButton.enabled = NO; // the button is in Cancel mode, so disable it until the camera state is updated
     [self.cameraController cancelCapture];
 }
 
@@ -1717,7 +1717,7 @@ static void* kvoContext;
 
 - (void)endSequence
 {
-    [self cancelCapture:nil];
+    [self.cameraController cancelCapture]; // not calling -cancelCapture: any more as that disables the Cancel button
 }
 
 @end
