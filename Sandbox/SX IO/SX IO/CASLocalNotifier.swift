@@ -21,6 +21,7 @@ class CASLocalNotifier: NSObject {
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureStarted:"), name:kCASCameraControllerExposureStartedNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureCompleted:"), name:kCASCameraControllerExposureCompletedNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("filterSelected:"), name:kCASFilterWheelControllerSelectedFilterNotification, object: nil)
     }
     
     deinit {
@@ -43,11 +44,20 @@ class CASLocalNotifier: NSObject {
     }
 
     func exposureCompleted(note: NSNotification) {
-        if let error = note.userInfo?["error" as NSObject] as? NSError {
+        if let error = note.userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {
             postLocalNotification("Exposure completed")
+        }
+    }
+    
+    func filterSelected(note: NSNotification) {
+        if let filter = note.userInfo?["filter"] as? String {
+            postLocalNotification("Filter \(filter) selected")
+        }
+        else {
+            postLocalNotification("Filter selected")
         }
     }
 }

@@ -40,3 +40,5 @@
 + (NSString*)sanitizeFilterName:(NSString*)string;
 
 @end
+
+extern NSString* const kCASFilterWheelControllerSelectedFilterNotification;
