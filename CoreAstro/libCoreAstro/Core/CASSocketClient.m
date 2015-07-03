@@ -393,7 +393,10 @@ static const char CRLF[] = "\r\n";
                 
                 // check this object hasn't been dealloc-ed in a message handler
                 __typeof(self) strongSelf = weakSelf;
-                if (strongSelf){
+                if (!strongSelf){
+                    break;
+                }
+                else{
                     
                     // look for CRLF
                     // crash... - happeing after client dealloc ???
