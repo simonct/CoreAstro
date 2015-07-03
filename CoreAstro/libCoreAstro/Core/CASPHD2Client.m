@@ -26,6 +26,7 @@ static void* kvoContext;
 {
     [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
     [_client removeObserver:self forKeyPath:@"connected" context:&kvoContext];
+    [self.client disconnect];
 }
 
 - (void)connectWithCompletion:(void(^)())completion
@@ -182,20 +183,27 @@ static void* kvoContext;
     
     // connect everything up, assume profile is set on the app
     [self.client enqueueCommand:@{@"method":@"set_connected",@"params":@[@YES]} completion:^(id result,NSError* error) {
+        
         if (error){
             NSLog(@"Connect failed: %@",error);
             completion(NO);
         }
         else{
-            NSLog(@"Connected");
-            [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
-                if (error){
-                    NSLog(@"Start failed: %@",error);
-                    completion(NO);
-                }
-                else{
-                    NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
-                }
+
+            // after a slew the chances are that the original guide star is nowhere near its original position so make sure it
+            // is cleared to prevent PHD2 from attempting to reaquire it. This will force an auto-select when the guide command is sent
+            [self.client enqueueCommand:@{@"method":@"deselect_star"} completion:^(id _,NSError* error) {
+                
+                [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+                    
+                    if (error){
+                        NSLog(@"Start failed: %@",error);
+                        completion(NO);
+                    }
+                    else{
+                        NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
+                    }
+                }];
             }];
         }
     }];
