@@ -217,7 +217,7 @@ static void* kvoContext;
             completion(NO);
         }
         else {
-            [self guideWithCompletion:completion];
+            completion(YES);
         }
     }];
 }
