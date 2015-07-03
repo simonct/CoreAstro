@@ -802,8 +802,10 @@ static void* kvoContext;
     }
 }
 
-- (void)restartWithMountFlipped:(BOOL)flipped
+- (void)restartAfterMountSlewCompleted
 {
+    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mount.pierSide);
+    
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self dismissMountSlewProgressSheet];
         [self presentAlertWithTitle:title message:message];
@@ -883,9 +885,8 @@ static void* kvoContext;
 
 - (void)handleMountSlewStateChanged
 {
-    NSLog(@"self.mountWindowController: %@",self.mountWindowController);
-    
     if (!self.mountWindowController){ // todo; remove dependency on the window
+        NSLog(@"Mount slew state changed but currently need mount window open to do anything");
         return;
     }
     
@@ -899,8 +900,10 @@ static void* kvoContext;
             self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
             self.mountState.pierSideWhenSlewStarted = self.mount.pierSide;
             self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
+           
+            NSLog(@"capturingWhenSlewStarted: %d",self.mountState.capturingWhenSlewStarted);
             NSLog(@"guidingWhenSlewStarted: %d",self.mountState.guidingWhenSlewStarted);
-            NSLog(@"self.pierSideWhenSlewStarted: %ld",(long)self.mountState.pierSideWhenSlewStarted);
+            NSLog(@"pierSideWhenSlewStarted: %ld",(long)self.mountState.pierSideWhenSlewStarted);
             
             // stop phd2 guiding whether we're capturing or not
             [self.cameraController.phd2Client stop];
@@ -926,10 +929,7 @@ static void* kvoContext;
             CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
             if (!solution){
                 NSLog(@"Mount slew ended but no locked solution");
-                [self dismissMountSlewProgressSheet];
-                if (self.mountState.capturingWhenSlewStarted){
-                    [self capture:nil]; // does this really make sense? - we're not likely to be pointing anywhere sensible
-                }
+                [self restartAfterMountSlewCompleted];
             }
             else {
                 
@@ -971,7 +971,7 @@ static void* kvoContext;
     
     // check to see if we were tracking the slew and restart, otherwise just pop a completion alert
     if (self.mountSlewProgressSheet){
-        [self restartWithMountFlipped:(self.mountState.pierSideWhenSlewStarted != self.mount.pierSide)];
+        [self restartAfterMountSlewCompleted];
     }
     else{
         [self presentAlertWithTitle:@"Slew Complete" message:@"The mount is now on the selected target"];
