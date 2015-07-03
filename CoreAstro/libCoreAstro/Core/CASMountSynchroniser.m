@@ -35,45 +35,6 @@ static void* kvoContext;
                                                               @"CASMountSlewControllerSearchRadius":@(5)}];
 }
 
-- (void)handleMountFlipCompletedWithRA:(double)raInDegrees dec:(double)decInDegrees
-{
-    NSParameterAssert(self.mount.connected);
-    NSParameterAssert(self.cameraController);
-    NSParameterAssert(raInDegrees >= 0 && raInDegrees <= 360);
-    NSParameterAssert(decInDegrees >= -90 && decInDegrees <= 90);
-
-    self.solving = YES;
-
-    _syncCount = 0;
-    _raInDegrees = raInDegrees;
-    _decInDegrees = decInDegrees;
-
-    // stop tracking
-    [self.mount stopTracking];
-    
-    // capture and solve to get current position
-    [self captureAndSolveWithCompletion:^(NSError* error, double actualRA, double actualDec) {
-        
-        if (error){
-            [self completeWithError:error];
-        }
-        else {
-            
-            // sync to current position
-            [self.mount syncToRA:actualRA dec:actualDec completion:^(CASMountSlewError error) {
-                
-                if (error != CASMountSlewErrorNone){
-                    [self completeWithErrorMessage:[NSString stringWithFormat:@"Failed to sync the mount with error %ld",error]];
-                }
-                else {
-                    // start slewing to the desired location
-                    [self startSlewToRA:_raInDegrees dec:_decInDegrees];
-                }
-            }];
-        }
-    }];
-}
-
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
     NSParameterAssert(self.mount.connected);
@@ -235,6 +196,8 @@ static void* kvoContext;
         settings.binning = captureBinning;
         settings.exposureDuration = captureSeconds;
 
+        // switch off dithering
+        
         // turn off temp lock, not stored in settings so we have to stash it in an ivar
         _pushedSettings = YES;
         _saveTemperatureLock = self.cameraController.temperatureLock;
