@@ -258,7 +258,7 @@
                                         }
                                         
                                         // just do this at the end of the selector rather than in the completion block ?
-                                        [self performSelector:_cmd withObject:nil afterDelay:1];
+                                        [self performSelector:_cmd withObject:nil afterDelay:0.5];
                                         
                                     }];
                                     
@@ -434,7 +434,7 @@
 {
     if (slewing != _slewing){
         _slewing = slewing;
-        [[NSNotificationCenter defaultCenter] postNotificationName:CASMountSlewingNotification object:nil userInfo:@{@"slewing":@(slewing)}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CASMountSlewingNotification object:self userInfo:@{@"slewing":@(slewing)}];
     }
 }
 

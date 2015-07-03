@@ -893,10 +893,9 @@ static void* kvoContext;
         
         if (!self.mountState.slewStarted){
             
-            self.mountState.slewStarted = YES;
-            
             // record the current state
             self.mountState = [SXIOMountState new];
+            self.mountState.slewStarted = YES;
             self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
             self.mountState.pierSideWhenSlewStarted = self.mount.pierSide;
             self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
@@ -927,6 +926,10 @@ static void* kvoContext;
             CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
             if (!solution){
                 NSLog(@"Mount slew ended but no locked solution");
+                [self dismissMountSlewProgressSheet];
+                if (self.mountState.capturingWhenSlewStarted){
+                    [self capture:nil]; // does this really make sense? - we're not likely to be pointing anywhere sensible
+                }
             }
             else {
                 
@@ -2043,8 +2046,8 @@ static void* kvoContext;
     NSLog(@"mountSlewing: %@",note.userInfo);
 
     if (note.object == self.mount){
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncAfterMeridianFlip"]){ // todo; rename this default
-            NSLog(@"Detected mount slew");
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
+            NSLog(@"Detected mount slew state changed");
             [self handleMountSlewStateChanged];
         }
         else {
