@@ -9,6 +9,8 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
+static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
+
 @interface CASSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,readonly,copy) NSString* type;
 @property (nonatomic,readonly,getter=isValid) BOOL valid;
@@ -447,7 +449,7 @@ static void* kvoContext;
 
 @end
 
-@interface SXIOSequenceEditorWindowController ()
+@interface SXIOSequenceEditorWindowController ()<NSWindowDelegate>
 @property (nonatomic,strong) NSURL* sequenceURL;
 @property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
@@ -473,10 +475,16 @@ static void* kvoContext;
     [closeButton setTarget:self];
     [closeButton setAction:@selector(close:)];
     
-    // restore last sequence
-    
     // [NSSet setWithArray:@[@"stepsController.arrangedObjects"]] doesn't seem to work so trigger manually
     [self.stepsController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:&kvoContext];
+    
+    NSURL* sequenceUrl = CASUrlFromDefaults(kSXIOSequenceEditorWindowControllerBookmarkKey);
+    if (sequenceUrl){
+        [self openSequenceWithURL:sequenceUrl];
+    }
+    
+    self.window.delegate = self;
+    [self.window registerForDraggedTypes:@[(id)NSFilenamesPboardType]];
 }
 
 - (void)dealloc
@@ -643,6 +651,33 @@ static void* kvoContext;
     return [NSSet setWithArray:@[@"stepsController.arrangedObjects"]];
 }
 
+- (BOOL)openSequenceWithURL:(NSURL*)url
+{
+    BOOL success = NO;
+    if (url){
+        CASSequence* sequence = nil;
+        @try {
+            [url startAccessingSecurityScopedResource];
+            NSData* data = [NSData dataWithContentsOfURL:url];
+            if (data){
+                sequence = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Exception opening sequence archive: %@",exception);
+        }
+        @finally{
+            [url stopAccessingSecurityScopedResource];
+        }
+        if ([sequence isKindOfClass:[CASSequence class]]){
+            self.sequence = sequence;
+            [self updateWindowRepresentedURL:url];
+            success = YES;
+        }
+    }
+    return success;
+}
+
 - (IBAction)open:(id)sender
 {
     NSOpenPanel* open = [NSOpenPanel openPanel];
@@ -651,18 +686,10 @@ static void* kvoContext;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            CASSequence* sequence = nil;
-            @try {
-                sequence = [NSKeyedUnarchiver unarchiveObjectWithData:[NSData dataWithContentsOfURL:open.URL]];
+            if ([self openSequenceWithURL:open.URL]){
+                CASSaveUrlToDefaults(open.URL,kSXIOSequenceEditorWindowControllerBookmarkKey);
             }
-            @catch (NSException *exception) {
-                NSLog(@"Exception opening sequence archive: %@",exception);
-            }
-            if ([sequence isKindOfClass:[CASSequence class]]){
-                self.sequence = sequence;
-                [self updateWindowRepresentedURL:open.URL];
-            }
-            else {
+            else{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
                                                      defaultButton:@"OK"
@@ -693,6 +720,44 @@ static void* kvoContext;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+#pragma mark - Drag & Drop
+
+- (NSString*)sequencePathFromDraggingInfo:(id <NSDraggingInfo>)sender
+{
+    NSPasteboard* pb = sender.draggingPasteboard;
+    if (!self.sequenceRunner){
+        NSArray* files = [pb propertyListForType:NSFilenamesPboardType];
+        if ([files isKindOfClass:[NSArray class]]){
+            NSString* path = files.firstObject;
+            if ([path.pathExtension isEqualToString:@"sxioSequence"]){
+                return path;
+            }
+        }
+    }
+    return nil;
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+    if ([self sequencePathFromDraggingInfo:sender]){
+        return NSDragOperationCopy;
+    }
+    return NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+{
+    NSString* path = [self sequencePathFromDraggingInfo:sender];
+    if (path.length){
+        NSURL* url = [NSURL fileURLWithPath:path];
+        if ([self openSequenceWithURL:url]){
+            CASSaveUrlToDefaults(url,kSXIOSequenceEditorWindowControllerBookmarkKey);
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

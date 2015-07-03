@@ -144,7 +144,7 @@
         for (CASIOpendingCommand* pending in self.pending){
             if ([pending.when timeIntervalSinceDate:now] < self.pendingThreshold){
                 [commandOp addDependency:pending.commandOp];
-                NSLog(@"Making command %@ dependent on %@",commandOp.command,pending.commandOp.command);
+//                NSLog(@"Making command %@ dependent on %@",commandOp.command,pending.commandOp.command);
             }
         }
         

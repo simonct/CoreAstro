@@ -70,3 +70,40 @@ void CASThrowOOMException(Class klass)
 {
     @throw [NSException exceptionWithName:NSStringFromClass(klass) reason:NSLocalizedString(@"Out of memory", @"Exception reason message") userInfo:nil];
 }
+
+BOOL CASRunningInSandbox()
+{
+    return [[[NSProcessInfo processInfo] environment] objectForKey:@"APP_SANDBOX_CONTAINER_ID"] != nil;
+}
+
+BOOL CASSaveUrlToDefaults(NSURL* url,NSString* key)
+{
+    NSCParameterAssert(url);
+    NSCParameterAssert(key);
+    
+    NSError* error;
+    const NSURLBookmarkCreationOptions options = CASRunningInSandbox() ? NSURLBookmarkCreationWithSecurityScope : 0;
+    NSData* bookmark = [url bookmarkDataWithOptions:options includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (error){
+        NSLog(@"CASSaveUrlToDefaults: %@",error);
+    }
+    if (bookmark){
+        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:key];
+    }
+    return bookmark != nil;
+}
+
+NSURL* CASUrlFromDefaults(NSString* key)
+{
+    NSCParameterAssert(key);
+
+    NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if ([bookmark length]){
+        const NSURLBookmarkResolutionOptions options = CASRunningInSandbox() ? NSURLBookmarkResolutionWithSecurityScope : 0;
+        NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:options relativeToURL:nil bookmarkDataIsStale:nil error:nil];
+        if (url){
+            return url;
+        }
+    }
+    return nil;
+}

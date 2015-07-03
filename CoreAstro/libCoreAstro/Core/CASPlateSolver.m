@@ -26,6 +26,7 @@
 #import "CASPlateSolver.h"
 #import "CASTaskWrapper.h"
 #import "CASCCDExposureIO.h"
+#import "CASUtilities.h"
 
 @interface CASPlateSolvedObject ()
 @property (nonatomic,strong) NSDictionary* annotation;
@@ -300,32 +301,18 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
 
 - (BOOL)runningInSandbox
 {
-    return [[[NSProcessInfo processInfo] environment] objectForKey:@"APP_SANDBOX_CONTAINER_ID"] != nil;
+    return CASRunningInSandbox();
 }
 
 - (NSURL*)indexDirectoryURL
 {
-    NSData* bookmark = [[NSUserDefaults standardUserDefaults] objectForKey:kCASAstrometryIndexDirectoryBookmarkKey];
-    if ([bookmark length]){
-        const NSURLBookmarkResolutionOptions options = [self runningInSandbox] ? NSURLBookmarkResolutionWithSecurityScope : 0;
-        NSURL* url = [NSURL URLByResolvingBookmarkData:bookmark options:options relativeToURL:nil bookmarkDataIsStale:nil error:nil];
-        if (url){
-            return url;
-        }
-    }
-    return nil;
+    return CASUrlFromDefaults(kCASAstrometryIndexDirectoryBookmarkKey);
 }
 
 - (void)setIndexDirectoryURL:(NSURL*)url
 {
-    NSError* error;
-    const NSURLBookmarkCreationOptions options = [self runningInSandbox] ? NSURLBookmarkCreationWithSecurityScope : 0;
-    NSData* bookmark = [url bookmarkDataWithOptions:options includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-    if (bookmark){
-        [[NSUserDefaults standardUserDefaults] setObject:bookmark forKey:kCASAstrometryIndexDirectoryBookmarkKey];
-    }
-    if (error){
-        NSLog(@"Failed to create index bookmark: %@",error);
+    if (!CASSaveUrlToDefaults(url, kCASAstrometryIndexDirectoryBookmarkKey)){
+        NSLog(@"Failed to create index bookmark");
     }
 }
 

@@ -26,6 +26,8 @@
 #import "CASFilterWheelController.h"
 #import "CASClassDefaults.h"
 
+NSString* const kCASFilterWheelControllerSelectedFilterNotification = @"kCASFilterWheelControllerSelectedFilterNotification";
+
 @interface CASFilterWheelController ()
 @property (nonatomic,strong) CASDevice<CASFWDevice>* filterWheel;
 @end
@@ -38,6 +40,9 @@
     if (self){
         self.filterWheel = filterWheel;
         [self registerDeviceDefaults];
+        if (filterWheel){
+            [self postSelectedFilterNotificationWithIndex:self.currentFilter];
+        }
     }
     return self;
 }
@@ -55,6 +60,7 @@
 - (void)connect:(void(^)(NSError*))block
 {
     if (block){
+        [self postSelectedFilterNotificationWithIndex:self.currentFilter];
         block(nil);
     }
 }
@@ -92,9 +98,24 @@
     return [NSSet setWithObject:@"filterWheel.currentFilter"];
 }
 
+- (void)postSelectedFilterNotificationWithIndex:(NSInteger)index
+{
+    if (index < self.filterNames.count){
+        NSString* filterName = self.filterNames[[@(index) description]];
+        NSLog(@"Selecting filter '%@'",filterName);
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASFilterWheelControllerSelectedFilterNotification object:self userInfo:@{@"filter":filterName,@"index":@(index)}];
+    }
+    else {
+        NSLog(@"Selecting filter at index %ld",(long)index);
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASFilterWheelControllerSelectedFilterNotification object:self userInfo:@{@"index":@(index)}];
+    }
+}
+
 - (void)setCurrentFilter:(NSInteger)currentFilter
 {
+    [self postSelectedFilterNotificationWithIndex:currentFilter];
     self.filterWheel.currentFilter = currentFilter;
+    // todo; detect when it stops moving ?
 }
 
 - (NSString*) currentFilterName
@@ -106,7 +127,8 @@
 {
     NSArray* indexes = [self.filterNames allKeysForObject:currentFilterName];
     if ([indexes count]){
-        NSLog(@"Setting current filter to '%@'",currentFilterName);
+        NSLog(@"Selecting filter '%@'",currentFilterName);
+        [[NSNotificationCenter defaultCenter] postNotificationName:kCASFilterWheelControllerSelectedFilterNotification object:self userInfo:@{@"filter":currentFilterName}];
         self.filterWheel.currentFilter = [indexes[0] integerValue];
     }
     else {
