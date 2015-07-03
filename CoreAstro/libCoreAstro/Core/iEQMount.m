@@ -53,9 +53,10 @@
     NSMutableString* _input;
 }
 
-@synthesize connected,slewing,tracking;
+@synthesize connected,tracking;
 @synthesize ra,dec,alt,az,targetRa,targetDec;
 @synthesize pierSide = _pierSide;
+@synthesize slewing = _slewing;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port
 {
@@ -427,6 +428,14 @@
             }];
         }
     }];
+}
+
+- (void)setSlewing:(BOOL)slewing
+{
+    if (slewing != _slewing){
+        _slewing = slewing;
+        [[NSNotificationCenter defaultCenter] postNotificationName:CASMountSlewingNotification object:nil userInfo:@{@"slewing":@(slewing)}];
+    }
 }
 
 // guide pulse Command: “:MnXXXXX#” “:MsXXXXX#” “:MeXXXXX#” “:MwXXXXX#” Response: (none)

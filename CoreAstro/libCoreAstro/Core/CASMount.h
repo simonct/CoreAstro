@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 @interface CASMount : NSObject<CASMount> // todo CASDevice subclass
 @end
 
+extern NSString* const CASMountSlewingNotification;
 extern NSString* const CASMountFlippedNotification;
 
 // CASMount < CASLX200Mount (defines command set + serial connection) < CASIEQMount (defines command variations)

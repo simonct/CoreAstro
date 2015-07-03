@@ -8,6 +8,7 @@
 
 #import "CASMount.h"
 
+NSString* const CASMountSlewingNotification = @"CASMountSlewingNotification";
 NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 @implementation CASMount
@@ -27,6 +28,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 }
 
 - (BOOL) slewing {
+    return NO;
+}
+
+- (BOOL) tracking {
     return NO;
 }
 
