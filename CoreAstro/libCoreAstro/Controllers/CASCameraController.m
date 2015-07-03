@@ -50,7 +50,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic) CASCameraControllerState state;
 @property (nonatomic) float progress;
 @property (nonatomic,strong) CASExposureSettings* settings;
-@property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
+//@property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @property (nonatomic,readonly) NSArray* slaves;
 @end
 
@@ -86,7 +86,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
+    return @[@"targetTemperature",@"temperatureLock",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
 }
 
 - (void)registerDeviceDefaults
@@ -361,6 +361,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             NSLog(@"Starting exposure of %ldms, binning %ld",_expParams.ms,_expParams.bin.width);
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerExposureStartedNotification object:self];
+        // todo; call delegate to inform an exposure will start.
+        // could figure out how long until a flip and modify the exposure time so that
+        // the flip doesn't happen in the middle of the exposure
         
         [self.camera exposeWithParams:_expParams type:self.settings.exposureType block:^(NSError *error, CASCCDExposure *exposure) {
             
@@ -485,9 +488,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }];
     };
     
+    // todo; always attempt to connect to phd2, only fail if we can't connect and had a specific thing to do e.g. dither, auto-start
+    
     // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
-    if (self.settings.ditherEnabled || self.settings.startGuiding){
+    if (self.settings.ditherEnabled || self.settings.startGuiding){  // make a read-only property
         self.phd2Client = [CASPHD2Client new];
+    }
+    else {
+        self.phd2Client = nil; // this is probably happening during sync captures
     }
     
     if (!self.phd2Client){
@@ -498,6 +506,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.capturing = YES;
         self.state = CASCameraControllerStateWaitingForGuider;
 
+        // not in continuous mode ?
+        
         // connect to PHD2 and start guiding before kicking off the capture
         [self.phd2Client connectWithCompletion:^{
             
@@ -616,6 +626,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)pushSettings:(CASExposureSettings*)settings
 {
+    // todo; change to just -pushSettings which also pushes other camera state not in the settings object e.g. temp lock, etc
+    // which will save us saving this in external flags
+    
     NSParameterAssert(settings);
     
     if (!_settingsStack){
