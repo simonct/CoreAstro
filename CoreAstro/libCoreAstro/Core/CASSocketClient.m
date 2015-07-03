@@ -100,12 +100,14 @@
     if (self.inputStream){
         [self.inputStream close];
         [self.inputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        self.inputStream.delegate = nil;
         self.inputStream = nil;
     }
     
     if (self.outputStream){
         [self.outputStream close];
         [self.outputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        self.outputStream.delegate = nil;
         self.outputStream = nil;
     }
     
@@ -378,31 +380,41 @@ static const char CRLF[] = "\r\n";
         const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
         if (count > 0){
             
+//            NSLog(@"self.readBuffer: %@",[[NSString alloc] initWithData:self.readBuffer encoding:NSUTF8StringEncoding]);
+            
             // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
             [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
             [self.readBuffer resetBytesInRange:NSMakeRange(0, [self.readBuffer length])];
             
             // search the persistent buffer for json separated by CRLF and keep going while we find any
+            __weak __typeof(self) weakSelf = self;
+            
             while (1) {
                 
-                // look for CRLF
-                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
-                if (range.location == NSNotFound){
-                    break;
+                // check this object hasn't been dealloc-ed in a message handler
+                __typeof(self) strongSelf = weakSelf;
+                if (strongSelf){
+                    
+                    // look for CRLF
+                    // crash... - happeing after client dealloc ???
+                    const NSRange range = [strongSelf.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [strongSelf.buffer length]))];
+                    if (range.location == NSNotFound){
+                        break;
+                    }
+                    
+                    // attempt to deserialise up to the CRLF
+                    NSRange jsonRange = NSMakeRange(0, range.location);
+                    id json = [NSJSONSerialization JSONObjectWithData:[strongSelf.buffer subdataWithRange:jsonRange] options:0 error:nil];
+                    
+                    // remove the json + CRLF from the front of the persistent buffer
+                    jsonRange.length += 2;
+                    [strongSelf.buffer replaceBytesInRange:jsonRange withBytes:nil length:0];
+                    
+                    if (!json){
+                        break;
+                    }
+                    [strongSelf handleIncomingMessage:json]; // this object is being deallocated when a settledone event is handled but the loop's still running...
                 }
-                
-                // attempt to deserialise up to the CRLF
-                NSRange jsonRange = NSMakeRange(0, range.location);
-                id json = [NSJSONSerialization JSONObjectWithData:[self.buffer subdataWithRange:jsonRange] options:0 error:nil];
-                
-                // remove the json + CRLF from the front of the persistent buffer
-                jsonRange.length += 2;
-                [self.buffer replaceBytesInRange:jsonRange withBytes:nil length:0];
-                
-                if (!json){
-                    break;
-                }
-                [self handleIncomingMessage:json];
             }
         }
     }
