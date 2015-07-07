@@ -19,6 +19,8 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import "CASMountWindowController.h"
 #import "SXIOFocuserWindowController.h"
+#import "SX_IO-Swift.h"
+#import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
@@ -1641,10 +1643,11 @@ static void* kvoContext;
                 }
                 else {
                     NSLog(@"Wrote exposure to %@",[finalUrl path]);
+                    [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
+                    [self.cameraController addRecentURL:finalUrl];
+                    NSLog(@"recentURLs: %@",self.cameraController.recentURLs);
                 }
             }
-            
-            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
         }
         
         [self updateWindowTitleWithExposurePath:finalUrl.path];
