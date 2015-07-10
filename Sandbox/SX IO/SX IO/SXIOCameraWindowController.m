@@ -846,10 +846,10 @@ static void* kvoContext;
         
         self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Restarting guiding...", @"Progress sheet status label");
 
-        // tmp - looks like captures to resync clears the phd2 client in the camera controller
-        if (!self.cameraController.phd2Client){
-            self.cameraController.phd2Client = [CASPHD2Client new];
-        }
+//        // tmp - looks like captures to resync clears the phd2 client in the camera controller
+//        if (!self.cameraController.phd2Client){
+//            self.cameraController.phd2Client = [CASPHD2Client new];
+//        }
         
         // ensure we're connected to PHD2
         NSLog(@"Connecting to PHD2");

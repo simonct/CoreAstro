@@ -50,8 +50,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic) CASCameraControllerState state;
 @property (nonatomic) float progress;
 @property (nonatomic,strong) CASExposureSettings* settings;
-//@property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
+@property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @property (nonatomic,readonly) NSArray* slaves;
+@property (nonatomic,readonly) BOOL ditherEnabled;
 @end
 
 @implementation CASCameraController {
@@ -198,6 +199,24 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (NSError*)errorWithCode:(NSInteger)code message:(NSString*)message
 {
     return [self errorWithCode:code message:message recovery:nil];
+}
+
+- (BOOL) ditherEnabled
+{
+    return self.settings.ditherEnabled && self.settings.ditherPixels > 0 && self.settings.startGuiding;
+}
+
+- (BOOL) requirePHD2Connection
+{
+    return self.ditherEnabled && !self.settings.continuous;
+}
+
+- (CASPHD2Client*) phd2Client
+{
+    if (!_phd2Client){
+        _phd2Client = [CASPHD2Client new];
+    }
+    return _phd2Client;
 }
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
@@ -418,7 +437,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             break;
         default:{
             // dither if requested and we're not in continuous capture or on the first exposure of a sequence
-            if (self.settings.continuous || !self.settings.ditherEnabled || self.settings.ditherPixels < 1 || self.settings.currentCaptureIndex == 0){
+            if (self.settings.continuous || !self.ditherEnabled || self.settings.currentCaptureIndex == 0){
                 startExposure();
             }
             else{
@@ -488,31 +507,23 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         }];
     };
     
-    // todo; always attempt to connect to phd2, only fail if we can't connect and had a specific thing to do e.g. dither, auto-start
+    // todo; always attempt to connect to phd2, only fail if we can't connect and had a specific thing to do e.g. dither, auto-start ?
     
     // todo; dithering is something that probably belongs in a capture co-ordinator class rather than the actual camera controller
-    if (self.settings.ditherEnabled || self.settings.startGuiding){  // make a read-only property
-        self.phd2Client = [CASPHD2Client new];
-    }
-    else {
-        self.phd2Client = nil; // this is probably happening during sync captures
-    }
-    
-    if (!self.phd2Client){
+    if (!self.requirePHD2Connection){
         startCapture();
     }
     else {
         
         self.capturing = YES;
         self.state = CASCameraControllerStateWaitingForGuider;
-
-        // not in continuous mode ?
         
         // connect to PHD2 and start guiding before kicking off the capture
         [self.phd2Client connectWithCompletion:^{
             
             if (!self.phd2Client.connected){
                 
+                // report the failure to connect
                 self.capturing = NO;
                 self.state = CASCameraControllerStateNone;
 
@@ -525,19 +536,27 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
             }
             else {
                 
+                // check the exposure wasn't cancelled during the connection
                 if (!self.cancelled){
                     
+                    // check to see if we're already guiding or don't need to start guiding
                     if (self.phd2Client.guiding || !self.settings.startGuiding){
                         startCapture();
                     }
                     else {
                         
+                        // start guiding
                         [self.phd2Client guideWithCompletion:^(BOOL guiding) {
                             
+                            // again, check we're not cancelled while starting guiding
                             if (!self.cancelled){
                                 
-                                if (!guiding){
+                                if (guiding){
+                                    startCapture();
+                                }
+                                else {
                                     
+                                    // report the failure to start guiding
                                     self.capturing = NO;
                                     self.state = CASCameraControllerStateNone;
 
@@ -547,9 +566,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                                     if (block){
                                         block([self errorWithCode:4 message:message recovery:recovery],nil);
                                     }
-                                }
-                                else {
-                                    startCapture();
                                 }
                             }
                         }];

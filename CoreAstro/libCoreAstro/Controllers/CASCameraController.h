@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 @property (nonatomic,strong) id<CASCameraControllerSink> sink;
 
-@property (nonatomic,strong/*,readonly*/) CASPHD2Client* phd2Client; // tmp for flipping
+@property (nonatomic,strong,readonly) CASPHD2Client* phd2Client;
 
 @property (nonatomic,readonly) BOOL cancelled;
 
