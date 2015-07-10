@@ -196,9 +196,12 @@
 - (void)pollMountStatus
 {
     if (!self.connected){
+        NSLog(@"Poll mount status not connected");
         return;
     }
     
+    NSLog(@"Poll mount status");
+
     [self sendCommand:@":SE?#" readCount:1 completion:^(NSString *response) {
         
 //        NSLog(@"Slewing: %@",response);
