@@ -195,8 +195,7 @@ static void* kvoContext;
         CASExposureSettings* settings = [CASExposureSettings new];
         settings.binning = captureBinning;
         settings.exposureDuration = captureSeconds;
-
-        // switch off dithering
+        settings.ditherEnabled = NO;
         
         // turn off temp lock, not stored in settings so we have to stash it in an ivar
         _pushedSettings = YES;
