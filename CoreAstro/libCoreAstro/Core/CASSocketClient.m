@@ -298,12 +298,18 @@
     // check we've read everything we wanted, complete if we have
     if (readComplete){
         
+        __weak __typeof(self) weakSelf = self;
         if (request.completion){
             @try {
                 request.completion(request.response);
             }
             @catch (id ex) {
                 NSLog(@"Exception calling request completion: %@",ex);
+            }
+            // check this object hasn't been deallocated in the message handler
+            __typeof(self) strongSelf = weakSelf;
+            if (!strongSelf){
+                return;
             }
         }
         [_queue removeLastObject];
@@ -391,15 +397,14 @@ static const char CRLF[] = "\r\n";
             
             while (1) {
                 
-                // check this object hasn't been dealloc-ed in a message handler
+                // check this object hasn't been deallocated in a message handler
                 __typeof(self) strongSelf = weakSelf;
                 if (!strongSelf){
-                    break;
+                    return;
                 }
                 else{
                     
                     // look for CRLF
-                    // crash... - happeing after client dealloc ???
                     const NSRange range = [strongSelf.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [strongSelf.buffer length]))];
                     if (range.location == NSNotFound){
                         break;
@@ -497,6 +502,7 @@ static const char LF[] = "\n";
             [self.readBuffer resetBytesInRange:NSMakeRange(0, count)];
             
             // search the persistent buffer linefeeds, passing them on to -processLine: as we find them and removing them from the buffer
+            __weak __typeof(self) weakSelf = self;
             while (self.buffer.length > 0) {
 
                 const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
@@ -507,6 +513,11 @@ static const char LF[] = "\n";
                 // got a line, splice it out, process it and remove from the front of the persistent buffer
                 const NSRange lineRange = NSMakeRange(0, range.location);
                 [self processLine:[self.buffer subdataWithRange:lineRange]];
+                // check this object hasn't been deallocated in the message handler
+                __typeof(self) strongSelf = weakSelf;
+                if (!strongSelf){
+                    return;
+                }
                 [self.buffer replaceBytesInRange:NSMakeRange(lineRange.location, lineRange.length + 1) withBytes:nil length:0];
             }
         }
