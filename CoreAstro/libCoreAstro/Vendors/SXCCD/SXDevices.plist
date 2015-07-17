@@ -173,10 +173,32 @@
 		<key>sensor-size</key>
 		<string>{8.81,6.63}</string>
 	</dict>
+	<key>182</key>
+	<dict>
+		<key>name</key>
+		<string>SXVR-H674C</string>
+		<key>image</key>
+		<string>H694</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{8.81,6.63}</string>
+	</dict>
 	<key>404</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H694</string>
+		<key>image</key>
+		<string>H694</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{12.49,9.99}</string>
+	</dict>
+	<key>183</key>
+	<dict>
+		<key>name</key>
+		<string>SXVR-H694C</string>
 		<key>image</key>
 		<string>H694</string>
 		<key>has-cooler</key>
