@@ -126,7 +126,7 @@ static void* kvoContext;
 
 - (void)closeWindow:sender
 {
-    if (self.mountSynchroniser.solving){
+    if (self.mountSynchroniser.busy){
         // need a way of cancelling a solve
         NSLog(@"Currently solving...");
         return;

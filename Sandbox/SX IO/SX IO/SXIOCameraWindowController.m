@@ -2120,12 +2120,20 @@ static void* kvoContext;
     NSLog(@"mountSlewing: %@",note.userInfo);
 
     if (note.object == self.mount){
+        
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
-            NSLog(@"Detected mount slew state changed");
-            [self handleMountSlewStateChanged];
+            
+            // check to see if we should let the synchroniser handle it
+            if (self.mountWindowController.mountSynchroniser.busy){
+                NSLog(@"Ignoring mount slew as the synchroniser is busy");
+            }
+            else {
+                // slew didn't originate from the mount synchroniser so we'll handle it
+                [self handleMountSlewStateChanged];
+            }
         }
         else {
-            NSLog(@"Ignoring mount slew");
+            NSLog(@"Ignoring mount slew as SXIOResyncMountAfterSlew is NO");
         }
     }
 }

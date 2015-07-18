@@ -9,7 +9,7 @@
 #import "CASMountSynchroniser.h"
 
 @interface CASMountSynchroniser ()
-@property BOOL solving;
+@property BOOL busy;
 @property float separation;
 @property (strong) NSError* error;
 @property (nonatomic,copy) NSString* status;
@@ -42,7 +42,7 @@ static void* kvoContext;
     NSParameterAssert(raInDegrees >= 0 && raInDegrees <= 360);
     NSParameterAssert(decInDegrees >= -90 && decInDegrees <= 90);
 
-    self.solving = YES;
+    self.busy = YES;
 
     _syncCount = 0;
     _raInDegrees = raInDegrees;
@@ -138,7 +138,7 @@ static void* kvoContext;
 
 - (void)completeWithError:(NSError*)error
 {
-    self.solving = NO;
+    self.busy = NO;
     self.status = @"";
     
     [self restoreCameraSettings];
