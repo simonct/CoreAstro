@@ -203,12 +203,12 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (BOOL) ditherEnabled
 {
-    return self.settings.ditherEnabled && self.settings.ditherPixels > 0 && self.settings.startGuiding;
+    return self.settings.ditherEnabled && self.settings.ditherPixels > 0;
 }
 
 - (BOOL) requirePHD2Connection
 {
-    return self.ditherEnabled && !self.settings.continuous;
+    return (self.ditherEnabled || self.settings.startGuiding) && !self.settings.continuous;
 }
 
 - (CASPHD2Client*) phd2Client
