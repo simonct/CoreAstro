@@ -162,7 +162,7 @@
 		<key>sensor-size</key>
 		<string>{6.4,4.75}</string>
 	</dict>
-	<key>884</key>
+	<key>372</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H674</string>
@@ -173,7 +173,7 @@
 		<key>sensor-size</key>
 		<string>{8.81,6.63}</string>
 	</dict>
-	<key>182</key>
+	<key>884</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H674C</string>
@@ -195,7 +195,7 @@
 		<key>sensor-size</key>
 		<string>{12.49,9.99}</string>
 	</dict>
-	<key>183</key>
+	<key>916</key>
 	<dict>
 		<key>name</key>
 		<string>SXVR-H694C</string>
