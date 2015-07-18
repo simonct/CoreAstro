@@ -140,7 +140,7 @@
 		F46FC8C016455D6400578010 /* CASProgressWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8BE16455D6400578010 /* CASProgressWindowController.m */; };
 		F46FC8C116455D6400578010 /* CASProgressWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F46FC8BF16455D6400578010 /* CASProgressWindowController.xib */; };
 		F46FC8C416455E5000578010 /* CASAuxWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F46FC8C316455E5000578010 /* CASAuxWindowController.m */; };
-		F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */; };
+		F4761DF616EBD7F10031CB3B /* CASClassDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = F4761DF416EBD7F10031CB3B /* CASClassDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = F4761DF516EBD7F10031CB3B /* CASClassDefaults.m */; };
 		F47BB16616AC535000E3F2FE /* CASCenteringClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = F47BB16516AC535000E3F2FE /* CASCenteringClipView.m */; };
 		F47BB16C16AC536100E3F2FE /* CASZoomableView.m in Sources */ = {isa = PBXBuildFile; fileRef = F47BB16B16AC536100E3F2FE /* CASZoomableView.m */; };

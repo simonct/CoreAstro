@@ -9,6 +9,28 @@
 import Cocoa
 import CoreAstro
 
+private func convert<T, U>(source: [T?], converter: (T) -> U?) -> [U] {
+    var u = [U]();
+    for t in source {
+        if t != nil {
+            if let x = converter(t!) {
+                u.append(x)
+            }
+        }
+    }
+    return u
+}
+
+private func convert<T, U>(source: [T], converter: (T) -> U?) -> [U] { // presumably a better way to handle this
+    var u = [U]();
+    for t in source {
+        if let x = converter(t) {
+            u.append(x)
+        }
+    }
+    return u
+}
+
 extension CASCameraController {
     
     private var deviceDefaults : CASDeviceDefaults {
@@ -32,14 +54,26 @@ extension CASCameraController {
             if recents == nil {
                 recents = [NSString]()
             }
-            return recents!.flatMap { s in
-                return NSURL(string: s as String)
-            }
+            
+            // Swift 2
+//            return recents!.flatMap { s in
+//                return NSURL(string: s as String)
+//            }
+            
+            return convert(recents!, {
+                return NSURL(string: $0 as String)
+            })
         }
         set {
-            defaultsDomain["RecentURLs"] = newValue.map { url in
-                return url.absoluteString
-            }
+            
+            // Swift 2
+//            defaultsDomain["RecentURLs"] = newValue.map { url in
+//                return url.absoluteString
+//            }
+            
+            defaultsDomain["RecentURLs"] = convert(newValue, {
+                return $0.absoluteString
+            })
         }
     }
     

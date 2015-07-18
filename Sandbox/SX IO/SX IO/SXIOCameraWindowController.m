@@ -446,13 +446,15 @@ static void* kvoContext;
 
 - (IBAction)nextExposure:(id)sender
 {
-    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    // Xcode 7
+//    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    NSArray* exposures = self.cameraController.recentURLs;
     if (exposures.count > 0){
         const NSInteger index = [exposures indexOfObject:self.currentExposure.io.url];
         NSLog(@"nextExposure index: %ld, count: %ld",index,exposures.count);
         if (index != NSNotFound){
             if (index > 0){
-                [self openExposureAtPath:exposures[index-1].path];
+                [self openExposureAtPath:((NSURL*)exposures[index-1]).path];
             }
             else {
                 if (self.latestExposure){
@@ -465,16 +467,18 @@ static void* kvoContext;
 
 - (IBAction)previousExposure:(id)sender
 {
-    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    // Xcode 7
+//    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    NSArray* exposures = self.cameraController.recentURLs;
     if (exposures.count > 0){
         if (!self.currentExposure.io.url){
-            [self openExposureAtPath:exposures.firstObject.path];
+            [self openExposureAtPath:((NSURL*)exposures.firstObject).path];
         }
         else {
             const NSInteger index = [exposures indexOfObject:self.currentExposure.io.url];
             NSLog(@"previousExposure index: %ld, count: %ld",index,exposures.count);
             if (index != NSNotFound && index < exposures.count - 1){
-                [self openExposureAtPath:exposures[index+1].path];
+                [self openExposureAtPath:((NSURL*)exposures[index+1]).path];
             }
         }
     }

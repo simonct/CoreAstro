@@ -31,7 +31,7 @@
 @property (nonatomic,strong) NSDictionary* domain;
 - (void)registerKeys:(NSArray*)keys ofInstance:(id)instance;
 - (void)unregisterKeys:(NSArray*)keys ofInstance:(id)instance;
-+ (CASClassDefaults*)defaultsForClassname:(NSString*)name;
++ (instancetype)defaultsForClassname:(NSString*)name;
 @end
 
 @interface CASDeviceDefaults : CASClassDefaults
