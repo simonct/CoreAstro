@@ -107,6 +107,8 @@
 		F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
 		F428D6221A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */; };
 		F428D6231A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */; };
+		F43A4A9F1B4BE498007BC28B /* CASRecentExposures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */; };
+		F43A4AA01B4BE498007BC28B /* CASRecentExposures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */; };
 		F440D25919FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
 		F440D25A19FCE318005510EB /* CASCameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F440D25719FCE318005510EB /* CASCameraServer.m */; };
 		F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */; };
@@ -487,6 +489,7 @@
 		F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSequenceEditorWindowController.h; sourceTree = "<group>"; };
 		F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOSequenceEditorWindowController.m; sourceTree = "<group>"; };
 		F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorWindowController.xib; sourceTree = "<group>"; };
+		F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASRecentExposures.swift; sourceTree = "<group>"; };
 		F440D25619FCE318005510EB /* CASCameraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCameraServer.h; sourceTree = "<group>"; };
 		F440D25719FCE318005510EB /* CASCameraServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCameraServer.m; sourceTree = "<group>"; };
 		F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
@@ -1061,6 +1064,7 @@
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F49459781B3F228C0028780D /* CASLocalNotifier.swift */,
+				F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1284,6 +1288,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = CAS;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Simon Taylor";
 				TargetAttributes = {
@@ -1597,6 +1602,7 @@
 				F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */,
 				F40D5B311849EC5E00977FA9 /* SXIOExposureEnumerator.m in Sources */,
 				F40D5B321849EC5E00977FA9 /* CASCenteringClipView.m in Sources */,
+				F43A4AA01B4BE498007BC28B /* CASRecentExposures.swift in Sources */,
 				F40D5B331849EC5E00977FA9 /* CASZoomableView.m in Sources */,
 				F494597A1B3F228C0028780D /* CASLocalNotifier.swift in Sources */,
 				F40D5B341849EC5E00977FA9 /* CASExposureView.m in Sources */,
@@ -1686,6 +1692,7 @@
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
 				F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */,
 				F4A25871179BC0100013D220 /* CASCenteringClipView.m in Sources */,
+				F43A4A9F1B4BE498007BC28B /* CASRecentExposures.swift in Sources */,
 				F4A25872179BC0100013D220 /* CASZoomableView.m in Sources */,
 				F49459791B3F228C0028780D /* CASLocalNotifier.swift in Sources */,
 				F4A25873179BC0100013D220 /* CASExposureView.m in Sources */,

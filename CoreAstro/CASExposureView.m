@@ -1221,4 +1221,27 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.contrastStretch = YES;
 }
 
+#pragma mark - Menu commands
+
+- (NSMenu*)menuForEvent:(nonnull NSEvent *)event
+{
+    NSMenu* menu;
+    NSURL* url = self.currentExposure.io.url;
+    if (url.isFileURL){
+        menu = [[NSMenu alloc] init];
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Reveal in Finder", @"Reveal in Finder menu command") action:@selector(revealInFinder:) keyEquivalent:@""];
+        item.target = self;
+        [menu addItem:item];
+    }
+    return menu;
+}
+
+- (void)revealInFinder:sender
+{
+    NSURL* url = self.currentExposure.io.url;
+    if (url.isFileURL){
+        [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[url]];
+    }
+}
+
 @end

@@ -19,6 +19,8 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import "CASMountWindowController.h"
 #import "SXIOFocuserWindowController.h"
+#import "SX_IO-Swift.h"
+#import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
@@ -60,6 +62,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) IBOutlet NSSegmentedControl *zoomControl;
 @property (strong) IBOutlet NSSegmentedControl *zoomFitControl;
 @property (strong) IBOutlet NSSegmentedControl *selectionControl;
+@property (strong) IBOutlet NSSegmentedControl *navigationControl;
 
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
@@ -96,6 +99,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 // focusing
 @property (strong) SXIOFocuserWindowController* focuserWindowController;
+
+@property (strong) CASCCDExposure* latestExposure;
 
 @end
 
@@ -429,6 +434,52 @@ static void* kvoContext;
     [self.exposureView zoomImageToActualSize:sender];
 }
 
+- (IBAction)navigate:(NSSegmentedControl*)sender
+{
+    if (sender.selectedSegment == 1){
+        [self nextExposure:nil];
+    }
+    else {
+        [self previousExposure:nil];
+    }
+}
+
+- (IBAction)nextExposure:(id)sender
+{
+    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    if (exposures.count > 0){
+        const NSInteger index = [exposures indexOfObject:self.currentExposure.io.url];
+        NSLog(@"nextExposure index: %ld, count: %ld",index,exposures.count);
+        if (index != NSNotFound){
+            if (index > 0){
+                [self openExposureAtPath:exposures[index-1].path];
+            }
+            else {
+                if (self.latestExposure){
+                    self.currentExposure = self.latestExposure;
+                }
+            }
+        }
+    }
+}
+
+- (IBAction)previousExposure:(id)sender
+{
+    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
+    if (exposures.count > 0){
+        if (!self.currentExposure.io.url){
+            [self openExposureAtPath:exposures.firstObject.path];
+        }
+        else {
+            const NSInteger index = [exposures indexOfObject:self.currentExposure.io.url];
+            NSLog(@"previousExposure index: %ld, count: %ld",index,exposures.count);
+            if (index != NSNotFound && index < exposures.count - 1){
+                [self openExposureAtPath:exposures[index+1].path];
+            }
+        }
+    }
+}
+
 - (IBAction)openDocument:(id)sender
 {
     if (self.cameraController.capturing){
@@ -453,7 +504,6 @@ static void* kvoContext;
     if (exposure){
         self.currentExposure = exposure;
         [self.cameraController updateSettingsWithExposure:exposure];
-        [self updateWindowTitleWithExposurePath:path];
         [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:[NSURL fileURLWithPath:path]];
     }
     else if (error){
@@ -1578,6 +1628,9 @@ static void* kvoContext;
             // display the exposure
             [self displayExposure:_currentExposure resetDisplay:resetDisplay];
             
+            // update the window title menu
+            [self updateWindowTitleWithExposurePath:_currentExposure.io.url.path];
+
             // clear selection - necessary ?
             if (!_currentExposure){
                 [self clearSelection];
@@ -1635,6 +1688,9 @@ static void* kvoContext;
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
     if (exposure){
+        
+        // save a reference to it (this is holding the pixels in memory though, may be better to store in a tmp file)
+        self.latestExposure = exposure;
         
         NSURL* finalUrl;
         
@@ -1708,13 +1764,11 @@ static void* kvoContext;
                 }
                 else {
                     NSLog(@"Wrote exposure to %@",[finalUrl path]);
+                    [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
+                    [self.cameraController addRecentURL:finalUrl];
                 }
             }
-            
-            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
         }
-        
-        [self updateWindowTitleWithExposurePath:finalUrl.path];
     }
     
     if (error){
@@ -1811,12 +1865,28 @@ static void* kvoContext;
                                           menu:nil];
     }
     
+    if ([@"Navigation" isEqualToString:itemIdentifier]){
+        
+        item = [self toolbarItemWithIdentifier:itemIdentifier
+                                         label:@"Navigation"
+                                   paleteLabel:@"Navigation"
+                                       toolTip:nil
+                                        target:self
+                                   itemContent:self.navigationControl
+                                        action:@selector(navigate:)
+                                          menu:nil];
+    }
+    
+    if ([NSToolbarFlexibleSpaceItemIdentifier isEqualToString:itemIdentifier]){
+        item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarFlexibleSpaceItemIdentifier];
+    }
+    
     return item;
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar;
 {
-    return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",@"Selection",nil];
+    return [NSArray arrayWithObjects:@"ZoomInOut",@"ZoomFit",@"Selection",NSToolbarFlexibleSpaceItemIdentifier,@"Navigation",nil];
 }
 
 #pragma mark - Menu validation

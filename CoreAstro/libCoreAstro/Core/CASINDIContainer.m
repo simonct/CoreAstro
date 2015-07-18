@@ -226,13 +226,16 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
     [type deleteCharactersInRange:[type rangeOfString:@"Vector"]];
     self.type = type;
     
-    [root.children enumerateObjectsUsingBlock:^(NSXMLElement* child, NSUInteger idx, BOOL *stop) {
-        CASINDIValue* value = [CASINDIValue new];
-        value.vector = self;
-        value.name = [child attributeForName:@"name"].stringValue;
-        value.label = [child attributeForName:@"label"].stringValue;
-        value.value = [child.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        self.items[value.name] = value;
+    [root.children enumerateObjectsUsingBlock:^(NSXMLNode* node, NSUInteger idx, BOOL *stop) {
+        NSXMLElement* child = (NSXMLElement*)node;
+        if ([child isKindOfClass:[NSXMLElement class]]){
+            CASINDIValue* value = [CASINDIValue new];
+            value.vector = self;
+            value.name = [child attributeForName:@"name"].stringValue;
+            value.label = [child attributeForName:@"label"].stringValue;
+            value.value = [child.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            self.items[value.name] = value;
+        }
     }];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIDefinedVectorNotification object:self];
@@ -241,15 +244,18 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
 // server sent an xml document to update the value of an existing vector
 - (void)updateVector:(NSXMLElement*)root
 {
-    [root.children enumerateObjectsUsingBlock:^(NSXMLElement* child, NSUInteger idx, BOOL *stop) {
-        NSString* const name = [child attributeForName:@"name"].stringValue;
-        CASINDIValue* value = self.items[name];
-        if (!value){
-            NSLog(@"Attempt to update undefined vector %@",name);
-        }
-        else {
-            value.value = [child.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIUpdatedVectorNotification object:self userInfo:@{@"value":value}];
+    [root.children enumerateObjectsUsingBlock:^(NSXMLNode* node, NSUInteger idx, BOOL *stop) {
+        NSXMLElement* child = (NSXMLElement*)node;
+        if ([child isKindOfClass:[NSXMLElement class]]){
+            NSString* const name = [child attributeForName:@"name"].stringValue;
+            CASINDIValue* value = self.items[name];
+            if (!value){
+                NSLog(@"Attempt to update undefined vector %@",name);
+            }
+            else {
+                value.value = [child.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIUpdatedVectorNotification object:self userInfo:@{@"value":value}];
+            }
         }
     }];
 }
