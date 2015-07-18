@@ -102,7 +102,7 @@
     }
 }
 
-+ (CASClassDefaults*)defaultsForClassname:(NSString*)name
++ (instancetype)defaultsForClassname:(NSString*)name
 {
     CASClassDefaults* result = nil;
     
