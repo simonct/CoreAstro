@@ -47,6 +47,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property BOOL capturingWhenSlewStarted;
 @property CASMountPierSide pierSideWhenSlewStarted;
 @property BOOL guidingWhenSlewStarted;
+@property BOOL synchronisingWhenSlewStarted;
 @end
 
 @implementation SXIOMountState
@@ -899,11 +900,6 @@ static void* kvoContext;
     else {
         
         self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Restarting guiding...", @"Progress sheet status label");
-
-//        // tmp - looks like captures to resync clears the phd2 client in the camera controller
-//        if (!self.cameraController.phd2Client){
-//            self.cameraController.phd2Client = [CASPHD2Client new];
-//        }
         
         // ensure we're connected to PHD2
         NSLog(@"Connecting to PHD2");
@@ -954,7 +950,8 @@ static void* kvoContext;
             self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
             self.mountState.pierSideWhenSlewStarted = self.mount.pierSide;
             self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
-           
+            self.mountState.synchronisingWhenSlewStarted = self.mountWindowController.mountSynchroniser.busy;
+            
             NSLog(@"capturingWhenSlewStarted: %d",self.mountState.capturingWhenSlewStarted);
             NSLog(@"guidingWhenSlewStarted: %d",self.mountState.guidingWhenSlewStarted);
             NSLog(@"pierSideWhenSlewStarted: %ld",(long)self.mountState.pierSideWhenSlewStarted);
@@ -965,12 +962,24 @@ static void* kvoContext;
             // cancel capture
             [self.cameraController cancelCapture];
             
-            // present a sheet with some status info
-            self.mountSlewProgressSheet = [CASProgressWindowController createWindowController];
-            [self.mountSlewProgressSheet beginSheetModalForWindow:self.window];
-            self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label");
-            [self.mountSlewProgressSheet.progressBar setIndeterminate:YES];
-            self.mountSlewProgressSheet.canCancel = NO;
+            // if the mount synchroniser is busy, leave the rest to it
+            if (self.mountState.synchronisingWhenSlewStarted){
+                NSLog(@"Mount slew started but leaving it to the mount synchroniser to handle");
+            }
+            else {
+                
+                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
+                    NSLog(@"Mount slew started but SXIOResyncMountAfterSlew is NO so ignoring");
+                }
+                else {
+                    // present a sheet with some status info
+                    self.mountSlewProgressSheet = [CASProgressWindowController createWindowController];
+                    [self.mountSlewProgressSheet beginSheetModalForWindow:self.window];
+                    self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label");
+                    [self.mountSlewProgressSheet.progressBar setIndeterminate:YES];
+                    self.mountSlewProgressSheet.canCancel = NO;
+                }
+            }
         }
     }
     else {
@@ -979,22 +988,38 @@ static void* kvoContext;
             
             self.mountState.slewStarted = NO;
 
-            // if there was a locked solution, resync the mount to that position
-            CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
-            if (!solution){
-                NSLog(@"Mount slew ended but no locked solution");
+            NSLog(@"pierSideWhenSlewEnded: %ld",self.mount.pierSide);
+
+            // check to see if this slew was triggered by the synchroniser and, if it was, just restart guiding if ncessary
+            if (self.mountState.synchronisingWhenSlewStarted){
+                NSLog(@"Mount slew started by synchroniser ended, restarting guiding if necessary");
                 [self restartAfterMountSlewCompleted];
             }
-            else {
+            else{
                 
-                NSLog(@"Mount slew ended, re-syncing to locked solution");
-                
-                self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
-                
-                self.mountWindowController.cameraController = self.cameraController;
-                self.mountWindowController.mountWindowDelegate = self;
-                self.mountWindowController.usePlateSolvng = YES;
-                [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
+                    NSLog(@"Mount slew ended but SXIOResyncMountAfterSlew is NO so ignoring");
+                }
+                else {
+                    
+                    // if there was a locked solution, resync the mount to that position
+                    CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
+                    if (!solution){
+                        NSLog(@"Mount slew ended but no locked solution");
+                        [self restartAfterMountSlewCompleted];
+                    }
+                    else {
+                        
+                        NSLog(@"Mount slew ended, re-syncing to locked solution");
+                        
+                        self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
+                        
+                        self.mountWindowController.cameraController = self.cameraController;
+                        self.mountWindowController.mountWindowDelegate = self;
+                        self.mountWindowController.usePlateSolvng = YES;
+                        [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+                    }
+                }
             }
         }
     }
@@ -2120,21 +2145,7 @@ static void* kvoContext;
     NSLog(@"mountSlewing: %@",note.userInfo);
 
     if (note.object == self.mount){
-        
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
-            
-            // check to see if we should let the synchroniser handle it
-            if (self.mountWindowController.mountSynchroniser.busy){
-                NSLog(@"Ignoring mount slew as the synchroniser is busy");
-            }
-            else {
-                // slew didn't originate from the mount synchroniser so we'll handle it
-                [self handleMountSlewStateChanged];
-            }
-        }
-        else {
-            NSLog(@"Ignoring mount slew as SXIOResyncMountAfterSlew is NO");
-        }
+        [self handleMountSlewStateChanged];
     }
 }
 
