@@ -865,7 +865,7 @@ static void* kvoContext;
 
 - (void)restartAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
-    NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]);
+    NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
     
     const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mount.pierSide);
     
@@ -977,7 +977,7 @@ static void* kvoContext;
             
             NSLog(@"Slew started: %@",self.mountState);
 
-            // present a sheet with some status info (todo; may only want to do this if SXIOResyncMountAfterSlew is YES)
+            // present a sheet with some status info (todo; may only want to do this if SXIORestartCaptureAfterSlew is YES)
             if (!self.mountSlewProgressSheet){
                 self.mountSlewProgressSheet = [CASProgressWindowController createWindowController];
                 [self.mountSlewProgressSheet beginSheetModalForWindow:self.window];
@@ -1001,9 +1001,9 @@ static void* kvoContext;
             }
             else {
                 
-                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
+                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
                     
-                    NSLog(@"Mount slew ended but SXIOResyncMountAfterSlew is NO so ignoring");
+                    NSLog(@"Mount slew ended but SXIORestartCaptureAfterSlew is NO so ignoring");
                     
                     [self dismissMountSlewProgressSheet];
                 }
@@ -1073,7 +1073,7 @@ static void* kvoContext;
         
         // check to see if we were tracking the slew and restart, otherwise just pop a completion alert
         if (self.mountSlewProgressSheet){
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOResyncMountAfterSlew"]){
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
                 [self restartAfterMountSlewCompleted];
             }
             else {
