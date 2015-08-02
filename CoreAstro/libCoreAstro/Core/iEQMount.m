@@ -200,7 +200,7 @@
         return;
     }
     
-    NSLog(@"Poll mount status");
+//    NSLog(@"Poll mount status");
 
     [self sendCommand:@":SE?#" readCount:1 completion:^(NSString *response) {
         
