@@ -100,7 +100,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
-@property (strong) CASMountWindowController* mountWindowController;
+@property (strong,nonatomic) CASMountWindowController* mountWindowController;
 
 @property (strong) CASProgressWindowController* mountSlewProgressSheet;
 
@@ -204,6 +204,7 @@ static void* kvoContext;
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
     }
+    self.mountWindowController = nil; // unobserve status
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -231,6 +232,15 @@ static void* kvoContext;
             if ([keyPath isEqualToString:@"saveFolderURL"]){
                 if (self.saveTargetControlsViewController.saveFolderURL && ![self beginAccessToSaveTarget]){
                     self.saveTargetControlsViewController.saveFolderURL = nil;
+                }
+            }
+        }
+        
+        if (object == self.mountWindowController.mountSynchroniser){
+            if ([keyPath isEqualToString:@"status"]){
+                NSString* status = self.mountWindowController.mountSynchroniser.status;
+                if (status){
+                    self.mountSlewProgressSheet.label.stringValue = status;
                 }
             }
         }
@@ -263,6 +273,15 @@ static void* kvoContext;
             [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:&kvoContext];
             [self configureForCameraController];
         }
+    }
+}
+
+- (void)setMountWindowController:(CASMountWindowController *)mountWindowController
+{
+    if (mountWindowController != _mountWindowController){
+        [_mountWindowController.mountSynchroniser removeObserver:self forKeyPath:@"status" context:&kvoContext];
+        _mountWindowController = mountWindowController;
+        [_mountWindowController.mountSynchroniser addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
     }
 }
 
@@ -970,8 +989,10 @@ static void* kvoContext;
                 self.mountState.pierSideWhenSlewStarted = self.mount.pierSide;
                 self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
                 
-                // stop guiding and capture
-                [self.cameraController cancelCapture];
+                // stop guiding and capture if we're not looping (which probably means we're framing the subject)
+                if (!self.cameraController.settings.continuous){
+                    [self.cameraController cancelCapture];
+                }
                 [self.cameraController.phd2Client stop];
             }
             
