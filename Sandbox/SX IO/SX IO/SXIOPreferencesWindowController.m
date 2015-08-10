@@ -69,6 +69,9 @@
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = (id)self;
     }
+    if (self.locationManager.location){
+        [self handleLocationUpdate:self.locationManager.location];
+    }
     [self.locationManager startUpdatingLocation];
 }
 
