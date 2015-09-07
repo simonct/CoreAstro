@@ -177,6 +177,8 @@ static void* kvoContext;
 
 - (void)guideWithCompletion:(void(^)(BOOL))completion
 {
+    NSLog(@"guideWithCompletion"); // todo; check/handle this being called re-entrantly
+    
     [self setupClient];
     
     self.settleCompletion = completion;
@@ -194,16 +196,25 @@ static void* kvoContext;
             // is cleared to prevent PHD2 from attempting to reaquire it. This will force an auto-select when the guide command is sent
             [self.client enqueueCommand:@{@"method":@"deselect_star"} completion:^(id _,NSError* error) {
                 
-                [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+                if (error){
+                    NSLog(@"Deselect star failed: %@",error);
+                    completion(NO);
+                }
+                else {
                     
-                    if (error){
-                        NSLog(@"Start failed: %@",error);
-                        completion(NO);
-                    }
-                    else{
-                        NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
-                    }
-                }];
+                    [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+                        
+                        // sometimes get an 'already guiding' error here so need to check -guideWithCompletion: isn't being called re-entrantly
+                        
+                        if (error){
+                            NSLog(@"Start failed: %@",error);
+                            completion(NO);
+                        }
+                        else{
+                            NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
+                        }
+                    }];
+                }
             }];
         }
     }];
@@ -236,8 +247,21 @@ static void* kvoContext;
     }];
 }
 
+- (void)handleFailedDither
+{
+    void(^settleCompletion)(BOOL) = [self.settleCompletion copy]; // grab the original dither completion block
+    [self guideWithCompletion:^(BOOL guiding) {
+        if (settleCompletion){
+            settleCompletion(guiding);
+        }
+        self.settleCompletion = nil;
+    }];
+}
+
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
+    NSLog(@"ditherByPixels"); // todo; check/handle this being called re-entrantly
+
     if (!self.guiding){
         // todo; this can happen if this is called before we've got the AppState event after connecting, queue the request up ?
         NSLog(@"Attempting to dither while not guiding"); // always getting this after stopping and starting guiding
@@ -258,10 +282,8 @@ static void* kvoContext;
     self.settleCompletion = completion;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result,NSError* error) {
         if (error){
-            NSLog(@"Dither failed: %@",result);
-            if (completion){
-                completion(NO);
-            }
+            NSLog(@"Dither failed with error %@, attempting to restart guiding",result);
+            [self handleFailedDither];
         }
         else {
             NSLog(@"Dithering %.1f pixels...",pixels);
@@ -273,8 +295,8 @@ static void* kvoContext;
 
 - (void)ditherTimeout
 {
-    NSLog(@"ditherTimeout");
-    // stop/start phd client ?
+    NSLog(@"Dither timeout fired, attempting to restart guiding");
+    [self handleFailedDither];
 }
 
 - (void)cancel
