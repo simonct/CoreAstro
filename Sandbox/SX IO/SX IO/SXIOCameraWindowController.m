@@ -1314,6 +1314,9 @@ static void* kvoContext;
     __block CASCCDExposure* calibration = [[CASCCDExposure alloc] init];
     if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:calibration readPixels:YES error:nil]){
 
+        // reset
+        calibration = nil;
+        
         // look for files with the correct fits header
         CASCCDExposureType type = kCASCCDExposureUnknownType;
         if ([suffix isEqualToString:@"dark"]){
@@ -1337,7 +1340,11 @@ static void* kvoContext;
     
     if (calibration){
         // check binning and dimenions match
-        if (exposure.isSubframe){
+        if (calibration.params.bin.width != exposure.params.bin.width ||
+            calibration.params.bin.height != exposure.params.bin.height){
+            calibration = nil;
+        }
+        else if (exposure.isSubframe){
             calibration = [calibration subframeWithRect:exposure.subframe];
             if (calibration){
                 const CASRect exposureSubframe = exposure.subframe;
