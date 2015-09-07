@@ -1314,10 +1314,19 @@ static void* kvoContext;
         return nil;
     }
     // check binning and dimenions match
-    const CASSize exposureSize = exposure.actualSize;
-    const CASSize calibrationSize = calibration.actualSize;
-    if (exposureSize.width != calibrationSize.width || exposureSize.height != calibrationSize.height){
-        return nil;
+    if (exposure.isSubframe){
+        calibration = [calibration subframeWithRect:exposure.subframe];
+        if (calibration){
+            const CASRect exposureSubframe = exposure.subframe;
+            const CASRect calibrationSubframe = calibration.subframe;
+            if (exposureSubframe.origin.x != calibrationSubframe.origin.x ||
+                exposureSubframe.origin.y != calibrationSubframe.origin.y ||
+                exposureSubframe.size.width != calibrationSubframe.size.width ||
+                exposureSubframe.size.height != calibrationSubframe.size.height){
+                NSLog(@"Calibration subframe %@ doesn't match exposure subframe %@",NSStringFromCASRect(calibrationSubframe),NSStringFromCASRect(exposureSubframe));
+                calibration = nil;
+            }
+        }
     }
     return calibration;
 }
@@ -1842,6 +1851,14 @@ static void* kvoContext;
                     NSLog(@"Wrote exposure to %@",[finalUrl path]);
                     [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
                     [self.cameraController addRecentURL:finalUrl];
+                }
+                
+                if (self.calibrate){
+                    // todo; write out the calibrated exposure alongside this one
+                    // we're already calibrating in the display exposure routine, perhaps do this first and
+                    // then in display exposure look for a matching calibrated file and show that in preference ?
+                    // or the display code caches the calibrated image and we just save it out here but
+                    // set current exposure will need a completion block
                 }
             }
         }
