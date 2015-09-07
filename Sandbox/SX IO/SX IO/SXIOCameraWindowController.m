@@ -72,6 +72,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) IBOutlet NSSegmentedControl *navigationControl;
 
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
+@property (nonatomic,strong) CASCCDExposure *calibratedExposure;
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
 @property (strong) CASFilterWheelControlsViewController *filterWheelControlsViewController;
@@ -1306,25 +1307,48 @@ static void* kvoContext;
     if (!suffix || !_targetFolder){
         return nil;
     }
+    
     // look for a matching calibration frame
     NSString* filename = [self exposureSaveNameWithSuffix:suffix fileType:@"fits"];
     NSURL* fullURL = [_targetFolder URLByAppendingPathComponent:filename];
-    CASCCDExposure* calibration = [[CASCCDExposure alloc] init];
+    __block CASCCDExposure* calibration = [[CASCCDExposure alloc] init];
     if (![[CASCCDExposureIO exposureIOWithPath:[fullURL path]] readExposure:calibration readPixels:YES error:nil]){
-        return nil;
+
+        // look for files with the correct fits header
+        CASCCDExposureType type = kCASCCDExposureUnknownType;
+        if ([suffix isEqualToString:@"dark"]){
+            type = kCASCCDExposureDarkType;
+        }
+        else if ([suffix isEqualToString:@"bias"]){
+            type = kCASCCDExposureBiasType;
+        }
+        else if ([suffix isEqualToString:@"flat"]){
+            type = kCASCCDExposureFlatType;
+        }
+        if (type != kCASCCDExposureUnknownType){
+            [CASCCDExposureIO enumerateExposuresWithURL:_targetFolder block:^(CASCCDExposure* exposure,BOOL* stop){
+                if (type == exposure.type){
+                    calibration = exposure;
+                    *stop = YES;
+                }
+            }];
+        }
     }
-    // check binning and dimenions match
-    if (exposure.isSubframe){
-        calibration = [calibration subframeWithRect:exposure.subframe];
-        if (calibration){
-            const CASRect exposureSubframe = exposure.subframe;
-            const CASRect calibrationSubframe = calibration.subframe;
-            if (exposureSubframe.origin.x != calibrationSubframe.origin.x ||
-                exposureSubframe.origin.y != calibrationSubframe.origin.y ||
-                exposureSubframe.size.width != calibrationSubframe.size.width ||
-                exposureSubframe.size.height != calibrationSubframe.size.height){
-                NSLog(@"Calibration subframe %@ doesn't match exposure subframe %@",NSStringFromCASRect(calibrationSubframe),NSStringFromCASRect(exposureSubframe));
-                calibration = nil;
+    
+    if (calibration){
+        // check binning and dimenions match
+        if (exposure.isSubframe){
+            calibration = [calibration subframeWithRect:exposure.subframe];
+            if (calibration){
+                const CASRect exposureSubframe = exposure.subframe;
+                const CASRect calibrationSubframe = calibration.subframe;
+                if (exposureSubframe.origin.x != calibrationSubframe.origin.x ||
+                    exposureSubframe.origin.y != calibrationSubframe.origin.y ||
+                    exposureSubframe.size.width != calibrationSubframe.size.width ||
+                    exposureSubframe.size.height != calibrationSubframe.size.height){
+                    NSLog(@"Calibration subframe %@ doesn't match exposure subframe %@",NSStringFromCASRect(calibrationSubframe),NSStringFromCASRect(exposureSubframe));
+                    calibration = nil;
+                }
             }
         }
     }
@@ -1620,6 +1644,7 @@ static void* kvoContext;
         }
         
         // live calibrate using saved bias and flat frames
+        self.calibratedExposure = nil;
         if (self.calibrate){
             
             NSURL* url = [self beginAccessToSaveTarget];
@@ -1644,7 +1669,7 @@ static void* kvoContext;
                         corrected = result;
                     }
                 }];
-                exposure = corrected;
+                self.calibratedExposure = exposure = corrected;
             }
         }
         
@@ -1853,14 +1878,20 @@ static void* kvoContext;
                     [self.cameraController addRecentURL:finalUrl];
                 }
                 
-                if (self.calibrate){
-                    // todo; write out the calibrated exposure alongside this one
-                    // we're already calibrating in the display exposure routine, perhaps do this first and
-                    // then in display exposure look for a matching calibrated file and show that in preference ?
-                    // or the display code caches the calibrated image and we just save it out here but
-                    // set current exposure will need a completion block
+                if (self.calibrate && self.calibratedExposure){
+                    NSString* filename = [[finalUrl lastPathComponent] stringByAppendingString:@"_calibrated"];
+                    NSString* calibratedPath = [[[finalUrl path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:filename];
+                    if (![CASCCDExposureIO writeExposure:self.calibratedExposure toPath:calibratedPath error:&error]){
+                        NSLog(@"Failed to write calibrated exposure to %@",[finalUrl path]);
+                    }
+                    else {
+                        NSLog(@"Wrote calibrated exposure to %@",[finalUrl path]);
+                    }
                 }
             }
+            
+            // clear any calibrated exposure set in the display code
+            self.calibratedExposure = nil;
         }
     }
     

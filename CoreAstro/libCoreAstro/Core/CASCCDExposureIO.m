@@ -937,6 +937,32 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     return nil;
 }
 
++ (void)enumerateExposuresWithURL:(NSURL*)url block:(void(^)(CASCCDExposure*,BOOL*))block
+{
+    NSParameterAssert(url);
+    NSParameterAssert(block);
+    
+    NSURL* exposureURL;
+    NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtURL:url
+                                                    includingPropertiesForKeys:@[]
+                                                                       options:NSDirectoryEnumerationSkipsSubdirectoryDescendants|NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                  errorHandler:nil];
+    while ((exposureURL = [e nextObject]) != nil) {
+        CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:[exposureURL path]];
+        if (io){
+            CASCCDExposure* exposure = [[CASCCDExposure alloc] init];
+            if ([io readExposure:exposure readPixels:NO error:nil]){
+                exposure.io = io;
+                BOOL stop = NO;
+                block(exposure,&stop);
+                if (stop){
+                    break;
+                }
+            }
+        }
+    }
+}
+
 + (BOOL)writeExposure:(CASCCDExposure*)exposure toPath:(NSString*)path error:(NSError**)error
 {
     CASCCDExposureIO* io = [CASCCDExposureIO exposureIOWithPath:path];

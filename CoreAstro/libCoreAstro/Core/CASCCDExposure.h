@@ -72,7 +72,8 @@ typedef enum {
     kCASCCDExposureLightType,
     kCASCCDExposureDarkType,
     kCASCCDExposureBiasType,
-    kCASCCDExposureFlatType
+    kCASCCDExposureFlatType,
+    kCASCCDExposureUnknownType = -1,
 } CASCCDExposureType;
 
 @property (nonatomic,assign) CASCCDExposureType type;
