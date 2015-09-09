@@ -1886,8 +1886,12 @@ static void* kvoContext;
                 }
                 
                 if (self.calibrate && self.calibratedExposure){
-                    NSString* filename = [[finalUrl lastPathComponent] stringByAppendingString:@"_calibrated"];
-                    NSString* calibratedPath = [[[finalUrl path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:filename];
+                    NSString* ext = [finalUrl pathExtension];
+                    NSString* filename = [[[finalUrl lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:@"_calibrated"];
+                    NSString* calibratedPath = [[[[finalUrl path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:filename] stringByAppendingPathExtension:ext];
+                    
+                    // todo; this is being written out as floating point...
+                    
                     if (![CASCCDExposureIO writeExposure:self.calibratedExposure toPath:calibratedPath error:&error]){
                         NSLog(@"Failed to write calibrated exposure to %@",[finalUrl path]);
                     }
