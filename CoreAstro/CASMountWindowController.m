@@ -147,6 +147,26 @@ static void* kvoContext;
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
+#pragma mark - Bookmarks
+
+- (NSArray*)bookmarks
+{
+    return [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIOBookmarks"];
+}
+
+- (IBAction)didSelectBookmark:(NSPopUpButton*)sender
+{
+    NSLog(@"didSelectBookmark: %ld",sender.indexOfSelectedItem);
+    
+    const NSInteger index = sender.indexOfSelectedItem;
+    if (index != -1){
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:[self.bookmarks objectAtIndex:index][@"solutionData"]];
+        if (solution){
+            [self setTargetRA:solution.centreRA dec:solution.centreDec];
+        }
+    }
+}
+
 #pragma mark - Mount/Camera
 
 - (NSArray*)cameraControllers

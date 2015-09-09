@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
@@ -19,14 +19,14 @@
         <window title="Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" deferred="NO" oneShot="NO" releasedWhenClosed="NO" frameAutosaveName="ieq-test-mount" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="423" height="472"/>
+            <rect key="contentRect" x="196" y="240" width="423" height="485"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="-2" width="423" height="472"/>
+                <rect key="frame" x="0.0" y="-6" width="423" height="485"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Current Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="PuF-mb-lQZ">
-                        <rect key="frame" x="17" y="369" width="389" height="83"/>
+                        <rect key="frame" x="17" y="382" width="389" height="83"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="67"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -129,13 +129,13 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Target Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Loc-Zz-t5b">
-                        <rect key="frame" x="17" y="236" width="389" height="129"/>
+                        <rect key="frame" x="17" y="231" width="389" height="147"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="387" height="113"/>
+                            <rect key="frame" x="1" y="1" width="387" height="131"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aBi-BL-Zub">
-                                    <rect key="frame" x="18" y="81" width="262" height="22"/>
+                                    <rect key="frame" x="18" y="99" width="262" height="22"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="Aau-AF-4BN">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -155,7 +155,7 @@
                                     </connections>
                                 </textField>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kYE-P5-Y3t">
-                                    <rect key="frame" x="288" y="41" width="87" height="32"/>
+                                    <rect key="frame" x="288" y="59" width="87" height="32"/>
                                     <buttonCell key="cell" type="push" title="Slew" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cvK-5D-7Gn">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -188,7 +188,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DuN-rt-RHL">
-                                    <rect key="frame" x="288" y="7" width="87" height="32"/>
+                                    <rect key="frame" x="288" y="25" width="87" height="32"/>
                                     <buttonCell key="cell" type="push" title="Stop" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g3Q-Zf-Jsj">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -198,7 +198,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ede-HG-ABr">
-                                    <rect key="frame" x="288" y="75" width="87" height="32"/>
+                                    <rect key="frame" x="288" y="93" width="87" height="32"/>
                                     <buttonCell key="cell" type="push" title="Lookup" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xxQ-cK-ARk">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -213,7 +213,7 @@
                                     </connections>
                                 </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BbH-oW-dr9">
-                                    <rect key="frame" x="16" y="54" width="33" height="21"/>
+                                    <rect key="frame" x="16" y="72" width="33" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="RA:" id="Jec-hp-YW2">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -221,7 +221,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aXc-Fx-QZr">
-                                    <rect key="frame" x="51" y="54" width="231" height="21"/>
+                                    <rect key="frame" x="51" y="72" width="231" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="FEG-oS-riM">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -236,7 +236,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKg-Zs-AWz">
-                                    <rect key="frame" x="10" y="26" width="40" height="21"/>
+                                    <rect key="frame" x="10" y="44" width="40" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Dec:" id="gqi-hZ-Qy8">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -244,7 +244,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2hX-Zg-al1">
-                                    <rect key="frame" x="52" y="26" width="230" height="21"/>
+                                    <rect key="frame" x="52" y="44" width="230" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="avb-pp-3zo">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -258,13 +258,44 @@
                                         </binding>
                                     </connections>
                                 </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aqw-Lf-zja">
+                                    <rect key="frame" x="16" y="16" width="78" height="17"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Bookmarks:" id="O20-ub-DV1">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FRd-sY-jte">
+                                    <rect key="frame" x="101" y="11" width="182" height="26"/>
+                                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="GHE-kB-54G" id="6rR-NR-Bvs">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" id="BhU-x9-NtK">
+                                            <items>
+                                                <menuItem title="Item 1" state="on" id="GHE-kB-54G"/>
+                                                <menuItem title="Item 2" id="nsz-gV-1Lx"/>
+                                                <menuItem title="Item 3" id="eB7-sB-ySK"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <connections>
+                                        <action selector="didSelectBookmark:" target="-2" id="yKv-tG-raB"/>
+                                        <binding destination="zI2-pD-xa0" name="contentValues" keyPath="arrangedObjects.name" id="OUg-C6-9lf"/>
+                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="WSC-b7-5El">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </popUpButton>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Camera" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Sng-gL-Xl5">
-                        <rect key="frame" x="17" y="177" width="389" height="55"/>
+                        <rect key="frame" x="17" y="172" width="389" height="55"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="39"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -375,7 +406,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XlS-17-G0Y">
-                        <rect key="frame" x="18" y="7" width="387" height="17"/>
+                        <rect key="frame" x="18" y="2" width="387" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="9cM-rP-swI">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -386,7 +417,7 @@
                         </connections>
                     </textField>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Move" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="t8k-Si-gol">
-                        <rect key="frame" x="17" y="77" width="389" height="96"/>
+                        <rect key="frame" x="17" y="72" width="389" height="96"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="80"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -527,7 +558,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Meridian Flip" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="qyq-Ac-Tj3">
-                        <rect key="frame" x="17" y="28" width="389" height="46"/>
+                        <rect key="frame" x="17" y="23" width="389" height="46"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="30"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -553,7 +584,7 @@
                 <binding destination="-2" name="title" keyPath="mount.name" id="TDL-zs-9nR"/>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-1329.5" y="-57"/>
+            <point key="canvasLocation" x="-1329.5" y="-50.5"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
         <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">
@@ -692,5 +723,10 @@
             </view>
             <point key="canvasLocation" x="-1529" y="297"/>
         </window>
+        <arrayController id="zI2-pD-xa0" userLabel="Bookmarks Array Controller">
+            <connections>
+                <binding destination="-2" name="contentArray" keyPath="bookmarks" id="RHz-FV-wI8"/>
+            </connections>
+        </arrayController>
     </objects>
 </document>

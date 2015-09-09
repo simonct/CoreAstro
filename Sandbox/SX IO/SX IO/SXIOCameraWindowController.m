@@ -19,6 +19,7 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import "CASMountWindowController.h"
 #import "SXIOFocuserWindowController.h"
+#import "SXIOBookmarkWindowController.h"
 #import "SX_IO-Swift.h"
 #import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/ORSSerialPortManager.h>
@@ -109,6 +110,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) SXIOFocuserWindowController* focuserWindowController;
 
 @property (strong) CASCCDExposure* latestExposure;
+
+@property (strong) SXIOBookmarkWindowController* bookmarksWindowController;
 
 @end
 
@@ -1284,7 +1287,7 @@ static void* kvoContext;
     }];
 }
 
-- (void)lockSolution:sender
+- (IBAction)lockSolution:sender
 {
     if (self.exposureView.lockedPlateSolveSolution){
         self.exposureView.lockedPlateSolveSolution = nil;
@@ -1292,6 +1295,30 @@ static void* kvoContext;
     else {
         self.exposureView.lockedPlateSolveSolution = self.exposureView.plateSolveSolution;
     }
+}
+
+- (IBAction)addBookmark:sender
+{
+    NSData* solutionData = self.exposureView.plateSolveSolution.solutionData;
+    if (!solutionData){
+        return;
+    }
+    
+    self.bookmarksWindowController = [SXIOBookmarkWindowController createWindowController];
+    [self.bookmarksWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result == NSOKButton) {
+            NSString* name = self.bookmarksWindowController.bookmarkName;
+            if (name.length > 0){
+                NSMutableArray* bookmarks = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIOBookmarks"] mutableCopy];
+                if (!bookmarks){
+                    bookmarks = [@[] mutableCopy];
+                }
+                [bookmarks addObject:@{@"name":self.bookmarksWindowController.bookmarkName,@"solutionData":solutionData}];
+                [[NSUserDefaults standardUserDefaults] setObject:[bookmarks copy] forKey:@"SXIOBookmarks"];
+            }
+        }
+        self.bookmarksWindowController = nil;
+    }];
 }
 
 #pragma mark - Path & Save Utilities
@@ -2155,6 +2182,10 @@ static void* kvoContext;
             
         case 11107: // Show Focuser...
             enabled = self.cameraController.settings && !self.cameraController.capturing && !CGRectEqualToRect(self.cameraController.settings.subframe, CGRectZero);
+            break;
+            
+        case 11108: // Add Bookmark...
+            enabled = (self.exposureView.plateSolveSolution != nil);
             break;
     }
     return enabled;
