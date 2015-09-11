@@ -372,7 +372,9 @@ static void* kvoContext;
             // todo; cache locally for offline access ?
             
             // add bookmark
+            [self willChangeValueForKey:@"bookmarks"];
             [CASBookmarks.sharedInstance addBookmark:self.searchString ra:ra dec:dec];
+            [self didChangeValueForKey:@"bookmarks"];
             
             [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
