@@ -206,6 +206,13 @@
 		<key>sensor-size</key>
 		<string>{12.49,9.99}</string>
 	</dict>
+	<key>1317</key>
+	<dict>
+		<key>name</key>
+		<string>Ultrastar</string>
+		<key>sensor-size</key>
+		<string>{8.9,6.7}</string>
+	</dict>
 	<key>1817</key>
 	<dict>
 		<key>name</key>
