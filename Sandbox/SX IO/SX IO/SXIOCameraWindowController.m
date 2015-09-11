@@ -898,6 +898,7 @@ static void* kvoContext;
         NSLog(@"Restart failed: %@",message);
     };
 
+    // final block to be called, dismiss the progress sheet and restart capturing
     void (^restartCapturing)() = ^(){
         [self dismissMountSlewProgressSheet];
         if (self.mountState.capturingWhenSlewStarted){
@@ -906,18 +907,32 @@ static void* kvoContext;
         }
     };
 
+    // restart guiding, then capturing
     void (^restartGuiding)() = ^(){
-        if (!self.mountState.guidingWhenSlewStarted){
-            restartCapturing();
+        NSLog(@"Restarting guiding");
+        [self.cameraController.phd2Client guideWithCompletion:^(BOOL success) {
+            if (!success){
+                failWithAlert(@"Guide Failed",@"Failed to restart guiding");
+            }
+            else {
+                restartCapturing();
+            }
+        }];
+    };
+    
+    // restart guiding, optionally flipping the calibration first then restart capturing
+    void (^restartGuidingWithFlipped)(BOOL) = ^(BOOL flipped){
+        if (!flipped){
+            restartGuiding();
         }
         else {
-            NSLog(@"Restarting guiding");
-            [self.cameraController.phd2Client guideWithCompletion:^(BOOL success) {
+            NSLog(@"Flipping guide calibration");
+            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
                 if (!success){
-                    failWithAlert(@"Guide Failed",@"Failed to restart guiding");
+                    failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
                 }
                 else {
-                    restartCapturing();
+                    restartGuiding();
                 }
             }];
         }
@@ -941,25 +956,8 @@ static void* kvoContext;
                 failWithAlert(@"Guide Failed",@"Failed to reconnect to PHD2");
             }
             else {
-                
-                if (!flipped){
-                    // mount didn't flip, so just restart guiding then capturing
-                    restartGuiding();
-                }
-                else {
-                    
-                    // looks like the mount did flip, so flip the guide calibration and restart guiding
-                    NSLog(@"Flipping guide calibration");
-                    [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
-                        
-                        if (!success){
-                            failWithAlert(@"Guide Failed",@"PHD2 failed to restart guiding");
-                        }
-                        else {
-                            restartGuiding();
-                        }
-                    }];
-                }
+                NSLog(@"Connected to PHD2");
+                restartGuidingWithFlipped(flipped);
             }
         }];
     }
