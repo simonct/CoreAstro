@@ -934,6 +934,7 @@ static void* kvoContext;
         
         // ensure we're connected to PHD2
         NSLog(@"Connecting to PHD2");
+        [self.cameraController.phd2Client disconnect];
         [self.cameraController.phd2Client connectWithCompletion:^{
             
             if (!self.cameraController.phd2Client.connected){
@@ -983,6 +984,9 @@ static void* kvoContext;
 
             // check to see if this is an external slew or not
             if (self.mountWindowController.mountSynchroniser.busy){
+                
+                NSLog(@"Mount slew started but being handled by mount synchroniser so ignoring");
+
                 self.mountState.synchronisingWhenSlewStarted = YES;
             }
             else{
@@ -1022,7 +1026,7 @@ static void* kvoContext;
 
             if (self.mountState.synchronisingWhenSlewStarted){
                 
-                NSLog(@"Mount slew ended but started by mount synchroniser so letting it handle it");
+                NSLog(@"Mount slew ended but being handled by mount synchroniser so ignoring");
             }
             else {
                 
@@ -1093,9 +1097,7 @@ static void* kvoContext;
     else {
         
         NSLog(@"Mount sync completed successfully");
-        
-        [self presentAlertWithTitle:@"Slew Complete" message:@"The mount is now on the selected target"];
-        
+                
         // check to see if we were tracking the slew and restart, otherwise just pop a completion alert
         if (self.mountSlewProgressSheet){
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){

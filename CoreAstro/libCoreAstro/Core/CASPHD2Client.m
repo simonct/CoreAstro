@@ -29,6 +29,12 @@ static void* kvoContext;
     [self.client disconnect];
 }
 
+- (void)disconnect
+{
+    [self.client disconnect];
+    self.client = nil;
+}
+
 - (void)connectWithCompletion:(void(^)())completion
 {
     if (self.connected){
