@@ -1297,18 +1297,23 @@ static void* kvoContext;
     }
 }
 
-- (IBAction)addBookmark:sender
+- (void)openBookmarksWithSolution:(CASPlateSolveSolution*)solution
 {
-    NSData* solutionData = self.exposureView.plateSolveSolution.solutionData;
-    if (!solutionData){
-        return;
-    }
-    
     self.bookmarksWindowController = [SXIOBookmarkWindowController createWindowController];
-    self.bookmarksWindowController.solution = self.exposureView.plateSolveSolution;
-    [self.bookmarksWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+    self.bookmarksWindowController.solution = solution;
+    [self.bookmarksWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger _) {
         self.bookmarksWindowController = nil;
     }];
+}
+
+- (IBAction)addBookmark:sender
+{
+    [self openBookmarksWithSolution:self.exposureView.plateSolveSolution];
+}
+
+- (IBAction)editBookmarks:sender
+{
+    [self openBookmarksWithSolution:nil];
 }
 
 #pragma mark - Path & Save Utilities
@@ -2177,7 +2182,11 @@ static void* kvoContext;
         case 11108: // Add Bookmark...
             enabled = (self.exposureView.plateSolveSolution != nil);
             break;
-    }
+
+        case 11109: // Edit Bookmarks...
+            enabled = YES;
+            break;
+}
     return enabled;
 }
 

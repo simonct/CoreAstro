@@ -1649,6 +1649,17 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11108</int>
 								</object>
+								<object class="NSMenuItem" id="886287087">
+									<reference key="NSMenu" ref="43874950"/>
+									<bool key="NSIsAlternate">YES</bool>
+									<string key="NSTitle">Edit Bookmarks...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSKeyEquivModMask">524288</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11109</int>
+								</object>
 								<object class="NSMenuItem" id="452202085">
 									<reference key="NSMenu" ref="43874950"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -2759,6 +2770,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">editBookmarks:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="886287087"/>
+					</object>
+					<int key="connectionID">927</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">addFontTrait:</string>
 						<reference key="source" ref="755631768"/>
 						<reference key="destination" ref="305399458"/>
@@ -3817,6 +3836,7 @@
 							<reference ref="135985122"/>
 							<reference ref="187252653"/>
 							<reference ref="91699478"/>
+							<reference ref="886287087"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4325,6 +4345,11 @@
 						<reference key="object" ref="91699478"/>
 						<reference key="parent" ref="43874950"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">924</int>
+						<reference key="object" ref="886287087"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4559,12 +4584,13 @@
 				<string key="916.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="920.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="924.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">923</int>
+			<int key="maxID">927</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5169,6 +5195,7 @@
 						<string key="captureFlats:">id</string>
 						<string key="connectButtonPressed:">id</string>
 						<string key="connectToMount:">id</string>
+						<string key="editBookmarks:">id</string>
 						<string key="lockSolution:">id</string>
 						<string key="navigate:">NSSegmentedControl</string>
 						<string key="nextExposure:">id</string>
@@ -5235,6 +5262,10 @@
 						</object>
 						<object class="IBActionInfo" key="connectToMount:">
 							<string key="name">connectToMount:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="editBookmarks:">
+							<string key="name">editBookmarks:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="lockSolution:">

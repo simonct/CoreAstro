@@ -55,7 +55,10 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-    if (self.solution){
+    if (!self.solution){
+        self.bookmarksArrayController.selectedObjects = nil;
+    }
+    else{
         SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:self.solution];
         NSMutableArray* bookmarks = [self mutableArrayValueForKey:@"bookmarks"];
         [bookmarks addObject:bookmark];

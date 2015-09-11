@@ -14,7 +14,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="F0z-JX-Cv5">
+        <window title="Bookmarks" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Bookmarks" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="475" height="295"/>
@@ -50,7 +50,7 @@ Gw
                         </connections>
                     </button>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BEY-Ik-57k">
-                        <rect key="frame" x="-1" y="54" width="477" height="242"/>
+                        <rect key="frame" x="-1" y="50" width="477" height="246"/>
                         <clipView key="contentView" id="zKu-tc-aSX">
                             <rect key="frame" x="1" y="17" width="238" height="117"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -209,7 +209,7 @@ Gw
                 <constraints>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="-1" id="17Z-PU-Tly"/>
                     <constraint firstItem="vi0-gV-6be" firstAttribute="baseline" secondItem="ODh-4v-WWv" secondAttribute="baseline" id="HOa-ER-82H"/>
-                    <constraint firstItem="vi0-gV-6be" firstAttribute="top" secondItem="BEY-Ik-57k" secondAttribute="bottom" constant="20" id="OtF-e5-tyV"/>
+                    <constraint firstItem="vi0-gV-6be" firstAttribute="top" secondItem="BEY-Ik-57k" secondAttribute="bottom" constant="16" id="OtF-e5-tyV"/>
                     <constraint firstAttribute="bottom" secondItem="Eb4-GS-wrP" secondAttribute="bottom" constant="13" id="Qii-88-k0e"/>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="-1" id="TzZ-wP-TJw"/>
                     <constraint firstAttribute="trailing" secondItem="ODh-4v-WWv" secondAttribute="trailing" constant="20" id="WZV-qA-Ddo"/>
