@@ -1361,20 +1361,20 @@ static void* kvoContext;
     }
     
     if (calibration){
-        // check binning and dimenions match
-        if (calibration.params.bin.width != exposure.params.bin.width ||
-            calibration.params.bin.height != exposure.params.bin.height){
+        
+        // check binning and dimensions match
+        if (!CASSizeEqualToSize(exposure.params.size,calibration.params.size) || !CASSizeEqualToSize(calibration.params.bin,exposure.params.bin)){
             calibration = nil;
         }
         else if (exposure.isSubframe){
+            
+            // grab the matching subframe
             calibration = [calibration subframeWithRect:exposure.subframe];
             if (calibration){
+                
                 const CASRect exposureSubframe = exposure.subframe;
                 const CASRect calibrationSubframe = calibration.subframe;
-                if (exposureSubframe.origin.x != calibrationSubframe.origin.x ||
-                    exposureSubframe.origin.y != calibrationSubframe.origin.y ||
-                    exposureSubframe.size.width != calibrationSubframe.size.width ||
-                    exposureSubframe.size.height != calibrationSubframe.size.height){
+                if (CASRectEqualToRect(exposureSubframe, calibrationSubframe)){
                     NSLog(@"Calibration subframe %@ doesn't match exposure subframe %@",NSStringFromCASRect(calibrationSubframe),NSStringFromCASRect(exposureSubframe));
                     calibration = nil;
                 }

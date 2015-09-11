@@ -25,11 +25,6 @@
 
 #import "CASExposureInfoView.h"
 
-BOOL CASRectEqualToRect(CASRect a,CASRect b)
-{
-    return (a.size.width == b.size.width && a.size.height == b.size.height && a.origin.x == b.origin.x && a.origin.y == b.origin.y);
-}
-
 @interface CASExposureInfoView ()
 @property (weak) IBOutlet NSTextField *averageValueField;
 @property (weak) IBOutlet NSTextField *medianValueField;

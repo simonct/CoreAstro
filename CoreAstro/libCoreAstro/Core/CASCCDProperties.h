@@ -54,6 +54,9 @@ typedef struct
 
 } CASSize;
 
+NS_INLINE BOOL CASSizeEqualToSize(CASSize a,CASSize b) {
+    return (a.width == b.width && a.height == b.height);
+}
 
 typedef struct
 {
@@ -103,6 +106,10 @@ NS_INLINE CASRect CASRectFromCGRect(CGRect r) {
 NS_INLINE CGRect CASCGRectFromCASRect(CASRect r) {
     CGRect rect = {.origin = CGPointMake(r.origin.x, r.origin.y), .size = CGSizeMake(r.size.width, r.size.height)};
     return rect;
+}
+
+NS_INLINE BOOL CASRectEqualToRect(CASRect a,CASRect b) {
+    return (a.size.width == b.size.width && a.size.height == b.size.height && a.origin.x == b.origin.x && a.origin.y == b.origin.y);
 }
 
 NS_INLINE NSString* NSStringFromCASPoint(CASPoint pt) {
