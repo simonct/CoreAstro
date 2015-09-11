@@ -7,6 +7,7 @@
 //
 
 #import "SXIOBookmarkWindowController.h"
+#import "SX_IO-Swift.h"
 
 @interface SXIOEditingBookmark : NSObject
 @property (copy) NSString* name;
@@ -41,6 +42,15 @@
     return editingBookmark;
 }
 
++ (instancetype)bookmarkWithName:(NSString*)name ra:(double)ra dec:(double)dec
+{
+    SXIOEditingBookmark* editingBookmark = [SXIOEditingBookmark new];
+    editingBookmark.name = name;
+    editingBookmark.ra = [CASLX200Commands highPrecisionRA:ra]; // todo; want a more natual presention format
+    editingBookmark.dec = [CASLX200Commands highPrecisionDec:dec];
+    return editingBookmark;
+}
+
 @end
 
 @interface SXIOBookmarkWindowController ()
@@ -70,12 +80,15 @@
 - (NSMutableArray*)bookmarks
 {
     if (!_bookmarks){
-        NSArray* storedBookmarks = [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIOBookmarks"];
+        NSArray* storedBookmarks = CASBookmarks.sharedInstance.bookmarks;
         _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
         for (NSDictionary* bookmark in storedBookmarks){
-            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:bookmark[@"solutionData"]];
+            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:bookmark[CASBookmarks.solutionDataKey]];
             if (solution){
-                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[@"name"] solution:solution]];
+                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
+            }
+            else {
+                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
             }
         }
     }
@@ -88,11 +101,16 @@
     for (SXIOEditingBookmark* bookmark in _bookmarks){
         NSData* solutionData = bookmark.solution.solutionData;
         if (solutionData){
-            [bookmarks addObject:@{@"name":bookmark.name,@"solutionData":solutionData}];
+            [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,CASBookmarks.solutionDataKey:solutionData}];
+        }
+        else {
+            [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,
+                                   CASBookmarks.centreRaKey:@([CASLX200Commands fromRAString:bookmark.ra asDegrees:NO]),
+                                   CASBookmarks.centreDecKey:@([CASLX200Commands fromDecString:bookmark.dec])}];
         }
     }
     
-    [[NSUserDefaults standardUserDefaults] setObject:bookmarks forKey:@"SXIOBookmarks"];
+    CASBookmarks.sharedInstance.bookmarks = bookmarks;
     
     [self endSheetWithCode:NSOKButton];
 }

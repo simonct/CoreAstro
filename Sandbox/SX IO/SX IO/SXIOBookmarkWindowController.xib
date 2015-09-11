@@ -223,7 +223,7 @@ Gw
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="268.5" y="257.5"/>
+            <point key="canvasLocation" x="307.5" y="275.5"/>
         </window>
         <arrayController objectClassName="SXIOEditingBookmark" id="KT4-sd-ZW9">
             <connections>

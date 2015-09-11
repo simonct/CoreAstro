@@ -8,6 +8,7 @@
 
 #import "CASMountWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
+#import "SX_IO-Swift.h"
 #if defined(SXIO)
 #import "SXIOAppDelegate.h"
 #endif
@@ -151,18 +152,24 @@ static void* kvoContext;
 
 - (NSArray*)bookmarks
 {
-    return [[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIOBookmarks"];
+    return CASBookmarks.sharedInstance.bookmarks;
 }
 
 - (IBAction)didSelectBookmark:(NSPopUpButton*)sender
 {
-    NSLog(@"didSelectBookmark: %ld",sender.indexOfSelectedItem);
-    
+    if (!self.mount.connected || self.mount.slewing){
+        return;
+    }
+
     const NSInteger index = sender.indexOfSelectedItem;
     if (index != -1){
-        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:[self.bookmarks objectAtIndex:index][@"solutionData"]];
+        NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:bookmark[CASBookmarks.solutionDataKey]];
         if (solution){
             [self setTargetRA:solution.centreRA dec:solution.centreDec];
+        }
+        else {
+            [self setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]];
         }
     }
 }
@@ -246,7 +253,8 @@ static void* kvoContext;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs
 {
     NSParameterAssert(self.mount.connected);
-    
+    NSParameterAssert(!self.mount.slewing);
+
     __weak __typeof (self) weakSelf = self;
     [self.mount setTargetRA:raDegs dec:decDegs completion:^(CASMountSlewError error) {
         if (error != CASMountSlewErrorNone){
@@ -362,6 +370,10 @@ static void* kvoContext;
         }
         else{
             // todo; cache locally for offline access ?
+            
+            // add bookmark
+            [CASBookmarks.sharedInstance addBookmark:self.searchString ra:ra dec:dec];
+            
             [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
     }];
