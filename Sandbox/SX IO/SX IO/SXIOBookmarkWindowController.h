@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Simon Taylor. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <CoreAstro/CoreAstro.h>
 #import "CASAuxWindowController.h"
 
 @interface SXIOBookmarkWindowController : CASAuxWindowController
-@property (copy) NSString* bookmarkName;
+@property (strong) CASPlateSolveSolution* solution;
 @end

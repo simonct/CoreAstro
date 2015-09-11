@@ -1305,18 +1305,8 @@ static void* kvoContext;
     }
     
     self.bookmarksWindowController = [SXIOBookmarkWindowController createWindowController];
+    self.bookmarksWindowController.solution = self.exposureView.plateSolveSolution;
     [self.bookmarksWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        if (result == NSOKButton) {
-            NSString* name = self.bookmarksWindowController.bookmarkName;
-            if (name.length > 0){
-                NSMutableArray* bookmarks = [[[NSUserDefaults standardUserDefaults] arrayForKey:@"SXIOBookmarks"] mutableCopy];
-                if (!bookmarks){
-                    bookmarks = [@[] mutableCopy];
-                }
-                [bookmarks addObject:@{@"name":self.bookmarksWindowController.bookmarkName,@"solutionData":solutionData}];
-                [[NSUserDefaults standardUserDefaults] setObject:[bookmarks copy] forKey:@"SXIOBookmarks"];
-            }
-        }
         self.bookmarksWindowController = nil;
     }];
 }
