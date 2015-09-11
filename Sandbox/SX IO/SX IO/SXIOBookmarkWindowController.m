@@ -44,6 +44,8 @@
 @end
 
 @interface SXIOBookmarkWindowController ()
+@property (weak) IBOutlet NSTableView *bookmarksTableView;
+@property (strong) IBOutlet NSArrayController *bookmarksArrayController;
 @end
 
 @implementation SXIOBookmarkWindowController {
@@ -54,7 +56,11 @@
     [super windowDidLoad];
     
     if (self.solution){
-        [[self mutableArrayValueForKey:@"bookmarks"] addObject:[SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:self.solution]];
+        SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:self.solution];
+        NSMutableArray* bookmarks = [self mutableArrayValueForKey:@"bookmarks"];
+        [bookmarks addObject:bookmark];
+        self.bookmarksArrayController.selectedObjects = @[bookmark];
+        [self.bookmarksTableView editColumn:0 row:bookmarks.count - 1 withEvent:nil select:YES];
     }
 }
 
