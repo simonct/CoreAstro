@@ -26,11 +26,12 @@ static void* kvoContext;
 {
     [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
     [_client removeObserver:self forKeyPath:@"connected" context:&kvoContext];
-    [self.client disconnect];
+    [self disconnect];
 }
 
 - (void)disconnect
 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
     [self.client disconnect];
     self.client = nil;
 }
@@ -53,6 +54,16 @@ static void* kvoContext;
     if (self.connectCompletion){
         self.connectCompletion();
         self.connectCompletion = nil;
+    }
+}
+
+- (void)callSettleCompletionWithGuiding:(BOOL)guiding
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
+
+    if (self.settleCompletion){
+        self.settleCompletion(guiding);
+        self.settleCompletion = nil;
     }
 }
 
@@ -145,10 +156,7 @@ static void* kvoContext;
         else {
             NSLog(@"Settling failed %@",message);
         }
-        if (self.settleCompletion){
-            self.settleCompletion(self.guiding);
-            self.settleCompletion = nil;
-        }
+        [self callSettleCompletionWithGuiding:self.guiding];
     }
     
     if ([@[@"Settling"] containsObject:event]){
@@ -256,6 +264,8 @@ static void* kvoContext;
 - (void)handleFailedDither
 {
     void(^settleCompletion)(BOOL) = [self.settleCompletion copy]; // grab the original dither completion block
+    
+    // restart guiding and call the original settle completion block
     [self guideWithCompletion:^(BOOL guiding) {
         if (settleCompletion){
             settleCompletion(guiding);
@@ -267,6 +277,8 @@ static void* kvoContext;
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
     NSLog(@"ditherByPixels"); // todo; check/handle this being called re-entrantly
+
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
 
     if (!self.guiding){
         // todo; this can happen if this is called before we've got the AppState event after connecting, queue the request up ?
@@ -307,10 +319,7 @@ static void* kvoContext;
 
 - (void)cancel
 {
-    if (self.settleCompletion){
-        self.settleCompletion(NO);
-        self.settleCompletion = nil;
-    }
+    [self callSettleCompletionWithGuiding:NO];
 }
 
 @end
