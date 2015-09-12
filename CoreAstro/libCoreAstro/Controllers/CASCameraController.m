@@ -519,6 +519,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.state = CASCameraControllerStateWaitingForGuider;
         
         // connect to PHD2 and start guiding before kicking off the capture
+        [self.phd2Client disconnect];
         [self.phd2Client connectWithCompletion:^{
             
             if (!self.phd2Client.connected){
