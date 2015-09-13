@@ -65,11 +65,23 @@ class CASBookmarks: NSObject {
     
     private func storeDidChange(note: NSNotification) {
         print("storeDidChange \(note.userInfo)")
-        if let changedKeys = note.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>, _ = changedKeys.indexOf(CASBookmarks.defaultsKey) {
-            if let bookmarks = NSUbiquitousKeyValueStore.defaultStore().arrayForKey(CASBookmarks.defaultsKey){
-                NSUserDefaults.standardUserDefaults().setObject(bookmarks, forKey: CASBookmarks.defaultsKey)
-                print("Updated local bookmarks from iCloud")
-            }
+        if let changedKeys = note.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
+            reason = note.userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
+            _ = changedKeys.indexOf(CASBookmarks.defaultsKey){
+                switch(reason){
+                case NSUbiquitousKeyValueStoreServerChange, NSUbiquitousKeyValueStoreInitialSyncChange, NSUbiquitousKeyValueStoreAccountChange:
+                    if let bookmarks = NSUbiquitousKeyValueStore.defaultStore().arrayForKey(CASBookmarks.defaultsKey) {
+                        NSUserDefaults.standardUserDefaults().setObject(bookmarks, forKey: CASBookmarks.defaultsKey)
+                    }
+                    else {
+                        NSUserDefaults.standardUserDefaults().removeObjectForKey(CASBookmarks.defaultsKey)
+                    }
+                    print("Updated local bookmarks from iCloud")
+                case NSUbiquitousKeyValueStoreQuotaViolationChange:
+                    print("iCloud KVS quote exceeded")
+                default:
+                    print("Unrecognised iCloud KVS change reason \(reason)")
+                }
         }
     }
 }
