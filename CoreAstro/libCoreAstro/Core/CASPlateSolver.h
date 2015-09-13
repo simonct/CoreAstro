@@ -44,6 +44,8 @@
 @property (nonatomic,copy) NSString* wcsPath;
 - (NSData*)solutionData;
 + (instancetype)solutionWithData:(NSData*)data;
+- (NSDictionary*)solutionDictionary;
++ (instancetype)solutionWithDictionary:(NSDictionary*)dictionary;
 @end
 
 @protocol CASPlateSolver <NSObject>

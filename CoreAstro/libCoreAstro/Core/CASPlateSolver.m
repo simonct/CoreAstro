@@ -234,6 +234,26 @@
     return data ? [NSKeyedUnarchiver unarchiveObjectWithData:data] : nil;
 }
 
+- (NSDictionary*)solutionDictionary
+{
+    NSMutableDictionary* result = [NSMutableDictionary dictionaryWithCapacity:2];
+    if (self.wcsinfo){
+        result[@"wcsinfo"] = self.wcsinfo;
+    }
+    if (self.annotations){
+        result[@"annotations"] = self.annotations;
+    }
+    return [result copy];
+}
+
++ (instancetype)solutionWithDictionary:(NSDictionary*)dictionary
+{
+    CASPlateSolveSolution* result = [CASPlateSolveSolution new];
+    result.wcsinfo = dictionary[@"wcsinfo"];
+    result.annotations = dictionary[@"annotations"];
+    return result;
+}
+
 @end
 
 @interface CASPlateSolver ()
@@ -591,6 +611,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         
         // solve it
         [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
+            
+            // todo; save to solution cache
             
             // delete the cache
             [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];

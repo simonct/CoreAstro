@@ -164,7 +164,7 @@ static void* kvoContext;
     const NSInteger index = sender.indexOfSelectedItem;
     if (index != -1){
         NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
-        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:bookmark[CASBookmarks.solutionDataKey]];
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
         if (solution){
             [self setTargetRA:solution.centreRA dec:solution.centreDec];
         }

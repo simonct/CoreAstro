@@ -66,7 +66,7 @@
     [super windowDidLoad];
     
     if (!self.solution){
-        self.bookmarksArrayController.selectedObjects = nil;
+        self.bookmarksArrayController.selectedObjects = @[];
     }
     else{
         SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:self.solution];
@@ -83,7 +83,7 @@
         NSArray* storedBookmarks = CASBookmarks.sharedInstance.bookmarks;
         _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
         for (NSDictionary* bookmark in storedBookmarks){
-            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:bookmark[CASBookmarks.solutionDataKey]];
+            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
             if (solution){
                 [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
             }
@@ -99,9 +99,9 @@
     
     NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
     for (SXIOEditingBookmark* bookmark in _bookmarks){
-        NSData* solutionData = bookmark.solution.solutionData;
-        if (solutionData){
-            [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,CASBookmarks.solutionDataKey:solutionData}];
+        NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
+        if (solutionDictionary){
+            [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,CASBookmarks.solutionDictionaryKey:solutionDictionary}];
         }
         else {
             [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,
