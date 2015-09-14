@@ -108,6 +108,8 @@ static void* kvoContext;
         }
         if ([@"connected" isEqualToString:keyPath]){
             self.connected = _client.connected;
+            NSLog(@"PHD2 client connected: %d",self.connected);
+            // if (self.connected) [self callConnectCompletion]; // ??
         }
 //        else if (!self.client.connected){
 //            NSLog(@"disconnected");

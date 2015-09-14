@@ -73,7 +73,7 @@
     BOOL success = NO;
     
     if (!is || !os){
-        NSLog(@"Can't open connection to %@",host.name);
+        NSLog(@"Socket client: can't open connection to %@",host.name);
     }
     else {
         
@@ -120,7 +120,7 @@
                 request.completion(nil);
             }
             @catch (id ex) {
-                NSLog(@"Exception calling request completion: %@",ex);
+                NSLog(@"Socket client: exception calling request completion: %@",ex);
             }
         }
     }
@@ -173,11 +173,13 @@
             [self process];
             break;
         case NSStreamEventErrorOccurred:
+            NSLog(@"Socket client: stream error %@",[aStream streamError]);
             name = [NSString stringWithFormat:@"NSStreamEventErrorOccurred: %@",[aStream streamError]];
             [self disconnect];
             self.error = [aStream streamError]; // set this after disconnecting as when we return from this we could have been deallocated
             break;
         case NSStreamEventEndEncountered:
+            NSLog(@"Socket client: end of stream");
             name = @"NSStreamEventEndEncountered";
             [self disconnect];
             break;
@@ -222,7 +224,7 @@
             
             const NSInteger count = [self.outputStream write:[request.data bytes] + request.writtenCount maxLength:[request.data length] - request.writtenCount];
             if (count < 0){
-                NSLog(@"Failed to write the whole packet"); // disconnect ?
+                NSLog(@"Socket client: failed to write the whole packet"); // disconnect ?
             }
             else {
                 request.writtenCount += count;
@@ -273,7 +275,7 @@
             }
             else {
                 
-                NSLog(@"Read %ld bytes but there was no outstanding request to handle them",count);
+                NSLog(@"Socket client: read %ld bytes but there was no outstanding request to handle them",count);
                 
                 readComplete = YES;
             }
@@ -282,11 +284,11 @@
             
             if (count == 0){
                 // remote peer closed connection
-                NSLog(@"peer disconnected");
+                NSLog(@"Socket client: peer disconnected");
             }
             else {
                 // some other sort of error
-                NSLog(@"read error ?");
+                NSLog(@"Socket client: read error");
             }
             readComplete = YES;
             break;
@@ -304,7 +306,7 @@
                 request.completion(request.response);
             }
             @catch (id ex) {
-                NSLog(@"Exception calling request completion: %@",ex);
+                NSLog(@"Socket client: exception calling request completion: %@",ex);
             }
             // check this object hasn't been deallocated in the message handler
             __typeof(self) strongSelf = weakSelf;
@@ -358,7 +360,7 @@ static const char CRLF[] = "\r\n";
     NSError* error;
     NSData* data = [NSJSONSerialization dataWithJSONObject:mcmd options:0 error:&error];
     if (error){
-        NSLog(@"enqueueCommand: %@",error);
+        NSLog(@"JSON Socket client: error serializing data %@",error);
     }
     else {
         
@@ -437,13 +439,13 @@ static const char CRLF[] = "\r\n";
     else {
         NSString* jsonrpc = message[@"jsonrpc"];
         if (![jsonrpc isEqualToString:@"2.0"]){
-            NSLog(@"Unrecognised JSON-RPC version of %@",jsonrpc);
+            NSLog(@"JSON Socket client: unrecognised JSON-RPC version of %@",jsonrpc);
         }
         else{
             id msgID = message[@"id"];
             void(^callback)(id,NSError*) = self.callbacks[msgID];
             if (!callback){
-                NSLog(@"No callback for id %@",msgID);
+                NSLog(@"JSON Socket client: no callback for id %@",msgID);
             }
             else {
                 @try {
@@ -457,7 +459,7 @@ static const char CRLF[] = "\r\n";
                     callback(result,error);
                 }
                 @catch (NSException *exception) {
-                    NSLog(@"*** %@",exception);
+                    NSLog(@"JSON Socket client: exception calling message handler %@",exception);
                 }
                 [self.callbacks removeObjectForKey:msgID];
             }
