@@ -263,20 +263,32 @@ static void* kvoContext;
 
 - (void)handleFailedDither
 {
-    void(^settleCompletion)(BOOL) = [self.settleCompletion copy]; // grab the original dither completion block
-    
     // restart guiding and call the original settle completion block
-    [self guideWithCompletion:^(BOOL guiding) {
-        if (settleCompletion){
-            settleCompletion(guiding);
+    void(^settleCompletion)(BOOL) = [self.settleCompletion copy]; // grab the original dither completion block
+
+    [self disconnect];
+    [self connectWithCompletion:^{
+        
+        if (!self.connected){
+            if (settleCompletion){
+                settleCompletion(NO);
+            }
+            self.settleCompletion = nil;
         }
-        self.settleCompletion = nil;
+        else {
+            [self guideWithCompletion:^(BOOL guiding) {
+                if (settleCompletion){
+                    settleCompletion(guiding);
+                }
+                self.settleCompletion = nil;
+            }];
+        }
     }];
 }
 
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
-    NSLog(@"ditherByPixels"); // todo; check/handle this being called re-entrantly
+    NSLog(@"ditherByPixels %f, raOnly: %d",pixels,raOnly); // todo; check/handle this being called re-entrantly
 
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
 
