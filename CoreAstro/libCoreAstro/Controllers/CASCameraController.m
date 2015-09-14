@@ -208,7 +208,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (BOOL) requirePHD2Connection
 {
-    return (self.ditherEnabled || self.settings.startGuiding) && !self.settings.continuous;
+    return self.settings.startGuiding && !self.settings.continuous;
 }
 
 - (CASPHD2Client*) phd2Client
