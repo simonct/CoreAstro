@@ -36,6 +36,9 @@
 
 - (void)complete;
 
++ (NSArray*)sortedExposuresByName:(NSArray*)urls;
++ (NSArray*)sortedExposuresByDate:(NSArray*)urls;
+
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url;
 
 // todo; make this an input source indepdent of the exporter

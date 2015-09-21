@@ -306,6 +306,49 @@ static NSInteger count;
     return (error == nil);
 }
 
++ (NSArray*)sortedExposuresByName:(NSArray*)urls
+{
+    return [urls sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSURL* obj1, NSURL* obj2) {
+        NSDictionary* d1 = [obj1 resourceValuesForKeys:@[NSURLNameKey] error:nil];
+        NSDictionary* d2 = [obj2 resourceValuesForKeys:@[NSURLNameKey] error:nil];
+        
+        NSString* name1 = d1[NSURLNameKey];
+        NSString* name2 = d2[NSURLNameKey];
+        const NSRange name1Range = NSMakeRange(0, [name1 length]);
+        
+        return [name1 compare:name2
+                      options:NSCaseInsensitiveSearch|NSNumericSearch|NSWidthInsensitiveSearch|NSForcedOrderingSearch
+                        range:name1Range
+                       locale:[NSLocale currentLocale]];
+    }];
+}
+
++ (NSArray*)sortedExposuresByDate:(NSArray*)urls
+{
+    NSMutableArray* dates = [NSMutableArray arrayWithCapacity:[urls count]];
+    for (NSURL* url in urls){
+        @autoreleasepool {
+            CASCCDExposure* exp = [CASCCDExposureIO exposureWithPath:url.path readPixels:NO error:nil];
+            if (exp){
+                NSDate* date = exp.date;
+                if (date){
+                    [dates addObject:@{@"url":url, @"date":date}];
+                }
+            }
+        }
+    }
+    
+    if ([dates count] != [urls count]){
+        NSLog(@"Counts don't match");
+    }
+    
+    return [[dates sortedArrayWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(NSDictionary* obj1, NSDictionary* obj2) {
+        NSDate* d1 = obj1[@"date"];
+        NSDate* d2 = obj2[@"date"];
+        return [d1 compare:d2];
+    }] valueForKey:@"url"];
+}
+
 + (CASMovieExporter*)exporterWithURL:(NSURL*)url
 {
     return [[CASMovieExporter alloc] initWithURL:url];
