@@ -10,8 +10,13 @@
 
 @interface SXIOExportMovieWindowController : NSWindowController
 
+@property (nonatomic,copy) NSURL* saveURL;
+@property (nonatomic,assign) BOOL showDateTime, showFilename, showCustom;
+@property (nonatomic,copy) NSString* customAnnotation;
+@property (nonatomic,strong) NSArray* URLs;
 @property (nonatomic,strong) CASFilterPipeline* filterPipeline;
 
+- (void)runExporterWithCompletion:(void(^)(NSError*))completion;
 - (void)runWithCompletion:(void(^)(NSError*,NSURL*))completion;
 
 + (instancetype)loadWindowController;

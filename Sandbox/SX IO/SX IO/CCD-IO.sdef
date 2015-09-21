@@ -32,6 +32,10 @@
                 <cocoa key="exposures"/>
             </element>
 
+            <responds-to name="make movie">
+                <cocoa method="scriptingMakeMovie:"/>
+            </responds-to>
+
         </class>
         
         <class name="device" plural="devices" code="CASD" description="A device object." inherits="item">
@@ -212,11 +216,40 @@
             
         </command>
 
+        <command name="make movie" code="CASSMKMV" description="Make a movie.">
+            
+            <parameter name="path" code="Path" optional="no" description="the path to export the movie to">
+                <cocoa key="file"/>
+                <type type="file" list="no"/>
+            </parameter>
+            
+            <parameter name="exposures" code="Expo" optional="no" description="the movie exposures to export">
+                <cocoa key="exposures"/>
+                <type type="file" list="yes"/>
+            </parameter>
+
+            <parameter name="show date" code="Shdt" optional="yes" description="print the exposure date on the movie frames">
+                <cocoa key="showDate"/>
+                <type type="boolean" list="no"/>
+            </parameter>
+
+            <parameter name="show filename" code="Shfn" optional="yes" description="print the exposure filename on the movie frames">
+                <cocoa key="showFilename"/>
+                <type type="boolean" list="no"/>
+            </parameter>
+
+            <parameter name="custom annotation" code="Anot" optional="yes" description="print the this text on the movie frames">
+                <cocoa key="customAnnotation"/>
+                <type type="text" list="no"/>
+            </parameter>
+
+        </command>
+
         <!--
         <command name="pulse" code="CASSGUID" description="Issue a guide command.">
-            
+         
             <cocoa class="CASGuideCommand"/>
-            
+         
             <direct-parameter description="The guider to pulse.">
                 <type type="guider" list="no"/>
             </direct-parameter>

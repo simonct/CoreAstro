@@ -479,6 +479,52 @@ static NSMutableArray* gRecentExposures;
     return gRecentExposures;
 }
 
+- (void)scriptingMakeMovie:(NSScriptCommand*)command
+{
+    NSArray* urls = command.arguments[@"exposures"];
+    if (!urls.count){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"No exposures to make into a movie have been specified", nil);
+        return;
+    }
+    
+    NSString* path = [command.arguments[@"file"] path];
+    if (!path.length){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"The path to export the movie to has not been specified", nil);
+        return;
+    }
+
+    SXIOAppDelegate* delegate = (SXIOAppDelegate*)self.delegate;
+
+    if (delegate.movieExportWindowController){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"There is a movie already exporting", nil);
+        return;
+    }
+    
+    if (!delegate.movieExportWindowController){
+        delegate.movieExportWindowController = [SXIOExportMovieWindowController loadWindowController];
+    }
+    
+    (void)delegate.movieExportWindowController.window;
+
+    // configure the exporter save url, etc
+    delegate.movieExportWindowController.URLs = command.arguments[@"exposures"];
+    delegate.movieExportWindowController.saveURL = [command.arguments[@"file"] URLByAppendingPathComponent:@"movie.mov"];
+    delegate.movieExportWindowController.showDateTime = [command.arguments[@"showDate"] boolValue];
+    delegate.movieExportWindowController.showFilename = [command.arguments[@"showFilename"] boolValue];
+    delegate.movieExportWindowController.customAnnotation = command.arguments[@"customAnnotation"];
+    delegate.movieExportWindowController.showCustom = delegate.movieExportWindowController.customAnnotation.length > 0;
+
+    [delegate.movieExportWindowController runExporterWithCompletion:^(NSError *error){
+        delegate.movieExportWindowController = nil;
+        if (error){
+            [NSApp presentError:error]; // todo; return to caller
+        }
+    }];
+}
+
 @end
 
 @interface SXIOCaptureCommand : CASCaptureCommand
