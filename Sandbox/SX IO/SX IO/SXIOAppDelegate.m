@@ -511,7 +511,7 @@ static NSMutableArray* gRecentExposures;
 
     // configure the exporter save url, etc
     delegate.movieExportWindowController.URLs = command.arguments[@"exposures"];
-    delegate.movieExportWindowController.saveURL = [command.arguments[@"file"] URLByAppendingPathComponent:@"movie.mov"];
+    delegate.movieExportWindowController.saveURL = command.arguments[@"file"];
     delegate.movieExportWindowController.showDateTime = [command.arguments[@"showDate"] boolValue];
     delegate.movieExportWindowController.showFilename = [command.arguments[@"showFilename"] boolValue];
     delegate.movieExportWindowController.customAnnotation = command.arguments[@"customAnnotation"];
