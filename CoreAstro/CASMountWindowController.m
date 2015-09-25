@@ -152,7 +152,21 @@ static void* kvoContext;
 
 - (NSArray*)bookmarks
 {
-    return CASBookmarks.sharedInstance.bookmarks;
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    // if the delegate has a solution, add that as a temp bookmark (would be nice to be able to add a separator but we're using bindings atm)
+    // todo; pick up changes in the delegate's solution
+    CASPlateSolveSolution* solution = self.mountWindowDelegate.plateSolveSolution;
+    if (solution){
+        NSDictionary* solutionDictionary = solution.solutionDictionary;
+        if (solutionDictionary){
+            NSString* name = [NSString stringWithFormat:@"Current Solution (%@, %@)",solution.displayCentreRA,solution.displayCentreDec];
+            NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solutionDictionary};
+            bookmarks = [bookmarks arrayByAddingObject:bookmark];
+        }
+    }
+    
+    return bookmarks;
 }
 
 - (IBAction)didSelectBookmark:(NSPopUpButton*)sender
@@ -293,6 +307,7 @@ static void* kvoContext;
 
 - (void)startMoving:(CASMountDirection)direction
 {
+    NSLog(@"startMoving: %ld",direction);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
     [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25];
     [self.mount startMoving:direction];
@@ -300,6 +315,7 @@ static void* kvoContext;
 
 - (void)stopMoving
 {
+    NSLog(@"stopMoving");
     [self.mount stopMoving];
 }
 

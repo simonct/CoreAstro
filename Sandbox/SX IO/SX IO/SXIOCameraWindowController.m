@@ -863,13 +863,14 @@ static void* kvoContext;
     }
     
     self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
+    self.mountWindowController.cameraController = self.cameraController;
+    self.mountWindowController.mountWindowDelegate = self;
     [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
         if (error){
             [self presentAlertWithTitle:nil message:[error localizedDescription]];
         }
         else {
-            self.mountWindowController.cameraController = self.cameraController;
-            self.mountWindowController.mountWindowDelegate = self;
+            [self.mountWindowController showWindow:nil];
             CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
             if (solution){
                 [self.mountWindowController setTargetRA:solution.centreRA dec:solution.centreDec];
@@ -1072,6 +1073,11 @@ static void* kvoContext;
 }
 
 #pragma mark - Mount Window Controller Delegate
+
+- (CASPlateSolveSolution*)plateSolveSolution
+{
+    return self.exposureView.plateSolveSolution;
+}
 
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
 {
