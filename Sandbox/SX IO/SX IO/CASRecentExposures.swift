@@ -60,7 +60,7 @@ extension CASCameraController {
 //                return NSURL(string: s as String)
 //            }
             
-            return convert(recents!, {
+            return convert(recents!, converter: {
                 return NSURL(string: $0 as String)
             })
         }
@@ -71,7 +71,7 @@ extension CASCameraController {
 //                return url.absoluteString
 //            }
             
-            defaultsDomain["RecentURLs"] = convert(newValue, {
+            defaultsDomain["RecentURLs"] = convert(newValue, converter: {
                 return $0.absoluteString
             })
         }
