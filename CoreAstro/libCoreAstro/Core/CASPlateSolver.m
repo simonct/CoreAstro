@@ -468,6 +468,8 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
             // run the solver task
             [self.solverTask launchWithOutputBlock:^(NSString* string) {
                 
+                NSLog(@"Plate solver: %@",string);
+                
                 // accumulate the log output
                 if (!self.logOutput){
                     self.logOutput = [NSMutableString stringWithCapacity:1024];
