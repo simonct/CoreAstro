@@ -133,7 +133,9 @@ static void* kvoContext;
         return;
     }
     
-    [self.mountSynchroniser cancel];
+    if (self.mountSynchroniser.busy){
+        [self.mountSynchroniser cancel];
+    }
     [self.mount disconnect];
     
 #if defined(SXIO)
