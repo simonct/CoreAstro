@@ -26,6 +26,7 @@
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
+#import <CloudKit/CloudKit.h>
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
@@ -1222,18 +1223,16 @@ static void* kvoContext;
                 
                 if (!error){
                     
-                    // cache the plate solution - todo; do we want to share this in iCloud ?
-                    NSURL* url = [self plateSolutionURLForExposure:exposure];
-                    if (url){
-                        NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
-                        if (!solutionData){
-                            NSLog(@"Failed to archive solution data");
-                        }
-                        else{
-                            if (![solutionData writeToURL:url options:NSDataWritingAtomic error:&error]){
-                                NSLog(@"Failed to write solution data: %@",error);
+                    NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
+                    if (solutionData){
+                        CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
+                        [record setObject:exposure.uuid forKey:@"UUID"];
+                        [record setObject:solutionData forKey:@"Solution"];
+                        [[CKContainer defaultContainer].publicCloudDatabase saveRecord:record completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+                            if (error){
+                                NSLog(@"Failed to save plate solution to CloudKit: %@",error);
                             }
-                        }
+                        }];
                     }
                 }
 
@@ -1662,19 +1661,49 @@ static void* kvoContext;
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
         // grab any solution data before we start reusing the exposure variable
-        NSData* solutionData = nil;
+        __block NSData* solutionData = nil;
         if (self.showPlateSolution){
             
-            // first try the cache
-            solutionData = [NSData dataWithContentsOfURL:[self plateSolutionURLForExposure:exposure]];
+            // look for a solution file alongside the exposure
+            NSURL* exposureUrl = exposure.io.url;
+            if (exposureUrl){
+                NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
+                solutionData = [NSData dataWithContentsOfURL:solutionUrl];
+            }
+            
+            // then, try CloudKit
             if (!solutionData){
                 
-                // then look for a solution file alongside the exposure
-                NSURL* exposureUrl = exposure.io.url;
-                if (exposureUrl){
-                    NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
-                    solutionData = [NSData dataWithContentsOfURL:solutionUrl];
-                }
+                CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
+                [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
+                    if (!error && results.count > 0){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            if ([exposure.uuid isEqualToString:self.currentExposure.uuid] && self.showPlateSolution){
+                                
+                                NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
+                                if ([solutionData length]){
+                                    @try {
+                                        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+                                        if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
+                                            NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
+                                            solution = nil;
+                                        }
+                                        if (!solution){
+                                            // todo; start plate solve for this exposure, show solution hud but with a spinner
+                                        }
+                                        else {
+                                            self.exposureView.plateSolveSolution = solution;
+                                        }
+                                    }
+                                    @catch (NSException *exception) {
+                                        NSLog(@"Exception opening solution data: %@",exception);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }];
             }
         }
         
