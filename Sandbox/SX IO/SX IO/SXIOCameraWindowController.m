@@ -100,6 +100,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 // mount control
 @property (strong) CASMount* mount;
 @property (strong) SXIOMountState* mountState;
+@property CASMountPierSide startPierSide;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
@@ -202,6 +203,32 @@ static void* kvoContext;
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
+    
+    // move solutions from cache to cloudkit?
+#if 0
+    NSString* s;
+    NSString* caches = self.cachesDirectory;
+    NSMutableArray* records = [NSMutableArray array];
+    NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtPath:caches];
+    while ((s = e.nextObject)) {
+        if ([s.pathExtension isEqualToString:@"caPlateSolution"]){
+            s = [caches stringByAppendingPathComponent:s];
+            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:[NSData dataWithContentsOfFile:s]];
+            if (solution){
+                CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
+                NSString* name = [[s lastPathComponent] stringByDeletingPathExtension];
+                [record setObject:name forKey:@"UUID"];
+                [record setObject:[solution solutionData] forKey:@"Solution"];
+                [records addObject:record];
+            }
+        }
+    }
+    
+    if (records.count){
+        CKModifyRecordsOperation* op = [[CKModifyRecordsOperation alloc] initWithRecordsToSave:records recordIDsToDelete:nil];
+        [[CKContainer defaultContainer].publicCloudDatabase addOperation:op];
+    }
+#endif
 }
 
 - (void)dealloc
@@ -888,6 +915,18 @@ static void* kvoContext;
     }
 }
 
+- (void)slewToLockedSolution
+{
+    CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
+    if (solution){
+        self.mountWindowController.cameraController = self.cameraController;
+        self.mountWindowController.mountWindowDelegate = self;
+        self.mountWindowController.usePlateSolvng = YES;
+        [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
+        // calls - (void)mountWindowController:didCompleteWithError: when complete
+    }
+}
+
 - (void)restartAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
     NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
@@ -1060,11 +1099,7 @@ static void* kvoContext;
                             
                             self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
                             
-                            self.mountWindowController.cameraController = self.cameraController;
-                            self.mountWindowController.mountWindowDelegate = self;
-                            self.mountWindowController.usePlateSolvng = YES;
-                            [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
-                            // calls - (void)mountWindowController:didCompleteWithError: when complete
+                            [self slewToLockedSolution];
                         }
                     }
                 }
@@ -1679,7 +1714,7 @@ static void* kvoContext;
                     if (!error && results.count > 0){
                         dispatch_async(dispatch_get_main_queue(), ^{
                             
-                            if ([exposure.uuid isEqualToString:self.currentExposure.uuid] && self.showPlateSolution){
+                            if ([exposure.uuid isEqualToString:self.currentExposure.uuid] && self.showPlateSolution){ // showPlateSolution shoudl be on the exposure view
                                 
                                 NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
                                 if ([solutionData length]){
@@ -1960,6 +1995,18 @@ static void* kvoContext;
             
             // clear any calibrated exposure set in the display code
             self.calibratedExposure = nil;
+        }
+        
+        // trigger a flip if we've crossed the meridian and have more exposures to take. This will cancel any current exposure and restart once the slew is completed
+        if (self.mount && controller.capturing){
+            if (self.mount.pierSide == self.startPierSide){
+                NSLog(@"Mount on same side of pier as at start of sequence, ignoring");
+            }
+            else {
+                NSLog(@"Mount on different side of pier as at start of sequence, triggering flip");
+                self.startPierSide = self.mount.pierSide;
+                [self slewToLockedSolution];
+            }
         }
     }
     
@@ -2263,6 +2310,9 @@ static void* kvoContext;
 
 - (void)captureWithCompletion:(void(^)(NSError*))completion
 {
+    // record the side of the pier that the exposure sequence started on (will be 0 if there's no mount)
+    self.startPierSide = self.mount.pierSide;
+    
     // disable idle sleep
     [CASPowerMonitor sharedInstance].disableSleep = YES;
     
