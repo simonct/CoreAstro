@@ -143,7 +143,12 @@ static void* kvoContext;
 #endif
     
     [self close];
-    
+}
+
+- (void)close
+{
+    [super close];
+
     [self.mountWindowDelegate mountWindowControllerDidClose:self];
 }
 
