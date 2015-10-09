@@ -1155,6 +1155,14 @@ static void* kvoContext;
     }
 }
 
+- (void)mountWindowControllerDidClose:(CASMountWindowController*)windowController;
+{
+    if (windowController == self.mountWindowController){
+        self.mountWindowController = nil;
+        self.mount = nil;
+    }
+}
+
 #pragma mark - Focuser
 
 - (IBAction)showFocuserWindow:(id)sender

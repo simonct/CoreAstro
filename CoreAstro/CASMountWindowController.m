@@ -143,6 +143,8 @@ static void* kvoContext;
 #endif
     
     [self close];
+    
+    [self.mountWindowDelegate mountWindowControllerDidClose:self];
 }
 
 - (void)presentAlertWithMessage:(NSString*)message
