@@ -863,11 +863,16 @@ static void* kvoContext;
 
 - (IBAction)connectToMount:(id)sender
 {
-    if (!self.serialPortManager){
-        self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    if (self.mountWindowController){
+        [self.mountWindowController.window makeKeyAndOrderFront:nil]; // todo; change menu item title when connected to a mount ?
     }
-    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-    [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+    else {
+        if (!self.serialPortManager){
+            self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+        }
+        self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+        [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
+    }
 }
 
 - (IBAction)connectButtonPressed:(id)sender
