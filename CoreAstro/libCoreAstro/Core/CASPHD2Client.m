@@ -26,6 +26,14 @@ static void* kvoContext;
 {
     [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
     [_client removeObserver:self forKeyPath:@"connected" context:&kvoContext];
+    [self disconnect];
+}
+
+- (void)disconnect
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
+    [self.client disconnect];
+    self.client = nil;
 }
 
 - (void)connectWithCompletion:(void(^)())completion
@@ -46,6 +54,16 @@ static void* kvoContext;
     if (self.connectCompletion){
         self.connectCompletion();
         self.connectCompletion = nil;
+    }
+}
+
+- (void)callSettleCompletionWithGuiding:(BOOL)guiding
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
+
+    if (self.settleCompletion){
+        self.settleCompletion(guiding);
+        self.settleCompletion = nil;
     }
 }
 
@@ -90,6 +108,8 @@ static void* kvoContext;
         }
         if ([@"connected" isEqualToString:keyPath]){
             self.connected = _client.connected;
+            NSLog(@"PHD2 client connected: %d",self.connected);
+            // if (self.connected) [self callConnectCompletion]; // ??
         }
 //        else if (!self.client.connected){
 //            NSLog(@"disconnected");
@@ -138,10 +158,7 @@ static void* kvoContext;
         else {
             NSLog(@"Settling failed %@",message);
         }
-        if (self.settleCompletion){
-            self.settleCompletion(self.guiding);
-            self.settleCompletion = nil;
-        }
+        [self callSettleCompletionWithGuiding:self.guiding];
     }
     
     if ([@[@"Settling"] containsObject:event]){
@@ -176,25 +193,43 @@ static void* kvoContext;
 
 - (void)guideWithCompletion:(void(^)(BOOL))completion
 {
+    NSLog(@"guideWithCompletion"); // todo; check/handle this being called re-entrantly
+    
     [self setupClient];
     
     self.settleCompletion = completion;
     
     // connect everything up, assume profile is set on the app
     [self.client enqueueCommand:@{@"method":@"set_connected",@"params":@[@YES]} completion:^(id result,NSError* error) {
+        
         if (error){
             NSLog(@"Connect failed: %@",error);
             completion(NO);
         }
         else{
-            NSLog(@"Connected");
-            [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+
+            // after a slew the chances are that the original guide star is nowhere near its original position so make sure it
+            // is cleared to prevent PHD2 from attempting to reaquire it. This will force an auto-select when the guide command is sent
+            [self.client enqueueCommand:@{@"method":@"deselect_star"} completion:^(id _,NSError* error) {
+                
                 if (error){
-                    NSLog(@"Start failed: %@",error);
+                    NSLog(@"Deselect star failed: %@",error);
                     completion(NO);
                 }
-                else{
-                    NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
+                else {
+                    
+                    [self.client enqueueCommand:@{@"method":@"guide",@"params":@[[self settleParam],@(NO)]} completion:^(id result,NSError* error) {
+                        
+                        // sometimes get an 'already guiding' error here so need to check -guideWithCompletion: isn't being called re-entrantly
+                        
+                        if (error){
+                            NSLog(@"Start failed: %@",error);
+                            completion(NO);
+                        }
+                        else{
+                            NSLog(@"Started"); // self.settleCompletion will be called when SettleDone is received
+                        }
+                    }];
                 }
             }];
         }
@@ -209,7 +244,7 @@ static void* kvoContext;
             completion(NO);
         }
         else {
-            [self guideWithCompletion:completion];
+            completion(YES);
         }
     }];
 }
@@ -228,8 +263,37 @@ static void* kvoContext;
     }];
 }
 
+- (void)handleFailedDither
+{
+    // restart guiding and call the original settle completion block
+    void(^settleCompletion)(BOOL) = [self.settleCompletion copy]; // grab the original dither completion block
+
+    [self disconnect];
+    [self connectWithCompletion:^{
+        
+        if (!self.connected){
+            if (settleCompletion){
+                settleCompletion(NO);
+            }
+            self.settleCompletion = nil;
+        }
+        else {
+            [self guideWithCompletion:^(BOOL guiding) {
+                if (settleCompletion){
+                    settleCompletion(guiding);
+                }
+                self.settleCompletion = nil;
+            }];
+        }
+    }];
+}
+
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion
 {
+    NSLog(@"ditherByPixels %f, raOnly: %d",pixels,raOnly); // todo; check/handle this being called re-entrantly
+
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(ditherTimeout) object:nil];
+
     if (!self.guiding){
         // todo; this can happen if this is called before we've got the AppState event after connecting, queue the request up ?
         NSLog(@"Attempting to dither while not guiding"); // always getting this after stopping and starting guiding
@@ -250,10 +314,8 @@ static void* kvoContext;
     self.settleCompletion = completion;
     [self.client enqueueCommand:@{@"method":@"dither",@"params":@[@(pixels),@(raOnly),[self settleParam]]} completion:^(id result,NSError* error) {
         if (error){
-            NSLog(@"Dither failed: %@",result);
-            if (completion){
-                completion(NO);
-            }
+            NSLog(@"Dither failed with error %@, attempting to restart guiding",result);
+            [self handleFailedDither];
         }
         else {
             NSLog(@"Dithering %.1f pixels...",pixels);
@@ -265,16 +327,13 @@ static void* kvoContext;
 
 - (void)ditherTimeout
 {
-    NSLog(@"ditherTimeout");
-    // stop/start phd client ?
+    NSLog(@"Dither timeout fired, attempting to restart guiding");
+    [self handleFailedDither];
 }
 
 - (void)cancel
 {
-    if (self.settleCompletion){
-        self.settleCompletion(NO);
-        self.settleCompletion = nil;
-    }
+    [self callSettleCompletionWithGuiding:NO];
 }
 
 @end

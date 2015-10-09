@@ -8,6 +8,7 @@
 
 #import "CASMountWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
+#import "SX_IO-Swift.h"
 #if defined(SXIO)
 #import "SXIOAppDelegate.h"
 #endif
@@ -126,13 +127,15 @@ static void* kvoContext;
 
 - (void)closeWindow:sender
 {
-    if (self.mountSynchroniser.solving){
+    if (self.mountSynchroniser.busy){
         // need a way of cancelling a solve
         NSLog(@"Currently solving...");
         return;
     }
     
-    [self.mountSynchroniser cancel];
+    if (self.mountSynchroniser.busy){
+        [self.mountSynchroniser cancel];
+    }
     [self.mount disconnect];
     
 #if defined(SXIO)
@@ -145,6 +148,46 @@ static void* kvoContext;
 - (void)presentAlertWithMessage:(NSString*)message
 {
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+}
+
+#pragma mark - Bookmarks
+
+- (NSArray*)bookmarks
+{
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    // if the delegate has a solution, add that as a temp bookmark (would be nice to be able to add a separator but we're using bindings atm)
+    // todo; pick up changes in the delegate's solution
+    CASPlateSolveSolution* solution = self.mountWindowDelegate.plateSolveSolution;
+    if (solution){
+        NSDictionary* solutionDictionary = solution.solutionDictionary;
+        if (solutionDictionary){
+            NSString* name = [NSString stringWithFormat:@"Current Solution (%@, %@)",solution.displayCentreRA,solution.displayCentreDec];
+            NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solutionDictionary};
+            bookmarks = [bookmarks arrayByAddingObject:bookmark];
+        }
+    }
+    
+    return bookmarks;
+}
+
+- (IBAction)didSelectBookmark:(NSPopUpButton*)sender
+{
+    if (!self.mount.connected || self.mount.slewing){
+        return;
+    }
+
+    const NSInteger index = sender.indexOfSelectedItem;
+    if (index != -1){
+        NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+        if (solution){
+            [self setTargetRA:solution.centreRA dec:solution.centreDec];
+        }
+        else {
+            [self setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]];
+        }
+    }
 }
 
 #pragma mark - Mount/Camera
@@ -226,7 +269,8 @@ static void* kvoContext;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs
 {
     NSParameterAssert(self.mount.connected);
-    
+    NSParameterAssert(!self.mount.slewing);
+
     __weak __typeof (self) weakSelf = self;
     [self.mount setTargetRA:raDegs dec:decDegs completion:^(CASMountSlewError error) {
         if (error != CASMountSlewErrorNone){
@@ -265,6 +309,7 @@ static void* kvoContext;
 
 - (void)startMoving:(CASMountDirection)direction
 {
+    NSLog(@"startMoving: %ld",direction);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
     [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25];
     [self.mount startMoving:direction];
@@ -272,6 +317,7 @@ static void* kvoContext;
 
 - (void)stopMoving
 {
+    NSLog(@"stopMoving");
     [self.mount stopMoving];
 }
 
@@ -342,6 +388,12 @@ static void* kvoContext;
         }
         else{
             // todo; cache locally for offline access ?
+            
+            // add bookmark
+            [self willChangeValueForKey:@"bookmarks"];
+            [CASBookmarks.sharedInstance addBookmark:self.searchString ra:ra dec:dec];
+            [self didChangeValueForKey:@"bookmarks"];
+            
             [weakSelf setTargetRA:ra dec:dec]; // probably not - do this when slew commanded as the mount may be busy ?
         }
     }];

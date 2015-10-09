@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1080</int>
-		<string key="IBDocument.SystemVersion">14D136</string>
+		<int key="IBDocument.SystemTarget">1090</int>
+		<string key="IBDocument.SystemVersion">14F27</string>
 		<string key="IBDocument.InterfaceBuilderVersion">7706</string>
-		<string key="IBDocument.AppKitVersion">1347.57</string>
+		<string key="IBDocument.AppKitVersion">1348.17</string>
 		<string key="IBDocument.HIToolboxVersion">758.70</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1640,6 +1640,26 @@
 									<reference key="NSMixedImage" ref="502551668"/>
 									<int key="NSTag">11103</int>
 								</object>
+								<object class="NSMenuItem" id="91699478">
+									<reference key="NSMenu" ref="43874950"/>
+									<string key="NSTitle">Add Bookmark...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11108</int>
+								</object>
+								<object class="NSMenuItem" id="886287087">
+									<reference key="NSMenu" ref="43874950"/>
+									<bool key="NSIsAlternate">YES</bool>
+									<string key="NSTitle">Edit Bookmarks...</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSKeyEquivModMask">524288</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+									<int key="NSTag">11109</int>
+								</object>
 								<object class="NSMenuItem" id="452202085">
 									<reference key="NSMenu" ref="43874950"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -1770,7 +1790,7 @@
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<object class="NSView" key="NSWindowView" id="373658400">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="790696633">
@@ -1778,7 +1798,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{18, 42}, {436, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="709462081"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
@@ -1815,8 +1834,6 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{18, 0}, {435, 34}}</string>
 							<reference key="NSSuperview" ref="373658400"/>
-							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSReuseIdentifierKey">_NS:1535</string>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="231152739">
@@ -1841,12 +1858,10 @@
 						</object>
 					</array>
 					<string key="NSFrameSize">{472, 91}</string>
-					<reference key="NSSuperview"/>
-					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="790696633"/>
 					<string key="NSReuseIdentifierKey">_NS:21</string>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {2560, 1417}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1280, 777}}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<int key="NSWindowAnimationBehavior">5</int>
 				<bool key="NSWindowIsRestorable">YES</bool>
@@ -2744,6 +2759,22 @@
 						<reference key="destination" ref="187252653"/>
 					</object>
 					<int key="connectionID">919</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">addBookmark:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="91699478"/>
+					</object>
+					<int key="connectionID">923</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">editBookmarks:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="886287087"/>
+					</object>
+					<int key="connectionID">927</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -3804,6 +3835,8 @@
 							<reference ref="452202085"/>
 							<reference ref="135985122"/>
 							<reference ref="187252653"/>
+							<reference ref="91699478"/>
+							<reference ref="886287087"/>
 						</array>
 						<reference key="parent" ref="242569285"/>
 					</object>
@@ -4307,6 +4340,16 @@
 						<reference key="object" ref="187252653"/>
 						<reference key="parent" ref="43874950"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">920</int>
+						<reference key="object" ref="91699478"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">924</int>
+						<reference key="object" ref="886287087"/>
+						<reference key="parent" ref="43874950"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4540,12 +4583,14 @@
 				<string key="914.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="916.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="920.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="924.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">919</int>
+			<int key="maxID">927</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5141,6 +5186,7 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SXIOCameraWindowController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="addBookmark:">id</string>
 						<string key="applyDebayer:">NSMenuItem</string>
 						<string key="cancelCapture:">id</string>
 						<string key="capture:">NSButton</string>
@@ -5149,9 +5195,14 @@
 						<string key="captureFlats:">id</string>
 						<string key="connectButtonPressed:">id</string>
 						<string key="connectToMount:">id</string>
+						<string key="editBookmarks:">id</string>
+						<string key="lockSolution:">id</string>
+						<string key="navigate:">NSSegmentedControl</string>
+						<string key="nextExposure:">id</string>
 						<string key="openDocument:">id</string>
 						<string key="plateSolve:">id</string>
 						<string key="plateSolveWithOptions:">id</string>
+						<string key="previousExposure:">id</string>
 						<string key="saveAs:">id</string>
 						<string key="saveToFITS:">id</string>
 						<string key="selection:">NSSegmentedControl</string>
@@ -5177,6 +5228,10 @@
 						<string key="zoomOut:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="addBookmark:">
+							<string key="name">addBookmark:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="applyDebayer:">
 							<string key="name">applyDebayer:</string>
 							<string key="candidateClassName">NSMenuItem</string>
@@ -5209,6 +5264,22 @@
 							<string key="name">connectToMount:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="editBookmarks:">
+							<string key="name">editBookmarks:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="lockSolution:">
+							<string key="name">lockSolution:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="navigate:">
+							<string key="name">navigate:</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
+						</object>
+						<object class="IBActionInfo" key="nextExposure:">
+							<string key="name">nextExposure:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="openDocument:">
 							<string key="name">openDocument:</string>
 							<string key="candidateClassName">id</string>
@@ -5219,6 +5290,10 @@
 						</object>
 						<object class="IBActionInfo" key="plateSolveWithOptions:">
 							<string key="name">plateSolveWithOptions:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="previousExposure:">
+							<string key="name">previousExposure:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="saveAs:">
@@ -5318,6 +5393,7 @@
 						<string key="captureButton">NSButton</string>
 						<string key="containerScrollView">NSScrollView</string>
 						<string key="mountConnectWindow">NSWindow</string>
+						<string key="navigationControl">NSSegmentedControl</string>
 						<string key="progressIndicator">NSProgressIndicator</string>
 						<string key="progressStatusText">NSTextField</string>
 						<string key="selectionControl">NSSegmentedControl</string>
@@ -5337,6 +5413,10 @@
 						<object class="IBToOneOutletInfo" key="mountConnectWindow">
 							<string key="name">mountConnectWindow</string>
 							<string key="candidateClassName">NSWindow</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="navigationControl">
+							<string key="name">navigationControl</string>
+							<string key="candidateClassName">NSSegmentedControl</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="progressIndicator">
 							<string key="name">progressIndicator</string>

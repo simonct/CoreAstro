@@ -102,6 +102,10 @@
 		F415C54E17C95C09001C42F1 /* QuickFITS.qlgenerator in Copy QuickFITS plugin */ = {isa = PBXBuildFile; fileRef = F415C53417C95B7C001C42F1 /* QuickFITS.qlgenerator */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F415C57A17CA0859001C42F1 /* CASFITSPreviewer.m in Sources */ = {isa = PBXBuildFile; fileRef = F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */; };
 		F415C57B17CA0859001C42F1 /* CASFITSPreviewer.h in Headers */ = {isa = PBXBuildFile; fileRef = F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */; };
+		F418AF391BA09B7A00395C4A /* SXIOBookmarkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F418AF371BA09B7A00395C4A /* SXIOBookmarkWindowController.m */; };
+		F418AF3A1BA09B7A00395C4A /* SXIOBookmarkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F418AF371BA09B7A00395C4A /* SXIOBookmarkWindowController.m */; };
+		F418AF3B1BA09B7A00395C4A /* SXIOBookmarkWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F418AF381BA09B7A00395C4A /* SXIOBookmarkWindowController.xib */; };
+		F418AF3C1BA09B7A00395C4A /* SXIOBookmarkWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F418AF381BA09B7A00395C4A /* SXIOBookmarkWindowController.xib */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
 		F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
@@ -124,6 +128,8 @@
 		F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
+		F479941C1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */; };
+		F479941D1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */; };
 		F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
 		F48534F517D23C7700C5EE8C /* SXIOCalibrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */; };
 		F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
@@ -181,6 +187,7 @@
 		F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C0179BC1D90013D220 /* CASFilterWheelControlsViewController.xib */; };
 		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
+		F4A63E081BC13DA50047ED91 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A63E071BC13DA50047ED91 /* CloudKit.framework */; };
 		F4AC8C5A1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
 		F4AC8C5B1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
 		F4AC8C5C1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */; };
@@ -486,6 +493,9 @@
 		F415C54717C95B7D001C42F1 /* QuickFITS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QuickFITS-Prefix.pch"; sourceTree = "<group>"; };
 		F415C57817CA0859001C42F1 /* CASFITSPreviewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFITSPreviewer.m; sourceTree = "<group>"; };
 		F415C57917CA0859001C42F1 /* CASFITSPreviewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFITSPreviewer.h; sourceTree = "<group>"; };
+		F418AF361BA09B7A00395C4A /* SXIOBookmarkWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOBookmarkWindowController.h; sourceTree = "<group>"; };
+		F418AF371BA09B7A00395C4A /* SXIOBookmarkWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOBookmarkWindowController.m; sourceTree = "<group>"; };
+		F418AF381BA09B7A00395C4A /* SXIOBookmarkWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOBookmarkWindowController.xib; sourceTree = "<group>"; };
 		F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSequenceEditorWindowController.h; sourceTree = "<group>"; };
 		F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOSequenceEditorWindowController.m; sourceTree = "<group>"; };
 		F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorWindowController.xib; sourceTree = "<group>"; };
@@ -506,6 +516,7 @@
 		F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
+		F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASBookmarks.swift; sourceTree = "<group>"; };
 		F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCalibrationWindowController.h; sourceTree = "<group>"; };
 		F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCalibrationWindowController.m; sourceTree = "<group>"; };
 		F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCalibrationWindowController.xib; sourceTree = "<group>"; };
@@ -579,6 +590,7 @@
 		F4A258C1179BC1D90013D220 /* CASPHDControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASPHDControlsViewController.h; path = ../../../CoreAstro/CASPHDControlsViewController.h; sourceTree = "<group>"; };
 		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
 		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
+		F4A63E071BC13DA50047ED91 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFocuserWindowController.h; sourceTree = "<group>"; };
 		F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFocuserWindowController.m; sourceTree = "<group>"; };
 		F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFocuserWindowController.xib; sourceTree = "<group>"; };
@@ -714,6 +726,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4A63E081BC13DA50047ED91 /* CloudKit.framework in Frameworks */,
 				F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */,
 				F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */,
 				F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */,
@@ -991,6 +1004,7 @@
 		F4FD2301179B30D60049F5B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F4A63E071BC13DA50047ED91 /* CloudKit.framework */,
 				F4BC3CCD19AE644200401578 /* CoreLocation.framework */,
 				F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */,
 				F4554895185128ED00D30926 /* CoreMedia.framework */,
@@ -1061,9 +1075,13 @@
 				F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */,
 				F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */,
 				F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */,
+				F418AF361BA09B7A00395C4A /* SXIOBookmarkWindowController.h */,
+				F418AF371BA09B7A00395C4A /* SXIOBookmarkWindowController.m */,
+				F418AF381BA09B7A00395C4A /* SXIOBookmarkWindowController.xib */,
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F49459781B3F228C0028780D /* CASLocalNotifier.swift */,
+				F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */,
 				F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
@@ -1305,6 +1323,9 @@
 							com.apple.Sandbox = {
 								enabled = 1;
 							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 						};
 					};
 				};
@@ -1405,6 +1426,7 @@
 				F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */,
 				F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */,
 				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
+				F418AF3C1BA09B7A00395C4A /* SXIOBookmarkWindowController.xib in Resources */,
 				F45C487018B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */,
 				F4E8B0DC18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F40D5B5D1849EC5E00977FA9 /* CASExposureInfoView.xib in Resources */,
@@ -1487,6 +1509,7 @@
 				F4FD230D179B30D60049F5B5 /* InfoPlist.strings in Resources */,
 				F4FD2313179B30D60049F5B5 /* Credits.rtf in Resources */,
 				F4FD2319179B30D60049F5B5 /* MainMenu.xib in Resources */,
+				F418AF3B1BA09B7A00395C4A /* SXIOBookmarkWindowController.xib in Resources */,
 				F4A2588B179BC0990013D220 /* CASExposureInfoView.xib in Resources */,
 				F4A2588D179BC0990013D220 /* CASStarInfoHUDView.xib in Resources */,
 				F40D5CAE1851283E00977FA9 /* SXIOExportMovieWindowController.xib in Resources */,
@@ -1613,6 +1636,7 @@
 				F40D5B371849EC5E00977FA9 /* CASStarInfoHUDView.m in Sources */,
 				F40D5B381849EC5E00977FA9 /* CASProgressHUDView.m in Sources */,
 				F40D5B391849EC5E00977FA9 /* CASHistogramHUDView.m in Sources */,
+				F418AF3A1BA09B7A00395C4A /* SXIOBookmarkWindowController.m in Sources */,
 				F40A062E1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */,
 				F40D5CAD1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F40D5B3A1849EC5E00977FA9 /* CASPlateSolutionHUDView.m in Sources */,
@@ -1639,6 +1663,7 @@
 				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
 				F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
+				F479941D1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
 			);
@@ -1703,6 +1728,7 @@
 				F4A2588C179BC0990013D220 /* CASStarInfoHUDView.m in Sources */,
 				F4A2588E179BC0990013D220 /* CASProgressHUDView.m in Sources */,
 				F4A2588F179BC0990013D220 /* CASHistogramHUDView.m in Sources */,
+				F418AF391BA09B7A00395C4A /* SXIOBookmarkWindowController.m in Sources */,
 				F40A062D1860523400729934 /* SXIOImageAdjustmentWindowController.m in Sources */,
 				F40D5CAC1851283E00977FA9 /* SXIOExportMovieWindowController.m in Sources */,
 				F4A25891179BC0990013D220 /* CASPlateSolutionHUDView.m in Sources */,
@@ -1729,6 +1755,7 @@
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
 				F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
+				F479941C1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
 			);
@@ -2121,7 +2148,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";
@@ -2144,7 +2171,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "SX IO/SX IO.entitlements";
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SX IO/SX IO-Prefix.pch";

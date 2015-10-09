@@ -73,7 +73,7 @@
     BOOL success = NO;
     
     if (!is || !os){
-        NSLog(@"Can't open connection to %@",host.name);
+        NSLog(@"Socket client: can't open connection to %@",host.name);
     }
     else {
         
@@ -100,12 +100,14 @@
     if (self.inputStream){
         [self.inputStream close];
         [self.inputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        self.inputStream.delegate = nil;
         self.inputStream = nil;
     }
     
     if (self.outputStream){
         [self.outputStream close];
         [self.outputStream removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+        self.outputStream.delegate = nil;
         self.outputStream = nil;
     }
     
@@ -118,7 +120,7 @@
                 request.completion(nil);
             }
             @catch (id ex) {
-                NSLog(@"Exception calling request completion: %@",ex);
+                NSLog(@"Socket client: exception calling request completion: %@",ex);
             }
         }
     }
@@ -171,11 +173,13 @@
             [self process];
             break;
         case NSStreamEventErrorOccurred:
+            NSLog(@"Socket client: stream error %@",[aStream streamError]);
             name = [NSString stringWithFormat:@"NSStreamEventErrorOccurred: %@",[aStream streamError]];
             [self disconnect];
             self.error = [aStream streamError]; // set this after disconnecting as when we return from this we could have been deallocated
             break;
         case NSStreamEventEndEncountered:
+            NSLog(@"Socket client: end of stream");
             name = @"NSStreamEventEndEncountered";
             [self disconnect];
             break;
@@ -220,7 +224,7 @@
             
             const NSInteger count = [self.outputStream write:[request.data bytes] + request.writtenCount maxLength:[request.data length] - request.writtenCount];
             if (count < 0){
-                NSLog(@"Failed to write the whole packet"); // disconnect ?
+                NSLog(@"Socket client: failed to write the whole packet"); // disconnect ?
             }
             else {
                 request.writtenCount += count;
@@ -271,7 +275,7 @@
             }
             else {
                 
-                NSLog(@"Read %ld bytes but there was no outstanding request to handle them",count);
+                NSLog(@"Socket client: read %ld bytes but there was no outstanding request to handle them",count);
                 
                 readComplete = YES;
             }
@@ -280,11 +284,11 @@
             
             if (count == 0){
                 // remote peer closed connection
-                NSLog(@"peer disconnected");
+                NSLog(@"Socket client: peer disconnected");
             }
             else {
                 // some other sort of error
-                NSLog(@"read error ?");
+                NSLog(@"Socket client: read error");
             }
             readComplete = YES;
             break;
@@ -296,12 +300,18 @@
     // check we've read everything we wanted, complete if we have
     if (readComplete){
         
+        __weak __typeof(self) weakSelf = self;
         if (request.completion){
             @try {
                 request.completion(request.response);
             }
             @catch (id ex) {
-                NSLog(@"Exception calling request completion: %@",ex);
+                NSLog(@"Socket client: exception calling request completion: %@",ex);
+            }
+            // check this object hasn't been deallocated in the message handler
+            __typeof(self) strongSelf = weakSelf;
+            if (!strongSelf){
+                return;
             }
         }
         [_queue removeLastObject];
@@ -350,7 +360,7 @@ static const char CRLF[] = "\r\n";
     NSError* error;
     NSData* data = [NSJSONSerialization dataWithJSONObject:mcmd options:0 error:&error];
     if (error){
-        NSLog(@"enqueueCommand: %@",error);
+        NSLog(@"JSON Socket client: error serializing data %@",error);
     }
     else {
         
@@ -378,31 +388,43 @@ static const char CRLF[] = "\r\n";
         const NSInteger count = [self read:[self.readBuffer mutableBytes] maxLength:[self.readBuffer length]];
         if (count > 0){
             
+//            NSLog(@"self.readBuffer: %@",[[NSString alloc] initWithData:self.readBuffer encoding:NSUTF8StringEncoding]);
+            
             // append the bytes we read to the end of the persistent buffer and reset the contents of the transient buffer
             [self.buffer appendBytes:[self.readBuffer mutableBytes] length:count];
             [self.readBuffer resetBytesInRange:NSMakeRange(0, [self.readBuffer length])];
             
             // search the persistent buffer for json separated by CRLF and keep going while we find any
+            __weak __typeof(self) weakSelf = self;
+            
             while (1) {
                 
-                // look for CRLF
-                const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
-                if (range.location == NSNotFound){
-                    break;
+                // check this object hasn't been deallocated in a message handler
+                __typeof(self) strongSelf = weakSelf;
+                if (!strongSelf){
+                    return;
                 }
-                
-                // attempt to deserialise up to the CRLF
-                NSRange jsonRange = NSMakeRange(0, range.location);
-                id json = [NSJSONSerialization JSONObjectWithData:[self.buffer subdataWithRange:jsonRange] options:0 error:nil];
-                
-                // remove the json + CRLF from the front of the persistent buffer
-                jsonRange.length += 2;
-                [self.buffer replaceBytesInRange:jsonRange withBytes:nil length:0];
-                
-                if (!json){
-                    break;
+                else{
+                    
+                    // look for CRLF
+                    const NSRange range = [strongSelf.buffer rangeOfData:[NSData dataWithBytes:CRLF length:2] options:0 range:NSMakeRange(0, MIN(count, [strongSelf.buffer length]))];
+                    if (range.location == NSNotFound){
+                        break;
+                    }
+                    
+                    // attempt to deserialise up to the CRLF
+                    NSRange jsonRange = NSMakeRange(0, range.location);
+                    id json = [NSJSONSerialization JSONObjectWithData:[strongSelf.buffer subdataWithRange:jsonRange] options:0 error:nil];
+                    
+                    // remove the json + CRLF from the front of the persistent buffer
+                    jsonRange.length += 2;
+                    [strongSelf.buffer replaceBytesInRange:jsonRange withBytes:nil length:0];
+                    
+                    if (!json){
+                        break;
+                    }
+                    [strongSelf handleIncomingMessage:json]; // this object is being deallocated when a settledone event is handled but the loop's still running...
                 }
-                [self handleIncomingMessage:json];
             }
         }
     }
@@ -417,13 +439,13 @@ static const char CRLF[] = "\r\n";
     else {
         NSString* jsonrpc = message[@"jsonrpc"];
         if (![jsonrpc isEqualToString:@"2.0"]){
-            NSLog(@"Unrecognised JSON-RPC version of %@",jsonrpc);
+            NSLog(@"JSON Socket client: unrecognised JSON-RPC version of %@",jsonrpc);
         }
         else{
             id msgID = message[@"id"];
             void(^callback)(id,NSError*) = self.callbacks[msgID];
             if (!callback){
-                NSLog(@"No callback for id %@",msgID);
+                NSLog(@"JSON Socket client: no callback for id %@",msgID);
             }
             else {
                 @try {
@@ -437,7 +459,7 @@ static const char CRLF[] = "\r\n";
                     callback(result,error);
                 }
                 @catch (NSException *exception) {
-                    NSLog(@"*** %@",exception);
+                    NSLog(@"JSON Socket client: exception calling message handler %@",exception);
                 }
                 [self.callbacks removeObjectForKey:msgID];
             }
@@ -482,6 +504,7 @@ static const char LF[] = "\n";
             [self.readBuffer resetBytesInRange:NSMakeRange(0, count)];
             
             // search the persistent buffer linefeeds, passing them on to -processLine: as we find them and removing them from the buffer
+            __weak __typeof(self) weakSelf = self;
             while (self.buffer.length > 0) {
 
                 const NSRange range = [self.buffer rangeOfData:[NSData dataWithBytes:LF length:1] options:0 range:NSMakeRange(0, MIN(count, [self.buffer length]))];
@@ -492,6 +515,11 @@ static const char LF[] = "\n";
                 // got a line, splice it out, process it and remove from the front of the persistent buffer
                 const NSRange lineRange = NSMakeRange(0, range.location);
                 [self processLine:[self.buffer subdataWithRange:lineRange]];
+                // check this object hasn't been deallocated in the message handler
+                __typeof(self) strongSelf = weakSelf;
+                if (!strongSelf){
+                    return;
+                }
                 [self.buffer replaceBytesInRange:NSMakeRange(lineRange.location, lineRange.length + 1) withBytes:nil length:0];
             }
         }

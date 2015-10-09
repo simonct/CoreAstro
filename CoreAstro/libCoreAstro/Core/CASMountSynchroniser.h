@@ -18,13 +18,12 @@
 
 @interface CASMountSynchroniser : NSObject
 @property (readonly) NSError* error;
-@property (readonly) BOOL solving;
+@property (readonly) BOOL busy;
 @property float focalLength;
 @property (readonly,nonatomic,copy) NSString* status;
 @property (strong) CASMount* mount;
 @property (strong) CASCameraController* cameraController;
 @property (weak) id<CASMountMountSynchroniserDelegate> delegate;
-- (void)handleMountFlipCompletedWithRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)cancel;
 @end

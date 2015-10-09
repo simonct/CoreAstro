@@ -256,6 +256,19 @@
     return (p.origin.x != 0 || p.origin.y != 0 || p.size.width != p.frame.width || p.size.height != p.frame.height);
 }
 
+- (CASRect)subframe
+{
+    CASRect result;
+    if (self.isSubframe){
+        const CASExposeParams p = self.params;
+        result = CASRectMake(p.origin, p.size);
+    }
+    else {
+        result = CASRectMake(CASPointMake(0, 0), CASSizeMake(0, 0));
+    }
+    return result;
+}
+
 - (NSInteger) maxPixelValue
 {
     return 65535;

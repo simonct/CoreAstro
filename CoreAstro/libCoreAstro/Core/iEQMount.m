@@ -53,9 +53,10 @@
     NSMutableString* _input;
 }
 
-@synthesize connected,slewing,tracking;
+@synthesize connected,tracking;
 @synthesize ra,dec,alt,az,targetRa,targetDec;
 @synthesize pierSide = _pierSide;
+@synthesize slewing = _slewing;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port
 {
@@ -195,9 +196,12 @@
 - (void)pollMountStatus
 {
     if (!self.connected){
+        NSLog(@"Poll mount status not connected");
         return;
     }
     
+//    NSLog(@"Poll mount status");
+
     [self sendCommand:@":SE?#" readCount:1 completion:^(NSString *response) {
         
 //        NSLog(@"Slewing: %@",response);
@@ -257,7 +261,7 @@
                                         }
                                         
                                         // just do this at the end of the selector rather than in the completion block ?
-                                        [self performSelector:_cmd withObject:nil afterDelay:1];
+                                        [self performSelector:_cmd withObject:nil afterDelay:0.5];
                                         
                                     }];
                                     
@@ -427,6 +431,14 @@
             }];
         }
     }];
+}
+
+- (void)setSlewing:(BOOL)slewing
+{
+    if (slewing != _slewing){
+        _slewing = slewing;
+        [[NSNotificationCenter defaultCenter] postNotificationName:CASMountSlewingNotification object:self userInfo:@{@"slewing":@(slewing)}];
+    }
 }
 
 // guide pulse Command: “:MnXXXXX#” “:MsXXXXX#” “:MeXXXXX#” “:MwXXXXX#” Response: (none)
