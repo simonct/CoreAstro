@@ -100,7 +100,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 // mount control
 @property (strong) CASMount* mount;
 @property (strong) SXIOMountState* mountState;
-@property CASMountPierSide startPierSide;
+@property BOOL forcedFlip;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
@@ -1027,7 +1027,7 @@ static void* kvoContext;
             self.mountState.slewStarted = YES;
 
             // check to see if this is an external slew or not
-            if (self.mountWindowController.mountSynchroniser.busy){
+            if (self.mountWindowController.mountSynchroniser.busy && !self.forcedFlip){
                 
                 NSLog(@"Mount slew started but being handled by mount synchroniser so ignoring");
 
@@ -1061,6 +1061,8 @@ static void* kvoContext;
         }
     }
     else {
+        
+        self.forcedFlip = NO;
         
         if (self.mountState.slewStarted){
             
@@ -2011,15 +2013,9 @@ static void* kvoContext;
         }
         
         // trigger a flip if we've crossed the meridian and have more exposures to take. This will cancel any current exposure and restart once the slew is completed
-        if (self.mount && controller.capturing){
-            if (self.mount.pierSide == self.startPierSide){
-                NSLog(@"Mount on same side of pier as at start of sequence, ignoring");
-            }
-            else {
-                NSLog(@"Mount on different side of pier as at start of sequence, triggering flip");
-                self.startPierSide = self.mount.pierSide;
-                [self slewToLockedSolution];
-            }
+        if (self.mount.az.floatValue > 180.0 && self.mount.pierSide == CASMountPierSideEast && controller.capturing){
+            NSLog(@"Mount has passed meridian, triggering flip");
+            [self slewToLockedSolution];
         }
     }
     
@@ -2323,8 +2319,8 @@ static void* kvoContext;
 
 - (void)captureWithCompletion:(void(^)(NSError*))completion
 {
-    // record the side of the pier that the exposure sequence started on (will be 0 if there's no mount)
-    self.startPierSide = self.mount.pierSide;
+    // reset the forced flip flag
+    self.forcedFlip = NO;
     
     // disable idle sleep
     [CASPowerMonitor sharedInstance].disableSleep = YES;
