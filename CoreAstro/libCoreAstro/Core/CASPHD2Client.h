@@ -19,6 +19,7 @@
 - (void)stop;
 
 - (void)flipWithCompletion:(void(^)(BOOL))completion;
+- (void)clearWithCompletion:(void(^)(BOOL))completion;
 
 - (void)ditherByPixels:(float)pixels inRAOnly:(BOOL)raOnly completion:(void(^)(BOOL))completion;
 

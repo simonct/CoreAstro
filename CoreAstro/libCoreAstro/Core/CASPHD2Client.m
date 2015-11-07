@@ -249,6 +249,19 @@ static void* kvoContext;
     }];
 }
 
+- (void)clearWithCompletion:(void(^)(BOOL))completion
+{
+    [self.client enqueueCommand:@{@"method":@"clear_calibration"} completion:^(id _,NSError* error) {
+        if (error){
+            NSLog(@"Clear failed %@",error);
+            completion(NO);
+        }
+        else {
+            completion(YES);
+        }
+    }];
+}
+
 - (void)stop
 {
     [self setupClient];
