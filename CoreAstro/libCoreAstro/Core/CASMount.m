@@ -7,9 +7,14 @@
 //
 
 #import "CASMount.h"
+#import "CASNova.h"
 
 NSString* const CASMountSlewingNotification = @"CASMountSlewingNotification";
 NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
+
+@interface CASMount ()
+@property (strong) CASNova* nova;
+@end
 
 @implementation CASMount
 
@@ -61,6 +66,39 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (NSNumber*) az {
     return nil;
+}
+
+- (NSNumber*) secondsUntilTransit {
+    
+    NSNumber* result;
+    
+    NSNumber* ra = self.ra;
+    NSNumber* dec = self.dec;    
+    if (ra && dec){
+        
+        if (!self.nova){
+            NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"]; // todo; using SXIO namespace defaults...
+            NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+            if (latitude && longitude){
+                self.nova = [[CASNova alloc] initWithObserverLatitude:latitude.doubleValue longitude:longitude.doubleValue];
+            }
+        }
+        
+        if (self.nova){
+            const CASRST rst = [self.nova rstForObjectRA:ra.doubleValue dec:dec.doubleValue jd:[CASNova today]];
+            if (rst.visibility == 0){
+                const double diffJD = rst.transit - [CASNova now];
+                const double diffSeconds = diffJD * 86400;
+                result = @(diffSeconds);
+            }
+        }
+    }
+
+    return result;
+}
+
++ (NSSet*)keyPathsForValuesAffectingSecondsUntilTransit {
+    return [NSSet setWithArray:@[@"ra",@"dec"]];
 }
 
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {

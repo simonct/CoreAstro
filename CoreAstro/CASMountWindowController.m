@@ -246,12 +246,33 @@ static void* kvoContext;
     }
 }
 
+- (void)setMount:(CASMount *)mount
+{
+    if (mount != _mount){
+        [_mount removeObserver:self forKeyPath:@"secondsUntilTransit"];
+        _mount = mount;
+        [_mount addObserver:self forKeyPath:@"secondsUntilTransit" options:0 context:&kvoContext];
+    }
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
-        if (_cameraController && [keyPath isEqualToString:@"focalLength"]){
+        if (object == _cameraController && [keyPath isEqualToString:@"focalLength"]){
             NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
             [[NSUserDefaults standardUserDefaults] setObject:@(self.mountSynchroniser.focalLength) forKey:focalLengthKey];
+        }
+        else if (object == _mount){
+            NSNumber* transit = self.mount.secondsUntilTransit;
+            if (transit){
+                const double transitSeconds = transit.doubleValue;
+                if (transitSeconds < 0){
+                    NSLog(@"approx. %.0f seconds until transit",transitSeconds);
+                }
+                else {
+                    NSLog(@"approx. %.0f seconds past transit",transitSeconds);
+                }
+            }
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];

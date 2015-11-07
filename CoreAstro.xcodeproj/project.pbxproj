@@ -199,6 +199,8 @@
 		F4AEDF1A1614DC16007641A2 /* CASGuiderController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AEDF181614DC16007641A2 /* CASGuiderController.m */; };
 		F4B08B651673AF1A00771948 /* CASBatchProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B08B631673AF1A00771948 /* CASBatchProcessor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B08B641673AF1A00771948 /* CASBatchProcessor.m */; };
+		F4B099FD1BEE4DE4005BAAB5 /* CASNova.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B099FB1BEE4DE4005BAAB5 /* CASNova.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4B099FE1BEE4DE4005BAAB5 /* CASNova.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B099FC1BEE4DE4005BAAB5 /* CASNova.m */; };
 		F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */; };
 		F4B26F6916BEC408001F1D03 /* CASPlateSolutionHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B26F6716BEC408001F1D03 /* CASPlateSolutionHUDView.m */; };
@@ -818,6 +820,8 @@
 		F4AEDF181614DC16007641A2 /* CASGuiderController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuiderController.m; sourceTree = "<group>"; };
 		F4B08B631673AF1A00771948 /* CASBatchProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASBatchProcessor.h; sourceTree = "<group>"; };
 		F4B08B641673AF1A00771948 /* CASBatchProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASBatchProcessor.m; sourceTree = "<group>"; };
+		F4B099FB1BEE4DE4005BAAB5 /* CASNova.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASNova.h; sourceTree = "<group>"; };
+		F4B099FC1BEE4DE4005BAAB5 /* CASNova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASNova.m; sourceTree = "<group>"; };
 		F4B251F915FD20AB00D7AC4B /* CASCCDDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCCDDevice.h; sourceTree = "<group>"; };
 		F4B251FA15FD20AC00D7AC4B /* CASCCDDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCCDDevice.m; sourceTree = "<group>"; };
 		F4B26F6616BEC408001F1D03 /* CASPlateSolutionHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPlateSolutionHUDView.h; sourceTree = "<group>"; };
@@ -2076,6 +2080,8 @@
 				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
 				F46879D21B18A5E200C61449 /* CASINDIContainer.h */,
 				F46879D31B18A5E200C61449 /* CASINDIContainer.m */,
+				F4B099FB1BEE4DE4005BAAB5 /* CASNova.h */,
+				F4B099FC1BEE4DE4005BAAB5 /* CASNova.m */,
 				F4E424791A86757700C2A87E /* ORSSerialPort */,
 			);
 			name = Core;
@@ -3210,6 +3216,7 @@
 				F4CA541C169CC9FD00832CFF /* tweak2.h in Headers */,
 				F4CA541D169CC9FD00832CFF /* tycho2-fits.h in Headers */,
 				F4CA541E169CC9FD00832CFF /* tycho2.h in Headers */,
+				F4B099FD1BEE4DE4005BAAB5 /* CASNova.h in Headers */,
 				F4CA541F169CC9FD00832CFF /* uniformize-catalog.h in Headers */,
 				F4CA5420169CC9FD00832CFF /* unpermute-quads.h in Headers */,
 				F4CA5421169CC9FD00832CFF /* unpermute-stars.h in Headers */,
@@ -3721,6 +3728,7 @@
 				F4FCE71317772270000E117F /* CASSHFCUSBDevice.m in Sources */,
 				F48F79B318818E5E00DFB0F2 /* CASExposureSettings.m in Sources */,
 				F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */,
+				F4B099FE1BEE4DE4005BAAB5 /* CASNova.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,6 +24,8 @@
 @property (nonatomic,strong,readonly) NSNumber* alt;
 @property (nonatomic,strong,readonly) NSNumber* az;
 
+@property (nonatomic,readonly) NSNumber* secondsUntilTransit;
+
 typedef NS_ENUM(NSInteger, CASMountMode) {
     CASMountModeEQ,
     CASMountModeAltAz

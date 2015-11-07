@@ -66,3 +66,4 @@
 #import <CoreAstro/CASFocuser.h>
 #import <CoreAstro/CASINDIContainer.h>
 #import <CoreAstro/CASClassDefaults.h>
+#import <CoreAstro/CASNova.h>
