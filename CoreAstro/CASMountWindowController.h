@@ -27,4 +27,5 @@
 @property BOOL usePlateSolvng;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs;
+- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion;
 @end

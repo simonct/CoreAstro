@@ -9,6 +9,8 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
+#import "CASMountWindowController.h" // tmp until this is refactored into a mount controller
+
 static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
 
 @interface CASSequenceStep : NSObject<NSCoding,NSCopying>
@@ -168,6 +170,64 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
         }
     }
     self.filter = filter;
+}
+
+@end
+
+@interface CASSequenceSlewStep : CASSequenceStep
+@property (nonatomic,copy) NSString* name; // should have a bookmark id ?
+@end
+
+@implementation CASSequenceSlewStep
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        self.name = [coder decodeObjectOfClass:[NSString class] forKey:@"name"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:self.name forKey:@"name"];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    CASSequenceSlewStep* copy = [super copyWithZone:zone];
+    copy.name = self.name;
+    return copy;
+}
+
+- (NSString*)type
+{
+    return @"slew";
+}
+
+- (BOOL)isValid
+{
+    return (self.name.length > 0);
+}
+
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([@"name" isEqualToString:key]){
+        self.name = 0;
+    }
+    else {
+        [super setNilValueForKey:key];
+    }
 }
 
 @end
@@ -342,39 +402,66 @@ static void* kvoContext;
     }
     else {
         
-        // todo; slew step, new methods on target
-        CASSequenceExposureStep* sequenceStep = (CASSequenceExposureStep*)self.currentStep;
-        CASExposureSettings* settings = self.target.sequenceCameraController.settings;
+        if ([self.currentStep.type isEqualToString:@"exposure"]){
+            [self executeExposureStep:(CASSequenceExposureStep*)self.currentStep];
+        }
+        if ([self.currentStep.type isEqualToString:@"slew"]){
+            [self executeSlewStep:(CASSequenceSlewStep*)self.currentStep];
+        }
+        else {
+            NSLog(@"Unknown sequence step %@",self.currentStep.type);
+        }
+    }
+}
 
-        settings.captureCount = sequenceStep.count;
-        settings.exposureUnits = 0;
-        settings.exposureDuration = sequenceStep.duration;
-        settings.binningIndex = sequenceStep.binningIndex;
-        
-        // dither
-        // temperature
-        // prefix
-
-        NSString* filter = sequenceStep.filter;
-        if ([filter length]){
-            // need to check it's a known filter name
-            CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
-            if (!filterWheel){
-                NSLog(@"*** Filter wheel hasn't been selected in capture window");
-                [self advanceToNextStep];
+- (void)executeExposureStep:(CASSequenceExposureStep*)sequenceStep
+{
+    CASExposureSettings* settings = self.target.sequenceCameraController.settings;
+    
+    settings.captureCount = sequenceStep.count;
+    settings.exposureUnits = 0;
+    settings.exposureDuration = sequenceStep.duration;
+    settings.binningIndex = sequenceStep.binningIndex;
+    
+    // dither
+    // temperature
+    // prefix
+    
+    NSString* filter = sequenceStep.filter;
+    if ([filter length]){
+        // need to check it's a known filter name
+        CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+        if (!filterWheel){
+            NSLog(@"*** Filter wheel hasn't been selected in capture window");
+            [self advanceToNextStep];
+            return;
+        }
+        else {
+            filterWheel.currentFilterName = filter;
+            if (filterWheel.filterWheel.moving){
+                [self observeFilterWheel];
                 return;
             }
+        }
+    }
+    
+    [self capture];
+}
+
+- (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
+{
+    [self.target slewToBookmarkWithName:sequenceStep.name completion:^(NSError* error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error){
+                [NSApp presentError:error];
+            }
             else {
-                filterWheel.currentFilterName = filter;
-                if (filterWheel.filterWheel.moving){
-                    [self observeFilterWheel];
-                    return;
+                if (!_stopped){
+                    [self advanceToNextStep];
                 }
             }
-        }
-        
-        [self capture];
-    }
+        });
+    }];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

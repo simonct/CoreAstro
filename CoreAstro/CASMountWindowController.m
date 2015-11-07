@@ -183,8 +183,11 @@ static void* kvoContext;
     if (!self.mount.connected || self.mount.slewing){
         return;
     }
+    [self selectBookmarkAtIndex:sender.indexOfSelectedItem];
+}
 
-    const NSInteger index = sender.indexOfSelectedItem;
+- (BOOL)selectBookmarkAtIndex:(NSInteger)index
+{
     if (index != -1){
         NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
         CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
@@ -194,7 +197,9 @@ static void* kvoContext;
         else {
             [self setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]];
         }
+        return YES;
     }
+    return NO;
 }
 
 #pragma mark - Mount/Camera
@@ -328,6 +333,36 @@ static void* kvoContext;
     [self.mount stopMoving];
 }
 
+- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+{
+    if (!self.mount.connected || self.mount.slewing){
+        // busy error
+        NSLog(@"Mount is busy");
+        return;
+    }
+
+    NSDictionary* bookmark;
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    for (NSDictionary* bm in bookmarks){
+        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
+            bookmark = bm;
+            break;
+        }
+    }
+    
+    if (!bookmark){
+        // nsb error
+        NSLog(@"No such bookmark");
+    }
+    else {
+        if ([self selectBookmarkAtIndex:[bookmarks indexOfObject:bookmark]]){
+            [self slew:nil];
+            // need to be able to call completion block
+        }
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)north:(id)sender // called continuously while the button is held down
@@ -353,9 +388,14 @@ static void* kvoContext;
 - (IBAction)slew:(id)sender
 {
     if (!self.mount.targetRa || !self.mount.targetDec){
+        NSLog(@"Slew action with no target set");
         return;
     }
-    
+    if (!self.mount.connected || self.mount.slewing){
+        NSLog(@"Slew action with no mount or mount already slewing");
+        return;
+    }
+
     [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
 }
 

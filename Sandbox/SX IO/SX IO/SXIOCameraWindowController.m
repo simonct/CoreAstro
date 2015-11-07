@@ -1155,6 +1155,8 @@ static void* kvoContext;
             }
         }
     }
+    
+    // todo; check to see if this is running a sequence step and call the completion block if it is
 }
 
 - (void)mountWindowControllerDidClose:(CASMountWindowController*)windowController;
@@ -2293,6 +2295,11 @@ static void* kvoContext;
     return self.filterWheelControlsViewController.currentFilterWheel;
 }
 
+- (CASMountWindowController*) sequenceMountController
+{
+    return self.mountWindowController;
+}
+
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
 {
     // todo; need a more generic mechanism to express 'ready to capture'
@@ -2361,6 +2368,11 @@ static void* kvoContext;
             }
         }
     }];
+}
+
+- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+{
+    [self.mountWindowController slewToBookmarkWithName:name completion:completion];
 }
 
 - (void)endSequence
