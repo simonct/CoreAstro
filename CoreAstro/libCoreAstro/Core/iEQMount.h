@@ -6,18 +6,9 @@
 //  Copyright (c) 2014 Simon Taylor. All rights reserved.
 //
 
-#import "CASMount.h"
-#import "ORSSerialPort.h"
+#import "CASLX200Mount.h"
 
-@interface iEQMount : CASMount
-
-@property (nonatomic,copy,readonly) NSString* name;
-
-- (id)initWithSerialPort:(ORSSerialPort*)port;
-
-- (void)connectWithCompletion:(void(^)(NSError*))completion;
-- (void)disconnect;
-
+@interface iEQMount : CASLX200Mount
 @end
 
 @interface iEQMount (iEQSpecific)

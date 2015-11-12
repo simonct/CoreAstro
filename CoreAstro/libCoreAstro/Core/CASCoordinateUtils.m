@@ -7,6 +7,7 @@
 //
 
 #import "CASCoordinateUtils.h"
+#import "libnova/angular_separation.h"
 
 static inline double toRadians(double degrees)
 {
@@ -87,7 +88,13 @@ CASHMSAngle CASHMSAngleFromDegrees(double degrees)
     return result;
 }
 
-extern double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2)
+double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2)
 {
-    return toDegrees(acos(sin(toRadians(dec1))*sin(toRadians(dec2)) + cos(toRadians(dec1))*cos(toRadians(dec2))*cos(toRadians(ra1 - ra2))));
+    struct ln_equ_posn p1 = {
+        .ra = ra1, .dec = dec1
+    };
+    struct ln_equ_posn p2 = {
+        .ra = ra2, .dec = dec2
+    };
+    return ln_get_angular_separation(&p1,&p2);
 }

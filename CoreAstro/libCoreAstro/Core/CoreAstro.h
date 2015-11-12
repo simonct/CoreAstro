@@ -58,7 +58,9 @@
 #import <CoreAstro/CASExposureSettings.h>
 #import <CoreAstro/CASObjectLookup.h>
 #import <CoreAstro/CASMount.h>
+#import <CoreAstro/CASLX200Mount.h>
 #import <CoreAstro/iEQMount.h>
+#import <CoreAstro/CASAPGTOMount.h>
 #import <CoreAstro/CASLX200Commands.h>
 #import <CoreAstro/CASCoordinateUtils.h>
 #import <CoreAstro/CASMountSynchroniser.h>

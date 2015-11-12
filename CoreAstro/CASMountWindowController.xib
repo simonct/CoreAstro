@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <development version="6300" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
@@ -456,7 +456,7 @@
                                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0v0-5B-3QZ">
                                     <rect key="frame" x="297" y="31" width="75" height="26"/>
                                     <animations/>
-                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="YTZ-b3-SgK">
+                                    <popUpButtonCell key="cell" type="push" title="16x" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Msa-AA-cCC" id="YTZ-b3-SgK">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" title="OtherViews" id="sIy-UB-zVh">
@@ -464,7 +464,7 @@
                                                 <menuItem title="1x" id="woh-w7-cKT"/>
                                                 <menuItem title="2x" id="5wd-m5-WnJ"/>
                                                 <menuItem title="8x" id="vaA-b9-M7W"/>
-                                                <menuItem title="16x" id="Msa-AA-cCC">
+                                                <menuItem title="16x" state="on" id="Msa-AA-cCC">
                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                 </menuItem>
                                                 <menuItem title="64x" id="y6i-hE-olO">
@@ -484,6 +484,9 @@
                                                 </menuItem>
                                             </items>
                                         </menu>
+                                        <connections>
+                                            <binding destination="-2" name="contentValues" keyPath="mount.movingRateValues" id="bOQ-BA-KtL"/>
+                                        </connections>
                                     </popUpButtonCell>
                                     <connections>
                                         <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" id="GEQ-pY-yOn"/>

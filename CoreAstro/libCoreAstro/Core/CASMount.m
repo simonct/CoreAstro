@@ -68,6 +68,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return nil;
 }
 
+- (NSArray<NSString*>*)movingRateValues {
+    return nil;
+}
+
 - (NSNumber*) secondsUntilTransit {
     
     NSNumber* result;
