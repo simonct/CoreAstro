@@ -65,7 +65,7 @@ static void* kvoContext;
     _cancelled = YES;
     [self.cameraController cancelCapture];
     [self.plateSolver cancel];
-    [self.mount stopMoving];
+    [self.mount stopSlewing];
 }
 
 - (void)setStatus:(NSString *)status
