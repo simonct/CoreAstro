@@ -165,7 +165,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     }
 
     const NSTimeInterval updateInterval = MAX(0.25,_expParams.ms/1000.0/100.0); // reduce further on battery ?
-    [self performSelector:_cmd withObject:nil afterDelay:updateInterval];
+    [self performSelector:_cmd withObject:nil afterDelay:updateInterval inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
