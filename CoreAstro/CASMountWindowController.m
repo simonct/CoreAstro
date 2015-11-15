@@ -109,6 +109,7 @@ static void* kvoContext;
 {
     // check this is being called...
     [self.mount disconnect];
+    self.mount = nil; // unbinds
     self.mountSynchroniser = nil; // unbinds
 }
 
@@ -266,11 +267,11 @@ static void* kvoContext;
             NSNumber* transit = self.mount.secondsUntilTransit;
             if (transit){
                 const double transitSeconds = transit.doubleValue;
-                if (transitSeconds < 0){
+                if (transitSeconds > 0){
                     NSLog(@"approx. %.0f seconds until transit",transitSeconds);
                 }
                 else {
-                    NSLog(@"approx. %.0f seconds past transit",transitSeconds);
+                    NSLog(@"approx. %.0f seconds past transit",fabs(transitSeconds));
                 }
             }
         }
