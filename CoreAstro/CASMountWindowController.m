@@ -247,13 +247,14 @@ static void* kvoContext;
     }
 }
 
-- (void)setMount:(CASMount *)mount
+- (BOOL)usePlateSolving
 {
-    if (mount != _mount){
-        [_mount removeObserver:self forKeyPath:@"secondsUntilTransit"];
-        _mount = mount;
-        [_mount addObserver:self forKeyPath:@"secondsUntilTransit" options:0 context:&kvoContext];
-    }
+    return self.mountSynchroniser.usePlateSolving; // todo; need to refactor here, too much muddled logic shared between this and the synchroniser
+}
+
+- (void)setUsePlateSolving:(BOOL)usePlateSolving
+{
+    self.mountSynchroniser.usePlateSolving = usePlateSolving;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -262,18 +263,6 @@ static void* kvoContext;
         if (object == _cameraController && [keyPath isEqualToString:@"focalLength"]){
             NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
             [[NSUserDefaults standardUserDefaults] setObject:@(self.mountSynchroniser.focalLength) forKey:focalLengthKey];
-        }
-        else if (object == _mount){
-            NSNumber* transit = self.mount.secondsUntilTransit;
-            if (transit){
-                const double transitSeconds = transit.doubleValue;
-                if (transitSeconds > 0){
-                    NSLog(@"approx. %.0f seconds until transit",transitSeconds);
-                }
-                else {
-                    NSLog(@"approx. %.0f seconds past transit",fabs(transitSeconds));
-                }
-            }
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -317,7 +306,7 @@ static void* kvoContext;
 {
     NSParameterAssert(self.mount.connected);
 
-    if (!self.usePlateSolvng){
+    if (!self.usePlateSolving){
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError error) {
             if (error != CASMountSlewErrorNone){
                 NSLog(@"*** start slew failed: %ld",(long)error);

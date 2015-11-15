@@ -932,7 +932,7 @@ static void* kvoContext;
     if (solution){
         self.mountWindowController.cameraController = self.cameraController;
         self.mountWindowController.mountWindowDelegate = self;
-        self.mountWindowController.usePlateSolvng = YES;
+        self.mountWindowController.usePlateSolving = YES;
         [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
         // calls - (void)mountWindowController:didCompleteWithError: when complete
     }
