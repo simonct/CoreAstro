@@ -22,7 +22,7 @@
 
 + (double)today
 {
-    return floor([self now]) - 0.5; // zero-th second of today
+    return floor([self now]); // zero-th second of today
 }
 
 - (instancetype)initWithObserverLatitude:(double)latitude longitude:(double)longitude

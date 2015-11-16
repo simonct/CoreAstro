@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1021" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <development version="6300" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
@@ -20,20 +20,20 @@
         <window title="Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" deferred="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="ieq-test-mount" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="423" height="485"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="contentRect" x="196" y="240" width="423" height="532"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="-6" width="423" height="485"/>
+                <rect key="frame" x="0.0" y="0.0" width="423" height="532"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Current Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="PuF-mb-lQZ">
-                        <rect key="frame" x="17" y="382" width="389" height="83"/>
+                        <rect key="frame" x="17" y="400" width="389" height="112"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="387" height="67"/>
+                            <rect key="frame" x="1" y="1" width="387" height="96"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ad4-ba-Glf">
-                                    <rect key="frame" x="16" y="40" width="32" height="21"/>
+                                    <rect key="frame" x="16" y="69" width="32" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="RA:" id="Djg-iP-Jv9">
                                         <font key="font" metaFont="system" size="17"/>
@@ -42,7 +42,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KMi-iD-JpX">
-                                    <rect key="frame" x="50" y="40" width="146" height="21"/>
+                                    <rect key="frame" x="50" y="69" width="146" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="mAL-o1-Wbu">
                                         <font key="font" metaFont="systemBold" size="17"/>
@@ -58,7 +58,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Nq-Oc-w7G">
-                                    <rect key="frame" x="7" y="14" width="40" height="21"/>
+                                    <rect key="frame" x="7" y="43" width="40" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Dec:" id="Grr-95-dRT">
                                         <font key="font" metaFont="system" size="17"/>
@@ -66,8 +66,24 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P6P-7g-Q9y">
+                                    <rect key="frame" x="8" y="17" width="40" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Pier:" id="FZP-D8-1eL">
+                                        <font key="font" metaFont="system" size="17"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PMx-EM-bCh">
+                                    <rect key="frame" x="165" y="17" width="61" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transit:" id="Bvp-I9-B6h">
+                                        <font key="font" metaFont="system" size="17"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lYe-Tg-o2b">
-                                    <rect key="frame" x="50" y="14" width="146" height="21"/>
+                                    <rect key="frame" x="50" y="43" width="146" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="VQG-dv-OR5">
                                         <font key="font" metaFont="systemBold" size="17"/>
@@ -83,7 +99,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tNc-NL-jIh">
-                                    <rect key="frame" x="198" y="40" width="26" height="21"/>
+                                    <rect key="frame" x="198" y="69" width="26" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Alt:" id="Cwi-gh-wDC">
                                         <font key="font" metaFont="system" size="17"/>
@@ -92,7 +108,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FLE-qb-0H4">
-                                    <rect key="frame" x="226" y="40" width="146" height="21"/>
+                                    <rect key="frame" x="226" y="69" width="146" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="hg5-Mm-2C8">
                                         <font key="font" metaFont="systemBold" size="17"/>
@@ -108,7 +124,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VCb-7b-HXD">
-                                    <rect key="frame" x="199" y="14" width="25" height="21"/>
+                                    <rect key="frame" x="199" y="43" width="25" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Az:" id="uTK-tz-1P0">
                                         <font key="font" metaFont="system" size="17"/>
@@ -117,7 +133,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="29j-Ey-2o9">
-                                    <rect key="frame" x="226" y="14" width="146" height="21"/>
+                                    <rect key="frame" x="226" y="43" width="146" height="21"/>
                                     <animations/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="axo-AY-YxF">
                                         <font key="font" metaFont="systemBold" size="17"/>
@@ -132,6 +148,33 @@
                                         </binding>
                                     </connections>
                                 </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HKi-ew-WFP">
+                                    <rect key="frame" x="50" y="17" width="76" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" id="pW0-hA-sNO">
+                                        <font key="font" metaFont="systemBold" size="17"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="-2" name="value" keyPath="mount.pierSide" id="0ZX-Zi-EM9">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">CASPierSideTransformer</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S7I-7X-MBe">
+                                    <rect key="frame" x="226" y="17" width="146" height="21"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="56J-kD-bE8">
+                                        <dateFormatter key="formatter" timeStyle="medium" doesRelativeDateFormatting="YES" id="7ei-uw-PyW"/>
+                                        <font key="font" metaFont="systemBold" size="17"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="-2" name="value" keyPath="mount.secondsUntilTransit" id="mTk-PB-mKm"/>
+                                    </connections>
+                                </textField>
                             </subviews>
                             <animations/>
                         </view>
@@ -140,7 +183,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Target Position" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Loc-Zz-t5b">
-                        <rect key="frame" x="17" y="231" width="389" height="147"/>
+                        <rect key="frame" x="17" y="249" width="389" height="147"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="131"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -318,7 +361,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Camera" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Sng-gL-Xl5">
-                        <rect key="frame" x="17" y="172" width="389" height="55"/>
+                        <rect key="frame" x="17" y="190" width="389" height="55"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="39"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -336,7 +379,7 @@
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="value" keyPath="usePlateSolvng" id="AZq-u1-w4y"/>
+                                        <binding destination="-2" name="value" keyPath="usePlateSolving" id="CqU-qb-YUV"/>
                                     </connections>
                                 </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eti-r6-dmf">
@@ -359,7 +402,15 @@
                                     <connections>
                                         <binding destination="Ps5-ee-7o7" name="content" keyPath="arrangedObjects" id="Cnc-Vp-JhS"/>
                                         <binding destination="Ps5-ee-7o7" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="Cnc-Vp-JhS" id="9Jb-Ad-H5d"/>
-                                        <binding destination="-2" name="enabled3" keyPath="cameraController" previousBinding="eqF-nn-CoL" id="TE2-VP-vXB">
+                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolving" previousBinding="UJf-Da-lz9" id="tGP-Cz-4Za">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="enabled3" keyPath="cameraController" previousBinding="tGP-Cz-4Za" id="Xws-wy-nAP">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -374,14 +425,6 @@
                                             </dictionary>
                                         </binding>
                                         <binding destination="-2" name="selectedObject" keyPath="selectedCameraController" previousBinding="9Jb-Ad-H5d" id="sN8-sQ-b63"/>
-                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="UJf-Da-lz9" id="eqF-nn-CoL">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
-                                            </dictionary>
-                                        </binding>
                                     </connections>
                                 </popUpButton>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j60-Si-5CF">
@@ -397,6 +440,14 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                     <connections>
+                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolving" previousBinding="xxR-eb-Odc" id="LZS-uU-K5l">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="xxR-eb-Odc">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -405,14 +456,6 @@
                                         <binding destination="-2" name="value" keyPath="mountSynchroniser.focalLength" id="jCq-EY-G6k">
                                             <dictionary key="options">
                                                 <bool key="NSContinuouslyUpdatesValue" value="YES"/>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolvng" previousBinding="xxR-eb-Odc" id="4F6-ZY-d9Z">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
                                             </dictionary>
                                         </binding>
                                     </connections>
@@ -436,7 +479,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XlS-17-G0Y">
-                        <rect key="frame" x="18" y="2" width="387" height="17"/>
+                        <rect key="frame" x="18" y="20" width="387" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="9cM-rP-swI">
                             <font key="font" metaFont="smallSystem"/>
@@ -448,7 +491,7 @@
                         </connections>
                     </textField>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Move" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="t8k-Si-gol">
-                        <rect key="frame" x="17" y="72" width="389" height="96"/>
+                        <rect key="frame" x="17" y="90" width="389" height="96"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="80"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -456,7 +499,7 @@
                                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0v0-5B-3QZ">
                                     <rect key="frame" x="297" y="31" width="75" height="26"/>
                                     <animations/>
-                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="YTZ-b3-SgK">
+                                    <popUpButtonCell key="cell" type="push" title="16x" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Msa-AA-cCC" id="YTZ-b3-SgK">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" title="OtherViews" id="sIy-UB-zVh">
@@ -464,7 +507,7 @@
                                                 <menuItem title="1x" id="woh-w7-cKT"/>
                                                 <menuItem title="2x" id="5wd-m5-WnJ"/>
                                                 <menuItem title="8x" id="vaA-b9-M7W"/>
-                                                <menuItem title="16x" id="Msa-AA-cCC">
+                                                <menuItem title="16x" state="on" id="Msa-AA-cCC">
                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                 </menuItem>
                                                 <menuItem title="64x" id="y6i-hE-olO">
@@ -484,6 +527,9 @@
                                                 </menuItem>
                                             </items>
                                         </menu>
+                                        <connections>
+                                            <binding destination="-2" name="contentValues" keyPath="mount.movingRateValues" id="bOQ-BA-KtL"/>
+                                        </connections>
                                     </popUpButtonCell>
                                     <connections>
                                         <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" id="GEQ-pY-yOn"/>
@@ -574,22 +620,6 @@
                                         </binding>
                                     </connections>
                                 </button>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LIu-U6-GWM">
-                                    <rect key="frame" x="16" y="14" width="67" height="17"/>
-                                    <animations/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" id="BbG-RE-a6g">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                    <connections>
-                                        <binding destination="-2" name="value" keyPath="mount.pierSide" id="L8A-G3-rMW">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">CASPierSideTransformer</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </textField>
                             </subviews>
                             <animations/>
                         </view>
@@ -598,7 +628,7 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" fixedFrame="YES" title="Slew handling" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="qyq-Ac-Tj3">
-                        <rect key="frame" x="17" y="23" width="389" height="46"/>
+                        <rect key="frame" x="17" y="41" width="389" height="46"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="387" height="30"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -628,7 +658,7 @@
                 <binding destination="-2" name="title" keyPath="mount.name" id="TDL-zs-9nR"/>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-1329.5" y="-50.5"/>
+            <point key="canvasLocation" x="-1300.5" y="-79"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
         <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">
@@ -640,7 +670,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="172" width="388" height="108"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
             <view key="contentView" id="t9Q-bh-yGD">
                 <rect key="frame" x="0.0" y="-1" width="388" height="108"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -742,7 +772,7 @@
                             </binding>
                         </connections>
                     </matrix>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vG7-dk-w8X">
+                    <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vG7-dk-w8X">
                         <rect key="frame" x="302" y="13" width="72" height="32"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="OXL-YX-VQ8"/>

@@ -19,6 +19,7 @@
 @interface CASMountSynchroniser : NSObject
 @property (readonly) NSError* error;
 @property (readonly) BOOL busy;
+@property BOOL usePlateSolving;
 @property float focalLength;
 @property (readonly,nonatomic,copy) NSString* status;
 @property (strong) CASMount* mount;

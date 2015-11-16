@@ -24,7 +24,7 @@
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
 @property (nonatomic,strong,readonly) CASMountSynchroniser* mountSynchroniser; // tmp for flipping
-@property BOOL usePlateSolvng;
+@property (nonatomic) BOOL usePlateSolving;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs;
 - (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion;
