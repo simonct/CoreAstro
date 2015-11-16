@@ -420,7 +420,7 @@
 		F470AC2217C8CC1F007277F0 /* xwdtopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = xwdtopnm; sourceTree = "<group>"; };
 		F470AC2317C8CC1F007277F0 /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F470AC2417C8CC1F007277F0 /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
-		F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "astrometry-test Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4883D751A908BC10004F87F /* Solver Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Solver Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4883D781A908BC10004F87F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4883D791A908BC10004F87F /* astrometry_test_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = astrometry_test_Tests.m; sourceTree = "<group>"; };
 		F48A68131B10BCBC004BB936 /* zoom1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = zoom1.pdf; sourceTree = "<group>"; };
@@ -430,7 +430,7 @@
 		F48BACFC18143447005788CC /* CASFolderWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFolderWatcher.h; sourceTree = "<group>"; };
 		F48BACFD18143447005788CC /* CASFolderWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASFolderWatcher.m; sourceTree = "<group>"; };
 		F4A101FC18E84FD50071035B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		F4A386BD168887FE00E77631 /* astrometry-test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "astrometry-test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4A386BD168887FE00E77631 /* Solver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Solver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A386C0168887FE00E77631 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4A386C3168887FE00E77631 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		F4A386C4168887FE00E77631 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1143,8 +1143,8 @@
 		F4A386BE168887FE00E77631 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F4A386BD168887FE00E77631 /* astrometry-test.app */,
-				F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */,
+				F4A386BD168887FE00E77631 /* Solver.app */,
+				F4883D751A908BC10004F87F /* Solver Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1667,9 +1667,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F4883D741A908BC10004F87F /* astrometry-test Tests */ = {
+		F4883D741A908BC10004F87F /* Solver Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "astrometry-test Tests" */;
+			buildConfigurationList = F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "Solver Tests" */;
 			buildPhases = (
 				F4883D711A908BC10004F87F /* Sources */,
 				F4883D721A908BC10004F87F /* Frameworks */,
@@ -1680,14 +1680,14 @@
 			dependencies = (
 				F4883D881A908CB20004F87F /* PBXTargetDependency */,
 			);
-			name = "astrometry-test Tests";
+			name = "Solver Tests";
 			productName = "astrometry-test Tests";
-			productReference = F4883D751A908BC10004F87F /* astrometry-test Tests.xctest */;
+			productReference = F4883D751A908BC10004F87F /* Solver Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F4A386BC168887FE00E77631 /* astrometry-test */ = {
+		F4A386BC168887FE00E77631 /* Solver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F4A386DA168887FF00E77631 /* Build configuration list for PBXNativeTarget "astrometry-test" */;
+			buildConfigurationList = F4A386DA168887FF00E77631 /* Build configuration list for PBXNativeTarget "Solver" */;
 			buildPhases = (
 				F4A386B9168887FE00E77631 /* Sources */,
 				F4A386BA168887FE00E77631 /* Frameworks */,
@@ -1700,9 +1700,9 @@
 			dependencies = (
 				F42E1E941814215500D04CB8 /* PBXTargetDependency */,
 			);
-			name = "astrometry-test";
+			name = Solver;
 			productName = "astrometry-test";
-			productReference = F4A386BD168887FE00E77631 /* astrometry-test.app */;
+			productReference = F4A386BD168887FE00E77631 /* Solver.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1747,8 +1747,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				F4A386BC168887FE00E77631 /* astrometry-test */,
-				F4883D741A908BC10004F87F /* astrometry-test Tests */,
+				F4A386BC168887FE00E77631 /* Solver */,
+				F4883D741A908BC10004F87F /* Solver Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -2020,7 +2020,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -2047,7 +2047,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -2056,7 +2056,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "astrometry-test/astrometry-test.entitlements";
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -2070,6 +2070,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = org.coreastro.solver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2079,7 +2080,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "astrometry-test/astrometry-test.entitlements";
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "astrometry-test/astrometry-test-Prefix.pch";
@@ -2093,6 +2094,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = org.coreastro.solver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2101,7 +2103,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "astrometry-test Tests" */ = {
+		F4883D861A908BC10004F87F /* Build configuration list for PBXNativeTarget "Solver Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F4883D7D1A908BC10004F87F /* Debug */,
@@ -2119,7 +2121,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F4A386DA168887FF00E77631 /* Build configuration list for PBXNativeTarget "astrometry-test" */ = {
+		F4A386DA168887FF00E77631 /* Build configuration list for PBXNativeTarget "Solver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F4A386DB168887FF00E77631 /* Debug */,
