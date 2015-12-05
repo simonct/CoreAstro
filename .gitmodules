@@ -1,3 +1,6 @@
 [submodule "External/CocoaHTTPServer"]
 	path = External/CocoaHTTPServer
 	url = https://github.com/robbiehanson/CocoaHTTPServer.git
+[submodule "External/PCL"]
+	path = External/PCL
+	url = https://github.com/PixInsight/PCL.git
