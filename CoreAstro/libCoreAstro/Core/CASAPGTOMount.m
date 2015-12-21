@@ -85,9 +85,12 @@
     if (!error){;
         self.connected = YES;
         
-        self.movingRate = CASAPGTOMountMovingRate1200;
+        self.movingRate = CASAPGTOMountMovingRate600;
         self.trackingRate = CASAPGTOMountTrackingRateSidereal;
         
+        [self sendCommand:@":RG1#"]; // 0.5x guide rate
+        [self sendCommand:@":RC1#"]; // 64x centering rate
+
         // magic delay seemingly required after setting rates...
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
@@ -291,6 +294,10 @@
                 break;
         }
     }
+}
+
+- (NSArray<NSString*>*)trackingRateValues {
+    return @[@"Lunar",@"Solar",@"Sidereal",@"None"];
 }
 
 - (CASAPGTOMountMovingRate)movingRate

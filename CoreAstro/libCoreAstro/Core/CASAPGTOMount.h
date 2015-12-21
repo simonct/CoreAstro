@@ -22,7 +22,6 @@ typedef NS_ENUM(NSInteger, CASAPGTOMountMovingRate) {
 @property (nonatomic) CASAPGTOMountMovingRate movingRate;
 
 typedef NS_ENUM(NSInteger, CASAPGTOMountTrackingRate) {
-    CASAPGTOMountTrackingRateUndefined,
     CASAPGTOMountTrackingRateLunar,
     CASAPGTOMountTrackingRateSolar,
     CASAPGTOMountTrackingRateSidereal,
