@@ -888,7 +888,7 @@ static void* kvoContext;
     
     [self.mountConnectWindow orderOut:nil];
     
-    self.mount = [[iEQMount alloc] initWithSerialPort:self.selectedSerialPort];
+    self.mount = [[CASAPGTOMount alloc] initWithSerialPort:self.selectedSerialPort];
     
     if (self.mount.slewing){
         [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
