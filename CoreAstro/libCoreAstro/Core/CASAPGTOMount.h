@@ -14,7 +14,6 @@
 @interface CASAPGTOMount (APSpecific)
 
 typedef NS_ENUM(NSInteger, CASAPGTOMountMovingRate) {
-    CASAPGTOMountMovingRateUndefined,
     CASAPGTOMountMovingRate1200,
     CASAPGTOMountMovingRate900,
     CASAPGTOMountMovingRate600

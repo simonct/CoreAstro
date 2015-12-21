@@ -34,12 +34,6 @@
     }
     
     self.name = @"Astro-Physics GTO"; // command to get this ?
-    self.movingRate = CASAPGTOMountMovingRate1200;
-    self.trackingRate = CASAPGTOMountTrackingRateSidereal;
-    
-    [self sendCommand:@":V#" completion:^(NSString *response) {
-        NSLog(@"AP firmware version %@",response);
-    }];
     
     [self sendCommand:@"#"];
     [self sendCommand:@":U#"];
@@ -88,8 +82,16 @@
         self.connectCompletion(error);
         self.connectCompletion = nil;
     }
-    if (!error){
-        [self pollMountStatus];
+    if (!error){;
+        self.connected = YES;
+        
+        self.movingRate = CASAPGTOMountMovingRate1200;
+        self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+        
+        // magic delay seemingly required after setting rates...
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self pollMountStatus];
+        });
     }
 }
 
@@ -144,7 +146,7 @@
     }];
     
     // :pS# -> “East#” or “West#”
-    [self sendCommand:@":GZ#" completion:^(NSString *response) {
+    [self sendCommand:@":pS#" completion:^(NSString *response) {
         
         NSLog(@"Get pier side: %@",response);
         
@@ -178,7 +180,7 @@
 
 - (void)gotoHomePosition
 {
-    NSLog(@"gotoHomePosition not implemented for AP mounts");
+    [self park];
 }
 
 - (CASMountDirection) direction
@@ -265,6 +267,10 @@
 
 - (void)setTrackingRate:(CASAPGTOMountTrackingRate)trackingRate
 {
+    if (!self.connected){
+        NSLog(@"Attempt to set tracking rate while not connected");
+        return;
+    }
     if (trackingRate != _trackingRate){
         _trackingRate = trackingRate;
         switch (_trackingRate) {
@@ -278,7 +284,7 @@
                 [self sendCommand:@":RT2#"];
                 break;
             case CASAPGTOMountTrackingRateZero:
-                [self sendCommand:@":RT0#"];
+                [self sendCommand:@":RT9#"];
                 break;
             default:
                 NSLog(@"Unrecognised tracking rate %ld",trackingRate);
@@ -294,6 +300,10 @@
 
 - (void)setMovingRate:(CASAPGTOMountMovingRate)movingRate
 {
+    if (!self.connected){
+        NSLog(@"Attempt to set moving rate while not connected");
+        return;
+    }
     if (movingRate != _movingRate){
         _movingRate = movingRate;
         switch (_movingRate) {
