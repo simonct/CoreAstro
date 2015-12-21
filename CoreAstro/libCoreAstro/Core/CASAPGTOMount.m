@@ -74,10 +74,6 @@
 
     [self sendCommand:@":PO#"];
     [self sendCommand:@":Q#"];
-    
-    [self sendCommand:@":V#" completion:^(NSString *response) {
-        NSLog(@"AP firmware version %@",response);
-    }];
 }
 
 - (void)completeInitialiseMount:(NSError*)error
@@ -184,7 +180,7 @@
 
 - (void)gotoHomePosition
 {
-    NSLog(@"gotoHomePosition not implemented for AP mounts");
+    [self park];
 }
 
 - (CASMountDirection) direction
