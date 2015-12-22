@@ -113,17 +113,18 @@
     
     // :GR# -> HH:MM:SS.S#
     [self sendCommand:@":GR#" completion:^(NSString *response) {
-        NSLog(@"Get RA: %@",response);
+        //NSLog(@"Get RA: %@",response);
         self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
     }];
     
     // :GD# -> sDD*MM:SS#
     [self sendCommand:@":GD#" completion:^(NSString *response) {
-        NSLog(@"Get Dec: %@",response);
+        //NSLog(@"Get Dec: %@",response);
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
         
+#if 0
             // use this to indicate whether we're slewing or not
             const double degrees = CASAngularSeparation(currentRa.doubleValue,currentDec.doubleValue,self.ra.doubleValue,self.dec.doubleValue);
             const double degreesPerSecond = _lastMountPollTime ? degrees/([NSDate timeIntervalSinceReferenceDate] - _lastMountPollTime) : 0;
@@ -132,26 +133,27 @@
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
+#endif
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
 
     // :GA# -> sDD*MM:SS#
     [self sendCommand:@":GA#" completion:^(NSString *response) {
-        NSLog(@"Get Alt: %@",response);
+        //NSLog(@"Get Alt: %@",response);
         self.alt = @([CASLX200Commands fromDecString:response]);
     }];
 
     // :GZ# -> sDD*MM:SS#
     [self sendCommand:@":GZ#" completion:^(NSString *response) {
-        NSLog(@"Get Az: %@",response);
+        //NSLog(@"Get Az: %@",response);
         self.az = @([CASLX200Commands fromDecString:response]);
     }];
     
     // :pS# -> “East#” or “West#”
     [self sendCommand:@":pS#" completion:^(NSString *response) {
         
-        NSLog(@"Get pier side: %@",response);
+        //NSLog(@"Get pier side: %@",response);
         
         if ([response isEqualToString:@"East"]){
             self.pierSide = CASMountPierSideEast;
@@ -173,7 +175,11 @@
 
 - (void)park
 {
-    [self sendCommand:@":KA#"];
+    [self sendCommand:@":KA#"]; // stops tracking but doesn't appear to move the mount to any park position
+    
+    [self willChangeValueForKey:@"trackingRate"];
+    _trackingRate = CASAPGTOMountTrackingRateZero;
+    [self didChangeValueForKey:@"trackingRate"];
 }
 
 - (void)unpark
@@ -226,7 +232,8 @@
 - (void)stopMoving
 {
     _direction = CASMountDirectionNone;
-    [self sendCommand:@":Q#"];
+    [self sendCommand:@":Q#"]; // stops slewing but not tracking
+    self.trackingRate = CASAPGTOMountTrackingRateZero; // stops tracking
 }
 
 - (void)stopTracking
