@@ -169,6 +169,36 @@
         [self performSelector:_cmd withObject:nil afterDelay:0.5];
     }];
     
+    // :Gg# -> current longitude
+    [self sendCommand:@":Gg#" completion:^(NSString *response) {
+        //NSLog(@"Get Lon: %@",response);
+        self.longitude = response;
+    }];
+
+    // :Gg# -> current latitude
+    [self sendCommand:@":Gt#" completion:^(NSString *response) {
+        //NSLog(@"Get Lat: %@",response);
+        self.latitude = response;
+    }];
+
+    // :GL# -> local time
+    [self sendCommand:@":GL#" completion:^(NSString *response) {
+        //NSLog(@"Get Time: %@",response);
+        self.localTime = response;
+    }];
+    
+    // :GG# -> gmt offset
+    [self sendCommand:@":GG#" completion:^(NSString *response) {
+        //NSLog(@"Get Local Time: %@",response);
+        self.gmtOffset = response;
+    }];
+
+    // :GS# -> sideral time
+    [self sendCommand:@":GS#" completion:^(NSString *response) {
+        //NSLog(@"Get Sidereal Time: %@",response);
+        self.siderealTime = response;
+    }];
+
     // slewing, tracking, etc
     // "#:D#", "#:SE?#"
 }

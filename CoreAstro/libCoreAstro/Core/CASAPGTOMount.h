@@ -30,4 +30,10 @@ typedef NS_ENUM(NSInteger, CASAPGTOMountTrackingRate) {
 
 @property (nonatomic) CASAPGTOMountTrackingRate trackingRate;
 
+@property (copy) NSString* longitude;
+@property (copy) NSString* latitude;
+@property (copy) NSString* localTime;
+@property (copy) NSString* gmtOffset;
+@property (copy) NSString* siderealTime;
+
 @end
