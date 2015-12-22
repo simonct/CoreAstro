@@ -24,6 +24,12 @@
 
 @synthesize name, connected;
 
+@synthesize longitude = _longitude;
+@synthesize latitude = _latitude;
+@synthesize localTime = _localTime;
+@synthesize gmtOffset = _gmtOffset;
+@synthesize siderealTime = _siderealTime;
+
 - (void)initialiseMount
 {
     NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
@@ -33,40 +39,40 @@
         return;
     }
     
-    self.name = @"Astro-Physics GTO"; // command to get this ?
+    self.name = @"Astro-Physics GTO";
     
     [self sendCommand:@"#"];
     [self sendCommand:@":U#"];
     
     // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
     [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
-        NSLog(@"Set backlash: %@",response);
+        if (![response isEqualToString:@"1"]) NSLog(@"Set backlash: %@",response);
     }];
     
     NSDate* date = [NSDate date];
     // :SL HH:MM:SS# -> 1
     [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
-        NSLog(@"Set local time: %@",response);
+        if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
     }];
     // :SC MM/DD/YY# -> 32 spaces followed by “#”, followed by 32 spaces, followed by “#”
     [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:66 completion:^(NSString* response){
-        NSLog(@"Set local date: %@",response);
+        // NSLog(@"Set local date: %@",response);
     }];
     
     // :St sDD*MM# or :St sDD*MM:SS -> 1
     [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
-        NSLog(@"Set latitude: %@",response);
+        if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
     }];
     // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
     [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){
-        NSLog(@"Set longitude: %@",response);
+        if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
     }];
 
     NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
     // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
     [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
         
-        NSLog(@"Set GMT offset: %@",response);
+        if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
 
         // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
         [self completeInitialiseMount:nil];
@@ -85,11 +91,11 @@
     if (!error){;
         self.connected = YES;
         
+        [self sendCommand:@":RG1#"]; // 0.5x guide rate
+        [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
+
         self.movingRate = CASAPGTOMountMovingRate600;
         self.trackingRate = CASAPGTOMountTrackingRateSidereal;
-        
-        [self sendCommand:@":RG1#"]; // 0.5x guide rate
-        [self sendCommand:@":RC1#"]; // 64x centering rate
 
         // magic delay seemingly required after setting rates...
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -263,7 +269,6 @@
 {
     _direction = CASMountDirectionNone;
     [self sendCommand:@":Q#"]; // stops slewing but not tracking
-    self.trackingRate = CASAPGTOMountTrackingRateZero; // stops tracking
 }
 
 - (void)stopTracking
@@ -345,20 +350,23 @@
 - (void)setMovingRate:(CASAPGTOMountMovingRate)movingRate
 {
     if (!self.connected){
-        NSLog(@"Attempt to set moving rate while not connected");
+        NSLog(@"Attempt to set centring rate while not connected");
         return;
     }
     if (movingRate != _movingRate){
         _movingRate = movingRate;
         switch (_movingRate) {
             case CASAPGTOMountMovingRate1200:
-                [self sendCommand:@":RS2#"];
-                break;
-            case CASAPGTOMountMovingRate900:
-                [self sendCommand:@":RS1#"];
+                [self sendCommand:@":RC3#"];
                 break;
             case CASAPGTOMountMovingRate600:
-                [self sendCommand:@":RS0#"];
+                [self sendCommand:@":RC2#"];
+                break;
+            case CASAPGTOMountMovingRate64:
+                [self sendCommand:@":RC1#"];
+                break;
+            case CASAPGTOMountMovingRate12:
+                [self sendCommand:@":RC0#"];
                 break;
             default:
                 NSLog(@"Unrecognised moving rate %ld",movingRate);
@@ -368,12 +376,12 @@
 }
 
 - (NSArray<NSString*>*)movingRateValues {
-    return @[@"1200x",@"900x",@"600x"];
+    return @[@"12x",@"64x",@"600x",@"1200x"];
 }
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
 {
-    NSLog(@"-pulseInDirection:ms: not implemented, needs GTPCP3");
+    NSLog(@"-pulseInDirection:ms: not implemented, needs GTOCP3");
 }
 
 @end
