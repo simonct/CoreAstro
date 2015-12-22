@@ -130,16 +130,16 @@
 
         if (currentRa && currentDec){
         
-#if 0
+
             // use this to indicate whether we're slewing or not
             const double degrees = CASAngularSeparation(currentRa.doubleValue,currentDec.doubleValue,self.ra.doubleValue,self.dec.doubleValue);
             const double degreesPerSecond = _lastMountPollTime ? degrees/([NSDate timeIntervalSinceReferenceDate] - _lastMountPollTime) : 0;
-            NSLog(@"degrees %f, degreesPerSecond %f",degrees,degreesPerSecond);
+            // NSLog(@"degrees %f, degreesPerSecond %f",degrees,degreesPerSecond);
             // may need to have a couple of 'not slewing' readings before declaring that the mount is back to tracking
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
-#endif
+            self.slewing = (fabs(degreesPerSecond) > 0);
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
@@ -170,9 +170,6 @@
         else {
             self.pierSide = 0;
         }
-        
-        // assuming this is the last command we get a response to
-        [self performSelector:_cmd withObject:nil afterDelay:0.5];
     }];
     
     // :Gg# -> current longitude
@@ -203,6 +200,9 @@
     [self sendCommand:@":GS#" completion:^(NSString *response) {
         //NSLog(@"Get Sidereal Time: %@",response);
         self.siderealTime = response;
+        
+        // assuming this is the last command we get a response to
+        [self performSelector:_cmd withObject:nil afterDelay:0.5 inModes:@[NSRunLoopCommonModes]];
     }];
 
     // slewing, tracking, etc
