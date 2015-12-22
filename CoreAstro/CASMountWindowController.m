@@ -332,7 +332,7 @@ static void* kvoContext;
 
 - (void)startMoving:(CASMountDirection)direction
 {
-    NSLog(@"startMoving: %ld",direction);
+//    NSLog(@"startMoving: %ld",direction);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
     [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25];
     [self.mount startMoving:direction];
@@ -340,7 +340,7 @@ static void* kvoContext;
 
 - (void)stopMoving
 {
-    NSLog(@"stopMoving");
+//    NSLog(@"stopMoving");
     [self.mount stopMoving];
 }
 
