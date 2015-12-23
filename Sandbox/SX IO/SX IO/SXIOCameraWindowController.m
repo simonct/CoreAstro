@@ -2021,9 +2021,11 @@ static void* kvoContext;
         }
         
         // trigger a flip if we've crossed the meridian and have more exposures to take. This will cancel any current exposure and restart once the slew is completed
-        if (self.mount.az.floatValue > 180.0 && self.mount.pierSide == CASMountPierSideWest && controller.capturing){
-            NSLog(@"Mount has passed meridian, triggering flip");
-            [self slewToLockedSolution];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFlipMountAfterMeridian"]){
+            if (self.mount.az.floatValue > 180.0 && self.mount.pierSide == CASMountPierSideWest && controller.capturing){
+                NSLog(@"Mount has passed meridian, triggering flip");
+                [self slewToLockedSolution];
+            }
         }
     }
     

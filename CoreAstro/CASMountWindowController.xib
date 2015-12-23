@@ -768,7 +768,7 @@
                             <subviews>
                                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vsm-gO-PSS">
                                     <rect key="frame" x="16" y="37" width="370" height="18"/>
-                                    <buttonCell key="cell" type="check" title="Flip mount after crossing meridian" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="FVo-K3-hha">
+                                    <buttonCell key="cell" type="check" title="Flip mount after crossing meridian when capturing" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="FVo-K3-hha">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
