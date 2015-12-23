@@ -139,7 +139,7 @@
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
-            self.slewing = (fabs(degreesPerSecond) > 0);
+            self.slewing = (fabs(degreesPerSecond) > 1);
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
