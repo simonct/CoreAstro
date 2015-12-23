@@ -37,12 +37,17 @@
 @property (assign) double fli_ccdTemp, fli_baseTemp, fli_coolerPower;
 @property (assign) CGSize fli_pixelSize;
 @property (assign) CGRect fli_area;
-//@property (readonly) NSString* fli_pixelSizeString;
-//@property (readonly) NSString* fli_areaString;
+// background flush mode, fan control, download speed
 @end
 
 @implementation FLICCDDevice {
     flidev_t _dev;
+    CGFloat _targetTemperature;
+    CASCCDProperties* _sensor;
+    CASExposeParams _params;
+    CASCCDExposureType _type;
+    void (^_completion)(NSError*,CASCCDExposure*exposure);
+    NSDate* _exposureStart;
 }
 
 - (instancetype)initWithId:(NSString*)ident path:(NSString*)path domain:(long)domain
@@ -60,6 +65,132 @@
 - (void)dealloc
 {
     [self disconnect];
+}
+
+- (BOOL) isColour
+{
+    return NO;
+}
+
+- (BOOL) hasCooler
+{
+    return YES;
+}
+
+- (BOOL) canSubframe
+{
+    return NO; // temp
+}
+
+- (NSArray*)binningModes
+{
+    return @[@1]; // temp
+}
+
+- (CGFloat) temperature // make this double
+{
+    return self.fli_ccdTemp;
+}
+
+- (CGFloat)targetTemperature
+{
+    return _targetTemperature;
+}
+
+- (void)setTargetTemperature:(CGFloat)targetTemperature
+{
+    if (_targetTemperature != targetTemperature){
+        if (!FLISetTemperature(_dev, targetTemperature) == 0){
+            NSLog(@"Failed to set target temperature");
+        }
+        else {
+            _targetTemperature = targetTemperature;
+        }
+    }
+}
+
+- (NSInteger) temperatureFrequency
+{
+    return 5;
+}
+
+- (CASCCDProperties*)sensor
+{
+    return _sensor;
+}
+
+- (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block
+{
+    // open shutter if this isn't a dark
+    if (kCASCCDExposureDarkType != type){
+        FLIControlShutter(_dev,FLI_SHUTTER_OPEN);
+    }
+    
+    // background flush ?
+    
+    FLISetCameraMode(_dev, 0); // download mode
+    
+    FLISetNFlushes(_dev, 5); // number of flushes
+    
+    FLISetExposureTime(_dev, params.ms); // exposure time
+    
+    switch (type) {
+        case kCASCCDExposureDarkType:
+            FLISetFrameType(_dev, FLI_FRAME_TYPE_DARK);
+            break;
+        default:
+            FLISetFrameType(_dev, FLI_FRAME_TYPE_NORMAL);
+            break;
+    }
+    
+    // FLISetImageArea(fli->active_camera, visible_ul_x, visible_ul_y, visible_ul_x + sx, visible_ul_y + sy)
+    
+    FLISetHBin(_dev, params.bin.width);
+    FLISetVBin(_dev, params.bin.height);
+    
+    FLIExposeFrame(_dev);
+    
+    _type = type;
+    _params = params;
+    _completion = [block copy];
+    _exposureStart = [NSDate date];
+    
+    [self checkExposureStatus];
+}
+
+- (void)checkExposureStatus
+{
+    long timeleft = 1;
+    FLIGetExposureStatus(_dev, &timeleft);
+    if (timeleft > 0){
+        [self performSelector:_cmd withObject:nil afterDelay:1];
+        return;
+    }
+    
+    // fliendexposure ?
+    
+    // close shutter
+    if (kCASCCDExposureDarkType != _type){
+        FLIControlShutter(_dev,FLI_SHUTTER_CLOSE);
+    }
+    
+    // read the pixels from the camera
+    NSMutableData* buffer = [NSMutableData dataWithLength:_params.frame.width * _params.frame.height * sizeof(UInt16)];
+    UInt16* p = (UInt16*)[buffer bytes];
+    for (int i = 0; i < _params.frame.height; i++, p += _params.frame.width) {
+        FLIGrabRow(_dev, p, _params.frame.width);
+    }
+    
+    // wrap it in an exposure object
+    CASCCDExposure* exposure = [CASCCDExposure exposureWithPixels:buffer camera:self params:_params time:_exposureStart];
+    
+    // call the completion block
+    _completion(nil,exposure);
+}
+
+- (void)cancelExposure
+{
+    FLICancelExposure(_dev);
 }
 
 - (void)connect
@@ -97,9 +228,17 @@
         }
         
         long ul_x, ul_y, lr_x, lr_y;
-        if (FLIGetArrayArea(_dev, &ul_x, &ul_y, &lr_x, &lr_y) == 0){
+        if (FLIGetVisibleArea(_dev, &ul_x, &ul_y, &lr_x, &lr_y) == 0){
             self.fli_area = CGRectMake(ul_x, ul_y, lr_x, lr_y);
         }
+        
+        CASCCDProperties* sensor = [CASCCDProperties new];
+        sensor.width = lr_x - ul_x;
+        sensor.height = lr_y - ul_y;
+        sensor.pixelSize = CGSizeMake(w, h);
+        sensor.sensorSize = CGSizeMake(sensor.width * sensor.pixelSize.width, sensor.height * sensor.pixelSize.height); // may not be correct ?
+        sensor.bitsPerPixel = 16;
+        _sensor = sensor;
         
         [self fetchCameraStatus];
     }
@@ -143,16 +282,14 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 
-- (NSString*)pixelSizeString
+- (NSString*)fli_pixelSizeString
 {
     return NSStringFromSize(self.fli_pixelSize);
 }
 
-- (NSString*)areaString
+- (NSString*)fli_areaString
 {
     return NSStringFromRect(self.fli_area);
 }
-
-// ccd device property accessors
 
 @end
