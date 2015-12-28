@@ -24,6 +24,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
     self.sdk = [FLISDK new];
+    self.exposureMS = 1000;
     
     __weak __typeof (self) weakSelf = self;
     self.sdk.deviceAdded = ^(NSString* path,CASDevice* device){
@@ -45,19 +46,30 @@
     [self.devicesArrayController.arrangedObjects makeObjectsPerformSelector:@selector(disconnect)];
 }
 
+- (void)showErrorAlert:(NSString*)message
+{
+    NSAlert* alert = [NSAlert alertWithMessageText:@"Error"
+                                     defaultButton:@"OK"
+                                   alternateButton:nil
+                                       otherButton:nil
+                         informativeTextWithFormat:@"%@",message];
+    
+    [alert runModal];
+}
+
 - (IBAction)capture:(id)sender
 {
     if (self.exposing){
-        NSLog(@"Busy");
+        [self showErrorAlert:@"Exposure already in progress"];
         return;
     }
     FLICCDDevice* ccd = self.devicesArrayController.selectedObjects.firstObject;
     if (![ccd isKindOfClass:[FLICCDDevice class]]){
-        NSLog(@"No selected ccd");
+        [self showErrorAlert:@"There's no selected CCD"];
         return;
     }
     if (self.exposureMS < 1){
-        NSLog(@"Exposure time < 1");
+        [self showErrorAlert:@"Exposure time is < 1ms"];
         return;
     }
 
