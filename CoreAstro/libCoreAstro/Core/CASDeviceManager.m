@@ -113,8 +113,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
 
-        // loop over the installed transport browsers; todo - can this be expressed as a form of external SDK ?
-        for (id<CASDeviceBrowser> browser in self.pluginManager.browsers){
+        // enumerate the installed transport browsers; todo - can this be expressed as a form of external SDK ?
+        [self.pluginManager.browsers enumerateObjectsUsingBlock:^(id<CASDeviceBrowser> browser, NSUInteger idx, BOOL * _Nonnull stop) {
             
             @try {
                 
@@ -172,37 +172,45 @@
             @catch (NSException *exception) {
                 NSLog(@"*** Exception scanning for devices: %@",exception);
             }
-        }
+        }];
         
-        // loop over installed SDKs
-        for (id<CASExternalSDK> sdk in self.pluginManager.externalSDKs){
+        // enumerate installed SDKs
+        [self.pluginManager.externalSDKs enumerateObjectsUsingBlock:^(id<CASExternalSDK> sdk, NSUInteger idx, BOOL * _Nonnull stop) {
             
-            __weak typeof (sdk) weakSDK = sdk;
-            
-            // SDK detected a new device
-            sdk.deviceAdded = ^(NSString* path,CASDevice* device){
+            @try {
                 
-                // check for duplicate
-                if (![self deviceWithPath:path]){
-                    
-                    // create+observe devices array
-                    [self createDevices];
-                    
-                    // add the device to the array
-                    NSLog(@"SDK %@ added device %@@%@",NSStringFromClass([weakSDK class]),device.deviceName,device.deviceLocation);
-                    [[self mutableArrayValueForKey:@"devices"] addObject:device];
-                }
-            };
-            
-            // SDK detected that a device had disappeared
-            sdk.deviceRemoved = ^(NSString* path,CASDevice* device){
+                __weak typeof (sdk) weakSDK = sdk;
                 
-                if (device && [self deviceWithPath:path]){
-                    NSLog(@"SDK %@ removed device %@",NSStringFromClass([weakSDK class]),device);
-                    [[self mutableArrayValueForKey:@"devices"] removeObject:device];
-                }
-            };
-        }
+                // SDK detected a new device
+                sdk.deviceAdded = ^(NSString* path,CASDevice* device){
+                    
+                    // check for duplicate
+                    if (![self deviceWithPath:path]){
+                        
+                        // create+observe devices array
+                        [self createDevices];
+                        
+                        // add the device to the array
+                        NSLog(@"SDK %@ added device %@@%@",NSStringFromClass([weakSDK class]),device.deviceName,device.deviceLocation);
+                        [[self mutableArrayValueForKey:@"devices"] addObject:device];
+                    }
+                };
+                
+                // SDK detected that a device had disappeared
+                sdk.deviceRemoved = ^(NSString* path,CASDevice* device){
+                    
+                    if (device && [self deviceWithPath:path]){
+                        NSLog(@"SDK %@ removed device %@",NSStringFromClass([weakSDK class]),device);
+                        [[self mutableArrayValueForKey:@"devices"] removeObject:device];
+                    }
+                };
+                
+                [sdk scan];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"*** Exception scanning for devices: %@",exception);
+            }
+        }];
     });
 }
 

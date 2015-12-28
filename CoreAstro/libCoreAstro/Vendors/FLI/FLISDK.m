@@ -63,6 +63,7 @@
             NSString* path = [NSString stringWithUTF8String:file];
             FLICCDDevice* camera = [[FLICCDDevice alloc] initWithId:ident path:path domain:domain];
             self.deviceAdded(path,camera);
+            NSLog(@"Added FLI camera: %@",camera.fli_model);
 		}
 		while((FLIListNext(&domain, file, MAX_PATH, name, MAX_PATH) == 0));
 	}
