@@ -965,7 +965,6 @@
         </window>
         <customObject id="494" customClass="SXIOAppDelegate">
             <connections>
-                <outlet property="arrayController" destination="Qcf-ph-Ifr" id="RKu-08-Hz7"/>
                 <outlet property="devicesArrayController" destination="Qcf-ph-Ifr" id="qbd-Xx-ZBt"/>
                 <outlet property="tableView" destination="EKW-hL-dHl" id="j3c-3a-zhc"/>
                 <outlet property="window" destination="371" id="532"/>
