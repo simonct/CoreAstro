@@ -38,12 +38,6 @@
 @property (nonatomic,readonly) NSInteger temperatureFrequency;
 @property (nonatomic,strong) NSMutableArray* exposureTemperatures; // move to CASExposure ?
 
-- (void)reset:(void (^)(NSError*))block;
-
-- (void)getParams:(void (^)(NSError*,CASCCDProperties* sensor))block;
-
-- (void)flush:(void (^)(NSError*))block;
-
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
 - (void)cancelExposure;
