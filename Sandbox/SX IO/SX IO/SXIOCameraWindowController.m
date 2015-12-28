@@ -20,7 +20,11 @@
 #import "CASMountWindowController.h"
 #import "SXIOFocuserWindowController.h"
 #import "SXIOBookmarkWindowController.h"
+#if defined(SXIO)
 #import "SX_IO-Swift.h"
+#else
+#import "CCD_IO-Swift.h"
+#endif
 #import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/ORSSerialPortManager.h>
 

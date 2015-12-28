@@ -8,8 +8,13 @@
 
 #import "CASMountWindowController.h"
 #import "SXIOPlateSolveOptionsWindowController.h" // for +focalLengthWithCameraKey:
-#import "SX_IO-Swift.h"
 #if defined(SXIO)
+#import "SX_IO-Swift.h"
+#import "SXIOAppDelegate.h"
+#else
+#import "CCD_IO-Swift.h"
+#endif
+#if defined(SXIO) || defined(CCDIO)
 #import "SXIOAppDelegate.h"
 #endif
 #import <CoreAstro/CoreAstro.h>
@@ -117,7 +122,7 @@ static void* kvoContext;
 {
     [super windowDidLoad];
     
-#if defined(SXIO)
+#if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
 #endif
     
@@ -139,7 +144,7 @@ static void* kvoContext;
     }
     [self.mount disconnect];
     
-#if defined(SXIO)
+#if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     

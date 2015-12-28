@@ -92,7 +92,7 @@
 {
     [super windowDidLoad];
     
-#if defined(SXIO)
+#if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
 #endif
 
@@ -140,7 +140,7 @@
 
 - (void)closeWindow:sender
 {
-#if defined(SXIO)
+#if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     
