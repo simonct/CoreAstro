@@ -16,6 +16,7 @@
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL slewing;
 @property (nonatomic,readonly) BOOL tracking;
+@property (nonatomic,readonly) BOOL weightsHigh;
 
 @property (nonatomic,strong,readonly) NSNumber* ra;
 @property (nonatomic,strong,readonly) NSNumber* dec;

@@ -40,6 +40,17 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return NO;
 }
 
+- (BOOL) weightsHigh {
+    if (!self.az){
+        return NO;
+    }
+    return (self.az.floatValue > 180.0 && self.pierSide == CASMountPierSideWest) || (self.az.floatValue < 180.0 && self.pierSide == CASMountPierSideEast);
+}
+
++ (NSSet*)keyPathsForValuesAffectingWeightsHigh {
+    return [NSSet setWithArray:@[@"az",@"pierSide"]];
+}
+
 - (CASMountMode) mode {
     return CASMountModeEQ;
 }
