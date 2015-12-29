@@ -16,6 +16,7 @@
 @property (weak) IBOutlet NSArrayController *devicesArrayController;
 @property (strong) FLISDK* sdk;
 @property NSInteger exposureMS;
+@property NSInteger binning;
 @property BOOL exposing;
 @end
 
@@ -25,6 +26,7 @@
 {
     self.sdk = [FLISDK new];
     self.exposureMS = 1000;
+    self.binning = 1;
     
     __weak __typeof (self) weakSelf = self;
     self.sdk.deviceAdded = ^(NSString* path,CASDevice* device){
@@ -72,9 +74,13 @@
         [self showErrorAlert:@"Exposure time is < 1ms"];
         return;
     }
+    if (![ccd.binningModes containsObject:@(self.binning)]){
+        [self showErrorAlert:@"Invalid binning"];
+        return;
+    }
 
     const CASExposeParams params = {
-        .bin = CASSizeMake(1, 1),
+        .bin = CASSizeMake(self.binning, self.binning),
         .origin = CASPointMake(0, 0),
         .size = CASSizeMake(ccd.sensor.width, ccd.sensor.height),
         .frame = CASSizeMake(ccd.sensor.width, ccd.sensor.height),
