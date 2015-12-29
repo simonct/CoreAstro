@@ -13,6 +13,7 @@
 @interface CASAPGTOMount ()
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
+@property BOOL synced; // YES if the initial sync command has been sent
 @end
 
 @implementation CASAPGTOMount {
@@ -84,11 +85,13 @@
 
 - (void)completeInitialiseMount:(NSError*)error
 {
-    if (self.connectCompletion){
-        self.connectCompletion(error);
-        self.connectCompletion = nil;
+    if (error){
+        if (self.connectCompletion){
+            self.connectCompletion(error);
+            self.connectCompletion = nil;
+        }
     }
-    if (!error){;
+    else {
         self.connected = YES;
         
         [self sendCommand:@":RG1#"]; // 0.5x guide rate
@@ -97,7 +100,7 @@
         self.movingRate = CASAPGTOMountMovingRate600;
         self.trackingRate = CASAPGTOMountTrackingRateSidereal;
 
-        // magic delay seemingly required after setting rates...
+        // magic delay seemingly required after setting rates... (still needed?)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
@@ -107,12 +110,9 @@
 - (void)pollMountStatus
 {
     if (!self.connected){
-        NSLog(@"Poll mount status not connected");
+        NSLog(@"Attempt to poll mount status when not connected");
         return;
     }
-    
-    // the serial machinery queues up requests so we can just issue a whole bunch and they'll be sent in order
-    // may need to set slew rates, etc on initialisation since we don't seem to be able to poll all of them
     
     NSNumber* currentRa = self.ra;
     NSNumber* currentDec = self.dec;
@@ -130,7 +130,6 @@
 
         if (currentRa && currentDec){
         
-
             // use this to indicate whether we're slewing or not
             const double degrees = CASAngularSeparation(currentRa.doubleValue,currentDec.doubleValue,self.ra.doubleValue,self.dec.doubleValue);
             const double degreesPerSecond = _lastMountPollTime ? degrees/([NSDate timeIntervalSinceReferenceDate] - _lastMountPollTime) : 0;
@@ -203,10 +202,13 @@
         
         // assuming this is the last command we get a response to
         [self performSelector:_cmd withObject:nil afterDelay:0.5 inModes:@[NSRunLoopCommonModes]];
+        
+        // call the completion block after the first poll of the mount
+        if (self.connectCompletion){
+            self.connectCompletion(nil);
+            self.connectCompletion = nil;
+        }
     }];
-
-    // slewing, tracking, etc
-    // "#:D#", "#:SE?#"
 }
 
 - (void)park
@@ -287,6 +289,12 @@
     
     __weak __typeof__(self) weakSelf = self;
     
+    if (!self.synced && self.weightsHigh){
+        NSLog(@"Attempt to perform initial sync of the mount while it's weights-high");
+        completion(CASMountSlewErrorInvalidLocation); // todo; need a new error code
+        return;
+    }
+    
     // set commanded ra and dec then issue sync command
     [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
         
@@ -295,10 +303,11 @@
         }
         else {
             
-            [weakSelf sendCommand:@"CMR#" completion:^(NSString *slewResponse) {
-                
-                NSLog(@"sync response: %@",slewResponse);
-                
+            NSString* command = weakSelf.synced ? @":CMR#" : @":CM#";
+            weakSelf.synced = YES;
+            
+            [weakSelf sendCommand:command completion:^(NSString *response) {
+                NSLog(@"%@: %@",command,response);
                 completion(CASMountSlewErrorNone);
             }];
         }
@@ -375,7 +384,8 @@
     }
 }
 
-- (NSArray<NSString*>*)movingRateValues {
+- (NSArray<NSString*>*)movingRateValues
+{
     return @[@"12x",@"64x",@"600x",@"1200x"];
 }
 
