@@ -44,43 +44,69 @@
     
     [self sendCommand:@"#"];
     [self sendCommand:@":U#"];
-    
-    // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
-    [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
-        if (![response isEqualToString:@"1"]) NSLog(@"Set backlash: %@",response);
-    }];
-    
-    NSDate* date = [NSDate date];
-    // :SL HH:MM:SS# -> 1
-    [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
-        if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
-    }];
-    // :SC MM/DD/YY# -> 32 spaces followed by “#”, followed by 32 spaces, followed by “#”
-    [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:66 completion:^(NSString* response){
-        // NSLog(@"Set local date: %@",response);
-    }];
-    
-    // :St sDD*MM# or :St sDD*MM:SS -> 1
-    [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
-        if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
-    }];
-    // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
-    [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){
-        if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
-    }];
 
-    NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
-    // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
-    [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
+    // get mount local time to try and see if it's already been configured
+    [self sendCommand:@":GL#" completion:^(NSString* response){
+
+        NSDate* date = [NSDate date];
         
-        if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
+        BOOL scopeConfigured = NO;
+        NSDateFormatter* dateFormatter = [NSDateFormatter new];
+        dateFormatter.dateFormat = @"HH:mm:ss.S";
+        NSDate* scopeTime = [dateFormatter dateFromString:response];
+        if (!scopeTime){
+            NSLog(@"Failed to parse scope local time of %@",response);
+        }
+        else {
+            NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+            NSDateComponents* scopeComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeTime];
+            NSDateComponents* localComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:date];
+            scopeConfigured = fabs([cal dateFromComponents:scopeComps].timeIntervalSinceReferenceDate - [cal dateFromComponents:localComps].timeIntervalSinceReferenceDate) < 60; // todo; check gmt offset as well, also doesn't account for site lat/lon
+        }
 
-        // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
-        [self completeInitialiseMount:nil];
+        if (scopeConfigured){
+            NSLog(@"Looks like the mount is already configured, skipping the rest of the setup");
+            [self completeInitialiseMount:nil];
+        }
+        else {
+            
+            // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
+            [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
+                if (![response isEqualToString:@"1"]) NSLog(@"Set backlash: %@",response);
+            }];
+            
+            // :SL HH:MM:SS# -> 1
+            [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
+                if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
+            }];
+            // :SC MM/DD/YY# -> 32 spaces followed by “#”, followed by 32 spaces, followed by “#”
+            [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:66 completion:^(NSString* response){
+                // NSLog(@"Set local date: %@",response);
+            }];
+            
+            // :St sDD*MM# or :St sDD*MM:SS -> 1
+            [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
+                if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
+            }];
+            // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
+            [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){
+                if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
+            }];
+            
+            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
+            // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
+            [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
+                
+                if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
+                
+                // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
+                [self completeInitialiseMount:nil];
+            }];
+            
+            [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
+            [self sendCommand:@":Q#"];
+        }
     }];
-
-    [self sendCommand:@":PO#"];
-    [self sendCommand:@":Q#"];
 }
 
 - (void)completeInitialiseMount:(NSError*)error
@@ -94,7 +120,7 @@
     else {
         self.connected = YES;
         
-        [self sendCommand:@":RG1#"]; // 0.5x guide rate
+        [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
         [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
 
         self.movingRate = CASAPGTOMountMovingRate600;
@@ -105,6 +131,12 @@
             [self pollMountStatus];
         });
     }
+}
+
+- (void)disconnect
+{
+    [super disconnect];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(pollMountStatus) object:nil];
 }
 
 - (void)pollMountStatus
@@ -314,6 +346,15 @@
     }];
 }
 
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion
+{
+    // todo; the mount can apparently not respond at all to this command under some circumstances
+    [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
+        NSLog(@"slew response: %@",slewResponse);
+        completion([slewResponse isEqualToString:@"0"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
+    }];
+}
+
 - (CASAPGTOMountTrackingRate)trackingRate
 {
     return _trackingRate;
@@ -347,7 +388,8 @@
     }
 }
 
-- (NSArray<NSString*>*)trackingRateValues {
+- (NSArray<NSString*>*)trackingRateValues
+{
     return @[@"Lunar",@"Solar",@"Sidereal",@"None"];
 }
 

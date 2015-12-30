@@ -148,24 +148,22 @@
     
     // set commanded ra and dec then issue slew command
     [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
-        
         if (error){
             completion(error);
         }
         else {
-            
             weakSelf.targetRa = @(ra_);
             weakSelf.targetDec = @(dec_);
-
-            [weakSelf sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
-                
-                NSLog(@"slew response: %@",slewResponse);
-                
-                // not ap...
-                
-                completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
-            }];
+            [weakSelf startSlewToTarget:completion];
         }
+    }];
+}
+
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
+    
+    [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
+        NSLog(@"start lew response: %@",slewResponse);
+        completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
     }];
 }
 

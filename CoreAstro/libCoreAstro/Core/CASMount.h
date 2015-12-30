@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, CASMountSlewError) {
     CASMountSlewErrorInvalidLocation
 };
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion; // for subclasses
 - (void)halt;
 
 typedef NS_ENUM(NSInteger, CASMountDirection) {

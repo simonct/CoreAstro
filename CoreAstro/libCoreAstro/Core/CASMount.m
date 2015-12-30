@@ -120,6 +120,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     NSAssert(NO, @"Not implemented");
 }
 
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
+    NSAssert(NO, @"Not implemented");
+}
+
 - (void)park {
     NSAssert(NO, @"Not implemented");
 }
