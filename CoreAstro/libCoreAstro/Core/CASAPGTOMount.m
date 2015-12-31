@@ -79,6 +79,7 @@
             [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
             }];
+            
             // :SC MM/DD/YY# -> 32 spaces followed by “#”, followed by 32 spaces, followed by “#”
             [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:66 completion:^(NSString* response){
                 // NSLog(@"Set local date: %@",response);
@@ -88,13 +89,15 @@
             [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
             }];
+            
             // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
-            [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){
+            const double longitudeValue = fmod(360 - longitude.doubleValue, 360.0); // AP mounts express longitude as 0-360 going West
+            [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitudeValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
             }];
             
-            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
             // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
+            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
             [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
                 
                 if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
