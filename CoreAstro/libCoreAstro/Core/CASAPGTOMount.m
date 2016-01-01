@@ -9,6 +9,7 @@
 #import "CASAPGTOMount.h"
 #import "CASLX200Commands.h"
 #import "CASCoordinateUtils.h"
+#import "CASNova.h"
 
 @interface CASAPGTOMount ()
 @property (nonatomic,assign) BOOL connected;
@@ -45,23 +46,28 @@
     [self sendCommand:@"#"];
     [self sendCommand:@":U#"];
 
-    // get mount local time to try and see if it's already been configured
-    [self sendCommand:@":GL#" completion:^(NSString* response){
+    // get mount sidereal time to try and see if it's already been configured
+    [self sendCommand:@":GS#" completion:^(NSString* response){
 
         NSDate* date = [NSDate date];
         
         BOOL scopeConfigured = NO;
         NSDateFormatter* dateFormatter = [NSDateFormatter new];
         dateFormatter.dateFormat = @"HH:mm:ss.S";
-        NSDate* scopeTime = [dateFormatter dateFromString:response];
-        if (!scopeTime){
-            NSLog(@"Failed to parse scope local time of %@",response);
+        NSDate* scopeSiderealTime = [dateFormatter dateFromString:response];
+        if (!scopeSiderealTime){
+            NSLog(@"Failed to parse scope sidereal time of %@",response);
         }
         else {
             NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-            NSDateComponents* scopeComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeTime];
-            NSDateComponents* localComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:date];
-            scopeConfigured = fabs([cal dateFromComponents:scopeComps].timeIntervalSinceReferenceDate - [cal dateFromComponents:localComps].timeIntervalSinceReferenceDate) < 60; // todo; check gmt offset as well, also doesn't account for site lat/lon
+            NSDateComponents* scopeSiderealComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeSiderealTime];
+            const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
+            const double lst = [CASNova siderealTimeForLongitude:longitude.doubleValue];
+            const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*(24*60*60);
+            scopeConfigured = diffSeconds < 300; // todo; make this limit configurable, probably should be lower
+            if (!scopeConfigured){
+                NSLog(@"Difference between local and scope sidereal time of %.0f seconds, assuming mount needs configuring",diffSeconds);
+            }
         }
 
         if (scopeConfigured){
@@ -69,6 +75,8 @@
             [self completeInitialiseMount:nil];
         }
         else {
+            
+            NSLog(@"Configuring mount");
             
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
@@ -79,6 +87,7 @@
             [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
             }];
+            
             // :SC MM/DD/YY# -> 32 spaces followed by “#”, followed by 32 spaces, followed by “#”
             [self sendCommand:[CASLX200Commands setTelescopeLocalDate:date] readCount:66 completion:^(NSString* response){
                 // NSLog(@"Set local date: %@",response);
@@ -88,13 +97,15 @@
             [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
             }];
+            
             // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
-            [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitude.doubleValue] readCount:1 completion:^(NSString* response){
+            const double longitudeValue = fmod(360 - longitude.doubleValue, 360.0); // AP mounts express longitude as 0-360 going West
+            [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitudeValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
             }];
             
-            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
             // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
+            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
             [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
                 
                 if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
@@ -206,7 +217,21 @@
     // :Gg# -> current longitude
     [self sendCommand:@":Gg#" completion:^(NSString *response) {
         //NSLog(@"Get Lon: %@",response);
-        self.longitude = response;
+        double longitude = [CASLX200Commands fromDecString:response];
+        if (longitude == -1){
+            self.longitude = response;
+            NSLog(@"Failed to parse longitude response: %@",response);
+        }
+        else {
+            // map back from 0-360 to -180 to +180
+            if (longitude > 180){
+                longitude = 360 - longitude; // east of meridian so +ve longitude
+            }
+            else {
+                longitude = -longitude; // west of meridian so -ve longitude
+            }
+            self.longitude = [CASLX200Commands highPrecisionDec:longitude];
+        }
     }];
 
     // :Gg# -> current latitude

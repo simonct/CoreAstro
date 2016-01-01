@@ -73,4 +73,10 @@
     return result;
 }
 
++ (double)siderealTimeForLongitude:(double)longitude
+{
+    const double now = [self now];
+    return ln_get_mean_sidereal_time(now) + longitude/15.0;
+}
+
 @end
