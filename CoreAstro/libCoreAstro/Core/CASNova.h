@@ -27,4 +27,6 @@ typedef struct {
 } CASDate;
 - (CASDate)getDateTime:(double)jd;
 
++ (double)siderealTimeForLongitude:(double)longitude;
+
 @end
