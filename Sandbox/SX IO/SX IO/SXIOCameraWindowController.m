@@ -26,7 +26,6 @@
 #import "CCD_IO-Swift.h"
 #endif
 #import <CoreAstro/CASClassDefaults.h>
-#import <CoreAstro/ORSSerialPortManager.h>
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
@@ -102,12 +101,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,copy) NSString* cameraDeviceID;
 
 // mount control
-@property (strong) CASMount* mount;
-@property (strong) SXIOMountState* mountState;
 @property BOOL forcedFlip;
-@property (weak) ORSSerialPort* selectedSerialPort;
-@property (strong) ORSSerialPortManager* serialPortManager;
-@property (strong) IBOutlet NSWindow *mountConnectWindow;
+@property (strong) SXIOMountState* mountState;
 @property (strong,nonatomic) CASMountWindowController* mountWindowController;
 
 @property (strong) CASProgressWindowController* mountSlewProgressSheet;
@@ -118,6 +113,10 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) CASCCDExposure* latestExposure;
 
 @property (strong) SXIOBookmarkWindowController* bookmarksWindowController;
+
+// obsolete but required until the xib format is updated
+@property (weak) IBOutlet id mountConnectWindow;
+@property id serialPortManager, selectedSerialPort;
 
 @end
 
@@ -331,6 +330,9 @@ static void* kvoContext;
 }
 
 #pragma mark - Actions
+
+// obsolete but required until the xib format is updated
+- (IBAction)connectButtonPressed:(id)sender {}
 
 - (NSURL*)beginAccessToSaveTarget // todo; NSError** param with reasons for failure
 {
@@ -867,49 +869,22 @@ static void* kvoContext;
 
 - (IBAction)connectToMount:(id)sender
 {
-    if (self.mountWindowController){
-        [self.mountWindowController.window makeKeyAndOrderFront:nil]; // todo; change menu item title when connected to a mount ?
-    }
-    else {
-        if (!self.serialPortManager){
-            self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    // keep things simple and have a single mount window across the app for now
+    self.mountWindowController = [CASMountWindowController sharedMountWindowController];
+    
+    [self.mountWindowController connectToMount:^{
+        
+        // only configure the mount window if it doesn't already have a camera controller
+        if (self.mountWindowController.cameraController != nil){
+            NSLog(@"Not configuring mount window as it already has a camera controller: %@",self.mountWindowController.cameraController);
         }
-        self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
-        [self.mountConnectWindow makeKeyAndOrderFront:nil]; // sheet ? todo; config UI should come from the driver...
-    }
-}
-
-- (IBAction)connectButtonPressed:(id)sender
-{
-    if (!self.selectedSerialPort){
-        return;
-    }
-    
-    if (self.selectedSerialPort.isOpen){
-        [self presentAlertWithTitle:nil message:@"Selected serial port is already open"];
-        return;
-    }
-    
-    [self.mountConnectWindow orderOut:nil];
-    
-    self.mount = [[CASAPGTOMount alloc] initWithSerialPort:self.selectedSerialPort];
-    
-    if (self.mount.slewing){
-        [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
-        return;
-    }
-    
-    self.mountWindowController = [[CASMountWindowController alloc] initWithWindowNibName:@"CASMountWindowController"];
-    self.mountWindowController.cameraController = self.cameraController;
-    self.mountWindowController.mountWindowDelegate = self;
-    [self.mountWindowController connectToMount:self.mount completion:^(NSError* error) {
-        if (error){
-            [self presentAlertWithTitle:nil message:[error localizedDescription]];
-        }
-        else {
-            [self.mountWindowController showWindow:nil];
+        else{
+        
+            self.mountWindowController.cameraController = self.cameraController;
+            self.mountWindowController.mountWindowDelegate = self; // this isn't set when the user picks from the popup menu
             CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
             if (solution){
+                // todo; check to see we're not slewing, etc
                 [self.mountWindowController setTargetRA:solution.centreRA dec:solution.centreDec];
             }
         }
@@ -946,7 +921,7 @@ static void* kvoContext;
 {
     NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
     
-    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mount.pierSide);
+    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountWindowController.mount.pierSide);
     
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self dismissMountSlewProgressSheet];
@@ -1026,7 +1001,7 @@ static void* kvoContext;
         return;
     }
     
-    if (self.mount.slewing){
+    if (self.mountWindowController.mount.slewing){
         
         if (!self.mountState.slewStarted){
             
@@ -1048,7 +1023,7 @@ static void* kvoContext;
                 // record the current state
                 self.mountState.synchronisingWhenSlewStarted = NO;
                 self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
-                self.mountState.pierSideWhenSlewStarted = self.mount.pierSide;
+                self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mount.pierSide;
                 self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
                 
                 // stop guiding and capture if we're not looping (which probably means we're framing the subject)
@@ -1173,7 +1148,6 @@ static void* kvoContext;
 {
     if (windowController == self.mountWindowController){
         self.mountWindowController = nil;
-        self.mount = nil;
     }
 }
 
@@ -2026,7 +2000,7 @@ static void* kvoContext;
         
         // trigger a flip if we've crossed the meridian and have more exposures to take. This will cancel any current exposure and restart once the slew is completed
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFlipMountAfterMeridian"]){
-            if (self.mount.weightsHigh && controller.capturing){
+            if (self.mountWindowController.mount.weightsHigh && controller.capturing){
                 NSLog(@"Mount has passed meridian, triggering flip");
                 [self slewToLockedSolution];
             }
@@ -2398,7 +2372,7 @@ static void* kvoContext;
 {
     NSLog(@"mountSlewing: %@",note.userInfo);
 
-    if (note.object == self.mount){
+    if (note.object == self.mountWindowController.mount){
         [self handleMountSlewStateChanged];
     }
 }

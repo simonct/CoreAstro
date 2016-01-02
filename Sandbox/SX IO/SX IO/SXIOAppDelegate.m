@@ -34,6 +34,7 @@
 #import "SXIOPreferencesWindowController.h"
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
+#import "CASMountWindowController.h"
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -441,6 +442,13 @@ static void* kvoContext;
         self.preferencesWindowController = [[SXIOPreferencesWindowController alloc] initWithWindowNibName:@"SXIOPreferencesWindowController"];
     }
     [self.preferencesWindowController showWindow:nil];
+}
+
+- (IBAction)connectToMount:(id)sender
+{
+    [[CASMountWindowController sharedMountWindowController] connectToMount:^{
+        // connected
+    }];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item

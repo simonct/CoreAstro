@@ -23,9 +23,17 @@
 @property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
+@property (nonatomic,strong,readonly) CASMount* mount;
 @property (nonatomic,strong,readonly) CASMountSynchroniser* mountSynchroniser; // tmp for flipping
 @property (nonatomic) BOOL usePlateSolving;
 - (void)connectToMount:(CASMount*)mount completion:(void(^)(NSError*))completion;
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs;
 - (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion;
+@end
+
+@interface CASMountWindowController (Global)
+
+- (void)connectToMount:(void(^)())completion;
++ (instancetype)sharedMountWindowController;
+
 @end

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1021" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <development version="6300" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
@@ -11,6 +11,7 @@
                 <outlet property="cameraPopupButton" destination="bSK-Fq-et0" id="h4t-JG-LqQ"/>
                 <outlet property="camerasArrayController" destination="Ps5-ee-7o7" id="Nyv-nW-e4F"/>
                 <outlet property="morePanel" destination="9Jl-UB-2vZ" id="1nb-ZV-X5n"/>
+                <outlet property="mountConnectWindow" destination="dIP-qc-kdb" id="nCf-Zn-xsP"/>
                 <outlet property="statusLabel" destination="XlS-17-G0Y" id="kCP-yQ-8tJ"/>
                 <outlet property="window" destination="1" id="3"/>
             </connections>
@@ -21,7 +22,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="423" height="681"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="423" height="681"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -33,7 +34,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ta8-Ob-8lu">
-                                    <rect key="frame" x="16" y="70" width="34" height="21"/>
+                                    <rect key="frame" x="16" y="70" width="33" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Lat:" id="vcM-6k-8nS">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -41,7 +42,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4bc-4W-80B">
-                                    <rect key="frame" x="54" y="70" width="25" height="21"/>
+                                    <rect key="frame" x="53" y="70" width="27" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="nUY-DV-6P9">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -52,7 +53,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Npl-ZY-ffV">
-                                    <rect key="frame" x="16" y="43" width="95" height="21"/>
+                                    <rect key="frame" x="16" y="43" width="92" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Local Time:" id="4b0-Cf-E72">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -60,7 +61,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3h8-9H-hCZ">
-                                    <rect key="frame" x="83" y="70" width="39" height="21"/>
+                                    <rect key="frame" x="84" y="70" width="37" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Lon:" id="XXe-L7-v6N">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -68,7 +69,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oVf-EE-mtc">
-                                    <rect key="frame" x="126" y="70" width="25" height="21"/>
+                                    <rect key="frame" x="125" y="70" width="27" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="G9Z-qb-fGV">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -79,7 +80,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8EN-gE-H2l">
-                                    <rect key="frame" x="115" y="43" width="25" height="21"/>
+                                    <rect key="frame" x="112" y="43" width="27" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="zeu-mg-2OK">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -90,7 +91,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KhV-k7-86J">
-                                    <rect key="frame" x="16" y="14" width="73" height="21"/>
+                                    <rect key="frame" x="16" y="14" width="71" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sidereal:" id="ZkV-wj-HBF">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -98,7 +99,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0nk-A6-mLY">
-                                    <rect key="frame" x="144" y="43" width="46" height="21"/>
+                                    <rect key="frame" x="143" y="43" width="46" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="GMT:" id="3G0-uo-eUf">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -106,7 +107,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hZa-Oo-EgR">
-                                    <rect key="frame" x="194" y="43" width="25" height="21"/>
+                                    <rect key="frame" x="193" y="43" width="27" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="AbL-yX-egS">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -117,7 +118,7 @@
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qwh-J3-h9y">
-                                    <rect key="frame" x="93" y="14" width="25" height="21"/>
+                                    <rect key="frame" x="91" y="14" width="27" height="21"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="1Vm-Vc-wJn">
                                         <font key="font" metaFont="systemBold" size="17"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -835,7 +836,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="172" width="388" height="108"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="t9Q-bh-yGD">
                 <rect key="frame" x="0.0" y="-1" width="388" height="108"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -893,7 +894,7 @@
                             <constraint firstAttribute="height" constant="27" id="JBz-p1-h71"/>
                         </constraints>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        <size key="cellSize" width="30" height="18"/>
+                        <size key="cellSize" width="31" height="18"/>
                         <size key="intercellSpacing" width="4" height="2"/>
                         <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="h2C-sI-ePD">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -934,7 +935,7 @@
                         </connections>
                     </matrix>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vG7-dk-w8X">
-                        <rect key="frame" x="301" y="13" width="73" height="32"/>
+                        <rect key="frame" x="302" y="13" width="72" height="32"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="OXL-YX-VQ8"/>
                         </constraints>
@@ -967,5 +968,78 @@
                 <binding destination="-2" name="contentArray" keyPath="bookmarks" id="RHz-FV-wI8"/>
             </connections>
         </arrayController>
+        <window title="Connect to Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Conect to Mount" animationBehavior="default" id="dIP-qc-kdb">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="335" y="1107" width="369" height="104"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <view key="contentView" id="9s1-4a-AEu">
+                <rect key="frame" x="0.0" y="0.0" width="369" height="104"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rzn-48-RSo">
+                        <rect key="frame" x="91" y="61" width="261" height="26"/>
+                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="ewe-UT-8Xj" id="mlw-aM-E02">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="Pbq-uO-2IY">
+                                <items>
+                                    <menuItem title="Item 1" state="on" id="ewe-UT-8Xj"/>
+                                    <menuItem title="Item 2" id="e8U-Kv-lTw"/>
+                                    <menuItem title="Item 3" id="bGu-gz-7LU"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="-2" name="selectedObject" keyPath="selectedSerialPort" previousBinding="m4f-w1-gkc" id="yYn-R5-0ku"/>
+                            <binding destination="-2" name="content" keyPath="serialPortManager.availablePorts" id="QiL-Cm-csb"/>
+                            <binding destination="-2" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="QiL-Cm-csb" id="m4f-w1-gkc"/>
+                        </connections>
+                    </popUpButton>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u2X-IH-PFz">
+                        <rect key="frame" x="263" y="16" width="92" height="32"/>
+                        <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Kle-ci-M5v">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="connectPressed:" target="-2" id="c75-0S-9BF"/>
+                            <binding destination="-2" name="enabled" keyPath="selectedSerialPort" id="6jF-If-U7P">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="giV-Zv-3bm">
+                        <rect key="frame" x="20" y="66" width="68" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Serial Port" id="Esi-SK-AIY">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zys-3M-s97">
+                        <rect key="frame" x="181" y="16" width="82" height="32"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="td9-JI-s2I">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="cancelPressed:" target="-2" id="DrN-wO-ZGZ"/>
+                            <binding destination="-2" name="enabled" keyPath="selectedSerialPort" id="bRt-30-TS9">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="-1091.5" y="-10"/>
+        </window>
     </objects>
 </document>

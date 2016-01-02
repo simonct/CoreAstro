@@ -18,6 +18,7 @@
 #import "SXIOAppDelegate.h"
 #endif
 #import <CoreAstro/CoreAstro.h>
+#import <CoreAstro/ORSSerialPortManager.h>
 
 @interface CASPierSideTransformer : NSValueTransformer
 @end
@@ -45,7 +46,6 @@
 @interface CASMountWindowController ()<CASMountMountSynchroniserDelegate>
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,copy) NSString* searchString;
-@property (nonatomic,assign) NSInteger guideDurationInMS;
 @property (weak) IBOutlet NSTextField *statusLabel;
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
@@ -54,6 +54,9 @@
 @property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
 @property (weak) IBOutlet NSTextField *pierSideLabel;
 @property (strong) IBOutlet NSPanel *morePanel;
+@property (strong) IBOutlet NSWindow *mountConnectWindow;
+@property (weak) ORSSerialPort* selectedSerialPort;
+@property (strong) ORSSerialPortManager* serialPortManager;
 @end
 
 // todo;
@@ -61,8 +64,8 @@
 // ra/dec all zeros ?
 
 @interface CASNumberStringTransformer : NSValueTransformer
-
 @end
+
 @implementation CASNumberStringTransformer
 
 + (BOOL)allowsReverseTransformation
@@ -129,6 +132,9 @@ static void* kvoContext;
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(closeWindow:)];
+    
+    self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
 }
 
 - (void)closeWindow:sender
@@ -239,6 +245,9 @@ static void* kvoContext;
             if ([focalLength isKindOfClass:[NSNumber class]]){
                 self.mountSynchroniser.focalLength = [focalLength floatValue];
             }
+            
+            // todo; needs to locate the owning camera window controller and set that as the mount delegate - or use notifications
+            NSLog(@"Picked a camera controller but can't set the mount delegate");
         }
     }
 }
@@ -286,7 +295,6 @@ static void* kvoContext;
     [self.mount connectWithCompletion:^(NSError* error){
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
-            self.guideDurationInMS = 1000;
         }
         if (completion){
             completion(error);
@@ -475,6 +483,25 @@ static void* kvoContext;
     [self.window endSheet:self.morePanel returnCode:NSModalResponseContinue];
 }
 
+- (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
+{
+    [[NSAlert alertWithMessageText:title
+                     defaultButton:nil
+                   alternateButton:nil
+                       otherButton:nil
+         informativeTextWithFormat:@"%@",message] runModal];
+}
+
+- (IBAction)connectPressed:(id)sender
+{
+    [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseContinue];
+}
+
+- (IBAction)cancelPressed:(id)sender
+{
+    [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseCancel];
+}
+
 #pragma mark - Mount Synchroniser delegate
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
@@ -490,6 +517,77 @@ static void* kvoContext;
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
 {
     [self.mountWindowDelegate mountWindowController:self didCompleteWithError:error];
+}
+
+@end
+
+@implementation CASMountWindowController (Global)
+
++ (instancetype)sharedMountWindowController
+{
+    static CASMountWindowController* mountController = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        mountController = [[[self class] alloc] initWithWindowNibName:@"CASMountWindowController"];
+    });
+    return mountController;
+}
+
+- (void)connectToMount:(void(^)())completion
+{
+    [self.window makeKeyAndOrderFront:nil];
+    
+    if (self.mount){
+        if (completion){
+            completion();
+        }
+        return;
+    }
+    
+    self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    if (self.selectedSerialPort){
+        
+        [self.window beginSheet:self.mountConnectWindow completionHandler:^(NSModalResponse returnCode) {
+            
+            if (returnCode != NSModalResponseContinue){
+                [self.window orderOut:nil];
+            }
+            else {
+                
+                if (!self.selectedSerialPort){
+                    return;
+                }
+                
+                if (self.selectedSerialPort.isOpen){
+                    [self presentAlertWithTitle:nil message:@"Selected serial port is already open"];
+                    return;
+                }
+                
+                self.mount = [[CASAPGTOMount alloc] initWithSerialPort:self.selectedSerialPort];
+                
+                if (self.mount.slewing){
+                    self.mount = nil;
+                    [self.window orderOut:nil];
+                    [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
+                    return;
+                }
+                
+                [self connectToMount:self.mount completion:^(NSError* error) {
+                    
+                    if (error){
+                        self.mount = nil;
+                        [self.window orderOut:nil];
+                        [self presentAlertWithTitle:nil message:[error localizedDescription]];
+                    }
+                    else {
+                        if (completion){
+                            completion();
+                        }
+                    }
+                }];
+            }
+        }];
+    }
 }
 
 @end
