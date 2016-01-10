@@ -123,6 +123,8 @@
 		F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F44FD0B3166120AA0095D857 /* CASUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD0B4166120AA0095D857 /* CASUtilities.m */; };
 		F455350916933C3A006A4A2F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59A15BDD7250097532B /* QuartzCore.framework */; };
+		F4554E081C4178B5003C60F7 /* CASMountController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4554E061C4178B5003C60F7 /* CASMountController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4554E091C4178B5003C60F7 /* CASMountController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4554E071C4178B5003C60F7 /* CASMountController.m */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F4587242183EA98700CB53D1 /* CASImageMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587240183EA98700CB53D1 /* CASImageMetrics.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -693,6 +695,8 @@
 		F44F071E1BF2C25100356A73 /* CASAPGTOMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAPGTOMount.m; sourceTree = "<group>"; };
 		F44FD0B3166120AA0095D857 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
 		F44FD0B4166120AA0095D857 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
+		F4554E061C4178B5003C60F7 /* CASMountController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountController.h; sourceTree = "<group>"; };
+		F4554E071C4178B5003C60F7 /* CASMountController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountController.m; sourceTree = "<group>"; };
 		F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
@@ -1820,6 +1824,8 @@
 				F48DF045160EF83000190D3E /* CASCameraController.m */,
 				F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */,
 				F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */,
+				F4554E061C4178B5003C60F7 /* CASMountController.h */,
+				F4554E071C4178B5003C60F7 /* CASMountController.m */,
 			);
 			name = Controllers;
 			path = CoreAstro/libCoreAstro/Controllers;
@@ -3100,6 +3106,7 @@
 				F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */,
 				F4EEF2701604662100547009 /* CASHIDDeviceBrowser.h in Headers */,
 				F4E4241E1A86741F00C2A87E /* CASCoordinateUtils.h in Headers */,
+				F4554E081C4178B5003C60F7 /* CASMountController.h in Headers */,
 				F4EEF2721604662100547009 /* CASIOHIDTransport.h in Headers */,
 				F4EEF2AB1604692600547009 /* HID_Utilities_External.h in Headers */,
 				F48783FB1C235A810001314E /* ORSSerialBuffer.h in Headers */,
@@ -3721,6 +3728,7 @@
 				F44EDF4515FCC701003B1B4C /* BusProberSharedFunctions.m in Sources */,
 				F44EDF4615FCC701003B1B4C /* DecodeDeviceDescriptor.m in Sources */,
 				F44EDF5D15FCC872003B1B4C /* CASScriptableObject.m in Sources */,
+				F4554E091C4178B5003C60F7 /* CASMountController.m in Sources */,
 				F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */,
 				F4EEF2711604662100547009 /* CASHIDDeviceBrowser.m in Sources */,
 				F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */,
