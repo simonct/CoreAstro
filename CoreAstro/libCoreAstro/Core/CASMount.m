@@ -18,7 +18,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 @implementation CASMount
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion {
+- (void)connect:(void(^)(NSError*))completion {
     if (completion){
         completion([NSError errorWithDomain:@"CASMount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Not implemented"}]);
     }
@@ -146,6 +146,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
     NSAssert(NO, @"Not implemented");
+}
+
+- (CASDeviceType)type {
+    return kCASDeviceTypeMount;
 }
 
 @end

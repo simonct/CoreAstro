@@ -57,9 +57,18 @@
             self.port.usesDTRDSRFlowControl = NO;
             self.port.usesDCDOutputFlowControl = NO;
             self.port.delegate = self;
+            NSLog(@"Connecting to mount at %@",self.port.path);
         }
     }
     return self;
+}
+
+- (NSString*)deviceName {
+    return self.name;
+}
+
+- (NSString*)deviceLocation {
+    return @"Serial"; // tmp until we get a serial transport implementation
 }
 
 - (void)sendNextCommand
@@ -123,7 +132,7 @@
 
 #pragma mark - CASMount
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion
+- (void)connect:(void (^)(NSError*))completion
 {
     if (self.connected){
         completion(nil);
@@ -138,6 +147,7 @@
 {
     [self.port close];
     self.connected = NO;
+    [super disconnect];
 }
 
 - (void)startSlewToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion

@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Simon Taylor. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "CASDevice.h"
 
-@protocol CASMount
+@protocol CASMount // <CASDevice>
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion;
+- (void)connect:(void(^)(NSError*))completion;
 - (void)disconnect;
 
 @property (nonatomic,readonly) BOOL connected;
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 
 @end
 
-@interface CASMount : NSObject<CASMount> // todo CASDevice subclass
+@interface CASMount : CASDevice<CASMount>
 @end
 
 extern NSString* const CASMountSlewingNotification;

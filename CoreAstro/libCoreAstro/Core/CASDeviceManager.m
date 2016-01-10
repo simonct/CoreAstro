@@ -30,6 +30,7 @@
 #import "CASGuiderController.h"
 #import "CASCameraController.h"
 #import "CASFilterWheelController.h"
+#import "CASMountController.h"
 #import "CASCCDDevice.h"
 #import "CASFWDevice.h"
 #import "CASExternalSDK.h"
@@ -44,13 +45,8 @@
     NSMutableArray* _cameraControllers;
     NSMutableArray* _guiderControllers;
     NSMutableArray* _filterWheelControllers;
+    NSMutableArray* _mountControllers;
 }
-
-@synthesize pluginManager;
-@synthesize devices = _devices;
-@synthesize cameraControllers = _cameraControllers;
-@synthesize guiderControllers = _guiderControllers;
-@synthesize filterWheelControllers = _filterWheelControllers;
 
 + (CASDeviceManager*)sharedManager {
     static CASDeviceManager* manager = nil;
@@ -70,6 +66,7 @@
         _cameraControllers = [NSMutableArray arrayWithCapacity:10];
         _guiderControllers = [NSMutableArray arrayWithCapacity:10];
         _filterWheelControllers = [NSMutableArray arrayWithCapacity:10];
+        _mountControllers = [NSMutableArray arrayWithCapacity:10];
     }
     return self;
 }
@@ -88,6 +85,10 @@
 
 - (NSArray*) filterWheelControllers {
     return [_filterWheelControllers copy]; // ensure we return an immutable copy to clients
+}
+
+- (NSArray*) mountControllers {
+    return [_mountControllers copy]; // ensure we return an immutable copy to clients
 }
 
 - (id)deviceWithPath:(NSString*)path {
@@ -244,6 +245,16 @@
     return nil;
 }
 
+- (CASMountController*)mountControllerForDevice:(CASDevice*)device
+{
+    for (CASMountController* mountController in self.mountControllers){
+        if ((CASDevice*)mountController.mount == device){
+            return mountController;
+        }
+    }
+    return nil;
+}
+
 - (NSMutableArray*)mutableCameraControllers
 {
     return [self mutableArrayValueForKey:@"cameraControllers"];
@@ -257,6 +268,11 @@
 - (NSMutableArray*)mutableFilterWheelControllers
 {
     return [self mutableArrayValueForKey:@"filterWheelControllers"];
+}
+
+- (NSMutableArray*)mutableMountControllers
+{
+    return [self mutableArrayValueForKey:@"mountControllers"];
 }
 
 - (void)recogniseGuider:(CASDevice*)device
@@ -394,6 +410,20 @@
         
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)addMountController:(CASMountController*)controller
+{
+    if (controller && ![self.mountControllers containsObject:controller]){
+        [[self mutableMountControllers] addObject:controller];
+    }
+}
+
+- (void)removeMountController:(CASMountController*)controller
+{
+    if (controller){
+        [[self mutableMountControllers] removeObject:controller];
     }
 }
 

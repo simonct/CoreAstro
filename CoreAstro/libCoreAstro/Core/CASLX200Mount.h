@@ -25,9 +25,11 @@
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,assign) CASMountPierSide pierSide;
 
+@property (nonatomic,strong,readonly) ORSSerialPort* port;
+
 - (id)initWithSerialPort:(ORSSerialPort*)port;
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion;
+- (void)connect:(void (^)(NSError*))block;
 - (void)disconnect;
 
 // for subclasses
