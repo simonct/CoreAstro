@@ -538,6 +538,35 @@ static NSMutableArray* gRecentExposures;
     }];
 }
 
+- (void)scriptingMake:(NSScriptCommand*)command
+{
+    const NSInteger objectClass = [[command.arguments valueForKeyPath:@"ObjectClass"] integerValue];
+    NSDictionary* properties = [command.arguments valueForKeyPath:@"KeyDictionary"];
+
+    if (objectClass == 'CASM'){
+        NSString* devicePath = properties[@"scriptingPath"];
+        if (!devicePath){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = NSLocalizedString(@"The device path to the mount has not been specified", nil);
+        }
+        else {
+            // todo; optional param of associated camera controller
+            [command suspendExecution];
+            [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:devicePath completion:^(NSError* error,CASMountController* mountController){
+                if (error){
+                    command.scriptErrorNumber = error.code;
+                    command.scriptErrorString = error.localizedDescription;
+                }
+                [command resumeExecutionWithResult:mountController.objectSpecifier];
+            }];
+        }
+    }
+    else {
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"Making that kind of object is not currently supported", nil);
+    }
+}
+
 @end
 
 @interface SXIOCaptureCommand : CASCaptureCommand

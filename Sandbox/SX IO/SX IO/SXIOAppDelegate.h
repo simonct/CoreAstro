@@ -8,10 +8,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CASDeviceController;
+
 @interface SXIOAppDelegate : NSObject <NSApplicationDelegate>
 
 - (void)addWindowToWindowMenu:(NSWindowController*)windowController;
 - (void)removeWindowFromWindowMenu:(NSWindowController*)windowController;
+
+- (NSWindowController*)findWindowController:(CASDeviceController*)controller;
 
 + (instancetype)sharedInstance;
 

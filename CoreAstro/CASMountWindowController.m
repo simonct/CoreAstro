@@ -16,6 +16,7 @@
 #endif
 #if defined(SXIO) || defined(CCDIO)
 #import "SXIOAppDelegate.h"
+#import "SXIOCameraWindowController.h"
 #endif
 #import <CoreAstro/CoreAstro.h>
 #import <CoreAstro/ORSSerialPortManager.h>
@@ -45,6 +46,7 @@
 
 @interface CASMountWindowController ()<CASMountMountSynchroniserDelegate>
 @property (nonatomic,strong) CASMount* mount;
+@property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
 @property (weak) IBOutlet NSTextField *statusLabel;
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
@@ -115,10 +117,7 @@ static void* kvoContext;
 
 - (void)dealloc
 {
-    // check this is being called...
-    [self.mount disconnect];
-    self.mount = nil; // unbinds
-    self.mountSynchroniser = nil; // unbinds
+    [self cleanup];
 }
 
 - (void)windowDidLoad
@@ -154,7 +153,21 @@ static void* kvoContext;
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     
+    [self cleanup];
+
     [self close];
+}
+
+- (void)cleanup
+{
+    [[CASDeviceManager sharedManager] removeMountController:self.mountController];
+    self.mountController = nil;
+    
+    // check this is being called...
+    [self.mount disconnect];
+    self.mount = nil; // unbinds
+    
+    self.mountSynchroniser = nil; // unbinds
 }
 
 - (void)close
@@ -239,15 +252,28 @@ static void* kvoContext;
     if (cameraController != _cameraController){
         _cameraController = cameraController;
         self.mountSynchroniser.cameraController = cameraController;
-        if (_cameraController){
+        if (!_cameraController){
+            self.mountWindowDelegate = nil;
+        }
+        else{
             NSString* const focalLengthKey = [SXIOPlateSolveOptionsWindowController focalLengthWithCameraKey:_cameraController];
             NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:focalLengthKey];
             if ([focalLength isKindOfClass:[NSNumber class]]){
                 self.mountSynchroniser.focalLength = [focalLength floatValue];
             }
             
-            // todo; needs to locate the owning camera window controller and set that as the mount delegate - or use notifications
-            NSLog(@"Picked a camera controller but can't set the mount delegate");
+#if defined(SXIO) || defined(CCDIO)
+            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findWindowController:cameraController];
+            if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
+
+                self.mountWindowDelegate = (id)cameraWindowController;
+                CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
+                if (solution){
+                    // todo; check to see we're not slewing, etc
+                    [self setTargetRA:solution.centreRA dec:solution.centreDec];
+                }
+            }
+#endif
         }
     }
 }
@@ -292,7 +318,7 @@ static void* kvoContext;
     _testError = 1;
 #endif
 
-    [self.mount connectWithCompletion:^(NSError* error){
+    [self.mount connect:^(NSError* error){
         if (self.mount.connected){
             [self.window makeKeyAndOrderFront:nil];
         }
@@ -315,7 +341,7 @@ static void* kvoContext;
     }];
 }
 
-- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
+- (BOOL)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees error:(NSError**)error
 {
     NSParameterAssert(self.mount.connected);
 
@@ -323,6 +349,7 @@ static void* kvoContext;
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError error) {
             if (error != CASMountSlewErrorNone){
                 NSLog(@"*** start slew failed: %ld",(long)error);
+                // call slew completion block
             }
         }];
     }
@@ -330,7 +357,7 @@ static void* kvoContext;
         
         if (!self.selectedCameraController){
             NSLog(@"*** No camera selected");
-            return;
+            return NO;
         }
         
         [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
@@ -339,8 +366,10 @@ static void* kvoContext;
         self.mountSynchroniser.cameraController = self.selectedCameraController;
         self.mountSynchroniser.delegate = self;
 
-        [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees];
+        [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion
     }
+    
+    return YES;
 }
 
 - (void)startMoving:(CASMountDirection)direction
@@ -357,34 +386,24 @@ static void* kvoContext;
     [self.mount stopMoving];
 }
 
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+- (BOOL)slewToTargetWithError:(NSError**)error
 {
+    if (!self.mount.targetRa || !self.mount.targetDec){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:3 userInfo:@{NSLocalizedDescriptionKey:@"No slew target is set"}];
+        }
+        return NO;
+    }
     if (!self.mount.connected || self.mount.slewing){
-        // busy error
-        NSLog(@"Mount is busy");
-        return;
-    }
-
-    NSDictionary* bookmark;
-    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
-    
-    for (NSDictionary* bm in bookmarks){
-        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
-            bookmark = bm;
-            break;
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:4 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}];
         }
+        return NO;
     }
     
-    if (!bookmark){
-        // nsb error
-        NSLog(@"No such bookmark");
-    }
-    else {
-        if ([self selectBookmarkAtIndex:[bookmarks indexOfObject:bookmark]]){
-            [self slew:nil];
-            // need to be able to call completion block
-        }
-    }
+    [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue] error:nil];
+    
+    return YES;
 }
 
 #pragma mark - Actions
@@ -411,16 +430,7 @@ static void* kvoContext;
 
 - (IBAction)slew:(id)sender
 {
-    if (!self.mount.targetRa || !self.mount.targetDec){
-        NSLog(@"Slew action with no target set");
-        return;
-    }
-    if (!self.mount.connected || self.mount.slewing){
-        NSLog(@"Slew action with no mount or mount already slewing");
-        return;
-    }
-
-    [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
+    [self slewToTargetWithError:nil];
 }
 
 - (IBAction)stop:(id)sender
@@ -516,7 +526,53 @@ static void* kvoContext;
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
 {
+    // call slew completion block
+    
     [self.mountWindowDelegate mountWindowController:self didCompleteWithError:error];
+}
+
+@end
+
+@implementation CASMountWindowController (Sequence)
+
+- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+{
+    if (!self.mount.connected || self.mount.slewing){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:1 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
+        }
+        return;
+    }
+    
+    NSDictionary* bookmark;
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    for (NSDictionary* bm in bookmarks){
+        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
+            bookmark = bm;
+            break;
+        }
+    }
+    
+    if (!bookmark){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:2 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"No such bookmark '%@'",name]}]);
+        }
+    }
+    else {
+        
+        self.mountSynchroniser.usePlateSolving = YES; // or pass in as a param ?
+        
+        if ([self selectBookmarkAtIndex:[bookmarks indexOfObject:bookmark]]){
+            NSError* error;
+            [self slewToTargetWithError:&error];
+            if (error && completion){
+                completion(error);
+                return;
+            }
+            // need to be able to call completion block when the slew completes
+        }
+    }
 }
 
 @end
@@ -533,9 +589,47 @@ static void* kvoContext;
     return mountController;
 }
 
+- (void)connectToMountWithPort:(ORSSerialPort*)port completion:(void(^)(NSError*))completion
+{
+    NSParameterAssert(completion);
+    
+    if (!port){
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"No serial port has been selected"}]);
+        return;
+    }
+
+    if (port.isOpen){
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"Selected serial port is already open"}]);
+        return;
+    }
+    
+    self.mount = [[CASAPGTOMount alloc] initWithSerialPort:port];
+    
+    if (self.mount.slewing){
+        self.mount = nil;
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:6 userInfo:@{NSLocalizedDescriptionKey:@"Mount is slewing. Please try again when it's stopped"}]);
+        return;
+    }
+    
+    [self connectToMount:self.mount completion:^(NSError* error) {
+        if (error){
+            self.mount = nil;
+            completion(error);
+        }
+        else {
+            [self.window makeKeyAndOrderFront:nil];
+            self.mountController = [[CASMountController alloc] initWithMount:self.mount]; // todo; this should be the property, not the mount
+            [[CASDeviceManager sharedManager] addMountController:self.mountController];
+            completion(nil);
+        }
+    }];
+}
+
 - (void)connectToMount:(void(^)())completion
 {
-    [self.window makeKeyAndOrderFront:nil];
+    NSParameterAssert(completion);
+
+    [self.window makeKeyAndOrderFront:nil]; // because we need to present a sheet
     
     if (self.mount){
         if (completion){
@@ -554,26 +648,7 @@ static void* kvoContext;
             }
             else {
                 
-                if (!self.selectedSerialPort){
-                    return;
-                }
-                
-                if (self.selectedSerialPort.isOpen){
-                    [self presentAlertWithTitle:nil message:@"Selected serial port is already open"];
-                    return;
-                }
-                
-                self.mount = [[CASAPGTOMount alloc] initWithSerialPort:self.selectedSerialPort];
-                
-                if (self.mount.slewing){
-                    self.mount = nil;
-                    [self.window orderOut:nil];
-                    [self presentAlertWithTitle:nil message:@"Mount is slewing. Please try again when it's stopped"];
-                    return;
-                }
-                
-                [self connectToMount:self.mount completion:^(NSError* error) {
-                    
+                [self connectToMountWithPort:self.selectedSerialPort completion:^(NSError* error) {
                     if (error){
                         self.mount = nil;
                         [self.window orderOut:nil];
@@ -586,6 +661,39 @@ static void* kvoContext;
                     }
                 }];
             }
+        }];
+    }
+}
+
+- (void)connectToMountAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion
+{
+    NSParameterAssert(completion);
+    
+//    // check to see if we're already connected to this mount
+//    if ([self.mountController.mount respondsToSelector:@selector(port)]){
+//        ORSSerialPort* port = [self.mountController.mount valueForKey:@"port"];
+//        if ([port.path isEqualToString:path]){
+//            // completion(nil,self.mountController); // except this seems to cause the make applevent handler to be called again ?
+//            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:9 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Mount '%@' already connected",self.mount.deviceName]}];
+//            completion(error,nil);
+//        }
+//        return;
+//    }
+    
+    // enfore a single mount connected policy
+    if (self.mount){
+        NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:8 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The mount window is already connected to the mount '%@'",self.mount.deviceName]}];
+        completion(error,nil);
+        return;
+    }
+
+    ORSSerialPort* port = [[ORSSerialPortManager sharedSerialPortManager].availablePorts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"path == %@",path]].firstObject;
+    if (!port){
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:7 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"There is no serial port with the path '%@'",path]}],nil);
+    }
+    else {
+        [self connectToMountWithPort:port completion:^(NSError* error) {
+            completion(error,self.mountController);
         }];
     }
 }

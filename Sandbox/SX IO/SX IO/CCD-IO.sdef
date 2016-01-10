@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd"> 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary title="SX IO Terminology">
     
     <!--
@@ -17,25 +17,28 @@
                 <cocoa key="cameraControllers"/>
             </element>
             
-            <!--
-            <element type="guider" access="r">
-                <cocoa key="guiderControllers"/>
-            </element>
-            -->
-
             <element type="filter wheel" access="r">
                 <cocoa key="filterWheelControllers"/>
             </element>
-
-            <!-- make this an element of the camera ? -->
-            <element type="exposure" access="r">
-                <cocoa key="exposures"/>
+            
+            <element type="mount" access="r">
+                <cocoa key="mountControllers"/>
             </element>
-
+            
+            <!--
+             <element type="focuser" access="r">
+             <cocoa key="focuserControllers"/>
+             </element>
+             -->
+            
             <responds-to name="make movie">
                 <cocoa method="scriptingMakeMovie:"/>
             </responds-to>
-
+            
+            <responds-to name="make">
+                <cocoa method="scriptingMake:"/>
+            </responds-to>
+            
         </class>
         
         <class name="device" plural="devices" code="CASD" description="A device object." inherits="item">
@@ -51,7 +54,7 @@
             </property>
             
         </class>
-
+        
         <class name="camera" plural="cameras" code="CASC" description="A camera object." inherits="device">
             
             <cocoa class="CASCameraController"/>
@@ -59,7 +62,7 @@
             <property name="id" code="ID  " type="text" access="r" description="The unique ID of the camera">
                 <cocoa key="uniqueID"/>
             </property>
-                       
+            
             <property name="temperature" code="Temp" type="number" description="The temperature of the camera">
                 <cocoa key="scriptingTemperature"/>
             </property>
@@ -67,7 +70,7 @@
             <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
                 <cocoa key="scriptingSequenceCount"/>
             </property>
-
+            
             <property name="sequence index" code="SeqI" type="number" access="r" description="The index of the exposure in the current sequence">
                 <cocoa key="scriptingSequenceIndex"/>
             </property>
@@ -83,37 +86,21 @@
             <property name="exposure duration" code="Dura" type="number" description="The duration in seconds for each exposure in the sequence">
                 <cocoa key="scriptingDuration"/>
             </property>
-
+            
             <property name="dither" code="Dith" type="number" description="The amount of pixels by which to dither the exposure between frames (requires that you are using PHD2 to guide on the same machine)">
                 <cocoa key="scriptingDitherPixels"/>
             </property>
-
+            
             <property name="capturing" code="Busy" type="boolean" access="r" description="True if the camera is currently capturing">
                 <cocoa key="scriptingIsCapturing"/>
             </property>
-
+            
             <responds-to name="capture">
                 <cocoa method="scriptingCapture:"/>
             </responds-to>
-
-        </class> 
-        
-        <!--
-        <class name="guider" plural="guiders" code="CASG" description="A guider object." inherits="device">
-            
-            <cocoa class="CASGuiderController"/>
-            
-            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the guider">
-                <cocoa key="uniqueID"/>
-            </property>
-            
-            <responds-to name="pulse">
-                <cocoa method="scriptingGuide:"/>
-            </responds-to>
             
         </class>
-        -->
-
+        
         <class name="filter wheel" plural="filter wheels" code="CASF" description="A filter wheel object." inherits="device">
             
             <cocoa class="CASFilterWheelController"/>
@@ -129,22 +116,86 @@
             <property name="current filter" code="Curf" type="number" description="The index of the curretly selected filter">
                 <cocoa key="scriptingCurrentFilter"/>
             </property>
-
+            
             <property name="filter names" code="Filn" access="r" description="The assigned names of the filter slots in the filter wheel">
                 <type type="text" list="yes"/>
                 <cocoa key="scriptingFilterNames"/>
             </property>
-
+            
             <property name="current filter name" code="Curn" type="text" description="The name of the curretly selected filter">
                 <cocoa key="scriptingCurrentFilterName"/>
             </property>
-
+            
             <property name="moving" code="Move" type="boolean" access="r" description="True if the wheel is currently moving">
                 <cocoa key="scriptingIsMoving"/>
             </property>
-
+            
         </class>
+        
+        <class name="mount" plural="mounts" code="CASM" description="A mount object." inherits="device">
+            
+            <cocoa class="CASMountController"/>
+            
+            <property name="id" code="ID  " type="text" access="r" description="The unique ID of the mount">
+                <cocoa key="uniqueID"/>
+            </property>
+            
+            <property name="right ascension" code="RA  " type="text" access="r" description="The current right ascension of the mount">
+                <cocoa key="scriptingRightAscension"/>
+            </property>
+            
+            <property name="declination" code="Dec " type="text" access="r" description="The current declination of the mount">
+                <cocoa key="scriptingDeclination"/>
+            </property>
+            
+            <property name="altitude" code="Alt " type="text" access="r" description="The current altitude of the mount">
+                <cocoa key="scriptingAltitude"/>
+            </property>
+            
+            <property name="azimuth" code="Azi " type="text" access="r" description="The current azimuth of the mount">
+                <cocoa key="scriptingAzimuth"/>
+            </property>
 
+            <property name="slewing" code="Slew" type="boolean" access="r" description="Current slewing state of the mount">
+                <cocoa key="scriptingSlewing"/>
+            </property>
+            
+            <property name="path" code="Devp" type="text" access="r" description="The mount's serial device path">
+                <cocoa key="scriptingPath"/>
+            </property>
+            
+            <property name="camera" code="Camr" type="camera" description="The mount's associated camera">
+                <cocoa key="scriptingCamera"/>
+            </property>
+            
+            <!--
+             <responds-to name="slew to">
+             <cocoa method="scriptingSlewTo:"/>
+             </responds-to>
+             
+             <responds-to name="stop">
+             <cocoa method="scriptingStop:"/>
+             </responds-to>
+             -->
+            
+        </class>
+        
+        <!--
+         <class name="focuser" plural="focusers" code="CASO" description="A focuser object." inherits="device">
+         
+         <cocoa class="CASFocuserController"/>
+         
+         <property name="id" code="ID  " type="text" access="r" description="The unique ID of the focuser">
+         <cocoa key="uniqueID"/>
+         </property>
+         
+         <property name="position" code="Posn" type="number" description="The current stepper positon of the focuser">
+         <cocoa key="scriptingPosition"/>
+         </property>
+         
+         </class>
+         -->
+        
         <class name="exposure" plural="exposures" code="CASX" description="An exposure object." inherits="item">
             
             <cocoa class="CASCCDExposure"/>
@@ -156,35 +207,29 @@
             <property name="date" code="Date" type="date" access="r" description="The date of the exposure">
                 <cocoa key="date"/>
             </property>
-
+            
             <property name="width" code="Widt" type="integer" access="r" description="The width of the exposure">
                 <cocoa key="scriptingWidth"/>
             </property>
-
+            
             <property name="height" code="Heig" type="integer" access="r" description="The height of the exposure">
                 <cocoa key="scriptingHeight"/>
             </property>
-
+            
             <property name="milliseconds" code="MS  " type="integer" access="r" description="The duration of the exposure in ms">
                 <cocoa key="scriptingMilliseconds"/>
             </property>
-
+            
             <property name="type" code="Type" type="exposure type" description="The type of the exposure">
                 <cocoa key="scriptingType"/>
             </property>
-
-            <!--
-            <property name="note" code="Note" type="text" description="The note of the exposure">
-                <cocoa key="scriptingNote"/>
-            </property>
-            -->
             
             <property name="exposure file" code="File" type="file" access="r" description="The exposure file">
                 <cocoa key="scriptingFile"/>
             </property>
-
+            
         </class>
-
+        
         <!-- Commands -->
         
         <command name="capture" code="CASSCAPT" description="Capture an image.">
@@ -193,29 +238,29 @@
             
             <direct-parameter description="The camera to capture the image from.">
                 <type type="camera" list="no"/>
-            </direct-parameter> 
-
+            </direct-parameter>
+            
             <parameter name="milliseconds" code="Ms  " optional="yes" description="exposure time in ms.">
                 <cocoa key="milliseconds"/>
                 <type type="integer" list="no"/>
-            </parameter>  
-
+            </parameter>
+            
             <parameter name="seconds" code="Secs" optional="yes" description="exposure time in seconds">
                 <cocoa key="seconds"/>
                 <type type="integer" list="no"/>
             </parameter>
-
+            
             <parameter name="bin" code="Bin " optional="yes" description="exposure binning.">
                 <cocoa key="bin"/>
                 <type type="integer" list="no"/>
-            </parameter>  
-
+            </parameter>
+            
             <result description="The exposures">
                 <type type="exposure" list="yes"/>
             </result>
             
         </command>
-
+        
         <command name="make movie" code="CASSMKMV" description="Make a movie.">
             
             <parameter name="path" code="Path" optional="no" description="the path to export the movie to">
@@ -227,45 +272,48 @@
                 <cocoa key="exposures"/>
                 <type type="file" list="yes"/>
             </parameter>
-
+            
             <parameter name="show date" code="Shdt" optional="yes" description="print the exposure date on the movie frames">
                 <cocoa key="showDate"/>
                 <type type="boolean" list="no"/>
             </parameter>
-
+            
             <parameter name="show filename" code="Shfn" optional="yes" description="print the exposure filename on the movie frames">
                 <cocoa key="showFilename"/>
                 <type type="boolean" list="no"/>
             </parameter>
-
+            
             <parameter name="custom annotation" code="Anot" optional="yes" description="print the this text on the movie frames">
                 <cocoa key="customAnnotation"/>
                 <type type="text" list="no"/>
             </parameter>
-
+            
         </command>
-
+        
         <!--
-        <command name="pulse" code="CASSGUID" description="Issue a guide command.">
+         <command name="slew to" code="CASSSlew" description="Slew to a given location">
          
-            <cocoa class="CASGuideCommand"/>
+         <parameter name="object" code="Obj " optional="no" description="the object to slew to">
+         <cocoa key="object"/>
+         <type type="text" list="no"/>
+         </parameter>
          
-            <direct-parameter description="The guider to pulse.">
-                <type type="guider" list="no"/>
-            </direct-parameter>
-            
-            <parameter name="direction" code="Gdir" optional="no" description="guide direction.">
-                <cocoa key="direction"/>
-                <type type="guide direction" list="no"/>
+         </command>
+         
+         <command name="stop" code="CASSStop" description="Stop the mount moving">
+         </command>
+         -->
+        
+        <command name="make" code="corecrel" description="Create a new object.">
+            <cocoa class="NSCreateCommand"/>
+            <parameter name="new" code="kocl" type="type" description="The class of the new object.">
+                <cocoa key="ObjectClass"/>
             </parameter>
-            
-            <parameter name="milliseconds" code="Gms " optional="no" description="guide duration in ms">
-                <cocoa key="duration"/>
-                <type type="integer" list="no"/>
+            <parameter name="with properties" code="prdt" type="record" optional="yes" description="The initial values for properties of the object.">
+                <cocoa key="KeyDictionary"/>
             </parameter>
-
+            <result type="specifier" description="The new object."/>
         </command>
-        -->
         
         <!-- Enumerations -->
         
@@ -275,16 +323,7 @@
             <enumerator name="bias" code="Bias" description="A bias frame."/>
             <enumerator name="flat" code="Flat" description="A flat frame."/>
         </enumeration>
-
-        <!--
-        <enumeration name="guide direction" code="Gdir">
-            <enumerator name="RAPlus" code="RAP " description="RA+ direction"/>
-            <enumerator name="RAMinus" code="RAM " description="RA- direction"/>
-            <enumerator name="DecPlus" code="DecP" description="Dec+ direction"/>
-            <enumerator name="DecMinus" code="DecM" description="Dec- direction"/>
-        </enumeration>
-        -->
-
+        
     </suite>
     
 </dictionary>
