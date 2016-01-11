@@ -32,6 +32,10 @@
 @synthesize gmtOffset = _gmtOffset;
 @synthesize siderealTime = _siderealTime;
 
+- (NSString*)vendorName {
+    return @"Astro-Physics";
+}
+
 - (void)initialiseMount
 {
     NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
@@ -63,20 +67,22 @@
             NSDateComponents* scopeSiderealComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeSiderealTime];
             const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
             const double lst = [CASNova siderealTimeForLongitude:longitude.doubleValue];
-            const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*(24*60*60);
+            const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*3600.0;
             scopeConfigured = diffSeconds < 300; // todo; make this limit configurable, probably should be lower
-            if (!scopeConfigured){
-                NSLog(@"Difference between local and scope sidereal time of %.0f seconds, assuming mount needs configuring",diffSeconds);
+            if (scopeConfigured){
+                NSLog(@"Difference between local and scope sidereal time of %.0f seconds, skipping the rest of the setup",diffSeconds);
+            }
+            else {
+                NSLog(@"Difference between local and scope sidereal timeof %.0f seconds, assuming mount needs configuring",diffSeconds);
             }
         }
 
         if (scopeConfigured){
-            NSLog(@"Looks like the mount is already configured, skipping the rest of the setup");
             [self completeInitialiseMount:nil];
         }
         else {
             
-            NSLog(@"Configuring mount");
+            NSLog(@"Configuring %@",self.name);
             
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
