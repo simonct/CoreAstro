@@ -14,10 +14,12 @@
 @interface CASAPGTOMount ()
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
+@property (copy) NSNumber* siteLongitude, *siteLatitude;
 @property BOOL synced; // YES if the initial sync command has been sent
 @end
 
 @implementation CASAPGTOMount {
+    BOOL _parking;
     CASMountDirection _direction;
     CASAPGTOMountMovingRate _movingRate;
     CASAPGTOMountTrackingRate _trackingRate;
@@ -38,9 +40,9 @@
 
 - (void)initialiseMount
 {
-    NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
-    NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
-    if (!latitude || !longitude){
+    self.siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+    self.siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+    if (!self.siteLatitude || !self.siteLongitude){
         [self completeInitialiseMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
         return;
     }
@@ -66,7 +68,7 @@
             NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
             NSDateComponents* scopeSiderealComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeSiderealTime];
             const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
-            const double lst = [CASNova siderealTimeForLongitude:longitude.doubleValue];
+            const double lst = [CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue];
             const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*3600.0;
             scopeConfigured = diffSeconds < 300; // todo; make this limit configurable, probably should be lower
             if (scopeConfigured){
@@ -100,12 +102,12 @@
             }];
             
             // :St sDD*MM# or :St sDD*MM:SS -> 1
-            [self sendCommand:[CASLX200Commands setTelescopeLatitude:latitude.doubleValue] readCount:1 completion:^(NSString* response){
+            [self sendCommand:[CASLX200Commands setTelescopeLatitude:self.siteLatitude.doubleValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set latitude: %@",response);
             }];
             
             // :Sg DDD*MM# or :Sg DDD*MM:SS# -> 1
-            const double longitudeValue = fmod(360 - longitude.doubleValue, 360.0); // AP mounts express longitude as 0-360 going West
+            const double longitudeValue = fmod(360 - self.siteLongitude.doubleValue, 360.0); // AP mounts express longitude as 0-360 going West
             [self sendCommand:[CASLX200Commands setTelescopeLongitude:longitudeValue] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
             }];
@@ -178,16 +180,26 @@
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
-        
-            // use this to indicate whether we're slewing or not
-            const double degrees = CASAngularSeparation(currentRa.doubleValue,currentDec.doubleValue,self.ra.doubleValue,self.dec.doubleValue);
+            
+            double degrees = 0;
+            const double threshold = 0.1; // degrees/second to be considered slewing
+            
+            // using angular separation doesn't work if the mount is rotating around either celestial pole
+            if ((currentDec.doubleValue > 89 && self.dec.doubleValue > 89) || (currentDec.doubleValue < -89 && self.dec.doubleValue < -89)){
+                degrees = currentRa.doubleValue - self.ra.doubleValue;
+            }
+            else {
+                // use this to indicate whether we're slewing or not
+                degrees = CASAngularSeparation(currentRa.doubleValue,currentDec.doubleValue,self.ra.doubleValue,self.dec.doubleValue);
+            }
+            
             const double degreesPerSecond = _lastMountPollTime ? degrees/([NSDate timeIntervalSinceReferenceDate] - _lastMountPollTime) : 0;
             // NSLog(@"degrees %f, degreesPerSecond %f",degrees,degreesPerSecond);
             // may need to have a couple of 'not slewing' readings before declaring that the mount is back to tracking
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
-            self.slewing = (fabs(degreesPerSecond) > 1);
+            self.slewing = (fabs(degreesPerSecond) > threshold);
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
@@ -274,13 +286,57 @@
     }];
 }
 
+- (NSInteger)parkPosition
+{
+    return 3;
+}
+
 - (void)park
 {
-    [self sendCommand:@":KA#"]; // stops tracking but doesn't appear to move the mount to any park position
+    [self halt];
     
-    [self willChangeValueForKey:@"trackingRate"];
-    _trackingRate = CASAPGTOMountTrackingRateZero;
-    [self didChangeValueForKey:@"trackingRate"];
+    double parkRA = 0, parkDec = 0;
+    
+    const NSInteger parkPosition = [self parkPosition];
+    switch (parkPosition) {
+        case 2:{
+            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
+            parkDec = 0;
+        }
+            break;
+        case 3:{
+            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
+            parkDec = 90;
+        }
+            break;
+        case 4:{
+            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 360, 360);
+            parkDec = self.siteLatitude.doubleValue - 90;
+        }
+            break;
+        default:
+            NSLog(@"Unrecognised park position: %ld",parkPosition);
+            return;
+    }
+    
+    // todo; southern hemisphere?
+    NSLog(@"Parking at RA: %f DEC: %f",parkRA,parkDec);
+    
+    [self parkWithRA:parkRA dec:parkDec];
+}
+
+- (void)parkWithRA:(double)parkRA dec:(double)parkDec
+{
+    [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error) {
+        if (error == CASMountSlewErrorNone){
+            _parking = YES;
+            NSLog(@"Starting park");
+        }
+        else {
+            _parking = NO;
+            NSLog(@"Park failed with result: %ld, ra: %f, dec: %f",error,parkRA,parkDec);
+        }
+    }];
 }
 
 - (void)unpark
@@ -291,6 +347,18 @@
 - (void)gotoHomePosition
 {
     [self park];
+}
+
+- (void)setSlewing:(BOOL)slewing
+{
+    [super setSlewing:slewing];
+    
+    if (_parking && !self.slewing){
+        NSLog(@"Ending park");
+        _parking = NO;
+        self.trackingRate = CASAPGTOMountTrackingRateZero;
+        [self sendCommand:@":KA#"];
+    }
 }
 
 - (CASMountDirection) direction
@@ -332,6 +400,7 @@
 
 - (void)stopMoving
 {
+    _parking = NO;
     _direction = CASMountDirectionNone;
     [self sendCommand:@":Q#"]; // stops slewing but not tracking
 }
