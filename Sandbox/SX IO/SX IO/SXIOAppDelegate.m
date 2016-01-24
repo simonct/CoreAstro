@@ -567,6 +567,30 @@ static NSMutableArray* gRecentExposures;
     }
 }
 
+- (void)scriptingLookup:(NSScriptCommand*)command
+{
+    // get the object param, look up in simbad, slew to location
+    NSString* object = command.arguments[@"object"];
+    if (!object.length){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"You must specify the name of the object to lookup", nil);
+        return;
+    }
+    
+    [command suspendExecution];
+    
+    [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
+        if (!success){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
+            [command resumeExecutionWithResult:nil];
+        }
+        else {
+            [command resumeExecutionWithResult:@{@"ra":@(ra),@"dec":@(dec)}];
+        }
+    }];
+}
+
 @end
 
 @interface SXIOCaptureCommand : CASCaptureCommand

@@ -86,37 +86,46 @@ static void* kvoContext;
 
 - (void)scriptingSlewTo:(NSScriptCommand*)command
 {
-    // get the object param, look up in simbad, slew to location
     NSString* object = command.arguments[@"object"];
-    if (!object.length){
+    NSDictionary* coordinates = command.arguments[@"coordinates"];
+    if (!object.length && !coordinates.count){
         command.scriptErrorNumber = paramErr;
-        command.scriptErrorString = NSLocalizedString(@"You must specify the name of the object to slew to", nil);
+        command.scriptErrorString = NSLocalizedString(@"You must specify the name or coordinates of the object to slew to", nil);
         return;
     }
     
+    void (^slew)(double,double) = ^(double ra, double dec){
+        [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
+            if (error != CASMountSlewErrorNone){
+                command.scriptErrorNumber = paramErr;
+                command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
+                [command resumeExecutionWithResult:nil];
+            }
+            else {
+                // wait until it stops slewing and then resume the command
+                self.slewCommand = command;
+                [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
+            }
+        }];
+    };
+    
     [command suspendExecution];
     
-    [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
-        if (!success){
-            command.scriptErrorNumber = paramErr;
-            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
-            [command resumeExecutionWithResult:nil];
-        }
-        else {
-            [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
-                if (error != CASMountSlewErrorNone){
-                    command.scriptErrorNumber = paramErr;
-                    command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
-                    [command resumeExecutionWithResult:nil];
-                }
-                else {
-                    // wait until it stops slewing and then resume the command
-                    self.slewCommand = command;
-                    [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
-                }
-            }];
-        }
-    }];
+    if (coordinates){
+        slew([coordinates[@"ra"] doubleValue],[coordinates[@"dec"] doubleValue]);
+    }
+    else {
+        [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
+            if (!success){
+                command.scriptErrorNumber = paramErr;
+                command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
+                [command resumeExecutionWithResult:nil];
+            }
+            else {
+                slew(ra,dec);
+            }
+        }];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -137,6 +146,12 @@ static void* kvoContext;
 - (void)scriptingStop:(NSScriptCommand*)command
 {
     [self.mount halt];
+}
+
+- (void)scriptingPark:(NSScriptCommand*)command
+{
+    NSLog(@"scriptingPark: %@:",command.evaluatedArguments);
+    [self.mount park]; // non-blocking...
 }
 
 @end

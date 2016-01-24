@@ -39,6 +39,10 @@
                 <cocoa method="scriptingMake:"/>
             </responds-to>
             
+            <responds-to name="lookup">
+                <cocoa method="scriptingLookup:"/>
+            </responds-to>
+
         </class>
         
         <class name="device" plural="devices" code="CASD" description="A device object." inherits="item">
@@ -176,6 +180,10 @@
                 <cocoa method="scriptingStop:"/>
             </responds-to>
             
+            <responds-to name="park">
+                <cocoa method="scriptingPark:"/>
+            </responds-to>
+            
         </class>
         
         <!--
@@ -289,15 +297,49 @@
         </command>
         
         <command name="slew to" code="CASSSLEW" description="Slew to a given object">
-            <parameter name="object" code="Obj " optional="no" description="the object to slew to">
+                        
+            <direct-parameter description="The mount to send the slew command to.">
+                <type type="mount" list="no"/>
+            </direct-parameter>
+            
+            <parameter name="object" code="Obj " optional="yes" description="the object to slew to">
                 <cocoa key="object"/>
                 <type type="text" list="no"/>
             </parameter>
+            
+            <parameter name="coordinates" code="Crds" optional="yes" type="coordinates" description="The coordinates to slew to">
+                <cocoa key="coordinates"/>
+            </parameter>
+
         </command>
         
-        <command name="stop" code="CASSStop" description="Stop the mount moving">
+        <command name="stop" code="CASSSTOP" description="Stop the mount moving">
+            
+            <direct-parameter description="The mount to send the stop command to.">
+                <type type="mount" list="no"/>
+            </direct-parameter>
+            
         </command>
         
+        <command name="park" code="CASSPARK" description="Park the mount">
+            
+            <direct-parameter description="The mount to send the park command to.">
+                <type type="mount" list="no"/>
+            </direct-parameter>
+            
+            <parameter name="position" code="Posn" optional="yes" type="integer" description="The park position to use">
+                <cocoa key="position"/>
+            </parameter>
+
+        </command>
+
+        <command name="lookup" code="CASSLOOK" description="Lookup an object">
+            <parameter name="object" code="Obj " type="text" description="The object to lookup">
+                <cocoa key="object"/>
+            </parameter>
+            <result type="coordinates" description="Coordinates of the object"/>
+        </command>
+
         <command name="make" code="corecrel" description="Create a new object.">
             <cocoa class="NSCreateCommand"/>
             <parameter name="new" code="kocl" type="type" description="The class of the new object.">
@@ -318,6 +360,17 @@
             <enumerator name="flat" code="Flat" description="A flat frame."/>
         </enumeration>
         
+        <!-- Records -->
+
+        <record-type name="coordinates" code="Crds">
+            <property name="right ascension" code="RA  " type="real" description="right ascension.">
+                <cocoa key="ra"/>
+            </property>
+            <property name="declination" code="Dec " type="real" description="declination">
+                <cocoa key="dec"/>
+            </property>
+        </record-type>
+
     </suite>
     
 </dictionary>
