@@ -11,7 +11,7 @@
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #import "SXIOAppDelegate.h"
-#else
+#elif defined(CCDIO)
 #import "CCD_IO-Swift.h"
 #endif
 #if defined(SXIO) || defined(CCDIO)
@@ -20,6 +20,11 @@
 #endif
 #import <CoreAstro/CoreAstro.h>
 #import <CoreAstro/ORSSerialPortManager.h>
+
+// todo; AP-specific options:
+// Force recal, sidereal diff to use
+// Use full sync vs re-cal, or Sync button
+// Load view xib from driver and embed in mount window, accessor on mount to get xib name
 
 @interface CASPierSideTransformer : NSValueTransformer
 @end
@@ -341,35 +346,36 @@ static void* kvoContext;
     }];
 }
 
-- (BOOL)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees error:(NSError**)error
+- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees completion:(void(^)(NSError*))completion
 {
     NSParameterAssert(self.mount.connected);
 
     if (!self.usePlateSolving){
-        [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError error) {
-            if (error != CASMountSlewErrorNone){
-                NSLog(@"*** start slew failed: %ld",(long)error);
-                // call slew completion block
+        [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError) {
+            if (slewError != CASMountSlewErrorNone){
+                if (completion){
+                    completion([NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]);
+                }
             }
         }];
     }
     else {
         
         if (!self.selectedCameraController){
-            NSLog(@"*** No camera selected");
-            return NO;
+            if (completion){
+                completion([NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"No camera selected"}]);
+            }
         }
-        
-        [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
-        
-        self.mountSynchroniser.mount = self.mount; // redundant ?
-        self.mountSynchroniser.cameraController = self.selectedCameraController;
-        self.mountSynchroniser.delegate = self;
-
-        [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion
+        else {
+            [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
+            
+            self.mountSynchroniser.mount = self.mount; // redundant ?
+            self.mountSynchroniser.cameraController = self.selectedCameraController;
+            self.mountSynchroniser.delegate = self;
+            
+            [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion which (todo;) needs to call the completion block
+        }
     }
-    
-    return YES;
 }
 
 - (void)startMoving:(CASMountDirection)direction
@@ -386,27 +392,30 @@ static void* kvoContext;
     [self.mount stopMoving];
 }
 
-- (BOOL)slewToTargetWithError:(NSError**)error
+- (void)slewToTargetWithCompletion:(void(^)(NSError*))completion
 {
     if (!self.mount.targetRa || !self.mount.targetDec){
-        if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:3 userInfo:@{NSLocalizedDescriptionKey:@"No slew target is set"}];
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:3 userInfo:@{NSLocalizedDescriptionKey:@"No slew target is set"}]);
         }
-        return NO;
     }
     if (!self.mount.connected || self.mount.slewing){
-        if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class]) code:4 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}];
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:4 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
         }
-        return NO;
     }
     
-    [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue] error:nil];
+    // set the slew completion block; this is the bottleneck called from interactive slew and sequence (note: scripting *does not* currently go via this)
     
-    return YES;
+    return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue] completion:completion];
 }
 
 #pragma mark - Actions
+
+- (IBAction)sync:(id)sender
+{
+    NSLog(@"Sync - not implemented");
+}
 
 - (IBAction)north:(id)sender // called continuously while the button is held down
 {
@@ -430,7 +439,11 @@ static void* kvoContext;
 
 - (IBAction)slew:(id)sender
 {
-    [self slewToTargetWithError:nil];
+    [self slewToTargetWithCompletion:^(NSError* error) {
+        if (error){
+            [self presentAlertWithMessage:error.localizedDescription];
+        }
+    }];
 }
 
 - (IBAction)stop:(id)sender
@@ -564,13 +577,13 @@ static void* kvoContext;
         self.mountSynchroniser.usePlateSolving = YES; // or pass in as a param ?
         
         if ([self selectBookmarkAtIndex:[bookmarks indexOfObject:bookmark]]){
-            NSError* error;
-            [self slewToTargetWithError:&error];
-            if (error && completion){
-                completion(error);
-                return;
-            }
+            [self slewToTargetWithCompletion:completion];
             // need to be able to call completion block when the slew completes
+        }
+        else {
+            if (completion){
+                completion([NSError errorWithDomain:NSStringFromClass([self class]) code:12 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"No such bookmark '%@'",name]}]);
+            }
         }
     }
 }
