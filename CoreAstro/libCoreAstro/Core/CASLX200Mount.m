@@ -150,25 +150,6 @@
     [super disconnect];
 }
 
-- (void)startSlewToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
-{
-    NSParameterAssert(completion);
-    
-    __weak __typeof__(self) weakSelf = self;
-    
-    // set commanded ra and dec then issue slew command
-    [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
-        if (error){
-            completion(error);
-        }
-        else {
-            weakSelf.targetRa = @(ra_);
-            weakSelf.targetDec = @(dec_);
-            [weakSelf startSlewToTarget:completion];
-        }
-    }];
-}
-
 - (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
     
     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {

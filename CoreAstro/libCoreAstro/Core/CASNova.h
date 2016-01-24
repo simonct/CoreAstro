@@ -29,4 +29,9 @@ typedef struct {
 
 + (double)siderealTimeForLongitude:(double)longitude;
 
+typedef struct {
+    double alt, az;
+} CASAltAz;
+- (CASAltAz)objectAltAzFromRA:(double)ra dec:(double)dec;
+
 @end

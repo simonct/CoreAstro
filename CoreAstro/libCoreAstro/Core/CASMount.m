@@ -116,8 +116,35 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return [NSSet setWithArray:@[@"ra",@"dec"]];
 }
 
+- (BOOL)horizonCheckRA:(double)ra dec:(double)dec
+{
+    const CASAltAz altaz = [self.nova objectAltAzFromRA:ra dec:dec];
+    return (altaz.alt > 0);
+}
+
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
-    NSAssert(NO, @"Not implemented");
+    
+    NSParameterAssert(completion);
+    
+    if (![self horizonCheckRA:ra dec:dec]){
+        NSLog(@"Target ra: %f dec %f is below the local horizon",ra,dec);
+        completion(CASMountSlewErrorInvalidLocation);
+        return;
+    }
+    
+    __weak __typeof__(self) weakSelf = self;
+    
+    // set commanded ra and dec then issue slew command
+    [self setTargetRA:ra dec:dec completion:^(CASMountSlewError error) {
+        if (error){
+            completion(error);
+        }
+        else {
+            weakSelf.targetRa = @(ra);
+            weakSelf.targetDec = @(dec);
+            [weakSelf startSlewToTarget:completion];
+        }
+    }];
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {

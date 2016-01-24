@@ -76,7 +76,29 @@
 + (double)siderealTimeForLongitude:(double)longitude
 {
     const double now = [self now];
-    return ln_get_mean_sidereal_time(now) + longitude/15.0;
+    return fmod(ln_get_mean_sidereal_time(now) + longitude/15.0 + 24, 24);
+}
+
+- (CASAltAz)objectAltAzFromRA:(double)ra dec:(double)dec;
+{
+    const double now = [[self class] now];
+    
+    struct ln_equ_posn object = {
+        .ra = ra,
+        .dec = dec
+    };
+    struct ln_lnlat_posn observer = {
+        .lat = self.latitude,
+        .lng = self.longitude
+    };
+    struct ln_hrz_posn altaz;
+    ln_get_hrz_from_equ (&object, &observer, now, &altaz);
+    
+    const CASAltAz result = {
+        .alt = altaz.alt,
+        .az = altaz.az
+    };
+    return result;
 }
 
 @end

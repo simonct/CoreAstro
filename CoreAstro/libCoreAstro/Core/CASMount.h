@@ -77,6 +77,10 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 @end
 
 @interface CASMount : CASDevice<CASMount>
+
+@property (nonatomic,strong) NSNumber* targetRa;
+@property (nonatomic,strong) NSNumber* targetDec;
+
 @end
 
 extern NSString* const CASMountSlewingNotification;
