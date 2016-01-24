@@ -482,6 +482,8 @@
 - (void)serialPortWasClosed:(ORSSerialPort *)serialPort
 {
     NSLog(@"serialPortWasClosed");
+
+    self.connected = NO;
 }
 
 @end
