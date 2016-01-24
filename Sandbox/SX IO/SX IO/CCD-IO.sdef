@@ -155,7 +155,7 @@
             <property name="azimuth" code="Azi " type="text" access="r" description="The current azimuth of the mount">
                 <cocoa key="scriptingAzimuth"/>
             </property>
-
+            
             <property name="slewing" code="Slew" type="boolean" access="r" description="Current slewing state of the mount">
                 <cocoa key="scriptingSlewing"/>
             </property>
@@ -168,15 +168,13 @@
                 <cocoa key="scriptingCamera"/>
             </property>
             
-            <!--
-             <responds-to name="slew to">
-             <cocoa method="scriptingSlewTo:"/>
-             </responds-to>
-             
-             <responds-to name="stop">
-             <cocoa method="scriptingStop:"/>
-             </responds-to>
-             -->
+            <responds-to name="slew to">
+                <cocoa method="scriptingSlewTo:"/>
+            </responds-to>
+            
+            <responds-to name="stop">
+                <cocoa method="scriptingStop:"/>
+            </responds-to>
             
         </class>
         
@@ -290,19 +288,15 @@
             
         </command>
         
-        <!--
-         <command name="slew to" code="CASSSlew" description="Slew to a given location">
-         
-         <parameter name="object" code="Obj " optional="no" description="the object to slew to">
-         <cocoa key="object"/>
-         <type type="text" list="no"/>
-         </parameter>
-         
-         </command>
-         
-         <command name="stop" code="CASSStop" description="Stop the mount moving">
-         </command>
-         -->
+        <command name="slew to" code="CASSSLEW" description="Slew to a given object">
+            <parameter name="object" code="Obj " optional="no" description="the object to slew to">
+                <cocoa key="object"/>
+                <type type="text" list="no"/>
+            </parameter>
+        </command>
+        
+        <command name="stop" code="CASSStop" description="Stop the mount moving">
+        </command>
         
         <command name="make" code="corecrel" description="Create a new object.">
             <cocoa class="NSCreateCommand"/>

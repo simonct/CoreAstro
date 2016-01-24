@@ -9,10 +9,12 @@
 #import "CASMountController.h"
 #import "CASCameraController.h"
 #import "CASLX200Commands.h"
+#import "CASObjectLookup.h"
 
 @interface CASMountController ()
 @property (nonatomic,strong) CASMount* mount;
 @property (nonatomic,weak) CASCameraController* camera;
+@property (strong) NSScriptCommand* slewCommand;
 @end
 
 @implementation CASMountController
@@ -39,6 +41,8 @@
 @end
 
 @implementation CASMountController (CASScripting)
+
+static void* kvoContext;
 
 - (NSString*)containerAccessor
 {
@@ -82,12 +86,57 @@
 
 - (void)scriptingSlewTo:(NSScriptCommand*)command
 {
-    NSLog(@"scriptingSlewTo");
+    // get the object param, look up in simbad, slew to location
+    NSString* object = command.arguments[@"object"];
+    if (!object.length){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"You must specify the name of the object to slew to", nil);
+        return;
+    }
+    
+    [command suspendExecution];
+    
+    [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
+        if (!success){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
+            [command resumeExecutionWithResult:nil];
+        }
+        else {
+            [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
+                if (error != CASMountSlewErrorNone){
+                    command.scriptErrorNumber = paramErr;
+                    command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
+                    [command resumeExecutionWithResult:nil];
+                }
+                else {
+                    // wait until it stops slewing and then resume the command
+                    self.slewCommand = command;
+                    [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
+                }
+            }];
+        }
+    }];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([@"slewing" isEqualToString:keyPath] && object == self.mount){
+            if (!self.mount.slewing){
+                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                if (self.slewCommand){
+                    [self.slewCommand resumeExecutionWithResult:nil];
+                    self.slewCommand = nil;
+                }
+            }
+        }
+    }
 }
 
 - (void)scriptingStop:(NSScriptCommand*)command
 {
-    NSLog(@"scriptingStop");
+    [self.mount halt];
 }
 
 @end
