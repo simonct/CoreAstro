@@ -8,6 +8,13 @@
 
 #import "CASDevice.h"
 
+@class CASMount;
+
+@interface CASMountSlewObserver : NSObject
+@property (copy,nonatomic) void (^completion)(NSError*);
++ (instancetype)observerWithMount:(CASMount*)mount;
+@end
+
 @protocol CASMount // <CASDevice>
 
 - (void)connect:(void(^)(NSError*))completion;
@@ -39,8 +46,8 @@ typedef NS_ENUM(NSInteger, CASMountSlewError) {
     CASMountSlewErrorInvalidDec,
     CASMountSlewErrorInvalidLocation
 };
-- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
-- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion; // for subclasses
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
+- (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion; // for subclasses
 - (void)halt;
 
 typedef NS_ENUM(NSInteger, CASMountDirection) {
@@ -85,7 +92,3 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 
 extern NSString* const CASMountSlewingNotification;
 extern NSString* const CASMountFlippedNotification;
-
-// CASMount < CASLX200Mount (defines command set + serial connection) < CASIEQMount (defines command variations)
-// or mount is simply a composite of transport and command set ?
-// or is this just over-abstracting ? although things like slewing look pretty common

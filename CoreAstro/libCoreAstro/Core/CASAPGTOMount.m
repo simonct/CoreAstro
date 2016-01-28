@@ -327,7 +327,7 @@
 
 - (void)parkWithRA:(double)parkRA dec:(double)parkDec
 {
-    [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error) {
+    [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         if (error == CASMountSlewErrorNone){
             _parking = YES;
             NSLog(@"Starting park");
@@ -415,17 +415,11 @@
     [self stopMoving];
 }
 
-- (void)syncToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
+- (void)syncCommand:(NSString*)command ToRA:(double)ra_ dec:(double)dec_ completion:(void (^)(CASMountSlewError))completion
 {
     NSParameterAssert(completion);
     
     __weak __typeof__(self) weakSelf = self;
-    
-    if (!self.synced && self.weightsHigh){
-        NSLog(@"Attempt to perform initial sync of the mount while it's weights-high");
-        completion(CASMountSlewErrorInvalidLocation); // todo; need a new error code
-        return;
-    }
     
     // set commanded ra and dec then issue sync command
     [self setTargetRA:ra_ dec:dec_ completion:^(CASMountSlewError error) {
@@ -435,9 +429,6 @@
         }
         else {
             
-            NSString* command = weakSelf.synced ? @":CMR#" : @":CM#";
-            weakSelf.synced = YES;
-            
             [weakSelf sendCommand:command completion:^(NSString *response) {
                 NSLog(@"%@: %@",command,response);
                 completion(CASMountSlewErrorNone);
@@ -446,12 +437,35 @@
     }];
 }
 
-- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion
+- (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
+{
+    if (!self.synced){
+        NSLog(@"Re-cal without initial sync...");
+    }
+    
+    [self syncCommand:@":CMR#" ToRA:ra dec:dec completion:completion];
+}
+
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
+{
+    if (self.weightsHigh){
+        NSLog(@"Attempt to perform initial sync of the mount while it's weights-high");
+        completion(CASMountSlewErrorInvalidLocation); // todo; need a new error code
+        return;
+    }
+    
+    self.synced = YES;
+    
+    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:completion];
+}
+
+- (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     // todo; the mount can apparently not respond at all to this command under some circumstances
     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
-        NSLog(@"slew response: %@",slewResponse);
-        completion([slewResponse isEqualToString:@"0"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
+        const CASMountSlewError error = [slewResponse isEqualToString:@"0"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
+        CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+        completion(error,observer);
     }];
 }
 

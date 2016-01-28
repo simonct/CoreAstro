@@ -59,11 +59,12 @@
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (nonatomic) CASCameraController* selectedCameraController;
 @property (nonatomic,strong) CASMountSynchroniser* mountSynchroniser;
-@property (weak) IBOutlet NSTextField *pierSideLabel;
+//@property (weak) IBOutlet NSTextField *pierSideLabel;
 @property (strong) IBOutlet NSPanel *morePanel;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
+@property (copy) void(^slewCompletion)(NSError*);
 @end
 
 // todo;
@@ -185,6 +186,15 @@ static void* kvoContext;
 - (void)presentAlertWithMessage:(NSString*)message
 {
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+}
+
+- (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
+{
+    [[NSAlert alertWithMessageText:title
+                     defaultButton:nil
+                   alternateButton:nil
+                       otherButton:nil
+         informativeTextWithFormat:@"%@",message] runModal];
 }
 
 #pragma mark - Bookmarks
@@ -346,27 +356,35 @@ static void* kvoContext;
     }];
 }
 
-- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees completion:(void(^)(NSError*))completion
+- (void)callSlewCompletion:(NSError*)error
+{
+    if (self.slewCompletion){
+        self.slewCompletion(error);
+    }
+    self.slewCompletion = nil;
+}
+
+- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
     NSParameterAssert(self.mount.connected);
 
     if (!self.usePlateSolving){
-        [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError) {
+        
+        // not doing anything clever, just ask the mount to slew and return when it confirms that it's on its way (todo; this should wait until it's completed the slew...)
+        [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
             if (slewError != CASMountSlewErrorNone){
-                if (completion){
-                    completion([NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]);
-                }
+                [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
             }
         }];
     }
     else {
         
         if (!self.selectedCameraController){
-            if (completion){
-                completion([NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"No camera selected"}]);
-            }
+            [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"No camera selected"}]];
         }
         else {
+            
+            // ok, looks like we're plate solving so we need to set up the mount synchroniser
             [self.selectedCameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
             
             self.mountSynchroniser.mount = self.mount; // redundant ?
@@ -398,16 +416,20 @@ static void* kvoContext;
         if (completion){
             completion([NSError errorWithDomain:NSStringFromClass([self class]) code:3 userInfo:@{NSLocalizedDescriptionKey:@"No slew target is set"}]);
         }
+        return;
     }
-    if (!self.mount.connected || self.mount.slewing){
+    if (!self.mount.connected || self.mount.slewing || self.slewCompletion){
         if (completion){
             completion([NSError errorWithDomain:NSStringFromClass([self class]) code:4 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
         }
+        return;
     }
-    
+
+    // this might involve a flip if the mount decides that it wants to
     // set the slew completion block; this is the bottleneck called from interactive slew and sequence (note: scripting *does not* currently go via this)
-    
-    return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue] completion:completion];
+    self.slewCompletion = completion;
+
+    return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
 }
 
 #pragma mark - Actions
@@ -506,15 +528,6 @@ static void* kvoContext;
     [self.window endSheet:self.morePanel returnCode:NSModalResponseContinue];
 }
 
-- (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
-{
-    [[NSAlert alertWithMessageText:title
-                     defaultButton:nil
-                   alternateButton:nil
-                       otherButton:nil
-         informativeTextWithFormat:@"%@",message] runModal];
-}
-
 - (IBAction)connectPressed:(id)sender
 {
     [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseContinue];
@@ -539,12 +552,14 @@ static void* kvoContext;
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
 {
-    // call slew completion block
+    [self callSlewCompletion:error];
     
     [self.mountWindowDelegate mountWindowController:self didCompleteWithError:error];
 }
 
 @end
+
+#pragma mark - Sequence support
 
 @implementation CASMountWindowController (Sequence)
 

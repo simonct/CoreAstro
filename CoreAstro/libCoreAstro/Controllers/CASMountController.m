@@ -42,8 +42,6 @@
 
 @implementation CASMountController (CASScripting)
 
-static void* kvoContext;
-
 - (NSString*)containerAccessor
 {
     return @"mountControllers";
@@ -95,7 +93,7 @@ static void* kvoContext;
     }
     
     void (^slew)(double,double) = ^(double ra, double dec){
-        [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error) {
+        [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
             if (error != CASMountSlewErrorNone){
                 command.scriptErrorNumber = paramErr;
                 command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
@@ -104,7 +102,12 @@ static void* kvoContext;
             else {
                 // wait until it stops slewing and then resume the command
                 self.slewCommand = command;
-                [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
+                observer.completion = ^(NSError* error){
+                    if (self.slewCommand){
+                        [self.slewCommand resumeExecutionWithResult:nil];
+                        self.slewCommand = nil;
+                    }
+                };
             }
         }];
     };
@@ -125,21 +128,6 @@ static void* kvoContext;
                 slew(ra,dec);
             }
         }];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == &kvoContext) {
-        if ([@"slewing" isEqualToString:keyPath] && object == self.mount){
-            if (!self.mount.slewing){
-                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
-                if (self.slewCommand){
-                    [self.slewCommand resumeExecutionWithResult:nil];
-                    self.slewCommand = nil;
-                }
-            }
-        }
     }
 }
 

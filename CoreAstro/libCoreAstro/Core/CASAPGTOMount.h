@@ -38,4 +38,6 @@ typedef NS_ENUM(NSInteger, CASAPGTOMountTrackingRate) {
 
 @property (nonatomic) CASAPGTOMountTrackingRate trackingRate;
 
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+
 @end

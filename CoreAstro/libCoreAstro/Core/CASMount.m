@@ -122,13 +122,13 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return (altaz.alt > 0);
 }
 
-- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
+- (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     
     NSParameterAssert(completion);
     
     if (![self horizonCheckRA:ra dec:dec]){
         NSLog(@"Target ra: %f dec %f is below the local horizon",ra,dec);
-        completion(CASMountSlewErrorInvalidLocation);
+        completion(CASMountSlewErrorInvalidLocation,nil);
         return;
     }
     
@@ -137,7 +137,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     // set commanded ra and dec then issue slew command
     [self setTargetRA:ra dec:dec completion:^(CASMountSlewError error) {
         if (error){
-            completion(error);
+            completion(error,nil);
         }
         else {
             weakSelf.targetRa = @(ra);
@@ -147,7 +147,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     }];
 }
 
-- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
+- (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     NSAssert(NO, @"Not implemented");
 }
 
@@ -177,6 +177,62 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (CASDeviceType)type {
     return kCASDeviceTypeMount;
+}
+
+@end
+
+@interface CASMountSlewObserver ()
+@property (strong) CASMount* mount;
+@end
+
+@implementation CASMountSlewObserver {
+    BOOL _observing:1;
+}
+
+static void* kvoContext;
+
++ (instancetype)observerWithMount:(CASMount*)mount
+{
+    CASMountSlewObserver* observer = [[CASMountSlewObserver alloc] init];
+    observer.mount = mount;
+    return observer;
+}
+
+- (void)dealloc
+{
+    if (_observing){
+        [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+    }
+}
+
+- (void)setCompletion:(void (^)(NSError *))completion
+{
+    NSParameterAssert(completion);
+    NSParameterAssert(self.completion == nil);
+
+    _completion = [completion copy];
+    if (!self.mount.slewing){
+        _completion(nil);
+    }
+    else {
+        [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
+        _observing = YES;
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([@"slewing" isEqualToString:keyPath] && object == self.mount){
+            if (!self.mount.slewing){
+                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                if (self.completion){
+                    self.completion(nil);
+                    self.completion = nil;
+                }
+            }
+        }
+    }
 }
 
 @end

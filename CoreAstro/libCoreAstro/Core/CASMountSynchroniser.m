@@ -25,8 +25,6 @@
     BOOL _cancelled;
 }
 
-static void* kvoContext;
-
 + (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountSlewControllerBinning":@(4),
@@ -48,54 +46,17 @@ static void* kvoContext;
     _raInDegrees = raInDegrees;
     _decInDegrees = decInDegrees;
     
-    [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error) {
+    [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         
         if (error != CASMountSlewErrorNone){
             [self completeWithErrorMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
         }
         else {
-            self.status = [NSString stringWithFormat:@"Slewing to %@, %@...",[CASLX200Commands highPrecisionRA:_raInDegrees],[CASLX200Commands highPrecisionDec:_decInDegrees]];
-            [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
-        }
-    }];
-}
-
-- (void)cancel
-{
-    _cancelled = YES;
-    [self.cameraController cancelCapture];
-    [self.plateSolver cancel];
-    [self.mount stopSlewing];
-}
-
-- (void)setStatus:(NSString *)status
-{
-    if (status != _status){
-        _status = [status copy];
-        if (status) NSLog(@"%@",status);
-    }
-}
-
-- (void)setNilValueForKey:(NSString *)key
-{
-    if ([@"focalLength" isEqualToString:key]){
-        self.focalLength = 0;
-    }
-    else {
-        [super setNilValueForKey:key];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == &kvoContext) {
-        
-        if ([@"slewing" isEqualToString:keyPath]){
             
-            if (!self.mount.slewing){
+            self.status = [NSString stringWithFormat:@"Slewing to %@, %@...",[CASLX200Commands highPrecisionRA:_raInDegrees],[CASLX200Commands highPrecisionDec:_decInDegrees]];
+            observer.completion = ^(NSError* error){
                 
-                NSLog(@"Slew complete");
-                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                NSLog(@"Synchroniser slew complete");
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
@@ -103,7 +64,7 @@ static void* kvoContext;
                         [self completeWithError:nil];
                     }
                     else{
-                    
+                        
 #if !CAS_SLEW_AND_SYNC_TEST
                         [self syncAndSlew];
 #else
@@ -135,10 +96,34 @@ static void* kvoContext;
 #endif
                     }
                 });
-            }
+            };
         }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }];
+}
+
+- (void)cancel
+{
+    _cancelled = YES;
+    [self.cameraController cancelCapture];
+    [self.plateSolver cancel];
+    [self.mount stopSlewing];
+}
+
+- (void)setStatus:(NSString *)status
+{
+    if (status != _status){
+        _status = [status copy];
+        if (status) NSLog(@"%@",status);
+    }
+}
+
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([@"focalLength" isEqualToString:key]){
+        self.focalLength = 0;
+    }
+    else {
+        [super setNilValueForKey:key];
     }
 }
 
@@ -324,7 +309,7 @@ static void* kvoContext;
 
                     self.status = [NSString stringWithFormat:@"Separation is %0.3f°, syncing mount and re-slewing",self.separation];
                     
-                    // close but not yet good enought, sync scope to solution co-ordinates, repeat slew
+                    // close but not yet good enough, sync scope to solution co-ordinates, repeat slew
                     [self.mount syncToRA:actualRA dec:actualDec completion:^(CASMountSlewError slewError) {
                         
                         if (slewError != CASMountSlewErrorNone){

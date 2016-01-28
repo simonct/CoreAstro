@@ -150,11 +150,12 @@
     [super disconnect];
 }
 
-- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
+- (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     
     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
-        NSLog(@"start lew response: %@",slewResponse);
-        completion([slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation);
+        const CASMountSlewError error = [slewResponse isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
+        CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+        completion(error,observer);
     }];
 }
 
