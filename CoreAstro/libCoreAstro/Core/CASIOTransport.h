@@ -31,7 +31,8 @@ typedef enum {
     kCASTransportTypeUSB,
     kCASTransportTypeFirewire,
     kCASTransportTypeEthernet,
-    kCASTransportTypeHID
+    kCASTransportTypeHID,
+    kCASTransportTypeSerial
 } CASIOTransportType;
 
 @class CASIOCommand;

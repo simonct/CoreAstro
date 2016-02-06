@@ -47,6 +47,7 @@
 #import <CoreAstro/CASCameraController.h>
 #import <CoreAstro/CASGuiderController.h>
 #import <CoreAstro/CASFilterWheelController.h>
+#import <CoreAstro/CASMountController.h>
 #import <CoreAstro/CASUtilities.h>
 #import <CoreAstro/CASMovieExporter.h>
 #import <CoreAstro/CASPlateSolver.h>
@@ -58,7 +59,9 @@
 #import <CoreAstro/CASExposureSettings.h>
 #import <CoreAstro/CASObjectLookup.h>
 #import <CoreAstro/CASMount.h>
+#import <CoreAstro/CASLX200Mount.h>
 #import <CoreAstro/iEQMount.h>
+#import <CoreAstro/CASAPGTOMount.h>
 #import <CoreAstro/CASLX200Commands.h>
 #import <CoreAstro/CASCoordinateUtils.h>
 #import <CoreAstro/CASMountSynchroniser.h>

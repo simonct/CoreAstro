@@ -7,7 +7,11 @@
 //
 
 #import "SXIOBookmarkWindowController.h"
+#if defined(SXIO)
 #import "SX_IO-Swift.h"
+#else
+#import "CCD_IO-Swift.h"
+#endif
 
 @interface SXIOEditingBookmark : NSObject
 @property (copy) NSString* name;

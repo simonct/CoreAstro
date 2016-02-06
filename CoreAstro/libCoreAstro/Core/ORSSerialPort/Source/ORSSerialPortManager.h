@@ -3,7 +3,7 @@
 //  ORSSerialPort
 //
 //  Created by Andrew R. Madsen on 08/7/11.
-//	Copyright (c) 2011-2012 Andrew R. Madsen (andrew@openreelsoftware.com)
+//	Copyright (c) 2011-2014 Andrew R. Madsen (andrew@openreelsoftware.com)
 //	
 //	Permission is hereby granted, free of charge, to any person obtaining a
 //	copy of this software and associated documentation files (the
@@ -26,6 +26,25 @@
 
 #import <Foundation/Foundation.h>
 
+// Keep older versions of the compiler happy
+#ifndef NS_ASSUME_NONNULL_BEGIN
+#define NS_ASSUME_NONNULL_BEGIN
+#define NS_ASSUME_NONNULL_END
+#define nullable
+#define nonnullable
+#define __nullable
+#endif
+
+#ifndef ORSArrayOf
+	#if __has_feature(objc_generics)
+		#define ORSArrayOf(TYPE) NSArray<TYPE>
+	#else
+		#define ORSArrayOf(TYPE) NSArray
+	#endif
+#endif // #ifndef ORSArrayOf
+
+NS_ASSUME_NONNULL_BEGIN
+
 /// Posted when a serial port is connected to the system
 extern NSString * const ORSSerialPortsWereConnectedNotification;
 
@@ -36,6 +55,8 @@ extern NSString * const ORSSerialPortsWereDisconnectedNotification;
 extern NSString * const ORSConnectedSerialPortsKey;
 /// Key for disconnected port in ORSSerialPortWasDisconnectedNotification userInfo dictionary
 extern NSString * const ORSDisconnectedSerialPortsKey;
+
+@class ORSSerialPort;
 
 /**
  *  `ORSSerialPortManager` is a singleton class (one instance per
@@ -108,6 +129,8 @@ extern NSString * const ORSDisconnectedSerialPortsKey;
  *  to easily give the user a way to select an available port 
  *  on the system.
  */
-@property (nonatomic, copy, readonly) NSArray *availablePorts;
+@property (nonatomic, copy, readonly) ORSArrayOf(ORSSerialPort *) *availablePorts;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -34,7 +34,12 @@
 #import "SXIOPreferencesWindowController.h"
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
+#import "CASMountWindowController.h"
+#if defined(SXIO)
 #import "SX_IO-Swift.h"
+#else
+#import "CCD_IO-Swift.h"
+#endif
 #import <CoreAstro/CoreAstro.h>
 #import <objc/runtime.h>
 
@@ -439,6 +444,13 @@ static void* kvoContext;
     [self.preferencesWindowController showWindow:nil];
 }
 
+- (IBAction)connectToMount:(id)sender
+{
+    [[CASMountWindowController sharedMountWindowController] connectToMount:^{
+        // connected
+    }];
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem*)item
 {
     BOOL enabled = YES;
@@ -522,6 +534,59 @@ static NSMutableArray* gRecentExposures;
         delegate.movieExportWindowController = nil;
         if (error){
             [NSApp presentError:error]; // todo; return to caller
+        }
+    }];
+}
+
+- (void)scriptingMake:(NSScriptCommand*)command
+{
+    const NSInteger objectClass = [[command.arguments valueForKeyPath:@"ObjectClass"] integerValue];
+    NSDictionary* properties = [command.arguments valueForKeyPath:@"KeyDictionary"];
+
+    if (objectClass == 'CASM'){
+        NSString* devicePath = properties[@"scriptingPath"];
+        if (!devicePath){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = NSLocalizedString(@"The device path to the mount has not been specified", nil);
+        }
+        else {
+            // todo; optional param of associated camera controller
+            [command suspendExecution];
+            [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:devicePath completion:^(NSError* error,CASMountController* mountController){
+                if (error){
+                    command.scriptErrorNumber = error.code;
+                    command.scriptErrorString = error.localizedDescription;
+                }
+                [command resumeExecutionWithResult:mountController.objectSpecifier];
+            }];
+        }
+    }
+    else {
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"Making that kind of object is not currently supported", nil);
+    }
+}
+
+- (void)scriptingLookup:(NSScriptCommand*)command
+{
+    // get the object param, look up in simbad, slew to location
+    NSString* object = command.arguments[@"object"];
+    if (!object.length){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"You must specify the name of the object to lookup", nil);
+        return;
+    }
+    
+    [command suspendExecution];
+    
+    [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
+        if (!success){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
+            [command resumeExecutionWithResult:nil];
+        }
+        else {
+            [command resumeExecutionWithResult:@{@"ra":@(ra),@"dec":@(dec)}];
         }
     }];
 }

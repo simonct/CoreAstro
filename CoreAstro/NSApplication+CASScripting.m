@@ -43,9 +43,14 @@
     return [CASDeviceManager sharedManager].filterWheelControllers;
 }
 
-- (NSArray*)exposures // todo: move this to the camera controller ?
+- (NSArray*)focuserControllers
 {
-    return [[CASCCDExposureLibrary sharedLibrary] exposures];
+    return nil;
+}
+
+- (NSArray*)mountControllers
+{
+    return [CASDeviceManager sharedManager].mountControllers;
 }
 
 @end

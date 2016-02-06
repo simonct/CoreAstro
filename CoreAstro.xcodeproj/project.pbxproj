@@ -118,9 +118,15 @@
 		F44EDF6015FCC925003B1B4C /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6215FCC944003B1B4C /* CoreAstro.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F44EDF6415FCD59C003B1B4C /* CoreAstro.h in Headers */ = {isa = PBXBuildFile; fileRef = F44EDF6315FCD59C003B1B4C /* CoreAstro.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F44F071B1BF2BD1B00356A73 /* CASLX200Mount.h in Headers */ = {isa = PBXBuildFile; fileRef = F44F07191BF2BD1B00356A73 /* CASLX200Mount.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F44F071C1BF2BD1B00356A73 /* CASLX200Mount.m in Sources */ = {isa = PBXBuildFile; fileRef = F44F071A1BF2BD1B00356A73 /* CASLX200Mount.m */; };
+		F44F071F1BF2C25100356A73 /* CASAPGTOMount.h in Headers */ = {isa = PBXBuildFile; fileRef = F44F071D1BF2C25100356A73 /* CASAPGTOMount.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F44F07201BF2C25100356A73 /* CASAPGTOMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F44F071E1BF2C25100356A73 /* CASAPGTOMount.m */; };
 		F44FD0B5166120AA0095D857 /* CASUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F44FD0B3166120AA0095D857 /* CASUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F44FD0B4166120AA0095D857 /* CASUtilities.m */; };
 		F455350916933C3A006A4A2F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46BA59A15BDD7250097532B /* QuartzCore.framework */; };
+		F4554E081C4178B5003C60F7 /* CASMountController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4554E061C4178B5003C60F7 /* CASMountController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4554E091C4178B5003C60F7 /* CASMountController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4554E071C4178B5003C60F7 /* CASMountController.m */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F4587242183EA98700CB53D1 /* CASImageMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587240183EA98700CB53D1 /* CASImageMetrics.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -157,6 +163,12 @@
 		F4849CC21659570B0069647F /* CASLibraryBrowserView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4849CBE1659570A0069647F /* CASLibraryBrowserView.m */; };
 		F4849CC31659570B0069647F /* CASLibraryBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4849CC01659570A0069647F /* CASLibraryBrowserViewController.m */; };
 		F4849CC41659570B0069647F /* CASLibraryBrowserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */; };
+		F48783FB1C235A810001314E /* ORSSerialBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = F48783F71C235A810001314E /* ORSSerialBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F48783FC1C235A810001314E /* ORSSerialBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = F48783F81C235A810001314E /* ORSSerialBuffer.m */; };
+		F48783FD1C235A810001314E /* ORSSerialPacketDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = F48783F91C235A810001314E /* ORSSerialPacketDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F48783FE1C235A810001314E /* ORSSerialPacketDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F48783FA1C235A810001314E /* ORSSerialPacketDescriptor.m */; };
+		F48784091C235A870001314E /* ORSSerialRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = F48784031C235A870001314E /* ORSSerialRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F487840A1C235A870001314E /* ORSSerialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F48784041C235A870001314E /* ORSSerialRequest.m */; };
 		F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00C160E46A800190D3E /* CASImageControlsView.m */; };
 		F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00F160E46F300190D3E /* CASExposuresController.m */; };
 		F48DF016160E47B800190D3E /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF015160E47B800190D3E /* CASImageView.m */; };
@@ -702,8 +714,14 @@
 		F44EDF5A15FCC872003B1B4C /* CASScriptableObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASScriptableObject.h; sourceTree = "<group>"; };
 		F44EDF5B15FCC872003B1B4C /* CASScriptableObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASScriptableObject.m; sourceTree = "<group>"; };
 		F44EDF6315FCD59C003B1B4C /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
+		F44F07191BF2BD1B00356A73 /* CASLX200Mount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLX200Mount.h; sourceTree = "<group>"; };
+		F44F071A1BF2BD1B00356A73 /* CASLX200Mount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLX200Mount.m; sourceTree = "<group>"; };
+		F44F071D1BF2C25100356A73 /* CASAPGTOMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAPGTOMount.h; sourceTree = "<group>"; };
+		F44F071E1BF2C25100356A73 /* CASAPGTOMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAPGTOMount.m; sourceTree = "<group>"; };
 		F44FD0B3166120AA0095D857 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
 		F44FD0B4166120AA0095D857 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
+		F4554E061C4178B5003C60F7 /* CASMountController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountController.h; sourceTree = "<group>"; };
+		F4554E071C4178B5003C60F7 /* CASMountController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountController.m; sourceTree = "<group>"; };
 		F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = External/cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		F457B68A15DD4E450035F015 /* H36.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H36.png; sourceTree = "<group>"; };
 		F457B68B15DD4E450035F015 /* H694.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = H694.png; sourceTree = "<group>"; };
@@ -754,6 +772,12 @@
 		F4849CBF1659570A0069647F /* CASLibraryBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLibraryBrowserViewController.h; sourceTree = "<group>"; };
 		F4849CC01659570A0069647F /* CASLibraryBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLibraryBrowserViewController.m; sourceTree = "<group>"; };
 		F4849CC11659570A0069647F /* CASLibraryBrowserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASLibraryBrowserViewController.xib; sourceTree = "<group>"; };
+		F48783F71C235A810001314E /* ORSSerialBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialBuffer.h; sourceTree = "<group>"; };
+		F48783F81C235A810001314E /* ORSSerialBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialBuffer.m; sourceTree = "<group>"; };
+		F48783F91C235A810001314E /* ORSSerialPacketDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPacketDescriptor.h; sourceTree = "<group>"; };
+		F48783FA1C235A810001314E /* ORSSerialPacketDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPacketDescriptor.m; sourceTree = "<group>"; };
+		F48784031C235A870001314E /* ORSSerialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialRequest.h; sourceTree = "<group>"; };
+		F48784041C235A870001314E /* ORSSerialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialRequest.m; sourceTree = "<group>"; };
 		F48DF00B160E46A800190D3E /* CASImageControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageControlsView.h; sourceTree = "<group>"; };
 		F48DF00C160E46A800190D3E /* CASImageControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageControlsView.m; sourceTree = "<group>"; };
 		F48DF00E160E46F300190D3E /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresController.h; sourceTree = "<group>"; };
@@ -1836,6 +1860,8 @@
 				F48DF045160EF83000190D3E /* CASCameraController.m */,
 				F4FCB7F517511F1B001A27F9 /* CASFilterWheelController.h */,
 				F4FCB7F417511F1B001A27F9 /* CASFilterWheelController.m */,
+				F4554E061C4178B5003C60F7 /* CASMountController.h */,
+				F4554E071C4178B5003C60F7 /* CASMountController.m */,
 			);
 			name = Controllers;
 			path = CoreAstro/libCoreAstro/Controllers;
@@ -2103,14 +2129,18 @@
 				F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */,
 				F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */,
 				F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */,
-				F4E424221A86744800C2A87E /* CASMount.h */,
-				F4E424231A86744800C2A87E /* CASMount.m */,
 				F4E4241A1A86741F00C2A87E /* CASCoordinateUtils.h */,
 				F4E4241B1A86741F00C2A87E /* CASCoordinateUtils.m */,
 				F4E4241C1A86741F00C2A87E /* CASLX200Commands.h */,
 				F4E4241D1A86741F00C2A87E /* CASLX200Commands.m */,
+				F4E424221A86744800C2A87E /* CASMount.h */,
+				F4E424231A86744800C2A87E /* CASMount.m */,
+				F44F07191BF2BD1B00356A73 /* CASLX200Mount.h */,
+				F44F071A1BF2BD1B00356A73 /* CASLX200Mount.m */,
 				F4E424261A86746C00C2A87E /* iEQMount.h */,
 				F4E424271A86746C00C2A87E /* iEQMount.m */,
+				F44F071D1BF2C25100356A73 /* CASAPGTOMount.h */,
+				F44F071E1BF2C25100356A73 /* CASAPGTOMount.m */,
 				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
 				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
 				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
@@ -2994,10 +3024,16 @@
 		F4E4249A1A86757700C2A87E /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F48783F71C235A810001314E /* ORSSerialBuffer.h */,
+				F48783F81C235A810001314E /* ORSSerialBuffer.m */,
+				F48783F91C235A810001314E /* ORSSerialPacketDescriptor.h */,
+				F48783FA1C235A810001314E /* ORSSerialPacketDescriptor.m */,
 				F4E4249B1A86757700C2A87E /* ORSSerialPort.h */,
 				F4E4249C1A86757700C2A87E /* ORSSerialPort.m */,
 				F4E4249D1A86757700C2A87E /* ORSSerialPortManager.h */,
 				F4E4249E1A86757700C2A87E /* ORSSerialPortManager.m */,
+				F48784031C235A870001314E /* ORSSerialRequest.h */,
+				F48784041C235A870001314E /* ORSSerialRequest.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -3079,6 +3115,7 @@
 				F44EDF2415FCC6D8003B1B4C /* CASCCDExposure.h in Headers */,
 				F44EDF2615FCC6D8003B1B4C /* CASCCDExposureIO.h in Headers */,
 				F44EDF2815FCC6D8003B1B4C /* CASCCDExposureLibrary.h in Headers */,
+				F44F071F1BF2C25100356A73 /* CASAPGTOMount.h in Headers */,
 				F46879D41B18A5E200C61449 /* CASINDIContainer.h in Headers */,
 				F4587250183EABE200CB53D1 /* CASAlgorithm.h in Headers */,
 				F4F59BA6183C0184006331E3 /* CASFITSUtilities.h in Headers */,
@@ -3090,6 +3127,7 @@
 				F44EDF3215FCC6D8003B1B4C /* CASIOCommand.h in Headers */,
 				F44EDF3415FCC6D8003B1B4C /* CASIOTransport.h in Headers */,
 				F44EDF3615FCC6D8003B1B4C /* CASPluginManager.h in Headers */,
+				F48784091C235A870001314E /* ORSSerialRequest.h in Headers */,
 				F44EDF3815FCC6D8003B1B4C /* CASImageProcessor.h in Headers */,
 				F44EDF4F15FCC74D003B1B4C /* CASIOUSBTransport.h in Headers */,
 				F44EDF5015FCC74D003B1B4C /* CASUSBDeviceBrowser.h in Headers */,
@@ -3104,8 +3142,10 @@
 				F4B251FB15FD20AD00D7AC4B /* CASCCDDevice.h in Headers */,
 				F4EEF2701604662100547009 /* CASHIDDeviceBrowser.h in Headers */,
 				F4E4241E1A86741F00C2A87E /* CASCoordinateUtils.h in Headers */,
+				F4554E081C4178B5003C60F7 /* CASMountController.h in Headers */,
 				F4EEF2721604662100547009 /* CASIOHIDTransport.h in Headers */,
 				F4EEF2AB1604692600547009 /* HID_Utilities_External.h in Headers */,
+				F48783FB1C235A810001314E /* ORSSerialBuffer.h in Headers */,
 				F4EEF2AE1604692600547009 /* ImmrHIDUtilAddOn.h in Headers */,
 				F4F2A4C11AED0EB200CCC40F /* CASMountSynchroniser.h in Headers */,
 				F4E424241A86744800C2A87E /* CASMount.h in Headers */,
@@ -3202,6 +3242,7 @@
 				F4CA53EB169CC9FD00832CFF /* permutedsort.h in Headers */,
 				F4CA53EC169CC9FD00832CFF /* plotannotations.h in Headers */,
 				F4CA53ED169CC9FD00832CFF /* plotfill.h in Headers */,
+				F44F071B1BF2BD1B00356A73 /* CASLX200Mount.h in Headers */,
 				F4CA53EE169CC9FD00832CFF /* plotgrid.h in Headers */,
 				F4CA53EF169CC9FD00832CFF /* plotimage.h in Headers */,
 				F4CA53F0169CC9FD00832CFF /* plotoutline.h in Headers */,
@@ -3239,6 +3280,7 @@
 				F4CA540E169CC9FD00832CFF /* sip-utils.h in Headers */,
 				F4CA540F169CC9FD00832CFF /* sip.h in Headers */,
 				F4CA5410169CC9FD00832CFF /* sip_qfits.h in Headers */,
+				F48783FD1C235A810001314E /* ORSSerialPacketDescriptor.h in Headers */,
 				F4CA5411169CC9FD00832CFF /* solvedclient.h in Headers */,
 				F4CA5412169CC9FD00832CFF /* solvedfile.h in Headers */,
 				F4CA5413169CC9FD00832CFF /* solver.h in Headers */,
@@ -3741,6 +3783,7 @@
 				F44EDF4515FCC701003B1B4C /* BusProberSharedFunctions.m in Sources */,
 				F44EDF4615FCC701003B1B4C /* DecodeDeviceDescriptor.m in Sources */,
 				F44EDF5D15FCC872003B1B4C /* CASScriptableObject.m in Sources */,
+				F4554E091C4178B5003C60F7 /* CASMountController.m in Sources */,
 				F4B251FC15FD20AD00D7AC4B /* CASCCDDevice.m in Sources */,
 				F4EEF2711604662100547009 /* CASHIDDeviceBrowser.m in Sources */,
 				F4EEF2731604662100547009 /* CASIOHIDTransport.m in Sources */,
@@ -3749,9 +3792,11 @@
 				F4E8B0EB18674573001A36EC /* CASDeviceController.m in Sources */,
 				F4EEF2AD1604692600547009 /* ImmrHIDUtilAddOn.c in Sources */,
 				F4EEF2AF1604692600547009 /* IOHIDDevice_.c in Sources */,
+				F48783FE1C235A810001314E /* ORSSerialPacketDescriptor.m in Sources */,
 				F4EEF2B11604692600547009 /* IOHIDElement_.c in Sources */,
 				F4EEF2BF1604699600547009 /* HID_Config_Utilities.c in Sources */,
 				F4EEF2C01604699600547009 /* HID_Error_Handler.c in Sources */,
+				F44F07201BF2C25100356A73 /* CASAPGTOMount.m in Sources */,
 				F4EEF2C11604699600547009 /* HID_Name_Lookup.c in Sources */,
 				F4E424251A86744800C2A87E /* CASMount.m in Sources */,
 				F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */,
@@ -3766,7 +3811,9 @@
 				F44FD0B6166120AA0095D857 /* CASUtilities.m in Sources */,
 				F4E424291A86746C00C2A87E /* iEQMount.m in Sources */,
 				F4B08B661673AF1A00771948 /* CASBatchProcessor.m in Sources */,
+				F487840A1C235A870001314E /* ORSSerialRequest.m in Sources */,
 				F40093611699AF4600E96DBE /* CASMovieExporter.m in Sources */,
+				F44F071C1BF2BD1B00356A73 /* CASLX200Mount.m in Sources */,
 				F4CA50DA169CB50900832CFF /* CASPlateSolver.m in Sources */,
 				F4CA50DE169CB62F00832CFF /* CASTaskWrapper.m in Sources */,
 				F4CA53B2169CC9FD00832CFF /* bl-nl.inc in Sources */,
@@ -3776,6 +3823,7 @@
 				F4CA53B5169CC9FD00832CFF /* bl.inc in Sources */,
 				F4CA5416169CC9FD00832CFF /* starutil.inc in Sources */,
 				F4761DF716EBD7F10031CB3B /* CASClassDefaults.m in Sources */,
+				F48783FC1C235A810001314E /* ORSSerialBuffer.m in Sources */,
 				F4587253183EABE200CB53D1 /* CASAlgorithm+Exposure.m in Sources */,
 				F4C70E911749405B003D35CA /* CASFWDevice.m in Sources */,
 				F4587251183EABE200CB53D1 /* CASAlgorithm.m in Sources */,

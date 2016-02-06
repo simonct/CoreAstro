@@ -70,6 +70,8 @@
             return @"Ethernet";
         case kCASTransportTypeHID:
             return @"HID";
+        case kCASTransportTypeSerial:
+            return @"Serial";
         default:
             break;
     }

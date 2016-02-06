@@ -65,7 +65,7 @@ static void* kvoContext;
     _cancelled = YES;
     [self.cameraController cancelCapture];
     [self.plateSolver cancel];
-    [self.mount stopMoving];
+    [self.mount stopSlewing];
 }
 
 - (void)setStatus:(NSString *)status
@@ -99,35 +99,41 @@ static void* kvoContext;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-#if !CAS_SLEW_AND_SYNC_TEST
-                    [self syncAndSlew];
-#else
-                    NSLog(@"_testError: %f",_testError);
-                    
-                    if (_testError < 0.125){
-                        [self.mountWindowDelegate mountWindowControllerDidSync:nil];
+                    if (!self.usePlateSolving){
+                        [self completeWithError:nil];
                     }
                     else{
+                    
+#if !CAS_SLEW_AND_SYNC_TEST
+                        [self syncAndSlew];
+#else
+                        NSLog(@"_testError: %f",_testError);
                         
-                        // sync to an imaginary position
-                        [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
+                        if (_testError < 0.125){
+                            [self.mountWindowDelegate mountWindowControllerDidSync:nil];
+                        }
+                        else{
                             
-                            // reduce error
-                            _testError /= 2;
-                            
-                            if (slewError != CASMountSlewErrorNone){
-                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
-                            }
-                            else {
+                            // sync to an imaginary position
+                            [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
                                 
-                                // slew
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self startSlewToRA:_raDegs dec:_decDegs];
-                                });
-                            }
-                        }];
-                    }
+                                // reduce error
+                                _testError /= 2;
+                                
+                                if (slewError != CASMountSlewErrorNone){
+                                    [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+                                }
+                                else {
+                                    
+                                    // slew
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [self startSlewToRA:_raDegs dec:_decDegs];
+                                    });
+                                }
+                            }];
+                        }
 #endif
+                    }
                 });
             }
         }

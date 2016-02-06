@@ -18,7 +18,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 @implementation CASMount
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion {
+- (void)connect:(void(^)(NSError*))completion {
     if (completion){
         completion([NSError errorWithDomain:@"CASMount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Not implemented"}]);
     }
@@ -38,6 +38,17 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (BOOL) tracking {
     return NO;
+}
+
+- (BOOL) weightsHigh {
+    if (!self.az){
+        return NO;
+    }
+    return (self.az.floatValue > 180.0 && self.pierSide == CASMountPierSideWest) || (self.az.floatValue < 180.0 && self.pierSide == CASMountPierSideEast);
+}
+
++ (NSSet*)keyPathsForValuesAffectingWeightsHigh {
+    return [NSSet setWithArray:@[@"az",@"pierSide"]];
 }
 
 - (CASMountMode) mode {
@@ -65,6 +76,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 }
 
 - (NSNumber*) az {
+    return nil;
+}
+
+- (NSArray<NSString*>*)movingRateValues {
     return nil;
 }
 
@@ -101,7 +116,38 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return [NSSet setWithArray:@[@"ra",@"dec"]];
 }
 
+- (BOOL)horizonCheckRA:(double)ra dec:(double)dec
+{
+    const CASAltAz altaz = [self.nova objectAltAzFromRA:ra dec:dec];
+    return (altaz.alt > 0);
+}
+
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
+    
+    NSParameterAssert(completion);
+    
+    if (![self horizonCheckRA:ra dec:dec]){
+        NSLog(@"Target ra: %f dec %f is below the local horizon",ra,dec);
+        completion(CASMountSlewErrorInvalidLocation);
+        return;
+    }
+    
+    __weak __typeof__(self) weakSelf = self;
+    
+    // set commanded ra and dec then issue slew command
+    [self setTargetRA:ra dec:dec completion:^(CASMountSlewError error) {
+        if (error){
+            completion(error);
+        }
+        else {
+            weakSelf.targetRa = @(ra);
+            weakSelf.targetDec = @(dec);
+            [weakSelf startSlewToTarget:completion];
+        }
+    }];
+}
+
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion {
     NSAssert(NO, @"Not implemented");
 }
 
@@ -127,6 +173,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
     NSAssert(NO, @"Not implemented");
+}
+
+- (CASDeviceType)type {
+    return kCASDeviceTypeMount;
 }
 
 @end

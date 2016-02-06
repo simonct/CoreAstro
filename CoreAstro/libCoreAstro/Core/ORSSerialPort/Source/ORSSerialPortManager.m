@@ -3,7 +3,7 @@
 //  ORSSerialPort
 //
 //  Created by Andrew R. Madsen on 08/7/11.
-//	Copyright (c) 2011-2012 Andrew R. Madsen (andrew@openreelsoftware.com)
+//	Copyright (c) 2011-2014 Andrew R. Madsen (andrew@openreelsoftware.com)
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a
 //	copy of this software and associated documentation files (the
@@ -25,19 +25,24 @@
 //	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if !__has_feature(objc_arc)
-	#error ORSSerialPortManager.m must be compiled with ARC. Either turn on ARC for the project or set the -fobjc-arc flag for ORSSerialPortManager.m in the Build Phases for this target
+#error ORSSerialPortManager.m must be compiled with ARC. Either turn on ARC for the project or set the -fobjc-arc flag for ORSSerialPortManager.m in the Build Phases for this target
 #endif
 
 #import "ORSSerialPortManager.h"
 #import "ORSSerialPort.h"
 
+#ifdef ORSSERIAL_FRAMEWORK
+// To enable sleep/wake notifications, etc.
+#import <Cocoa/Cocoa.h>
+#endif
+
 #import <IOKit/IOKitLib.h>
 #import <IOKit/serial/IOSerialKeys.h>
 
 #ifdef LOG_SERIAL_PORT_ERRORS
-	#define LOG_SERIAL_PORT_ERROR(fmt, ...) NSLog(fmt, ##__VA_ARGS__)
+#define LOG_SERIAL_PORT_ERROR(fmt, ...) NSLog(fmt, ##__VA_ARGS__)
 #else
-	#define LOG_SERIAL_PORT_ERROR(fmt, ...)
+#define LOG_SERIAL_PORT_ERROR(fmt, ...)
 #endif
 
 NSString * const ORSSerialPortsWereConnectedNotification = @"ORSSerialPortWasConnectedNotification";
@@ -51,12 +56,9 @@ void ORSSerialPortManagerPortsTerminatedNotificationCallback(void *refCon, io_it
 
 @interface ORSSerialPortManager ()
 
-- (void)serialPortsWerePublished:(io_iterator_t)iterator;
-- (void)serialPortsWereTerminated:(io_iterator_t)iterator;
-- (void)getAvailablePortsAndRegisterForChangeNotifications;
-
 @property (nonatomic, copy, readwrite) NSArray *availablePorts;
 @property (nonatomic, strong) NSMutableArray *portsToReopenAfterSleep;
+@property (nonatomic, strong) id terminationObserver;
 
 @property (nonatomic) io_iterator_t portPublishedNotificationIterator;
 @property (nonatomic) io_iterator_t portTerminatedNotificationIterator;
@@ -72,7 +74,7 @@ static ORSSerialPortManager *sharedInstance = nil;
 
 #pragma mark - Singleton Methods
 
-- (id)init
+- (instancetype)init
 {
 	if (self == sharedInstance) return sharedInstance; // Already initialized
 	
@@ -81,7 +83,7 @@ static ORSSerialPortManager *sharedInstance = nil;
 	{
 		self.portsToReopenAfterSleep = [NSMutableArray array];
 		
-		[self getAvailablePortsAndRegisterForChangeNotifications];
+		[self retrieveAvailablePortsAndRegisterForChangeNotifications];
 		[self registerForNotifications];
 	}
 	return self;
@@ -111,7 +113,11 @@ static ORSSerialPortManager *sharedInstance = nil;
 {
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc removeObserver:self];
-	
+#ifdef NSAppKitVersionNumber10_0
+	NSNotificationCenter *wsnc = [[NSWorkspace sharedWorkspace] notificationCenter];
+	[wsnc removeObserver:self];
+	if (self.terminationObserver) [nc removeObserver:self.terminationObserver];
+#endif
 	// Stop IOKit notifications for ports being added/removed
 	IOObjectRelease(_portPublishedNotificationIterator);
 	_portPublishedNotificationIterator = 0;
@@ -123,23 +129,20 @@ static ORSSerialPortManager *sharedInstance = nil;
 {
 	// register for notifications (only if AppKit is available)
 	void (^terminationBlock)(void) = ^{
-		for (ORSSerialPort *eachPort in self.availablePorts) [eachPort cleanup];
-		self.availablePorts = nil;
+		for (ORSSerialPort *eachPort in self.availablePorts) [eachPort cleanupAfterSystemRemoval];
+		self.availablePorts = @[];
 	};
 	
 #ifdef NSAppKitVersionNumber10_0
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserverForName:NSApplicationWillTerminateNotification
-					object:nil
-					 queue:nil
-				usingBlock:^(NSNotification *notification){
-					// For some unknown reason, this notification fires twice,
-					// doesn't cause a problem right now, but be aware
-					terminationBlock();
-				}];
+	self.terminationObserver = [nc addObserverForName:NSApplicationWillTerminateNotification
+											   object:nil
+												queue:nil
+										   usingBlock:^(NSNotification *notification){ terminationBlock(); }];
 	
-	[nc addObserver:self selector:@selector(systemWillSleep:) name:NSWorkspaceWillSleepNotification object:NULL];
-	[nc addObserver:self selector:@selector(systemDidWake:) name:NSWorkspaceDidWakeNotification object:NULL];
+	NSNotificationCenter *wsnc = [[NSWorkspace sharedWorkspace] notificationCenter];
+	[wsnc addObserver:self selector:@selector(systemWillSleep:) name:NSWorkspaceWillSleepNotification object:NULL];
+	[wsnc addObserver:self selector:@selector(systemDidWake:) name:NSWorkspaceDidWakeNotification object:NULL];
 #else
 	// If AppKit isn't available, as in a Foundation command-line tool, cleanup upon exit. Sleep/wake
 	// notifications don't seem to be available without NSWorkspace.
@@ -206,7 +209,7 @@ static ORSSerialPortManager *sharedInstance = nil;
 		IOObjectRelease(device);
 	}
 	
-	[newlyDisconnectedPorts makeObjectsPerformSelector:@selector(cleanup)];
+	[newlyDisconnectedPorts makeObjectsPerformSelector:@selector(cleanupAfterSystemRemoval)];
 	[[self mutableArrayValueForKey:@"availablePorts"] removeObjectsInArray:newlyDisconnectedPorts];
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -214,7 +217,7 @@ static ORSSerialPortManager *sharedInstance = nil;
 	[nc postNotificationName:ORSSerialPortsWereDisconnectedNotification object:self userInfo:userInfo];
 }
 
-- (void)getAvailablePortsAndRegisterForChangeNotifications;
+- (void)retrieveAvailablePortsAndRegisterForChangeNotifications;
 {
 	IONotificationPortRef notificationPort = IONotificationPortCreate(kIOMasterPortDefault);
 	CFRunLoopAddSource(CFRunLoopGetCurrent(),
@@ -251,10 +254,7 @@ static ORSSerialPortManager *sharedInstance = nil;
 	while ((eachPort = IOIteratorNext(self.portPublishedNotificationIterator)))
 	{
 		ORSSerialPort *port = [ORSSerialPort serialPortWithDevice:eachPort];
-		if ([port.name rangeOfString:@"bluetooth" options:NSCaseInsensitiveSearch].location == NSNotFound)
-		{
-			[ports addObject:port];
-		}
+		if (port) [ports addObject:port];
 		IOObjectRelease(eachPort);
 	}
 	
@@ -286,8 +286,6 @@ static ORSSerialPortManager *sharedInstance = nil;
 
 #pragma mark - Properties
 
-@synthesize availablePorts = _availablePorts;
-
 - (void)setAvailablePorts:(NSArray *)ports
 {
 	if (ports != _availablePorts)
@@ -297,15 +295,12 @@ static ORSSerialPortManager *sharedInstance = nil;
 }
 
 - (NSUInteger)countOfAvailablePorts { return [_availablePorts count]; }
-- (id)objectInAvailablePortsAtIndex:(NSUInteger)index { return [_availablePorts objectAtIndex:index]; }
+- (id)objectInAvailablePortsAtIndex:(NSUInteger)index { return _availablePorts[index]; }
 - (void)insertAvailablePorts:(NSArray *)array atIndexes:(NSIndexSet *)indexes { [_availablePorts insertObjects:array atIndexes:indexes]; }
 - (void)insertObject:(ORSSerialPort *)object inAvailablePortsAtIndex:(NSUInteger)index { [_availablePorts insertObject:object atIndex:index]; }
 - (void)removeAvailablePortsAtIndexes:(NSIndexSet *)indexes { [_availablePorts removeObjectsAtIndexes:indexes]; }
 - (void)removeObjectFromAvailablePortsAtIndex:(NSUInteger)index { [_availablePorts removeObjectAtIndex:index]; }
 
-@synthesize portsToReopenAfterSleep = _portsToReopenAfterSleep;
-
-@synthesize portPublishedNotificationIterator = _portPublishedNotificationIterator;
 - (void)setPortPublishedNotificationIterator:(io_iterator_t)iterator
 {
 	if (iterator != _portPublishedNotificationIterator)
@@ -317,7 +312,6 @@ static ORSSerialPortManager *sharedInstance = nil;
 	}
 }
 
-@synthesize portTerminatedNotificationIterator = _portTerminatedNotificationIterator;
 - (void)setPortTerminatedNotificationIterator:(io_iterator_t)iterator
 {
 	if (iterator != _portTerminatedNotificationIterator)

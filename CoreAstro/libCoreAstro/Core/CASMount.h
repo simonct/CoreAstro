@@ -6,16 +6,17 @@
 //  Copyright (c) 2014 Simon Taylor. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "CASDevice.h"
 
-@protocol CASMount
+@protocol CASMount // <CASDevice>
 
-- (void)connectWithCompletion:(void(^)(NSError*))completion;
+- (void)connect:(void(^)(NSError*))completion;
 - (void)disconnect;
 
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL slewing;
 @property (nonatomic,readonly) BOOL tracking;
+@property (nonatomic,readonly) BOOL weightsHigh;
 
 @property (nonatomic,strong,readonly) NSNumber* ra;
 @property (nonatomic,strong,readonly) NSNumber* dec;
@@ -39,6 +40,7 @@ typedef NS_ENUM(NSInteger, CASMountSlewError) {
     CASMountSlewErrorInvalidLocation
 };
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+- (void)startSlewToTarget:(void (^)(CASMountSlewError))completion; // for subclasses
 - (void)halt;
 
 typedef NS_ENUM(NSInteger, CASMountDirection) {
@@ -74,7 +76,11 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 
 @end
 
-@interface CASMount : NSObject<CASMount> // todo CASDevice subclass
+@interface CASMount : CASDevice<CASMount>
+
+@property (nonatomic,strong) NSNumber* targetRa;
+@property (nonatomic,strong) NSNumber* targetDec;
+
 @end
 
 extern NSString* const CASMountSlewingNotification;

@@ -60,7 +60,6 @@
 		F461187519F37295003BA344 /* CASSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184A19F37295003BA344 /* CASSocketClient.m */; };
 		F461187619F37295003BA344 /* CASTaskWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184C19F37295003BA344 /* CASTaskWrapper.m */; };
 		F461187719F37295003BA344 /* CASUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F461184E19F37295003BA344 /* CASUtilities.m */; };
-		F461187819F37295003BA344 /* CoreAstro.m in Sources */ = {isa = PBXBuildFile; fileRef = F461185019F37295003BA344 /* CoreAstro.m */; };
 		F461187A19F37344003BA344 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187919F37344003BA344 /* Accelerate.framework */; };
 		F461187C19F37350003BA344 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187B19F37350003BA344 /* AVFoundation.framework */; };
 		F461187E19F37361003BA344 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F461187D19F37361003BA344 /* CoreMedia.framework */; };
@@ -202,8 +201,6 @@
 		F461184C19F37295003BA344 /* CASTaskWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASTaskWrapper.m; sourceTree = "<group>"; };
 		F461184D19F37295003BA344 /* CASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUtilities.h; sourceTree = "<group>"; };
 		F461184E19F37295003BA344 /* CASUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUtilities.m; sourceTree = "<group>"; };
-		F461184F19F37295003BA344 /* CoreAstro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAstro.h; sourceTree = "<group>"; };
-		F461185019F37295003BA344 /* CoreAstro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreAstro.m; sourceTree = "<group>"; };
 		F461187919F37344003BA344 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F461187B19F37350003BA344 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F461187D19F37361003BA344 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -398,8 +395,6 @@
 				F461184C19F37295003BA344 /* CASTaskWrapper.m */,
 				F461184D19F37295003BA344 /* CASUtilities.h */,
 				F461184E19F37295003BA344 /* CASUtilities.m */,
-				F461184F19F37295003BA344 /* CoreAstro.h */,
-				F461185019F37295003BA344 /* CoreAstro.m */,
 			);
 			name = Core;
 			path = ../../../CoreAstro/libCoreAstro/Core;
@@ -640,7 +635,6 @@
 				F461185419F37295003BA344 /* CASGuiderController.m in Sources */,
 				F461186119F37295003BA344 /* CASDeviceManager.m in Sources */,
 				F461187219F37295003BA344 /* CASPluginManager.m in Sources */,
-				F461187819F37295003BA344 /* CoreAstro.m in Sources */,
 				F461186F19F37295003BA344 /* CASNetworkServer.m in Sources */,
 				F46117DB19F36E1A003BA344 /* libfli.c in Sources */,
 				F46117E519F36E1A003BA344 /* libfli-usb-sys.c in Sources */,
