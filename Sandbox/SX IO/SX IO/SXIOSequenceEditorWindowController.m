@@ -405,7 +405,7 @@ static void* kvoContext;
         if ([self.currentStep.type isEqualToString:@"exposure"]){
             [self executeExposureStep:(CASSequenceExposureStep*)self.currentStep];
         }
-        if ([self.currentStep.type isEqualToString:@"slew"]){
+        else if ([self.currentStep.type isEqualToString:@"slew"]){
             [self executeSlewStep:(CASSequenceSlewStep*)self.currentStep];
         }
         else {
