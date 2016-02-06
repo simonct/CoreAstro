@@ -60,6 +60,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
     NSMutableArray* _settingsStack;
+    NSInteger _savedCurrentCaptureIndex;
 }
 
 - (id)initWithCamera:(CASCCDDevice*)camera
@@ -476,7 +477,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
     _cancelled = NO;
 
-    self.settings.currentCaptureIndex = 0;
+    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex;
+    _savedCurrentCaptureIndex = 0;
     
     void (^startCapture)() = ^{
         
@@ -611,6 +613,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.state = CASCameraControllerStateNone;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
+}
+
+- (void)saveCurrentCaptureIndex
+{
+    _savedCurrentCaptureIndex = self.settings.currentCaptureIndex;
 }
 
 - (BOOL) cancelled

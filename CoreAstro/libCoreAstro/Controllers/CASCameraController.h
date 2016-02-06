@@ -93,6 +93,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 - (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block;
 
 - (void)cancelCapture;
+- (void)saveCurrentCaptureIndex; // yuk - this may be better done with pushing/popping settings
 
 - (void)pushSettings:(CASExposureSettings*)settings;
 - (void)popSettings;
