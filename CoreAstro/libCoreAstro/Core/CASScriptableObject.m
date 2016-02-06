@@ -38,6 +38,13 @@
 	return self;
 }
 
+- (instancetype)copyWithZone:(NSZone *)zone
+{
+    CASScriptableObject* copy = [[self class] allocWithZone:zone];
+    copy->_id = self->_id;
+    return copy;
+}
+
 - (NSString*)containerAccessor
 {
 	return nil;

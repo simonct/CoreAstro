@@ -26,7 +26,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface CASScriptableObject : NSObject
+@interface CASScriptableObject : NSObject<NSCopying>
 
 @property (nonatomic,strong) NSScriptCommand* scriptCommand;
 

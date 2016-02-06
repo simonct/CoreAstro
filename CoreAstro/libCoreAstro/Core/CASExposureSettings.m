@@ -50,6 +50,28 @@
     [super setNilValueForKey:key];
 }
 
+- (instancetype)copyWithZone:(NSZone *)zone
+{
+    CASExposureSettings* copy = [super copyWithZone:zone];
+    
+    copy.cameraController = self.cameraController;
+    copy.continuous = self.continuous;
+    copy.captureCount = self.captureCount;
+    copy.currentCaptureIndex = self.currentCaptureIndex;
+    copy.exposureDuration = self.exposureDuration;
+    copy.exposureUnits = self.exposureUnits;
+    copy.exposureInterval = self.exposureInterval;
+    copy.subframe = self.subframe;
+    copy.subframe = self.subframe;
+    copy.binning = self.binning;
+    copy.exposureType = self.exposureType;
+    copy.ditherEnabled = self.ditherEnabled;
+    copy.ditherPixels = self.ditherPixels;
+    copy.startGuiding = self.startGuiding;
+    
+    return copy;
+}
+
 @end
 
 @implementation CASExposureSettings (CASScripting)
