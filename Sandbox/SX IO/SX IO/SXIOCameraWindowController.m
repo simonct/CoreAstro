@@ -923,21 +923,21 @@ static void* kvoContext;
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self completeMountSlewHandling];
         [self presentAlertWithTitle:title message:message];
-        NSLog(@"Restart failed: %@",message);
+        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming capture failed" subtitle:message];
     };
 
     // final block to be called, dismiss the progress sheet and restart capturing
     void (^restartCapturing)() = ^(){
         [self completeMountSlewHandling];
         if (self.mountState.capturingWhenSlewStarted){
-            NSLog(@"Restarting capturing");
+            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming capture" subtitle:nil];
             [self startCapture]; // does this reset the camera controller's capture count ? - this probably resets the capture index so it'll start again
         }
     };
 
     // restart guiding, then capturing
     void (^restartGuiding)() = ^(){
-        NSLog(@"Restarting guiding");
+        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming guiding" subtitle:nil];
         [self.cameraController.phd2Client guideWithCompletion:^(BOOL success) {
             if (!success){
                 failWithAlert(@"Guide Failed",@"Failed to restart guiding");
@@ -954,7 +954,7 @@ static void* kvoContext;
             restartGuiding();
         }
         else {
-            NSLog(@"Flipping guide calibration");
+            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
             [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
                 if (!success){
                     failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
@@ -984,7 +984,7 @@ static void* kvoContext;
                 failWithAlert(@"Guide Failed",@"Failed to reconnect to PHD2");
             }
             else {
-                NSLog(@"Connected to PHD2");
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Connected to PHD2" subtitle:nil];
                 restartGuidingWithFlipped(flipped);
             }
         }];
@@ -1062,6 +1062,8 @@ static void* kvoContext;
             }
             else {
                 
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"Recording mount state for possible restart"];
+
                 // record the current state
                 self.mountState.synchronisingWhenSlewStarted = NO;
                 self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
@@ -1131,7 +1133,9 @@ static void* kvoContext;
                             
                             NSLog(@"Mount slew ended, re-syncing to locked solution");
                             
-                            self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Syncing mount...", @"Progress sheet status label");
+                            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Synchronising mount to locked solution"];
+
+                            self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Synchronising mount to locked solution...", @"Progress sheet status label");
                             
                             [self slewToLockedSolution];
                         }
@@ -1164,6 +1168,8 @@ static void* kvoContext;
     if (error){
         
         NSLog(@"Mount sync failed with error %@",error);
+
+        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing ended" subtitle:@"Failed to slew to target"];
 
         [self completeMountSlewHandling];
         [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
@@ -2396,17 +2402,16 @@ static void* kvoContext;
             // post a completion notification if the capture wasn't cancelled
             if (!self.cameraController.cancelled){
                 
-                NSUserNotification* note = [[NSUserNotification alloc] init];
-                note.title = NSLocalizedString(@"Capture Complete", @"Notification title");
+                NSString* subtitle;
+                NSString* title = NSLocalizedString(@"Capture Complete", @"Notification title");
                 NSString* exposureUnits = (self.cameraController.settings.exposureUnits == 0) ? @"s" : @"ms";
                 if (self.cameraController.settings.captureCount == 1){
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                    subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
                 else {
-                    note.subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                    subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
-                note.soundName = NSUserNotificationDefaultSoundName;
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+                [[CASLocalNotifier sharedInstance] postLocalNotification:title subtitle:subtitle];
             }
             
             // only call the completion block if the camera isn't suspended

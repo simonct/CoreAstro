@@ -13,7 +13,7 @@ class CASLocalNotifier: NSObject {
 
     static var sharedInstance = CASLocalNotifier()
     
-    var postLocalNotifications: Bool = false
+    var postLocalNotifications: Bool = true
     
     override init() {
         
@@ -37,6 +37,11 @@ class CASLocalNotifier: NSObject {
         note.subtitle = subtitle;
         note.soundName = NSUserNotificationDefaultSoundName;
         NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(note);
+        var message = title
+        if (subtitle != nil) {
+            message = message + ": \(subtitle)"
+        }
+        print(message)
     }
     
     func exposureStarted(note: NSNotification) {
