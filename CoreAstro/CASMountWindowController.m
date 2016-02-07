@@ -159,8 +159,6 @@ static void* kvoContext;
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     
-    [self cleanup];
-
     [self close];
 }
 
@@ -178,9 +176,11 @@ static void* kvoContext;
 
 - (void)close
 {
-    [super close];
+    [self.mountWindowDelegate mountWindowControllerWillClose:self];
 
-    [self.mountWindowDelegate mountWindowControllerDidClose:self];
+    [self cleanup];
+
+    [super close];
 }
 
 - (void)presentAlertWithMessage:(NSString*)message

@@ -928,11 +928,11 @@ static void* kvoContext;
 
     // final block to be called, dismiss the progress sheet and restart capturing
     void (^restartCapturing)() = ^(){
-        [self completeMountSlewHandling];
         if (self.mountState.capturingWhenSlewStarted){
             [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming capture" subtitle:nil];
             [self startCapture]; // does this reset the camera controller's capture count ? - this probably resets the capture index so it'll start again
         }
+        [self completeMountSlewHandling]; // call after checking the capturingWhenSlewStarted flag as this clears the mount state object
     };
 
     // restart guiding, then capturing
@@ -1192,7 +1192,7 @@ static void* kvoContext;
     // todo; check to see if this is running a sequence step and call the completion block if it is (doing that now?)
 }
 
-- (void)mountWindowControllerDidClose:(CASMountWindowController*)windowController;
+- (void)mountWindowControllerWillClose:(CASMountWindowController*)windowController;
 {
     if (windowController == self.mountWindowController){
         self.mountWindowController = nil;
@@ -2026,6 +2026,7 @@ static void* kvoContext;
                     NSLog(@"Wrote exposure to %@",[finalUrl path]);
                     [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
                     [self.cameraController addRecentURL:finalUrl];
+                    // todo; run any user-defined post-processing scripts e.g. NSUserAppleScriptTask
                 }
                 
                 if (self.calibrate && self.calibratedExposure){
