@@ -914,7 +914,7 @@ static void* kvoContext;
     }
 }
 
-- (void)restartAfterMountSlewCompleted // only called after the synchroniser has completed successfully
+- (void)resumeAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
     NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
     
@@ -1003,8 +1003,7 @@ static void* kvoContext;
     
     // stop capture if we're not looping (which probably means we're framing the subject)
     if (!self.cameraController.settings.continuous){
-        [self.cameraController saveCurrentCaptureIndex]; // todo; push/pop settings ?
-        [self.cameraController cancelCapture];
+        [self.cameraController suspendCapture];
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
@@ -1176,7 +1175,7 @@ static void* kvoContext;
         // check to see if we were tracking the slew and restart
         if (self.mountSlewProgressSheet){
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
-                [self restartAfterMountSlewCompleted];
+                [self resumeAfterMountSlewCompleted];
             }
             else {
                 [self completeMountSlewHandling];
@@ -2394,6 +2393,7 @@ static void* kvoContext;
             // re-enable idle sleep
             [CASPowerMonitor sharedInstance].disableSleep = NO;
             
+            // post a completion notification if the capture wasn't cancelled
             if (!self.cameraController.cancelled){
                 
                 NSUserNotification* note = [[NSUserNotification alloc] init];
@@ -2409,12 +2409,19 @@ static void* kvoContext;
                 [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
             }
             
-            // so, if the mount flips and the capture is cancelled (suspended?) does this get called ?
-            [self endSequence];
-            
-            if (self.captureCompletion){
-                self.captureCompletion(error);
-                self.captureCompletion = nil;
+            // only call the completion block if the camera isn't suspended
+            if (self.cameraController.suspended){
+                // this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption
+                NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
+            }
+            else{
+
+                [self endSequence];
+                
+                if (self.captureCompletion){
+                    self.captureCompletion(error);
+                    self.captureCompletion = nil;
+                }
             }
         }
     }];
@@ -2427,7 +2434,7 @@ static void* kvoContext;
 
 - (void)endSequence
 {
-    [self.cameraController cancelCapture]; // not calling -cancelCapture: any more as that disables the Cancel button
+    [self.cameraController cancelCapture]; // not calling the -cancelCapture: action on this class as that disables the Cancel button
 }
 
 #pragma mark - Notifications
