@@ -32,7 +32,7 @@ class CASLocalNotifier: NSObject {
         if (!postLocalNotifications){
             return
         }
-        var note = NSUserNotification();
+        let note = NSUserNotification();
         note.title = title;
         note.subtitle = subtitle;
         note.soundName = NSUserNotificationDefaultSoundName;
@@ -44,7 +44,7 @@ class CASLocalNotifier: NSObject {
     }
 
     func exposureCompleted(note: NSNotification) {
-        if let error = note.userInfo?["error"] as? NSError {
+        if let _ = note.userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {
