@@ -51,8 +51,8 @@
     self.parent = window;
     self.modalHandler = handler;
     
-    if ([self.parent respondsToSelector:@selector(beginSheet:completionHandler:)]){
-        [self.parent beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+    if ([self.parent respondsToSelector:@selector(beginCriticalSheet:completionHandler:)]){
+        [self.parent beginCriticalSheet:self.window completionHandler:^(NSModalResponse returnCode) {
             self.modalHandler = nil;
             if (handler){
                 handler(returnCode);
