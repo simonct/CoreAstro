@@ -2055,8 +2055,8 @@ static void* kvoContext;
             controller.capturing &&
             self.exposureView.lockedPlateSolveSolution){
 
-            NSLog(@"Mount has passed meridian while capturing, triggering flip");
-            
+            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
+
             // captures current mount state, suspends capture and stops guiding
             [self prepareForMountSlewHandling];
             
