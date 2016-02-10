@@ -41,6 +41,7 @@
 #import "CCD_IO-Swift.h"
 #endif
 #import <CoreAstro/CoreAstro.h>
+#import <CoreAstro/CoreAstro-Swift.h>
 #import <objc/runtime.h>
 
 @interface SXIOAppDelegate ()
