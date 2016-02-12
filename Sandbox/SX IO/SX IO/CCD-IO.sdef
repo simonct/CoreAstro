@@ -337,7 +337,7 @@
             <parameter name="object" code="Obj " type="text" description="The object to lookup">
                 <cocoa key="object"/>
             </parameter>
-            <result type="coordinates" description="Coordinates of the object"/>
+            <result type="lookup result" description="Coordinates and rise time of the object"/>
         </command>
 
         <command name="make" code="corecrel" description="Create a new object.">
@@ -368,6 +368,21 @@
             </property>
             <property name="declination" code="Dec " type="real" description="declination">
                 <cocoa key="dec"/>
+            </property>
+        </record-type>
+
+        <record-type name="lookup result" code="Look">
+            <property name="coordinates" code="Crds" type="coordinates" description="Co-ordinates of the object">
+                <cocoa key="coords"/>
+            </property>
+            <property name="rise" code="Rise" type="real" description="Rise time of the object">
+                <cocoa key="rise"/>
+            </property>
+            <property name="set" code="Set " type="real" description="Set time of the object">
+                <cocoa key="set"/>
+            </property>
+            <property name="transit" code="Tran" type="real" description="Transit time of the object">
+                <cocoa key="transit"/>
             </property>
         </record-type>
 

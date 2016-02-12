@@ -587,7 +587,30 @@ static NSMutableArray* gRecentExposures;
             [command resumeExecutionWithResult:nil];
         }
         else {
-            [command resumeExecutionWithResult:@{@"ra":@(ra),@"dec":@(dec)}];
+            
+            NSNumber* rise;
+            NSNumber* set;
+            NSNumber* transit;
+            NSDictionary* coords = @{@"ra":@(ra),@"dec":@(dec)};
+
+            NSNumber* siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+            NSNumber* siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+            if (siteLatitude && siteLongitude){
+                CASNova* nova = [[CASNova alloc] initWithObserverLatitude:siteLatitude.doubleValue longitude:siteLongitude.doubleValue];
+                const CASRST rst = [nova rstForObjectRA:ra dec:dec jd:[CASNova today]];
+                rise = @(rst.rise);
+                set = @(rst.set);
+                transit = @(rst.transit);
+            }
+            
+            NSDictionary* result;
+            if (rise){
+                result = @{@"coords":coords,@"rise":rise,@"set":set,@"transit":transit};
+            }
+            else {
+                result = @{@"coords":coords};
+            }
+            [command resumeExecutionWithResult:result];
         }
     }];
 }
