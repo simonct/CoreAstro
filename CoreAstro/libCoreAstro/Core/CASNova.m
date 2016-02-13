@@ -50,6 +50,7 @@
     };
 
     struct ln_rst_time rst;
+    bzero(&rst, sizeof(rst));
     result.visibility = ln_get_object_rst(jd, &observer, &object, &rst);
     result.rise = rst.rise;
     result.transit = rst.transit;
