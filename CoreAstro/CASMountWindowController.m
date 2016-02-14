@@ -49,6 +49,7 @@
 @end
 
 @interface CASMountWindowController ()
+@property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
 @property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
 @property (weak) IBOutlet NSTextField *statusLabel;

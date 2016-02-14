@@ -635,6 +635,7 @@
                                         </menu>
                                         <connections>
                                             <binding destination="-2" name="contentValues" keyPath="mount.movingRateValues" id="bOQ-BA-KtL"/>
+                                            <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" previousBinding="bOQ-BA-KtL" id="2AH-G0-wnB"/>
                                         </connections>
                                     </popUpButtonCell>
                                     <connections>
@@ -646,7 +647,6 @@
                                                 <integer key="NSNullPlaceholder" value="-1"/>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="selectedIndex" keyPath="mount.movingRate" id="GEQ-pY-yOn"/>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="wOB-DN-0Ui">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -798,6 +798,7 @@
                                         </menu>
                                         <connections>
                                             <binding destination="-2" name="contentValues" keyPath="mount.trackingRateValues" id="a97-ql-Bh5"/>
+                                            <binding destination="-2" name="selectedIndex" keyPath="mount.trackingRate" previousBinding="a97-ql-Bh5" id="7tQ-Zi-uSr"/>
                                         </connections>
                                     </popUpButtonCell>
                                     <connections>
@@ -814,7 +815,6 @@
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="selectedIndex" keyPath="mount.trackingRate" id="Yvi-XZ-mps"/>
                                     </connections>
                                 </popUpButton>
                             </subviews>
