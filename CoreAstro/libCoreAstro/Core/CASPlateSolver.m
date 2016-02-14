@@ -248,9 +248,14 @@
 
 + (instancetype)solutionWithDictionary:(NSDictionary*)dictionary
 {
+    id wcsinfo = dictionary[@"wcsinfo"];
+    id annotations = dictionary[@"annotations"];
+    if (!wcsinfo || !annotations){
+        return nil;
+    }
     CASPlateSolveSolution* result = [CASPlateSolveSolution new];
-    result.wcsinfo = dictionary[@"wcsinfo"];
-    result.annotations = dictionary[@"annotations"];
+    result.wcsinfo = wcsinfo;
+    result.annotations = annotations;
     return result;
 }
 
