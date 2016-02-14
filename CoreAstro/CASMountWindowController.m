@@ -91,6 +91,8 @@
 
 @implementation CASMountWindowController
 
+static void* kvoContext;
+
 @synthesize cameraControllers = _cameraControllers;
 
 + (void)initialize
@@ -115,7 +117,7 @@
     [super windowDidLoad];
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
+    [self.window addObserver:self forKeyPath:@"title" options:0 context:&kvoContext];
 #endif
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
@@ -124,6 +126,26 @@
     
     self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
     self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+#if defined(SXIO) || defined(CCDIO)
+        [[SXIOAppDelegate sharedInstance] updateWindowInWindowMenu:self];
+#endif
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)showWindow:(id)sender
+{
+    [super showWindow:sender];
+
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
+#endif
 }
 
 - (void)closeWindow:sender
@@ -436,7 +458,7 @@
     
     [mount connect:^(NSError* error){
         if (mount.connected){
-            [self.window makeKeyAndOrderFront:nil];
+            [self showWindow:nil];
         }
         if (completion){
             completion(error);
@@ -471,7 +493,7 @@
         }
         else {
             
-            [self.window makeKeyAndOrderFront:nil];
+            [self showWindow:nil];
             
             self.mountController = [[CASMountController alloc] initWithMount:mount];
             [[CASDeviceManager sharedManager] addMountController:self.mountController];
@@ -485,7 +507,7 @@
 {
     NSParameterAssert(completion);
 
-    [self.window makeKeyAndOrderFront:nil]; // because we need to present a sheet
+    [self showWindow:nil]; // because we need to present a sheet
     
     if (self.mountController.mount){
         if (completion){
@@ -500,13 +522,13 @@
         [self.window beginSheet:self.mountConnectWindow completionHandler:^(NSModalResponse returnCode) {
             
             if (returnCode != NSModalResponseContinue){
-                [self.window orderOut:nil];
+                [self closeWindow:nil];
             }
             else {
                 
                 [self connectToMountWithPort:self.selectedSerialPort completion:^(NSError* error) {
                     if (error){
-                        [self.window orderOut:nil];
+                        [self closeWindow:nil];
                         [self presentAlertWithTitle:nil message:[error localizedDescription]];
                     }
                     else {

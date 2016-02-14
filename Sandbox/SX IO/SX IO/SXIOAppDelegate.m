@@ -330,6 +330,10 @@ static void* kvoContext;
 {
     NSParameterAssert(windowController);
     
+    if ([_windows containsObject:windowController]){
+        return;
+    }
+    
     [_windows addObject:windowController];
 
     // add to Window menu
@@ -347,6 +351,10 @@ static void* kvoContext;
 {
     NSParameterAssert(windowController);
 
+    if (![_windows containsObject:windowController]){
+        return;
+    }
+
     // remove from Window menu
     for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
         if (item.representedObject == windowController){
@@ -359,6 +367,15 @@ static void* kvoContext;
     // remove trailing separator
     if ([_windows count] == 0){
         [self.windowMenu removeItemAtIndex:self.windowMenu.numberOfItems-1];
+    }
+}
+
+- (void)updateWindowInWindowMenu:(NSWindowController*)windowController
+{
+    for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
+        if (item.representedObject == windowController){
+            item.title = windowController.window.title;
+        }
     }
 }
 

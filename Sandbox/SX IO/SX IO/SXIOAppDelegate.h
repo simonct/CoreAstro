@@ -14,6 +14,7 @@
 
 - (void)addWindowToWindowMenu:(NSWindowController*)windowController;
 - (void)removeWindowFromWindowMenu:(NSWindowController*)windowController;
+- (void)updateWindowInWindowMenu:(NSWindowController*)windowController;
 
 - (NSWindowController*)findWindowController:(CASDeviceController*)controller;
 
