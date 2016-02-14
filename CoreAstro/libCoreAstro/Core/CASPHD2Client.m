@@ -138,7 +138,7 @@ static void* kvoContext;
     // Paused
     // Resumed
     // GuidingDithered
-    NSLog(@"PHD2 client event: %@",message[@"Event"]);
+    // NSLog(@"PHD2 client event: %@",message[@"Event"]);
     
     NSString* event = message[@"Event"];
     
