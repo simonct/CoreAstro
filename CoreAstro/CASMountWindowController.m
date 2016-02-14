@@ -470,9 +470,12 @@
             completion(error);
         }
         else {
+            
             [self.window makeKeyAndOrderFront:nil];
-            self.mountController = [[CASMountController alloc] initWithMount:mount]; // todo; this should be the property, not the mount
+            
+            self.mountController = [[CASMountController alloc] initWithMount:mount];
             [[CASDeviceManager sharedManager] addMountController:self.mountController];
+            
             completion(nil);
         }
     }];

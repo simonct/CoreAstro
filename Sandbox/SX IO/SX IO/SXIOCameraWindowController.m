@@ -878,13 +878,14 @@ static void* kvoContext;
 - (IBAction)connectToMount:(id)sender
 {
     // keep things simple and have a single mount window across the app for now
-    self.mountWindowController = [CASMountWindowController sharedMountWindowController];
-    
-    [self.mountWindowController connectToMount:^{
+    CASMountWindowController* mountWindowController = [CASMountWindowController sharedMountWindowController];
+    [mountWindowController connectToMount:^{
         
+        self.mountWindowController = mountWindowController; // only set this once it's connected as it observes the mount controller status
+
         // only configure the mount window if it doesn't already have a camera controller
-        if (self.mountWindowController.cameraController != nil){
-            NSLog(@"Not configuring mount window as it already has a camera controller: %@",self.mountWindowController.cameraController);
+        if (mountWindowController.cameraController != nil){
+            NSLog(@"Not configuring mount window as it already has a camera controller: %@",mountWindowController.cameraController);
         }
         else{
         
