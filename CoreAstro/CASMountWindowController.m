@@ -173,6 +173,18 @@
          informativeTextWithFormat:@"%@",message] runModal];
 }
 
+#pragma mark - Bindings convenience
+
+- (id)mount
+{
+    return self.mountController.mount;
+}
+
++ (NSSet*)keyPathsForValuesAffectingMount
+{
+    return [NSSet setWithObject:@"mountController"];
+}
+
 #pragma mark - Bookmarks
 
 - (NSArray*)bookmarks
