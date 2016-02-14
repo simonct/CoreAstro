@@ -372,6 +372,7 @@ static void* kvoContext;
     [self.target captureWithCompletion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
+                [self stop];
                 [NSApp presentError:error];
             }
             else {
@@ -453,6 +454,7 @@ static void* kvoContext;
     [self.target slewToBookmarkWithName:sequenceStep.name completion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
+                [self stop];
                 [NSApp presentError:error];
             }
             else {
