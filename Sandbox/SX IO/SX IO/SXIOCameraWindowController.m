@@ -1142,6 +1142,11 @@ static void* kvoContext;
                             
                             NSLog(@"Mount slew ended but no locked solution so not restarting guiding or capturing");
                             
+                            // this is an error case as we were capturing when the slew started but cannot resume as we can't accurately repoint the mount
+                            [self captureCompletedWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                code:3
+                                                                            userInfo:@{NSLocalizedDescriptionKey:@"The capture was cancelled by a mount slew but there was no locked solution set allowing it to resume."}]];
+
                             [self completeMountSlewHandling];
                         }
                         else {
@@ -2340,7 +2345,7 @@ static void* kvoContext;
     if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
         if (error){
             *error = [NSError errorWithDomain:NSStringFromClass([self class])
-                                         code:1
+                                         code:2
                                      userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
         }
         return NO;
@@ -2399,13 +2404,7 @@ static void* kvoContext;
                 NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
             }
             else{
-
-                [self endSequence];
-                
-                if (self.captureCompletion){
-                    self.captureCompletion(error);
-                    self.captureCompletion = nil;
-                }
+                [self captureCompletedWithError:error];
             }
         }
     }];
@@ -2414,6 +2413,16 @@ static void* kvoContext;
 - (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
 {
     [self.mountWindowController.mountController slewToBookmarkWithName:name completion:completion];
+}
+
+- (void)captureCompletedWithError:(NSError*)error
+{
+    [self endSequence];
+    
+    if (self.captureCompletion){
+        self.captureCompletion(error);
+        self.captureCompletion = nil;
+    }
 }
 
 - (void)endSequence
