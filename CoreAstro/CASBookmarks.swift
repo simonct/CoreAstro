@@ -65,7 +65,7 @@ public class CASBookmarks: NSObject {
         }
     }
     
-    private func storeDidChange(note: NSNotification) { // interestingly, can't be private otherwise the notification fails with selector not found
+    public func storeDidChange(note: NSNotification) { // interestingly, can't be private otherwise the notification fails with selector not found
         print("storeDidChange \(note.userInfo)")
         if let changedKeys = note.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
             reason = note.userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
