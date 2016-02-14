@@ -10,11 +10,18 @@
 #import "CASCameraController.h"
 #import "CASLX200Commands.h"
 #import "CASObjectLookup.h"
+#import "CASMountSynchroniser.h"
+#import <CoreAstro/CoreAstro-Swift.h>
 
-@interface CASMountController ()
+NSString* kCASMountControllerCapturedSyncExposureNotification = @"kCASMountControllerCapturedSyncExposureNotification";
+NSString* kCASMountControllerSolvedSyncExposureNotification = @"kCASMountControllerSolvedSyncExposureNotification";
+NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCompletedSyncNotification";
+
+@interface CASMountController ()<CASMountMountSynchroniserDelegate>
 @property (nonatomic,strong) CASMount* mount;
-@property (nonatomic,weak) CASCameraController* camera;
 @property (strong) NSScriptCommand* slewCommand;
+@property (strong) CASMountSynchroniser* mountSynchroniser;
+@property (copy) void(^slewCompletion)(NSError*);
 @end
 
 @implementation CASMountController
@@ -24,6 +31,10 @@
     self = [super init];
     if (self){
         self.mount = mount;
+        self.mountSynchroniser = [[CASMountSynchroniser alloc] init];
+        self.mountSynchroniser.delegate = self;
+        [self bind:@"status" toObject:self.mountSynchroniser withKeyPath:@"status" options:nil];
+        // unbind ?
     }
     return self;
 }
@@ -38,7 +49,193 @@
     return self.mount;
 }
 
+- (BOOL) busy
+{
+    return self.mount.slewing || self.synchronising;
+}
+
+- (BOOL) synchronising
+{
+    return self.mountSynchroniser.busy;
+}
+
+#pragma mark - Mount Synchroniser delegate
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
+{
+    NSDictionary* userInfo = exposure ? @{@"exposure":exposure} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerCapturedSyncExposureNotification object:self userInfo:userInfo];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    NSDictionary* userInfo = solution ? @{@"solution":solution} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerSolvedSyncExposureNotification object:self userInfo:userInfo];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
+{
+    if (self.slewCommand){
+        if (error){
+            self.slewCommand.scriptErrorNumber = error.code;
+            self.slewCommand.scriptErrorString = error.localizedDescription;
+        }
+        [self.slewCommand resumeExecutionWithResult:nil];
+        self.slewCommand = nil;
+    }
+
+    [self callSlewCompletion:error];
+
+    NSDictionary* userInfo = error ? @{@"error":error} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerCompletedSyncNotification object:self userInfo:userInfo];
+}
+
+#pragma mark - Slewing
+
+- (void)callSlewCompletion:(NSError*)error
+{
+    if (self.slewCompletion){
+        self.slewCompletion(error);
+    }
+    self.slewCompletion = nil;
+}
+
+- (void)setTargetRA:(double)raDegs dec:(double)decDegs completion:(void(^)(NSError*))completion
+{
+    if (!self.mount.connected){
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:13 userInfo:@{NSLocalizedDescriptionKey:@"Mount not connected"}]);
+        return;
+    }
+    if (self.mount.slewing || self.mountSynchroniser.busy){
+        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:14 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
+        return;
+    }
+
+    [self.mount setTargetRA:raDegs dec:decDegs completion:^(CASMountSlewError slewError) {
+        NSError* error;
+        if (error != CASMountSlewErrorNone){
+            error = [NSError errorWithDomain:NSStringFromClass([self class]) code:12 userInfo:@{NSLocalizedDescriptionKey:@"Set target failed"}];
+        }
+        if (completion){
+            completion(error);
+        }
+    }];
+}
+
+- (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
+{
+    NSParameterAssert(self.mount.connected);
+    
+    if (!self.usePlateSolving){
+        
+        // not doing anything clever, just ask the mount to slew and return when it confirms that it's on its way (todo; this should wait until it's completed the slew...)
+        [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
+            if (slewError != CASMountSlewErrorNone){
+                [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
+            }
+        }];
+    }
+    else {
+        
+        if (!self.cameraController){
+            [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"No camera selected"}]];
+        }
+        else {
+            
+            // ok, looks like we're plate solving so we need to set up the mount synchroniser
+            [self.cameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
+            
+            self.mountSynchroniser.mount = self.mount; // redundant ?
+            self.mountSynchroniser.cameraController = self.cameraController;
+            
+            [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion which (todo;) needs to call the completion block
+        }
+    }
+}
+
+- (void)slewToTargetWithCompletion:(void(^)(NSError*))completion
+{
+    if (!self.mount.targetRa || !self.mount.targetDec){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:3 userInfo:@{NSLocalizedDescriptionKey:@"No slew target is set"}]);
+        }
+        return;
+    }
+    if (!self.mount.connected || self.mount.slewing || self.mountSynchroniser.busy || self.slewCompletion){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:4 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
+        }
+        return;
+    }
+    
+    // this might involve a flip if the mount decides that it wants to
+    // set the slew completion block; this is the bottleneck called from interactive slew and sequence (note: scripting *does not* currently go via this)
+    self.slewCompletion = completion;
+    
+    return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
+}
+
+- (void)setTargetFromBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
+{
+    CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+    if (solution){
+        [self setTargetRA:solution.centreRA dec:solution.centreDec completion:completion];
+    }
+    else {
+        [self setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue] completion:completion];
+    }
+}
+
+- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+{
+    if (!self.mount.connected || self.mount.slewing || self.mountSynchroniser.busy){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:1 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
+        }
+        return;
+    }
+    
+    NSDictionary* bookmark;
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    for (NSDictionary* bm in bookmarks){
+        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
+            bookmark = bm;
+            break;
+        }
+    }
+    
+    if (!bookmark){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:2 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"No such bookmark '%@'",name]}]);
+        }
+    }
+    else {
+        __weak __typeof(self) weakSelf = self;
+        [self setTargetFromBookmark:bookmark completion:^(NSError* error) {
+            if (error){
+                completion(error);
+            }
+            else {
+                [weakSelf slewToTargetWithCompletion:completion];
+            }
+        }];
+    }
+}
+
+- (void)stop
+{
+    if (self.mountSynchroniser.mount){
+        [self.mountSynchroniser cancel];
+    }
+    else {
+        [self.mount halt];
+    }
+}
+
 @end
+
+#pragma mark - Scripting
 
 @implementation CASMountController (CASScripting)
 
@@ -69,21 +266,27 @@
 
 - (NSNumber*)scriptingSlewing
 {
-    return @(self.mount.slewing);
+    return @(self.mount.slewing || self.mountSynchroniser.busy);
 }
 
 - (CASCameraController*)scriptingCamera
 {
-    return self.camera;
+    return self.cameraController;
 }
 
 - (void)setScriptingCamera:(CASCameraController*)cameraController
 {
-    self.camera = cameraController;
+    self.cameraController = cameraController;
 }
 
 - (void)scriptingSlewTo:(NSScriptCommand*)command
 {
+    if (self.mount.slewing || self.mountSynchroniser.busy){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"The mount is currently slewing", nil);
+        return;
+    }
+    
     NSString* object = command.arguments[@"object"];
     NSDictionary* coordinates = command.arguments[@"coordinates"];
     if (!object.length && !coordinates.count){
@@ -92,24 +295,41 @@
         return;
     }
     
+    const BOOL plateSolving = [command.arguments[@"plateSolving"] boolValue];
+    if (plateSolving && !self.cameraController){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"Plate solving requires that the mount's camera be set", nil);
+        return;
+    }
+    
     void (^slew)(double,double) = ^(double ra, double dec){
-        [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
-            if (error != CASMountSlewErrorNone){
-                command.scriptErrorNumber = paramErr;
-                command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
-                [command resumeExecutionWithResult:nil];
-            }
-            else {
-                // wait until it stops slewing and then resume the command
-                self.slewCommand = command;
-                observer.completion = ^(NSError* error){
-                    if (self.slewCommand){
-                        [self.slewCommand resumeExecutionWithResult:nil];
-                        self.slewCommand = nil;
-                    }
-                };
-            }
-        }];
+        
+        if (plateSolving){
+            
+            // save the command so that we can resume when the synchroniser completes
+            self.slewCommand = command;
+            
+            self.mountSynchroniser.mount = self.mount;
+            self.mountSynchroniser.cameraController = self.cameraController;
+            
+            [self.mountSynchroniser startSlewToRA:ra dec:dec]; // this calls its delegate on completion which (todo;) needs to call the completion block
+        }
+        else {
+            
+            [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
+                if (error != CASMountSlewErrorNone){
+                    command.scriptErrorNumber = paramErr;
+                    command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
+                    [command resumeExecutionWithResult:nil];
+                }
+                else {
+                    // wait until it stops slewing and then resume the command
+                    observer.completion = ^(NSError* error){
+                        [command resumeExecutionWithResult:nil];
+                    };
+                }
+            }];
+        }
     };
     
     [command suspendExecution];
@@ -134,11 +354,15 @@
 - (void)scriptingStop:(NSScriptCommand*)command
 {
     [self.mount halt];
+    [self.mountSynchroniser cancel];
 }
 
 - (void)scriptingPark:(NSScriptCommand*)command
 {
     NSLog(@"scriptingPark: %@:",command.evaluatedArguments);
+    
+    [self scriptingStop:nil];
+    
     [self.mount park]; // non-blocking...
 }
 

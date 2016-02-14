@@ -11,6 +11,7 @@
 @interface CASMountSynchroniser ()
 @property BOOL busy;
 @property float separation;
+@property float focalLength;
 @property (strong) NSError* error;
 @property (nonatomic,copy) NSString* status;
 @property (strong) CASPlateSolver* plateSolver;
@@ -60,41 +61,35 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if (!self.usePlateSolving){
-                        [self completeWithError:nil];
+#if !CAS_SLEW_AND_SYNC_TEST
+                    [self syncAndSlew];
+#else
+                    NSLog(@"_testError: %f",_testError);
+                    
+                    if (_testError < 0.125){
+                        [self.mountWindowDelegate mountWindowControllerDidSync:nil];
                     }
                     else{
                         
-#if !CAS_SLEW_AND_SYNC_TEST
-                        [self syncAndSlew];
-#else
-                        NSLog(@"_testError: %f",_testError);
-                        
-                        if (_testError < 0.125){
-                            [self.mountWindowDelegate mountWindowControllerDidSync:nil];
-                        }
-                        else{
+                        // sync to an imaginary position
+                        [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
                             
-                            // sync to an imaginary position
-                            [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
+                            // reduce error
+                            _testError /= 2;
+                            
+                            if (slewError != CASMountSlewErrorNone){
+                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+                            }
+                            else {
                                 
-                                // reduce error
-                                _testError /= 2;
-                                
-                                if (slewError != CASMountSlewErrorNone){
-                                    [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
-                                }
-                                else {
-                                    
-                                    // slew
-                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                        [self startSlewToRA:_raDegs dec:_decDegs];
-                                    });
-                                }
-                            }];
-                        }
-#endif
+                                // slew
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [self startSlewToRA:_raDegs dec:_decDegs];
+                                });
+                            }
+                        }];
                     }
+#endif
                 });
             };
         }
@@ -193,7 +188,8 @@
         _saveTemperatureLock = self.cameraController.temperatureLock;
         self.cameraController.temperatureLock = NO;
         
-        // turn off the controller's sink
+        // turn off the controller's sink so that we don't save these intermediate pointing exposures
+        // (todo; or could just pass a param identifying this as a pointing rather than capture exposure?)
         _savedSink = self.cameraController.sink;
         self.cameraController.sink = nil;
         
@@ -209,7 +205,7 @@
             }
             else {
                 
-                // check exposure intensity ?
+                // check exposure intensity ? e.g. see if it's massively overexposed
                 
                 if (_cancelled || self.cameraController.cancelled){
                     [self restoreCameraSettings];
@@ -226,6 +222,9 @@
                     }
                     else {
                         
+                        // grab the camera's focal length
+                        self.focalLength = self.cameraController.focalLength;
+
                         // set optical params
                         if (self.focalLength > 0){
                             self.plateSolver.fieldSizeDegrees = [self.cameraController fieldSizeForFocalLength:self.focalLength];

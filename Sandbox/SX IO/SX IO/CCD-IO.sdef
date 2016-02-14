@@ -310,6 +310,10 @@
             <parameter name="coordinates" code="Crds" optional="yes" type="coordinates" description="The coordinates to slew to">
                 <cocoa key="coordinates"/>
             </parameter>
+            
+            <parameter name="with plate solving" code="Solv" optional="yes" type="boolean" description="Whether to use plate solving to refine the slew (requires the mount's camera to be set)">
+                <cocoa key="plateSolving"/>
+            </parameter>
 
         </command>
         

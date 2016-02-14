@@ -703,6 +703,28 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     return size;
 }
 
+- (float)focalLength
+{
+    NSString* const focalLengthKey = [[self class] focalLengthWithCameraKey:self];
+    NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:focalLengthKey];
+    if ([focalLength isKindOfClass:[NSNumber class]]){
+        return [focalLength floatValue];
+    }
+    return 0;
+}
+
+- (void)setFocalLength:(float)focalLength
+{
+    NSString* const focalLengthKey = [[self class] focalLengthWithCameraKey:self];
+    [[NSUserDefaults standardUserDefaults] setFloat:focalLength forKey:focalLengthKey];
+}
+
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController
+{
+    NSString* const key = @"SXIOPlateSolverFocalLength";
+    return [NSString stringWithFormat:@"%@%@",key,cameraController.camera.uniqueID];
+}
+
 @end
 
 @implementation CASCameraController (CASScripting)

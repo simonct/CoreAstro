@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 @property (nonatomic,readonly) BOOL capturing;
 
-@property (nonatomic,assign) BOOL temperatureLock;
+@property (nonatomic,assign) BOOL temperatureLock; // why is this not in settings?
 
 @property (nonatomic,readonly) CASExposureSettings* settings;
 
@@ -101,6 +101,9 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 - (CGSize)arcsecsPerPixelForFocalLength:(float)focalLength;
 - (CGSize)fieldSizeForFocalLength:(float)focalLength;
+
+@property (nonatomic) float focalLength;
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController;
 
 @end
 

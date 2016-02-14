@@ -4096,6 +4096,7 @@
 					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\\\"",
 					"\\\"$(SRCROOT)/External/astrometry.net/support\\\"",
 				);
+				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				WRAPPER_EXTENSION = framework;
@@ -4129,6 +4130,7 @@
 					"\\\"$(SRCROOT)/External/astrometry.net/astrometry/python/astrometry/util\\\"",
 					"\\\"$(SRCROOT)/External/astrometry.net/support\\\"",
 				);
+				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
 				WRAPPER_EXTENSION = framework;
 			};
