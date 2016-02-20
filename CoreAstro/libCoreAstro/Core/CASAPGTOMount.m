@@ -65,6 +65,9 @@
             NSLog(@"Failed to parse scope sidereal time of %@",response);
         }
         else {
+            
+            // todo; may have to read mount longitude and use that when calculating the LST as it seems to round the values we send
+            
             NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
             NSDateComponents* scopeSiderealComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeSiderealTime];
             const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
@@ -286,18 +289,22 @@
     }];
 }
 
-- (NSInteger)parkPosition
+- (NSInteger)defaultParkPosition
 {
     return 3;
 }
 
 - (void)park
 {
+    [self parkToPosition:[self defaultParkPosition]];
+}
+
+- (BOOL)parkToPosition:(NSInteger)parkPosition
+{
     [self halt];
     
     double parkRA = 0, parkDec = 0;
     
-    const NSInteger parkPosition = [self parkPosition];
     switch (parkPosition) {
         case 2:{
             parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
@@ -311,18 +318,25 @@
             break;
         case 4:{
             parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 360, 360);
-            parkDec = self.siteLatitude.doubleValue - 90;
+            const double latitude = self.siteLatitude.doubleValue;
+            if (latitude < 0){
+                parkDec = latitude + 90;
+            }
+            else {
+                parkDec = latitude - 90;
+            }
         }
             break;
         default:
             NSLog(@"Unrecognised park position: %ld",parkPosition);
-            return;
+            return NO;
     }
     
-    // todo; southern hemisphere?
     NSLog(@"Parking at RA: %f DEC: %f",parkRA,parkDec);
     
     [self parkWithRA:parkRA dec:parkDec];
+    
+    return YES;
 }
 
 - (void)parkWithRA:(double)parkRA dec:(double)parkDec

@@ -58,8 +58,6 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
     CASMountDirectionWest
 };
 
-@optional
-
 @property (nonatomic,readonly) CASMountDirection direction;
 - (void)startMoving:(CASMountDirection)direction;
 - (void)stopMoving;
@@ -80,6 +78,10 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
     CASMountPierSideWest = 2
 };
 @property (nonatomic,readonly) CASMountPierSide pierSide;
+
+@optional
+
+- (BOOL)parkToPosition:(NSInteger)parkPosition;
 
 @end
 

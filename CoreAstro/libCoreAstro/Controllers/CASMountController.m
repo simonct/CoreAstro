@@ -363,7 +363,18 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     
     [self scriptingStop:nil];
     
-    [self.mount park]; // non-blocking...
+    NSNumber* position = command.evaluatedArguments[@"position"];
+    
+    // non-blocking so the client will have to poll the slewing state
+    if (position && [self.mount respondsToSelector:@selector(parkToPosition:)]){
+        if (![self.mount parkToPosition:[position integerValue]]){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Unrecognised park position %ld", nil),position];
+        }
+    }
+    else {
+        [self.mount park];
+    }
 }
 
 @end

@@ -40,4 +40,6 @@ typedef NS_ENUM(NSInteger, CASAPGTOMountTrackingRate) {
 
 - (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
 
+- (BOOL)parkToPosition:(NSInteger)parkPosition;
+
 @end
