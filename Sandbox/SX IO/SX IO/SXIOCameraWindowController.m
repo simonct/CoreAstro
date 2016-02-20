@@ -1712,6 +1712,63 @@ static void* kvoContext;
     }
 }
 
+- (void)lookupSolutionForExposure:(CASCCDExposure*)exposure completion:(void(^)(CASCCDExposure*,CASPlateSolveSolution*))completion
+{
+    NSData* solutionData;
+    
+    // look for a solution file alongside the exposure
+    NSURL* exposureUrl = exposure.io.url;
+    if (exposureUrl){
+        NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
+        solutionData = [NSData dataWithContentsOfURL:solutionUrl];
+    }
+    
+    if (solutionData){
+        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+        if (solution){
+            completion(exposure,solution);
+            return;
+        }
+    }
+    
+    // then, try CloudKit
+    if (!solutionData){
+        
+        CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
+        [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
+            
+            if (!error && results.count > 0){
+                
+                if (self.showPlateSolution){ // showPlateSolution should be on the exposure view
+                    
+                    NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
+                    if ([solutionData length]){
+                        
+                        @try {
+                            CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+                            if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
+                                NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
+                                solution = nil;
+                            }
+                            if (!solution){
+                                // todo; start plate solve for this exposure, show solution hud but with a spinner
+                            }
+                            else {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    completion(exposure,solution);
+                                });
+                            }
+                        }
+                        @catch (NSException *exception) {
+                            NSLog(@"Exception opening solution data: %@",exception);
+                        }
+                    }
+                }
+            }
+        }];
+    }
+}
+
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     [self displayExposure:exposure resetDisplay:YES];
@@ -1723,55 +1780,18 @@ static void* kvoContext;
         self.exposureView.currentExposure = nil;
         return;
     }
-        
+    
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // grab any solution data before we start reusing the exposure variable
-        __block NSData* solutionData = nil;
+        // lookup any solution
+        self.exposureView.plateSolveSolution = nil;
         if (self.showPlateSolution){
-            
-            // look for a solution file alongside the exposure
-            NSURL* exposureUrl = exposure.io.url;
-            if (exposureUrl){
-                NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
-                solutionData = [NSData dataWithContentsOfURL:solutionUrl];
-            }
-            
-            // then, try CloudKit
-            if (!solutionData){
-                
-                CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
-                [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
-                    if (!error && results.count > 0){
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            if ([exposure.uuid isEqualToString:self.currentExposure.uuid] && self.showPlateSolution){ // showPlateSolution shoudl be on the exposure view
-                                
-                                NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
-                                if ([solutionData length]){
-                                    @try {
-                                        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-                                        if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
-                                            NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
-                                            solution = nil;
-                                        }
-                                        if (!solution){
-                                            // todo; start plate solve for this exposure, show solution hud but with a spinner
-                                        }
-                                        else {
-                                            self.exposureView.plateSolveSolution = solution;
-                                        }
-                                    }
-                                    @catch (NSException *exception) {
-                                        NSLog(@"Exception opening solution data: %@",exception);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }];
-            }
+            [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *exposure, CASPlateSolveSolution *solution) {
+                if ([exposure.uuid isEqualToString:self.exposureView.currentExposure.uuid]){
+                    self.exposureView.plateSolveSolution = solution;
+                }
+            }];
         }
         
         // live calibrate using saved bias and flat frames
@@ -1819,27 +1839,6 @@ static void* kvoContext;
         
         // set the exposure
         [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
-        
-        // check for plate solution - do this after setting the exposure as that clears the annotations layer
-        CASPlateSolveSolution* solution;
-        if (self.showPlateSolution){
-            if ([solutionData length]){
-                @try {
-                    solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-                    if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
-                        NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
-                        solution = nil;
-                    }
-                }
-                @catch (NSException *exception) {
-                    NSLog(@"Exception opening solution data: %@",exception);
-                }
-            }
-            if (!solution){
-                // todo; start plate solve for this exposure, show solution hud but with a spinner
-            }
-        }
-        self.exposureView.plateSolveSolution = solution;
     }
 }
 
@@ -2049,6 +2048,8 @@ static void* kvoContext;
             // start the slew to the flipped position
             [self slewToLockedSolution];
         }
+        
+        // todo; kick off a background plate solve
     }
     
     if (error){
