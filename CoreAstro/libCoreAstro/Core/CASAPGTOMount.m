@@ -20,6 +20,7 @@
 
 @implementation CASAPGTOMount {
     BOOL _parking;
+    NSInteger _skipSlewStateCount;
     CASMountDirection _direction;
     CASAPGTOMountMovingRate _movingRate;
     CASAPGTOMountTrackingRate _trackingRate;
@@ -202,7 +203,12 @@
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
-            self.slewing = (fabs(degreesPerSecond) > threshold);
+            if (_skipSlewStateCount > 0){
+                _skipSlewStateCount--; // skip the first few slew states from the mount as it may not have started moving yet
+            }
+            else {
+                self.slewing = (fabs(degreesPerSecond) > threshold);
+            }
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
@@ -344,6 +350,7 @@
     [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         if (error == CASMountSlewErrorNone){
             _parking = YES;
+            _skipSlewStateCount = 5;
             NSLog(@"Starting park");
         }
         else {
@@ -475,10 +482,18 @@
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
+    // set this immediately rather than wait for the next mount status poll
+    self.slewing = YES;
+    _skipSlewStateCount = 5;
+    self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+    
     // todo; the mount can apparently not respond at all to this command under some circumstances
     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
         const CASMountSlewError error = [slewResponse isEqualToString:@"0"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
         CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+        if (error){
+            self.slewing = NO;
+        }
         completion(error,observer);
     }];
 }
