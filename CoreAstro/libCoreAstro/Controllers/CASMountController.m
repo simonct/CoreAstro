@@ -22,6 +22,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 @property (strong) NSScriptCommand* slewCommand;
 @property (strong) CASMountSynchroniser* mountSynchroniser;
 @property (copy) void(^slewCompletion)(NSError*);
+@property (strong) CASMountSlewObserver* slewObserver;
 @end
 
 @implementation CASMountController
@@ -129,10 +130,16 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     if (!self.usePlateSolving){
         
         // not doing anything clever, just ask the mount to slew and return when it confirms that it's on its way (todo; this should wait until it's completed the slew...)
+        __weak __typeof(self) weakSelf = self;
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
             if (slewError != CASMountSlewErrorNone){
                 [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
             }
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
+                [weakSelf callSlewCompletion:error];
+                weakSelf.slewObserver = nil;
+            };
         }];
     }
     else {
@@ -332,6 +339,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         }
         else {
             
+            __weak __typeof(self) weakSelf = self;
             [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
                 if (error != CASMountSlewErrorNone){
                     command.scriptErrorNumber = paramErr;
@@ -340,8 +348,10 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
                 }
                 else {
                     // wait until it stops slewing and then resume the command
-                    observer.completion = ^(NSError* error){
+                    self.slewObserver = observer;
+                    self.slewObserver.completion = ^(NSError* error){
                         [command resumeExecutionWithResult:nil];
+                        weakSelf.slewObserver = nil;
                     };
                 }
             }];
@@ -404,6 +414,8 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     else {
         [self.mount park];
     }
+    
+    // todo; this needs to block
 }
 
 @end

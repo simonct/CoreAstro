@@ -15,6 +15,7 @@
 @property (strong) NSError* error;
 @property (nonatomic,copy) NSString* status;
 @property (strong) CASPlateSolver* plateSolver;
+@property (strong) CASMountSlewObserver* slewObserver;
 @end
 
 @implementation CASMountSynchroniser {
@@ -47,6 +48,7 @@
     _raInDegrees = raInDegrees;
     _decInDegrees = decInDegrees;
     
+    __weak __typeof(self) weakSelf = self;
     [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         
         if (error != CASMountSlewErrorNone){
@@ -55,14 +57,16 @@
         else {
             
             self.status = [NSString stringWithFormat:@"Slewing to %@, %@...",[CASLX200Commands highPrecisionRA:_raInDegrees],[CASLX200Commands highPrecisionDec:_decInDegrees]];
-            observer.completion = ^(NSError* error){
+            
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
                 
                 NSLog(@"Synchroniser slew complete");
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
 #if !CAS_SLEW_AND_SYNC_TEST
-                    [self syncAndSlew];
+                    [weakSelf syncAndSlew];
 #else
                     NSLog(@"_testError: %f",_testError);
                     
@@ -91,6 +95,7 @@
                     }
 #endif
                 });
+                weakSelf.slewObserver = nil;
             };
         }
     }];
