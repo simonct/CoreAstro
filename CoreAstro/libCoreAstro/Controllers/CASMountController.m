@@ -175,15 +175,39 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
 }
 
-- (void)setTargetFromBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
+- (NSDictionary*)bookmarkWithName:(NSString*)name
+{
+    NSDictionary* bookmark;
+    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    
+    for (NSDictionary* bm in bookmarks){
+        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
+            bookmark = bm;
+            break;
+        }
+    }
+    
+    return bookmark;
+}
+
+- (void)getCoordinatesRA:(double*)ra dec:(double*)dec fromBookmark:(NSDictionary*)bookmark
 {
     CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
     if (solution){
-        [self setTargetRA:solution.centreRA dec:solution.centreDec completion:completion];
+        *ra = solution.centreRA;
+        *dec = solution.centreDec;
     }
     else {
-        [self setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue] completion:completion];
+        *ra = [bookmark[CASBookmarks.centreRaKey] doubleValue];
+        *dec = [bookmark[CASBookmarks.centreDecKey] doubleValue];
     }
+}
+
+- (void)setTargetFromBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
+{
+    double ra = 0, dec = 0;
+    [self getCoordinatesRA:&ra dec:&dec fromBookmark:bookmark];
+    [self setTargetRA:ra dec:dec completion:completion];
 }
 
 - (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
@@ -195,16 +219,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         return;
     }
     
-    NSDictionary* bookmark;
-    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
-    
-    for (NSDictionary* bm in bookmarks){
-        if ([bm[CASBookmarks.nameKey] isEqualToString:name]){
-            bookmark = bm;
-            break;
-        }
-    }
-    
+    NSDictionary* bookmark = [self bookmarkWithName:name];
     if (!bookmark){
         if (completion){
             completion([NSError errorWithDomain:NSStringFromClass([self class]) code:2 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"No such bookmark '%@'",name]}]);
@@ -288,10 +303,11 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     }
     
     NSString* object = command.arguments[@"object"];
+    NSString* bookmark = command.arguments[@"bookmark"];
     NSDictionary* coordinates = command.arguments[@"coordinates"];
-    if (!object.length && !coordinates.count){
+    if (!object.length && !coordinates.count && !bookmark.length){
         command.scriptErrorNumber = paramErr;
-        command.scriptErrorString = NSLocalizedString(@"You must specify the name or coordinates of the object to slew to", nil);
+        command.scriptErrorString = NSLocalizedString(@"You must specify the name, coordinates or a bookmark for the object to slew to", nil);
         return;
     }
     
@@ -334,8 +350,21 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     
     [command suspendExecution];
     
-    if (coordinates){
+    if (coordinates.count){
         slew([coordinates[@"ra"] doubleValue],[coordinates[@"dec"] doubleValue]);
+    }
+    else if (bookmark.length) {
+        NSDictionary* bookmarkDict = [self bookmarkWithName:bookmark];
+        if (!bookmarkDict.count){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the bookmark '%@'", nil),bookmark];
+            [command resumeExecutionWithResult:nil];
+        }
+        else {
+            double ra = 0, dec = 0;
+            [self getCoordinatesRA:&ra dec:&dec fromBookmark:bookmarkDict];
+            slew(ra,dec);
+        }
     }
     else {
         [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
