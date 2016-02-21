@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 
-- (void)park;
+- (void)park:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 - (void)unpark;
 - (void)gotoHomePosition;
 
@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, CASMountPierSide) {
 
 @optional
 
-- (BOOL)parkToPosition:(NSInteger)parkPosition;
+- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 
 @end
 

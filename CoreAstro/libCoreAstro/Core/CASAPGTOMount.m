@@ -300,12 +300,12 @@
     return 3;
 }
 
-- (void)park
+- (void)park:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
-    [self parkToPosition:[self defaultParkPosition]];
+    [self parkToPosition:[self defaultParkPosition] completion:completion];
 }
 
-- (BOOL)parkToPosition:(NSInteger)parkPosition
+- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     [self halt];
     
@@ -340,12 +340,12 @@
     
     NSLog(@"Parking at RA: %f DEC: %f",parkRA,parkDec);
     
-    [self parkWithRA:parkRA dec:parkDec];
+    [self parkWithRA:parkRA dec:parkDec completion:completion];
     
     return YES;
 }
 
-- (void)parkWithRA:(double)parkRA dec:(double)parkDec
+- (void)parkWithRA:(double)parkRA dec:(double)parkDec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         if (error == CASMountSlewErrorNone){
@@ -357,6 +357,9 @@
             _parking = NO;
             NSLog(@"Park failed with result: %ld, ra: %f, dec: %f",error,parkRA,parkDec);
         }
+        if (completion){
+            completion(error,_parking ? [CASMountSlewObserver observerWithMount:self] : nil);
+        }
     }];
 }
 
@@ -367,7 +370,7 @@
 
 - (void)gotoHomePosition
 {
-    [self park];
+    [self park:nil];
 }
 
 - (void)setSlewing:(BOOL)slewing

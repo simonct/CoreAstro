@@ -398,24 +398,48 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 
 - (void)scriptingPark:(NSScriptCommand*)command
 {
-    NSLog(@"scriptingPark: %@:",command.evaluatedArguments);
-    
     [self scriptingStop:nil];
     
+    [command suspendExecution];
+
     NSNumber* position = command.evaluatedArguments[@"position"];
     
     // non-blocking so the client will have to poll the slewing state
-    if (position && [self.mount respondsToSelector:@selector(parkToPosition:)]){
-        if (![self.mount parkToPosition:[position integerValue]]){
+    __weak __typeof(self) weakSelf = self;
+    
+    void (^parkCompletion)(CASMountSlewError,CASMountSlewObserver*) = ^(CASMountSlewError error, CASMountSlewObserver* observer){
+        if (error != CASMountSlewErrorNone){
+            command.scriptErrorNumber = paramErr;
+            command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Failed to park", nil)];
+            [command resumeExecutionWithResult:nil];
+        }
+        else {
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
+                if (error){
+                    command.scriptErrorNumber = paramErr;
+                    command.scriptErrorString = error.localizedDescription;
+                }
+                [command resumeExecutionWithResult:nil];
+                weakSelf.slewObserver = nil;
+            };
+        }
+    };
+    
+    if (position && [self.mount respondsToSelector:@selector(parkToPosition:completion:)]){
+        if (![self.mount parkToPosition:[position integerValue] completion:^(CASMountSlewError error, CASMountSlewObserver* observer) {
+            parkCompletion(error,observer);
+        }]){
             command.scriptErrorNumber = paramErr;
             command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Unrecognised park position %ld", nil),position];
+            [command resumeExecutionWithResult:nil];
         }
     }
     else {
-        [self.mount park];
+        [self.mount park:^(CASMountSlewError error, CASMountSlewObserver* observer) {
+            parkCompletion(error,observer);
+        }];
     }
-    
-    // todo; this needs to block
 }
 
 @end

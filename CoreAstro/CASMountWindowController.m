@@ -377,7 +377,11 @@ static void* kvoContext;
 
 - (IBAction)park:(id)sender
 {
-    [self.mountController.mount park];
+    [self.mountController.mount park:^(CASMountSlewError error, CASMountSlewObserver* _) {
+        if (error != CASMountSlewErrorNone){
+            [self presentAlertWithMessage:@"Failed to park the mount"];
+        }
+    }];
 }
 
 - (IBAction)lookup:(id)sender
