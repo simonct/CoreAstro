@@ -585,9 +585,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
-- (void)setSelectionRect:(CGRect)rect
+- (void)setSelectionRect:(CGRect)selectionRect
 {
-    self.selectionLayer.frame = rect;
+    // call through to delegate to validate the subframe
+    if ([self.exposureViewDelegate respondsToSelector:@selector(validateSelectionRect:exposureView:)]){
+        selectionRect = [self.exposureViewDelegate validateSelectionRect:selectionRect exposureView:self];
+    }
+
+    self.selectionLayer.frame = selectionRect;
     
     [self informSelectionChanged];
     

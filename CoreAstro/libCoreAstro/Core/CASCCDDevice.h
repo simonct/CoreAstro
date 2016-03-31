@@ -48,7 +48,7 @@
 
 - (void)cancelExposure;
 
-- (CGRect)validateSubframe:(CGRect)subframe;
+- (CASRect)validateSubframe:(CASRect)subframe binning:(CASSize)binning;
 
 @end
 

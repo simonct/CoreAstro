@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,assign) CASExposureDurationUnits exposureUnits;
 @property (nonatomic,assign) NSInteger exposureInterval;
 
-@property (nonatomic,assign) CGRect subframe;
+@property (nonatomic,assign) CGRect subframe; // this should be a CASRect
 @property (nonatomic,assign) NSInteger binning;
 
 @property (nonatomic,assign) CASCCDExposureType exposureType;
