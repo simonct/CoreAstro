@@ -40,6 +40,8 @@
 		F41AAC441BDB8DAD003757C7 /* liblibnova.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F41AAC401BDB8D22003757C7 /* liblibnova.dylib */; };
 		F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */ = {isa = PBXBuildFile; fileRef = F43D311918A6A1FC00087C52 /* CASPHD2Client.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */; };
+		F44587EA1C12E442000DD6CF /* libPCL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F44587E21C12E403000DD6CF /* libPCL.dylib */; };
+		F44587EB1C12E44B000DD6CF /* libPCL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F44587E21C12E403000DD6CF /* libPCL.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
 		F44791E3167F5A59007A6815 /* CASExposureInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */; };
 		F44791E816806BB2007A6815 /* CASProgressHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F44791E716806BB1007A6815 /* CASProgressHUDView.m */; };
@@ -453,6 +455,27 @@
 			remoteGlobalIDString = F41AAB641BDB890A003757C7;
 			remoteInfo = libnova;
 		};
+		F44587E11C12E403000DD6CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F44587DC1C12E403000DD6CF /* PCL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F47E14221C0B2E90007AB661;
+			remoteInfo = PCL;
+		};
+		F44587E31C12E403000DD6CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F44587DC1C12E403000DD6CF /* PCL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F47E15511C0B301D007AB661;
+			remoteInfo = "pcl-test";
+		};
+		F44587E81C12E43B000DD6CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F44587DC1C12E403000DD6CF /* PCL.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F47E14211C0B2E90007AB661;
+			remoteInfo = PCL;
+		};
 		F44EDF0E15FCC386003B1B4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F49E52B415A971610018DC75 /* Project object */;
@@ -546,6 +569,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				F44587EB1C12E44B000DD6CF /* libPCL.dylib in CopyFiles */,
 				F41AAC441BDB8DAD003757C7 /* liblibnova.dylib in CopyFiles */,
 				F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */,
 			);
@@ -652,6 +676,7 @@
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
 		F43D311918A6A1FC00087C52 /* CASPHD2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHD2Client.h; sourceTree = "<group>"; };
 		F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHD2Client.m; sourceTree = "<group>"; };
+		F44587DC1C12E403000DD6CF /* PCL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PCL.xcodeproj; path = "External/PCL-build/PCL.xcodeproj"; sourceTree = "<group>"; };
 		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
 		F44791E2167F5A59007A6815 /* CASExposureInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASExposureInfoView.xib; sourceTree = "<group>"; };
 		F44791E616806BB1007A6815 /* CASProgressHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASProgressHUDView.h; sourceTree = "<group>"; };
@@ -1532,6 +1557,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44587EA1C12E442000DD6CF /* libPCL.dylib in Frameworks */,
 				F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */,
 				F41AAC431BDB8D5B003757C7 /* liblibnova.dylib in Frameworks */,
 				F400936A1699B2ED00E96DBE /* CoreMedia.framework in Frameworks */,
@@ -1723,6 +1749,7 @@
 		F422B05915FC8D4800D86260 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				F44587DC1C12E403000DD6CF /* PCL.xcodeproj */,
 				F456A2AD1621FFCA008DBD3F /* cfitsio.xcodeproj */,
 				F41AAC3B1BDB8D22003757C7 /* libnova.xcodeproj */,
 			);
@@ -1736,6 +1763,15 @@
 				F422B05D15FC8D5B00D86260 /* README.md */,
 			);
 			name = Docs;
+			sourceTree = "<group>";
+		};
+		F44587DD1C12E403000DD6CF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F44587E21C12E403000DD6CF /* libPCL.dylib */,
+				F44587E41C12E403000DD6CF /* pcl-test */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F44EDEFC15FCC385003B1B4C /* CoreAstro Framework */ = {
@@ -3325,6 +3361,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F44587E91C12E43B000DD6CF /* PBXTargetDependency */,
 				F456A2B71621FFD1008DBD3F /* PBXTargetDependency */,
 				F41AAC421BDB8D37003757C7 /* PBXTargetDependency */,
 			);
@@ -3489,6 +3526,10 @@
 					ProductGroup = F41AAC3C1BDB8D22003757C7 /* Products */;
 					ProjectRef = F41AAC3B1BDB8D22003757C7 /* libnova.xcodeproj */;
 				},
+				{
+					ProductGroup = F44587DD1C12E403000DD6CF /* Products */;
+					ProjectRef = F44587DC1C12E403000DD6CF /* PCL.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -3510,6 +3551,20 @@
 			fileType = "compiled.mach-o.dylib";
 			path = liblibnova.dylib;
 			remoteRef = F41AAC3F1BDB8D22003757C7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F44587E21C12E403000DD6CF /* libPCL.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libPCL.dylib;
+			remoteRef = F44587E11C12E403000DD6CF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F44587E41C12E403000DD6CF /* pcl-test */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "pcl-test";
+			remoteRef = F44587E31C12E403000DD6CF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */ = {
@@ -3896,6 +3951,11 @@
 			name = libnova;
 			targetProxy = F41AAC411BDB8D37003757C7 /* PBXContainerItemProxy */;
 		};
+		F44587E91C12E43B000DD6CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PCL;
+			targetProxy = F44587E81C12E43B000DD6CF /* PBXContainerItemProxy */;
+		};
 		F44EDF0F15FCC386003B1B4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F44EDEF915FCC385003B1B4C /* CoreAstro Framework */;
@@ -4083,9 +4143,16 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					__PCL_MACOSX,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/External/cfitsio\"",
 					"\"$(SRCROOT)/External/libnova-0.15.0/src\"",
+					"\"$(SRCROOT)/External/PCL/include\"",
+					"\"$(SRCROOT)/External/PCL/src/modules/processes/Image\"",
 				);
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
 				INSTALL_PATH = "@rpath";
@@ -4116,9 +4183,12 @@
 				FRAMEWORK_VERSION = A;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreAstro Framework/CoreAstro Framework-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = __PCL_MACOSX;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/External/cfitsio\"",
 					"\"$(SRCROOT)/External/libnova-0.15.0/src\"",
+					"\"$(SRCROOT)/External/PCL/include\"",
+					"\"$(SRCROOT)/External/PCL/src/modules/processes/Image\"",
 				);
 				INFOPLIST_FILE = "CoreAstro Framework/CoreAstro Framework-Info.plist";
 				INSTALL_PATH = "@rpath";
