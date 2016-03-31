@@ -204,6 +204,17 @@
     return YES;
 }
 
+- (CASRect)validateSubframe:(CASRect)subframe binning:(CASSize)binning {
+    if (self.productID == 805 && binning.width == 1){ // M25C
+        // need to keep these on a even pixel boundary if in 1x1 binning mode
+        subframe.origin.x -= subframe.origin.x % 2;
+        subframe.origin.y -= subframe.origin.y % 2;
+        subframe.size.width -= subframe.size.width % 2;
+        subframe.size.height -= subframe.size.height % 2;
+    }
+    return [super validateSubframe:subframe binning:binning];
+}
+
 - (NSArray*)binningModes {
     if (self.productID == 806){ // M26C
         return @[@1,@2]; // todo; get 4x4 working

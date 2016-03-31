@@ -640,9 +640,11 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
                 
                 size_t i = 0;
                 for (size_t y = 0; y < height; y += 2){
-                    for (size_t x = 0; x < width; x += 1){
+                    for (size_t x = 0; x < width; x += 2){
                         rearrangedPixelsPtr[x + (y * width)] = pixelsPtr[i++];
                         rearrangedPixelsPtr[x + ((y+1) * width)] = pixelsPtr[i++];
+                        rearrangedPixelsPtr[x + 1 + ((y+1) * width)] = pixelsPtr[i++];
+                        rearrangedPixelsPtr[x + 1 + (y * width)] = pixelsPtr[i++];
                     }
                 }
                 

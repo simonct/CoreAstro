@@ -68,7 +68,7 @@
     return YES; // can this camera capture subframes ?
 }
 
-- (CGRect)validateSubframe:(CGRect)subframe {
+- (CASRect)validateSubframe:(CASRect)subframe binning:(CASSize)binning {
     return subframe;
 }
 

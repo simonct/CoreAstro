@@ -15,6 +15,7 @@
 @class CASPlateSolveSolution;
 
 @protocol CASExposureViewDelegate <NSObject>
+- (CGRect)validateSelectionRect:(CGRect)selection exposureView:(CASExposureView*)view;
 - (void)selectionRectChanged:(CASExposureView*)view;
 @end
 
