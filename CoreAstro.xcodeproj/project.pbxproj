@@ -167,6 +167,7 @@
 		F48783FE1C235A810001314E /* ORSSerialPacketDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F48783FA1C235A810001314E /* ORSSerialPacketDescriptor.m */; };
 		F48784091C235A870001314E /* ORSSerialRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = F48784031C235A870001314E /* ORSSerialRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F487840A1C235A870001314E /* ORSSerialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F48784041C235A870001314E /* ORSSerialRequest.m */; };
+		F48C17801C68AAA100A2D3B8 /* CASBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48C177E1C68AA5400A2D3B8 /* CASBookmarks.swift */; };
 		F48DF00D160E46A800190D3E /* CASImageControlsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00C160E46A800190D3E /* CASImageControlsView.m */; };
 		F48DF010160E46F300190D3E /* CASExposuresController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF00F160E46F300190D3E /* CASExposuresController.m */; };
 		F48DF016160E47B800190D3E /* CASImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F48DF015160E47B800190D3E /* CASImageView.m */; };
@@ -753,6 +754,8 @@
 		F48783FA1C235A810001314E /* ORSSerialPacketDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPacketDescriptor.m; sourceTree = "<group>"; };
 		F48784031C235A870001314E /* ORSSerialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialRequest.h; sourceTree = "<group>"; };
 		F48784041C235A870001314E /* ORSSerialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialRequest.m; sourceTree = "<group>"; };
+		F48C177D1C68AA5400A2D3B8 /* CoreAstro-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreAstro-Bridging-Header.h"; sourceTree = "<group>"; };
+		F48C177E1C68AA5400A2D3B8 /* CASBookmarks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASBookmarks.swift; sourceTree = "<group>"; };
 		F48DF00B160E46A800190D3E /* CASImageControlsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASImageControlsView.h; sourceTree = "<group>"; };
 		F48DF00C160E46A800190D3E /* CASImageControlsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASImageControlsView.m; sourceTree = "<group>"; };
 		F48DF00E160E46F300190D3E /* CASExposuresController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASExposuresController.h; sourceTree = "<group>"; };
@@ -1953,6 +1956,7 @@
 				F49E52CF15A971610018DC75 /* CoreAstro-Prefix.pch */,
 				F49E52D015A971610018DC75 /* Credits.rtf */,
 				F4198F9B1635DDC7009164B0 /* dsa_pub.pem */,
+				F48C177D1C68AA5400A2D3B8 /* CoreAstro-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2256,6 +2260,7 @@
 		F4AD8E8D16E69A9E00CF3083 /* Model Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				F48C177E1C68AA5400A2D3B8 /* CASBookmarks.swift */,
 				F48DF00E160E46F300190D3E /* CASExposuresController.h */,
 				F48DF00F160E46F300190D3E /* CASExposuresController.m */,
 				F4AD8E8216E6973C00CF3083 /* CASTemperatureTransformer.h */,
@@ -3455,6 +3460,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = MKO;
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Mako Technology Ltd.";
 				TargetAttributes = {
@@ -3718,6 +3724,7 @@
 				F4E424B01A86757700C2A87E /* ORSSerialPort.m in Sources */,
 				F44EDF3515FCC6D8003B1B4C /* CASIOTransport.m in Sources */,
 				F46879D51B18A5E200C61449 /* CASINDIContainer.m in Sources */,
+				F48C17801C68AAA100A2D3B8 /* CASBookmarks.swift in Sources */,
 				F46A3EF21854E16A00CD336C /* CASFilterPipeline.m in Sources */,
 				F44EDF3715FCC6D8003B1B4C /* CASPluginManager.m in Sources */,
 				F44EDF3915FCC6D8003B1B4C /* CASImageProcessor.mm in Sources */,
@@ -4243,9 +4250,11 @@
 		F49E52F015A971620018DC75 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/Sparkle 1.5b6\"",
@@ -4256,6 +4265,8 @@
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoreAstro/CoreAstro-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -4263,9 +4274,11 @@
 		F49E52F115A971620018DC75 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/Sparkle 1.5b6\"",
@@ -4276,6 +4289,7 @@
 				INFOPLIST_FILE = "CoreAstro/CoreAstro-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoreAstro/CoreAstro-Bridging-Header.h";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

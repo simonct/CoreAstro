@@ -128,8 +128,6 @@
 		F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
-		F479941C1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */; };
-		F479941D1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */; };
 		F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */; };
 		F48534F517D23C7700C5EE8C /* SXIOCalibrationWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */; };
 		F48F464117C40971008FCEBE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4F9B1FF17B15A9A0063DD0D /* ApplicationServices.framework */; };
@@ -516,7 +514,6 @@
 		F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
 		F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASUpdateCheck.m; sourceTree = "<group>"; };
-		F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CASBookmarks.swift; sourceTree = "<group>"; };
 		F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCalibrationWindowController.h; sourceTree = "<group>"; };
 		F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCalibrationWindowController.m; sourceTree = "<group>"; };
 		F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCalibrationWindowController.xib; sourceTree = "<group>"; };
@@ -1081,7 +1078,6 @@
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F49459781B3F228C0028780D /* CASLocalNotifier.swift */,
-				F479941B1BA2F3E6007DAE93 /* CASBookmarks.swift */,
 				F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
@@ -1663,7 +1659,6 @@
 				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
 				F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
-				F479941D1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
 			);
@@ -1755,7 +1750,6 @@
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
 				F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
-				F479941C1BA2F3E6007DAE93 /* CASBookmarks.swift in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
 			);
@@ -1906,6 +1900,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				SWIFT_OBJC_BRIDGING_HEADER = "SX IO/CCD IO-Bridging-Header.h";
@@ -1927,6 +1922,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "CCDIO=1";
 				INFOPLIST_FILE = "$(SRCROOT)/SX IO/CCD IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = "CCD IO";
 				SWIFT_OBJC_BRIDGING_HEADER = "SX IO/CCD IO-Bridging-Header.h";
@@ -2164,6 +2160,7 @@
 				);
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SX IO/SX IO-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2184,6 +2181,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "SXIO=1";
 				INFOPLIST_FILE = "SX IO/SX IO-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SX IO/SX IO-Bridging-Header.h";
 				WRAPPER_EXTENSION = app;

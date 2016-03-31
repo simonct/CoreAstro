@@ -13,7 +13,7 @@ class CASLocalNotifier: NSObject {
 
     static var sharedInstance = CASLocalNotifier()
     
-    var postLocalNotifications: Bool = false
+    var postLocalNotifications: Bool = true
     
     override init() {
         
@@ -32,11 +32,16 @@ class CASLocalNotifier: NSObject {
         if (!postLocalNotifications){
             return
         }
-        var note = NSUserNotification();
+        let note = NSUserNotification();
         note.title = title;
         note.subtitle = subtitle;
         note.soundName = NSUserNotificationDefaultSoundName;
         NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(note);
+        var message = title
+        if (subtitle != nil) {
+            message = message + ": \(subtitle)"
+        }
+        print(message)
     }
     
     func exposureStarted(note: NSNotification) {
@@ -44,7 +49,7 @@ class CASLocalNotifier: NSObject {
     }
 
     func exposureCompleted(note: NSNotification) {
-        if let error = note.userInfo?["error"] as? NSError {
+        if let _ = note.userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {

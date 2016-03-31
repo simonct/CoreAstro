@@ -83,6 +83,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 @property (nonatomic,strong,readonly) CASPHD2Client* phd2Client;
 
 @property (nonatomic,readonly) BOOL cancelled;
+@property (readonly) BOOL suspended;
 
 - (id)initWithCamera:(CASCCDDevice*)camera;
 
@@ -93,6 +94,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 - (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block;
 
 - (void)cancelCapture;
+- (void)suspendCapture;
 
 - (void)pushSettings:(CASExposureSettings*)settings;
 - (void)popSettings;

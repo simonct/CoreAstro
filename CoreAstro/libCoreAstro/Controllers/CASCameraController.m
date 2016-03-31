@@ -53,6 +53,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @property (nonatomic,readonly) NSArray* slaves;
 @property (nonatomic,readonly) BOOL ditherEnabled;
+@property BOOL suspended;
 @end
 
 @implementation CASCameraController {
@@ -60,6 +61,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
     NSMutableArray* _settingsStack;
+    NSInteger _savedCurrentCaptureIndex;
 }
 
 - (id)initWithCamera:(CASCCDDevice*)camera
@@ -475,8 +477,10 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     }
 
     _cancelled = NO;
-
-    self.settings.currentCaptureIndex = 0;
+    _suspended = NO;
+    
+    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex;
+    _savedCurrentCaptureIndex = 0;
     
     void (^startCapture)() = ^{
         
@@ -611,6 +615,13 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.state = CASCameraControllerStateNone;
         [NSObject cancelPreviousPerformRequestsWithTarget:self];
     }
+}
+
+- (void)suspendCapture
+{
+    self.suspended = YES; // set this before calling -cancelCapture
+    _savedCurrentCaptureIndex = self.settings.currentCaptureIndex; // todo; push/pop settings ?
+    [self cancelCapture];
 }
 
 - (BOOL) cancelled

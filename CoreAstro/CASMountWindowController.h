@@ -17,7 +17,7 @@
 - (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure;
 - (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution;
 - (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error;
-- (void)mountWindowControllerDidClose:(CASMountWindowController*)windowController;
+- (void)mountWindowControllerWillClose:(CASMountWindowController*)windowController;
 @end
 
 @interface CASMountWindowController : NSWindowController

@@ -5,21 +5,23 @@
 //  Created by Simon Taylor on 11/09/2015.
 //  Copyright (c) 2015 Simon Taylor. All rights reserved.
 //
+// Put into the framework, there's no explicit reference here to the host app
+//
 
 import Foundation
 
 
-class CASBookmarks: NSObject {
+public class CASBookmarks: NSObject {
     
-    static private let defaultsKey = "SXIOBookmarks"
-
-    static let nameKey = "name"
-    static let centreRaKey = "centreRa"
-    static let centreDecKey = "centreDec"
-    static let solutionDictionaryKey = "solutionDictionary"
+    static private let defaultsKey = "CASBookmarks"
     
-    static var sharedInstance = CASBookmarks()
-
+    public static let nameKey = "name"
+    public static let centreRaKey = "centreRa"
+    public static let centreDecKey = "centreDec"
+    public static let solutionDictionaryKey = "solutionDictionary"
+    
+    public static let sharedInstance = CASBookmarks()
+    
     override init() {
         super.init()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("storeDidChange:"), name: NSUbiquitousKeyValueStoreDidChangeExternallyNotification, object: NSUbiquitousKeyValueStore.defaultStore())
@@ -32,8 +34,8 @@ class CASBookmarks: NSObject {
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
-
-    var bookmarks: [NSDictionary] {
+    
+    public var bookmarks: [NSDictionary] {
         get {
             return NSUserDefaults.standardUserDefaults().objectForKey(CASBookmarks.defaultsKey) as? [NSDictionary] ?? []
         }
@@ -49,21 +51,21 @@ class CASBookmarks: NSObject {
         self.bookmarks = bookmarks
     }
     
-    func addBookmark(name: String, solution: CASPlateSolveSolution) {
+    public func addBookmark(name: String, solution: CASPlateSolveSolution) {
         if (!name.isEmpty){
             if let solutionDictionary = solution.solutionDictionary() {
                 appendBookmark(NSDictionary(objects:[name,solutionDictionary],forKeys:[CASBookmarks.nameKey,CASBookmarks.solutionDictionaryKey]));
             }
         }
     }
-
-    func addBookmark(name: String, ra: Double, dec: Double) {
+    
+    public func addBookmark(name: String, ra: Double, dec: Double) {
         if (!name.isEmpty){
             appendBookmark(NSDictionary(objects:[name,ra,dec],forKeys:[CASBookmarks.nameKey,CASBookmarks.centreRaKey,CASBookmarks.centreDecKey]));
         }
     }
     
-    func storeDidChange(note: NSNotification) { // interestingly, can't be private otherwise the notification fails with selector not found
+    private func storeDidChange(note: NSNotification) { // interestingly, can't be private otherwise the notification fails with selector not found
         print("storeDidChange \(note.userInfo)")
         if let changedKeys = note.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
             reason = note.userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
