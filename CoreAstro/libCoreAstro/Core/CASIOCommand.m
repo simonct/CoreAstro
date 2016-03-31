@@ -26,6 +26,10 @@
 #import "CASIOCommand.h"
 #import "CASIOTransport.h"
 
+@interface CASIOCommand ()
+@property (copy) void (^completion)(NSError*);
+@end
+
 @implementation CASIOCommand
 
 - (NSData*)toDataRepresentation {
@@ -45,6 +49,8 @@
 }
 
 - (void)submit:(id<CASIOTransport>)transport block:(void (^)(NSError*))block {
+    
+    self.completion = block;
     
     //NSLog(@"submit: %@",self);
     NSError* error = [transport send:[self toDataRepresentation]];
@@ -67,11 +73,15 @@
         }
     }
     
-    if (block){
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            block(error);
-        }];
+    if (self.completion){
+        // the main operation queue doesn't run in the modal runloop mode so use -performSelectorOnMainThread: instead
+        [self performSelectorOnMainThread:@selector(callCompletionBlock:) withObject:error waitUntilDone:NO modes:@[NSRunLoopCommonModes]];
     }
+}
+
+- (void)callCompletionBlock:(NSError*)error
+{
+    self.completion(error);
 }
 
 @end

@@ -1894,31 +1894,35 @@ static void* kvoContext;
 
 #pragma mark - CASExposureView delegate
 
+- (CGRect)validateSelectionRect:(CGRect)selection exposureView:(CASExposureView*)view
+{
+    CGSize size = CGSizeZero;
+    CASCCDProperties* sensor = self.cameraController.camera.sensor;
+    if (sensor){
+        size = CGSizeMake(sensor.width, sensor.height);
+    }
+    else {
+        size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
+    }
+    
+    CGRect subframe = CGRectMake(selection.origin.x, size.height - selection.origin.y - selection.size.height, selection.size.width,selection.size.height);
+    subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
+    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:CASRectFromCGRect(subframe)
+                                                                             binning:CASSizeMake(self.cameraController.settings.binning, self.cameraController.settings.binning)];
+    return CASCGRectFromCASRect(validatedSubframe);
+}
+
 - (void) selectionRectChanged: (CASExposureView*) imageView
 {
     //    NSLog(@"selectionRectChanged: %@",NSStringFromRect(imageView.selectionRect));
     
     if (self.exposureView.image){
-        
-        const CGRect rect = self.exposureView.selectionRect;
-        if (CGRectIsEmpty(rect)){
-            
+        const CGRect selectionRect = self.exposureView.selectionRect;
+        if (CGRectIsEmpty(selectionRect)){
             self.cameraController.settings.subframe = CGRectZero;
         }
         else {
-            
-            CGSize size = CGSizeZero;
-            CASCCDProperties* sensor = self.cameraController.camera.sensor;
-            if (sensor){
-                size = CGSizeMake(sensor.width, sensor.height);
-            }
-            else {
-                size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
-            }
-            
-            CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
-            subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-            self.cameraController.settings.subframe = subframe;
+            self.cameraController.settings.subframe = selectionRect; // assuming -validateSelectionRect:exposureView: has been called
         }
     }
 }

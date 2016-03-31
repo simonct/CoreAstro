@@ -63,11 +63,10 @@ static void* kvoContext;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
-        
-        //        NSLog(@"keyPath %@ -> %@",keyPath,[object valueForKeyPath:keyPath]);
-        
+                
         if ([@"filterCount" isEqualToString:keyPath]){
             
+            // todo; should create the radio buttons and text field on demand
             if (self.filterSelectionMatrix.numberOfRows > self.filterWheelController.filterCount){
                 
                 // remove excess radio buttons
@@ -84,7 +83,7 @@ static void* kvoContext;
                 
                 // resize window to fit
                 NSRect frame = self.window.frame;
-                const CGFloat height = 40 + (22+12)*self.filterWheelController.filterCount;
+                const CGFloat height = 44 + (22+12)*self.filterWheelController.filterCount;
                 frame.origin.y += frame.size.height - height;
                 frame.size.height = height;
                 [self.window setFrame:frame display:NO animate:YES];
