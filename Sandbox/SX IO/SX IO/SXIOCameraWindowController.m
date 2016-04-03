@@ -1218,17 +1218,17 @@ static void* kvoContext;
             }
         }
         
-        // debayer
+        // equalise
+        if (self.equalise){
+            exposure = [self.imageProcessor equalise:exposure];
+        }
+
+        // debayer (we do this as the last step as equalise only works with single-channel images, todo; make it work with rgba images as well)
         if (self.imageDebayer.mode != kCASImageDebayerNone){
             CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
             if (debayeredExposure){
                 exposure = debayeredExposure;
             }
-        }
-
-        // equalise
-        if (self.equalise){
-            exposure = [self.imageProcessor equalise:exposure];
         }
         
         // set the exposure
