@@ -16,15 +16,32 @@
 
 @implementation CASSiteAnnotation
 
++ (CLLocationCoordinate2D)coordinate
+{
+    CLLocationCoordinate2D result = CLLocationCoordinate2DMake([[NSUserDefaults standardUserDefaults] doubleForKey:@"SXIOSiteLatitude"], [[NSUserDefaults standardUserDefaults] doubleForKey:@"SXIOSiteLongitude"]);
+    return result;
+}
+
 - (CLLocationCoordinate2D)coordinate
 {
-    return CLLocationCoordinate2DMake([[NSUserDefaults standardUserDefaults] doubleForKey:@"SXIOSiteLatitude"], [[NSUserDefaults standardUserDefaults] doubleForKey:@"SXIOSiteLongitude"]);
+    return [[self class] coordinate];
+}
+
++ (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate
+{
+    [[NSUserDefaults standardUserDefaults] setDouble:newCoordinate.latitude forKey:@"SXIOSiteLatitude"];
+    [[NSUserDefaults standardUserDefaults] setDouble:newCoordinate.longitude forKey:@"SXIOSiteLongitude"];
 }
 
 - (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate
 {
-    [[NSUserDefaults standardUserDefaults] setDouble:newCoordinate.latitude forKey:@"SXIOSiteLatitude"];
-    [[NSUserDefaults standardUserDefaults] setDouble:newCoordinate.longitude forKey:@"SXIOSiteLongitude"];
+    [[self class] setCoordinate:newCoordinate];
+}
+
++ (void)clearCoordinate
+{
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLatitude"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLongitude"];
 }
 
 @end
@@ -35,6 +52,7 @@
 @property (weak) IBOutlet NSTextField *locationLabel;
 @property (nonatomic,strong) CLLocationManager* locationManager;
 @property (strong) NSPopover* popover;
+@property (strong) MKMapView* mapView;
 @end
 
 @implementation SXIOPreferencesWindowController
@@ -76,6 +94,18 @@
     }
 }
 
+- (void)dropSiteLocationPin
+{
+    if (self.mapView.annotations.count == 0){
+        const CLLocationCoordinate2D location = [CASSiteAnnotation coordinate];
+        if (location.latitude != 0 || location.longitude != 0){
+            CASSiteAnnotation* annot = [[CASSiteAnnotation alloc] init];
+            self.mapView.centerCoordinate = annot.coordinate;
+            [self.mapView addAnnotation:annot];
+        }
+    }
+}
+
 - (IBAction)close:sender
 {
     [self close];
@@ -99,8 +129,7 @@
 {
     [self.locationManager stopUpdatingLocation];
     self.locationManager = nil;
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLatitude"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SXIOSiteLongitude"];
+    [CASSiteAnnotation clearCoordinate];
     self.locationLabel.stringValue = @"";
 }
 
@@ -118,6 +147,7 @@
         NSViewController* vc = [[NSViewController alloc] initWithNibName:nil bundle:nil];
         MKMapView* mapView = [[MKMapView alloc] init];
         mapView.delegate = self;
+        mapView.showsUserLocation = YES;
         vc.view = mapView;
         
         self.popover = [[NSPopover alloc] init];
@@ -125,12 +155,10 @@
         self.popover.contentViewController = vc;
         self.popover.behavior = NSPopoverBehaviorTransient;
         self.popover.contentSize = CGSizeMake(300, 300);
-        [self.popover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSMaxXEdge]; // poor choice, covers the lat/lon text fields
+        [self.popover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSMaxXEdge];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            CASSiteAnnotation* annot = [[CASSiteAnnotation alloc] init];
-            mapView.centerCoordinate = annot.coordinate;
-            [mapView addAnnotation:annot];
+            [self dropSiteLocationPin];
         });
     }
 }
@@ -153,8 +181,8 @@
 - (void)handleLocationUpdate:(CLLocation*)location
 {
     if (location){
-        [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.latitude forKey:@"SXIOSiteLatitude"];
-        [[NSUserDefaults standardUserDefaults] setDouble:location.coordinate.longitude forKey:@"SXIOSiteLongitude"];
+        [CASSiteAnnotation setCoordinate:CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)];
+        [self dropSiteLocationPin];
     }
 }
 
@@ -182,6 +210,14 @@
     
     [self.locationManager stopUpdatingLocation];
     self.locationManager = nil;
+}
+
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+{
+    const CLLocationCoordinate2D location = [CASSiteAnnotation coordinate];
+    if (location.latitude == 0 && location.longitude == 0){
+        [self handleLocationUpdate:userLocation.location];
+    }
 }
 
 // todo; utilities to download plate solving indexes
