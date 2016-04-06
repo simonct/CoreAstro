@@ -40,7 +40,7 @@
 
 - (void)setNilValueForKey:(NSString *)key
 {
-    if ([@"exposureDuration" isEqualToString:key]){
+    if ([@[@"temperatureLock",@"targetTemperature",@"exposureDuration"] containsObject:key]){
         return;
     }
     [super setNilValueForKey:key];
@@ -135,6 +135,26 @@
 {
     self.exposureUnits = 0;
     self.exposureDuration = MAX(0,[duration integerValue]);
+}
+
+- (NSNumber*)scriptingTemperatureLock
+{
+    return @(self.temperatureLock);
+}
+
+- (void)setScriptingTemperatureLock:(NSNumber*)temperatureLock
+{
+    self.temperatureLock = temperatureLock.boolValue;
+}
+
+- (NSNumber*)scriptingTargetTemperature
+{
+    return @(self.targetTemperature);
+}
+
+- (void)setScriptingTargetTemperature:(NSNumber*)targetTemperature
+{
+    self.targetTemperature = targetTemperature.floatValue;
 }
 
 @end

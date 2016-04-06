@@ -61,11 +61,12 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 @property (nonatomic,readonly) BOOL capturing;
 
+// tmp; moved to settings but kept for compatibility with bindings
 @property (nonatomic,assign) BOOL temperatureLock;
+@property (nonatomic,assign) CGFloat targetTemperature;
 
 @property (nonatomic,readonly) CASExposureSettings* settings;
 
-@property (nonatomic,assign) CGFloat targetTemperature;
 @property (nonatomic,strong) NSDate* exposureStart;
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;

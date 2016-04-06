@@ -63,6 +63,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     if (self){
         self.camera = camera;
         self.temperatureLock = YES;
+        self.targetTemperature = -20;
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
         [self registerDeviceDefaults];
@@ -82,7 +83,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
+    return @[@"settings.temperatureLock",@"settings.targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
 }
 
 - (void)registerDeviceDefaults
@@ -512,14 +513,35 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     _guider = guider;
 }
 
+- (BOOL)temperatureLock
+{
+    return self.settings.temperatureLock;
+}
+
+- (void)setTemperatureLock:(BOOL)temperatureLock
+{
+    self.settings.temperatureLock = temperatureLock;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTemperatureLock
+{
+    return [NSSet setWithObject:@"settings.temperatureLock"];
+}
+
 - (CGFloat)targetTemperature
 {
-    return self.camera.targetTemperature;
+    return self.settings.targetTemperature;
 }
 
 - (void)setTargetTemperature:(CGFloat)targetTemperature
 {
-    self.camera.targetTemperature = targetTemperature;
+    self.settings.targetTemperature = targetTemperature;
+    self.camera.targetTemperature = self.settings.targetTemperature;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTargetTemperature
+{
+    return [NSSet setWithObject:@"settings.targetTemperature"];
 }
 
 - (void)setNilValueForKey:(NSString *)key
