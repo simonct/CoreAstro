@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOPreferencesWindowController">
@@ -23,7 +24,7 @@
                 <subviews>
                     <box autoresizesSubviews="NO" title="General" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Hvl-qu-FV9">
                         <rect key="frame" x="17" y="224" width="347" height="97"/>
-                        <view key="contentView">
+                        <view key="contentView" id="6EU-QA-yny">
                             <rect key="frame" x="1" y="1" width="345" height="81"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -67,7 +68,7 @@
                     </box>
                     <box autoresizesSubviews="NO" title="Image file format" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="9HO-tb-tcW">
                         <rect key="frame" x="17" y="164" width="347" height="56"/>
-                        <view key="contentView">
+                        <view key="contentView" id="I1r-hh-Rn4">
                             <rect key="frame" x="1" y="1" width="345" height="40"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -77,7 +78,7 @@
                                         <constraint firstAttribute="width" constant="110" id="yD3-xD-dMQ"/>
                                     </constraints>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    <size key="cellSize" width="51" height="18"/>
+                                    <size key="cellSize" width="50" height="18"/>
                                     <size key="intercellSpacing" width="4" height="2"/>
                                     <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="OF3-6A-Wkp">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -104,16 +105,16 @@
                             </subviews>
                         </view>
                         <constraints>
-                            <constraint firstItem="iIJ-zr-SGL" firstAttribute="top" secondItem="9HO-tb-tcW" secondAttribute="top" constant="25" id="6T6-At-5pM"/>
-                            <constraint firstAttribute="bottom" secondItem="iIJ-zr-SGL" secondAttribute="bottom" constant="9" id="r5o-7B-11A"/>
-                            <constraint firstItem="iIJ-zr-SGL" firstAttribute="leading" secondItem="9HO-tb-tcW" secondAttribute="leading" constant="16" id="u6A-i7-tHj"/>
+                            <constraint firstItem="iIJ-zr-SGL" firstAttribute="top" secondItem="9HO-tb-tcW" secondAttribute="top" constant="25" id="8ft-d1-AUA"/>
+                            <constraint firstItem="iIJ-zr-SGL" firstAttribute="leading" secondItem="9HO-tb-tcW" secondAttribute="leading" constant="16" id="geS-Ix-OFX"/>
+                            <constraint firstAttribute="bottom" secondItem="iIJ-zr-SGL" secondAttribute="bottom" constant="9" id="myz-ak-3eb"/>
                         </constraints>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" title="astrometry.net plate solving" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Se7-kA-RSO">
                         <rect key="frame" x="17" y="104" width="347" height="56"/>
-                        <view key="contentView">
+                        <view key="contentView" id="v3W-DC-csg">
                             <rect key="frame" x="1" y="1" width="345" height="40"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -148,13 +149,13 @@
                     </box>
                     <box autoresizesSubviews="NO" title="Site Location" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="bxs-o6-ywP">
                         <rect key="frame" x="17" y="16" width="347" height="84"/>
-                        <view key="contentView">
+                        <view key="contentView" id="K7C-89-3K6">
                             <rect key="frame" x="1" y="1" width="345" height="68"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FYb-NX-rHz">
-                                    <rect key="frame" x="259" y="8" width="73" height="28"/>
-                                    <buttonCell key="cell" type="push" title="Update" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rua-k1-plK">
+                                    <rect key="frame" x="239" y="8" width="93" height="28"/>
+                                    <buttonCell key="cell" type="push" title="Get Location" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rua-k1-plK">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="smallSystem"/>
                                     </buttonCell>
@@ -163,7 +164,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mQs-HK-FDi">
-                                    <rect key="frame" x="188" y="8" width="73" height="28"/>
+                                    <rect key="frame" x="35" y="8" width="73" height="28"/>
                                     <buttonCell key="cell" type="push" title="Clear" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Eb-bO-3i8">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="smallSystem"/>
@@ -228,6 +229,16 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VYd-T8-2sE">
+                                    <rect key="frame" x="168" y="8" width="73" height="28"/>
+                                    <buttonCell key="cell" type="push" title="Map" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ygp-5L-bi2">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="mapPressed:" target="-2" id="A7s-2G-k9q"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <constraints>
