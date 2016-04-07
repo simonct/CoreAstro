@@ -609,54 +609,64 @@ static void* kvoContext;
 - (IBAction)toggleShowHistogram:(id)sender
 {
     self.exposureView.showHistogram = !self.exposureView.showHistogram;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showHistogram) forKey:@"SXIODisplayShowHistogram"];
 }
 
 - (IBAction)toggleShowReticle:(id)sender
 {
     self.exposureView.showReticle = !self.exposureView.showReticle;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showReticle) forKey:@"SXIODisplayShowReticle"];
 }
 
 - (IBAction)toggleShowStarProfile:(id)sender
 {
     self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showStarProfile) forKey:@"SXIODisplayShowStarProfile"];
 }
 
 - (IBAction)toggleShowImageStats:(id)sender
 {
     self.exposureView.showImageStats = !self.exposureView.showImageStats;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showImageStats) forKey:@"SXIODisplayShowImageStats"];
 }
 
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.exposureView.invert = !self.exposureView.invert;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.invert) forKey:@"SXIODisplayInvert"];
 }
 
 - (IBAction)toggleMedianFilter:(id)sender
 {
     self.exposureView.medianFilter = !self.exposureView.medianFilter;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.medianFilter) forKey:@"SXIODisplayMedian"];
 }
 
 - (IBAction)toggleEqualiseHistogram:(id)sender
 {
     self.equalise = !self.equalise;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayEqualise"];
 }
 
 - (IBAction)toggleContrastStretch:(id)sender
 {
     self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.contrastStretch) forKey:@"SXIODisplayContrastStretch"];
 }
 
 - (IBAction)toggleCalibrate:(id)sender
 {
     self.calibrate = !self.calibrate;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayCalibrate"];
 }
 
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.showPlateSolution) forKey:@"SXIODisplayShowPlateSolution"];
 }
 
 - (IBAction)applyDebayer:(NSMenuItem*)sender
@@ -679,16 +689,19 @@ static void* kvoContext;
             break;
     }
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.imageDebayer.mode) forKey:@"SXIODisplayDebayerMode"];
 }
 
 - (IBAction)toggleFlipVertical:(id)sender
 {
     self.exposureView.flipVertical = !self.exposureView.flipVertical;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipVertical"];
 }
 
 - (IBAction)toggleFlipHorizontal:(id)sender
 {
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipHorizontal"];
 }
 
 - (IBAction)sequence:(id)sender
@@ -1060,6 +1073,24 @@ static void* kvoContext;
         }];
         
         [self zoomImageToFit:nil];
+        
+        
+        // restore menu settings
+        self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
+        self.calibrate = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayCalibrate"] boolValue];
+        self.showPlateSolution = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowPlateSolution"] boolValue];
+        
+        self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
+        self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
+        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
+        self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
+        self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
+        self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
+        self.exposureView.showImageStats = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowImageStats"] boolValue];
+        self.exposureView.flipVertical = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipVertical"] boolValue];
+        self.exposureView.flipHorizontal = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipHorizontal"] boolValue];
+        
+        self.imageDebayer.mode = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayDebayerMode"] integerValue];
     }
     
     // Subframes on the M26C aren't currently supported

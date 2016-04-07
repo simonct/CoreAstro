@@ -61,3 +61,4 @@
 #import <CoreAstro/iEQMount.h>
 #import <CoreAstro/CASLX200Commands.h>
 #import <CoreAstro/CASCoordinateUtils.h>
+#import <CoreAstro/CASClassDefaults.h>

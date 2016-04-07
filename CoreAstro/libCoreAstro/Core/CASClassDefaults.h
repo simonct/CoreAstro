@@ -24,6 +24,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CASDevice.h"
 
 @interface CASClassDefaults : NSObject
 @property (nonatomic,copy) NSString* name;
@@ -35,4 +36,10 @@
 @end
 
 @interface CASDeviceDefaults : CASClassDefaults
+@end
+
+@interface CASDevice (CASDeviceDefaults)
+- (id)defaultsObjectForKey:(id)key;
+- (void)setDefaultsObject:(id)obj forKey:(id)key;
+- (void)removeDefaultsObjectForKey:(id)key;
 @end
