@@ -67,6 +67,11 @@ static void* kvoContext;
     }
 }
 
+- (void)applicationWillFinishLaunching:(nonnull NSNotification *)notification
+{
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSFullScreenMenuItemEverywhere"];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // HACK; swizzle - (NSArray*)exposures
