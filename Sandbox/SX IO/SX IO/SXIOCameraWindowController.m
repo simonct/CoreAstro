@@ -1102,17 +1102,22 @@ static void* kvoContext;
     [self updateExposureIndicator];
 }
 
+- (void)setProgressStatusTextValue:(NSString*)text
+{
+    if (!text){
+        text = @"";
+    }
+    if (![text isEqualToString:self.progressStatusText.stringValue]){ // seems to avoid significant performance problems with text fields
+        self.progressStatusText.stringValue = text;
+    }
+}
+
 - (void)updateExposureIndicator
 {
     void (^commonShowProgressSetup)(NSString*,BOOL) = ^(NSString* statusText,BOOL showIndicator){
-        
-        // todo; tidy this interface up
-//        self.exposureView.showProgress = showIndicator;
-//        self.exposureView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
-        
         self.progressIndicator.hidden = NO;
         self.progressIndicator.indeterminate = NO;
-        self.progressStatusText.stringValue = statusText ? statusText : @"";
+        [self setProgressStatusTextValue:statusText];
     };
     
     switch (self.cameraController.state) {
@@ -1120,7 +1125,7 @@ static void* kvoContext;
         case CASCameraControllerStateNone:{
             self.exposureView.showProgress = NO;
             self.progressIndicator.hidden = YES;
-            self.progressStatusText.stringValue = @"";
+            [self setProgressStatusTextValue:nil];
         }
             break;
             
@@ -1138,7 +1143,7 @@ static void* kvoContext;
             commonShowProgressSetup(nil,YES);
             if (self.cameraController.progress >= 1){
                 self.progressIndicator.indeterminate = YES;
-                self.progressStatusText.stringValue = @"Downloading image...";
+                [self setProgressStatusTextValue:@"Downloading image..."];
             }
             else {
                 NSString* statusText;
@@ -1154,7 +1159,7 @@ static void* kvoContext;
                         statusText = [statusText stringByAppendingFormat:@" %.0fs",timeRemaining];
                     }
                 }
-                self.progressStatusText.stringValue = statusText;
+                [self setProgressStatusTextValue:statusText];
             }
         }
             break;
