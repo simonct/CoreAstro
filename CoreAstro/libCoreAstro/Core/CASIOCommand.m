@@ -81,7 +81,10 @@
 
 - (void)callCompletionBlock:(NSError*)error
 {
-    self.completion(error);
+    if (self.completion){
+        self.completion(error);
+        self.completion = nil;
+    }
 }
 
 @end

@@ -590,8 +590,8 @@
         
     }; // end exposePixelsAndCompleteExposure
     
-    void (^__block clearChargeAndExpose)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
-    void (^__block clearChargeAndExpose2)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
+    void (^clearChargeAndExpose)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
+    void (^clearChargeAndExpose2)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
     clearChargeAndExpose = ^(SXCCDIOExposeCommand* exposureCommand,SXCCDIOField field,NSInteger ms,NSInteger flushCount,void (^completion)(NSError*,NSData*)){
                 
         if (flushCount-- > 0) {
@@ -610,7 +610,6 @@
                 // we're using internal timing so start exposing now
                 exposePixelsAndCompleteExposure(field,nil,exposureCommand,completion);
             }
-//            clearChargeAndExpose2 = nil; // crashing on second call but probably leaking now
         }
     }; // end clearChargeAndExpose
     clearChargeAndExpose2 = clearChargeAndExpose;
