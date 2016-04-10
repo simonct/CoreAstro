@@ -1353,10 +1353,15 @@ static void* kvoContext;
         size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
     }
     
-    CGRect subframe = CGRectMake(selection.origin.x, size.height - selection.origin.y - selection.size.height, selection.size.width,selection.size.height);
-    subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:CASRectFromCGRect(subframe)
-                                                                             binning:CASSizeMake(self.cameraController.settings.binning, self.cameraController.settings.binning)];
+    selection = CGRectIntersection(selection, CGRectMake(0, 0, size.width, size.height));
+    
+    const CASRect subframe = {
+        .origin = CASPointMake(round(selection.origin.x), round(selection.origin.y)),
+        .size = CASSizeMake(round(selection.size.width), round(selection.size.height))
+    };
+    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:subframe
+                                                                             binning:CASSizeMake(self.cameraController.settings.binning,
+                                                                                                 self.cameraController.settings.binning)];
     return CASCGRectFromCASRect(validatedSubframe);
 }
 
