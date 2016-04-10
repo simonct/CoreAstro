@@ -53,6 +53,7 @@
 @property (nonatomic,strong) CLLocationManager* locationManager;
 @property (strong) NSPopover* popover;
 @property (strong) MKMapView* mapView;
+@property (strong) CASSiteAnnotation* siteAnnotation;
 @end
 
 @implementation SXIOPreferencesWindowController
@@ -96,12 +97,12 @@
 
 - (void)dropSiteLocationPin
 {
-    if (self.mapView.annotations.count == 0){
+    if (self.mapView && !self.siteAnnotation){
         const CLLocationCoordinate2D location = [CASSiteAnnotation coordinate];
         if (location.latitude != 0 || location.longitude != 0){
-            CASSiteAnnotation* annot = [[CASSiteAnnotation alloc] init];
-            self.mapView.centerCoordinate = annot.coordinate;
-            [self.mapView addAnnotation:annot];
+            self.siteAnnotation = [[CASSiteAnnotation alloc] init];
+            self.mapView.centerCoordinate = self.siteAnnotation.coordinate;
+            [self.mapView addAnnotation:self.siteAnnotation];
         }
     }
 }
@@ -145,10 +146,10 @@
     else {
         
         NSViewController* vc = [[NSViewController alloc] initWithNibName:nil bundle:nil];
-        MKMapView* mapView = [[MKMapView alloc] init];
-        mapView.delegate = self;
-        mapView.showsUserLocation = YES;
-        vc.view = mapView;
+        self.mapView = [[MKMapView alloc] init];
+        self.mapView.delegate = self;
+        self.mapView.showsUserLocation = YES;
+        vc.view = self.mapView;
         
         self.popover = [[NSPopover alloc] init];
         self.popover.delegate = self;
@@ -166,10 +167,16 @@
 - (void)popoverDidClose:(NSNotification *)notification
 {
     self.popover = nil;
+    self.mapView = nil;
+    self.siteAnnotation = nil;
 }
 
 - (nullable MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
+    if ([annotation isKindOfClass:[MKUserLocation class]]){
+        return nil;
+    }
+    
     // how to continuously update pin location ?
     MKPinAnnotationView* pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"];
     pin.pinTintColor = [MKPinAnnotationView redPinColor];
