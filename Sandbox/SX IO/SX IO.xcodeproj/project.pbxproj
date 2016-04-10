@@ -112,6 +112,8 @@
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
 		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
+		F458CAD11CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */; };
+		F458CAD21CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */; };
 		F45C486D18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
 		F45C486E18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
 		F45C486F18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */; };
@@ -472,6 +474,8 @@
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
 		F4554895185128ED00D30926 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F458CACF1CB9ED67004A166C /* SXIOM25CFixupTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOM25CFixupTool.h; sourceTree = "<group>"; };
+		F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOM25CFixupTool.m; sourceTree = "<group>"; };
 		F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolveOptionsWindowController.h; sourceTree = "<group>"; };
 		F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolveOptionsWindowController.m; sourceTree = "<group>"; };
 		F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOPlateSolveOptionsWindowController.xib; sourceTree = "<group>"; };
@@ -996,6 +1000,8 @@
 				F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */,
 				F440D25619FCE318005510EB /* CASCameraServer.h */,
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
+				F458CACF1CB9ED67004A166C /* SXIOM25CFixupTool.h */,
+				F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1511,6 +1517,7 @@
 				F40D5B3D1849EC5E00977FA9 /* CASTemperatureTransformer.m in Sources */,
 				F40D5B3E1849EC5E00977FA9 /* NSApplication+CASScripting.m in Sources */,
 				F40D5B3F1849EC5E00977FA9 /* CASScriptCommand.m in Sources */,
+				F458CAD21CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */,
 				F40D5B401849EC5E00977FA9 /* CASCaptureCommand.m in Sources */,
 				F40D5B411849EC5E00977FA9 /* CASGuideCommand.m in Sources */,
 				F40D5B421849EC5E00977FA9 /* CASCameraControlsViewController.m in Sources */,
@@ -1589,6 +1596,7 @@
 				F4A2589F179BC1460013D220 /* CASTemperatureTransformer.m in Sources */,
 				F4A258AF179BC1630013D220 /* NSApplication+CASScripting.m in Sources */,
 				F4A258B0179BC1630013D220 /* CASScriptCommand.m in Sources */,
+				F458CAD11CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */,
 				F4A258B1179BC1630013D220 /* CASCaptureCommand.m in Sources */,
 				F4A258B2179BC1630013D220 /* CASGuideCommand.m in Sources */,
 				F4A258C4179BC1D90013D220 /* CASCameraControlsViewController.m in Sources */,

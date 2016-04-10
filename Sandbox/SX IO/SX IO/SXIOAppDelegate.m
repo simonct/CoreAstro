@@ -32,8 +32,10 @@
 #import "SXIOImageAdjustmentWindowController.h"
 #import "SXIOExportMovieWindowController.h"
 #import "SXIOPreferencesWindowController.h"
+#import "CASProgressWindowController.h"
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
+#import "SXIOM25CFixupTool.h"
 #import <CoreAstro/CoreAstro.h>
 #import <objc/runtime.h>
 
@@ -418,6 +420,64 @@ static void* kvoContext;
         self.preferencesWindowController = [[SXIOPreferencesWindowController alloc] initWithWindowNibName:@"SXIOPreferencesWindowController"];
     }
     [self.preferencesWindowController showWindow:nil];
+}
+
+- (IBAction)fixupM25CFrames:(id)sender
+{
+    // todo; need a first-time explainer here
+    
+    NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+    
+    openPanel.canChooseFiles = YES;
+    openPanel.canChooseDirectories = NO;
+    openPanel.allowsMultipleSelection = YES;
+    openPanel.allowedFileTypes = @[@"fit",@"fits"];
+    
+    __block NSInteger count = 0;
+    
+    [openPanel beginWithCompletionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+            [progress beginSheetModalForWindow:nil];
+            [progress configureWithRange:NSMakeRange(0, [openPanel.URLs count]) label:@"Fixing..."];
+            progress.canCancel = YES;
+            
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+                
+                [openPanel.URLs enumerateObjectsUsingBlock:^(NSURL* url, NSUInteger idx, BOOL* stop) {
+                    
+                    if (progress.cancelled){
+                        *stop = YES;
+                    }
+                    else {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            progress.progressBar.doubleValue++;
+                        });
+                        @autoreleasepool {
+                            SXIOM25CFixupTool* fixup = [[SXIOM25CFixupTool alloc] initWithPath:url.path];
+                            NSError* error;
+                            if ([fixup fixupWithError:&error]){
+                                ++count;
+                            }
+                            else {
+                                NSLog(@"%@",error.localizedFailureReason); // todo; report
+                            }
+                        }
+                    }
+                }];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    alert.messageText = [NSString stringWithFormat:@"Fixed %ld out of %ld exposures",count,openPanel.URLs.count];
+                    [alert runModal];
+                });
+            });
+        }
+    }];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
