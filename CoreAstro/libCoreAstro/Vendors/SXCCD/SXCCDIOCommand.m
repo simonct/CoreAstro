@@ -603,6 +603,9 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
     // map binning settings to internal values
     NSUInteger binX = 1, binY = 1;
     switch (self.params.bin.width) { // assume self.params.bin.width == self.params.bin.height
+        case 1:
+            binX = 1, binY = 1;
+            break;
         case 2:
             binX = 4, binY = 1;
             break;
@@ -610,7 +613,7 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
             binX = 8, binY = 2;
             break;
         default:
-            NSLog(@"SXCCDIOExposeCommandM25C: unrecognised binning value: %ld",self.params.bin.width);
+            NSLog(@"SXCCDIOExposeCommandM25C: unrecognised binning value %ld",self.params.bin.width);
             break;
     }
 
