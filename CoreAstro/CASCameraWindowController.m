@@ -1126,7 +1126,7 @@
 
 - (IBAction)sendFeedback:(id)sender
 {
-    NSString* const feedback = @"feedback@coreastro.org";
+    NSString* const feedback = @"coreastro@icloud.com";
     NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"mailto:%@?subject=%@",feedback,@"CoreAstro%20Feedback"]];
     if (![[NSWorkspace sharedWorkspace] openURL:mailUrl]){
         [[NSAlert alertWithMessageText:@"Send Feedback"

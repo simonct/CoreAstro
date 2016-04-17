@@ -91,7 +91,7 @@ static void* kvoContext;
                                              defaultButton:@"Quit"
                                            alternateButton:@"OK"
                                                otherButton:nil
-                                 informativeTextWithFormat:@"Please be aware that this is Beta software. There is no guarantee it will work correctly and there's no offical support although you can send comments to feedback@coreastro.org. If you're not OK with that please click Quit.",nil];
+                                 informativeTextWithFormat:@"Please be aware that this is Beta software. There is no guarantee it will work correctly and there's no offical support although you can send comments to coreastro@icloud.com. If you're not OK with that please click Quit.",nil];
             
             alert.showsSuppressionButton = YES;
             
@@ -240,7 +240,7 @@ static void* kvoContext;
                                                                          defaultButton:@"OK"
                                                                        alternateButton:nil
                                                                            otherButton:nil
-                                                             informativeTextWithFormat:@"Support for this camera is still in development. Please let me know if you encounter any problems at feedback@coreastro.org",nil];
+                                                             informativeTextWithFormat:@"Support for this camera is still in development. Please let me know if you encounter any problems at coreastro@icloud.com",nil];
                                         
                                         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:betaWarningKey];
                                         
@@ -341,7 +341,7 @@ static void* kvoContext;
 
 - (IBAction)sendFeedback:(id)sender
 {
-    NSString* const feedback = @"feedback@coreastro.org";
+    NSString* const feedback = @"coreastro@icloud.com";
     NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"mailto:%@?subject=%@",feedback,@"SX%20IO%20Feedback"]];
     if (![[NSWorkspace sharedWorkspace] openURL:mailUrl]){
         [[NSAlert alertWithMessageText:@"Send Feedback"
