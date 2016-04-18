@@ -91,6 +91,10 @@
             <responds-to name="capture">
                 <cocoa method="scriptingCapture:"/>
             </responds-to>
+            
+            <responds-to name="cancel capture">
+                <cocoa method="scriptingCancel:"/>
+            </responds-to>
 
         </class> 
         
@@ -210,6 +214,14 @@
                 <type type="exposure" list="yes"/>
             </result>
             
+        </command>
+
+        <command name="cancel capture" code="CASSCACL" description="Cancel image capture.">
+    
+            <direct-parameter description="The camera to cancel.">
+                <type type="camera" list="no"/>
+            </direct-parameter>
+    
         </command>
 
         <!--

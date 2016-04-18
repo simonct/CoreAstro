@@ -49,6 +49,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,strong) CASExposureSettings* settings;
 @property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @property (nonatomic,readonly) NSArray* slaves;
+@property (strong) NSScriptCommand* cancelCommand;
 @end
 
 @implementation CASCameraController {
@@ -56,6 +57,8 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
 }
+
+static void* kvoContext;
 
 - (id)initWithCamera:(CASCCDDevice*)camera
 {
@@ -552,6 +555,18 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     [super setNilValueForKey:key];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([keyPath isEqualToString:@"capturing"] && self.capturing == NO){
+            [self.cancelCommand resumeExecutionWithResult:nil];
+            self.cancelCommand = nil;
+            [self removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
 @end
 
 @implementation CASCameraController (CASScripting)
@@ -569,6 +584,26 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)scriptingCapture:(NSScriptCommand*)command
 {
     [command performDefaultImplementation];
+}
+
+- (void)scriptingCancel:(NSScriptCommand*)command
+{
+    if (self.cancelCommand){
+        NSLog(@"Already cancelling capture, ignoring command");
+        return;
+    }
+    if (!self.capturing){
+        NSLog(@"Cancel command received when not capturing, ignoring");
+        return;
+    }
+    
+    self.cancelCommand = command;
+    
+    [self.cancelCommand suspendExecution];
+    
+    [self addObserver:self forKeyPath:@"capturing" options:nil context:&kvoContext];
+    
+    [self cancelCapture];
 }
 
 - (NSNumber*)scriptingTemperature
