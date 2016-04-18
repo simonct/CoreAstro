@@ -208,7 +208,7 @@ static void sxResetWriteData(UCHAR setup_data[8])
     setup_data[USB_REQ_LENGTH_H] = 0;
 }
 
-static void sxGetCameraParamsWriteData(USHORT camIndex, UCHAR setup_data[17])
+static void sxGetCameraParamsWriteData(USHORT camIndex, UCHAR setup_data[8])
 {
     setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAIN;
     setup_data[USB_REQ         ] = SXUSB_GET_CCD;
