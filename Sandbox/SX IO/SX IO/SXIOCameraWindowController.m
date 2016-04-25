@@ -402,7 +402,7 @@ static void* kvoContext;
 - (BOOL)openExposureAtPath:(NSString*)path
 {
     NSError* error;
-    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
+    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:NO error:nil];
     if (exposure){
         self.currentExposure = exposure;
         [self.cameraController updateSettingsWithExposure:exposure];
