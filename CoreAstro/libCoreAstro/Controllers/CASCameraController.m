@@ -54,6 +54,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,readonly) NSArray* slaves;
 @property (nonatomic,readonly) BOOL ditherEnabled;
 @property BOOL suspended;
+@property (strong) NSScriptCommand* cancelCommand;
 @end
 
 @implementation CASCameraController {
@@ -64,12 +65,15 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     NSInteger _savedCurrentCaptureIndex;
 }
 
+static void* kvoContext;
+
 - (id)initWithCamera:(CASCCDDevice*)camera
 {
     self = [super init];
     if (self){
         self.camera = camera;
         self.temperatureLock = YES;
+        self.targetTemperature = -20;
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
         [self registerDeviceDefaults];
@@ -89,7 +93,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"temperatureLock",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
+    return @[@"settings.temperatureLock",@"settings.targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
 }
 
 - (void)registerDeviceDefaults
@@ -174,7 +178,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     }
 
     const NSTimeInterval updateInterval = MAX(0.25,_expParams.ms/1000.0/100.0); // reduce further on battery ?
-    [self performSelector:_cmd withObject:nil afterDelay:updateInterval];
+    [self performSelector:_cmd withObject:nil afterDelay:updateInterval inModes:@[NSRunLoopCommonModes]];
 }
 
 - (void)postLocalNotificationWithTitle:(NSString*)title subtitle:(NSString*)subtitle
@@ -634,14 +638,35 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     _guider = guider;
 }
 
+- (BOOL)temperatureLock
+{
+    return self.settings.temperatureLock;
+}
+
+- (void)setTemperatureLock:(BOOL)temperatureLock
+{
+    self.settings.temperatureLock = temperatureLock;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTemperatureLock
+{
+    return [NSSet setWithObject:@"settings.temperatureLock"];
+}
+
 - (CGFloat)targetTemperature
 {
-    return self.camera.targetTemperature;
+    return self.settings.targetTemperature;
 }
 
 - (void)setTargetTemperature:(CGFloat)targetTemperature
 {
-    self.camera.targetTemperature = targetTemperature;
+    self.settings.targetTemperature = targetTemperature;
+    self.camera.targetTemperature = self.settings.targetTemperature;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTargetTemperature
+{
+    return [NSSet setWithObject:@"settings.targetTemperature"];
 }
 
 - (void)setNilValueForKey:(NSString *)key
@@ -725,6 +750,19 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     return [NSString stringWithFormat:@"%@%@",key,cameraController.camera.uniqueID];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([keyPath isEqualToString:@"capturing"] && self.capturing == NO){
+            [self.cancelCommand resumeExecutionWithResult:nil];
+            self.cancelCommand = nil;
+            [self removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 @end
 
 @implementation CASCameraController (CASScripting)
@@ -742,6 +780,26 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)scriptingCapture:(NSScriptCommand*)command
 {
     [command performDefaultImplementation];
+}
+
+- (void)scriptingCancel:(NSScriptCommand*)command
+{
+    if (self.cancelCommand){
+        NSLog(@"Already cancelling capture, ignoring command");
+        return;
+    }
+    if (!self.capturing){
+        NSLog(@"Cancel command received when not capturing, ignoring");
+        return;
+    }
+    
+    self.cancelCommand = command;
+    
+    [self.cancelCommand suspendExecution];
+    
+    [self addObserver:self forKeyPath:@"capturing" options:nil context:&kvoContext];
+    
+    [self cancelCapture];
 }
 
 - (NSNumber*)scriptingTemperature

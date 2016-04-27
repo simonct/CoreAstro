@@ -107,6 +107,7 @@
     BOOL _polling;
     NSUInteger _filterCount;
     NSInteger _currentFilter;
+    NSInteger _targetFilter;
     NSMutableArray* _completionStack;
 }
 
@@ -230,7 +231,11 @@
 #pragma mark - Properties
 
 - (NSInteger)currentFilter {
-    return _settingFilter ? NSNotFound : _currentFilter;
+    if (_targetFilter != _currentFilter){
+        return _targetFilter;
+    }
+    NSInteger result = _settingFilter ? NSNotFound : _currentFilter;
+    return result;
 }
 
 - (void)setCurrentFilter:(NSInteger)currentFilter {
@@ -239,13 +244,14 @@
     
     if (_currentFilter != currentFilter){
 
-        self.moving = YES;
+        self.moving = YES; // cleared in the report callback
         
         if (_settingFilter){
             NSLog(@"Attempt to set filter index to while already setting it");
         }
         else {
             
+            _targetFilter = currentFilter;
             _settingFilter = YES;
             
             __weak SXFWDevice* weakDev = self;

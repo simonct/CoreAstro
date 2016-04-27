@@ -204,6 +204,17 @@
     return YES;
 }
 
+- (CASRect)validateSubframe:(CASRect)subframe binning:(CASSize)binning {
+    if (self.productID == 805 && binning.width == 1){ // M25C
+        // need to keep these on a even pixel boundary if in 1x1 binning mode
+        subframe.origin.x -= subframe.origin.x % 2;
+        subframe.origin.y -= subframe.origin.y % 2;
+        subframe.size.width -= subframe.size.width % 2;
+        subframe.size.height -= subframe.size.height % 2;
+    }
+    return [super validateSubframe:subframe binning:binning];
+}
+
 - (NSArray*)binningModes {
     if (self.productID == 806){ // M26C
         return @[@1,@2]; // todo; get 4x4 working
@@ -408,6 +419,19 @@
     return expose;
 }
 
+- (void)flushChargeWithCount:(NSInteger)count field:(SXCCDIOField)field completion:(void(^)())completion
+{
+    NSParameterAssert(completion);
+    
+    if (count > 0){
+        [self flushField:field wipe:YES block:^(NSError* _) {
+            [self flushChargeWithCount:count - 1 field:field completion:completion];
+        }];
+    }
+    else {
+        completion();
+    }
+}
 
 - (void)exposeWithParams:(CASExposeParams)exp type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*image))block {
     
@@ -579,16 +603,9 @@
         
     }; // end exposePixelsAndCompleteExposure
     
-    void (^__block clearChargeAndExpose)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
-    void (^__block clearChargeAndExpose2)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^completion)(NSError*,NSData*));
-    clearChargeAndExpose = ^(SXCCDIOExposeCommand* exposureCommand,SXCCDIOField field,NSInteger ms,NSInteger flushCount,void (^completion)(NSError*,NSData*)){
-                
-        if (flushCount-- > 0) {
-            [self flushField:field wipe:YES block:^(NSError *error) {
-                clearChargeAndExpose2(exposureCommand,field,ms,flushCount,completion);
-            }];
-        }
-        else {
+    void (^clearChargeAndExpose)(SXCCDIOExposeCommand*,SXCCDIOField,NSInteger,NSInteger,void (^)(NSError*,NSData*)) = ^(SXCCDIOExposeCommand* exposureCommand,SXCCDIOField field,NSInteger ms,NSInteger flushCount,void (^completion)(NSError*,NSData*)){
+        
+        [self flushChargeWithCount:flushCount field:field completion:^{
             
             // if we're externally timing then the exposure time starts with the flush and 
             // we set a timer to fire at the appropriate time to latch and read the pixels
@@ -599,10 +616,8 @@
                 // we're using internal timing so start exposing now
                 exposePixelsAndCompleteExposure(field,nil,exposureCommand,completion);
             }
-//            clearChargeAndExpose2 = nil; // crashing on second call but probably leaking now
-        }
+        }];
     }; // end clearChargeAndExpose
-    clearChargeAndExpose2 = clearChargeAndExpose;
     
     // entry point to actually running an exposure
     void (^startExposureSequence)(SXCCDIOExposeCommand*) = ^(SXCCDIOExposeCommand* exposureCommand) {

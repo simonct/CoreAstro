@@ -132,3 +132,36 @@
 }
 
 @end
+
+@implementation CASDevice (CASDeviceDefaults)
+
++ (CASClassDefaults*)deviceDefaults
+{
+    return [CASDeviceDefaults defaultsForClassname:NSStringFromClass([self class])];
+}
+
+- (id)defaultsObjectForKey:(id)key
+{
+    return [[self class] deviceDefaults].domain[key];
+}
+
+- (void)setDefaultsObject:(id)obj forKey:(id)key
+{
+    NSParameterAssert(obj);
+    NSParameterAssert(key);
+    CASClassDefaults* defaults = [[self class] deviceDefaults];
+    NSMutableDictionary* domain = [defaults.domain mutableCopy];
+    domain[key] = obj;
+    defaults.domain = [domain copy];
+}
+
+- (void)removeDefaultsObjectForKey:(id)key
+{
+    NSParameterAssert(key);
+    CASClassDefaults* defaults = [[self class] deviceDefaults];
+    NSMutableDictionary* domain = [defaults.domain mutableCopy];
+    [domain removeObjectForKey:key];
+    defaults.domain = [domain copy];
+}
+
+@end

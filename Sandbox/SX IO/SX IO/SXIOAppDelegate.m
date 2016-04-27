@@ -32,6 +32,7 @@
 #import "SXIOImageAdjustmentWindowController.h"
 #import "SXIOExportMovieWindowController.h"
 #import "SXIOPreferencesWindowController.h"
+#import "CASProgressWindowController.h"
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
 #import "CASMountWindowController.h"
@@ -40,6 +41,7 @@
 #else
 #import "CCD_IO-Swift.h"
 #endif
+#import "SXIOM25CFixupTool.h"
 #import <CoreAstro/CoreAstro.h>
 #import <CoreAstro/CoreAstro-Swift.h>
 #import <objc/runtime.h>
@@ -80,6 +82,11 @@ static void* kvoContext;
     return (SXIOAppDelegate*)[NSApplication sharedApplication].delegate;
 }
 
+- (void)applicationWillFinishLaunching:(nonnull NSNotification *)notification
+{
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSFullScreenMenuItemEverywhere"];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // HACK; swizzle - (NSArray*)exposures
@@ -97,7 +104,7 @@ static void* kvoContext;
                                              defaultButton:@"Quit"
                                            alternateButton:@"OK"
                                                otherButton:nil
-                                 informativeTextWithFormat:@"Please be aware that this is Beta software. There is no guarantee it will work correctly and there's no offical support although you can send comments to feedback@coreastro.org. If you're not OK with that please click Quit.",nil];
+                                 informativeTextWithFormat:@"Please be aware that this is Beta software. There is no guarantee it will work correctly and there's no offical support although you can send comments to coreastro@icloud.com. If you're not OK with that please click Quit.",nil];
             
             alert.showsSuppressionButton = YES;
             
@@ -249,7 +256,7 @@ static void* kvoContext;
                                                                          defaultButton:@"OK"
                                                                        alternateButton:nil
                                                                            otherButton:nil
-                                                             informativeTextWithFormat:@"Support for this camera is still in development. Please let me know if you encounter any problems at feedback@coreastro.org",nil];
+                                                             informativeTextWithFormat:@"Support for this camera is still in development. Please let me know if you encounter any problems at coreastro@icloud.com",nil];
                                         
                                         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:betaWarningKey];
                                         
@@ -381,7 +388,7 @@ static void* kvoContext;
 
 - (IBAction)sendFeedback:(id)sender
 {
-    NSString* const feedback = @"feedback@coreastro.org";
+    NSString* const feedback = @"coreastro@icloud.com";
     NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"mailto:%@?subject=%@",feedback,@"SX%20IO%20Feedback"]];
     if (![[NSWorkspace sharedWorkspace] openURL:mailUrl]){
         [[NSAlert alertWithMessageText:@"Send Feedback"
@@ -466,6 +473,64 @@ static void* kvoContext;
 {
     [[CASMountWindowController sharedMountWindowController] connectToMount:^{
         // connected
+    }];
+}
+
+- (IBAction)fixupM25CFrames:(id)sender
+{
+    // todo; need a first-time explainer here
+    
+    NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+    
+    openPanel.canChooseFiles = YES;
+    openPanel.canChooseDirectories = NO;
+    openPanel.allowsMultipleSelection = YES;
+    openPanel.allowedFileTypes = @[@"fit",@"fits"];
+    
+    __block NSInteger count = 0;
+    
+    [openPanel beginWithCompletionHandler:^(NSInteger result) {
+        
+        if (result == NSFileHandlingPanelOKButton){
+            
+            CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+            [progress beginSheetModalForWindow:nil];
+            [progress configureWithRange:NSMakeRange(0, [openPanel.URLs count]) label:@"Fixing..."];
+            progress.canCancel = YES;
+            
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+                
+                [openPanel.URLs enumerateObjectsUsingBlock:^(NSURL* url, NSUInteger idx, BOOL* stop) {
+                    
+                    if (progress.cancelled){
+                        *stop = YES;
+                    }
+                    else {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            progress.progressBar.doubleValue++;
+                        });
+                        @autoreleasepool {
+                            SXIOM25CFixupTool* fixup = [[SXIOM25CFixupTool alloc] initWithPath:url.path];
+                            NSError* error;
+                            if ([fixup fixupWithError:&error]){
+                                ++count;
+                            }
+                            else {
+                                NSLog(@"%@",error.localizedFailureReason); // todo; report
+                            }
+                        }
+                    }
+                }];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    alert.messageText = [NSString stringWithFormat:@"Fixed %ld out of %ld exposures",count,openPanel.URLs.count];
+                    [alert runModal];
+                });
+            });
+        }
     }];
 }
 

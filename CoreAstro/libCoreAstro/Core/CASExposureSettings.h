@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,assign) CASExposureDurationUnits exposureUnits;
 @property (nonatomic,assign) NSInteger exposureInterval;
 
-@property (nonatomic,assign) CGRect subframe;
+@property (nonatomic,assign) CGRect subframe; // this should be a CASRect
 @property (nonatomic,assign) NSInteger binning;
 
 @property (nonatomic,assign) CASCCDExposureType exposureType;
@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,assign) float ditherPixels;
 
 @property (nonatomic,assign) BOOL startGuiding;
+@property (nonatomic,assign) BOOL temperatureLock;
+@property (nonatomic,assign) float targetTemperature;
 
 @end
 
@@ -52,4 +54,6 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,strong) NSNumber* scriptingDitherPixels;
 @property (nonatomic,strong) NSNumber* scriptingBinning;
 @property (nonatomic,strong) NSNumber* scriptingDuration;
+@property (nonatomic,strong) NSNumber* scriptingTemperatureLock;
+@property (nonatomic,strong) NSNumber* scriptingTargetTemperature;
 @end

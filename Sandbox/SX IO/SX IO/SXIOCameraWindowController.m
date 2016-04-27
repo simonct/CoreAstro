@@ -576,7 +576,7 @@ static void* kvoContext;
 - (BOOL)openExposureAtPath:(NSString*)path
 {
     NSError* error;
-    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
+    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:NO error:nil];
     if (exposure){
         self.currentExposure = exposure;
         [self.cameraController updateSettingsWithExposure:exposure];
@@ -782,54 +782,64 @@ static void* kvoContext;
 - (IBAction)toggleShowHistogram:(id)sender
 {
     self.exposureView.showHistogram = !self.exposureView.showHistogram;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showHistogram) forKey:@"SXIODisplayShowHistogram"];
 }
 
 - (IBAction)toggleShowReticle:(id)sender
 {
     self.exposureView.showReticle = !self.exposureView.showReticle;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showReticle) forKey:@"SXIODisplayShowReticle"];
 }
 
 - (IBAction)toggleShowStarProfile:(id)sender
 {
     self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showStarProfile) forKey:@"SXIODisplayShowStarProfile"];
 }
 
 - (IBAction)toggleShowImageStats:(id)sender
 {
     self.exposureView.showImageStats = !self.exposureView.showImageStats;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showImageStats) forKey:@"SXIODisplayShowImageStats"];
 }
 
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.exposureView.invert = !self.exposureView.invert;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.invert) forKey:@"SXIODisplayInvert"];
 }
 
 - (IBAction)toggleMedianFilter:(id)sender
 {
     self.exposureView.medianFilter = !self.exposureView.medianFilter;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.medianFilter) forKey:@"SXIODisplayMedian"];
 }
 
 - (IBAction)toggleEqualiseHistogram:(id)sender
 {
     self.equalise = !self.equalise;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayEqualise"];
 }
 
 - (IBAction)toggleContrastStretch:(id)sender
 {
     self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.contrastStretch) forKey:@"SXIODisplayContrastStretch"];
 }
 
 - (IBAction)toggleCalibrate:(id)sender
 {
     self.calibrate = !self.calibrate;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayCalibrate"];
 }
 
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.showPlateSolution) forKey:@"SXIODisplayShowPlateSolution"];
 }
 
 - (IBAction)applyDebayer:(NSMenuItem*)sender
@@ -852,16 +862,19 @@ static void* kvoContext;
             break;
     }
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.imageDebayer.mode) forKey:@"SXIODisplayDebayerMode"];
 }
 
 - (IBAction)toggleFlipVertical:(id)sender
 {
     self.exposureView.flipVertical = !self.exposureView.flipVertical;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipVertical"];
 }
 
 - (IBAction)toggleFlipHorizontal:(id)sender
 {
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipHorizontal"];
 }
 
 - (IBAction)sequence:(id)sender
@@ -1610,6 +1623,24 @@ static void* kvoContext;
         }];
         
         [self zoomImageToFit:nil];
+        
+        
+        // restore menu settings
+        self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
+        self.calibrate = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayCalibrate"] boolValue];
+        self.showPlateSolution = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowPlateSolution"] boolValue];
+        
+        self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
+        self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
+        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
+        self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
+        self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
+        self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
+        self.exposureView.showImageStats = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowImageStats"] boolValue];
+        self.exposureView.flipVertical = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipVertical"] boolValue];
+        self.exposureView.flipHorizontal = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipHorizontal"] boolValue];
+        
+        self.imageDebayer.mode = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayDebayerMode"] integerValue];
     }
     
     // Subframes on the M26C aren't currently supported
@@ -1621,17 +1652,22 @@ static void* kvoContext;
     [self updateExposureIndicator];
 }
 
+- (void)setProgressStatusTextValue:(NSString*)text
+{
+    if (!text){
+        text = @"";
+    }
+    if (![text isEqualToString:self.progressStatusText.stringValue]){ // seems to avoid significant performance problems with text fields
+        self.progressStatusText.stringValue = text;
+    }
+}
+
 - (void)updateExposureIndicator
 {
     void (^commonShowProgressSetup)(NSString*,BOOL) = ^(NSString* statusText,BOOL showIndicator){
-        
-        // todo; tidy this interface up
-//        self.exposureView.showProgress = showIndicator;
-//        self.exposureView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
-        
         self.progressIndicator.hidden = NO;
         self.progressIndicator.indeterminate = NO;
-        self.progressStatusText.stringValue = statusText ? statusText : @"";
+        [self setProgressStatusTextValue:statusText];
     };
     
     switch (self.cameraController.state) {
@@ -1639,7 +1675,7 @@ static void* kvoContext;
         case CASCameraControllerStateNone:{
             self.exposureView.showProgress = NO;
             self.progressIndicator.hidden = YES;
-            self.progressStatusText.stringValue = @"";
+            [self setProgressStatusTextValue:nil];
         }
             break;
             
@@ -1662,7 +1698,7 @@ static void* kvoContext;
             commonShowProgressSetup(nil,YES);
             if (self.cameraController.progress >= 1){
                 self.progressIndicator.indeterminate = YES;
-                self.progressStatusText.stringValue = @"Downloading image...";
+                [self setProgressStatusTextValue:@"Downloading image..."];
             }
             else {
                 NSString* statusText;
@@ -1678,7 +1714,7 @@ static void* kvoContext;
                         statusText = [statusText stringByAppendingFormat:@" %.0fs",timeRemaining];
                     }
                 }
-                self.progressStatusText.stringValue = statusText;
+                [self setProgressStatusTextValue:statusText];
             }
         }
             break;
@@ -1824,17 +1860,17 @@ static void* kvoContext;
             }
         }
         
-        // debayer
+        // equalise
+        if (self.equalise){
+            exposure = [self.imageProcessor equalise:exposure];
+        }
+
+        // debayer (we do this as the last step as equalise only works with single-channel images, todo; make it work with rgba images as well)
         if (self.imageDebayer.mode != kCASImageDebayerNone){
             CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
             if (debayeredExposure){
                 exposure = debayeredExposure;
             }
-        }
-
-        // equalise
-        if (self.equalise){
-            exposure = [self.imageProcessor equalise:exposure];
         }
         
         // set the exposure
@@ -1894,31 +1930,40 @@ static void* kvoContext;
 
 #pragma mark - CASExposureView delegate
 
+- (CGRect)validateSelectionRect:(CGRect)selection exposureView:(CASExposureView*)view
+{
+    CGSize size = CGSizeZero;
+    CASCCDProperties* sensor = self.cameraController.camera.sensor;
+    if (sensor){
+        size = CGSizeMake(sensor.width, sensor.height);
+    }
+    else {
+        size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
+    }
+    
+    selection = CGRectIntersection(selection, CGRectMake(0, 0, size.width, size.height));
+    
+    const CASRect subframe = {
+        .origin = CASPointMake(round(selection.origin.x), round(selection.origin.y)),
+        .size = CASSizeMake(round(selection.size.width), round(selection.size.height))
+    };
+    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:subframe
+                                                                             binning:CASSizeMake(self.cameraController.settings.binning,
+                                                                                                 self.cameraController.settings.binning)];
+    return CASCGRectFromCASRect(validatedSubframe);
+}
+
 - (void) selectionRectChanged: (CASExposureView*) imageView
 {
     //    NSLog(@"selectionRectChanged: %@",NSStringFromRect(imageView.selectionRect));
     
     if (self.exposureView.image){
-        
-        const CGRect rect = self.exposureView.selectionRect;
-        if (CGRectIsEmpty(rect)){
-            
+        const CGRect selectionRect = self.exposureView.selectionRect;
+        if (CGRectIsEmpty(selectionRect)){
             self.cameraController.settings.subframe = CGRectZero;
         }
         else {
-            
-            CGSize size = CGSizeZero;
-            CASCCDProperties* sensor = self.cameraController.camera.sensor;
-            if (sensor){
-                size = CGSizeMake(sensor.width, sensor.height);
-            }
-            else {
-                size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
-            }
-            
-            CGRect subframe = CGRectMake(rect.origin.x, size.height - rect.origin.y - rect.size.height, rect.size.width,rect.size.height);
-            subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-            self.cameraController.settings.subframe = subframe;
+            self.cameraController.settings.subframe = selectionRect; // assuming -validateSelectionRect:exposureView: has been called
         }
     }
 }
