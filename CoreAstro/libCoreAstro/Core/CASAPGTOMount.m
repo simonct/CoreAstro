@@ -15,7 +15,6 @@
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
 @property (copy) NSNumber* siteLongitude, *siteLatitude;
-@property BOOL synced; // YES if the initial sync command has been sent
 @end
 
 @implementation CASAPGTOMount {
@@ -463,24 +462,7 @@
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
 {
-    if (!self.synced){
-        NSLog(@"Re-cal without initial sync...");
-    }
-    
     [self syncCommand:@":CMR#" ToRA:ra dec:dec completion:completion];
-}
-
-- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
-{
-    if (self.weightsHigh){
-        NSLog(@"Attempt to perform initial sync of the mount while it's weights-high");
-        completion(CASMountSlewErrorInvalidLocation); // todo; need a new error code
-        return;
-    }
-    
-    self.synced = YES;
-    
-    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:completion];
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
