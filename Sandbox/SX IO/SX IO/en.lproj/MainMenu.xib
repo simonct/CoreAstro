@@ -810,6 +810,12 @@
                                     <action selector="sequence:" target="-1" id="911"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Connect to Mount..." tag="11106" id="8JL-Ar-HEd">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="connectToMount:" target="-1" id="Scn-SF-5Hw"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="893"/>
                             <menuItem title="Plate Solve..." tag="11104" id="901">
                                 <modifierMask key="keyEquivalentModifierMask"/>
