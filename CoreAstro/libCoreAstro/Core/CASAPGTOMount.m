@@ -187,7 +187,19 @@
     // :GD# -> sDD*MM:SS#
     [self sendCommand:@":GD#" completion:^(NSString *response) {
         //NSLog(@"Get Dec: %@",response);
-        // todo; need to strip non-integer characters
+        
+        // remove any spurious letter characters
+        NSCharacterSet* letterCharacterSet = [NSCharacterSet letterCharacterSet];
+        NSMutableString* mutableResponse = [response mutableCopy];
+        while (1) {
+            const NSRange range = [mutableResponse rangeOfCharacterFromSet:letterCharacterSet];
+            if (range.location == NSNotFound){
+                break;
+            }
+            [mutableResponse replaceCharactersInRange:range withString:@""];
+        }
+        response = [mutableResponse copy];
+
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
