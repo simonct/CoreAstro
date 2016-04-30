@@ -79,6 +79,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) CASCCDExposure *calibratedExposure;
 @property (strong) CASCCDExposure* latestExposure;
+@property (copy) NSString* currentExposureUUID;
 
 @property (copy) void(^captureCompletion)(NSError*);
 
@@ -1820,11 +1821,14 @@ static void* kvoContext;
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // lookup any solution
+        // stash this as we may replace the exposure below and the uuids will no longer match
+        self.currentExposureUUID = exposure.uuid;
+        
+        // lookup any solution, this runs asynchronously so we need to track the current image uuid or when it completes
         self.exposureView.plateSolveSolution = nil;
         if (self.showPlateSolution){
-            [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *exposure, CASPlateSolveSolution *solution) {
-                if ([exposure.uuid isEqualToString:self.exposureView.currentExposure.uuid]){
+            [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
+                if ([solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
                     self.exposureView.plateSolveSolution = solution;
                 }
             }];
