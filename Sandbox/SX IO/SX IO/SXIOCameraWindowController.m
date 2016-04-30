@@ -1327,7 +1327,7 @@ static void* kvoContext;
                     else {
                         self.showPlateSolution = YES;
                         self.exposureView.plateSolveSolution = results[@"solution"];
-                        [self resetAndRedisplayCurrentExposure];
+                        // no longer resetting display as that then immediately nils out the solution
                     }
                     self.plateSolver = nil;
                 });
