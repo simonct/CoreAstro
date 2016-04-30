@@ -283,6 +283,24 @@
     // :GG# -> gmt offset
     [self sendCommand:@":GG#" completion:^(NSString *response) {
         //NSLog(@"Get Local Time: %@",response);
+        
+        // GTOCP1/2 magic return values
+        if ([response hasPrefix:@"A"]){
+            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+            if (offset <= 5 && offset >= 1){
+                response = [NSString stringWithFormat:@"-%02ld:00:00",(3 - labs(offset)) + 3];
+            }
+        }
+        else if ([response hasPrefix:@"00"]){
+            response = @"-06:00:00";
+        }
+        else if ([response hasPrefix:@"@"]){
+            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+            if (offset <= 9 && offset >= 3){
+                response = [NSString stringWithFormat:@"-%02ld:00:00",(8 - labs(offset)) + 8];
+            }
+        }
+
         self.gmtOffset = response;
     }];
 
