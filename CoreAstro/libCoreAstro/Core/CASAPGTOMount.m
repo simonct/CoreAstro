@@ -78,7 +78,7 @@
                 NSLog(@"Difference between local and scope sidereal time of %.0f seconds, skipping the rest of the setup",diffSeconds);
             }
             else {
-                NSLog(@"Difference between local and scope sidereal timeof %.0f seconds, assuming mount needs configuring",diffSeconds);
+                NSLog(@"Difference between local and scope sidereal timeof %.0f seconds, assuming the mount needs configuring",diffSeconds);
             }
         }
 
@@ -88,6 +88,10 @@
         else {
             
             NSLog(@"Configuring %@",self.name);
+            
+            // switch on command logging
+            const BOOL saveLogCommands = self.logCommands;
+            self.logCommands = YES;
             
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
@@ -115,8 +119,8 @@
                 if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
             }];
             
-            // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
-            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
+            // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1 (total difference between local and GMT including any daylight savings)
+            NSTimeZone* tz = [NSTimeZone systemTimeZone];
             [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
                 
                 if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
@@ -127,6 +131,9 @@
             
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
             [self sendCommand:@":Q#"];
+            
+            // restore logging state
+            self.logCommands = saveLogCommands;
         }
     }];
 }
@@ -145,7 +152,7 @@
         [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
         [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
 
-        self.movingRate = CASAPGTOMountMovingRate600;
+        self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above)
         self.trackingRate = CASAPGTOMountTrackingRateSidereal;
 
         // magic delay seemingly required after setting rates... (still needed?)
@@ -180,6 +187,7 @@
     // :GD# -> sDD*MM:SS#
     [self sendCommand:@":GD#" completion:^(NSString *response) {
         //NSLog(@"Get Dec: %@",response);
+        // todo; need to strip non-integer characters
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
@@ -337,7 +345,7 @@
             return NO;
     }
     
-    NSLog(@"Parking at RA: %f DEC: %f",parkRA,parkDec);
+    NSLog(@"Parking to position %ld at RA: %f DEC: %f",parkPosition,parkRA,parkDec);
     
     [self parkWithRA:parkRA dec:parkDec completion:completion];
     
