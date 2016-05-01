@@ -633,6 +633,16 @@ static void* kvoContext;
     self.settings.scriptingSequenceCount = count;
 }
 
+- (NSNumber*)scriptingStartIndex
+{
+    return self.settings.scriptingStartIndex;
+}
+
+- (void)setScriptingStartIndex:(NSNumber*)startIndex
+{
+    self.settings.scriptingStartIndex = startIndex;
+}
+
 - (NSNumber*)scriptingSequenceIndex
 {
     return self.settings.scriptingSequenceIndex;

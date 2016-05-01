@@ -49,6 +49,7 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @interface CASExposureSettings (CASScripting)
 @property (nonatomic,strong) NSNumber* scriptingSequenceCount;
 @property (nonatomic,readonly) NSNumber* scriptingSequenceIndex;
+@property (nonatomic,strong) NSNumber* scriptingStartIndex;
 @property (nonatomic,strong) NSNumber* scriptingInterval;
 @property (nonatomic,strong) NSNumber* scriptingDitherPixels;
 @property (nonatomic,strong) NSNumber* scriptingBinning;

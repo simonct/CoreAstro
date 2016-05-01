@@ -60,6 +60,10 @@
                 <cocoa key="scriptingTemperature"/>
             </property>
             
+            <property name="sequence start index" code="SeqS" type="number" description="The start index to use in exposures captures in the sequence">
+                <cocoa key="scriptingStartIndex"/>
+            </property>
+
             <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
                 <cocoa key="scriptingSequenceCount"/>
             </property>
@@ -194,21 +198,6 @@
             <direct-parameter description="The camera to capture the image from.">
                 <type type="camera" list="no"/>
             </direct-parameter> 
-
-            <parameter name="milliseconds" code="Ms  " optional="yes" description="exposure time in ms.">
-                <cocoa key="milliseconds"/>
-                <type type="integer" list="no"/>
-            </parameter>  
-
-            <parameter name="seconds" code="Secs" optional="yes" description="exposure time in seconds">
-                <cocoa key="seconds"/>
-                <type type="integer" list="no"/>
-            </parameter>
-
-            <parameter name="bin" code="Bin " optional="yes" description="exposure binning.">
-                <cocoa key="bin"/>
-                <type type="integer" list="no"/>
-            </parameter>  
 
             <result description="The exposures">
                 <type type="exposure" list="yes"/>
