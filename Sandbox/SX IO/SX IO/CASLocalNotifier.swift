@@ -19,9 +19,9 @@ class CASLocalNotifier: NSObject {
         
         super.init()
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureStarted:"), name:kCASCameraControllerExposureStartedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureCompleted:"), name:kCASCameraControllerExposureCompletedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("filterSelected:"), name:kCASFilterWheelControllerSelectedFilterNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(exposureStarted(_:)), name:kCASCameraControllerExposureStartedNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(exposureCompleted(_:)), name:kCASCameraControllerExposureCompletedNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(filterSelected(_:)), name:kCASFilterWheelControllerSelectedFilterNotification, object: nil)
     }
     
     deinit {
@@ -45,6 +45,11 @@ class CASLocalNotifier: NSObject {
     }
     
     func exposureStarted(note: NSNotification) {
+        if let camera = note.object as? CASCameraController {
+            if camera.settings.continuous {
+                return
+            }
+        }
         postLocalNotification("Exposure started")
     }
 
@@ -53,6 +58,11 @@ class CASLocalNotifier: NSObject {
             postLocalNotification("Exposure failed")
         }
         else {
+            if let camera = note.object as? CASCameraController {
+                if camera.settings.continuous {
+                    return
+                }
+            }
             postLocalNotification("Exposure completed")
         }
     }
