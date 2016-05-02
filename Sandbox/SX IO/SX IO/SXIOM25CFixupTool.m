@@ -11,15 +11,17 @@
 
 @interface SXIOM25CFixupTool ()
 @property (copy) NSString* path;
+@property (copy) NSString* saveFolder;
 @end
 
 @implementation SXIOM25CFixupTool
 
-- (instancetype)initWithPath:(NSString*)path
+- (_Nonnull instancetype)initWithPath:( NSString* _Nonnull )path saveFolder:(NSString* _Nonnull)saveFolder
 {
     self = [super init];
     if (self){
         self.path = path;
+        self.saveFolder = saveFolder;
     }
     return self;
 }
@@ -79,7 +81,7 @@
     memcpy((void*)exposure.pixels.bytes, fixed.mutableBytes, fixed.length);
     
     // save to a new file
-    NSString* fixedPath = [self.path stringByAppendingPathExtension:@"fixed.fits"];
+    NSString* fixedPath = [[self.saveFolder stringByAppendingPathComponent:self.path.lastPathComponent] stringByAppendingPathExtension:@"fixed.fits"];
     io = [CASCCDExposureIO exposureIOWithPath:fixedPath];
     if (!io){
         *error = [self errorWithCode:1 message:@"Failed to create I/O object for fixed exposure"];
