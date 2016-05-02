@@ -71,6 +71,10 @@
                 <cocoa key="scriptingTemperature"/>
             </property>
             
+            <property name="sequence start index" code="SeqS" type="number" description="The start index to use in exposures captures in the sequence">
+                <cocoa key="scriptingStartIndex"/>
+            </property>
+
             <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
                 <cocoa key="scriptingSequenceCount"/>
             </property>

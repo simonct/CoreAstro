@@ -10,7 +10,7 @@
 
 @interface SXIOM25CFixupTool : NSObject
 
-- (_Nonnull instancetype)initWithPath:( NSString* _Nonnull )path;
+- (_Nonnull instancetype)initWithPath:( NSString* _Nonnull )path saveFolder:(NSString* _Nonnull)saveFolder;
 
 - (BOOL)fixupWithError:(NSError* _Nonnull * _Nonnull)error;
 

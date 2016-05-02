@@ -489,8 +489,31 @@ static void* kvoContext;
 
 - (IBAction)fixupM25CFrames:(id)sender
 {
-    // todo; need a first-time explainer here
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFixupM25CExplainerDisplayed"]){
+        [self fixupM25CFramesImpl];
+    }
+    else{
     
+        NSAlert* alert = [NSAlert alertWithMessageText:@"M25C Fixup"
+                                         defaultButton:@"OK"
+                                       alternateButton:@"Cancel"
+                                           otherButton:nil
+                             informativeTextWithFormat:@"This tool corrects unbinned, full frame exposures from the M25C taken by versions of SX IO prior to 1.0.8.\n\nSelect the frames you want to correct and the tool will save new versions that allow them to be debayered correctly.",nil];
+        
+        alert.showsSuppressionButton = YES;
+        
+        if ([alert runModal] == NSOKButton){
+            
+            if ([[alert suppressionButton] state]){
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"SXIOFixupM25CExplainerDisplayed"];
+            }
+            [self fixupM25CFramesImpl];
+        }
+    }
+}
+
+- (void)fixupM25CFramesImpl
+{
     NSOpenPanel* openPanel = [NSOpenPanel openPanel];
     
     openPanel.canChooseFiles = YES;
@@ -504,6 +527,8 @@ static void* kvoContext;
         
         if (result == NSFileHandlingPanelOKButton){
             
+            NSString* documentsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+
             CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
             [progress beginSheetModalForWindow:nil];
             [progress configureWithRange:NSMakeRange(0, [openPanel.URLs count]) label:@"Fixing..."];
@@ -521,7 +546,7 @@ static void* kvoContext;
                             progress.progressBar.doubleValue++;
                         });
                         @autoreleasepool {
-                            SXIOM25CFixupTool* fixup = [[SXIOM25CFixupTool alloc] initWithPath:url.path];
+                            SXIOM25CFixupTool* fixup = [[SXIOM25CFixupTool alloc] initWithPath:url.path saveFolder:documentsPath];
                             NSError* error;
                             if ([fixup fixupWithError:&error]){
                                 ++count;
@@ -539,6 +564,10 @@ static void* kvoContext;
                     NSAlert* alert = [[NSAlert alloc] init];
                     alert.messageText = [NSString stringWithFormat:@"Fixed %ld out of %ld exposures",count,openPanel.URLs.count];
                     [alert runModal];
+                    
+                    if (count > 0){
+                        [[NSWorkspace sharedWorkspace] selectFile:nil inFileViewerRootedAtPath:documentsPath];
+                    }
                 });
             });
         }

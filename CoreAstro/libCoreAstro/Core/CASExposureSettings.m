@@ -8,6 +8,7 @@
 
 #import "CASExposureSettings.h"
 #import "CASCameraController.h"
+#import "CASCCDDevice.h"
 
 @interface CASExposureSettings ()
 @property (nonatomic,assign) NSInteger currentCaptureIndex;
@@ -113,7 +114,31 @@
 
 - (void)setScriptingSequenceCount:(NSNumber*)count
 {
-    self.captureCount = MIN(1000,MAX(0,[count integerValue]));
+    self.captureCount = MIN(10000,MAX(0,[count integerValue]));
+}
+
+- (NSNumber*)scriptingStartIndex
+{
+    NSString* cameraID = self.cameraController.camera.uniqueID;
+    if (!cameraID){
+        return nil;
+    }
+    return [[NSUserDefaults standardUserDefaults] objectForKey:[@"SavedImageSequence" stringByAppendingString:cameraID]];
+}
+
+- (void)setScriptingStartIndex:(NSNumber*)startIndex
+{
+    if (!startIndex){
+        return;
+    }
+    NSString* cameraID = self.cameraController.camera.uniqueID;
+    if (!cameraID){
+        return;
+    }
+    if (startIndex.integerValue < 1){
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:@(startIndex.integerValue - 1) forKey:[@"SavedImageSequence" stringByAppendingString:cameraID]];
 }
 
 - (NSNumber*)scriptingSequenceIndex
