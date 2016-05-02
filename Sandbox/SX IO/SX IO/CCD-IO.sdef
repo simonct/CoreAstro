@@ -71,6 +71,10 @@
                 <cocoa key="scriptingTemperature"/>
             </property>
             
+            <property name="sequence start index" code="SeqS" type="number" description="The start index to use in exposures captures in the sequence">
+                <cocoa key="scriptingStartIndex"/>
+            </property>
+
             <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
                 <cocoa key="scriptingSequenceCount"/>
             </property>
@@ -102,7 +106,11 @@
             <responds-to name="capture">
                 <cocoa method="scriptingCapture:"/>
             </responds-to>
-            
+
+            <responds-to name="cancel capture">
+                <cocoa method="scriptingCancel:"/>
+            </responds-to>
+
         </class>
         
         <class name="filter wheel" plural="filter wheels" code="CASF" description="A filter wheel object." inherits="device">
@@ -266,7 +274,15 @@
             </result>
             
         </command>
-        
+
+        <command name="cancel capture" code="CASSCACL" description="Cancel image capture.">
+    
+            <direct-parameter description="The camera to cancel.">
+                <type type="camera" list="no"/>
+            </direct-parameter>
+    
+        </command>
+
         <command name="make movie" code="CASSMKMV" description="Make a movie.">
             
             <parameter name="path" code="Path" optional="no" description="the path to export the movie to">

@@ -189,7 +189,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
     else {
         
-        // convert point to view co-ords
+        // convert point to view co-ords (this is indepdendent of flipping as that's done using a coreimage filter)
         NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
         
         // find the layer at this point
@@ -255,7 +255,12 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
                 self.selectionLayer.position = p;
             }
             
-            const CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
+            CGRect frame = CASCGRectConstrainWithinRect(self.selectionLayer.frame,CGRectMake(0, 0, CGImageGetWidth(self.CGImage), CGImageGetHeight(self.CGImage)));
+            
+            if ([self.exposureViewDelegate respondsToSelector:@selector(validateSelectionRect:exposureView:)]){
+                frame = [self inverseTransformRect:[self.exposureViewDelegate validateSelectionRect:[self transformRect:frame] exposureView:self]];
+            }
+            
             if (!CGRectEqualToRect(frame, self.selectionLayer.frame)){
                 self.selectionRect = frame; // invokes -selectionRectChanged: on delegate
             }
@@ -545,6 +550,30 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     }
 }
 
+- (CGAffineTransform)currentTransform
+{
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    if (self.flipHorizontal){
+        transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(-1, 1));
+        transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(self.layer.bounds.size.width, 0));
+    }
+    if (!self.flipVertical){
+        transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(1, -1));
+        transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(0, self.layer.bounds.size.height));
+    }
+    return transform;
+}
+
+- (CGRect)transformRect:(CGRect)rect
+{
+    return CGRectApplyAffineTransform(rect,[self currentTransform]);
+}
+
+- (CGRect)inverseTransformRect:(CGRect)rect
+{
+    return CGRectApplyAffineTransform(rect,CGAffineTransformInvert([self currentTransform]));
+}
+
 #pragma mark - Properties
 
 - (CGFloat)progress
@@ -563,17 +592,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     CGRect frame = CGRectZero;
     if (_showSelection){
-        frame = self.selectionLayer.frame;
-        CGAffineTransform transform = CGAffineTransformIdentity;
-        if (self.flipHorizontal){
-            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(-1, 1));
-            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(self.layer.bounds.size.width, 0));
-        }
-        if (self.flipVertical){
-            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeScale(1, -1));
-            transform = CGAffineTransformConcat(transform,CGAffineTransformMakeTranslation(0, self.layer.bounds.size.height));
-        }
-        frame = CGRectApplyAffineTransform(frame,transform);
+        frame = [self transformRect:self.selectionLayer.frame];
     }
     return frame;
 }
@@ -589,7 +608,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 {
     // call through to delegate to validate the subframe
     if ([self.exposureViewDelegate respondsToSelector:@selector(validateSelectionRect:exposureView:)]){
-        selectionRect = [self.exposureViewDelegate validateSelectionRect:selectionRect exposureView:self];
+        selectionRect = [self inverseTransformRect:[self.exposureViewDelegate validateSelectionRect:[self transformRect:selectionRect] exposureView:self]];
     }
 
     self.selectionLayer.frame = selectionRect;
@@ -603,14 +622,18 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 - (void)setFlipHorizontal:(BOOL)flipHorizontal
 {
     [super setFlipHorizontal:flipHorizontal];
-    // move self.selectionLayer.frame ?
+    
+    // todo; move self.selectionLayer.frame if toggled
+    
     [self informSelectionChanged];
 }
 
 - (void)setFlipVertical:(BOOL)flipVertical
 {
     [super setFlipVertical:flipVertical];
-    // move self.selectionLayer.frame ?
+    
+    // todo; move self.selectionLayer.frame if toggled
+    
     [self informSelectionChanged];
 }
 

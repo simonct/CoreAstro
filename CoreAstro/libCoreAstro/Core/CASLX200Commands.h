@@ -61,6 +61,7 @@
 + (NSString*)setTelescopeLocalTime:(NSDate*)date;
 + (NSString*)setTelescopeLocalDate:(NSDate*)date;
 + (NSString*)setTelescopeGMTOffset:(NSTimeZone*)tz;
++ (NSString*)setTelescopeGMTOffsetExDST:(NSTimeZone*)tz;
 + (NSString*)setTelescopeDaylightSavings:(NSTimeZone*)tz;
 
 @end

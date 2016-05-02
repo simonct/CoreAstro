@@ -118,13 +118,19 @@
 		F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */; };
 		F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */; };
 		F4415B4C17CBAF7D00D1233C /* CASCaptureWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */; };
-		F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
 		F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
+		F458CAD11CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */; };
+		F458CAD21CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */ = {isa = PBXBuildFile; fileRef = F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */; };
 		F45C486D18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
 		F45C486E18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */; };
 		F45C486F18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */; };
 		F45C487018B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */; };
 		F45CF46F17F376B500E14588 /* SXIOExposureEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */; };
+		F46221721CB9EEDE0006A7FD /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46221711CB9EEDE0006A7FD /* MapKit.framework */; };
+		F46221791CB9EEF00006A7FD /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46221711CB9EEDE0006A7FD /* MapKit.framework */; };
+		F462217A1CB9EEF40006A7FD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC3CCD19AE644200401578 /* CoreLocation.framework */; };
+		F462217B1CB9EF220006A7FD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4554895185128ED00D30926 /* CoreMedia.framework */; };
+		F462217C1CB9EF520006A7FD /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */; };
 		F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */; };
 		F47781AB17AD32AC000E4C73 /* CASUpdateCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F47781AA17AD32AC000E4C73 /* CASUpdateCheck.m */; };
@@ -505,11 +511,14 @@
 		F4415B4917CBAF7D00D1233C /* CASCaptureWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASCaptureWindowController.m; path = ../../../CoreAstro/CASCaptureWindowController.m; sourceTree = "<group>"; };
 		F4415B4A17CBAF7D00D1233C /* CASCaptureWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASCaptureWindowController.xib; path = ../../../CoreAstro/CASCaptureWindowController.xib; sourceTree = "<group>"; };
 		F4554895185128ED00D30926 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		F458CACF1CB9ED67004A166C /* SXIOM25CFixupTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOM25CFixupTool.h; sourceTree = "<group>"; };
+		F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOM25CFixupTool.m; sourceTree = "<group>"; };
 		F45C486A18B7318F00BCD684 /* SXIOPlateSolveOptionsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolveOptionsWindowController.h; sourceTree = "<group>"; };
 		F45C486B18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolveOptionsWindowController.m; sourceTree = "<group>"; };
 		F45C486C18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOPlateSolveOptionsWindowController.xib; sourceTree = "<group>"; };
 		F45CF46D17F376B500E14588 /* SXIOExposureEnumerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOExposureEnumerator.h; sourceTree = "<group>"; };
 		F45CF46E17F376B500E14588 /* SXIOExposureEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOExposureEnumerator.m; sourceTree = "<group>"; };
+		F46221711CB9EEDE0006A7FD /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		F46A3EFC1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CASPlateSolvedObject+Drawing.h"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.h"; sourceTree = "<group>"; };
 		F46A3EFD1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CASPlateSolvedObject+Drawing.m"; path = "../../../CoreAstro/CASPlateSolvedObject+Drawing.m"; sourceTree = "<group>"; };
 		F47781A917AD32AC000E4C73 /* CASUpdateCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASUpdateCheck.h; sourceTree = "<group>"; };
@@ -666,7 +675,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F46221791CB9EEF00006A7FD /* MapKit.framework in Frameworks */,
+				F462217A1CB9EEF40006A7FD /* CoreLocation.framework in Frameworks */,
 				F455489D185128F800D30926 /* CoreMedia.framework in Frameworks */,
+				F462217C1CB9EF520006A7FD /* MultipeerConnectivity.framework in Frameworks */,
 				F40D5B531849EC5E00977FA9 /* IOKit.framework in Frameworks */,
 				F40D5B541849EC5E00977FA9 /* Quartz.framework in Frameworks */,
 				F40D5B551849EC5E00977FA9 /* Accelerate.framework in Frameworks */,
@@ -724,9 +736,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4A63E081BC13DA50047ED91 /* CloudKit.framework in Frameworks */,
+				F46221721CB9EEDE0006A7FD /* MapKit.framework in Frameworks */,
 				F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */,
+				F462217B1CB9EF220006A7FD /* CoreMedia.framework in Frameworks */,
 				F440D26419FCE9A0005510EB /* MultipeerConnectivity.framework in Frameworks */,
-				F4554896185128ED00D30926 /* CoreMedia.framework in Frameworks */,
 				F4F6E11B182F8F6B00ACBFB4 /* IOKit.framework in Frameworks */,
 				F4E64284179DC2D10044B349 /* Quartz.framework in Frameworks */,
 				F4A25896179BC0CF0013D220 /* Accelerate.framework in Frameworks */,
@@ -1002,6 +1015,7 @@
 			isa = PBXGroup;
 			children = (
 				F4A63E071BC13DA50047ED91 /* CloudKit.framework */,
+				F46221711CB9EEDE0006A7FD /* MapKit.framework */,
 				F4BC3CCD19AE644200401578 /* CoreLocation.framework */,
 				F440D26319FCE9A0005510EB /* MultipeerConnectivity.framework */,
 				F4554895185128ED00D30926 /* CoreMedia.framework */,
@@ -1079,6 +1093,8 @@
 				F440D25719FCE318005510EB /* CASCameraServer.m */,
 				F49459781B3F228C0028780D /* CASLocalNotifier.swift */,
 				F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */,
+				F458CACF1CB9ED67004A166C /* SXIOM25CFixupTool.h */,
+				F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1641,6 +1657,7 @@
 				F40D5B3D1849EC5E00977FA9 /* CASTemperatureTransformer.m in Sources */,
 				F40D5B3E1849EC5E00977FA9 /* NSApplication+CASScripting.m in Sources */,
 				F40D5B3F1849EC5E00977FA9 /* CASScriptCommand.m in Sources */,
+				F458CAD21CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */,
 				F40D5B401849EC5E00977FA9 /* CASCaptureCommand.m in Sources */,
 				F40D5B411849EC5E00977FA9 /* CASGuideCommand.m in Sources */,
 				F40D5B421849EC5E00977FA9 /* CASCameraControlsViewController.m in Sources */,
@@ -1732,6 +1749,7 @@
 				F4A2589F179BC1460013D220 /* CASTemperatureTransformer.m in Sources */,
 				F4A258AF179BC1630013D220 /* NSApplication+CASScripting.m in Sources */,
 				F4A258B0179BC1630013D220 /* CASScriptCommand.m in Sources */,
+				F458CAD11CB9ED67004A166C /* SXIOM25CFixupTool.m in Sources */,
 				F4A258B1179BC1630013D220 /* CASCaptureCommand.m in Sources */,
 				F4A258B2179BC1630013D220 /* CASGuideCommand.m in Sources */,
 				F4A258C4179BC1D90013D220 /* CASCameraControlsViewController.m in Sources */,

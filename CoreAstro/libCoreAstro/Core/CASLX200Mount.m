@@ -96,6 +96,10 @@
     //        return;
     //    }
     
+    if (self.logCommands){
+        NSLog(@"Command: %@",command);
+    }
+    
     if (!self.completionStack){
         self.completionStack = [NSMutableArray arrayWithCapacity:3];
     }
