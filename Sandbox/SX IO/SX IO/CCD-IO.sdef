@@ -25,6 +25,10 @@
                 <cocoa key="mountControllers"/>
             </element>
             
+            <element type="exposure" access="r">
+                <cocoa key="exposures"/>
+            </element>
+            
             <!--
              <element type="focuser" access="r">
              <cocoa key="focuserControllers"/>

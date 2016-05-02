@@ -89,9 +89,6 @@ static void* kvoContext;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    // HACK; swizzle - (NSArray*)exposures
-    method_exchangeImplementations(class_getInstanceMethod([NSApplication class],@selector(exposures)),class_getInstanceMethod([NSApplication class],@selector(sxioExposures)));
-
     _windows = [NSMutableArray arrayWithCapacity:5];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -610,7 +607,7 @@ static NSMutableArray* gRecentExposures;
 
 @implementation NSApplication (SXIOScripting)
 
-- (NSArray*)sxioExposures
+- (NSArray*)exposures
 {
     return gRecentExposures;
 }
