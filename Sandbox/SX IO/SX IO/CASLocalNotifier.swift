@@ -41,7 +41,7 @@ class CASLocalNotifier: NSObject {
         if (subtitle != nil) {
             message = message + ": \(subtitle)"
         }
-        print(message)
+//        print(message)
     }
     
     func exposureStarted(note: NSNotification) {
