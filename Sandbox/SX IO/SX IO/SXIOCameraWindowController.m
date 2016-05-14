@@ -919,32 +919,11 @@ static void* kvoContext;
     }];
 }
 
-// Slew to the the locked position.
+// Slew to the mount's current position in order to trigger a meridian flip
 //
 // Called when a capture has completed and the mount has crossed the meridian and needs flipping
 //
-- (void)slewToLockedSolution
-{
-    CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
-    if (solution){
-        self.mountWindowController.cameraController = self.cameraController;
-        self.mountWindowController.mountWindowDelegate = self;
-        self.mountWindowController.mountController.usePlateSolving = YES;
-        __weak __typeof(self) weakSelf = self;
-        [self.mountWindowController.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
-            if (error){
-                [NSApp presentError:error];
-            }
-            else {
-                [weakSelf.mountWindowController.mountController slewToTargetWithCompletion:^(NSError* _) {
-                    // actual completion handling done in -mountCompletedSync:
-                }];
-            }
-        }];
-    }
-}
-
-- (void)slewToMountCurrentPosition
+- (void)slewToCurrentMountPosition
 {
     id<CASMount> mount = self.mountWindowController.mountController.mount;
     if (mount){
@@ -2088,7 +2067,7 @@ static void* kvoContext;
             [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
 
             // start the slew to the flipped position
-            [self slewToMountCurrentPosition];
+            [self slewToCurrentMountPosition];
         }
         
         // todo; kick off a background plate solve
