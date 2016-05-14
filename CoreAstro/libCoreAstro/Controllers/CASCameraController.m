@@ -76,6 +76,7 @@ static void* kvoContext;
         self.targetTemperature = -20;
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
+        _savedCurrentCaptureIndex = -1;
         [self registerDeviceDefaults];
     }
     return self;
@@ -483,8 +484,12 @@ static void* kvoContext;
     _cancelled = NO;
     _suspended = NO;
     
-    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex;
-    _savedCurrentCaptureIndex = 0;
+    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex != -1 ? _savedCurrentCaptureIndex + 1 : 0;
+    if (self.settings.currentCaptureIndex >= self.settings.captureCount){
+        block([self errorWithCode:5 message:@"Attempted to resume capture when sequence is complete" recovery:nil],nil);
+        return;
+    }
+    _savedCurrentCaptureIndex = -1;
     
     void (^startCapture)() = ^{
         
