@@ -53,6 +53,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property CASMountPierSide pierSideWhenSlewStarted;
 @property BOOL guidingWhenSlewStarted;
 @property BOOL synchronisingWhenSlewStarted;
+@property BOOL restoreStateWhenComplete;
 @end
 
 @implementation SXIOMountState
@@ -920,9 +921,7 @@ static void* kvoContext;
 
 // Slew to the the locked position.
 //
-// Called when:
-// 1. The mount stops slewing and we need to restart capturing
-// 2. A capture has completed and the mount has crossed the meridian and needs flipping
+// Called when a capture has completed and the mount has crossed the meridian and needs flipping
 //
 - (void)slewToLockedSolution
 {
@@ -945,10 +944,12 @@ static void* kvoContext;
     }
 }
 
-- (void)resumeAfterMountSlewCompleted // only called after the synchroniser has completed successfully
+// Restart guiding and/or capturing.
+//
+// Called when the mount has successfully re-synced after a triggered meridian flip
+//
+- (void)restoreStateAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
-    NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
-    
     const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountWindowController.mountController.mount.pierSide);
     
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
@@ -1038,8 +1039,10 @@ static void* kvoContext;
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
-    [self.cameraController.phd2Client stop];
-    [self.cameraController.phd2Client disconnect];
+    if (self.cameraController.phd2Client.connected){
+        [self.cameraController.phd2Client stop];
+        [self.cameraController.phd2Client disconnect];
+    }
 }
 
 - (void)completeMountSlewHandling
@@ -1065,6 +1068,20 @@ static void* kvoContext;
     self.mountSlewProgressSheet.label.stringValue = label;
 }
 
+// Handle the mount starting or ending slew, either triggered by us or externally
+//
+// Called from the mount slew state changed notification handler. There are a number of possible states
+//
+// 1. External slew e.g. slew buttons on mount window or handset. We cancel capture and guiding and wait for the mount to stop, no state is restored
+//
+// 2. User typed an object into the mount search field and hit slew and plate solve is OFF. Same behaviour as (1)
+//
+// 3. User typed an object into the mount search field and hit slew and plate solve is ON. Cancel capture and guiding, no state is restored.
+//
+// 4. Mount was flipped by us after crossing the meridian and will resync on the other side, plate solve is ON. Cancel capture and guiding, attempt to restore state when the mount controller finishes.
+//
+// 5. Mount is iterating towards its target and this is an intermediate slew, plate solve is ON. Cancel capture and guiding, wait until the sync completes and then restore state if appropriate.
+//
 - (void)handleMountSlewStateChanged
 {
     if (!self.mountWindowController){ // todo; remove dependency on the window
@@ -1076,107 +1093,50 @@ static void* kvoContext;
         
         if (!self.mountState.slewStarted){
             
-            // create a new mount state object if this is a new slew operation
-            if (!self.mountState){
-                self.mountState = [SXIOMountState new];
-            }
-            self.mountState.slewStarted = YES;
-
-            // check to see if this is a slew triggered by the mount synchroniser which will happen after we've slewed and need to resync to the locked solution
-            if (self.mountWindowController.mountController.synchronising){
-                
-                // I'm assuming that we already captured the state when the slew was triggered so don't overwrite with the current state as this may be an intermediate slew
-                
-                NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
-
-                self.mountState.synchronisingWhenSlewStarted = YES;
-            }
-            else {
-                
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"Recording mount state for possible restart"];
-
-                // record the current state
-                self.mountState.synchronisingWhenSlewStarted = NO;
-                self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
-                self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mountController.mount.pierSide;
-                self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
-            }
-            
-            // ensure capture and guiding is suspended regardless of how the slew was triggered
+            // ensure capture and guiding are suspended and that we record the current state (if it wasn't already done when we triggered the slew)
             [self prepareForMountSlewHandling];
             
             NSLog(@"Slew started: %@",self.mountState);
 
-            // present a sheet with some status info (todo; may only want to do this if SXIORestartCaptureAfterSlew is YES)
-            [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+            self.mountState.slewStarted = YES;
+
+            // check to see if this is a slew triggered by the mount synchroniser which will happen after we've slewed and need to resync to the locked solution
+            self.mountState.synchronisingWhenSlewStarted = self.mountWindowController.mountController.synchronising;
+            if (self.mountState.synchronisingWhenSlewStarted){
+                
+                NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
+                
+                [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Synchronising mount...", @"Progress sheet status label")];
+            }
+            else {
+                
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"External slew, cancelling capture and guiding"];
+                
+                [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+            }
         }
     }
     else {
         
         if (self.mountState.slewStarted){
             
-            self.mountState.slewStarted = NO;
-
             NSLog(@"Slew ended: %@",self.mountState);
 
+            self.mountState.slewStarted = NO;
+
+            // this was a slew triggered by the mount synchroniser so we wait until -mountCompletedSync: is called
+            // (this may be called multiple times as the mount interates towards the target)
             if (self.mountState.synchronisingWhenSlewStarted){
                 
-                // this was a slew triggered by the mount synchroniser so we wait until -didCompleteWithError: is called
-                
-                NSLog(@"Mount slew ended but being handled by mount synchroniser so ignoring");
+                NSLog(@"Mount slew ended but it's being handled by the mount synchroniser so waiting until -mountCompletedSync: is called");
             }
             else {
                 
-                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
-                    
-                    // non-synchroniser slew but the restart option is off so nothing more to do other that clean up
-                    
-                    NSLog(@"Mount slew ended but SXIORestartCaptureAfterSlew is NO so ignoring");
-                    
-                    [self completeMountSlewHandling];
-                }
-                else {
-                    
-                    if (!self.mountState.capturingWhenSlewStarted) {
-                        
-                        // non-synchroniser slew but we weren't capturing when the slew began so just clean up
-                        
-                        NSLog(@"Mount slew ended but wasn't capturing so not restarting guiding or capturing");
-                        
-                        [self completeMountSlewHandling];
-                    }
-                    else{
-                        
-                        CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
-                        if (!solution){
-                            
-                            // non-synchroniser slew but no locked solution so just clean up
+                NSLog(@"Mount slew ended but we didn't start it so cleanup and complete");
 
-                            // todo; could capture last ra/dec of mount when slew started ? (need to ensure though that it wasn't recorded after the slew started)
-                            
-                            NSLog(@"Mount slew ended but no locked solution so not restarting guiding or capturing");
-                            
-                            // this is an error case as we were capturing when the slew started but cannot resume as we can't accurately repoint the mount
-                            [self captureCompletedWithError:[NSError errorWithDomain:NSStringFromClass([self class])
-                                                                                code:3
-                                                                            userInfo:@{NSLocalizedDescriptionKey:@"The capture was cancelled by a mount slew but there was no locked solution set allowing it to resume."}]];
-
-                            [self completeMountSlewHandling];
-                        }
-                        else {
-                            
-                            // ok, full restart required - start the mount synchroniser slewing to the locked position and restart when -didCompleteWithError: is called
-                            
-                            NSLog(@"Mount slew ended, re-syncing to locked solution");
-                            
-                            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Synchronising mount to locked solution"];
-
-                            self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Synchronising mount to locked solution...", @"Progress sheet status label");
-                            
-                            [self slewToLockedSolution];
-                        }
-                    }
-                }
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Externally triggered slew completed, capture and guiding not restarted"];
+                
+                [self completeMountSlewHandling];
             }
         }
     }
@@ -2085,11 +2045,18 @@ static void* kvoContext;
             self.mountWindowController.mountController.mount.weightsHigh &&
             controller.capturing &&
             self.exposureView.lockedPlateSolveSolution){
+            
+            // todo; put in an 'at least' param for ap mounts
+            // todo; 30s beeping countdown alert ?
+            // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
 
             [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
 
             // captures current mount state, suspends capture and stops guiding
             [self prepareForMountSlewHandling];
+            
+            // set the retore on complete flag; this is the *only* place we do this
+            self.mountState.restoreStateWhenComplete = YES;
             
             // pop the slew sheet so that we can set the label text to something specific
             [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
@@ -2512,7 +2479,7 @@ static void* kvoContext;
             
             NSLog(@"Mount sync failed with error %@",error);
             
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing ended" subtitle:@"Failed to slew to target"];
+            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing failed" subtitle:error.localizedDescription];
             
             [self completeMountSlewHandling];
             [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
@@ -2521,14 +2488,14 @@ static void* kvoContext;
             
             NSLog(@"Mount sync completed successfully");
             
-            // check to see if we were tracking the slew and restart
-            if (self.mountSlewProgressSheet){
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
-                    [self resumeAfterMountSlewCompleted];
-                }
-                else {
-                    [self completeMountSlewHandling];
-                }
+            // check to see if we triggered the slew and restart capture and guiding
+            if (self.mountState.restoreStateWhenComplete){
+                [self restoreStateAfterMountSlewCompleted];
+            }
+            else {
+                // just cleanup and we're done
+                // this would happen if the synchroniser was running the slew but it wasn't as a result of us triggering the flip e.g. the user used the mount window to slew to a target
+                [self completeMountSlewHandling];
             }
         }
         
