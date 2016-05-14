@@ -73,7 +73,7 @@
             const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
             const double lst = [CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue];
             const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*3600.0;
-            scopeConfigured = diffSeconds < 300; // todo; make this limit configurable, probably should be lower
+            scopeConfigured = diffSeconds < 30; // todo; make this limit configurable, probably should be lower
             if (scopeConfigured){
                 NSLog(@"Difference between local and scope sidereal time of %.0f seconds, skipping the rest of the setup",diffSeconds);
             }
