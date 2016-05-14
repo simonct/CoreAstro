@@ -375,7 +375,7 @@
             return NO;
     }
     
-    NSLog(@"Parking to position %ld at RA: %f DEC: %f",parkPosition,parkRA,parkDec);
+    NSLog(@"Parking mount to position %ld at RA: %f DEC: %f",parkPosition,parkRA,parkDec);
     
     [self parkWithRA:parkRA dec:parkDec completion:completion];
     
@@ -388,7 +388,7 @@
         if (error == CASMountSlewErrorNone){
             _parking = YES;
             _skipSlewStateCount = 5;
-            NSLog(@"Starting park");
+            NSLog(@"Starting mount park");
         }
         else {
             _parking = NO;
