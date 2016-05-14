@@ -531,7 +531,7 @@
                             when = [self.exposureStartDate dateByAddingTimeInterval:exposureCommand.params.ms/1000.0];
                         }
                         else {
-                            NSLog(@"Elapsed time %f",[[NSDate date] timeIntervalSinceDate:self.exposureStartDate]);
+                            NSLog(@"Exposure elapsed time %f",[[NSDate date] timeIntervalSinceDate:self.exposureStartDate]);
                         }
                         
                         // todo; record the actual exposure time to account for inaccuracies in external timing
