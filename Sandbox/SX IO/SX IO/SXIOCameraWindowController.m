@@ -944,6 +944,27 @@ static void* kvoContext;
     }
 }
 
+- (void)slewToMountCurrentPosition
+{
+    id<CASMount> mount = self.mountWindowController.mountController.mount;
+    if (mount){
+        self.mountWindowController.cameraController = self.cameraController;
+        self.mountWindowController.mountWindowDelegate = self;
+        self.mountWindowController.mountController.usePlateSolving = YES;
+        __weak __typeof(self) weakSelf = self;
+        [self.mountWindowController.mountController setTargetRA:mount.ra.doubleValue dec:mount.dec.doubleValue completion:^(NSError* error) {
+            if (error){
+                [NSApp presentError:error];
+            }
+            else {
+                [weakSelf.mountWindowController.mountController slewToTargetWithCompletion:^(NSError* _) {
+                    // actual completion handling done in -mountCompletedSync:
+                }];
+            }
+        }];
+    }
+}
+
 // Restart guiding and/or capturing.
 //
 // Called when the mount has successfully re-synced after a triggered meridian flip
@@ -1106,13 +1127,19 @@ static void* kvoContext;
                 
                 NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
                 
-                [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Synchronising mount...", @"Progress sheet status label")];
+                if (self.mountState.capturingWhenSlewStarted){
+                    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Synchronising mount...", @"Progress sheet status label")];
+                }
             }
             else {
                 
+                NSLog(@"Mount slew started but being triggered externally so just cancel capture and guiding");
+
                 [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"External slew, cancelling capture and guiding"];
                 
-                [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+                if (self.mountState.capturingWhenSlewStarted){
+                    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+                }
             }
         }
     }
@@ -2043,8 +2070,7 @@ static void* kvoContext;
         // trigger a flip if we've crossed the meridian, have more exposures to take and have a locked solution. This will cancel any current exposure and restart once the slew is completed
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFlipMountAfterMeridian"] &&
             self.mountWindowController.mountController.mount.weightsHigh &&
-            controller.capturing &&
-            self.exposureView.lockedPlateSolveSolution){
+            controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
             
             // todo; put in an 'at least' param for ap mounts
             // todo; 30s beeping countdown alert ?
@@ -2062,7 +2088,7 @@ static void* kvoContext;
             [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
 
             // start the slew to the flipped position
-            [self slewToLockedSolution];
+            [self slewToMountCurrentPosition];
         }
         
         // todo; kick off a background plate solve
