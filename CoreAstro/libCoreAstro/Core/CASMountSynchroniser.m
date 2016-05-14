@@ -8,6 +8,8 @@
 
 #import "CASMountSynchroniser.h"
 
+//#define CAS_SLEW_AND_SYNC_TEST 1
+
 @interface CASMountSynchroniser ()
 @property BOOL busy;
 @property float separation;
@@ -25,6 +27,9 @@
     BOOL _saveTemperatureLock;
     id<CASCameraControllerSink> _savedSink;
     BOOL _cancelled;
+#if CAS_SLEW_AND_SYNC_TEST
+    double _testError;
+#endif
 }
 
 + (void)initialize
@@ -47,6 +52,13 @@
     _syncCount = 0;
     _raInDegrees = raInDegrees;
     _decInDegrees = decInDegrees;
+    
+#if CAS_SLEW_AND_SYNC_TEST
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _testError = 1;
+    });
+#endif
     
     __weak __typeof(self) weakSelf = self;
     [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
@@ -71,24 +83,25 @@
                     NSLog(@"_testError: %f",_testError);
                     
                     if (_testError < 0.125){
-                        [self.mountWindowDelegate mountWindowControllerDidSync:nil];
+                        [self completeWithError:nil];
                     }
                     else{
                         
                         // sync to an imaginary position
-                        [self.mount syncToRA:_raDegs+_testError dec:_decDegs+_testError completion:^(CASMountSlewError slewError) {
+                        [self.mount syncToRA:_raInDegrees+_testError dec:_decInDegrees+_testError completion:^(CASMountSlewError slewError) {
                             
                             // reduce error
                             _testError /= 2;
                             
                             if (slewError != CASMountSlewErrorNone){
-                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+//                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
+                                [self completeWithErrorMessage:[NSString stringWithFormat:@"Slew failed with error %ld",(long)slewError]];
                             }
                             else {
                                 
                                 // slew
                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self startSlewToRA:_raDegs dec:_decDegs];
+                                    [self startSlewToRA:_raInDegrees dec:_decInDegrees];
                                 });
                             }
                         }];
