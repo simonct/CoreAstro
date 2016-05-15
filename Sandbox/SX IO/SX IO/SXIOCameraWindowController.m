@@ -2421,9 +2421,14 @@ static void* kvoContext;
             }
             
             // only call the completion block if the camera isn't suspended
+            // (this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption)
             if (self.cameraController.suspended){
-                // this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption
-                NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
+                if (error){
+                    [self captureCompletedWithError:error];
+                }
+                else {
+                    NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
+                }
             }
             else{
                 [self captureCompletedWithError:error];

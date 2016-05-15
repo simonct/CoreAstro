@@ -199,6 +199,8 @@
 		F4BC3CCE19AE644200401578 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BC3CCD19AE644200401578 /* CoreLocation.framework */; };
 		F4BDF8EE17B657AF00749F4B /* SMDoubleSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EA17B657AF00749F4B /* SMDoubleSliderCell.m */; };
 		F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */; };
+		F4BF8E461CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4BF8E451CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib */; };
+		F4BF8E471CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4BF8E451CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib */; };
 		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in Copy SXDevices plugin */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
@@ -605,6 +607,7 @@
 		F4BDF8EB17B657AF00749F4B /* SMDoubleSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMDoubleSlider.m; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.m"; sourceTree = "<group>"; };
 		F4BDF8EC17B657AF00749F4B /* SMDoubleSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSliderCell.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSliderCell.h"; sourceTree = "<group>"; };
 		F4BDF8ED17B657AF00749F4B /* SMDoubleSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMDoubleSlider.h; path = "../../../External/SMDoubleSlider-master/Framework_code/SMDoubleSlider.h"; sourceTree = "<group>"; };
+		F4BF8E451CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorExposureView.xib; sourceTree = "<group>"; };
 		F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcfitsio.dylib; path = ../../External/cfitsio/build/Release/libcfitsio.dylib; sourceTree = "<group>"; };
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
@@ -1083,6 +1086,7 @@
 				F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */,
 				F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */,
 				F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */,
+				F4BF8E451CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib */,
 				F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */,
 				F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */,
 				F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */,
@@ -1435,6 +1439,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F40D5B891849ECBE00977FA9 /* CCD IO-Info.plist in Resources */,
+				F4BF8E471CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib in Resources */,
 				F40D5B5A1849EC5E00977FA9 /* InfoPlist.strings in Resources */,
 				F40D5B5B1849EC5E00977FA9 /* Credits.rtf in Resources */,
 				F40D5B5C1849EC5E00977FA9 /* MainMenu.xib in Resources */,
@@ -1533,6 +1538,7 @@
 				F4A258C9179BC1D90013D220 /* CASFilterWheelControlsViewController.xib in Resources */,
 				F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */,
 				F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */,
+				F4BF8E461CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib in Resources */,
 				F4F2A4D31AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F4E6422E179BDF8F0044B349 /* loop.png in Resources */,

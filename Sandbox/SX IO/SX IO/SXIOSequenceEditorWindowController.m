@@ -482,6 +482,20 @@ static void* kvoContext;
 
 @end
 
+@interface SXIOSequenceEditorRowView : NSTableRowView
+@property (strong) CASSequenceStep* step;
+@end
+
+@implementation SXIOSequenceEditorRowView
+@end
+
+@interface SXIOSequenceEditorExposureView : SXIOSequenceEditorRowView
+@property (strong) IBOutlet NSObjectController *objectController;
+@end
+
+@implementation SXIOSequenceEditorExposureView
+@end
+
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
 @property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
 @end
@@ -538,12 +552,13 @@ static void* kvoContext;
 
 @end
 
-@interface SXIOSequenceEditorWindowController ()<NSWindowDelegate>
+@interface SXIOSequenceEditorWindowController ()<NSWindowDelegate,NSTableViewDelegate>
 @property (nonatomic,strong) NSURL* sequenceURL;
 @property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
 @property (nonatomic,weak) IBOutlet NSButton *startButton;
 @property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
+@property (weak) IBOutlet NSTableView *tableView;
 @end
 
 @implementation SXIOSequenceEditorWindowController
@@ -559,6 +574,10 @@ static void* kvoContext;
     [super windowDidLoad];
     
     self.sequence = [CASSequence new];
+    
+    self.tableView.delegate = self;
+    
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureView" bundle:nil] forIdentifier:@"exposure"];
     
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -699,7 +718,7 @@ static void* kvoContext;
 
 - (void)updateWindowRepresentedURL:(NSURL*)url
 {
-    self.sequenceURL = url;
+    self.sequenceURL = url; // this isn't being shown while it's a sheet
     self.window.representedURL = url; // need scoped bookmark data ?
     NSString* name = [url isFileURL] ? [[NSFileManager defaultManager] displayNameAtPath:url.path] : [url lastPathComponent];
     [self.window setTitleWithRepresentedFilename:name];
@@ -708,12 +727,16 @@ static void* kvoContext;
 - (IBAction)save:(id)sender
 {
     void (^archiveToURL)(NSURL*) = ^(NSURL* url){
-        if ([[NSKeyedArchiver archivedDataWithRootObject:self.sequence] writeToURL:url options:NSDataWritingAtomic error:nil]){
+        NSError* error;
+        if ([[NSKeyedArchiver archivedDataWithRootObject:self.sequence] writeToURL:url options:NSDataWritingAtomic error:&error]){
             [self updateWindowRepresentedURL:url];
+        }
+        else if (error) {
+            [NSApp presentError:error];
         }
     };
     
-    if (self.sequenceURL){
+    if (/*self.sequenceURL*/0){ // tmp, getting permissions erros when saving
         archiveToURL(self.sequenceURL);
     }
     else {
@@ -847,6 +870,20 @@ static void* kvoContext;
         }
     }
     return NO;
+}
+
+#pragma mark - Table view
+
+- (nullable NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    SXIOSequenceEditorRowView* result;
+    NSArray<CASSequenceStep*>* steps = self.stepsController.arrangedObjects;
+    if (row < steps.count){
+        CASSequenceStep* step = steps[row];
+        result = [tableView makeViewWithIdentifier:step.type owner:nil];
+        result.step = step;
+    }
+    return result;
 }
 
 @end
