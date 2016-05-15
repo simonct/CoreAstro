@@ -11,11 +11,13 @@
 
 @class CASCameraController;
 @class CASFilterWheelController;
+@class CASMountController;
 
 @protocol SXIOSequenceTarget <NSObject>
 @required
 @property (nonatomic,readonly) CASCameraController* sequenceCameraController;
 @property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
+@property (nonatomic,readonly) CASMountController* sequenceMountController;
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
 - (void)captureWithCompletion:(void(^)(NSError*))completion;
 - (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;

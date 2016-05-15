@@ -176,6 +176,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @interface CASSequenceSlewStep : CASSequenceStep
 @property (nonatomic,copy) NSDictionary* bookmark;
+// use plate solving flag ? or just implied ?
 @end
 
 @implementation CASSequenceSlewStep
@@ -658,15 +659,29 @@ static void* kvoContext;
 
 - (BOOL)preflightSequence
 {
-    for (CASSequenceExposureStep* step in self.sequence.steps){
-        if ([step.filter length]){
-            CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
-            if (!filterWheel){
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
+    for (CASSequenceStep* step in self.sequence.steps){
+        if ([step isKindOfClass:[CASSequenceExposureStep class]]){
+            CASSequenceExposureStep* exposureStep = (CASSequenceExposureStep*)step;
+            if ([exposureStep.filter length]){
+                CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+                if (!filterWheel){
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
+                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    return NO;
+                }
+            }
+        }
+        else if ([step isKindOfClass:[CASSequenceSlewStep class]]){
+            if (!self.target.sequenceMountController){
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
                                                  defaultButton:@"OK"
                                                alternateButton:nil
                                                    otherButton:nil
-                                     informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
+                                     informativeTextWithFormat:@"Please connect to a mount before before running this sequence"];
                 [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
                 return NO;
             }

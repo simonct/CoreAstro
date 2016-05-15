@@ -2347,9 +2347,9 @@ static void* kvoContext;
     return self.filterWheelControlsViewController.currentFilterWheel;
 }
 
-- (CASMountWindowController*) sequenceMountController
+- (CASMountController*) sequenceMountController
 {
-    return self.mountWindowController;
+    return self.mountWindowController.mountController;
 }
 
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
@@ -2439,6 +2439,7 @@ static void* kvoContext;
 
 - (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
 {
+    self.mountWindowController.mountController.usePlateSolving = YES; // make optional ? - may not have tools installed...
     [self.mountWindowController.mountController slewToBookmark:bookmark completion:completion];
 }
 

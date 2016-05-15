@@ -32,7 +32,7 @@
                     <rect key="frame" x="2" y="0.0" width="407" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="5.5" width="65" height="17"/>
+                            <rect key="frame" x="-2" y="5" width="65" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Bookmark" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -40,7 +40,7 @@
                             </textFieldCell>
                         </textField>
                         <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p9o-Qd-IRk">
-                            <rect key="frame" x="67" y="0.5" width="343" height="26"/>
+                            <rect key="frame" x="67" y="0.0" width="343" height="26"/>
                             <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="wOb-V1-Zby" id="UdR-Wa-31p">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
