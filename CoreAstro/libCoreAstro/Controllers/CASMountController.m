@@ -217,8 +217,14 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     [self setTargetRA:ra dec:dec completion:completion];
 }
 
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;
 {
+    if (!bookmark.count){
+        if (completion){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:2 userInfo:@{NSLocalizedDescriptionKey:@"Invalid bookmark"}]);
+        }
+        return;
+    }
     if (!self.mount.connected || self.mount.slewing || self.mountSynchroniser.busy){
         if (completion){
             completion([NSError errorWithDomain:NSStringFromClass([self class]) code:1 userInfo:@{NSLocalizedDescriptionKey:@"Mount is busy"}]);
@@ -226,23 +232,15 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         return;
     }
     
-    NSDictionary* bookmark = [self bookmarkWithName:name];
-    if (!bookmark){
-        if (completion){
-            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:2 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"No such bookmark '%@'",name]}]);
+    __weak __typeof(self) weakSelf = self;
+    [self setTargetFromBookmark:bookmark completion:^(NSError* error) {
+        if (error){
+            completion(error);
         }
-    }
-    else {
-        __weak __typeof(self) weakSelf = self;
-        [self setTargetFromBookmark:bookmark completion:^(NSError* error) {
-            if (error){
-                completion(error);
-            }
-            else {
-                [weakSelf slewToTargetWithCompletion:completion];
-            }
-        }];
-    }
+        else {
+            [weakSelf slewToTargetWithCompletion:completion];
+        }
+    }];
 }
 
 - (void)stop

@@ -175,7 +175,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @end
 
 @interface CASSequenceSlewStep : CASSequenceStep
-@property (nonatomic,copy) NSString* name; // should have a bookmark id ?
+@property (nonatomic,copy) NSDictionary* bookmark;
 @end
 
 @implementation CASSequenceSlewStep
@@ -192,7 +192,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 {
     self = [super initWithCoder:coder];
     if (self) {
-        self.name = [coder decodeObjectOfClass:[NSString class] forKey:@"name"];
+        self.bookmark = [coder decodeObjectOfClass:[NSDictionary class] forKey:@"bookmarkName"];
     }
     return self;
 }
@@ -200,13 +200,13 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [super encodeWithCoder:aCoder];
-    [aCoder encodeObject:self.name forKey:@"name"];
+    [aCoder encodeObject:self.bookmark forKey:@"bookmarkName"];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
     CASSequenceSlewStep* copy = [super copyWithZone:zone];
-    copy.name = self.name;
+    copy.bookmark = self.bookmark;
     return copy;
 }
 
@@ -217,17 +217,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 - (BOOL)isValid
 {
-    return (self.name.length > 0);
-}
-
-- (void)setNilValueForKey:(NSString *)key
-{
-    if ([@"name" isEqualToString:key]){
-        self.name = 0;
-    }
-    else {
-        [super setNilValueForKey:key];
-    }
+    return (self.bookmark.count > 0);
 }
 
 @end
@@ -451,7 +441,7 @@ static void* kvoContext;
 
 - (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
 {
-    [self.target slewToBookmarkWithName:sequenceStep.name completion:^(NSError* error){
+    [self.target slewToBookmark:sequenceStep.bookmark completion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
                 [self stop];
@@ -496,6 +486,19 @@ static void* kvoContext;
 @implementation SXIOSequenceEditorExposureView
 @end
 
+@interface SXIOSequenceEditorSlewStepView : SXIOSequenceEditorRowView
+@property (strong) IBOutlet NSObjectController *objectController;
+@end
+
+@implementation SXIOSequenceEditorSlewStepView
+
+- (NSArray*)bookmarks
+{
+    return CASBookmarks.sharedInstance.bookmarks;
+}
+
+@end
+
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
 @property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
 @end
@@ -521,7 +524,8 @@ static void* kvoContext;
     
     // only supporting exposure types for now but in the future could have focus, slew, etc
     self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(CASSequenceStep* step, NSDictionary *bindings) {
-        return [step isKindOfClass:[CASSequenceExposureStep class]];
+        return [step isKindOfClass:[CASSequenceExposureStep class]] ||
+        [step isKindOfClass:[CASSequenceSlewStep class]];
     }];
     
     for (id object in self.content){
@@ -610,6 +614,7 @@ static void* kvoContext;
     self.tableView.delegate = self;
     
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureView" bundle:nil] forIdentifier:@"exposure"];
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
     
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -873,7 +878,8 @@ static void* kvoContext;
 
 - (IBAction)addSlewStep:(id)sender
 {
-    NSLog(@"addSlewStep");
+    CASSequenceSlewStep* step = [CASSequenceSlewStep new];
+    [self.stepsController addObject:step];
 }
 
 - (IBAction)addParkStep:(id)sender

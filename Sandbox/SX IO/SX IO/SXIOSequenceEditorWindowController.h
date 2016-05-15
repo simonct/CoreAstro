@@ -18,7 +18,7 @@
 @property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
 - (void)captureWithCompletion:(void(^)(NSError*))completion;
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion;
+- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;
 - (void)endSequence;
 @end
 

@@ -2437,9 +2437,9 @@ static void* kvoContext;
     }];
 }
 
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
 {
-    [self.mountWindowController.mountController slewToBookmarkWithName:name completion:completion];
+    [self.mountWindowController.mountController slewToBookmark:bookmark completion:completion];
 }
 
 - (void)captureCompletedWithError:(NSError*)error
