@@ -552,6 +552,37 @@ static void* kvoContext;
 
 @end
 
+// from https://developer.apple.com/library/mac/samplecode/ButtonMadness/Introduction/Intro.html
+//
+@interface SXIOSequenceEditorAddButton : NSButton
+@end
+
+@implementation SXIOSequenceEditorAddButton {
+    NSPopUpButtonCell* popUpCell;
+}
+
+- (void)awakeFromNib
+{
+    popUpCell = [[NSPopUpButtonCell alloc] initTextCell:@""];
+    [popUpCell setPullsDown:YES];
+    [popUpCell setPreferredEdge:NSMaxYEdge];
+}
+
+- (void)mouseDown:(NSEvent*)theEvent
+{
+    // create the menu the popup will use
+    NSMenu *popUpMenu = [[self menu] copy];
+    [popUpMenu insertItemWithTitle:@"" action:NULL keyEquivalent:@"" atIndex:0];	// blank item at top
+    [popUpCell setMenu:popUpMenu];
+    
+    // and show it
+    [popUpCell performClickWithFrame:[self bounds] inView:self];
+    
+    [self setNeedsDisplay: YES];
+}
+
+@end
+
 @interface SXIOSequenceEditorWindowController ()<NSWindowDelegate,NSTableViewDelegate>
 @property (nonatomic,strong) NSURL* sequenceURL;
 @property (nonatomic,strong) CASSequence* sequence;
@@ -570,7 +601,8 @@ static void* kvoContext;
     return [[[self class] alloc] initWithWindowNibName:@"SXIOSequenceEditorWindowController"];
 }
 
-- (void)windowDidLoad {
+- (void)windowDidLoad
+{
     [super windowDidLoad];
     
     self.sequence = [CASSequence new];
@@ -832,6 +864,21 @@ static void* kvoContext;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+- (IBAction)addExposureStep:(id)sender
+{
+    [self.stepsController add:nil];
+}
+
+- (IBAction)addSlewStep:(id)sender
+{
+    NSLog(@"addSlewStep");
+}
+
+- (IBAction)addParkStep:(id)sender
+{
+    NSLog(@"addParkStep");
 }
 
 #pragma mark - Drag & Drop

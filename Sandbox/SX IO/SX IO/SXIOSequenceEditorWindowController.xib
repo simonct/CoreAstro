@@ -33,7 +33,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="20" viewBased="YES" id="loe-Z3-bYl">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="271"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="119" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="6"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -76,7 +76,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14M-km-aak">
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14M-km-aak" customClass="SXIOSequenceEditorAddButton">
                         <rect key="frame" x="6" y="5" width="21" height="23"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="21" id="IgS-is-XNt"/>
@@ -98,6 +98,7 @@
                                     <string key="NSValueTransformerName">NSIsNil</string>
                                 </dictionary>
                             </binding>
+                            <outlet property="menu" destination="e0g-Vq-l2r" id="yrQ-RM-jx5"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DbS-ay-4mf">
@@ -221,5 +222,28 @@ Gw
                 <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
             </connections>
         </arrayController>
+        <menu id="e0g-Vq-l2r">
+            <items>
+                <menuItem title="Add Exposure Step" id="tPZ-AC-lcI" userLabel="Add Exposure Step">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addExposureStep:" target="-2" id="hE2-VJ-rkM"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Slew Step" id="xFZ-Ci-D5V" userLabel="Add Slew Step">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addSlewStep:" target="-2" id="CEL-G0-f0G"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Park Step" id="HkJ-tr-KZB" userLabel="Add Park Step">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addParkStep:" target="-2" id="49T-Gj-Nro"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-116" y="-87.5"/>
+        </menu>
     </objects>
 </document>

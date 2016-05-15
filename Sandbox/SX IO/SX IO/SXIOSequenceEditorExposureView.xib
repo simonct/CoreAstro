@@ -32,7 +32,7 @@
                     <rect key="frame" x="2" y="0.0" width="407" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="5.5" width="54" height="17"/>
+                            <rect key="frame" x="-2" y="5" width="54" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Count" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -60,7 +60,7 @@
                             </connections>
                         </textField>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="avD-wo-eKw">
-                            <rect key="frame" x="137.5" y="5.5" width="54" height="17"/>
+                            <rect key="frame" x="137" y="5" width="54" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Seconds" id="n1u-P9-Qi2">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -71,7 +71,7 @@
                             </textFieldCell>
                         </textField>
                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="cWe-if-Gti">
-                            <rect key="frame" x="197.5" y="3" width="73.5" height="22"/>
+                            <rect key="frame" x="197" y="3" width="73.5" height="22"/>
                             <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" id="0F7-Lk-5XB">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
