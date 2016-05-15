@@ -568,7 +568,8 @@ static void* kvoContext;
     // only supporting exposure types for now but in the future could have focus, slew, etc
     self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(CASSequenceStep* step, NSDictionary *bindings) {
         return [step isKindOfClass:[CASSequenceExposureStep class]] ||
-        [step isKindOfClass:[CASSequenceSlewStep class]];
+        [step isKindOfClass:[CASSequenceSlewStep class]] ||
+        [step isKindOfClass:[CASSequenceParkStep class]];
     }];
     
     for (id object in self.content){
