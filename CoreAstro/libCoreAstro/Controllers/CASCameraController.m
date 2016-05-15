@@ -480,15 +480,20 @@ static void* kvoContext;
         block([self errorWithCode:2 message:@"The associated filter wheel is moving"],nil);
         return;
     }
-
+    
+    if (!_suspended){
+        self.settings.currentCaptureIndex = 0;
+    }
+    else{
+        self.settings.currentCaptureIndex = _savedCurrentCaptureIndex != -1 ? _savedCurrentCaptureIndex + 1 : 0;
+        if (self.settings.currentCaptureIndex >= self.settings.captureCount){
+            block([self errorWithCode:5 message:@"Attempted to resume capture when sequence is complete" recovery:nil],nil);
+            return;
+        }
+    }
+    
     _cancelled = NO;
     _suspended = NO;
-    
-    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex != -1 ? _savedCurrentCaptureIndex + 1 : 0;
-    if (self.settings.currentCaptureIndex >= self.settings.captureCount){
-        block([self errorWithCode:5 message:@"Attempted to resume capture when sequence is complete" recovery:nil],nil);
-        return;
-    }
     _savedCurrentCaptureIndex = -1;
     
     void (^startCapture)() = ^{
@@ -628,9 +633,11 @@ static void* kvoContext;
 
 - (void)suspendCapture
 {
-    self.suspended = YES; // set this before calling -cancelCapture
-    _savedCurrentCaptureIndex = self.settings.currentCaptureIndex; // todo; push/pop settings ?
-    [self cancelCapture];
+    if (self.capturing){
+        self.suspended = YES; // set this before calling -cancelCapture
+        _savedCurrentCaptureIndex = self.settings.currentCaptureIndex; // todo; push/pop settings ?
+        [self cancelCapture];
+    }
 }
 
 - (BOOL) cancelled
