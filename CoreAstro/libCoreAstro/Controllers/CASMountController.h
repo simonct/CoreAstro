@@ -27,6 +27,7 @@
 - (void)slewToTargetWithCompletion:(void(^)(NSError*))completion;
 
 - (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;
+- (void)parkMountWithCompletion:(void(^)(NSError*))completion;
 
 - (void)stop;
 

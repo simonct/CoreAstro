@@ -2442,6 +2442,11 @@ static void* kvoContext;
     [self.mountWindowController.mountController slewToBookmark:bookmark plateSolve:plateSolve completion:completion];
 }
 
+- (void)parkMountWithCompletion:(void(^)(NSError*))completion
+{
+    [self.mountWindowController.mountController parkMountWithCompletion:completion];
+}
+
 - (void)captureCompletedWithError:(NSError*)error
 {
     [self endSequence];

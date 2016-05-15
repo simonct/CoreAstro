@@ -227,6 +227,18 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
+@interface CASSequenceParkStep : CASSequenceStep
+@end
+
+@implementation CASSequenceParkStep
+
+- (NSString*)type
+{
+    return @"park";
+}
+
+@end
+
 @interface CASSequence : NSObject<NSCoding>
 @property (nonatomic,strong) NSMutableArray* steps;
 @property (nonatomic,copy) NSString* prefix;
@@ -404,6 +416,9 @@ static void* kvoContext;
         else if ([self.currentStep.type isEqualToString:@"slew"]){
             [self executeSlewStep:(CASSequenceSlewStep*)self.currentStep];
         }
+        else if ([self.currentStep.type isEqualToString:@"park"]){
+            [self executeParkStep:(CASSequenceParkStep*)self.currentStep];
+        }
         else {
             NSLog(@"Unknown sequence step %@",self.currentStep.type);
         }
@@ -461,6 +476,23 @@ static void* kvoContext;
     }];
 }
 
+- (void)executeParkStep:(CASSequenceParkStep*)parkStep
+{
+    [self.target parkMountWithCompletion:^(NSError* error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error){
+                [self stop];
+                [NSApp presentError:error];
+            }
+            else {
+                if (!_stopped){
+                    [self advanceToNextStep];
+                }
+            }
+        });
+    }];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
@@ -502,6 +534,12 @@ static void* kvoContext;
     return CASBookmarks.sharedInstance.bookmarks;
 }
 
+@end
+
+@interface SXIOSequenceEditorParkStepView : SXIOSequenceEditorRowView
+@end
+
+@implementation SXIOSequenceEditorParkStepView
 @end
 
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
@@ -620,7 +658,8 @@ static void* kvoContext;
     
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureView" bundle:nil] forIdentifier:@"exposure"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
-    
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorParkStepView" bundle:nil] forIdentifier:@"park"];
+
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
     [closeButton setAction:@selector(close:)];
@@ -910,13 +949,12 @@ static void* kvoContext;
 
 - (IBAction)addSlewStep:(id)sender
 {
-    CASSequenceSlewStep* step = [CASSequenceSlewStep new];
-    [self.stepsController addObject:step];
+    [self.stepsController addObject:[CASSequenceSlewStep new]];
 }
 
 - (IBAction)addParkStep:(id)sender
 {
-    NSLog(@"addParkStep");
+    [self.stepsController addObject:[CASSequenceParkStep new]];
 }
 
 #pragma mark - Drag & Drop

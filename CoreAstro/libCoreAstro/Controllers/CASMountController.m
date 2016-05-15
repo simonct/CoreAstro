@@ -245,6 +245,27 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     }];
 }
 
+- (void)parkMountWithCompletion:(void(^)(NSError*))completion
+{
+    __weak __typeof(self) weakSelf = self;
+    void (^parkCompletion)(CASMountSlewError,CASMountSlewObserver*) = ^(CASMountSlewError error, CASMountSlewObserver* observer){
+        if (error != CASMountSlewErrorNone){
+            completion([NSError errorWithDomain:NSStringFromClass([self class]) code:15 userInfo:@{NSLocalizedDescriptionKey:@"Mount failed to park"}]);
+        }
+        else {
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
+                weakSelf.slewObserver = nil;
+                completion(error);
+            };
+        }
+    };
+
+    [self.mount park:^(CASMountSlewError error, CASMountSlewObserver* observer) {
+        parkCompletion(error,observer);
+    }];
+}
+
 - (void)stop
 {
     if (self.mountSynchroniser.mount){
