@@ -217,7 +217,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     [self setTargetRA:ra dec:dec completion:completion];
 }
 
-- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;
 {
     if (!bookmark.count){
         if (completion){
@@ -231,6 +231,8 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         }
         return;
     }
+    
+    self.usePlateSolving = plateSolve; // push and pop this value ?
     
     __weak __typeof(self) weakSelf = self;
     [self setTargetFromBookmark:bookmark completion:^(NSError* error) {

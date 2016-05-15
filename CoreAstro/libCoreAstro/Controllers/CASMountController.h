@@ -26,7 +26,7 @@
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs completion:(void(^)(NSError*))completion;
 - (void)slewToTargetWithCompletion:(void(^)(NSError*))completion;
 
-- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;
 
 - (void)stop;
 

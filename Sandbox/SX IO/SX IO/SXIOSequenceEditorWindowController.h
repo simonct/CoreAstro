@@ -20,7 +20,7 @@
 @property (nonatomic,readonly) CASMountController* sequenceMountController;
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
 - (void)captureWithCompletion:(void(^)(NSError*))completion;
-- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion;
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;
 - (void)endSequence;
 @end
 

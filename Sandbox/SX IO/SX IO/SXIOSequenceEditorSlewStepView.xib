@@ -40,7 +40,7 @@
                             </textFieldCell>
                         </textField>
                         <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p9o-Qd-IRk">
-                            <rect key="frame" x="67" y="0.0" width="343" height="26"/>
+                            <rect key="frame" x="67" y="0.0" width="156" height="26"/>
                             <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="wOb-V1-Zby" id="UdR-Wa-31p">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
@@ -51,6 +51,13 @@
                                         <menuItem title="Item 3" id="Tfk-GJ-Pxy"/>
                                     </items>
                                 </menu>
+                                <connections>
+                                    <binding destination="5Zq-Z6-Rt2" name="enabled" keyPath="selection.step.sequenceRunning" id="0ZN-pi-wgS">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
+                                </connections>
                             </popUpButtonCell>
                             <connections>
                                 <binding destination="5Zq-Z6-Rt2" name="content" keyPath="selection.bookmarks" id="cld-9V-TZb"/>
@@ -58,12 +65,29 @@
                                 <binding destination="5Zq-Z6-Rt2" name="selectedObject" keyPath="selection.step.bookmark" previousBinding="9EM-Qg-vHy" id="wRM-nf-GnR"/>
                             </connections>
                         </popUpButton>
+                        <button translatesAutoresizingMaskIntoConstraints="NO" id="MHL-oP-QgM">
+                            <rect key="frame" x="226" y="5" width="183" height="18"/>
+                            <buttonCell key="cell" type="check" title="Plate solve" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="YKN-gS-2BV">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <binding destination="5Zq-Z6-Rt2" name="value" keyPath="selection.step.plateSolve" id="y4r-nq-fy7"/>
+                                <binding destination="5Zq-Z6-Rt2" name="enabled" keyPath="selection.step.sequenceRunning" id="HUq-1F-l5l">
+                                    <dictionary key="options">
+                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                    </dictionary>
+                                </binding>
+                            </connections>
+                        </button>
                     </subviews>
                     <visibilityPriorities>
                         <integer value="1000"/>
                         <integer value="1000"/>
+                        <integer value="1000"/>
                     </visibilityPriorities>
                     <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                     </customSpacing>

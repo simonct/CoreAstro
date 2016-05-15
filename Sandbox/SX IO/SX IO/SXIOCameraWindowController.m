@@ -2437,10 +2437,9 @@ static void* kvoContext;
     }];
 }
 
-- (void)slewToBookmark:(NSDictionary*)bookmark completion:(void(^)(NSError*))completion
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion
 {
-    self.mountWindowController.mountController.usePlateSolving = YES; // make optional ? - may not have tools installed...
-    [self.mountWindowController.mountController slewToBookmark:bookmark completion:completion];
+    [self.mountWindowController.mountController slewToBookmark:bookmark plateSolve:plateSolve completion:completion];
 }
 
 - (void)captureCompletedWithError:(NSError*)error

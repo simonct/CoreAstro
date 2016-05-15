@@ -176,7 +176,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @interface CASSequenceSlewStep : CASSequenceStep
 @property (nonatomic,copy) NSDictionary* bookmark;
-// use plate solving flag ? or just implied ?
+@property BOOL plateSolve;
 @end
 
 @implementation CASSequenceSlewStep
@@ -185,6 +185,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 {
     self = [super init];
     if (self) {
+        self.plateSolve = YES;
     }
     return self;
 }
@@ -194,6 +195,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     self = [super initWithCoder:coder];
     if (self) {
         self.bookmark = [coder decodeObjectOfClass:[NSDictionary class] forKey:@"bookmarkName"];
+        self.plateSolve = [coder decodeBoolForKey:@"plateSolve"];
     }
     return self;
 }
@@ -202,12 +204,14 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 {
     [super encodeWithCoder:aCoder];
     [aCoder encodeObject:self.bookmark forKey:@"bookmarkName"];
+    [aCoder encodeBool:self.plateSolve forKey:@"plateSolve"];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
     CASSequenceSlewStep* copy = [super copyWithZone:zone];
     copy.bookmark = self.bookmark;
+    copy.plateSolve = self.plateSolve;
     return copy;
 }
 
@@ -442,7 +446,7 @@ static void* kvoContext;
 
 - (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
 {
-    [self.target slewToBookmark:sequenceStep.bookmark completion:^(NSError* error){
+    [self.target slewToBookmark:sequenceStep.bookmark plateSolve:sequenceStep.plateSolve completion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
                 [self stop];
@@ -676,6 +680,7 @@ static void* kvoContext;
             }
         }
         else if ([step isKindOfClass:[CASSequenceSlewStep class]]){
+            CASSequenceSlewStep* slewStep = (CASSequenceSlewStep*)step;
             if (!self.target.sequenceMountController){
                 NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
                                                  defaultButton:@"OK"
@@ -684,6 +689,18 @@ static void* kvoContext;
                                      informativeTextWithFormat:@"Please connect to a mount before before running this sequence"];
                 [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
                 return NO;
+            }
+            if (slewStep.plateSolve){
+                CASPlateSolver* solver = [CASPlateSolver plateSolverWithIdentifier:nil];
+                if (![solver canSolveExposure:nil error:nil]){
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Plate Solve"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps"];
+                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    return NO;
+                }
             }
         }
     }
