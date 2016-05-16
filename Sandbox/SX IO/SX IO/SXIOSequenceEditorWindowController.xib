@@ -242,8 +242,14 @@ Gw
                         <action selector="addParkStep:" target="-2" id="49T-Gj-Nro"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Add Start Time Step" id="c7A-vK-X8Y" userLabel="Add Park Step">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addStartTimeStep:" target="-2" id="0kH-rp-psW"/>
+                    </connections>
+                </menuItem>
             </items>
-            <point key="canvasLocation" x="-116" y="-87.5"/>
+            <point key="canvasLocation" x="-187" y="-83.5"/>
         </menu>
     </objects>
 </document>

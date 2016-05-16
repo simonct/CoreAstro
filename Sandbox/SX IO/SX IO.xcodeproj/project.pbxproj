@@ -196,6 +196,8 @@
 		F4A258CA179BC1D90013D220 /* CASPHDControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */; };
 		F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */; };
 		F4A63E081BC13DA50047ED91 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A63E071BC13DA50047ED91 /* CloudKit.framework */; };
+		F4A82C7C1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A82C7B1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib */; };
+		F4A82C7D1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4A82C7B1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib */; };
 		F4AC8C5A1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
 		F4AC8C5B1B1B2896008A3622 /* SXIOFocuserWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */; };
 		F4AC8C5C1B1B2896008A3622 /* SXIOFocuserWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */; };
@@ -605,6 +607,7 @@
 		F4A258C2179BC1D90013D220 /* CASPHDControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASPHDControlsViewController.m; path = ../../../CoreAstro/CASPHDControlsViewController.m; sourceTree = "<group>"; };
 		F4A258C3179BC1D90013D220 /* CASPHDControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CASPHDControlsViewController.xib; path = ../../../CoreAstro/CASPHDControlsViewController.xib; sourceTree = "<group>"; };
 		F4A63E071BC13DA50047ED91 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		F4A82C7B1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorStartTimeStepView.xib; sourceTree = "<group>"; };
 		F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOFocuserWindowController.h; sourceTree = "<group>"; };
 		F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOFocuserWindowController.m; sourceTree = "<group>"; };
 		F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOFocuserWindowController.xib; sourceTree = "<group>"; };
@@ -1095,6 +1098,7 @@
 				F4BF8E451CE7537800EE3374 /* SXIOSequenceEditorExposureView.xib */,
 				F42437BB1CE889BC0097E1E8 /* SXIOSequenceEditorSlewStepView.xib */,
 				F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */,
+				F4A82C7B1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib */,
 				F4AC8C571B1B2896008A3622 /* SXIOFocuserWindowController.h */,
 				F4AC8C581B1B2896008A3622 /* SXIOFocuserWindowController.m */,
 				F4AC8C591B1B2896008A3622 /* SXIOFocuserWindowController.xib */,
@@ -1461,6 +1465,7 @@
 				F40D5B5F1849EC5E00977FA9 /* CASHistogramHUDView.xib in Resources */,
 				F40D5B601849EC5E00977FA9 /* CASPlateSolutionHUDView.xib in Resources */,
 				F40D5B611849EC5E00977FA9 /* CASCameraControlsViewController.xib in Resources */,
+				F4A82C7D1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib in Resources */,
 				F40D5B621849EC5E00977FA9 /* CASGuiderControlsViewController.xib in Resources */,
 				F40D5B631849EC5E00977FA9 /* CASFilterWheelControlsViewController.xib in Resources */,
 				F40D5B641849EC5E00977FA9 /* CASPHDControlsViewController.xib in Resources */,
@@ -1552,6 +1557,7 @@
 				F4F2A4D31AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F42437C51CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib in Resources */,
+				F4A82C7C1CE9A70500B5CDA9 /* SXIOSequenceEditorStartTimeStepView.xib in Resources */,
 				F4E6422E179BDF8F0044B349 /* loop.png in Resources */,
 				F4E6424D179BEE540044B349 /* SXIOSaveTargetViewController.xib in Resources */,
 				F45C486F18B7319000BCD684 /* SXIOPlateSolveOptionsWindowController.xib in Resources */,

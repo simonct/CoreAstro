@@ -52,6 +52,8 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     return copy;
 }
 
+- (void)cancel {}
+
 @end
 
 @interface CASSequenceExposureStep : CASSequenceStep
@@ -222,7 +224,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 - (BOOL)isValid
 {
-    return (self.bookmark.count > 0);
+    return (self.bookmark.count > 0); // and mount connected
 }
 
 @end
@@ -239,11 +241,87 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
+@interface CASSequenceStartTimeStep : CASSequenceStep
+@property (strong) NSDate* date;
+@property (copy) void(^completion)();
+@end
+
+@implementation CASSequenceStartTimeStep
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.date = [NSDate date];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        self.date = [coder decodeObjectOfClass:[NSDate class] forKey:@"date"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:self.date forKey:@"date"];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    CASSequenceStartTimeStep* copy = [super copyWithZone:zone];
+    copy.date = self.date;
+    return copy;
+}
+
+- (NSString*)type
+{
+    return @"start";
+}
+
+- (BOOL)isValid
+{
+    return (self.date != nil);
+}
+
+- (void)waitWithCompletion:(void(^)())completion
+{
+    const NSTimeInterval delay = self.date.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate];
+    if (delay <= 0){
+        completion();
+    }
+    else {
+        self.completion = completion;
+        [self performSelector:@selector(complete) withObject:nil afterDelay:delay];
+    }
+}
+
+- (void)complete
+{
+    if (self.completion){
+        self.completion();
+    }
+}
+
+- (void)cancel
+{
+    self.completion = nil;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(complete) object:nil];
+}
+
+@end
+
 @interface CASSequence : NSObject<NSCoding>
 @property (nonatomic,strong) NSMutableArray* steps;
 @property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
 @property (nonatomic,assign) NSInteger temperature;
+// repeat time interval, updates any start time steps by the given delay
 @end
 
 @implementation CASSequence
@@ -336,6 +414,7 @@ static void* kvoContext;
     self.currentStep = nil;
     
     for (CASSequenceStep* step in self.sequence.steps){
+        [step cancel];
         step.sequenceRunning = NO;
     }
 
@@ -393,7 +472,7 @@ static void* kvoContext;
 
 - (void)advanceToNextStep
 {
-    const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep];
+    const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep]; // get from array controller instead ?
     if (index != NSNotFound && index < [self.sequence.steps count] - 1){
         self.currentStep = self.sequence.steps[index + 1];
     }
@@ -405,7 +484,7 @@ static void* kvoContext;
 - (void)executeCurrentStep
 {
     if (![self.currentStep isValid]){
-        NSLog(@"Skipping empty step");
+        NSLog(@"Skipping invalid step: %@",self.currentStep);
         [self advanceToNextStep];
     }
     else {
@@ -418,6 +497,9 @@ static void* kvoContext;
         }
         else if ([self.currentStep.type isEqualToString:@"park"]){
             [self executeParkStep:(CASSequenceParkStep*)self.currentStep];
+        }
+        else if ([self.currentStep.type isEqualToString:@"start"]){
+            [self executeStartTimeStep:(CASSequenceStartTimeStep*)self.currentStep];
         }
         else {
             NSLog(@"Unknown sequence step %@",self.currentStep.type);
@@ -493,6 +575,15 @@ static void* kvoContext;
     }];
 }
 
+- (void)executeStartTimeStep:(CASSequenceStartTimeStep*)startTimeStep
+{
+    [startTimeStep waitWithCompletion:^{
+        if (!_stopped){
+            [self advanceToNextStep];
+        }
+    }];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
@@ -540,6 +631,12 @@ static void* kvoContext;
 @end
 
 @implementation SXIOSequenceEditorParkStepView
+@end
+
+@interface SXIOSequenceEditorStartTimeStepView : SXIOSequenceEditorRowView
+@end
+
+@implementation SXIOSequenceEditorStartTimeStepView
 @end
 
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
@@ -660,6 +757,7 @@ static void* kvoContext;
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureView" bundle:nil] forIdentifier:@"exposure"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorParkStepView" bundle:nil] forIdentifier:@"park"];
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorStartTimeStepView" bundle:nil] forIdentifier:@"start"];
 
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -956,6 +1054,11 @@ static void* kvoContext;
 - (IBAction)addParkStep:(id)sender
 {
     [self.stepsController addObject:[CASSequenceParkStep new]];
+}
+
+- (IBAction)addStartTimeStep:(id)sender
+{
+    [self.stepsController addObject:[CASSequenceStartTimeStep new]];
 }
 
 #pragma mark - Drag & Drop
