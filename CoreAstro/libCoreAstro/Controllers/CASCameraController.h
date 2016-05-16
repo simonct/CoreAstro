@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
 
 @property (nonatomic,strong) CASGuiderController* guider;
-@property (nonatomic,strong) CASFilterWheelController* filterWheel;
+@property (nonatomic,weak) CASFilterWheelController* filterWheel;
 
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;

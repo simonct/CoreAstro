@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOSequenceEditorWindowController">
             <connections>
+                <outlet property="camerasController" destination="gdZ-KH-tco" id="iMZ-lj-j8j"/>
                 <outlet property="startButton" destination="jm5-Wb-FH0" id="zdU-Ls-QPa"/>
                 <outlet property="stepsController" destination="gGE-tq-u0q" id="J9A-Xz-R39"/>
                 <outlet property="tableView" destination="loe-Z3-bYl" id="TF1-li-zof"/>
@@ -34,7 +35,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="20" viewBased="YES" id="loe-Z3-bYl">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="214"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="119" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="6"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -98,6 +99,11 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <binding destination="gdZ-KH-tco" name="content" keyPath="arrangedObjects" id="ou7-hy-YHy"/>
+                            <binding destination="gdZ-KH-tco" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="ou7-hy-YHy" id="0xq-XT-QO0"/>
+                            <binding destination="gdZ-KH-tco" name="selectedIndex" keyPath="selectionIndex" previousBinding="0xq-XT-QO0" id="DyQ-Ga-7ke"/>
+                        </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jpa-Un-Byf">
                         <rect key="frame" x="6" y="392" width="51" height="17"/>
@@ -379,6 +385,11 @@ Gw
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>
                 <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
+            </connections>
+        </arrayController>
+        <arrayController objectClassName="CASCameraController" id="gdZ-KH-tco" userLabel="Cameras Controller">
+            <connections>
+                <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="dih-xA-Ixt"/>
             </connections>
         </arrayController>
         <menu id="e0g-Vq-l2r">

@@ -2337,17 +2337,7 @@ static void* kvoContext;
 
 #pragma mark - Sequence Target
 
-- (CASCameraController*) sequenceCameraController
-{
-    return self.cameraController;
-}
-
-- (CASFilterWheelController*) sequenceFilterWheelController
-{
-    return self.filterWheelControlsViewController.currentFilterWheel;
-}
-
-- (CASMountController*) sequenceMountController
+- (CASMountController*) sequenceMountController // tmp
 {
     return self.mountWindowController.mountController;
 }

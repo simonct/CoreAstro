@@ -15,9 +15,7 @@
 
 @protocol SXIOSequenceTarget <NSObject>
 @required
-@property (nonatomic,readonly) CASCameraController* sequenceCameraController;
-@property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
-@property (nonatomic,readonly) CASMountController* sequenceMountController;
+@property (nonatomic,readonly) CASMountController* sequenceMountController; // tmp
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
 - (void)captureWithCompletion:(void(^)(NSError*))completion;
 - (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;

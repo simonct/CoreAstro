@@ -316,6 +316,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @interface SXIOSequenceRunner : NSObject // use an operation queue?
 @property (nonatomic,weak) CASSequence* sequence; // copy ?
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
+@property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic,weak,readonly) CASSequenceStep* currentStep;
 @property (nonatomic,copy) void(^completion)();
 - (BOOL)startWithError:(NSError**)error;
@@ -384,7 +385,7 @@ static void* kvoContext;
 - (void)observeFilterWheel
 {
     if (!_observing){
-        [self.target.sequenceFilterWheelController.filterWheel addObserver:self forKeyPath:@"moving" options:0 context:&kvoContext];
+        [self.cameraController.filterWheel.filterWheel addObserver:self forKeyPath:@"moving" options:0 context:&kvoContext];
         _observing = YES;
     }
 }
@@ -392,7 +393,7 @@ static void* kvoContext;
 - (void)unobserveFilterWheel
 {
     if (_observing){
-        [self.target.sequenceFilterWheelController.filterWheel removeObserver:self forKeyPath:@"moving" context:&kvoContext];
+        [self.cameraController.filterWheel.filterWheel removeObserver:self forKeyPath:@"moving" context:&kvoContext];
         _observing = NO;
     }
 }
@@ -462,7 +463,7 @@ static void* kvoContext;
 
 - (void)executeExposureStep:(CASSequenceExposureStep*)sequenceStep
 {
-    CASExposureSettings* settings = self.target.sequenceCameraController.settings;
+    CASExposureSettings* settings = self.cameraController.settings;
     
     settings.captureCount = sequenceStep.count;
     settings.exposureUnits = 0;
@@ -476,7 +477,7 @@ static void* kvoContext;
     NSString* filter = sequenceStep.filter;
     if ([filter length]){
         // need to check it's a known filter name
-        CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+        CASFilterWheelController* filterWheel = self.cameraController.filterWheel;
         if (!filterWheel){
             NSLog(@"*** Filter wheel hasn't been selected in capture window");
             [self advanceToNextStep];
@@ -496,6 +497,10 @@ static void* kvoContext;
 
 - (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
 {
+//    // speak/beep warning for a few seconds ?
+//    NSSpeechSynthesizer* speech = [[NSSpeechSynthesizer alloc] init];
+//    [speech startSpeakingString:@"Mount will start slewing"];
+    // - (void)speechSynthesizer:(NSSpeechSynthesizer *)sender didFinishSpeaking:(BOOL)finishedSpeaking
     [self.target slewToBookmark:sequenceStep.bookmark plateSolve:sequenceStep.plateSolve completion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
@@ -513,6 +518,9 @@ static void* kvoContext;
 
 - (void)executeParkStep:(CASSequenceParkStep*)parkStep
 {
+//    // speak/beep warning for a few seconds ?
+//    NSSpeechSynthesizer* speech = [[NSSpeechSynthesizer alloc] init];
+//    [speech startSpeakingString:@"Mount will start parking"];
     [self.target parkMountWithCompletion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
@@ -532,7 +540,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
         if ([@"moving" isEqualToString:keyPath]){
-            if ([self.target.sequenceFilterWheelController.currentFilterName isEqualToString:((CASSequenceExposureStep*)self.currentStep).filter]){
+            if (!self.cameraController.filterWheel.filterWheel.moving && [self.cameraController.filterWheel.currentFilterName isEqualToString:((CASSequenceExposureStep*)self.currentStep).filter]){
                 [self unobserveFilterWheel];
                 [self capture];
             }
@@ -580,13 +588,17 @@ static void* kvoContext;
 @property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
 @end
 
+@interface SXIOSequenceEditorWindowController () // need to forward declare this for -setFilterNameOnObject:
+@property (nonatomic,readonly) CASCameraController* selectedCameraController;
+@end
+
 @implementation SXIOSequenceEditorWindowControllerStepsController
 
 - (void)setFilterNameOnObject:(id)object
 {
     CASSequenceExposureStep* step = object;
     if ([step respondsToSelector:@selector(setFilterNames:)]){
-        step.filterNames = [[[self.windowController.target.sequenceFilterWheelController.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
+        step.filterNames = [[[self.windowController.selectedCameraController.filterWheel.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
             return [evaluatedObject length] > 0;
         }]] sortedArrayUsingSelector:@selector(compare:)];
         if (!step.selectedFilter){
@@ -672,8 +684,11 @@ static void* kvoContext;
 @property (nonatomic,weak) IBOutlet NSButton *startButton;
 @property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
 @property (weak) IBOutlet NSTableView *tableView;
+@property (strong) IBOutlet NSArrayController *camerasController;
+
 @property (copy) void(^startTimeCompletion)();
 @property (strong) NSDate* nextRunTime;
+
 @end
 
 @implementation SXIOSequenceEditorWindowController {
@@ -721,6 +736,16 @@ static void* kvoContext;
     [self.stepsController removeObserver:self forKeyPath:@"arrangedObjects" context:&kvoContext];
 }
 
+- (NSArray*)cameraControllers
+{
+    return [CASDeviceManager sharedManager].cameraControllers;
+}
+
+- (CASCameraController*)selectedCameraController
+{
+    return self.camerasController.selectedObjects.firstObject;
+}
+
 - (void)close
 {
     // warn first...
@@ -743,9 +768,18 @@ static void* kvoContext;
 {
     for (CASSequenceStep* step in self.sequence.steps){
         if ([step isKindOfClass:[CASSequenceExposureStep class]]){
+            if (!self.selectedCameraController){
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Camera"
+                                                 defaultButton:@"OK"
+                                               alternateButton:nil
+                                                   otherButton:nil
+                                     informativeTextWithFormat:@"Please select a camera from the pop-up menu before running this sequence"];
+                [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                return NO;
+            }
             CASSequenceExposureStep* exposureStep = (CASSequenceExposureStep*)step;
             if ([exposureStep.filter length]){
-                CASFilterWheelController* filterWheel = self.target.sequenceFilterWheelController;
+                CASFilterWheelController* filterWheel = self.selectedCameraController.filterWheel;
                 if (!filterWheel){
                     NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
                                                      defaultButton:@"OK"
@@ -818,6 +852,7 @@ static void* kvoContext;
         
             self.sequenceRunner = [SXIOSequenceRunner new];
             self.sequenceRunner.target = self.target;
+            self.sequenceRunner.cameraController = self.selectedCameraController;
             self.sequenceRunner.sequence = self.sequence;
             
             __typeof(self) weakSelf = self;
