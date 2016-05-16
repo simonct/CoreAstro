@@ -607,11 +607,11 @@ static void* kvoContext;
 @implementation SXIOSequenceEditorRowView
 @end
 
-@interface SXIOSequenceEditorExposureView : SXIOSequenceEditorRowView
+@interface SXIOSequenceEditorExposureStepView : SXIOSequenceEditorRowView
 @property (strong) IBOutlet NSObjectController *objectController;
 @end
 
-@implementation SXIOSequenceEditorExposureView
+@implementation SXIOSequenceEditorExposureStepView
 @end
 
 @interface SXIOSequenceEditorSlewStepView : SXIOSequenceEditorRowView
@@ -754,7 +754,7 @@ static void* kvoContext;
     
     self.tableView.delegate = self;
     
-    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureView" bundle:nil] forIdentifier:@"exposure"];
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureStepView" bundle:nil] forIdentifier:@"exposure"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorParkStepView" bundle:nil] forIdentifier:@"park"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorStartTimeStepView" bundle:nil] forIdentifier:@"start"];

@@ -32,7 +32,7 @@
                     <rect key="frame" x="2" y="0.0" width="326" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="6" width="68" height="17"/>
+                            <rect key="frame" x="-2" y="5" width="68" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Start Time" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -40,7 +40,7 @@
                             </textFieldCell>
                         </textField>
                         <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fqe-SH-8nl">
-                            <rect key="frame" x="72" y="3" width="257" height="27"/>
+                            <rect key="frame" x="72" y="2" width="257" height="27"/>
                             <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="4VS-fy-sYR">
                                 <font key="font" metaFont="system"/>
                                 <calendarDate key="date" timeIntervalSinceReferenceDate="-595929600" calendarFormat="%Y-%m-%d %H:%M:%S %z">
