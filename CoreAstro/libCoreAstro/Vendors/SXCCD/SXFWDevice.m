@@ -105,6 +105,7 @@
     BOOL _settingFilter;
     BOOL _moving;
     BOOL _polling;
+    BOOL _awaitingMoveFlag;
     NSUInteger _filterCount;
     NSInteger _currentFilter;
     NSInteger _targetFilter;
@@ -245,6 +246,7 @@
     if (_currentFilter != currentFilter){
 
         self.moving = YES; // cleared in the report callback
+        _awaitingMoveFlag = YES;
         
         if (_settingFilter){
             NSLog(@"Attempt to set filter index to while already setting it");
@@ -342,7 +344,21 @@
     _filterCount = report >> 8;
     const NSInteger index = report & 0x00ff;
     [self _updateCurrentFilterIndex:index];
-    _moving = (index == 0);
+    
+    // after switching filter we'll often get a 'not moving' indicator back from the wheel
+    // which can confuse clients observing the moving flag. we don't change the flag until
+    // we've had one moving indicator from the wheel.
+    const BOOL moving = (index == 0);
+    if (_awaitingMoveFlag){
+        if (moving){
+            _awaitingMoveFlag = NO;
+            NSLog(@"Wheel registered as moving after filter change, accepting move status changes");
+        }
+    }
+    else {
+        _moving = moving;
+    }
+    
     [self didChangeValueForKey:@"filterCount"];
     [self didChangeValueForKey:@"currentFilter"];
     [self didChangeValueForKey:@"moving"];
