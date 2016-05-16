@@ -348,6 +348,7 @@ static void* kvoContext;
         return NO;
     }
     
+    // todo; alternatively we could create all steps at once as dependent nsoperations, which would allow some to run in parallel
     self.currentStep = [self.sequence.steps firstObject];
     
     // table cell subviews only seem to be able to bind to the container table view cell so
@@ -785,8 +786,8 @@ static void* kvoContext;
 
 - (IBAction)start:(id)sender
 {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:_cmd object:nil];
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(complete) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(restartTimerFired) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
     if (self.sequenceRunner || self.nextRunTime){
         // button is in Stop mode
@@ -800,10 +801,17 @@ static void* kvoContext;
     NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
 
+    self.startButton.title = @"Stop";
+
     [self waitForStartTimeWithCompletion:^{
         
-        if ([self preflightSequence]){
-            
+        if (![self preflightSequence]){
+        
+            self.nextRunTime = nil;
+            self.startButton.title = @"Start";
+        }
+        else{
+        
             self.sequenceRunner = [SXIOSequenceRunner new];
             self.sequenceRunner.target = self.target;
             self.sequenceRunner.sequence = self.sequence;
@@ -840,7 +848,7 @@ static void* kvoContext;
                     NSLog(@"Restarting at %@",date);
                     const NSTimeInterval delay = date.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate];
                     weakSelf.nextRunTime = [NSDate dateWithTimeIntervalSinceNow:delay];
-                    [weakSelf performSelector:_cmd withObject:nil afterDelay:delay];
+                    [weakSelf performSelector:@selector(restartTimerFired) withObject:nil afterDelay:delay];
                 }
                 else {
                     weakSelf.nextRunTime = nil;
@@ -853,11 +861,14 @@ static void* kvoContext;
                 self.sequenceRunner = nil;
                 [NSApp presentError:error];
             }
-            else {
-                self.startButton.title = @"Stop";
-            }
         }
     }];
+}
+
+- (void)restartTimerFired
+{
+    self.nextRunTime = nil;
+    [self start:nil];
 }
 
 - (void)waitForStartTimeWithCompletion:(void(^)())completion
@@ -865,22 +876,22 @@ static void* kvoContext;
     self.startTimeCompletion = completion;
 
     if (!self.sequence.hasStartTime || !self.sequence.startTime){
-        [self complete];
+        [self completeWaitForStartTime];
         return;
     }
 
     const NSTimeInterval delay = self.sequence.startTime.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate];
     if (delay <= 0){
-        [self complete];
+        [self completeWaitForStartTime];
     }
     else {
         NSLog(@"Waiting for %@",self.sequence.startTime);
         self.nextRunTime = [NSDate dateWithTimeIntervalSinceNow:delay];
-        [self performSelector:@selector(complete) withObject:nil afterDelay:delay];
+        [self performSelector:@selector(completeWaitForStartTime) withObject:nil afterDelay:delay];
     }
 }
 
-- (void)complete
+- (void)completeWaitForStartTime
 {
     self.nextRunTime = nil;
     if (self.startTimeCompletion){
@@ -892,9 +903,9 @@ static void* kvoContext;
 - (void)cancelSequence
 {
     self.startTimeCompletion = nil;
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(complete) object:nil];
-    
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(start:) object:nil];
+
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(restartTimerFired) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
     [self.sequenceRunner stop];
     self.sequenceRunner = nil;

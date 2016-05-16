@@ -324,9 +324,25 @@ Gw
                             </binding>
                         </connections>
                     </progressIndicator>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RUs-GD-lpp">
+                        <rect key="frame" x="285" y="392" width="165" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Waiting for next run time..." id="3hW-2t-9uO">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="hidden" keyPath="nextRunTime" id="5K6-jq-Ugr">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textField>
                 </subviews>
                 <constraints>
                     <constraint firstItem="n5x-Ed-FFK" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="12" id="04i-uQ-FzZ"/>
+                    <constraint firstItem="nZL-CE-zdQ" firstAttribute="leading" secondItem="RUs-GD-lpp" secondAttribute="trailing" constant="8" id="7Ww-3j-9f1"/>
                     <constraint firstAttribute="bottom" secondItem="uLq-dk-P9Z" secondAttribute="bottom" constant="5" id="7YA-Zm-NXf"/>
                     <constraint firstAttribute="bottom" secondItem="90h-M2-bGc" secondAttribute="bottom" constant="6" id="9AO-B3-b2n"/>
                     <constraint firstAttribute="bottom" secondItem="0kq-Tx-Ixy" secondAttribute="bottom" constant="6" id="F8l-xV-AgL"/>
@@ -340,6 +356,7 @@ Gw
                     <constraint firstItem="Ee5-Kn-Y8u" firstAttribute="leading" secondItem="jpa-Un-Byf" secondAttribute="trailing" constant="8" id="YwM-Ya-dtv"/>
                     <constraint firstAttribute="bottom" secondItem="14M-km-aak" secondAttribute="bottom" constant="6" id="ZRr-vn-OMW"/>
                     <constraint firstItem="n5x-Ed-FFK" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="dnj-rb-CAq"/>
+                    <constraint firstItem="RUs-GD-lpp" firstAttribute="centerY" secondItem="nZL-CE-zdQ" secondAttribute="centerY" id="g54-eB-vHh"/>
                     <constraint firstItem="jpa-Un-Byf" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="8" id="gqa-OC-xAe"/>
                     <constraint firstItem="90h-M2-bGc" firstAttribute="leading" secondItem="0kq-Tx-Ixy" secondAttribute="trailing" constant="8" id="hrW-wi-Zm2"/>
                     <constraint firstAttribute="trailing" secondItem="OgJ-KU-VDA" secondAttribute="trailing" constant="-1" id="i0Q-hv-bj9"/>
