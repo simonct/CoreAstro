@@ -676,7 +676,9 @@ static void* kvoContext;
 @property (strong) NSDate* nextRunTime;
 @end
 
-@implementation SXIOSequenceEditorWindowController
+@implementation SXIOSequenceEditorWindowController {
+    BOOL _stopped;
+}
 
 static void* kvoContext;
 
@@ -790,6 +792,7 @@ static void* kvoContext;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
     if (self.sequenceRunner || self.nextRunTime){
+        _stopped = YES;
         // button is in Stop mode
         [self.sequenceRunner stop];
         self.sequenceRunner = nil;
@@ -801,6 +804,7 @@ static void* kvoContext;
     NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
 
+    _stopped = NO;
     self.startButton.title = @"Stop";
 
     [self waitForStartTimeWithCompletion:^{
@@ -822,7 +826,7 @@ static void* kvoContext;
                 weakSelf.sequenceRunner = nil;
                 
                 // check for the repeat sequence option
-                if (self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
+                if (!_stopped && self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
                     
                     // figure out the date to repeat from
                     NSDate* date;
