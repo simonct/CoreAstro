@@ -242,7 +242,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @end
 
 @interface CASSequenceStartTimeStep : CASSequenceStep
-@property (strong) NSDate* date;
+@property (nonatomic,strong) NSDate* date;
 @property (copy) void(^completion)();
 @end
 
@@ -279,6 +279,14 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     return copy;
 }
 
+- (void)setDate:(NSDate *)date
+{
+    if (date != _date){
+        // truncate seconds to 0
+        _date = [[NSCalendar currentCalendar] dateBySettingUnit:NSCalendarUnitSecond value:0 ofDate:date options:0];
+    }
+}
+
 - (NSString*)type
 {
     return @"start";
@@ -296,6 +304,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
         completion();
     }
     else {
+        NSLog(@"Waiting for %@",self.date);
         self.completion = completion;
         [self performSelector:@selector(complete) withObject:nil afterDelay:delay];
     }
@@ -303,6 +312,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 - (void)complete
 {
+    NSLog(@"Wait step completed at %@",[NSDate date]);
     if (self.completion){
         self.completion();
     }
@@ -321,7 +331,8 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
 @property (nonatomic,assign) NSInteger temperature;
-// repeat time interval, updates any start time steps by the given delay
+@property BOOL repeat;
+@property NSInteger repeatHoursInterval;
 @end
 
 @implementation CASSequence
@@ -331,6 +342,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     self = [super init];
     if (self) {
         self.steps = [NSMutableArray arrayWithCapacity:10];
+        self.repeatHoursInterval = 24;
     }
     return self;
 }
@@ -342,6 +354,8 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
         self.steps = [[coder decodeObjectOfClass:[NSArray class] forKey:@"steps"] mutableCopy];
         self.dither = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"dither"] integerValue];
         self.temperature = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"temperature"] integerValue];
+        self.repeat = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"repeat"] boolValue];
+        self.repeatHoursInterval = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"repeatHoursInterval"] integerValue];
     }
     return self;
 }
@@ -349,13 +363,20 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [aCoder encodeObject:self.steps forKey:@"steps"];
-    [aCoder encodeInteger:self.dither forKey:@"dither"];
-    [aCoder encodeInteger:self.temperature forKey:@"temperature"];
+    [aCoder encodeObject:@(self.dither) forKey:@"dither"];
+    [aCoder encodeObject:@(self.temperature) forKey:@"temperature"];
+    [aCoder encodeObject:@(self.repeat) forKey:@"repeat"];
+    [aCoder encodeObject:@(self.repeatHoursInterval) forKey:@"repeatHoursInterval"];
 }
 
 - (void)setNilValueForKey:(NSString *)key
 {
-    [super setNilValueForKey:key];
+    if ([@"repeatHoursInterval" isEqualToString:key]){
+        self.repeatHoursInterval = 0;
+    }
+    else {
+        [super setNilValueForKey:key];
+    }
 }
 
 @end
@@ -420,8 +441,10 @@ static void* kvoContext;
 
     [self unobserveFilterWheel];
     [self.target endSequence];
+    
     if (self.completion){
         self.completion();
+        self.completion = nil;
     }
 }
 
@@ -602,20 +625,19 @@ static void* kvoContext;
 
 @interface SXIOSequenceEditorRowView : NSTableRowView
 @property (strong) CASSequenceStep* step;
+@property (strong) IBOutlet NSObjectController *objectController;
 @end
 
 @implementation SXIOSequenceEditorRowView
 @end
 
 @interface SXIOSequenceEditorExposureStepView : SXIOSequenceEditorRowView
-@property (strong) IBOutlet NSObjectController *objectController;
 @end
 
 @implementation SXIOSequenceEditorExposureStepView
 @end
 
 @interface SXIOSequenceEditorSlewStepView : SXIOSequenceEditorRowView
-@property (strong) IBOutlet NSObjectController *objectController;
 @end
 
 @implementation SXIOSequenceEditorSlewStepView
@@ -666,7 +688,8 @@ static void* kvoContext;
     self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(CASSequenceStep* step, NSDictionary *bindings) {
         return [step isKindOfClass:[CASSequenceExposureStep class]] ||
         [step isKindOfClass:[CASSequenceSlewStep class]] ||
-        [step isKindOfClass:[CASSequenceParkStep class]];
+        [step isKindOfClass:[CASSequenceParkStep class]] ||
+        [step isKindOfClass:[CASSequenceStartTimeStep class]];
     }];
     
     for (id object in self.content){
@@ -852,9 +875,12 @@ static void* kvoContext;
         // button is in Stop mode
         [self.sequenceRunner stop];
         self.sequenceRunner = nil;
+        NSLog(@"Stopped");
         return;
     }
     
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:_cmd object:nil];
+
     NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
     
@@ -866,8 +892,29 @@ static void* kvoContext;
         
         __typeof(self) weakSelf = self;
         self.sequenceRunner.completion = ^(){
+            
             weakSelf.sequenceRunner = nil;
-            weakSelf.startButton.title = @"Start";
+
+            // check for the repeat sequence option
+            if (self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
+                NSDate* date;
+                NSCalendarUnit unit = NSCalendarUnitMinute; // NSCalendarUnitHour;
+                for (CASSequenceStartTimeStep* step in weakSelf.sequence.steps){
+                    if ([step isKindOfClass:[CASSequenceStartTimeStep class]]){
+                        step.date = [[NSCalendar currentCalendar] dateByAddingUnit:unit value:weakSelf.sequence.repeatHoursInterval toDate:step.date options:0];
+                        if (!date){
+                            date = step.date;
+                        }
+                    }
+                }
+                if (date){
+                    NSLog(@"Restarting at %@",date); // todo; round to nearest unit
+                    [weakSelf performSelector:_cmd withObject:nil afterDelay:date.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate]];
+                }
+            }
+            else {
+                weakSelf.startButton.title = @"Start";
+            }
         };
         
         NSError* error;
@@ -883,6 +930,8 @@ static void* kvoContext;
 
 - (void)cancelSequence
 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(start:) object:nil];
+
     [self.sequenceRunner stop];
     self.sequenceRunner = nil;
     
