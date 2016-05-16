@@ -6,7 +6,7 @@
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="SXIOSequenceEditorExposureView">
+        <customObject id="-2" userLabel="File's Owner" customClass="SXIOSequenceEditorParkStepView">
             <connections>
                 <outlet property="objectController" destination="5Zq-Z6-Rt2" id="uAQ-Z3-j5O"/>
             </connections>
