@@ -986,15 +986,28 @@ static void* kvoContext;
             restartGuiding();
         }
         else {
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
-            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
-                if (!success){
-                    failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
-                }
-                else {
-                    restartGuiding();
-                }
-            }];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOClearGuideCalibrationAfterFlip"]){
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Clearing guide calibration" subtitle:nil];
+                [self.cameraController.phd2Client clearWithCompletion:^(BOOL success) {
+                    if (!success){
+                        failWithAlert(@"Guide Failed",@"Failed to clear guide calibration");
+                    }
+                    else {
+                        restartGuiding();
+                    }
+                }];
+            }
+            else {
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
+                [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+                    if (!success){
+                        failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
+                    }
+                    else {
+                        restartGuiding();
+                    }
+                }];
+            }
         }
     };
     

@@ -841,6 +841,16 @@
                                         <binding destination="83E-JI-oE9" name="value" keyPath="values.SXIOFlipMountAfterMeridian" id="tsk-vh-y4R"/>
                                     </connections>
                                 </button>
+                                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fdl-pc-tRW">
+                                    <rect key="frame" x="16" y="12" width="370" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Clear PHD2 guide calibrartion after flip" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IZU-Ee-vKQ">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <binding destination="83E-JI-oE9" name="value" keyPath="values.SXIOClearGuideCalibrationAfterFlip" id="aHp-es-xk0"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <constraints>
