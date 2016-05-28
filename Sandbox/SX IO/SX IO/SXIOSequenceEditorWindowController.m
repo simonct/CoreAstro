@@ -241,7 +241,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
-@interface CASSequence : NSObject<NSCoding>
+@interface CASSequence ()
 @property (nonatomic,strong) NSMutableArray* steps;
 @property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
@@ -685,7 +685,6 @@ static void* kvoContext;
 
 @interface SXIOSequenceEditorWindowController ()<NSWindowDelegate,NSTableViewDelegate,NSTableViewDataSource>
 @property (nonatomic,strong) NSURL* sequenceURL;
-@property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
 @property (nonatomic,weak) IBOutlet NSButton *startButton;
 @property (nonatomic,strong) IBOutlet SXIOSequenceEditorWindowControllerStepsController* stepsController;
@@ -703,16 +702,11 @@ static void* kvoContext;
 
 static void* kvoContext;
 
-+ (instancetype)loadSequenceEditor
-{
-    return [[[self class] alloc] initWithWindowNibName:@"SXIOSequenceEditorWindowController"];
-}
+@synthesize sequence = _sequence;
 
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    
-    self.sequence = [CASSequence new];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self; // for dragging
@@ -727,6 +721,9 @@ static void* kvoContext;
     [closeButton setTarget:self];
     [closeButton setAction:@selector(close:)];
     
+    if (self.sequence){
+        self.stepsController.content = self.sequence.steps;
+    }
     // [NSSet setWithArray:@[@"stepsController.arrangedObjects"]] doesn't seem to work so trigger manually
     [self.stepsController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:&kvoContext];
         
@@ -758,6 +755,14 @@ static void* kvoContext;
     // save current sequence
     
     [super close];
+}
+
+- (CASSequence*)sequence
+{
+    if (!_sequence){
+        _sequence = [CASSequence new];
+    }
+    return _sequence;
 }
 
 - (void)setSequence:(CASSequence *)sequence

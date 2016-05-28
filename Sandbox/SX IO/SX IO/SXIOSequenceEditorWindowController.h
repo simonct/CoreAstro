@@ -23,8 +23,12 @@
 - (void)endSequence;
 @end
 
+@interface CASSequence : NSObject<NSCoding>
+@end
+
 @interface SXIOSequenceEditorWindowController : CASAuxWindowController
 
+@property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
 
 @end
