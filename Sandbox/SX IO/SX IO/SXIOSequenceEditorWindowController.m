@@ -729,12 +729,7 @@ static void* kvoContext;
     
     // [NSSet setWithArray:@[@"stepsController.arrangedObjects"]] doesn't seem to work so trigger manually
     [self.stepsController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:&kvoContext];
-    
-    NSURL* sequenceUrl = CASUrlFromDefaults(kSXIOSequenceEditorWindowControllerBookmarkKey);
-    if (sequenceUrl){
-        [self openSequenceWithURL:sequenceUrl];
-    }
-    
+        
     self.window.delegate = self;
     [self.window registerForDraggedTypes:@[(id)NSFilenamesPboardType]];
 }
