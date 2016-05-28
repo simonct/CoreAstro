@@ -564,6 +564,12 @@ static void* kvoContext;
 @end
 
 @implementation SXIOSequenceEditorExposureStepView
+
+- (void)setSelectionHighlightStyle:(NSTableViewSelectionHighlightStyle)selectionHighlightStyle
+{
+    // suppressing this with the table view selection style set to none, seems (a) enable highlighting and (b) fix editing of text fields. I have no idea why.
+}
+
 @end
 
 @interface SXIOSequenceEditorSlewStepView : SXIOSequenceEditorRowView
@@ -710,6 +716,7 @@ static void* kvoContext;
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self; // for dragging
+    self.tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone; // see comment about with SXIOSequenceEditorExposureStepView
     [self.tableView registerForDraggedTypes:@[@"sxio.sequencestep.index"]];
     
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureStepView" bundle:nil] forIdentifier:@"exposure"];
