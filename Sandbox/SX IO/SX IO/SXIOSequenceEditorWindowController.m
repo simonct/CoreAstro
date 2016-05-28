@@ -677,7 +677,7 @@ static void* kvoContext;
 
 @end
 
-@interface SXIOSequenceEditorWindowController ()<NSWindowDelegate,NSTableViewDelegate>
+@interface SXIOSequenceEditorWindowController ()<NSWindowDelegate,NSTableViewDelegate,NSTableViewDataSource>
 @property (nonatomic,strong) NSURL* sequenceURL;
 @property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceRunner* sequenceRunner;
@@ -709,6 +709,8 @@ static void* kvoContext;
     self.sequence = [CASSequence new];
     
     self.tableView.delegate = self;
+    self.tableView.dataSource = self; // for dragging
+    [self.tableView registerForDraggedTypes:@[@"sxio.sequencestep.index"]];
     
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureStepView" bundle:nil] forIdentifier:@"exposure"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
@@ -1158,6 +1160,45 @@ static void* kvoContext;
 }
 
 #pragma mark - Table view
+
+- (nullable id <NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row
+{
+    NSPasteboardItem* item = [[NSPasteboardItem alloc] init];
+    [item setString:[NSString stringWithFormat:@"%ld",row] forType:@"sxio.sequencestep.index"];
+    return item;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation
+{
+    if (dropOperation == NSTableViewDropAbove){
+        return NSDragOperationMove;
+    }
+    return NSDragOperationNone;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id <NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation
+{
+    [info enumerateDraggingItemsWithOptions:0 forView:tableView classes:@[[NSPasteboardItem class]] searchOptions:[NSDictionary dictionary] usingBlock:^(NSDraggingItem * _Nonnull draggingItem, NSInteger idx, BOOL * _Nonnull stop) {
+
+        NSInteger targetRow = row;
+        const NSInteger sourceRow = [[draggingItem.item stringForType:@"sxio.sequencestep.index"] integerValue];
+
+//        NSLog(@"draggingItem: %ld -> %ld",sourceRow,targetRow);
+
+        NSArray* arrangedSteps = self.stepsController.arrangedObjects;
+        if (sourceRow >= 0 && sourceRow < arrangedSteps.count){
+            CASSequenceStep* step = arrangedSteps[sourceRow];
+            [self.stepsController removeObjectAtArrangedObjectIndex:sourceRow];
+            if (sourceRow < targetRow){
+                targetRow--;
+            }
+            [self.stepsController insertObject:step atArrangedObjectIndex:targetRow];
+        }
+        
+    }];
+    
+    return YES;
+}
 
 - (nullable NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
 {
