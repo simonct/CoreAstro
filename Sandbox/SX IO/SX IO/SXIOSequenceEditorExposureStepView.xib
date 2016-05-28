@@ -17,22 +17,11 @@
             <rect key="frame" x="0.0" y="0.0" width="433" height="28"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="al7-HM-xzC">
-                    <rect key="frame" x="413" y="6" width="16" height="16"/>
-                    <connections>
-                        <binding destination="5Zq-Z6-Rt2" name="hidden" keyPath="selection.step.active" id="Fyf-Yb-sgi">
-                            <dictionary key="options">
-                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                            </dictionary>
-                        </binding>
-                        <binding destination="5Zq-Z6-Rt2" name="animate" keyPath="selection.step.active" id="cFo-pX-aQD"/>
-                    </connections>
-                </progressIndicator>
-                <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DON-MR-EYh">
-                    <rect key="frame" x="2" y="0.0" width="407" height="28"/>
+                <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KCm-jB-IDc">
+                    <rect key="frame" x="4" y="0.0" width="425" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="5" width="54" height="17"/>
+                            <rect key="frame" x="-2" y="6" width="41" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Count" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -40,7 +29,7 @@
                             </textFieldCell>
                         </textField>
                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="7qo-fO-7l0">
-                            <rect key="frame" x="58" y="3" width="73.5" height="22"/>
+                            <rect key="frame" x="45" y="3" width="62" height="22"/>
                             <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" id="WB0-yd-idu">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -59,19 +48,19 @@
                                 </binding>
                             </connections>
                         </textField>
-                        <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="avD-wo-eKw">
-                            <rect key="frame" x="137" y="5" width="54" height="17"/>
-                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Seconds" id="n1u-P9-Qi2">
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Yo-zr-67h">
+                            <rect key="frame" x="113" y="6" width="66" height="17"/>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Seconds" id="2TG-ms-zZn">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                <connections>
-                                    <binding destination="-2" name="value" keyPath="step.duration" id="vYO-pS-mSn"/>
-                                </connections>
                             </textFieldCell>
                         </textField>
                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="cWe-if-Gti">
-                            <rect key="frame" x="197" y="3" width="73.5" height="22"/>
+                            <rect key="frame" x="185" y="3" width="62" height="22"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="62" id="zF1-js-KJL"/>
+                            </constraints>
                             <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" id="0F7-Lk-5XB">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -91,9 +80,10 @@
                             </connections>
                         </textField>
                         <popUpButton horizontalHuggingPriority="249" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AdC-eb-h8h">
-                            <rect key="frame" x="276" y="2" width="66" height="22"/>
+                            <rect key="frame" x="252" y="2" width="82" height="22"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="ABp-6T-cFv"/>
+                                <constraint firstAttribute="width" constant="76" id="fT2-ts-TBj"/>
                             </constraints>
                             <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="NRt-5k-n0V">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -119,7 +109,7 @@
                             </connections>
                         </popUpButton>
                         <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="o7l-4d-11O">
-                            <rect key="frame" x="344" y="2" width="66" height="22"/>
+                            <rect key="frame" x="336" y="2" width="68" height="22"/>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="2hn-GH-1wv"/>
                             </constraints>
@@ -147,14 +137,29 @@
                                 </binding>
                             </connections>
                         </popUpButton>
+                        <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="al7-HM-xzC">
+                            <rect key="frame" x="409" y="6" width="16" height="16"/>
+                            <connections>
+                                <binding destination="5Zq-Z6-Rt2" name="hidden" keyPath="selection.step.active" id="Fyf-Yb-sgi">
+                                    <dictionary key="options">
+                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                    </dictionary>
+                                </binding>
+                                <binding destination="5Zq-Z6-Rt2" name="animate" keyPath="selection.step.active" id="cFo-pX-aQD"/>
+                            </connections>
+                        </progressIndicator>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="XbS-rq-Euh" firstAttribute="width" secondItem="avD-wo-eKw" secondAttribute="width" id="FDP-H4-iiA"/>
-                        <constraint firstItem="7qo-fO-7l0" firstAttribute="centerY" secondItem="DON-MR-EYh" secondAttribute="centerY" id="Tle-xb-WH4"/>
-                        <constraint firstItem="7qo-fO-7l0" firstAttribute="leading" secondItem="DON-MR-EYh" secondAttribute="leading" constant="58" id="Uxi-0W-Hrw"/>
-                        <constraint firstItem="7qo-fO-7l0" firstAttribute="width" secondItem="cWe-if-Gti" secondAttribute="width" id="Whf-SX-flF"/>
+                        <constraint firstItem="4Yo-zr-67h" firstAttribute="baseline" secondItem="cWe-if-Gti" secondAttribute="baseline" id="8fw-Jl-Z3K"/>
+                        <constraint firstItem="o7l-4d-11O" firstAttribute="centerY" secondItem="AdC-eb-h8h" secondAttribute="centerY" id="ESS-xy-8te"/>
+                        <constraint firstItem="XbS-rq-Euh" firstAttribute="leading" secondItem="KCm-jB-IDc" secondAttribute="leading" id="XdX-fB-RuY"/>
+                        <constraint firstItem="cWe-if-Gti" firstAttribute="width" secondItem="7qo-fO-7l0" secondAttribute="width" id="hW3-TW-ahN"/>
+                        <constraint firstItem="cWe-if-Gti" firstAttribute="centerY" secondItem="AdC-eb-h8h" secondAttribute="centerY" id="pE6-3B-2LV"/>
+                        <constraint firstItem="7qo-fO-7l0" firstAttribute="baseline" secondItem="4Yo-zr-67h" secondAttribute="baseline" id="qm2-QT-5Pt"/>
+                        <constraint firstItem="7qo-fO-7l0" firstAttribute="baseline" secondItem="XbS-rq-Euh" secondAttribute="baseline" id="xQK-43-77X"/>
                     </constraints>
                     <visibilityPriorities>
+                        <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
@@ -169,16 +174,15 @@
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
                     </customSpacing>
                 </stackView>
             </subviews>
             <constraints>
-                <constraint firstItem="al7-HM-xzC" firstAttribute="leading" secondItem="DON-MR-EYh" secondAttribute="trailing" constant="4" id="FsV-K9-r66"/>
-                <constraint firstAttribute="bottom" secondItem="DON-MR-EYh" secondAttribute="bottom" id="akY-cf-CJM"/>
-                <constraint firstItem="DON-MR-EYh" firstAttribute="leading" secondItem="4mP-az-EyK" secondAttribute="leading" constant="2" id="grK-vj-k6g"/>
-                <constraint firstItem="DON-MR-EYh" firstAttribute="top" secondItem="4mP-az-EyK" secondAttribute="top" id="kAR-0g-KcF"/>
-                <constraint firstAttribute="trailing" secondItem="al7-HM-xzC" secondAttribute="trailing" constant="4" id="mlG-TK-8rN"/>
-                <constraint firstItem="al7-HM-xzC" firstAttribute="centerY" secondItem="4mP-az-EyK" secondAttribute="centerY" id="nGO-Gi-gxe"/>
+                <constraint firstAttribute="bottom" secondItem="KCm-jB-IDc" secondAttribute="bottom" id="1rA-m2-pBt"/>
+                <constraint firstAttribute="trailing" secondItem="KCm-jB-IDc" secondAttribute="trailing" constant="4" id="7nY-yc-cck"/>
+                <constraint firstItem="KCm-jB-IDc" firstAttribute="top" secondItem="4mP-az-EyK" secondAttribute="top" id="XPy-Hb-YhL"/>
+                <constraint firstItem="KCm-jB-IDc" firstAttribute="leading" secondItem="4mP-az-EyK" secondAttribute="leading" constant="4" id="dQr-d7-cQ5"/>
             </constraints>
             <point key="canvasLocation" x="-3087.5" y="-1585"/>
         </customView>
