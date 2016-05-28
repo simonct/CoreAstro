@@ -99,8 +99,13 @@
     return _bookmarks;
 }
 
-- (IBAction)ok:(id)sender {
-    
+- (void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray *)oldDescriptors
+{
+    self.bookmarksArrayController.sortDescriptors = tableView.sortDescriptors;
+}
+
+- (IBAction)ok:(id)sender
+{
     NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
     for (SXIOEditingBookmark* bookmark in _bookmarks){
         NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
@@ -119,7 +124,8 @@
     [self endSheetWithCode:NSOKButton];
 }
 
-- (IBAction)cancel:(id)sender {
+- (IBAction)cancel:(id)sender
+{
     [self endSheetWithCode:NSCancelButton];
 }
 
