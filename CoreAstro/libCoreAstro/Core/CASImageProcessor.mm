@@ -31,9 +31,6 @@
 #import <Accelerate/Accelerate.h>
 #import <algorithm>
 
-typedef float cas_pixel_t;
-typedef struct { float r,g,b,a; } cas_fpixel_t;
-
 @implementation CASImageProcessor {
     void* _equalisationBuffer;
     size_t _equalisationBufferSize;
@@ -84,7 +81,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         (void*)[exposure.floatPixels bytes],
         size.height,
         size.width,
-        exposure.rgba ? size.width * sizeof(float) * 4 : size.width * sizeof(cas_pixel_t)
+        exposure.rgba ? size.width * sizeof(cas_rgbapixel_t) : size.width * sizeof(cas_pixel_t)
     };
     return buffer;
 }
@@ -234,7 +231,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
             
             if (result.rgba){
                 
-                cas_fpixel_t* exposurePixels = (cas_fpixel_t*)[result.floatPixels bytes];
+                cas_rgbapixel_t* exposurePixels = (cas_rgbapixel_t*)[result.floatPixels bytes];
                 
                 dispatch_apply(groupCount, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t groupIndex) {
                     
@@ -242,7 +239,7 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
                     const NSInteger offset = pixelsPerGroup * groupIndex;
                     const NSInteger pixelsInThisGroup = (groupIndex == groupCount - 1) ? pixelsPerGroup + pixelCount % pixelsPerGroup : pixelsPerGroup;
                     for (NSInteger i = offset; i < pixelsInThisGroup + offset; ++i){
-                        cas_fpixel_t pixel = exposurePixels[i];
+                        cas_rgbapixel_t pixel = exposurePixels[i];
                         pixel.r = 1.0 - pixel.r;
                         pixel.g = 1.0 - pixel.g;
                         pixel.b = 1.0 - pixel.b;
@@ -539,6 +536,11 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
 
 - (NSArray*)histogram:(CASCCDExposure*)exposure
 {
+    if (exposure.rgba){
+        NSLog(@"Can't produce an monchrome histogram of an RGB image");
+        return nil;
+    }
+
     __block NSMutableArray* result = nil;
 
     const NSTimeInterval time = CASTimeBlock(^{
@@ -553,6 +555,59 @@ typedef struct { float r,g,b,a; } cas_fpixel_t;
         for (NSInteger i = 0; i < count; ++i){
             [result addObject:[NSNumber numberWithFloat:(float)histogram[i]]];
         }
+    });
+    
+    NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);
+    
+    return [result copy];
+}
+
+- (NSArray*)rgbHistogram:(CASCCDExposure*)exposure
+{
+    if (!exposure.rgba){
+        NSLog(@"Can't produce an RGB histogram of a monochrome image");
+        return nil;
+    }
+    
+    NSMutableArray* result = [NSMutableArray arrayWithCapacity:3];
+    
+    const NSTimeInterval time = CASTimeBlock(^{
+        
+        vImage_Buffer buffer = [self vImageBufferForExposure:exposure];
+        
+        // rgba -> argb
+        const uint8_t rgba2argb[4] = { 3, 0, 1, 2 };
+        vImagePermuteChannels_ARGBFFFF(&buffer,&buffer,rgba2argb,kvImageNoFlags);
+        
+        const NSInteger count = 256;
+        vImagePixelCount histogramA[count],histogramR[count],histogramG[count],histogramB[count];
+        vImagePixelCount* histograms[4] = {
+            histogramA,histogramR,histogramG,histogramB
+        };
+        const vImage_Error error = vImageHistogramCalculation_ARGBFFFF(&buffer,histograms,count,0,1,kvImageNoFlags);
+        if (error != kvImageNoError){
+            NSLog(@"vImageHistogramCalculation_ARGBFFFF: %zd",error);
+        }
+        
+        // argb -> rgba
+        const uint8_t argb2rgba[4] = { 1, 2, 3, 0 };
+        vImagePermuteChannels_ARGBFFFF(&buffer,&buffer,argb2rgba,kvImageNoFlags);
+        
+        NSArray* (^toArray)(vImagePixelCount*[],int) = ^(vImagePixelCount* histograms[],int index){
+            NSMutableArray* a = [NSMutableArray arrayWithCapacity:count];
+            for (NSInteger i = 0; i < count; ++i){
+                [a addObject:[NSNumber numberWithFloat:(float)histograms[index][i]]];
+            }
+            return a;
+        };
+        
+        NSArray* r = toArray(histograms,1);
+        NSArray* g = toArray(histograms,2);
+        NSArray* b = toArray(histograms,3);
+        
+        [result addObject:r];
+        [result addObject:g];
+        [result addObject:b];
     });
     
     NSLog(@"%@: %fs",NSStringFromSelector(_cmd),time);

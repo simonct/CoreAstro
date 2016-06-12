@@ -24,10 +24,10 @@
     self.max = 1.0;
 }
 
-- (void)drawSamples:(NSData*)samples
+- (void)drawSamples:(NSData*)samples colour:(NSColor*)colour
 {
-    float* pixels = (float*)[self.samples bytes];
-    const NSInteger count = [self.samples length]/sizeof(float);
+    float* pixels = (float*)[samples bytes];
+    const NSInteger count = [samples length]/sizeof(float);
     if (count > 0 && _max != 0){
         
         const CGFloat pixelsPerSample = self.bounds.size.width / count;
@@ -44,7 +44,12 @@
             }
         }
         
-        [[NSColor orangeColor] set];
+        if (colour){
+            [colour set];
+        }
+        else {
+            [[NSColor orangeColor] set];
+        }
         [path setLineWidth:1.5];
         [path stroke];
     }
@@ -55,7 +60,13 @@
     [[NSColor clearColor] set];
     NSRectFill(self.bounds);
  
-    [self drawSamples:self.samples];
+    [self.samples enumerateObjectsUsingBlock:^(NSData * sampleArray, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSColor* colour;
+        if (idx < self.colours.count){
+            colour = self.colours[idx];
+        }
+        [self drawSamples:sampleArray colour:colour];
+    }];
 
     if (self.showLimits && _max != 0){
         
@@ -71,7 +82,7 @@
     }
 }
 
-- (void)setSamples:(NSData *)samples
+- (void)setSamples:(NSArray *)samples
 {
     if (samples != _samples){
         _samples = samples;

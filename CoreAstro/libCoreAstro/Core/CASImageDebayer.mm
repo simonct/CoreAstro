@@ -28,8 +28,6 @@
 #import "CASUtilities.h"
 #import <Accelerate/Accelerate.h>
 
-typedef struct { float r,g,b,a; } fpixel_t;
-
 @interface CASImageDebayer ()
 - (CASCCDExposure*)debayer:(CASCCDExposure*)image;
 @end
@@ -46,7 +44,7 @@ typedef struct { float r,g,b,a; } fpixel_t;
 - (CASCCDExposure*)debayer:(CASCCDExposure*)exposure adjustRed:(float)red green:(float)green blue:(float)blue all:(float)all
 {
     if (exposure.rgba){
-        NSLog(@"%@: passed an rgba image",NSStringFromSelector(_cmd));
+        NSLog(@"%@: passed an argb image",NSStringFromSelector(_cmd));
         return exposure;
     }
     
@@ -56,14 +54,14 @@ typedef struct { float r,g,b,a; } fpixel_t;
         return nil;
     }
     
-    const NSInteger finalPixelsLength = (size.width * size.height * sizeof(fpixel_t));
+    const NSInteger finalPixelsLength = (size.width * size.height * sizeof(cas_rgbapixel_t));
     NSMutableData* finalPixels = [NSMutableData dataWithLength:finalPixelsLength];
     if (!finalPixels){
         CASThrowOOMException([self class]);
     }
     
     float *gp = (float*)[exposure.floatPixels bytes];
-    fpixel_t *cp = (fpixel_t*)[finalPixels mutableBytes];
+    cas_rgbapixel_t *cp = (cas_rgbapixel_t*)[finalPixels mutableBytes];
         
     #define clip(x,lim) ((x) < 0 ? 0 : (x) >= (lim) ? (lim-1) : (x))
     #define clipx(x) clip(x,size.width)
