@@ -20,8 +20,8 @@
 
 - (void)drawSamples:(NSData*)samples
 {
-    CGPoint* points = (CGPoint*)[self.samples bytes];
-    const NSInteger count = [self.samples length]/sizeof(CGPoint);
+    CGPoint* points = (CGPoint*)[samples bytes];
+    const NSInteger count = [samples length]/sizeof(CGPoint);
     if (count > 0 && self.max != 0 && self.maxX != 0){
         
         for (NSInteger i = 0; i < count; ++i){
@@ -247,7 +247,7 @@
                             samples[i].x = m.position;
                             samples[i].y = m.fwhm;
                         }
-                        self.plotView.samples = [NSData dataWithBytes:samples length:sizeof(samples)];
+                        self.plotView.samples = @[[NSData dataWithBytes:samples length:sizeof(samples)]];
                         
                         // looks like the min fwhm is in the middle of the measurements, calc line fit of the two halves, this should give us
                         // an approx focus min and we can stop when we get within some tolerance of that
@@ -361,7 +361,7 @@
             
             pixels = pixels + (exposure.actualSize.width * yLine);
             memcpy([pixelData mutableBytes], pixels, exposure.actualSize.width * sizeof(float));
-            self.graphView.samples = pixelData;
+            self.graphView.samples = @[pixelData];
             self.graphView.showLimits = YES;
             
             float maxValue = 0;
