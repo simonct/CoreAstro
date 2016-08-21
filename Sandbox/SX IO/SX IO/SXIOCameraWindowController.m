@@ -98,8 +98,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 
 @property (nonatomic,strong) SXIOPlateSolveOptionsWindowController* plateSolveOptionsWindowController;
-
-@property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,strong) SXIOSequenceEditorWindowController* sequenceEditorWindowController;
 
 @property (assign) BOOL showPlateSolution;
@@ -883,13 +881,11 @@ static void* kvoContext;
 
 - (IBAction)sequence:(id)sender
 {
-    self.sequenceEditorWindowController = [SXIOSequenceEditorWindowController createWindowController];
-    self.sequenceEditorWindowController.target = self;
-    self.sequenceEditorWindowController.sequence = self.sequence;
-    [self.sequenceEditorWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        self.sequence = self.sequenceEditorWindowController.sequence;
-        self.sequenceEditorWindowController = nil;
-    }];
+    self.sequenceEditorWindowController = [SXIOSequenceEditorWindowController sharedWindowController];
+    if (self.sequenceEditorWindowController.target == nil) {
+        self.sequenceEditorWindowController.target = self;
+    }
+    [self.sequenceEditorWindowController.window makeKeyAndOrderFront:nil];
 }
 
 #pragma mark - Mount Control

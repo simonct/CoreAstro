@@ -380,7 +380,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-3304" y="-1416.5"/>
+            <point key="canvasLocation" x="-3452" y="-1570.5"/>
         </window>
         <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>

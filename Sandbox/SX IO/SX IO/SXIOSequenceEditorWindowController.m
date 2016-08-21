@@ -704,6 +704,16 @@ static void* kvoContext;
 
 @synthesize sequence = _sequence;
 
++ (instancetype)sharedWindowController
+{
+    static SXIOSequenceEditorWindowController* _sharedWindowController = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedWindowController = [SXIOSequenceEditorWindowController createWindowController];
+    });
+    return _sharedWindowController;
+}
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];
@@ -719,7 +729,7 @@ static void* kvoContext;
 
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
-    [closeButton setAction:@selector(close:)];
+    [closeButton setAction:@selector(close)];
     
     if (self.sequence){
         self.stepsController.content = self.sequence.steps;
@@ -754,7 +764,9 @@ static void* kvoContext;
     
     // save current sequence
     
-    [super close];
+    // [super close];
+    
+    [self.window orderOut:nil];
 }
 
 - (CASSequence*)sequence

@@ -36,6 +36,7 @@
 #import "CASCaptureCommand.h"
 #import "CASCameraServer.h"
 #import "CASMountWindowController.h"
+#import "SXIOSequenceEditorWindowController.h"
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -482,6 +483,12 @@ static void* kvoContext;
     [[CASMountWindowController sharedMountWindowController] connectToMount:^{
         // connected
     }];
+}
+
+- (IBAction)sequence:(id)sender
+{
+    SXIOSequenceEditorWindowController* sequence = [SXIOSequenceEditorWindowController sharedWindowController];
+    [sequence.window makeKeyAndOrderFront:nil];
 }
 
 - (IBAction)fixupM25CFrames:(id)sender
