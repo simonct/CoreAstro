@@ -503,6 +503,11 @@
     [self syncCommand:@":CMR#" ToRA:ra dec:dec completion:completion];
 }
 
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
+{
+    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:completion];
+}
+
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     // set this immediately rather than wait for the next mount status poll

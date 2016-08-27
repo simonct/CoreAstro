@@ -66,6 +66,7 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 

@@ -175,6 +175,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     NSAssert(NO, @"Not implemented");
 }
 
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
+    [self syncToRA:ra dec:dec completion:completion];
+}
+
 - (CASDeviceType)type {
     return kCASDeviceTypeMount;
 }
