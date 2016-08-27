@@ -319,7 +319,7 @@ static void* kvoContext;
 {
 //    NSLog(@"startMoving: %ld",direction);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
-    [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25];
+    [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25 inModes:@[NSRunLoopCommonModes]];
     [self.mountController.mount startMoving:direction];
 }
 
@@ -333,7 +333,18 @@ static void* kvoContext;
 
 - (IBAction)sync:(id)sender
 {
-    NSLog(@"Sync - not implemented");
+    NSNumber* ra = self.mount.ra;
+    NSNumber* dec = self.mount.dec;
+    if (ra && dec){
+        [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
+            if (error != CASMountSlewErrorNone){
+                [self presentAlertWithMessage:@"Failed to sync the mount"];
+            }
+        }];
+    }
+    else {
+        [self presentAlertWithMessage:@"The mount is not currently reporting a positon so cannot be synced"];
+    }
 }
 
 - (IBAction)north:(id)sender // called continuously while the button is held down
