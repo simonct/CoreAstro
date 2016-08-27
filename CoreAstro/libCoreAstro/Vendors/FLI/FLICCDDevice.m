@@ -157,12 +157,17 @@
 
 - (NSInteger)binnedWidth
 {
-    return _params.bin.width > 0 ? _params.frame.width / _params.bin.width : 0;
+    return _params.bin.width > 0 ? _params.size.width / _params.bin.width : 0;
 }
 
 - (NSInteger)binnedHeight
 {
-    return _params.bin.height > 0 ? _params.frame.height / _params.bin.height : 0;
+    return _params.bin.height > 0 ? _params.size.height / _params.bin.height : 0;
+}
+
+- (CASSize)binnedOrigin
+{
+    return CASSizeMake(_params.origin.x / _params.bin.width, _params.origin.y / _params.bin.height);
 }
 
 - (void)startContinuousExposures
@@ -210,8 +215,8 @@
         
         _type = type;
         _params = params;
-        _completion = [block copy];
         _exposureStart = [NSDate date];
+        _completion = nil; // set once we've kicked off the exposure without error
         
         self.exposureTemperatures = [NSMutableArray array];
         [self.exposureTemperatures addObject:@(self.fli_ccdTemp)];
@@ -244,11 +249,12 @@
         // check return values
         const NSInteger binnedWidth = [self binnedWidth];
         const NSInteger binnedHeight = [self binnedHeight];
+        const CASSize binnedOrigin = [self binnedOrigin];
         status = FLISetImageArea(_dev,
                                  params.origin.x /*+ self.fli_visibleArea.origin.x*/,
                                  params.origin.y /*+ self.fli_visibleArea.origin.y*/,
-                                 binnedWidth,
-                                 binnedHeight);
+                                 binnedOrigin.width + binnedWidth,
+                                 binnedOrigin.height + binnedHeight);
         require_noerr(status, end);
         NSLog(@"FLISetImageArea: x=%ld, y=%ld, width=%ld, height=%ld",params.origin.x,params.origin.y,binnedWidth,binnedHeight);
         
@@ -271,6 +277,7 @@
             });
         }
         else {
+            _completion = [block copy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self checkExposureStatus];
             });
