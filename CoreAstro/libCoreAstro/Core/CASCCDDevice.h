@@ -40,6 +40,9 @@
 
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block;
 
+- (void)startContinuousExposures;
+- (void)stopContinuousExposures;
+
 - (void)cancelExposure;
 
 - (CASRect)validateSubframe:(CASRect)subframe binning:(CASSize)binning;

@@ -54,6 +54,16 @@
     }
 }
 
+- (void)startContinuousExposures
+{
+    NSLog(@"startContinuousExposures - not implemented");
+}
+
+- (void)stopContinuousExposures
+{
+    NSLog(@"stopContinuousExposures - not implemented");
+}
+
 - (void)exposeWithParams:(CASExposeParams)params type:(CASCCDExposureType)type block:(void (^)(NSError*,CASCCDExposure*exposure))block {
     if (block){
         block(nil,nil);
