@@ -25,6 +25,8 @@ static void* kvoContext;
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
+    
+    [self updateFilterRows];
 }
 
 - (void)dealloc
@@ -63,31 +65,8 @@ static void* kvoContext;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
-                
         if ([@"filterCount" isEqualToString:keyPath]){
-            
-            // todo; should create the radio buttons and text field on demand
-            if (self.filterSelectionMatrix.numberOfRows > self.filterWheelController.filterCount){
-                
-                // remove excess radio buttons
-                while (self.filterSelectionMatrix.numberOfRows > self.filterWheelController.filterCount) {
-                    [self.filterSelectionMatrix removeRow:[self.filterSelectionMatrix numberOfRows]-1];
-                }
-                
-                // remove excess text fields
-                for (NSTextField* textField in ((NSView*)self.window.contentView).subviews){
-                    if ([textField isKindOfClass:[NSTextField class]]){
-                        [textField setHidden:(textField.tag > self.filterWheelController.filterCount)];
-                    }
-                }
-                
-                // resize window to fit
-                NSRect frame = self.window.frame;
-                const CGFloat height = 44 + (22+12)*self.filterWheelController.filterCount;
-                frame.origin.y += frame.size.height - height;
-                frame.size.height = height;
-                [self.window setFrame:frame display:NO animate:YES];
-            }
+            [self updateFilterRows];
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -104,6 +83,32 @@ static void* kvoContext;
 {
     self.filterWheelController.filterNames = names;
     [self updateFilterNames];
+}
+
+- (void)updateFilterRows
+{
+    // todo; should create the radio buttons and text field on demand
+    if (self.filterSelectionMatrix.numberOfRows > self.filterWheelController.filterCount){
+        
+        // remove excess radio buttons
+        while (self.filterSelectionMatrix.numberOfRows > self.filterWheelController.filterCount) {
+            [self.filterSelectionMatrix removeRow:[self.filterSelectionMatrix numberOfRows]-1];
+        }
+        
+        // remove excess text fields
+        for (NSTextField* textField in ((NSView*)self.window.contentView).subviews){
+            if ([textField isKindOfClass:[NSTextField class]]){
+                [textField setHidden:(textField.tag > self.filterWheelController.filterCount)];
+            }
+        }
+        
+        // resize window to fit
+        NSRect frame = self.window.frame;
+        const CGFloat height = 44 + (22+12)*self.filterWheelController.filterCount;
+        frame.origin.y += frame.size.height - height;
+        frame.size.height = height;
+        [self.window setFrame:frame display:NO animate:YES];
+    }
 }
 
 - (void)updateFilterNames
