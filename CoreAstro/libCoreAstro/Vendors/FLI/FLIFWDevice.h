@@ -1,5 +1,5 @@
 //
-//  FLISDK.h
+//  FLIFWDevice.h
 //  CoreAstro
 //
 //  Copyright (c) 2016, Simon Taylor
@@ -23,10 +23,15 @@
 //  IN THE SOFTWARE.
 //
 
-#import "CASExternalSDK.h"
+#import "CASFWDevice.h"
 
-@interface FLISDK : NSObject<CASExternalSDK>
+@interface FLIFWDevice : CASFWDevice
 
-+ (dispatch_queue_t)q;
+@property (copy,readonly) NSString* fli_ident;
+@property (copy,readonly) NSString* fli_path;
+@property (copy,readonly) NSString* fli_model;
+@property (copy,readonly) NSString* fli_serial;
+
+- (instancetype)initWithId:(NSString*)ident path:(NSString*)path;
 
 @end

@@ -359,6 +359,7 @@
 		F4CA5426169CC9FD00832CFF /* wcs-xy2rd.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DE169CC9FB00832CFF /* wcs-xy2rd.h */; };
 		F4CA5427169CC9FD00832CFF /* xylist.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA51DF169CC9FB00832CFF /* xylist.h */; };
 		F4CA81A71B0915BB00BEEAA3 /* CASFocuser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4CFB5501D3187EE004BBE18 /* FLIFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CFB54F1D3187EE004BBE18 /* FLIFWDevice.m */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
 		F4E424101A8630A700C2A87E /* CASObjectLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4E424111A8630A700C2A87E /* CASObjectLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */; };
@@ -1440,6 +1441,8 @@
 		F4CA532E169CC9FD00832CFF /* ybmtopbm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ybmtopbm; sourceTree = "<group>"; };
 		F4CA532F169CC9FD00832CFF /* zeisstopnm */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = zeisstopnm; sourceTree = "<group>"; };
 		F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASFocuser.h; sourceTree = "<group>"; };
+		F4CFB54E1D3187EE004BBE18 /* FLIFWDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLIFWDevice.h; sourceTree = "<group>"; };
+		F4CFB54F1D3187EE004BBE18 /* FLIFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLIFWDevice.m; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
 		F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASObjectLookup.h; sourceTree = "<group>"; };
@@ -1616,6 +1619,8 @@
 				F40D5BFD184B314F00977FA9 /* FLISDK.m */,
 				F40D5BDC184A930C00977FA9 /* FLICCDDevice.h */,
 				F40D5BDD184A930C00977FA9 /* FLICCDDevice.m */,
+				F4CFB54E1D3187EE004BBE18 /* FLIFWDevice.h */,
+				F4CFB54F1D3187EE004BBE18 /* FLIFWDevice.m */,
 				F40D5C05184B5B8600977FA9 /* libfli-1.104 */,
 				F40D5BD5184A922D00977FA9 /* Supporting Files */,
 			);
@@ -3461,6 +3466,7 @@
 			attributes = {
 				CLASSPREFIX = MKO;
 				LastSwiftUpdateCheck = 0720;
+				LastTestingUpgradeCheck = 0730;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Mako Technology Ltd.";
 				TargetAttributes = {
@@ -3697,6 +3703,7 @@
 				F44C9A15195F041500285C34 /* libfli.c in Sources */,
 				F44C9A18195F041500285C34 /* libfli-usb.c in Sources */,
 				F44C9A10195F041500285C34 /* libfli-camera-usb.c in Sources */,
+				F4CFB5501D3187EE004BBE18 /* FLIFWDevice.m in Sources */,
 				F44C9A16195F041500285C34 /* libfli-debug.c in Sources */,
 				F44C9A17195F041500285C34 /* libfli-serial.c in Sources */,
 				F44C9A19195F041500285C34 /* libfli-usb-sys.c in Sources */,
