@@ -73,11 +73,11 @@ static void* kvoContext;
     if (self){
         self.camera = camera;
         self.temperatureLock = YES;
-        self.targetTemperature = -20;
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
         _savedCurrentCaptureIndex = -1;
         [self registerDeviceDefaults];
+        self.targetTemperature = self.settings.targetTemperature;
     }
     return self;
 }
@@ -672,6 +672,7 @@ static void* kvoContext;
 
 - (void)setTargetTemperature:(CGFloat)targetTemperature
 {
+    NSAssert(self.settings, @"Must create settings object before setting temperature");
     self.settings.targetTemperature = targetTemperature;
     self.camera.targetTemperature = self.settings.targetTemperature;
 }
