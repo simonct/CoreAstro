@@ -402,15 +402,18 @@
                                 </textField>
                                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FRd-sY-jte">
                                     <rect key="frame" x="101" y="68" width="182" height="26"/>
-                                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="GHE-kB-54G" id="6rR-NR-Bvs">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="6rR-NR-Bvs">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="BhU-x9-NtK">
                                             <items>
-                                                <menuItem title="Item 1" state="on" id="GHE-kB-54G"/>
+                                                <menuItem title="Item 1" id="GHE-kB-54G"/>
                                                 <menuItem title="Item 2" id="nsz-gV-1Lx"/>
                                                 <menuItem title="Item 3" id="eB7-sB-ySK"/>
                                             </items>
+                                            <connections>
+                                                <outlet property="delegate" destination="1" id="FRv-rB-Ihy"/>
+                                            </connections>
                                         </menu>
                                     </popUpButtonCell>
                                     <connections>
@@ -472,13 +475,12 @@
                                     </buttonCell>
                                     <connections>
                                         <action selector="sync:" target="-2" id="gYN-y5-8fd"/>
-                                        <binding destination="-2" name="enabled2" keyPath="mount.ra" previousBinding="RBQ-Cy-miA" id="sEL-WY-r4Y">
+                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="i1K-0j-eba" id="FmO-NZ-9uY">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
                                                 <integer key="NSNotApplicablePlaceholder" value="-1"/>
                                                 <integer key="NSNullPlaceholder" value="-1"/>
-                                                <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
                                         <binding destination="-2" name="enabled3" keyPath="mount.dec" previousBinding="sEL-WY-r4Y" id="i1K-0j-eba">
@@ -490,12 +492,13 @@
                                                 <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="i1K-0j-eba" id="FmO-NZ-9uY">
+                                        <binding destination="-2" name="enabled2" keyPath="mount.ra" previousBinding="RBQ-Cy-miA" id="sEL-WY-r4Y">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
                                                 <integer key="NSNotApplicablePlaceholder" value="-1"/>
                                                 <integer key="NSNullPlaceholder" value="-1"/>
+                                                <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="RBQ-Cy-miA">
@@ -1076,14 +1079,14 @@
         <window title="Connect to Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Conect to Mount" animationBehavior="default" id="dIP-qc-kdb">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="1107" width="369" height="104"/>
+            <rect key="contentRect" x="335" y="1107" width="369" height="127"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="9s1-4a-AEu">
-                <rect key="frame" x="0.0" y="0.0" width="369" height="104"/>
+                <rect key="frame" x="0.0" y="0.0" width="369" height="127"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rzn-48-RSo">
-                        <rect key="frame" x="91" y="61" width="261" height="26"/>
+                        <rect key="frame" x="91" y="84" width="261" height="26"/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="ewe-UT-8Xj" id="mlw-aM-E02">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -1101,8 +1104,26 @@
                             <binding destination="-2" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="QiL-Cm-csb" id="m4f-w1-gkc"/>
                         </connections>
                     </popUpButton>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="giV-Zv-3bm">
+                        <rect key="frame" x="20" y="89" width="68" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Serial Port" id="Esi-SK-AIY">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BjR-zj-No9">
+                        <rect key="frame" x="91" y="59" width="124" height="18"/>
+                        <buttonCell key="cell" type="check" title="Configure mount" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="R3E-0R-XFf">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="83E-JI-oE9" name="value" keyPath="values.CASConfigureMountOnConnect" id="RXz-EM-c0J"/>
+                        </connections>
+                    </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u2X-IH-PFz">
-                        <rect key="frame" x="263" y="16" width="92" height="32"/>
+                        <rect key="frame" x="263" y="13" width="92" height="32"/>
                         <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Kle-ci-M5v">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -1116,16 +1137,8 @@
                             </binding>
                         </connections>
                     </button>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="giV-Zv-3bm">
-                        <rect key="frame" x="20" y="66" width="68" height="17"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Serial Port" id="Esi-SK-AIY">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zys-3M-s97">
-                        <rect key="frame" x="181" y="16" width="82" height="32"/>
+                        <rect key="frame" x="181" y="13" width="82" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="td9-JI-s2I">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -1144,7 +1157,7 @@ Gw
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-1091.5" y="-10"/>
+            <point key="canvasLocation" x="-1178.5" y="-76.5"/>
         </window>
     </objects>
 </document>

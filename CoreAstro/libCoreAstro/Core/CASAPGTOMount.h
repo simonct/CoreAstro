@@ -21,6 +21,7 @@
 @interface CASAPGTOMount (APSpecific)
 
 typedef NS_ENUM(NSInteger, CASAPGTOMountMovingRate) {
+    CASAPGTOMountMovingRateUnknown,
     CASAPGTOMountMovingRate12,
     CASAPGTOMountMovingRate64,
     CASAPGTOMountMovingRate600,
@@ -30,6 +31,7 @@ typedef NS_ENUM(NSInteger, CASAPGTOMountMovingRate) {
 @property (nonatomic) CASAPGTOMountMovingRate movingRate;
 
 typedef NS_ENUM(NSInteger, CASAPGTOMountTrackingRate) {
+    CASAPGTOMountTrackingRateUnknown,
     CASAPGTOMountTrackingRateLunar,
     CASAPGTOMountTrackingRateSolar,
     CASAPGTOMountTrackingRateSidereal,

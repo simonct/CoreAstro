@@ -203,7 +203,7 @@
 }
 
 - (NSArray<NSString*>*)movingRateValues {
-    return @[@"1x",@"2x",@"8x",@"16x",@"64x",@"128x",@"256x",@"512x",@"Max"];
+    return @[@"Unknown",@"1x",@"2x",@"8x",@"16x",@"64x",@"128x",@"256x",@"512x",@"Max"];
 }
 
 - (void)dumpInfo

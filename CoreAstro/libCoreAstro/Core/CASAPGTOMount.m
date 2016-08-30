@@ -15,6 +15,7 @@
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
 @property (copy) NSNumber* siteLongitude, *siteLatitude;
+@property (nonatomic,readonly) BOOL shouldConfigureMount;
 @end
 
 @implementation CASAPGTOMount {
@@ -43,7 +44,7 @@
     self.siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
     self.siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
     if (!self.siteLatitude || !self.siteLongitude){
-        [self completeInitialiseMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
+        [self completeInitialisingMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
         return;
     }
     
@@ -78,12 +79,17 @@
                 NSLog(@"Difference between local and scope sidereal time of %.0f seconds, skipping the rest of the setup",diffSeconds);
             }
             else {
-                NSLog(@"Difference between local and scope sidereal timeof %.0f seconds, assuming the mount needs configuring",diffSeconds);
+                if (!self.shouldConfigureMount){
+                    NSLog(@"Difference between local and scope sidereal time of %.0f seconds, but mount configuration is suppressed",diffSeconds);
+                }
+                else {
+                    NSLog(@"Difference between local and scope sidereal time of %.0f seconds, assuming the mount needs configuring",diffSeconds);
+                }
             }
         }
 
-        if (scopeConfigured){
-            [self completeInitialiseMount:nil];
+        if (scopeConfigured || !self.shouldConfigureMount){
+            [self completeInitialisingMount:nil];
         }
         else {
             
@@ -126,7 +132,7 @@
                 if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
                 
                 // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
-                [self completeInitialiseMount:nil];
+                [self completeInitialisingMount:nil];
             }];
             
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
@@ -138,7 +144,7 @@
     }];
 }
 
-- (void)completeInitialiseMount:(NSError*)error
+- (void)completeInitialisingMount:(NSError*)error
 {
     if (error){
         if (self.connectCompletion){
@@ -149,17 +155,30 @@
     else {
         self.connected = YES;
         
-        [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
-        [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
-
-        self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above)
-        self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+        if (!self.shouldConfigureMount){
+            // we can't get the rate from the mount so it needs to be marked as unknown
+            self.movingRate = CASAPGTOMountMovingRateUnknown;
+            self.trackingRate = CASAPGTOMountTrackingRateUnknown;
+        }
+        else {
+            // todo; save in defaults
+            [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
+            [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
+            
+            self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above
+            self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+        }
 
         // magic delay seemingly required after setting rates... (still needed?)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
     }
+}
+
+- (BOOL) shouldConfigureMount
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"CASConfigureMountOnConnect"];
 }
 
 - (void)disconnect
@@ -540,6 +559,8 @@
     if (trackingRate != _trackingRate){
         _trackingRate = trackingRate;
         switch (_trackingRate) {
+            case CASAPGTOMountTrackingRateUnknown:
+                break;
             case CASAPGTOMountTrackingRateLunar:
                 [self sendCommand:@":RT0#"];
                 break;
@@ -561,7 +582,7 @@
 
 - (NSArray<NSString*>*)trackingRateValues
 {
-    return @[@"Lunar",@"Solar",@"Sidereal",@"None"];
+    return @[@"Unknown",@"Lunar",@"Solar",@"Sidereal",@"None"];
 }
 
 - (CASAPGTOMountMovingRate)movingRate
@@ -578,6 +599,8 @@
     if (movingRate != _movingRate){
         _movingRate = movingRate;
         switch (_movingRate) {
+            case CASAPGTOMountMovingRateUnknown:
+                break;
             case CASAPGTOMountMovingRate1200:
                 [self sendCommand:@":RC3#"];
                 break;
@@ -599,7 +622,7 @@
 
 - (NSArray<NSString*>*)movingRateValues
 {
-    return @[@"12x",@"64x",@"600x",@"1200x"];
+    return @[@"Unknown",@"12x",@"64x",@"600x",@"1200x"];
 }
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
