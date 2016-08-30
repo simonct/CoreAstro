@@ -119,7 +119,7 @@
                     [self didChangeValueForKey:@"filterCount"];
                 }
                 
-                // FLISetFilterPos(_dev,0);
+                FLISetFilterPos(_dev,0); // otherwise GetFilterPos returns -1
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (block){
