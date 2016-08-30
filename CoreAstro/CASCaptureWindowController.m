@@ -190,9 +190,9 @@
                 
                 if (!saveExposure) {
                     [self.exposuresController removeObjects:@[exposure]]; // cameraController will have saved it to the library so we need to remove it again
-                    dispatch_async(dispatch_get_current_queue(), capture);
+                    dispatch_async(dispatch_get_main_queue(), capture);
                 }
-                else{
+                else {
                 
                     // add the exposure
                     if (exposure){
@@ -209,7 +209,7 @@
                     if ([exposures count] < self.model.captureCount){
                         
                         if (progress) progress(exposure,NO);
-                        dispatch_async(dispatch_get_current_queue(), capture);
+                        dispatch_async(dispatch_get_main_queue(), capture);
                     }
                     else {
                         
