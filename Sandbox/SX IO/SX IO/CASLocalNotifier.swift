@@ -9,6 +9,23 @@
 import Cocoa
 import CoreAstro
 
+extension CASCameraController {
+    var notificationSubtitle: String {
+        var subtitle: String = camera.deviceName
+        switch settings.exposureUnits {
+        case .Seconds:
+            subtitle += ", \(settings.exposureDuration)s"
+        case .Milliseconds:
+            subtitle += ", \(settings.exposureDuration)ms"
+        }
+        subtitle += ", \(settings.binning)x\(settings.binning)"
+        if let currentFilterName = filterWheel?.currentFilterName {
+            subtitle += ", \(currentFilterName)"
+        }
+        return subtitle
+    }
+}
+
 class CASLocalNotifier: NSObject {
 
     static var sharedInstance = CASLocalNotifier()
@@ -45,25 +62,29 @@ class CASLocalNotifier: NSObject {
     }
     
     func exposureStarted(note: NSNotification) {
+        var subtitle: String?
         if let camera = note.object as? CASCameraController {
-            if camera.settings.continuous {
+            if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
                 return
             }
+            subtitle = camera.notificationSubtitle
         }
-        postLocalNotification("Exposure started")
+        postLocalNotification("Exposure started", subtitle: subtitle)
     }
 
     func exposureCompleted(note: NSNotification) {
+        var subtitle: String?
         if let _ = note.userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {
             if let camera = note.object as? CASCameraController {
-                if camera.settings.continuous {
+                if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
                     return
                 }
+                subtitle = camera.notificationSubtitle
             }
-            postLocalNotification("Exposure completed")
+            postLocalNotification("Exposure completed", subtitle: subtitle)
         }
     }
     
