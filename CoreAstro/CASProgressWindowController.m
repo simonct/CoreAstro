@@ -62,6 +62,7 @@
 
 - (IBAction)cancel:(id)sender {
     _cancelled = YES;
+    [self endSheetWithCode:NSCancelButton];
     if (self.cancelBlock){
         self.cancelBlock();
     }
