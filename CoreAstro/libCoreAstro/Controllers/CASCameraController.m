@@ -334,14 +334,14 @@ static void* kvoContext;
 
         const CGFloat temperature = self.camera.temperature;
         const CGFloat targetTemperature = self.camera.targetTemperature;
-        if (MIN(temperature,targetTemperature) == targetTemperature && fabs(targetTemperature - temperature) > temperatureLatitude){
+        if (fabs(targetTemperature - temperature) > temperatureLatitude){
             
             self.state = CASCameraControllerStateWaitingForTemperature;
 
             // todo; give up and alert user if we've waited in excess of some limit ?
             // todo; min capture interval in temp lock mode to allow temp commands to run
 
-            NSLog(@"Camera temperature of %.1f is above target temperature of %.1f, waiting %ld seconds...",temperature,targetTemperature,temperatureWaitInterval);
+            NSLog(@"Camera temperature of %.1f relative to target temperature of %.1f, waiting %ld seconds...",temperature,targetTemperature,temperatureWaitInterval);
             scheduleNextCapture(temperatureWaitInterval);
             return;
         }
