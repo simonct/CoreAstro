@@ -424,9 +424,9 @@
     [self sendCommand:@":PO#"];
 }
 
-- (void)gotoHomePosition
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
-    [self park:nil];
+    [self park:completion];
 }
 
 - (void)setSlewing:(BOOL)slewing

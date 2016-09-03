@@ -159,7 +159,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     NSAssert(NO, @"Not implemented");
 }
 
-- (void)gotoHomePosition {
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     NSAssert(NO, @"Not implemented");
 }
 

@@ -48,20 +48,21 @@
 
 @end
 
-@interface CASMountWindowController ()
+@interface CASMountWindowController ()<NSWindowDelegate>
 @property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
 @property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
+@property (nonatomic,copy) NSString* lastSearchString;
 @property (weak) IBOutlet NSTextField *statusLabel;
 @property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
-@property (nonatomic) CASCameraController* selectedCameraController;
 @property (strong) IBOutlet NSPanel *morePanel;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (copy) void(^slewCompletion)(NSError*);
+@property BOOL hasCurrentSolutionBookmark;
 @end
 
 // todo;
@@ -120,6 +121,8 @@ static void* kvoContext;
 #if defined(SXIO) || defined(CCDIO)
     [self.window addObserver:self forKeyPath:@"title" options:0 context:&kvoContext];
 #endif
+    
+    self.window.delegate = self;
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -212,21 +215,28 @@ static void* kvoContext;
 
 - (NSArray*)bookmarks
 {
-    NSArray* bookmarks = CASBookmarks.sharedInstance.bookmarks;
+    // this is only being called once when the window is first created...
+    
+    NSMutableArray* bookmarks = [CASBookmarks.sharedInstance.bookmarks mutableCopy];
     
     // if the delegate has a solution, add that as a temp bookmark (would be nice to be able to add a separator but we're using bindings atm)
     // todo; pick up changes in the delegate's solution
+    BOOL hasCurrentSolutionBookmark = NO;
     CASPlateSolveSolution* solution = self.mountWindowDelegate.plateSolveSolution;
     if (solution){
         NSDictionary* solutionDictionary = solution.solutionDictionary;
         if (solutionDictionary){
             NSString* name = [NSString stringWithFormat:@"Current Solution (%@, %@)",solution.displayCentreRA,solution.displayCentreDec];
             NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solutionDictionary};
-            bookmarks = [bookmarks arrayByAddingObject:bookmark];
+            [bookmarks insertObject:bookmark atIndex:0];
+            [bookmarks insertObject:@{CASBookmarks.nameKey:@"<separator>"} atIndex:1];
+            hasCurrentSolutionBookmark = YES;
         }
     }
     
-    return bookmarks;
+    self.hasCurrentSolutionBookmark = hasCurrentSolutionBookmark;
+
+    return [bookmarks copy];
 }
 
 - (IBAction)didSelectBookmark:(NSPopUpButton*)sender
@@ -235,6 +245,17 @@ static void* kvoContext;
         return;
     }
     [self selectBookmarkAtIndex:sender.indexOfSelectedItem];
+}
+
+- (void)menuNeedsUpdate:(NSMenu *)menu // menu delegate for swapping placeholders for actual separator items
+{
+    NSArray* items = menu.itemArray.copy;
+    for (NSMenuItem* item in items) {
+        if ([item.title isEqualToString:@"<separator>"]) {
+            [menu insertItem:[NSMenuItem separatorItem] atIndex:[menu indexOfItem:item]];
+            [menu removeItem:item];
+        }
+    }
 }
 
 - (void)selectBookmarkAtIndex:(NSInteger)index
@@ -246,13 +267,23 @@ static void* kvoContext;
     };
     
     if (index != -1){
+        
+        // if items 0 and 1 are a current location bookmark, fixup the index into the bookmarks array
+        if (self.hasCurrentSolutionBookmark && index > 1){
+            index -= 2;
+        }
+        
         NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
         CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
         if (solution){
             [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:completion];
         }
         else {
-            [self.mountController setTargetRA:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue] completion:completion];
+            NSNumber* centreRA = bookmark[CASBookmarks.centreRaKey];
+            NSNumber* centreDec = bookmark[CASBookmarks.centreDecKey];
+            if (centreRA && centreDec){
+                [self.mountController setTargetRA:[centreRA doubleValue] dec:[centreDec doubleValue] completion:completion];
+            }
         }
     }
 }
@@ -264,25 +295,20 @@ static void* kvoContext;
     return [CASDeviceManager sharedManager].cameraControllers;
 }
 
-- (CASCameraController*) selectedCameraController
+- (CASCameraController*)cameraController
 {
-    if (_cameraController){
-        return _cameraController;
-    }
-    return self.camerasArrayController.selectedObjects.firstObject;
-}
-
-+ (NSSet*)keyPathsForValuesAffectingSelectedCameraController
-{
-    return [NSSet setWithObject:@"cameraController"];
+    return self.mountController.cameraController;
 }
 
 - (void)setCameraController:(CASCameraController *)cameraController
 {
-    if (cameraController != _cameraController){
-        _cameraController = cameraController;
+    NSAssert(self.mountController, @"Need a mount controller");
+
+    if (self.mountController.cameraController != cameraController){
+        
         self.mountController.cameraController = cameraController;
-        if (!_cameraController){
+        
+        if (!cameraController){
             self.mountWindowDelegate = nil;
         }
         else{
@@ -290,15 +316,18 @@ static void* kvoContext;
 #if defined(SXIO) || defined(CCDIO)
             SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findWindowController:cameraController];
             if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
-
+                
                 self.mountWindowDelegate = (id)cameraWindowController;
                 /*
-                CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
-                if (solution){
-                    // todo; check to see we're not slewing, etc
-                    [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec];
-                }
-                */
+                 CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
+                 if (solution){
+                 // todo; check to see we're not slewing, etc
+                 [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec];
+                 }
+                 */
+            }
+            else {
+                self.mountWindowDelegate = nil;
             }
 #endif
         }
@@ -383,7 +412,14 @@ static void* kvoContext;
 
 - (IBAction)home:(id)sender
 {
-    [self.mountController.mount gotoHomePosition];
+    [self.mountController.mount gotoHomePosition:^(CASMountSlewError error, CASMountSlewObserver* observer){
+        if (error != CASMountSlewErrorNone) {
+            [self presentAlertWithMessage:@"Failed to home the mount"];
+        }
+        else {
+            [self presentAlertWithTitle:@"Home Complete" message:@"The mount is now in its Home position"];
+        }
+    }];
 }
 
 - (IBAction)park:(id)sender
@@ -391,6 +427,9 @@ static void* kvoContext;
     [self.mountController.mount park:^(CASMountSlewError error, CASMountSlewObserver* _) {
         if (error != CASMountSlewErrorNone){
             [self presentAlertWithMessage:@"Failed to park the mount"];
+        }
+        else {
+            [self presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
         }
     }];
 }
@@ -409,14 +448,9 @@ static void* kvoContext;
         if (!success){
             [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
         }
-        else{
-            // todo; cache locally for offline access ?
+        else {
             
-            // add bookmark
-            [self willChangeValueForKey:@"bookmarks"];
-            [CASBookmarks.sharedInstance addBookmark:self.searchString ra:ra dec:dec];
-            [self didChangeValueForKey:@"bookmarks"];
-            
+            self.lastSearchString = self.searchString;
             [weakSelf.mountController setTargetRA:ra dec:dec completion:^(NSError* error) { // probably not - do this when slew commanded as the mount may be busy ?
                 if (error){
                     [NSApp presentError:error];
@@ -434,6 +468,22 @@ static void* kvoContext;
     }];
 }
 
+- (IBAction)add:(id)sender
+{
+    if (self.lastSearchString &&
+        self.mountController.mount.targetRa &&
+        self.mountController.mount.targetDec){
+        [self willChangeValueForKey:@"bookmarks"];
+        [CASBookmarks.sharedInstance addBookmark:self.lastSearchString
+                                              ra:self.mountController.mount.targetRa.doubleValue
+                                             dec:self.mountController.mount.targetDec.doubleValue];
+        [self didChangeValueForKey:@"bookmarks"];
+    }
+    else {
+        [[NSAlert alertWithMessageText:@"No Target Set" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"No mount target has been set via a successful lookup"] runModal];
+    }
+}
+
 - (IBAction)moreDone:(id)sender
 {
     [self.window endSheet:self.morePanel returnCode:NSModalResponseContinue];
@@ -447,6 +497,16 @@ static void* kvoContext;
 - (IBAction)cancelPressed:(id)sender
 {
     [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseCancel];
+}
+
+#pragma mark - Window delegate
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    [self willChangeValueForKey:@"bookmarks"];
+    // force the bookmarks menu to redraw in case the associated window controller has a current plate solution
+    // todo; this is a workaround, we should bind to the mount window delegate somehow 
+    [self didChangeValueForKey:@"bookmarks"];
 }
 
 @end

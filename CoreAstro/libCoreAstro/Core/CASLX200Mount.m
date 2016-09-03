@@ -175,9 +175,14 @@
     }];
 }
 
-- (void)gotoHomePosition {
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     [self sendCommand:@":MH#" readCount:1 completion:^(NSString* response) {
         NSLog(@"Home command response: %@",response);
+        if (completion){
+            const CASMountSlewError error = [response isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
+            CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+            completion(error,observer);
+        }
     }];
 }
 
