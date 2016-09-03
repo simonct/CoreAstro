@@ -318,9 +318,9 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
 @property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic,weak,readonly) CASSequenceStep* currentStep;
-@property (nonatomic,copy) void(^completion)();
+@property (nonatomic,copy) void(^completion)(NSError*);
 - (BOOL)startWithError:(NSError**)error;
-- (void)stop;
+- (void)stopWithError:(NSError*)error; // todo; cancelled flag/error ?
 @end
 
 @interface SXIOSequenceRunner ()
@@ -362,7 +362,7 @@ static void* kvoContext;
     return YES;
 }
 
-- (void)stop
+- (void)stopWithError:(NSError*)error
 {
     _stopped = YES;
     
@@ -377,8 +377,12 @@ static void* kvoContext;
     [self.target endSequence];
     
     if (self.completion){
-        self.completion();
+        self.completion(error);
         self.completion = nil;
+    }
+    
+    if (error){
+        [NSApp presentError:error];
     }
 }
 
@@ -415,8 +419,7 @@ static void* kvoContext;
     [self.target captureWithCompletion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
-                [self stop];
-                [NSApp presentError:error];
+                [self stopWithError:error];
             }
             else {
                 if (!_stopped){
@@ -434,7 +437,7 @@ static void* kvoContext;
         self.currentStep = self.sequence.steps[index + 1];
     }
     else {
-        [self stop];
+        [self stopWithError:nil];
     }
 }
 
@@ -504,8 +507,7 @@ static void* kvoContext;
     [self.target slewToBookmark:sequenceStep.bookmark plateSolve:sequenceStep.plateSolve completion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
-                [self stop];
-                [NSApp presentError:error];
+                [self stopWithError:error];
             }
             else {
                 if (!_stopped){
@@ -524,8 +526,7 @@ static void* kvoContext;
     [self.target parkMountWithCompletion:^(NSError* error){
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error){
-                [self stop];
-                [NSApp presentError:error];
+                [self stopWithError:error];
             }
             else {
                 if (!_stopped){
@@ -760,7 +761,7 @@ static void* kvoContext;
 - (void)close
 {
     // warn first...
-    [self.sequenceRunner stop];
+    [self.sequenceRunner stopWithError:nil];
     
     // save current sequence
     
@@ -849,7 +850,7 @@ static void* kvoContext;
     if (self.sequenceRunner || self.nextRunTime){
         _stopped = YES;
         // button is in Stop mode
-        [self.sequenceRunner stop];
+        [self.sequenceRunner stopWithError:nil];
         self.sequenceRunner = nil;
         self.nextRunTime = nil;
         NSLog(@"Stopped");
@@ -877,9 +878,11 @@ static void* kvoContext;
             self.sequenceRunner.sequence = self.sequence;
             
             __typeof(self) weakSelf = self;
-            self.sequenceRunner.completion = ^(){
+            self.sequenceRunner.completion = ^(NSError* error){
                 
                 weakSelf.sequenceRunner = nil;
+
+                // todo; have an option to continue or stop if the sequence ended with an error
                 
                 // check for the repeat sequence option
                 if (!_stopped && self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
@@ -967,7 +970,7 @@ static void* kvoContext;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(restartTimerFired) object:nil];
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
-    [self.sequenceRunner stop];
+    [self.sequenceRunner stopWithError:nil];
     self.sequenceRunner = nil;
     
     if (self.parent){
