@@ -2134,7 +2134,7 @@ static void* kvoContext;
                     break;
                 case 2:
                     [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount" subtitle:nil];
-                    [self.mountController stop];
+                    [self.mountWindowController.mountController stop];
                     break;
                 default:
                     break;
