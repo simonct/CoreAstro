@@ -121,6 +121,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (weak) IBOutlet id mountConnectWindow;
 @property id serialPortManager, selectedSerialPort;
 
+@property BOOL isRunningSequence; // used to track if we're running a sequence as part of mount slew handling
+
 @end
 
 @implementation SXIOCameraWindowController {
@@ -407,11 +409,35 @@ static void* kvoContext;
     return [prefix stringByAppendingPathExtension:fileType];
 }
 
+- (BOOL)checkReadyToCapture:(NSError**)error
+{
+    // todo; need a more generic mechanism to express 'ready to capture'
+    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:1
+                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+        }
+        return NO;
+    }
+    
+    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:2
+                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (IBAction)capture:(NSButton*)sender
 {
     // todo; need a more generic mechanism to express 'ready to capture'
     NSError* error;
-    if (![self prepareToStartSequenceWithError:&error]){
+    if (![self checkReadyToCapture:&error]){
         [NSApp presentError:error];
         return;
     }
@@ -1048,7 +1074,12 @@ static void* kvoContext;
     
     // stop capture if we're not looping (which probably means we're framing the subject)
     if (!self.cameraController.settings.continuous){
-        [self.cameraController suspendCapture];
+        if (self.isRunningSequence){
+            [self.cameraController suspendCapture];
+        }
+        else {
+            [self.cameraController cancelCapture];
+        }
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
@@ -1250,7 +1281,7 @@ static void* kvoContext;
         }
         else if (error.code == 2) {
             
-            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."];
+            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."]; // link to blog page ?
         }
     }
 }
@@ -1282,6 +1313,8 @@ static void* kvoContext;
             [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                 
                 if (!error){
+                    
+                    // post notification so that mount controller window can pick up the new solution ?
                     
                     NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
                     if (solutionData){
@@ -2083,7 +2116,7 @@ static void* kvoContext;
             [self slewToCurrentMountPosition];
         }
         
-        // todo; kick off a background plate solve
+        // todo; kick off a background plate solve for this exposure
     }
     
     if (error){
@@ -2357,24 +2390,14 @@ static void* kvoContext;
 
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
 {
-    // todo; need a more generic mechanism to express 'ready to capture'
-    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+    if (![self checkReadyToCapture:error]){
         if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class])
-                                         code:1
-                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+            [NSApp presentError:*error];
         }
         return NO;
     }
     
-    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
-        if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class])
-                                         code:2
-                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
-        }
-        return NO;
-    }
+    self.isRunningSequence = YES;
     
     return YES;
 }
@@ -2462,6 +2485,8 @@ static void* kvoContext;
 
 - (void)endSequence
 {
+    self.isRunningSequence = NO;
+
     [self.cameraController cancelCapture]; // not calling the -cancelCapture: action on this class as that disables the Cancel button
 }
 
@@ -2514,11 +2539,21 @@ static void* kvoContext;
                 // just cleanup and we're done
                 // this would happen if the synchroniser was running the slew but it wasn't as a result of us triggering the flip e.g. the user used the mount window to slew to a target
                 [self completeMountSlewHandling];
+                
+                // pop a temporary alert to confirm the slew completed
+                [self performSelector:@selector(dismissModal) withObject:nil afterDelay:5 inModes:@[NSRunLoopCommonModes]];
+                [self presentAlertWithTitle:@"Slew Complete" message:@"The mount successfully synced to the target"];
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismissModal) object:nil];
             }
         }
         
         // todo; check to see if this is running a sequence step and call the completion block if it is (doing that now?)
     }
+}
+
+- (void)dismissModal
+{
+    [NSApp abortModal];
 }
 
 @end
