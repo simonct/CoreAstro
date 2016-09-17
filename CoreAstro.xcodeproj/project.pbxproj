@@ -3472,6 +3472,10 @@
 				TargetAttributes = {
 					F44EDEF915FCC385003B1B4C = {
 						DevelopmentTeam = D8EQ3MVHHB;
+						LastSwiftMigration = 0800;
+					};
+					F49E52BC15A971610018DC75 = {
+						DevelopmentTeam = D8EQ3MVHHB;
 					};
 				};
 			};
@@ -4106,6 +4110,7 @@
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -4139,6 +4144,7 @@
 				);
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -4263,6 +4269,7 @@
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4287,6 +4294,7 @@
 				CODE_SIGN_ENTITLEMENTS = CoreAstro/CoreAstro.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

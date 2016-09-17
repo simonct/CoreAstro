@@ -13,9 +13,9 @@ extension CASCameraController {
     var notificationSubtitle: String {
         var subtitle: String = camera.deviceName
         switch settings.exposureUnits {
-        case .Seconds:
+        case .seconds:
             subtitle += ", \(settings.exposureDuration)s"
-        case .Milliseconds:
+        case .milliseconds:
             subtitle += ", \(settings.exposureDuration)ms"
         }
         subtitle += ", \(settings.binning)x\(settings.binning)"
@@ -36,16 +36,16 @@ class CASLocalNotifier: NSObject {
         
         super.init()
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(exposureStarted(_:)), name:kCASCameraControllerExposureStartedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(exposureCompleted(_:)), name:kCASCameraControllerExposureCompletedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(filterSelected(_:)), name:kCASFilterWheelControllerSelectedFilterNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(exposureStarted(_:)), name:NSNotification.Name.casCameraControllerExposureStarted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(exposureCompleted(_:)), name:NSNotification.Name.casCameraControllerExposureCompleted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(filterSelected(_:)), name:NSNotification.Name.casFilterWheelControllerSelectedFilter, object: nil)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func postLocalNotification(title: String, subtitle: String? = nil) {
+    func postLocalNotification(_ title: String, subtitle: String? = nil) {
         if (!postLocalNotifications){
             return
         }
@@ -53,7 +53,7 @@ class CASLocalNotifier: NSObject {
         note.title = title;
         note.subtitle = subtitle;
         note.soundName = NSUserNotificationDefaultSoundName;
-        NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(note);
+        NSUserNotificationCenter.default.deliver(note);
         var message = title
         if (subtitle != nil) {
             message = message + ": \(subtitle)"
@@ -61,7 +61,7 @@ class CASLocalNotifier: NSObject {
 //        print(message)
     }
     
-    func exposureStarted(note: NSNotification) {
+    func exposureStarted(_ note: Notification) {
         var subtitle: String?
         if let camera = note.object as? CASCameraController {
             if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
@@ -72,9 +72,9 @@ class CASLocalNotifier: NSObject {
         postLocalNotification("Exposure started", subtitle: subtitle)
     }
 
-    func exposureCompleted(note: NSNotification) {
+    func exposureCompleted(_ note: Notification) {
         var subtitle: String?
-        if let _ = note.userInfo?["error"] as? NSError {
+        if let _ = (note as NSNotification).userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {
@@ -88,8 +88,8 @@ class CASLocalNotifier: NSObject {
         }
     }
     
-    func filterSelected(note: NSNotification) {
-        if let filter = note.userInfo?["filter"] as? String {
+    func filterSelected(_ note: Notification) {
+        if let filter = (note as NSNotification).userInfo?["filter"] as? String {
             postLocalNotification("Filter \(filter) selected")
         }
         else {

@@ -11,72 +11,72 @@
 import Foundation
 
 
-public class CASBookmarks: NSObject {
+open class CASBookmarks: NSObject {
     
-    static private let defaultsKey = "CASBookmarks"
+    static fileprivate let defaultsKey = "CASBookmarks"
     
-    public static let nameKey = "name"
-    public static let centreRaKey = "centreRa"
-    public static let centreDecKey = "centreDec"
-    public static let solutionDictionaryKey = "solutionDictionary"
+    open static let nameKey = "name"
+    open static let centreRaKey = "centreRa"
+    open static let centreDecKey = "centreDec"
+    open static let solutionDictionaryKey = "solutionDictionary"
     
-    public static let sharedInstance = CASBookmarks()
+    open static let sharedInstance = CASBookmarks()
     
     override init() {
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("storeDidChange:"), name: NSUbiquitousKeyValueStoreDidChangeExternallyNotification, object: NSUbiquitousKeyValueStore.defaultStore())
-        NSUbiquitousKeyValueStore.defaultStore().synchronize()
-        if let bookmarks = NSUbiquitousKeyValueStore.defaultStore().dictionaryRepresentation[CASBookmarks.defaultsKey] as? Array<NSDictionary> {
+        NotificationCenter.default.addObserver(self, selector: #selector(CASBookmarks.storeDidChange(_:)), name: NSUbiquitousKeyValueStore.didChangeExternallyNotification, object: NSUbiquitousKeyValueStore.default())
+        NSUbiquitousKeyValueStore.default().synchronize()
+        if let bookmarks = NSUbiquitousKeyValueStore.default().dictionaryRepresentation[CASBookmarks.defaultsKey] as? Array<NSDictionary> {
             print("CASBookmarks.init, \(bookmarks.count) bookmark(s) in iCloud")
         }
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    public var bookmarks: [NSDictionary] {
+    open var bookmarks: [NSDictionary] {
         get {
-            return NSUserDefaults.standardUserDefaults().objectForKey(CASBookmarks.defaultsKey) as? [NSDictionary] ?? []
+            return UserDefaults.standard.object(forKey: CASBookmarks.defaultsKey) as? [NSDictionary] ?? []
         }
         set {
-            NSUserDefaults.standardUserDefaults().setObject(newValue, forKey: CASBookmarks.defaultsKey)
-            NSUbiquitousKeyValueStore.defaultStore().setArray(newValue, forKey: CASBookmarks.defaultsKey)
+            UserDefaults.standard.set(newValue, forKey: CASBookmarks.defaultsKey)
+            NSUbiquitousKeyValueStore.default().set(newValue, forKey: CASBookmarks.defaultsKey)
         }
     }
     
-    private func appendBookmark(bookmark: NSDictionary) {
+    fileprivate func appendBookmark(_ bookmark: NSDictionary) {
         var bookmarks = self.bookmarks;
         bookmarks.append(bookmark)
         self.bookmarks = bookmarks
     }
     
-    public func addBookmark(name: String, solution: CASPlateSolveSolution) {
+    open func addBookmark(_ name: String, solution: CASPlateSolveSolution) {
         if (!name.isEmpty){
             if let solutionDictionary = solution.solutionDictionary() {
-                appendBookmark(NSDictionary(objects:[name,solutionDictionary],forKeys:[CASBookmarks.nameKey,CASBookmarks.solutionDictionaryKey]));
+                appendBookmark(NSDictionary(objects:[name,solutionDictionary],forKeys:[CASBookmarks.nameKey as NSCopying,CASBookmarks.solutionDictionaryKey as NSCopying]));
             }
         }
     }
     
-    public func addBookmark(name: String, ra: Double, dec: Double) {
+    open func addBookmark(_ name: String, ra: Double, dec: Double) {
         if (!name.isEmpty){
-            appendBookmark(NSDictionary(objects:[name,ra,dec],forKeys:[CASBookmarks.nameKey,CASBookmarks.centreRaKey,CASBookmarks.centreDecKey]));
+            appendBookmark(NSDictionary(objects:[name,ra,dec],forKeys:[CASBookmarks.nameKey as NSCopying,CASBookmarks.centreRaKey as NSCopying,CASBookmarks.centreDecKey as NSCopying]));
         }
     }
     
-    public func storeDidChange(note: NSNotification) { // interestingly, can't be private otherwise the notification fails with selector not found
-        print("storeDidChange \(note.userInfo)")
-        if let changedKeys = note.userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
-            reason = note.userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
-            _ = changedKeys.indexOf(CASBookmarks.defaultsKey){
+    open func storeDidChange(_ note: Notification) { // interestingly, can't be private otherwise the notification fails with selector not found
+        print("storeDidChange \((note as NSNotification).userInfo)")
+        if let changedKeys = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
+            let reason = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
+            let _ = changedKeys.index(of: CASBookmarks.defaultsKey){
                 switch(reason){
                 case NSUbiquitousKeyValueStoreServerChange, NSUbiquitousKeyValueStoreInitialSyncChange, NSUbiquitousKeyValueStoreAccountChange:
-                    if let bookmarks = NSUbiquitousKeyValueStore.defaultStore().arrayForKey(CASBookmarks.defaultsKey) {
-                        NSUserDefaults.standardUserDefaults().setObject(bookmarks, forKey: CASBookmarks.defaultsKey)
+                    if let bookmarks = NSUbiquitousKeyValueStore.default().array(forKey: CASBookmarks.defaultsKey) {
+                        UserDefaults.standard.set(bookmarks, forKey: CASBookmarks.defaultsKey)
                     }
                     else {
-                        NSUserDefaults.standardUserDefaults().removeObjectForKey(CASBookmarks.defaultsKey)
+                        UserDefaults.standard.removeObject(forKey: CASBookmarks.defaultsKey)
                     }
                     print("Updated local bookmarks from iCloud")
                 case NSUbiquitousKeyValueStoreQuotaViolationChange:
