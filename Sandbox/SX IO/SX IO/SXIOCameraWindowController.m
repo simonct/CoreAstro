@@ -1012,27 +1012,38 @@ static void* kvoContext;
             restartGuiding();
         }
         else {
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOClearGuideCalibrationAfterFlip"]){
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Clearing guide calibration" subtitle:nil];
-                [self.cameraController.phd2Client clearWithCompletion:^(BOOL success) {
-                    if (!success){
-                        failWithAlert(@"Guide Failed",@"Failed to clear guide calibration");
-                    }
-                    else {
-                        restartGuiding();
-                    }
-                }];
-            }
-            else {
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
-                [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
-                    if (!success){
-                        failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
-                    }
-                    else {
-                        restartGuiding();
-                    }
-                }];
+            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianPHD2Behaviour"]) {
+                case 0:
+                    NSLog(@"No PHD2 meridian behaviour selected");
+                    break;
+                case 1:
+                {
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
+                    [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+                        if (!success){
+                            failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
+                        }
+                        else {
+                            restartGuiding();
+                        }
+                    }];
+                }
+                    break;
+                case 2:
+                {
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Clearing guide calibration" subtitle:nil];
+                    [self.cameraController.phd2Client clearWithCompletion:^(BOOL success) {
+                        if (!success){
+                            failWithAlert(@"Guide Failed",@"Failed to clear guide calibration");
+                        }
+                        else {
+                            restartGuiding();
+                        }
+                    }];
+                }
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -2092,28 +2103,42 @@ static void* kvoContext;
             self.calibratedExposure = nil;
         }
         
-        // trigger a flip if we've crossed the meridian, have more exposures to take and have a locked solution. This will cancel any current exposure and restart once the slew is completed
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFlipMountAfterMeridian"] &&
-            self.mountWindowController.mountController.mount.weightsHigh &&
-            controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
+        // check to see if we crossed the meridian during the exposure
+        if (self.mountWindowController.mountController.mount.weightsHigh){
             
-            // todo; put in an 'at least' param for ap mounts
-            // todo; 30s beeping countdown alert ?
-            // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
-
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
-
-            // captures current mount state, suspends capture and stops guiding
-            [self prepareForMountSlewHandling];
-            
-            // set the retore on complete flag; this is the *only* place we do this
-            self.mountState.restoreStateWhenComplete = YES;
-            
-            // pop the slew sheet so that we can set the label text to something specific
-            [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
-
-            // start the slew to the flipped position
-            [self slewToCurrentMountPosition];
+            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
+                case 0:
+                    // no nothing
+                    break;
+                case 1:
+                    if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
+                        
+                        // todo; put in an 'at least' param for ap mounts
+                        // todo; 30s beeping countdown alert ?
+                        // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
+                        
+                        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
+                        
+                        // captures current mount state, suspends capture and stops guiding
+                        [self prepareForMountSlewHandling];
+                        
+                        // set the retore on complete flag; this is the *only* place we do this - yes, but where do we clear it ??
+                        self.mountState.restoreStateWhenComplete = YES;
+                        
+                        // pop the slew sheet so that we can set the label text to something specific
+                        [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+                        
+                        // start the slew to the flipped position
+                        [self slewToCurrentMountPosition];
+                    }
+                    break;
+                case 2:
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount" subtitle:nil];
+                    [self.mountController stop];
+                    break;
+                default:
+                    break;
+            }
         }
         
         // todo; kick off a background plate solve for this exposure
