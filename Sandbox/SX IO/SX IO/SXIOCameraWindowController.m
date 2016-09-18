@@ -949,15 +949,42 @@ static void* kvoContext;
 //
 // Called when a capture has completed and the mount has crossed the meridian and needs flipping
 //
-- (void)slewToCurrentMountPosition
+- (void)startMountMeridianFlip
 {
-    id<CASMount> mount = self.mountWindowController.mountController.mount;
-    if (mount){
+    // captures current mount state, suspends capture and stops guiding
+    [self prepareForMountSlewHandling];
+    
+    // set the retore on complete flag; this is the *only* place we do this - yes, but where do we clear it ??
+    self.mountState.restoreStateWhenComplete = YES;
+    
+    // pop the slew sheet so that we can set the label text to something specific
+    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+    
+    // start the slew to the flipped position
+    NSNumber* ra, *dec;
+    CASPlateSolveSolution* lockedSolution = self.exposureView.lockedPlateSolveSolution;
+    if (lockedSolution){
+        ra = @(lockedSolution.centreRA);
+        dec = @(lockedSolution.centreDec);
+    }
+    else {
+        id<CASMount> mount = self.mountWindowController.mountController.mount;
+        ra = mount.ra;
+        dec = mount.dec;
+    }
+    
+    if (!ra || !dec){
+        [self presentAlertWithTitle:@"Failed to Slew Mount"
+                            message:@"There is no current locked solution and the mount position is not available either so the mount cannot be slewed to its current position"];
+    }
+    else {
+        
         self.mountWindowController.cameraController = self.cameraController;
         self.mountWindowController.mountWindowDelegate = self;
         self.mountWindowController.mountController.usePlateSolving = YES;
+        
         __weak __typeof(self) weakSelf = self;
-        [self.mountWindowController.mountController setTargetRA:mount.ra.doubleValue dec:mount.dec.doubleValue completion:^(NSError* error) {
+        [self.mountWindowController.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
             if (error){
                 [NSApp presentError:error];
             }
@@ -1085,12 +1112,7 @@ static void* kvoContext;
     
     // stop capture if we're not looping (which probably means we're framing the subject)
     if (!self.cameraController.settings.continuous){
-        if (self.isRunningSequence){
-            [self.cameraController suspendCapture];
-        }
-        else {
-            [self.cameraController cancelCapture];
-        }
+        [self.cameraController suspendCapture];
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
@@ -2106,10 +2128,26 @@ static void* kvoContext;
         // check to see if we crossed the meridian during the exposure
         if (self.mountWindowController.mountController.mount.weightsHigh){
             
+            void (^stopMountTracking)() = ^{
+                
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount"
+                                                                subtitle:@"Mount has passed meridian so stopping tracking"];
+                
+                [self.mountWindowController.mountController stop]; // todo; option to park
+                
+                [self.cameraController cancelCapture];
+                
+                if (self.cameraController.phd2Client.connected){
+                    [self.cameraController.phd2Client stop];
+                    [self.cameraController.phd2Client disconnect];
+                }
+            };
+            
             switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
                 case 0:
                     // no nothing
                     break;
+                    
                 case 1:
                     if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
                         
@@ -2117,26 +2155,21 @@ static void* kvoContext;
                         // todo; 30s beeping countdown alert ?
                         // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
                         
-                        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
-                        
-                        // captures current mount state, suspends capture and stops guiding
-                        [self prepareForMountSlewHandling];
-                        
-                        // set the retore on complete flag; this is the *only* place we do this - yes, but where do we clear it ??
-                        self.mountState.restoreStateWhenComplete = YES;
-                        
-                        // pop the slew sheet so that we can set the label text to something specific
-                        [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+                        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount"
+                                                                        subtitle:@"Mount has passed meridian while capturing, triggering flip"];
                         
                         // start the slew to the flipped position
-                        [self slewToCurrentMountPosition];
+                        [self startMountMeridianFlip];
+                    }
+                    else {
+                        
+                        stopMountTracking();
                     }
                     break;
+                    
                 case 2:
-                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount" subtitle:nil];
-                    [self.mountWindowController.mountController stop];
-                    break;
                 default:
+                    stopMountTracking();
                     break;
             }
         }
