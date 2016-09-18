@@ -42,6 +42,16 @@
 
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
+#if CAS_SLEW_AND_SYNC_TEST
+    _testError = 1;
+#endif
+    
+    [self startSlewToRAImpl:raInDegrees dec:decInDegrees];
+}
+
+- (void)startSlewToRAImpl:(double)raInDegrees dec:(double)decInDegrees
+{
+    NSParameterAssert(self.mount);
     NSParameterAssert(self.mount.connected);
     NSParameterAssert(self.cameraController);
     NSParameterAssert(raInDegrees >= 0 && raInDegrees <= 360);
@@ -52,13 +62,6 @@
     _syncCount = 0;
     _raInDegrees = raInDegrees;
     _decInDegrees = decInDegrees;
-    
-#if CAS_SLEW_AND_SYNC_TEST
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _testError = 1;
-    });
-#endif
     
     __weak __typeof(self) weakSelf = self;
     [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
@@ -83,25 +86,25 @@
                     NSLog(@"_testError: %f",_testError);
                     
                     if (_testError < 0.125){
-                        [self completeWithError:nil];
+                        [weakSelf completeWithError:nil];
                     }
                     else{
                         
                         // sync to an imaginary position
-                        [self.mount syncToRA:_raInDegrees+_testError dec:_decInDegrees+_testError completion:^(CASMountSlewError slewError) {
+                        [weakSelf.mount syncToRA:_raInDegrees+_testError dec:_decInDegrees+_testError completion:^(CASMountSlewError slewError) {
                             
                             // reduce error
                             _testError /= 2;
                             
                             if (slewError != CASMountSlewErrorNone){
 //                                [self presentAlertWithMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];
-                                [self completeWithErrorMessage:[NSString stringWithFormat:@"Slew failed with error %ld",(long)slewError]];
+                                [weakSelf completeWithErrorMessage:[NSString stringWithFormat:@"Slew failed with error %ld",(long)slewError]];
                             }
                             else {
                                 
                                 // slew
                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self startSlewToRA:_raInDegrees dec:_decInDegrees];
+                                    [self startSlewToRAImpl:_raInDegrees dec:_decInDegrees];
                                 });
                             }
                         }];
@@ -337,7 +340,7 @@
                             [self restoreCameraSettings];
                             
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [self startSlewToRA:_raInDegrees dec:_decInDegrees];
+                                [self startSlewToRAImpl:_raInDegrees dec:_decInDegrees];
                             });
                         }
                     }];
