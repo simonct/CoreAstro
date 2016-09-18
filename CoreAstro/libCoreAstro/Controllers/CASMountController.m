@@ -135,17 +135,19 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             if (slewError != CASMountSlewErrorNone){
                 [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
             }
-            self.slewObserver = observer;
-            self.slewObserver.completion = ^(NSError* error){
-                [weakSelf callSlewCompletion:error];
-                weakSelf.slewObserver = nil;
-            };
+            else {
+                self.slewObserver = observer;
+                self.slewObserver.completion = ^(NSError* error){
+                    [weakSelf callSlewCompletion:error];
+                    weakSelf.slewObserver = nil;
+                };
+            }
         }];
     }
     else {
         
         if (!self.cameraController){
-            [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"No camera selected"}]];
+            [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:11 userInfo:@{NSLocalizedDescriptionKey:@"Cannot slew with plate solving enabled as no camera has been selected"}]];
         }
         else {
             
@@ -155,7 +157,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             self.mountSynchroniser.mount = self.mount; // redundant ?
             self.mountSynchroniser.cameraController = self.cameraController;
             
-            [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion which (todo;) needs to call the completion block
+            [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion which calls the slew completion block
         }
     }
 }
@@ -179,7 +181,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     // set the slew completion block; this is the bottleneck called from interactive slew and sequence (note: scripting *does not* currently go via this)
     self.slewCompletion = completion;
     
-    return [self startSlewToRA:[self.mount.targetRa doubleValue] dec:[self.mount.targetDec doubleValue]];
+    return [self startSlewToRA:self.mount.targetRa.doubleValue dec:self.mount.targetDec.doubleValue];
 }
 
 - (NSDictionary*)bookmarkWithName:(NSString*)name
