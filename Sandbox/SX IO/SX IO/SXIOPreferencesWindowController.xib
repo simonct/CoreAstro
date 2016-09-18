@@ -262,11 +262,11 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" title="Do nothing" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="70r-hg-EPu" id="Zsq-IW-WgX">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
+                                        <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="tJ9-c8-n81">
                                             <items>
                                                 <menuItem title="Do nothing" state="on" id="70r-hg-EPu"/>
-                                                <menuItem title="Flip after completing current exposure" id="hxD-y6-kcv"/>
+                                                <menuItem title="Flip after completing exposure" id="hxD-y6-kcv"/>
                                                 <menuItem title="Stop" id="c61-PN-bcq"/>
                                             </items>
                                         </menu>
@@ -298,12 +298,12 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" title="Do nothing" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="u5v-YD-ONp" id="BAO-HU-xR0">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
+                                        <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="67G-Jk-8TD">
                                             <items>
                                                 <menuItem title="Do nothing" state="on" id="u5v-YD-ONp"/>
                                                 <menuItem title="Flip calibration" id="wA6-ms-tuc"/>
-                                                <menuItem title="Re-calibrate" id="uNJ-0g-J3H"/>
+                                                <menuItem title="Clear and re-calibrate" id="uNJ-0g-J3H"/>
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
