@@ -9,6 +9,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
             <connections>
                 <outlet property="camerasArrayController" destination="Ps5-ee-7o7" id="Nyv-nW-e4F"/>
+                <outlet property="lookupSpinner" destination="3qC-bE-egp" id="pyo-AX-TGz"/>
                 <outlet property="morePanel" destination="9Jl-UB-2vZ" id="1nb-ZV-X5n"/>
                 <outlet property="mountConnectWindow" destination="dIP-qc-kdb" id="nCf-Zn-xsP"/>
                 <outlet property="window" destination="mjq-79-kKX" id="9G2-t1-L1g"/>
@@ -244,7 +245,7 @@ Gw
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-1178.5" y="-76.5"/>
+            <point key="canvasLocation" x="-917" y="-111"/>
         </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="mjq-79-kKX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
@@ -255,7 +256,7 @@ Gw
                 <rect key="frame" x="0.0" y="0.0" width="423" height="595"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <box autoresizesSubviews="NO" ambiguous="YES" misplaced="YES" borderType="line" title="Site" translatesAutoresizingMaskIntoConstraints="NO" id="d7d-jd-e75">
+                    <box autoresizesSubviews="NO" borderType="line" title="Site" translatesAutoresizingMaskIntoConstraints="NO" id="d7d-jd-e75">
                         <rect key="frame" x="17" y="461" width="389" height="114"/>
                         <view key="contentView" id="R44-EF-sVy">
                             <rect key="frame" x="1" y="1" width="387" height="98"/>
@@ -382,7 +383,7 @@ Gw
                             <constraint firstItem="lVY-Bx-aAE" firstAttribute="leading" secondItem="hhS-zf-fKx" secondAttribute="trailing" constant="8" id="w70-bg-Qu5"/>
                         </constraints>
                     </box>
-                    <box autoresizesSubviews="NO" ambiguous="YES" misplaced="YES" borderType="line" title="Current Position" translatesAutoresizingMaskIntoConstraints="NO" id="1Hx-jt-Lg0">
+                    <box autoresizesSubviews="NO" borderType="line" title="Current Position" translatesAutoresizingMaskIntoConstraints="NO" id="1Hx-jt-Lg0">
                         <rect key="frame" x="17" y="348" width="389" height="109"/>
                         <view key="contentView" id="NmG-9k-9PA">
                             <rect key="frame" x="1" y="1" width="387" height="93"/>
@@ -541,7 +542,7 @@ Gw
                             <constraint firstAttribute="height" constant="105" id="IJy-tz-UZC"/>
                         </constraints>
                     </box>
-                    <box autoresizesSubviews="NO" ambiguous="YES" misplaced="YES" borderType="line" title="Target Position" translatesAutoresizingMaskIntoConstraints="NO" id="Jog-a5-Wp6">
+                    <box autoresizesSubviews="NO" borderType="line" title="Target Position" translatesAutoresizingMaskIntoConstraints="NO" id="Jog-a5-Wp6">
                         <rect key="frame" x="17" y="197" width="389" height="147"/>
                         <view key="contentView" id="YkR-AA-ExK">
                             <rect key="frame" x="1" y="1" width="387" height="131"/>
@@ -602,7 +603,7 @@ Gw
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                     <connections>
-                                        <binding destination="-2" name="value" keyPath="mount.targetRa" id="Rvh-Pm-9jv">
+                                        <binding destination="-2" name="value" keyPath="targetRA" id="hc6-F2-X0F">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">CASLX200RATransformer</string>
                                             </dictionary>
@@ -627,7 +628,7 @@ Gw
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                     <connections>
-                                        <binding destination="-2" name="value" keyPath="mount.targetDec" id="PIB-tp-61r">
+                                        <binding destination="-2" name="value" keyPath="targetDec" id="eta-fC-Egd">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">CASLX200DecTransformer</string>
                                             </dictionary>
@@ -679,7 +680,7 @@ Gw
                                     </buttonCell>
                                     <connections>
                                         <action selector="slew:" target="-2" id="uqS-oW-Gf4"/>
-                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="pif-fM-Wgb" id="seg-0F-Xtv">
+                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="fRp-bG-rzU" id="ih7-Ok-xLy">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -692,7 +693,7 @@ Gw
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled3" keyPath="mount.targetDec" previousBinding="c8S-fM-F30" id="pif-fM-Wgb">
+                                        <binding destination="-2" name="enabled3" keyPath="targetDec" previousBinding="0tN-PT-L8O" id="fRp-bG-rzU">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -701,7 +702,7 @@ Gw
                                                 <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="mount.targetRa" previousBinding="gPL-vJ-nJC" id="c8S-fM-F30">
+                                        <binding destination="-2" name="enabled2" keyPath="targetRA" previousBinding="gPL-vJ-nJC" id="0tN-PT-L8O">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -763,15 +764,24 @@ Gw
                                     </buttonCell>
                                     <connections>
                                         <action selector="add:" target="-2" id="7YL-eo-1x1"/>
+                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="T30-tg-8Ph">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
                                     </connections>
                                 </button>
+                                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="3qC-bE-egp">
+                                    <rect key="frame" x="262" y="102" width="16" height="16"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                </progressIndicator>
                             </subviews>
                         </view>
                         <constraints>
                             <constraint firstAttribute="height" constant="143" id="XmT-tw-T8o"/>
                         </constraints>
                     </box>
-                    <box autoresizesSubviews="NO" ambiguous="YES" misplaced="YES" borderType="line" title="Camera" translatesAutoresizingMaskIntoConstraints="NO" id="VkD-9x-6yl">
+                    <box autoresizesSubviews="NO" borderType="line" title="Camera" translatesAutoresizingMaskIntoConstraints="NO" id="VkD-9x-6yl">
                         <rect key="frame" x="17" y="138" width="389" height="55"/>
                         <view key="contentView" id="25j-gs-FBG">
                             <rect key="frame" x="1" y="1" width="387" height="39"/>
@@ -790,7 +800,7 @@ Gw
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="value" keyPath="usePlateSolving" id="PnG-N5-htj"/>
+                                        <binding destination="-2" name="value" keyPath="mountController.usePlateSolving" id="3bG-PO-22f"/>
                                     </connections>
                                 </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ydR-C6-KoH">
@@ -819,7 +829,7 @@ Gw
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolving" previousBinding="zqI-f2-41h" id="fST-ha-dY2">
+                                        <binding destination="-2" name="enabled2" keyPath="mountController.usePlateSolving" previousBinding="zqI-f2-41h" id="ne7-U6-Ua4">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -852,7 +862,7 @@ Gw
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="usePlateSolving" previousBinding="TMA-bF-lfe" id="oQx-wR-wZZ">
+                                        <binding destination="-2" name="enabled2" keyPath="mountController.usePlateSolving" previousBinding="TMA-bF-lfe" id="a7X-Ry-XOD">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                                 <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -879,7 +889,7 @@ Gw
                             <constraint firstAttribute="height" constant="51" id="6Ia-U6-orR"/>
                         </constraints>
                     </box>
-                    <box autoresizesSubviews="NO" ambiguous="YES" misplaced="YES" borderType="line" title="Move" translatesAutoresizingMaskIntoConstraints="NO" id="obg-rc-H3a">
+                    <box autoresizesSubviews="NO" borderType="line" title="Move" translatesAutoresizingMaskIntoConstraints="NO" id="obg-rc-H3a">
                         <rect key="frame" x="17" y="38" width="389" height="96"/>
                         <view key="contentView" id="cPb-lP-YRf">
                             <rect key="frame" x="1" y="1" width="387" height="80"/>
@@ -1113,9 +1123,8 @@ Gw
                             <constraint firstAttribute="height" constant="92" id="3jO-qV-Hcg"/>
                         </constraints>
                     </box>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wgw-DM-cMk">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Wgw-DM-cMk">
                         <rect key="frame" x="18" y="20" width="387" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="ODf-s0-rxC">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1128,8 +1137,22 @@ Gw
                 </subviews>
                 <constraints>
                     <constraint firstItem="Jog-a5-Wp6" firstAttribute="top" secondItem="1Hx-jt-Lg0" secondAttribute="bottom" constant="8" id="0Bt-fo-R6d"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="trailing" secondItem="d7d-jd-e75" secondAttribute="trailing" id="0il-BE-8kI"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="trailing" secondItem="1Hx-jt-Lg0" secondAttribute="trailing" id="18J-qf-UxO"/>
                     <constraint firstItem="obg-rc-H3a" firstAttribute="top" secondItem="VkD-9x-6yl" secondAttribute="bottom" constant="8" id="1Y5-FG-uYQ"/>
+                    <constraint firstAttribute="trailing" secondItem="VkD-9x-6yl" secondAttribute="trailing" constant="20" symbolic="YES" id="5xa-Vv-Rqa"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="obg-rc-H3a" secondAttribute="leading" id="83o-uh-JVi"/>
                     <constraint firstItem="1Hx-jt-Lg0" firstAttribute="top" secondItem="d7d-jd-e75" secondAttribute="bottom" constant="8" id="Fad-ul-jqa"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="Jog-a5-Wp6" secondAttribute="leading" id="MVq-Mm-WUa"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="trailing" secondItem="obg-rc-H3a" secondAttribute="trailing" id="Me5-VU-EMb"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="d7d-jd-e75" secondAttribute="leading" id="PZR-cl-h49"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="top" secondItem="xyv-uk-NCw" secondAttribute="top" constant="402" id="g0o-Ec-k73"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="trailing" secondItem="Jog-a5-Wp6" secondAttribute="trailing" id="gGz-K9-kcQ"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="Wgw-DM-cMk" secondAttribute="leading" id="ilj-I7-8E4"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="trailing" secondItem="Wgw-DM-cMk" secondAttribute="trailing" id="rGe-et-lFP"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="xyv-uk-NCw" secondAttribute="leading" constant="20" symbolic="YES" id="tVq-lK-BEP"/>
+                    <constraint firstItem="VkD-9x-6yl" firstAttribute="leading" secondItem="1Hx-jt-Lg0" secondAttribute="leading" id="tbI-Yn-fqA"/>
+                    <constraint firstItem="Wgw-DM-cMk" firstAttribute="top" secondItem="obg-rc-H3a" secondAttribute="bottom" constant="8" symbolic="YES" id="uWJ-w3-bUF"/>
                     <constraint firstItem="VkD-9x-6yl" firstAttribute="top" secondItem="Jog-a5-Wp6" secondAttribute="bottom" constant="8" id="wjd-9X-01h"/>
                 </constraints>
             </view>

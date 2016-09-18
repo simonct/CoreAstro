@@ -24,6 +24,7 @@
 // Force recal, sidereal diff to use
 // Use full sync vs re-cal, or Sync button
 // Load view xib from driver and embed in mount window, accessor on mount to get xib name
+// Don't have a pop-up for the slew rate...
 
 @interface CASPierSideTransformer : NSValueTransformer
 @end
@@ -43,7 +44,7 @@
         case CASMountPierSideWest:
             return @"West";
     }
-    return @"";
+    return @"--";
 }
 
 @end
@@ -53,16 +54,18 @@
 @property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,copy) NSString* lastSearchString;
-@property (weak) IBOutlet NSTextField *statusLabel;
-@property (weak) IBOutlet NSPopUpButton *cameraPopupButton;
 @property (nonatomic,readonly) NSArray* cameraControllers;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (strong) IBOutlet NSPanel *morePanel;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
+@property (weak) IBOutlet NSProgressIndicator *lookupSpinner;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (copy) void(^slewCompletion)(NSError*);
 @property BOOL hasCurrentSolutionBookmark;
+@property (strong) NSNumber* targetRA;
+@property (strong) NSNumber* targetDec;
+@property (strong) CASObjectLookup* lookup;
 @end
 
 // todo;
@@ -260,12 +263,6 @@ static void* kvoContext;
 
 - (void)selectBookmarkAtIndex:(NSInteger)index
 {
-    void (^completion)(NSError*) = ^(NSError* error){
-        if (error){
-            [NSApp presentError:error];
-        }
-    };
-    
     if (index != -1){
         
         // if items 0 and 1 are a current location bookmark, fixup the index into the bookmarks array
@@ -276,13 +273,15 @@ static void* kvoContext;
         NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
         CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
         if (solution){
-            [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:completion];
+            self.targetRA = @(solution.centreRA);
+            self.targetDec = @(solution.centreDec);
         }
         else {
             NSNumber* centreRA = bookmark[CASBookmarks.centreRaKey];
             NSNumber* centreDec = bookmark[CASBookmarks.centreDecKey];
             if (centreRA && centreDec){
-                [self.mountController setTargetRA:[centreRA doubleValue] dec:[centreDec doubleValue] completion:completion];
+                self.targetRA = centreRA;
+                self.targetDec = centreDec;
             }
         }
     }
@@ -334,16 +333,6 @@ static void* kvoContext;
     }
 }
 
-- (BOOL)usePlateSolving
-{
-    return self.mountController.usePlateSolving; // todo; need to refactor here, too much muddled logic shared between this and the synchroniser
-}
-
-- (void)setUsePlateSolving:(BOOL)usePlateSolving
-{
-    self.mountController.usePlateSolving = usePlateSolving;
-}
-
 - (void)startMoving:(CASMountDirection)direction
 {
 //    NSLog(@"startMoving: %ld",direction);
@@ -365,11 +354,18 @@ static void* kvoContext;
     NSNumber* ra = self.mount.ra;
     NSNumber* dec = self.mount.dec;
     if (ra && dec){
-        [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
-            if (error != CASMountSlewErrorNone){
-                [self presentAlertWithMessage:@"Failed to sync the mount"];
-            }
-        }];
+        const NSModalResponse response = [[NSAlert alertWithMessageText:@"Confirm Sync"
+                                                          defaultButton:@"Sync"
+                                                        alternateButton:@"Cancel"
+                                                            otherButton:nil
+                                              informativeTextWithFormat:@"Confirm that you want to sync the mount to this target"] runModal];
+        if (response == NSOKButton){
+            [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
+                if (error != CASMountSlewErrorNone){
+                    [self presentAlertWithMessage:@"Failed to sync the mount"];
+                }
+            }];
+        }
     }
     else {
         [self presentAlertWithMessage:@"The mount is not currently reporting a positon so cannot be synced"];
@@ -398,9 +394,21 @@ static void* kvoContext;
 
 - (IBAction)slew:(id)sender
 {
-    [self.mountController slewToTargetWithCompletion:^(NSError* error) {
+    if (!self.targetRA || !self.targetDec){
+        return;
+    }
+    
+    __weak __typeof (self) weakSelf = self;
+    [self.mountController setTargetRA:self.targetRA.doubleValue dec:self.targetDec.doubleValue completion:^(NSError* error) {
         if (error){
-            [self presentAlertWithMessage:error.localizedDescription];
+            [weakSelf presentAlertWithMessage:error.localizedDescription];
+        }
+        else{
+            [weakSelf.mountController slewToTargetWithCompletion:^(NSError* error) {
+                if (error){
+                    [weakSelf presentAlertWithMessage:error.localizedDescription];
+                }
+            }];
         }
     }];
 }
@@ -436,27 +444,35 @@ static void* kvoContext;
 
 - (IBAction)lookup:(id)sender
 {
-    if (![self.searchString length]){
+    if (![self.searchString length] || self.lookup){
         NSBeep();
         return;
     }
     
-    __weak __typeof (self) weakSelf = self;
+    self.targetRA = nil;
+    self.targetDec = nil;
     
-    CASObjectLookup* lookup = [CASObjectLookup new];
-    [lookup lookupObject:self.searchString withCompletion:^(BOOL success,NSString*objectName,double ra, double dec) {
-        if (!success){
-            [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
-        }
-        else {
+    [self.lookupSpinner startAnimation:nil];
+    
+    self.lookup = [CASObjectLookup new];
+    [self.lookup lookupObject:self.searchString withCompletion:^(BOOL success, NSString* objectName, double ra, double dec) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-            self.lastSearchString = self.searchString;
-            [weakSelf.mountController setTargetRA:ra dec:dec completion:^(NSError* error) { // probably not - do this when slew commanded as the mount may be busy ?
-                if (error){
-                    [NSApp presentError:error];
-                }
-            }];
-        }
+            self.lookup = nil;
+            
+            [self.lookupSpinner stopAnimation:nil];
+            
+            if (!success){
+                [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
+            }
+            else {
+                NSLog(@"Found %@",objectName);
+                self.lastSearchString = self.searchString;
+                self.targetRA = @(ra);
+                self.targetDec = @(dec);
+            }
+        });
     }];
 }
 
@@ -471,12 +487,12 @@ static void* kvoContext;
 - (IBAction)add:(id)sender
 {
     if (self.lastSearchString &&
-        self.mountController.mount.targetRa &&
-        self.mountController.mount.targetDec){
+        self.targetRA &&
+        self.targetDec){
         [self willChangeValueForKey:@"bookmarks"];
         [CASBookmarks.sharedInstance addBookmark:self.lastSearchString
-                                              ra:self.mountController.mount.targetRa.doubleValue
-                                             dec:self.mountController.mount.targetDec.doubleValue];
+                                              ra:self.targetRA.doubleValue
+                                             dec:self.targetDec.doubleValue];
         [self didChangeValueForKey:@"bookmarks"];
     }
     else {
