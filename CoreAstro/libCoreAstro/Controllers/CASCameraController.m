@@ -92,7 +92,7 @@ static void* kvoContext;
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"settings.temperatureLock",@"settings.targetTemperature",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels"];
+    return @[@"settings.temperatureLock",@"settings.targetTemperature",@"settings.continuous",@"settings.binning",@"settings.captureCount",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
 }
 
 - (void)registerDeviceDefaults
