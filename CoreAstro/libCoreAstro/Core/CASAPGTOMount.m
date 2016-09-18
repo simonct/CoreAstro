@@ -20,6 +20,7 @@
 
 @implementation CASAPGTOMount {
     BOOL _parking;
+    BOOL _synced;
     NSInteger _skipSlewStateCount;
     CASMountDirection _direction;
     CASAPGTOMountMovingRate _movingRate;
@@ -173,6 +174,10 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
+        
+        // pop an alert reminding that you need to sync the mount with a 'don't show again' checkbox
+        // or some red text on the status label ??
+        // offer to let the user set the synced flag if it was already done with the handset
     }
 }
 
@@ -254,28 +259,44 @@
     // :GA# -> sDD*MM:SS#
     [self sendCommand:@":GA#" completion:^(NSString *response) {
         //NSLog(@"Get Alt: %@",response);
-        self.alt = @([CASLX200Commands fromDecString:response]);
+        if (!_synced){
+            self.alt = nil;
+        }
+        else {
+            self.alt = @([CASLX200Commands fromDecString:response]);
+        }
     }];
 
     // :GZ# -> sDD*MM:SS#
     [self sendCommand:@":GZ#" completion:^(NSString *response) {
         //NSLog(@"Get Az: %@",response);
-        self.az = @([CASLX200Commands fromDecString:response]);
+        if (!_synced){
+            self.az = nil;
+        }
+        else {
+            self.az = @([CASLX200Commands fromDecString:response]);
+        }
     }];
     
     // :pS# -> “East#” or “West#”
     [self sendCommand:@":pS#" completion:^(NSString *response) {
         
-        //NSLog(@"Get pier side: %@",response);
-        
-        if ([response isEqualToString:@"East"]){
-            self.pierSide = CASMountPierSideEast;
-        }
-        else if ([response isEqualToString:@"West"]){
-            self.pierSide = CASMountPierSideWest;
+        if (!_synced){
+//            NSLog(@"Get pier side: %@ but ignoring as the mount has not yet been synced",response);
+            self.pierSide = 0;
         }
         else {
-            self.pierSide = 0;
+//            NSLog(@"Get pier side: %@",response);
+            
+            if ([response isEqualToString:@"East"]){
+                self.pierSide = CASMountPierSideEast;
+            }
+            else if ([response isEqualToString:@"West"]){
+                self.pierSide = CASMountPierSideWest;
+            }
+            else {
+                self.pierSide = 0;
+            }
         }
     }];
     
@@ -524,7 +545,16 @@
 
 - (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
 {
-    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:completion];
+    
+    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:^(CASMountSlewError error) {
+       
+        if (error == CASMountSlewErrorNone){
+            _synced = YES;
+        }
+        if (completion){
+            completion(error);
+        }
+    }];
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
