@@ -66,6 +66,7 @@
 @property (strong) NSNumber* targetRA;
 @property (strong) NSNumber* targetDec;
 @property (strong) CASObjectLookup* lookup;
+@property (strong) CASMountSlewObserver* slewObserver;
 @end
 
 // todo;
@@ -167,6 +168,8 @@ static void* kvoContext;
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     
+    // todo; just hide window have an explicit disconnect command
+
     [self close];
 }
 
@@ -420,24 +423,42 @@ static void* kvoContext;
 
 - (IBAction)home:(id)sender
 {
+    __weak __typeof (self) weakSelf = self;
     [self.mountController.mount gotoHomePosition:^(CASMountSlewError error, CASMountSlewObserver* observer){
         if (error != CASMountSlewErrorNone) {
             [self presentAlertWithMessage:@"Failed to home the mount"];
         }
         else {
-            [self presentAlertWithTitle:@"Home Complete" message:@"The mount is now in its Home position"];
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
+                if (error){
+                    [weakSelf presentAlertWithMessage:error.localizedDescription];
+                }
+                else {
+                    [weakSelf presentAlertWithTitle:@"Home Complete" message:@"The mount is now in its Home position"];
+                }
+            };
         }
     }];
 }
 
 - (IBAction)park:(id)sender
 {
-    [self.mountController.mount park:^(CASMountSlewError error, CASMountSlewObserver* _) {
+    __weak __typeof (self) weakSelf = self;
+    [self.mountController.mount park:^(CASMountSlewError error, CASMountSlewObserver* observer) {
         if (error != CASMountSlewErrorNone){
             [self presentAlertWithMessage:@"Failed to park the mount"];
         }
         else {
-            [self presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
+            self.slewObserver = observer;
+            self.slewObserver.completion = ^(NSError* error){
+                if (error){
+                    [weakSelf presentAlertWithMessage:error.localizedDescription];
+                }
+                else {
+                    [weakSelf presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
+                }
+            };
         }
     }];
 }
