@@ -62,7 +62,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
     NSMutableArray* _settingsStack;
-    NSInteger _savedCurrentCaptureIndex;
 }
 
 static void* kvoContext;
@@ -75,7 +74,6 @@ static void* kvoContext;
         self.temperatureLock = YES;
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
-        _savedCurrentCaptureIndex = -1;
         [self registerDeviceDefaults];
         self.targetTemperature = self.settings.targetTemperature;
     }
@@ -485,16 +483,17 @@ static void* kvoContext;
         self.settings.currentCaptureIndex = 0;
     }
     else{
-        self.settings.currentCaptureIndex = _savedCurrentCaptureIndex != -1 ? _savedCurrentCaptureIndex + 1 : 0;
+        self.settings.currentCaptureIndex += 1;
         if (self.settings.currentCaptureIndex >= self.settings.captureCount){
-            block([self errorWithCode:5 message:@"Attempted to resume capture when sequence is complete" recovery:nil],nil);
+            // getting this after trying to restart capture after slew
+            NSString* message = [NSString stringWithFormat:@"Attempted to resume capture when sequence is complete, current index of %ld vs count of %ld",self.settings.currentCaptureIndex,self.settings.captureCount];
+            block([self errorWithCode:5 message:message recovery:nil],nil);
             return;
         }
     }
     
     _cancelled = NO;
     _suspended = NO;
-    _savedCurrentCaptureIndex = -1;
     
     void (^startCapture)() = ^{
         
@@ -635,7 +634,7 @@ static void* kvoContext;
 {
     if (self.capturing){
         self.suspended = YES; // set this before calling -cancelCapture
-        _savedCurrentCaptureIndex = self.settings.currentCaptureIndex; // todo; push/pop settings ?
+        NSLog(@"Suspending capture, current index is %ld",self.settings.currentCaptureIndex);
         [self cancelCapture];
     }
 }
