@@ -20,17 +20,32 @@
 - (CIImage *)outputImage
 {
     CISampler *src = [CISampler samplerWithImage:inputImage];
-        
+    
     static CIKernel* kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        NSString* clipMax = @"kernel vec4 clipMax(sampler image)\
-        {\
+        NSString* clipMax;
+        NSProcessInfo* proc = [NSProcessInfo processInfo];
+        if ([proc respondsToSelector:@selector(isOperatingSystemAtLeastVersion:)]){
+            const NSOperatingSystemVersion sierra = {10,12,0};
+            if ([proc isOperatingSystemAtLeastVersion:sierra]){
+                clipMax = @"kernel vec4 clipMax(sampler image)\
+                {\
+                vec4 p = sample(image, samplerCoord(image));\
+                p.rgba = p.r >= 1.0 && p.g >= 1.0 && p.b >= 1.0 ? vec4(1,0,0,1) : p.rgba;\
+                return p;\
+                }";
+            }
+        }
+        if (!clipMax){
+            clipMax = @"kernel vec4 clipMax(sampler image)\
+            {\
             vec4 p = sample(image, samplerCoord(image));\
             p.rgba = greaterThanEqual(p.rgb,vec3(1)).r ? vec4(1,0,0,1) : p.rgba;\
             return p;\
-        }";
+            }";
+        }
         
         kernel = [[CIKernel kernelsWithString:clipMax] firstObject];
     });
