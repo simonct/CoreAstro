@@ -139,6 +139,9 @@
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
             [self sendCommand:@":Q#"];
             
+            // switch PEC off, todo; make configurable in the UI
+            [self sendCommand:@":p#"];
+
             // restore logging state
             self.logCommands = saveLogCommands;
         }
