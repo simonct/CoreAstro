@@ -43,7 +43,7 @@ NSString* const kCASCameraControllerExposureCompletedNotification = @"kCASCamera
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
 
-@interface CASCameraController ()
+@interface CASCameraController ()<CASPHD2ClientDelegate>
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
@@ -208,7 +208,7 @@ static void* kvoContext;
 
 - (BOOL) ditherEnabled
 {
-    return self.settings.ditherEnabled && self.settings.ditherPixels > 0;
+    return self.settings.ditherEnabled && self.settings.ditherPixels > 0 && self.settings.startGuiding;
 }
 
 - (BOOL) requirePHD2Connection
@@ -452,13 +452,14 @@ static void* kvoContext;
                 [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
                     if (success){
                         NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
+                        if (!_cancelled){
+                            startExposure(); // expose anyway as long as we haven't been cancelled
+                        }
                     }
                     else {
                         NSLog(@"*** Dither failed"); // an alert might be too intrusive - need a sequence log this can go into perhaps plus a non-blocking ui feature e.g. log window
                         [self postLocalNotificationWithTitle:NSLocalizedString(@"Dither failed", @"Notification title") subtitle:NSLocalizedString(@"Check PHD2 is guiding successfully", @"Notification subtitle")];
-                    }
-                    if (!_cancelled){
-                        startExposure(); // expose anyway as long as we haven't been cancelled
+                        [self guidingFailedWithError:[self errorWithCode:6 message:@"Dither failed"]];
                     }
                 }];
             }
@@ -537,6 +538,7 @@ static void* kvoContext;
         
         // connect to PHD2 and start guiding before kicking off the capture
         [self.phd2Client disconnect];
+        self.phd2Client.delegate = self;
         [self.phd2Client connectWithCompletion:^{
             
             if (!self.phd2Client.connected){
@@ -773,6 +775,18 @@ static void* kvoContext;
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
+}
+
+- (void)guidingStarted
+{
+    NSLog(@"Guiding started");
+}
+
+- (void)guidingFailedWithError:(NSError*)error
+{
+    // todo; we should suspend and re-start when guiding resumes or give up after a limit
+
+    [self.sink cameraController:self didCompleteExposure:nil error:error];
 }
 
 @end
