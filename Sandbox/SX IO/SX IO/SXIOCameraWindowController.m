@@ -2023,6 +2023,20 @@ static void* kvoContext;
 
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
+    if (error){
+        
+        [self.cameraController cancelCapture];
+        
+        if (self.cameraController.phd2Client.connected){
+            [self.cameraController.phd2Client stop];
+            [self.cameraController.phd2Client disconnect];
+        }
+
+        [NSApp presentError:error];
+
+        return;
+    }
+    
     if (exposure){
         
         // save a reference to it (this is holding the pixels in memory though, may be better to store in a tmp file)
@@ -2175,12 +2189,6 @@ static void* kvoContext;
         }
         
         // todo; kick off a background plate solve for this exposure
-    }
-    
-    if (error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [NSApp presentError:error];
-        });
     }
 }
 
