@@ -25,7 +25,7 @@
 #else
 #import "CCD_IO-Swift.h"
 #endif
-#import <CoreAstro/CASClassDefaults.h>
+#import <CoreAstro/CoreAstro.h>
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
@@ -53,6 +53,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property CASMountPierSide pierSideWhenSlewStarted;
 @property BOOL guidingWhenSlewStarted;
 @property BOOL synchronisingWhenSlewStarted;
+@property BOOL restoreStateWhenComplete;
 @end
 
 @implementation SXIOMountState
@@ -79,6 +80,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) CASCCDExposure *calibratedExposure;
 @property (strong) CASCCDExposure* latestExposure;
+@property (copy) NSString* currentExposureUUID;
 
 @property (copy) void(^captureCompletion)(NSError*);
 
@@ -118,6 +120,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 // obsolete but required until the xib format is updated
 @property (weak) IBOutlet id mountConnectWindow;
 @property id serialPortManager, selectedSerialPort;
+
+@property BOOL isRunningSequence; // used to track if we're running a sequence as part of mount slew handling
 
 @end
 
@@ -201,8 +205,11 @@ static void* kvoContext;
     [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
     
     // listen to mount flipped notifications (todo; put in camera controller/capture controller?)
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountSlewing:) name:CASMountSlewingNotification object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountSlewingStateChanged:) name:CASMountSlewingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountCapturedSyncExposure:) name:kCASMountControllerCapturedSyncExposureNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountSolvedSyncExposure:) name:kCASMountControllerSolvedSyncExposureNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountCompletedSync:) name:kCASMountControllerCompletedSyncNotification object:nil];
+
     // map close button to hide window
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -272,9 +279,9 @@ static void* kvoContext;
             }
         }
         
-        if (object == self.mountWindowController.mountSynchroniser){
+        if (object == self.mountWindowController.mountController){
             if ([keyPath isEqualToString:@"status"]){
-                NSString* status = self.mountWindowController.mountSynchroniser.status;
+                NSString* status = self.mountWindowController.mountController.status;
                 if (status){
                     self.mountSlewProgressSheet.label.stringValue = status;
                 }
@@ -315,9 +322,9 @@ static void* kvoContext;
 - (void)setMountWindowController:(CASMountWindowController *)mountWindowController
 {
     if (mountWindowController != _mountWindowController){
-        [_mountWindowController.mountSynchroniser removeObserver:self forKeyPath:@"status" context:&kvoContext];
+        [_mountWindowController.mountController removeObserver:self forKeyPath:@"status" context:&kvoContext];
         _mountWindowController = mountWindowController;
-        [_mountWindowController.mountSynchroniser addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
+        [_mountWindowController.mountController addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
     }
 }
 
@@ -402,11 +409,35 @@ static void* kvoContext;
     return [prefix stringByAppendingPathExtension:fileType];
 }
 
+- (BOOL)checkReadyToCapture:(NSError**)error
+{
+    // todo; need a more generic mechanism to express 'ready to capture'
+    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:1
+                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+        }
+        return NO;
+    }
+    
+    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
+        if (error){
+            *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:2
+                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (IBAction)capture:(NSButton*)sender
 {
     // todo; need a more generic mechanism to express 'ready to capture'
     NSError* error;
-    if (![self prepareToStartSequenceWithError:&error]){
+    if (![self checkReadyToCapture:&error]){
         [NSApp presentError:error];
         return;
     }
@@ -573,7 +604,7 @@ static void* kvoContext;
 - (BOOL)openExposureAtPath:(NSString*)path
 {
     NSError* error;
-    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:YES error:nil];
+    CASCCDExposure* exposure = [CASCCDExposureIO exposureWithPath:path readPixels:NO error:nil];
     if (exposure){
         self.currentExposure = exposure;
         [self.cameraController updateSettingsWithExposure:exposure];
@@ -779,54 +810,64 @@ static void* kvoContext;
 - (IBAction)toggleShowHistogram:(id)sender
 {
     self.exposureView.showHistogram = !self.exposureView.showHistogram;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showHistogram) forKey:@"SXIODisplayShowHistogram"];
 }
 
 - (IBAction)toggleShowReticle:(id)sender
 {
     self.exposureView.showReticle = !self.exposureView.showReticle;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showReticle) forKey:@"SXIODisplayShowReticle"];
 }
 
 - (IBAction)toggleShowStarProfile:(id)sender
 {
     self.exposureView.showStarProfile = !self.exposureView.showStarProfile;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showStarProfile) forKey:@"SXIODisplayShowStarProfile"];
 }
 
 - (IBAction)toggleShowImageStats:(id)sender
 {
     self.exposureView.showImageStats = !self.exposureView.showImageStats;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.showImageStats) forKey:@"SXIODisplayShowImageStats"];
 }
 
 - (IBAction)toggleInvertImage:(id)sender
 {
     self.exposureView.invert = !self.exposureView.invert;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.invert) forKey:@"SXIODisplayInvert"];
 }
 
 - (IBAction)toggleMedianFilter:(id)sender
 {
     self.exposureView.medianFilter = !self.exposureView.medianFilter;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.medianFilter) forKey:@"SXIODisplayMedian"];
 }
 
 - (IBAction)toggleEqualiseHistogram:(id)sender
 {
     self.equalise = !self.equalise;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayEqualise"];
 }
 
 - (IBAction)toggleContrastStretch:(id)sender
 {
     self.exposureView.contrastStretch = !self.exposureView.contrastStretch;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.contrastStretch) forKey:@"SXIODisplayContrastStretch"];
 }
 
 - (IBAction)toggleCalibrate:(id)sender
 {
     self.calibrate = !self.calibrate;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayCalibrate"];
 }
 
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.showPlateSolution) forKey:@"SXIODisplayShowPlateSolution"];
 }
 
 - (IBAction)applyDebayer:(NSMenuItem*)sender
@@ -849,25 +890,28 @@ static void* kvoContext;
             break;
     }
     [self resetAndRedisplayCurrentExposure];
+    [self.cameraController.camera setDefaultsObject:@(self.imageDebayer.mode) forKey:@"SXIODisplayDebayerMode"];
 }
 
 - (IBAction)toggleFlipVertical:(id)sender
 {
     self.exposureView.flipVertical = !self.exposureView.flipVertical;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipVertical"];
 }
 
 - (IBAction)toggleFlipHorizontal:(id)sender
 {
     self.exposureView.flipHorizontal = !self.exposureView.flipHorizontal;
+    [self.cameraController.camera setDefaultsObject:@(self.exposureView.flipVertical) forKey:@"SXIODisplayFlipHorizontal"];
 }
 
 - (IBAction)sequence:(id)sender
 {
-    self.sequenceEditorWindowController = [SXIOSequenceEditorWindowController createWindowController];
-    self.sequenceEditorWindowController.target = self;
-    [self.sequenceEditorWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        self.sequenceEditorWindowController = nil;
-    }];
+    self.sequenceEditorWindowController = [SXIOSequenceEditorWindowController sharedWindowController];
+    if (self.sequenceEditorWindowController.target == nil) {
+        self.sequenceEditorWindowController.target = self;
+    }
+    [self.sequenceEditorWindowController.window makeKeyAndOrderFront:nil];
 }
 
 #pragma mark - Mount Control
@@ -875,13 +919,14 @@ static void* kvoContext;
 - (IBAction)connectToMount:(id)sender
 {
     // keep things simple and have a single mount window across the app for now
-    self.mountWindowController = [CASMountWindowController sharedMountWindowController];
-    
-    [self.mountWindowController connectToMount:^{
+    CASMountWindowController* mountWindowController = [CASMountWindowController sharedMountWindowController];
+    [mountWindowController connectToMount:^{
         
+        self.mountWindowController = mountWindowController; // only set this once it's connected as it observes the mount controller status
+
         // only configure the mount window if it doesn't already have a camera controller
-        if (self.mountWindowController.cameraController != nil){
-            NSLog(@"Not configuring mount window as it already has a camera controller: %@",self.mountWindowController.cameraController);
+        if (mountWindowController.cameraController != nil){
+            NSLog(@"Not configuring mount window as it already has a camera controller: %@",mountWindowController.cameraController);
         }
         else{
         
@@ -890,35 +935,75 @@ static void* kvoContext;
             CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
             if (solution){
                 // todo; check to see we're not slewing, etc
-                [self.mountWindowController setTargetRA:solution.centreRA dec:solution.centreDec];
+                [self.mountWindowController.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                }];
             }
         }
     }];
 }
 
-// Slew to the the locked position.
+// Slew to the mount's current position in order to trigger a meridian flip
 //
-// Called when:
-// 1. The mount stops slewing and we need to restart capturing
-// 2. A capture has completed and the mount has crossed the meridian and needs flipping
+// Called when a capture has completed and the mount has crossed the meridian and needs flipping
 //
-- (void)slewToLockedSolution
+- (void)startMountMeridianFlip
 {
-    CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
-    if (solution){
+    // captures current mount state, suspends capture and stops guiding
+    [self prepareForMountSlewHandling];
+    
+    // set the retore on complete flag; this is the *only* place we do this - yes, but where do we clear it ??
+    self.mountState.restoreStateWhenComplete = YES;
+    
+    // pop the slew sheet so that we can set the label text to something specific
+    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+    
+    // start the slew to the flipped position
+    NSNumber* ra, *dec;
+    CASPlateSolveSolution* lockedSolution = self.exposureView.lockedPlateSolveSolution;
+    if (lockedSolution){
+        ra = @(lockedSolution.centreRA);
+        dec = @(lockedSolution.centreDec);
+    }
+    else {
+        id<CASMount> mount = self.mountWindowController.mountController.mount;
+        ra = mount.ra;
+        dec = mount.dec;
+    }
+    
+    if (!ra || !dec){
+        [self presentAlertWithTitle:@"Failed to Slew Mount"
+                            message:@"There is no current locked solution and the mount position is not available either so the mount cannot be slewed to its current position"];
+    }
+    else {
+        
         self.mountWindowController.cameraController = self.cameraController;
         self.mountWindowController.mountWindowDelegate = self;
-        self.mountWindowController.usePlateSolving = YES;
-        [self.mountWindowController.mountSynchroniser startSlewToRA:solution.centreRA dec:solution.centreDec];
-        // calls - (void)mountWindowController:didCompleteWithError: when complete
+        self.mountWindowController.mountController.usePlateSolving = YES;
+        
+        __weak __typeof(self) weakSelf = self;
+        [self.mountWindowController.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
+            if (error){
+                [NSApp presentError:error];
+            }
+            else {
+                [weakSelf.mountWindowController.mountController slewToTargetWithCompletion:^(NSError* _) {
+                    // actual completion handling done in -mountCompletedSync:
+                }];
+            }
+        }];
     }
 }
 
-- (void)resumeAfterMountSlewCompleted // only called after the synchroniser has completed successfully
+// Restart guiding and/or capturing.
+//
+// Called when the mount has successfully re-synced after a triggered meridian flip
+//
+- (void)restoreStateAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
-    NSParameterAssert([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]);
-    
-    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountWindowController.mount.pierSide);
+    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountWindowController.mountController.mount.pierSide);
     
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self completeMountSlewHandling];
@@ -954,15 +1039,39 @@ static void* kvoContext;
             restartGuiding();
         }
         else {
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
-            [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
-                if (!success){
-                    failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
+            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianPHD2Behaviour"]) {
+                case 0:
+                    NSLog(@"No PHD2 meridian behaviour selected");
+                    break;
+                case 1:
+                {
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
+                    [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
+                        if (!success){
+                            failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
+                        }
+                        else {
+                            restartGuiding();
+                        }
+                    }];
                 }
-                else {
-                    restartGuiding();
+                    break;
+                case 2:
+                {
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Clearing guide calibration" subtitle:nil];
+                    [self.cameraController.phd2Client clearWithCompletion:^(BOOL success) {
+                        if (!success){
+                            failWithAlert(@"Guide Failed",@"Failed to clear guide calibration");
+                        }
+                        else {
+                            restartGuiding();
+                        }
+                    }];
                 }
-            }];
+                    break;
+                default:
+                    break;
+            }
         }
     };
     
@@ -997,7 +1106,7 @@ static void* kvoContext;
     if (!self.mountState){
         self.mountState = [SXIOMountState new];
         self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
-        self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mount.pierSide;
+        self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mountController.mount.pierSide;
         self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
     }
     
@@ -1007,8 +1116,10 @@ static void* kvoContext;
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
-    [self.cameraController.phd2Client stop];
-    [self.cameraController.phd2Client disconnect];
+    if (self.cameraController.phd2Client.connected){
+        [self.cameraController.phd2Client stop];
+        [self.cameraController.phd2Client disconnect];
+    }
 }
 
 - (void)completeMountSlewHandling
@@ -1034,6 +1145,20 @@ static void* kvoContext;
     self.mountSlewProgressSheet.label.stringValue = label;
 }
 
+// Handle the mount starting or ending slew, either triggered by us or externally
+//
+// Called from the mount slew state changed notification handler. There are a number of possible states
+//
+// 1. External slew e.g. slew buttons on mount window or handset. We cancel capture and guiding and wait for the mount to stop, no state is restored
+//
+// 2. User typed an object into the mount search field and hit slew and plate solve is OFF. Same behaviour as (1)
+//
+// 3. User typed an object into the mount search field and hit slew and plate solve is ON. Cancel capture and guiding, no state is restored.
+//
+// 4. Mount was flipped by us after crossing the meridian and will resync on the other side, plate solve is ON. Cancel capture and guiding, attempt to restore state when the mount controller finishes.
+//
+// 5. Mount is iterating towards its target and this is an intermediate slew, plate solve is ON. Cancel capture and guiding, wait until the sync completes and then restore state if appropriate.
+//
 - (void)handleMountSlewStateChanged
 {
     if (!self.mountWindowController){ // todo; remove dependency on the window
@@ -1041,106 +1166,60 @@ static void* kvoContext;
         return;
     }
     
-    if (self.mountWindowController.mount.slewing){
+    if (self.mountWindowController.mountController.mount.slewing){
         
         if (!self.mountState.slewStarted){
             
-            // create a new mount state object if this is a new slew operation
-            if (!self.mountState){
-                self.mountState = [SXIOMountState new];
-            }
-            self.mountState.slewStarted = YES;
-
-            // check to see if this is a slew triggered by the mount synchroniser which will happen after we've slewed and need to resync to the locked solution
-            if (self.mountWindowController.mountSynchroniser.busy){
-                
-                // I'm assuming that we already captured the state when the slew was triggered so don't overwrite with the current state as this may be an intermediate slew
-                
-                NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
-
-                self.mountState.synchronisingWhenSlewStarted = YES;
-            }
-            else {
-                
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"Recording mount state for possible restart"];
-
-                // record the current state
-                self.mountState.synchronisingWhenSlewStarted = NO;
-                self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
-                self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mount.pierSide;
-                self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
-            }
-            
-            // ensure capture and guiding is suspended regardless of how the slew was triggered
+            // ensure capture and guiding are suspended and that we record the current state (if it wasn't already done when we triggered the slew)
             [self prepareForMountSlewHandling];
             
             NSLog(@"Slew started: %@",self.mountState);
 
-            // present a sheet with some status info (todo; may only want to do this if SXIORestartCaptureAfterSlew is YES)
-            [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+            self.mountState.slewStarted = YES;
+
+            // check to see if this is a slew triggered by the mount synchroniser which will happen after we've slewed and need to resync to the locked solution
+            self.mountState.synchronisingWhenSlewStarted = self.mountWindowController.mountController.synchronising;
+            if (self.mountState.synchronisingWhenSlewStarted){
+                
+                NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
+                
+                if (self.mountState.capturingWhenSlewStarted){
+                    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Synchronising mount...", @"Progress sheet status label")];
+                }
+            }
+            else {
+                
+                NSLog(@"Mount slew started but being triggered externally so just cancel capture and guiding");
+
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"External slew, cancelling capture and guiding"];
+                
+                if (self.mountState.capturingWhenSlewStarted){
+                    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
+                }
+            }
         }
     }
     else {
         
         if (self.mountState.slewStarted){
             
-            self.mountState.slewStarted = NO;
-
             NSLog(@"Slew ended: %@",self.mountState);
 
+            self.mountState.slewStarted = NO;
+
+            // this was a slew triggered by the mount synchroniser so we wait until -mountCompletedSync: is called
+            // (this may be called multiple times as the mount interates towards the target)
             if (self.mountState.synchronisingWhenSlewStarted){
                 
-                // this was a slew triggered by the mount synchroniser so we wait until -didCompleteWithError: is called
-                
-                NSLog(@"Mount slew ended but being handled by mount synchroniser so ignoring");
+                NSLog(@"Mount slew ended but it's being handled by the mount synchroniser so waiting until -mountCompletedSync: is called");
             }
             else {
                 
-                if (![[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
-                    
-                    // non-synchroniser slew but the restart option is off so nothing more to do other that clean up
-                    
-                    NSLog(@"Mount slew ended but SXIORestartCaptureAfterSlew is NO so ignoring");
-                    
-                    [self completeMountSlewHandling];
-                }
-                else {
-                    
-                    if (!self.mountState.capturingWhenSlewStarted) {
-                        
-                        // non-synchroniser slew but we weren't capturing when the slew began so just clean up
-                        
-                        NSLog(@"Mount slew ended but wasn't capturing so not restarting guiding or capturing");
-                        
-                        [self completeMountSlewHandling];
-                    }
-                    else{
-                        
-                        CASPlateSolveSolution* solution = self.exposureView.lockedPlateSolveSolution;
-                        if (!solution){
-                            
-                            // non-synchroniser slew but no locked solution so just clean up
+                NSLog(@"Mount slew ended but we didn't start it so cleanup and complete");
 
-                            // todo; could capture last ra/dec of mount when slew started ? (need to ensure though that it wasn't recorded after the slew started)
-                            
-                            NSLog(@"Mount slew ended but no locked solution so not restarting guiding or capturing");
-                            
-                            [self completeMountSlewHandling];
-                        }
-                        else {
-                            
-                            // ok, full restart required - start the mount synchroniser slewing to the locked position and restart when -didCompleteWithError: is called
-                            
-                            NSLog(@"Mount slew ended, re-syncing to locked solution");
-                            
-                            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Synchronising mount to locked solution"];
-
-                            self.mountSlewProgressSheet.label.stringValue = NSLocalizedString(@"Synchronising mount to locked solution...", @"Progress sheet status label");
-                            
-                            [self slewToLockedSolution];
-                        }
-                    }
-                }
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Externally triggered slew completed, capture and guiding not restarted"];
+                
+                [self completeMountSlewHandling];
             }
         }
     }
@@ -1151,45 +1230,6 @@ static void* kvoContext;
 - (CASPlateSolveSolution*)plateSolveSolution
 {
     return self.exposureView.plateSolveSolution;
-}
-
-- (void)mountWindowController:(CASMountWindowController*)windowController didCaptureExposure:(CASCCDExposure*)exposure
-{
-    [self setCurrentExposure:exposure resetDisplay:YES];
-}
-
-- (void)mountWindowController:(CASMountWindowController*)windowController didSolveExposure:(CASPlateSolveSolution*)solution
-{
-    self.exposureView.plateSolveSolution = solution;
-}
-
-- (void)mountWindowController:(CASMountWindowController*)windowController didCompleteWithError:(NSError*)error
-{
-    if (error){
-        
-        NSLog(@"Mount sync failed with error %@",error);
-
-        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing ended" subtitle:@"Failed to slew to target"];
-
-        [self completeMountSlewHandling];
-        [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
-    }
-    else {
-        
-        NSLog(@"Mount sync completed successfully");
-                
-        // check to see if we were tracking the slew and restart
-        if (self.mountSlewProgressSheet){
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIORestartCaptureAfterSlew"]){
-                [self resumeAfterMountSlewCompleted];
-            }
-            else {
-                [self completeMountSlewHandling];
-            }
-        }
-    }
-    
-    // todo; check to see if this is running a sequence step and call the completion block if it is (doing that now?)
 }
 
 - (void)mountWindowControllerWillClose:(CASMountWindowController*)windowController;
@@ -1274,7 +1314,7 @@ static void* kvoContext;
         }
         else if (error.code == 2) {
             
-            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."];
+            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."]; // link to blog page ?
         }
     }
 }
@@ -1307,6 +1347,8 @@ static void* kvoContext;
                 
                 if (!error){
                     
+                    // post notification so that mount controller window can pick up the new solution ?
+                    
                     NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
                     if (solutionData){
                         CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
@@ -1330,7 +1372,7 @@ static void* kvoContext;
                     else {
                         self.showPlateSolution = YES;
                         self.exposureView.plateSolveSolution = results[@"solution"];
-                        [self resetAndRedisplayCurrentExposure];
+                        // no longer resetting display as that then immediately nils out the solution
                     }
                     self.plateSolver = nil;
                 });
@@ -1627,6 +1669,24 @@ static void* kvoContext;
         }];
         
         [self zoomImageToFit:nil];
+        
+        
+        // restore menu settings
+        self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
+        self.calibrate = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayCalibrate"] boolValue];
+        self.showPlateSolution = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowPlateSolution"] boolValue];
+        
+        self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
+        self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
+        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
+        self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
+        self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
+        self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
+        self.exposureView.showImageStats = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowImageStats"] boolValue];
+        self.exposureView.flipVertical = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipVertical"] boolValue];
+        self.exposureView.flipHorizontal = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipHorizontal"] boolValue];
+        
+        self.imageDebayer.mode = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayDebayerMode"] integerValue];
     }
     
     // Subframes on the M26C aren't currently supported
@@ -1638,17 +1698,22 @@ static void* kvoContext;
     [self updateExposureIndicator];
 }
 
+- (void)setProgressStatusTextValue:(NSString*)text
+{
+    if (!text){
+        text = @"";
+    }
+    if (![text isEqualToString:self.progressStatusText.stringValue]){ // seems to avoid significant performance problems with text fields
+        self.progressStatusText.stringValue = text;
+    }
+}
+
 - (void)updateExposureIndicator
 {
     void (^commonShowProgressSetup)(NSString*,BOOL) = ^(NSString* statusText,BOOL showIndicator){
-        
-        // todo; tidy this interface up
-//        self.exposureView.showProgress = showIndicator;
-//        self.exposureView.progressInterval = self.cameraController.exposureUnits ? self.cameraController.exposure/1000 : self.cameraController.exposure;
-        
         self.progressIndicator.hidden = NO;
         self.progressIndicator.indeterminate = NO;
-        self.progressStatusText.stringValue = statusText ? statusText : @"";
+        [self setProgressStatusTextValue:statusText];
     };
     
     switch (self.cameraController.state) {
@@ -1656,7 +1721,7 @@ static void* kvoContext;
         case CASCameraControllerStateNone:{
             self.exposureView.showProgress = NO;
             self.progressIndicator.hidden = YES;
-            self.progressStatusText.stringValue = @"";
+            [self setProgressStatusTextValue:nil];
         }
             break;
             
@@ -1679,7 +1744,7 @@ static void* kvoContext;
             commonShowProgressSetup(nil,YES);
             if (self.cameraController.progress >= 1){
                 self.progressIndicator.indeterminate = YES;
-                self.progressStatusText.stringValue = @"Downloading image...";
+                [self setProgressStatusTextValue:@"Downloading image..."];
             }
             else {
                 NSString* statusText;
@@ -1695,7 +1760,7 @@ static void* kvoContext;
                         statusText = [statusText stringByAppendingFormat:@" %.0fs",timeRemaining];
                     }
                 }
-                self.progressStatusText.stringValue = statusText;
+                [self setProgressStatusTextValue:statusText];
             }
         }
             break;
@@ -1729,6 +1794,63 @@ static void* kvoContext;
     }
 }
 
+- (void)lookupSolutionForExposure:(CASCCDExposure*)exposure completion:(void(^)(CASCCDExposure*,CASPlateSolveSolution*))completion
+{
+    NSData* solutionData;
+    
+    // look for a solution file alongside the exposure
+    NSURL* exposureUrl = exposure.io.url;
+    if (exposureUrl){
+        NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
+        solutionData = [NSData dataWithContentsOfURL:solutionUrl];
+    }
+    
+    if (solutionData){
+        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+        if (solution){
+            completion(exposure,solution);
+            return;
+        }
+    }
+    
+    // then, try CloudKit
+    if (!solutionData){
+        
+        CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
+        [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
+            
+            if (!error && results.count > 0){
+                
+                if (self.showPlateSolution){ // showPlateSolution should be on the exposure view
+                    
+                    NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
+                    if ([solutionData length]){
+                        
+                        @try {
+                            CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
+                            if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
+                                NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
+                                solution = nil;
+                            }
+                            if (!solution){
+                                // todo; start plate solve for this exposure, show solution hud but with a spinner
+                            }
+                            else {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    completion(exposure,solution);
+                                });
+                            }
+                        }
+                        @catch (NSException *exception) {
+                            NSLog(@"Exception opening solution data: %@",exception);
+                        }
+                    }
+                }
+            }
+        }];
+    }
+}
+
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     [self displayExposure:exposure resetDisplay:YES];
@@ -1740,55 +1862,21 @@ static void* kvoContext;
         self.exposureView.currentExposure = nil;
         return;
     }
-        
+    
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // grab any solution data before we start reusing the exposure variable
-        __block NSData* solutionData = nil;
+        // stash this as we may replace the exposure below and the uuids will no longer match
+        self.currentExposureUUID = exposure.uuid;
+        
+        // lookup any solution, this runs asynchronously so we need to track the current image uuid or when it completes
+        self.exposureView.plateSolveSolution = nil;
         if (self.showPlateSolution){
-            
-            // look for a solution file alongside the exposure
-            NSURL* exposureUrl = exposure.io.url;
-            if (exposureUrl){
-                NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
-                solutionData = [NSData dataWithContentsOfURL:solutionUrl];
-            }
-            
-            // then, try CloudKit
-            if (!solutionData){
-                
-                CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
-                [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
-                    if (!error && results.count > 0){
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            if ([exposure.uuid isEqualToString:self.currentExposure.uuid] && self.showPlateSolution){ // showPlateSolution shoudl be on the exposure view
-                                
-                                NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
-                                if ([solutionData length]){
-                                    @try {
-                                        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-                                        if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
-                                            NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
-                                            solution = nil;
-                                        }
-                                        if (!solution){
-                                            // todo; start plate solve for this exposure, show solution hud but with a spinner
-                                        }
-                                        else {
-                                            self.exposureView.plateSolveSolution = solution;
-                                        }
-                                    }
-                                    @catch (NSException *exception) {
-                                        NSLog(@"Exception opening solution data: %@",exception);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }];
-            }
+            [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
+                if ([solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
+                    self.exposureView.plateSolveSolution = solution;
+                }
+            }];
         }
         
         // live calibrate using saved bias and flat frames
@@ -1821,42 +1909,21 @@ static void* kvoContext;
             }
         }
         
-        // debayer
+        // equalise
+        if (self.equalise){
+            exposure = [self.imageProcessor equalise:exposure];
+        }
+
+        // debayer (we do this as the last step as equalise only works with single-channel images, todo; make it work with rgba images as well)
         if (self.imageDebayer.mode != kCASImageDebayerNone){
             CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
             if (debayeredExposure){
                 exposure = debayeredExposure;
             }
         }
-
-        // equalise
-        if (self.equalise){
-            exposure = [self.imageProcessor equalise:exposure];
-        }
         
         // set the exposure
         [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
-        
-        // check for plate solution - do this after setting the exposure as that clears the annotations layer
-        CASPlateSolveSolution* solution;
-        if (self.showPlateSolution){
-            if ([solutionData length]){
-                @try {
-                    solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-                    if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
-                        NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
-                        solution = nil;
-                    }
-                }
-                @catch (NSException *exception) {
-                    NSLog(@"Exception opening solution data: %@",exception);
-                }
-            }
-            if (!solution){
-                // todo; start plate solve for this exposure, show solution hud but with a spinner
-            }
-        }
-        self.exposureView.plateSolveSolution = solution;
     }
 }
 
@@ -1923,10 +1990,15 @@ static void* kvoContext;
         size = CGSizeMake(CGImageGetWidth(self.exposureView.CGImage), CGImageGetHeight(self.exposureView.CGImage));
     }
     
-    CGRect subframe = CGRectMake(selection.origin.x, size.height - selection.origin.y - selection.size.height, selection.size.width,selection.size.height);
-    subframe = CGRectIntersection(subframe, CGRectMake(0, 0, size.width, size.height));
-    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:CASRectFromCGRect(subframe)
-                                                                             binning:CASSizeMake(self.cameraController.settings.binning, self.cameraController.settings.binning)];
+    selection = CGRectIntersection(selection, CGRectMake(0, 0, size.width, size.height));
+    
+    const CASRect subframe = {
+        .origin = CASPointMake(round(selection.origin.x), round(selection.origin.y)),
+        .size = CASSizeMake(round(selection.size.width), round(selection.size.height))
+    };
+    const CASRect validatedSubframe = [self.cameraController.camera validateSubframe:subframe
+                                                                             binning:CASSizeMake(self.cameraController.settings.binning,
+                                                                                                 self.cameraController.settings.binning)];
     return CASCGRectFromCASRect(validatedSubframe);
 }
 
@@ -1951,6 +2023,20 @@ static void* kvoContext;
 
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
+    if (error){
+        
+        [self.cameraController cancelCapture];
+        
+        if (self.cameraController.phd2Client.connected){
+            [self.cameraController.phd2Client stop];
+            [self.cameraController.phd2Client disconnect];
+        }
+
+        [NSApp presentError:error];
+
+        return;
+    }
+    
     if (exposure){
         
         // save a reference to it (this is holding the pixels in memory though, may be better to store in a tmp file)
@@ -2053,29 +2139,56 @@ static void* kvoContext;
             self.calibratedExposure = nil;
         }
         
-        // trigger a flip if we've crossed the meridian, have more exposures to take and have a locked solution. This will cancel any current exposure and restart once the slew is completed
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOFlipMountAfterMeridian"] &&
-            self.mountWindowController.mount.weightsHigh &&
-            controller.capturing &&
-            self.exposureView.lockedPlateSolveSolution){
-
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount" subtitle:@"Mount has passed meridian while capturing, triggering flip"];
-
-            // captures current mount state, suspends capture and stops guiding
-            [self prepareForMountSlewHandling];
+        // check to see if we crossed the meridian during the exposure
+        if (self.mountWindowController.mountController.mount.weightsHigh){
             
-            // pop the slew sheet so that we can set the label text to something specific
-            [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
-
-            // start the slew to the flipped position
-            [self slewToLockedSolution];
+            void (^stopMountTracking)() = ^{
+                
+                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount"
+                                                                subtitle:@"Mount has passed meridian so stopping tracking"];
+                
+                [self.mountWindowController.mountController stop]; // todo; option to park
+                
+                [self.cameraController cancelCapture];
+                
+                if (self.cameraController.phd2Client.connected){
+                    [self.cameraController.phd2Client stop];
+                    [self.cameraController.phd2Client disconnect];
+                }
+            };
+            
+            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
+                case 0:
+                    // no nothing
+                    break;
+                    
+                case 1:
+                    if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
+                        
+                        // todo; put in an 'at least' param for ap mounts
+                        // todo; 30s beeping countdown alert ?
+                        // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
+                        
+                        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount"
+                                                                        subtitle:@"Mount has passed meridian while capturing, triggering flip"];
+                        
+                        // start the slew to the flipped position
+                        [self startMountMeridianFlip];
+                    }
+                    else {
+                        
+                        stopMountTracking();
+                    }
+                    break;
+                    
+                case 2:
+                default:
+                    stopMountTracking();
+                    break;
+            }
         }
-    }
-    
-    if (error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [NSApp presentError:error];
-        });
+        
+        // todo; kick off a background plate solve for this exposure
     }
 }
 
@@ -2336,41 +2449,21 @@ static void* kvoContext;
 
 #pragma mark - Sequence Target
 
-- (CASCameraController*) sequenceCameraController
+- (CASMountController*) sequenceMountController // tmp
 {
-    return self.cameraController;
-}
-
-- (CASFilterWheelController*) sequenceFilterWheelController
-{
-    return self.filterWheelControlsViewController.currentFilterWheel;
-}
-
-- (CASMountWindowController*) sequenceMountController
-{
-    return self.mountWindowController;
+    return self.mountWindowController.mountController;
 }
 
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
 {
-    // todo; need a more generic mechanism to express 'ready to capture'
-    if (self.filterWheelControlsViewController.currentFilterWheel.filterWheel.moving){
+    if (![self checkReadyToCapture:error]){
         if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class])
-                                         code:1
-                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+            [NSApp presentError:*error];
         }
         return NO;
     }
     
-    if (self.saveTargetControlsViewController.saveImages && !_targetFolder){
-        if (error){
-            *error = [NSError errorWithDomain:NSStringFromClass([self class])
-                                         code:1
-                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
-        }
-        return NO;
-    }
+    self.isRunningSequence = YES;
     
     return YES;
 }
@@ -2420,42 +2513,113 @@ static void* kvoContext;
             }
             
             // only call the completion block if the camera isn't suspended
+            // (this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption)
             if (self.cameraController.suspended){
-                // this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption
-                NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
+                if (error){
+                    [self captureCompletedWithError:error];
+                }
+                else {
+                    NSLog(@"Camera completion block called while suspended so not calling calling capture completion block");
+                }
             }
             else{
-
-                [self endSequence];
-                
-                if (self.captureCompletion){
-                    self.captureCompletion(error);
-                    self.captureCompletion = nil;
-                }
+                [self captureCompletedWithError:error];
             }
         }
     }];
 }
 
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion
 {
-    [self.mountWindowController slewToBookmarkWithName:name completion:completion];
+    [self.mountWindowController.mountController slewToBookmark:bookmark plateSolve:plateSolve completion:completion];
+}
+
+- (void)parkMountWithCompletion:(void(^)(NSError*))completion
+{
+    [self.mountWindowController.mountController parkMountWithCompletion:completion];
+}
+
+- (void)captureCompletedWithError:(NSError*)error
+{
+    [self endSequence];
+    
+    if (self.captureCompletion){
+        self.captureCompletion(error);
+        self.captureCompletion = nil;
+    }
 }
 
 - (void)endSequence
 {
+    self.isRunningSequence = NO;
+
     [self.cameraController cancelCapture]; // not calling the -cancelCapture: action on this class as that disables the Cancel button
 }
 
 #pragma mark - Notifications
 
-- (void)mountSlewing:(NSNotification*)note
+- (void)mountSlewingStateChanged:(NSNotification*)note // todo; post from mount controller instead ?
 {
-    NSLog(@"mountSlewing: %@",note.userInfo);
-
-    if (note.object == self.mountWindowController.mount){
+    if (note.object == self.mountWindowController.mountController.mount){
         [self handleMountSlewStateChanged];
     }
+}
+
+- (void)mountCapturedSyncExposure:(NSNotification*)note
+{
+    if (note.object == self.mountWindowController.mountController){
+        [self setCurrentExposure:note.userInfo[@"exposure"] resetDisplay:YES];
+    }
+}
+
+- (void)mountSolvedSyncExposure:(NSNotification*)note
+{
+    if (note.object == self.mountWindowController.mountController){
+        self.exposureView.plateSolveSolution = note.userInfo[@"solution"];
+    }
+}
+
+- (void)mountCompletedSync:(NSNotification*)note
+{
+    if (note.object == self.mountWindowController.mountController){
+        
+        NSError* error = note.userInfo[@"error"];
+        if (error){
+            
+            NSLog(@"Mount sync failed with error %@",error);
+            
+            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing failed" subtitle:error.localizedDescription];
+            
+            [self completeMountSlewHandling];
+            [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+        }
+        else {
+            
+            NSLog(@"Mount sync completed successfully");
+            
+            // check to see if we triggered the slew and restart capture and guiding
+            if (self.mountState.restoreStateWhenComplete){
+                [self restoreStateAfterMountSlewCompleted];
+            }
+            else {
+                // just cleanup and we're done
+                // this would happen if the synchroniser was running the slew but it wasn't as a result of us triggering the flip e.g. the user used the mount window to slew to a target
+                [self completeMountSlewHandling];
+                
+                // pop a temporary alert to confirm the slew completed
+                [self performSelector:@selector(dismissModal) withObject:nil afterDelay:5 inModes:@[NSRunLoopCommonModes]];
+                [self presentAlertWithTitle:@"Slew Complete" message:@"The mount successfully synced to the target"];
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismissModal) object:nil];
+            }
+        }
+        
+        // todo; check to see if this is running a sequence step and call the completion block if it is (doing that now?)
+    }
+}
+
+- (void)dismissModal
+{
+    [NSApp abortModal];
 }
 
 @end

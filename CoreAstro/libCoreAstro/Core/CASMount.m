@@ -159,7 +159,7 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     NSAssert(NO, @"Not implemented");
 }
 
-- (void)gotoHomePosition {
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     NSAssert(NO, @"Not implemented");
 }
 
@@ -173,6 +173,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
     NSAssert(NO, @"Not implemented");
+}
+
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion {
+    [self syncToRA:ra dec:dec completion:completion];
 }
 
 - (CASDeviceType)type {
@@ -201,22 +205,17 @@ static void* kvoContext;
 - (void)dealloc
 {
     if (_observing){
+        _observing = NO;
         [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
     }
 }
 
 - (void)setCompletion:(void (^)(NSError *))completion
 {
-    NSParameterAssert(completion);
-    NSParameterAssert(self.completion == nil);
-
     _completion = [completion copy];
-    if (!self.mount.slewing){
-        _completion(nil);
-    }
-    else {
-        [self.mount addObserver:self forKeyPath:@"slewing" options:0 context:&kvoContext];
-        _observing = YES;
+    if (_completion && !_observing){
+        [self.mount addObserver:self forKeyPath:@"slewing" options:NSKeyValueObservingOptionInitial context:&kvoContext];
+        _observing = YES; // set this *after* this call returns otherwise calls to -removeObserver: throws
     }
 }
 
@@ -225,7 +224,10 @@ static void* kvoContext;
     if (context == &kvoContext) {
         if ([@"slewing" isEqualToString:keyPath] && object == self.mount){
             if (!self.mount.slewing){
-                [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                if (_observing){
+                    _observing = NO;
+                    [self.mount removeObserver:self forKeyPath:@"slewing" context:&kvoContext];
+                }
                 if (self.completion){
                     self.completion(nil);
                     self.completion = nil;

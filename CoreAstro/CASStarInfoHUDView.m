@@ -91,7 +91,7 @@
                     else{
                         pixels = pixels + subframe.actualSize.width * y;
                         memcpy([pixelData mutableBytes], pixels, subframe.actualSize.width * sizeof(float));
-                        self.graphView.samples = pixelData;
+                        self.graphView.samples = @[pixelData];
                         self.graphView.showLimits = YES;
                         
                         // hfd

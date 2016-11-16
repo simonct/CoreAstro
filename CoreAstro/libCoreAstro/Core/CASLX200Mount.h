@@ -23,6 +23,8 @@
 @property (nonatomic,strong) NSNumber* az;
 @property (nonatomic,assign) CASMountPierSide pierSide;
 
+@property BOOL logCommands;
+
 @property (nonatomic,strong,readonly) ORSSerialPort* port;
 
 - (id)initWithSerialPort:(ORSSerialPort*)port;

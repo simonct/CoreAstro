@@ -43,7 +43,7 @@ NSString* const kCASCameraControllerExposureCompletedNotification = @"kCASCamera
 NSString* const kCASCameraControllerGuideErrorNotification = @"kCASCameraControllerGuideErrorNotification";
 NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraControllerGuideCommandNotification";
 
-@interface CASCameraController ()
+@interface CASCameraController ()<CASPHD2ClientDelegate>
 @property (nonatomic,assign) BOOL capturing;
 @property (nonatomic,strong) CASCCDDevice* camera;
 @property (nonatomic) NSTimeInterval continuousNextExposureTime;
@@ -54,6 +54,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,readonly) NSArray* slaves;
 @property (nonatomic,readonly) BOOL ditherEnabled;
 @property BOOL suspended;
+@property (strong) NSScriptCommand* cancelCommand;
 @end
 
 @implementation CASCameraController {
@@ -61,8 +62,9 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     BOOL _waitingForDevice:1;
     CASExposeParams _expParams;
     NSMutableArray* _settingsStack;
-    NSInteger _savedCurrentCaptureIndex;
 }
+
+static void* kvoContext;
 
 - (id)initWithCamera:(CASCCDDevice*)camera
 {
@@ -73,6 +75,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         self.settings = [CASExposureSettings new];
         self.settings.cameraController = self;
         [self registerDeviceDefaults];
+        self.targetTemperature = self.settings.targetTemperature;
     }
     return self;
 }
@@ -89,7 +92,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (NSArray*)deviceDefaultsKeys
 {
-    return @[@"targetTemperature",@"temperatureLock",@"settings.continuous",@"settings.binning",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
+    return @[@"settings.temperatureLock",@"settings.targetTemperature",@"settings.continuous",@"settings.binning",@"settings.captureCount",@"settings.exposureDuration",@"settings.exposureUnits",@"settings.exposureInterval",@"settings.ditherEnabled",@"settings.ditherPixels",@"settings.startGuiding"];
 }
 
 - (void)registerDeviceDefaults
@@ -205,7 +208,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (BOOL) ditherEnabled
 {
-    return self.settings.ditherEnabled && self.settings.ditherPixels > 0;
+    return self.settings.ditherEnabled && self.settings.ditherPixels > 0 && self.settings.startGuiding;
 }
 
 - (BOOL) requirePHD2Connection
@@ -329,14 +332,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
         const CGFloat temperature = self.camera.temperature;
         const CGFloat targetTemperature = self.camera.targetTemperature;
-        if (MIN(temperature,targetTemperature) == targetTemperature && fabs(targetTemperature - temperature) > temperatureLatitude){
+        if (fabs(targetTemperature - temperature) > temperatureLatitude){
             
             self.state = CASCameraControllerStateWaitingForTemperature;
 
             // todo; give up and alert user if we've waited in excess of some limit ?
             // todo; min capture interval in temp lock mode to allow temp commands to run
 
-            NSLog(@"Camera temperature of %.1f is above target temperature of %.1f, waiting %ld seconds...",temperature,targetTemperature,temperatureWaitInterval);
+            NSLog(@"Camera temperature of %.1f relative to target temperature of %.1f, waiting %ld seconds...",temperature,targetTemperature,temperatureWaitInterval);
             scheduleNextCapture(temperatureWaitInterval);
             return;
         }
@@ -449,13 +452,14 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
                 [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
                     if (success){
                         NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
+                        if (!_cancelled){
+                            startExposure(); // expose anyway as long as we haven't been cancelled
+                        }
                     }
                     else {
                         NSLog(@"*** Dither failed"); // an alert might be too intrusive - need a sequence log this can go into perhaps plus a non-blocking ui feature e.g. log window
                         [self postLocalNotificationWithTitle:NSLocalizedString(@"Dither failed", @"Notification title") subtitle:NSLocalizedString(@"Check PHD2 is guiding successfully", @"Notification subtitle")];
-                    }
-                    if (!_cancelled){
-                        startExposure(); // expose anyway as long as we haven't been cancelled
+                        [self guidingFailedWithError:[self errorWithCode:6 message:@"Dither failed"]];
                     }
                 }];
             }
@@ -475,12 +479,22 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         block([self errorWithCode:2 message:@"The associated filter wheel is moving"],nil);
         return;
     }
-
+    
+    if (!_suspended){
+        self.settings.currentCaptureIndex = 0;
+    }
+    else{
+        self.settings.currentCaptureIndex += 1;
+        if (self.settings.currentCaptureIndex >= self.settings.captureCount){
+            // getting this after trying to restart capture after slew
+            NSString* message = [NSString stringWithFormat:@"Attempted to resume capture when sequence is complete, current index of %ld vs count of %ld",self.settings.currentCaptureIndex,self.settings.captureCount];
+            block([self errorWithCode:5 message:message recovery:nil],nil);
+            return;
+        }
+    }
+    
     _cancelled = NO;
     _suspended = NO;
-    
-    self.settings.currentCaptureIndex = _savedCurrentCaptureIndex;
-    _savedCurrentCaptureIndex = 0;
     
     void (^startCapture)() = ^{
         
@@ -524,6 +538,7 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
         
         // connect to PHD2 and start guiding before kicking off the capture
         [self.phd2Client disconnect];
+        self.phd2Client.delegate = self;
         [self.phd2Client connectWithCompletion:^{
             
             if (!self.phd2Client.connected){
@@ -619,9 +634,11 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 
 - (void)suspendCapture
 {
-    self.suspended = YES; // set this before calling -cancelCapture
-    _savedCurrentCaptureIndex = self.settings.currentCaptureIndex; // todo; push/pop settings ?
-    [self cancelCapture];
+    if (self.capturing){
+        self.suspended = YES; // set this before calling -cancelCapture
+        NSLog(@"Suspending capture, current index is %ld",self.settings.currentCaptureIndex);
+        [self cancelCapture];
+    }
 }
 
 - (BOOL) cancelled
@@ -634,14 +651,36 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     _guider = guider;
 }
 
+- (BOOL)temperatureLock
+{
+    return self.settings.temperatureLock;
+}
+
+- (void)setTemperatureLock:(BOOL)temperatureLock
+{
+    self.settings.temperatureLock = temperatureLock;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTemperatureLock
+{
+    return [NSSet setWithObject:@"settings.temperatureLock"];
+}
+
 - (CGFloat)targetTemperature
 {
-    return self.camera.targetTemperature;
+    return self.settings.targetTemperature;
 }
 
 - (void)setTargetTemperature:(CGFloat)targetTemperature
 {
-    self.camera.targetTemperature = targetTemperature;
+    NSAssert(self.settings, @"Must create settings object before setting temperature");
+    self.settings.targetTemperature = targetTemperature;
+    self.camera.targetTemperature = self.settings.targetTemperature;
+}
+
++ (NSSet*)keyPathsForValuesAffectingTargetTemperature
+{
+    return [NSSet setWithObject:@"settings.targetTemperature"];
 }
 
 - (void)setNilValueForKey:(NSString *)key
@@ -703,6 +742,53 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
     return size;
 }
 
+- (float)focalLength
+{
+    NSString* const focalLengthKey = [[self class] focalLengthWithCameraKey:self];
+    NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:focalLengthKey];
+    if ([focalLength isKindOfClass:[NSNumber class]]){
+        return [focalLength floatValue];
+    }
+    return 0;
+}
+
+- (void)setFocalLength:(float)focalLength
+{
+    NSString* const focalLengthKey = [[self class] focalLengthWithCameraKey:self];
+    [[NSUserDefaults standardUserDefaults] setFloat:focalLength forKey:focalLengthKey];
+}
+
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController
+{
+    NSString* const key = @"SXIOPlateSolverFocalLength";
+    return [NSString stringWithFormat:@"%@%@",key,cameraController.camera.uniqueID];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if ([keyPath isEqualToString:@"capturing"] && self.capturing == NO){
+            [self.cancelCommand resumeExecutionWithResult:nil];
+            self.cancelCommand = nil;
+            [self removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)guidingStarted
+{
+    NSLog(@"Guiding started");
+}
+
+- (void)guidingFailedWithError:(NSError*)error
+{
+    // todo; we should suspend and re-start when guiding resumes or give up after a limit
+
+    [self.sink cameraController:self didCompleteExposure:nil error:error];
+}
+
 @end
 
 @implementation CASCameraController (CASScripting)
@@ -720,6 +806,26 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)scriptingCapture:(NSScriptCommand*)command
 {
     [command performDefaultImplementation];
+}
+
+- (void)scriptingCancel:(NSScriptCommand*)command
+{
+    if (self.cancelCommand){
+        NSLog(@"Already cancelling capture, ignoring command");
+        return;
+    }
+    if (!self.capturing){
+        NSLog(@"Cancel command received when not capturing, ignoring");
+        return;
+    }
+    
+    self.cancelCommand = command;
+    
+    [self.cancelCommand suspendExecution];
+    
+    [self addObserver:self forKeyPath:@"capturing" options:nil context:&kvoContext];
+    
+    [self cancelCapture];
 }
 
 - (NSNumber*)scriptingTemperature
@@ -747,6 +853,16 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 - (void)setScriptingSequenceCount:(NSNumber*)count
 {
     self.settings.scriptingSequenceCount = count;
+}
+
+- (NSNumber*)scriptingStartIndex
+{
+    return self.settings.scriptingStartIndex;
+}
+
+- (void)setScriptingStartIndex:(NSNumber*)startIndex
+{
+    self.settings.scriptingStartIndex = startIndex;
 }
 
 - (NSNumber*)scriptingSequenceIndex

@@ -31,6 +31,9 @@
 
 @interface CASCCDExposure : CASScriptableObject<NSCopying>
 
+typedef float cas_pixel_t;
+typedef struct { float r,g,b,a; } cas_rgbapixel_t;
+
 // represents the raw pixels of an exposure, contains metadata describing the source camera and exposure settings. saves the data to a persistent store
 
 @property (nonatomic,strong) NSData* pixels; // original 16-bit unsigned int samples

@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @property (nonatomic,assign) float ditherPixels;
 
 @property (nonatomic,assign) BOOL startGuiding;
+@property (nonatomic,assign) BOOL temperatureLock;
+@property (nonatomic,assign) float targetTemperature;
 
 @end
 
@@ -48,8 +50,11 @@ typedef NS_ENUM(NSInteger, CASExposureDurationUnits) {
 @interface CASExposureSettings (CASScripting)
 @property (nonatomic,strong) NSNumber* scriptingSequenceCount;
 @property (nonatomic,readonly) NSNumber* scriptingSequenceIndex;
+@property (nonatomic,strong) NSNumber* scriptingStartIndex;
 @property (nonatomic,strong) NSNumber* scriptingInterval;
 @property (nonatomic,strong) NSNumber* scriptingDitherPixels;
 @property (nonatomic,strong) NSNumber* scriptingBinning;
 @property (nonatomic,strong) NSNumber* scriptingDuration;
+@property (nonatomic,strong) NSNumber* scriptingTemperatureLock;
+@property (nonatomic,strong) NSNumber* scriptingTargetTemperature;
 @end

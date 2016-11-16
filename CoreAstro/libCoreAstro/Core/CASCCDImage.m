@@ -186,7 +186,7 @@
 
 + (CGContextRef)newRGBBitmapContextWithSize:(CASSize)size
 {
-    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 8, (size.width) * 4, space, kCGImageAlphaPremultipliedLast);
     CFRelease(space);
     
@@ -204,7 +204,7 @@
 
 + (CGContextRef)newRGBAFloatBitmapContextWithSize:(CASSize)size
 {
-    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGColorSpaceRef space = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     CGContextRef context = CGBitmapContextCreate(nil, size.width, size.height, 32, (size.width) * 4 * 4, space, kCGImageAlphaNoneSkipLast|kCGBitmapFloatComponents|kCGBitmapByteOrder32Little);
     CFRelease(space);
     

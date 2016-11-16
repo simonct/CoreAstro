@@ -208,7 +208,7 @@ static void sxResetWriteData(UCHAR setup_data[8])
     setup_data[USB_REQ_LENGTH_H] = 0;
 }
 
-static void sxGetCameraParamsWriteData(USHORT camIndex, UCHAR setup_data[17])
+static void sxGetCameraParamsWriteData(USHORT camIndex, UCHAR setup_data[8])
 {
     setup_data[USB_REQ_TYPE    ] = USB_REQ_VENDOR | USB_REQ_DATAIN;
     setup_data[USB_REQ         ] = SXUSB_GET_CCD;
@@ -595,12 +595,27 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
         self.params = params;
     }
     
-    const NSUInteger binX = self.params.bin.width;
-    const NSUInteger binY = self.params.bin.height;
     const NSUInteger width = 2 * self.params.size.width;
     const NSUInteger height = self.params.size.height / 2;
     const NSUInteger originX = 2 * self.params.origin.x;
     const NSUInteger originY = self.params.origin.y / 2;
+    
+    // map binning settings to internal values
+    NSUInteger binX = 1, binY = 1;
+    switch (self.params.bin.width) { // assume self.params.bin.width == self.params.bin.height
+        case 1:
+            binX = 1, binY = 1;
+            break;
+        case 2:
+            binX = 4, binY = 1;
+            break;
+        case 4:
+            binX = 8, binY = 2;
+            break;
+        default:
+            NSLog(@"SXCCDIOExposeCommandM25C: unrecognised binning value %ld",self.params.bin.width);
+            break;
+    }
 
     if (self.latchPixels){
         
@@ -617,21 +632,20 @@ static void sxSetShutterReadData(const UCHAR setup_data[2],USHORT* state)
 }
 
 - (NSData*)postProcessPixels:(NSData*)pixels {
-    
-    if ([pixels length]){
+
+    // only unbinned images need reconstruction
+    if (self.params.bin.width == 1 && [pixels length] > 0){
         
-        // sxReconstructM25CFields()
+        // todo; sxReconstructM25CFields()
         
         NSMutableData* rearrangedPixels = [NSMutableData dataWithLength:[pixels length]];
         if ([rearrangedPixels length]){
             
             uint16_t* pixelsPtr = (uint16_t*)[pixels bytes];
             uint16_t* rearrangedPixelsPtr = (uint16_t*)[rearrangedPixels bytes];
-            
             if (pixelsPtr && rearrangedPixelsPtr){
                 
                 const size_t width = self.params.size.width/self.params.bin.width;
-                
                 size_t height = self.params.size.height/self.params.bin.height;
                 if ([pixels length] < width * height * sizeof(uint16_t)){
                     height = [pixels length] / (width * sizeof(uint16_t));

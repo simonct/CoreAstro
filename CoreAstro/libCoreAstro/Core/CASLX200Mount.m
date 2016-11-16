@@ -96,6 +96,10 @@
     //        return;
     //    }
     
+    if (self.logCommands){
+        NSLog(@"Command: %@",command);
+    }
+    
     if (!self.completionStack){
         self.completionStack = [NSMutableArray arrayWithCapacity:3];
     }
@@ -171,9 +175,14 @@
     }];
 }
 
-- (void)gotoHomePosition {
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
     [self sendCommand:@":MH#" readCount:1 completion:^(NSString* response) {
         NSLog(@"Home command response: %@",response);
+        if (completion){
+            const CASMountSlewError error = [response isEqualToString:@"1"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
+            CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+            completion(error,observer);
+        }
     }];
 }
 
@@ -215,8 +224,15 @@
 - (void)setTargetRA:(double)ra_ dec:(double)dec_ completion:(void(^)(CASMountSlewError))completion
 {
     NSParameterAssert(completion);
-    NSParameterAssert(ra_ >= 0 && ra_ <= 360);
-    NSParameterAssert(dec_ >= -90 && dec_ <= 90);
+    
+    if (!(ra_ >= 0 && ra_ <= 360)) {
+        completion(CASMountSlewErrorInvalidRA);
+        return;
+    }
+    if (!(dec_ >= -90 && dec_ <= 90)) {
+        completion(CASMountSlewErrorInvalidDec);
+        return;
+    }
 
     self.targetRa = @(ra_);
     self.targetDec = @(dec_);
@@ -227,10 +243,10 @@
     NSString* formattedRA = [CASLX200Commands highPrecisionRA:ra_];
     NSString* formattedDec = [CASLX200Commands highPrecisionDec:dec_];
     
-    NSLog(@"setTargetRA:%f (%@) dec:%f (%@)",ra_,formattedRA,dec_,formattedDec);
+    //NSLog(@"setTargetRA:%f (%@) dec:%f (%@)",ra_,formattedRA,dec_,formattedDec);
     
     NSString* decCommand = [CASLX200Commands setTargetObjectDeclination:formattedDec];
-    NSLog(@"Dec command: %@",decCommand);
+    //NSLog(@"Dec command: %@",decCommand);
     [self sendCommand:decCommand readCount:1 completion:^(NSString *setDecResponse) {
         
         if (![setDecResponse isEqualToString:@"1"]){
@@ -243,7 +259,7 @@
             
             // “:Sr HH:MM:SS#”
             NSString* raCommand = [CASLX200Commands setTargetObjectRightAscension:formattedRA];
-            NSLog(@"RA command: %@",raCommand);
+            //NSLog(@"RA command: %@",raCommand);
             [self sendCommand:raCommand readCount:1 completion:^(NSString *setRAResponse) {
                 
                 if (![setRAResponse isEqualToString:@"1"]){

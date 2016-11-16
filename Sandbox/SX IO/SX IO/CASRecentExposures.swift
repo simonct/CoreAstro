@@ -11,13 +11,13 @@ import CoreAstro
 
 extension CASCameraController {
     
-    private var deviceDefaults : CASDeviceDefaults {
+    fileprivate var deviceDefaults : CASDeviceDefaults {
         get {
             return CASDeviceDefaults(forClassname: self.device.deviceName);
         }
     }
     
-    private var defaultsDomain: [NSObject:AnyObject] {
+    fileprivate var defaultsDomain: [AnyHashable: Any] {
         get {
             return deviceDefaults.domain
         }
@@ -26,14 +26,14 @@ extension CASCameraController {
         }
     }
         
-    var recentURLs: [NSURL] {
+    var recentURLs: [URL] {
         get {
             var recents = defaultsDomain["RecentURLs"] as? [NSString]
             if recents == nil {
                 recents = [NSString]()
             }
             return recents!.flatMap { s in
-                return NSURL(string: s as String)
+                return URL(string: s as String)
             }
         }
         set {
@@ -43,13 +43,13 @@ extension CASCameraController {
         }
     }
     
-    func addRecentURL(url: NSURL?) {
+    func addRecentURL(_ url: URL?) {
         if url != nil {
             var recent = recentURLs
             if recent.count >= 100 {
                 recent = Array(recent[0..<100])
             }
-            recent.insert(url!, atIndex: 0)
+            recent.insert(url!, at: 0)
             recentURLs = recent
         }
     }

@@ -47,6 +47,7 @@
 - (CASCCDExposure*)luminance:(CASCCDExposure*)exposure;
 
 - (NSArray*)histogram:(CASCCDExposure*)exposure;
+- (NSArray*)rgbHistogram:(CASCCDExposure*)exposure;
 
 - (CGFloat)medianPixelValue:(CASCCDExposure*)exposure;
 - (CGFloat)averagePixelValue:(CASCCDExposure*)exposure;

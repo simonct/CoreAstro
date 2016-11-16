@@ -11,19 +11,26 @@
 
 @class CASCameraController;
 @class CASFilterWheelController;
+@class CASMountController;
 
 @protocol SXIOSequenceTarget <NSObject>
 @required
-@property (nonatomic,readonly) CASCameraController* sequenceCameraController;
-@property (nonatomic,readonly) CASFilterWheelController* sequenceFilterWheelController;
+@property (nonatomic,readonly) CASMountController* sequenceMountController; // tmp
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error;
 - (void)captureWithCompletion:(void(^)(NSError*))completion;
-- (void)slewToBookmarkWithName:(NSString*)name completion:(void(^)(NSError*))completion;
+- (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion;
+- (void)parkMountWithCompletion:(void(^)(NSError*))completion;
 - (void)endSequence;
+@end
+
+@interface CASSequence : NSObject<NSCoding>
 @end
 
 @interface SXIOSequenceEditorWindowController : CASAuxWindowController
 
+@property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
+
++ (instancetype)sharedWindowController;
 
 @end

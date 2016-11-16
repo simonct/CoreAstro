@@ -525,11 +525,17 @@
     [meta setObject:[NSNumber numberWithInteger:format] forKey:@"format"];
     
     if (camera.hasCooler){
-        NSMutableDictionary* temp = [NSMutableDictionary dictionaryWithCapacity:2];
-        [temp setObject:[NSNumber numberWithInteger:camera.temperatureFrequency] forKey:@"frequency"];
-        [temp setObject:camera.exposureTemperatures forKey:@"temperatures"];
-        [temp setObject:@(camera.targetTemperature) forKey:@"setpoint"];
-        [meta setObject:temp forKey:@"temperature"];
+        id temperatures = camera.exposureTemperatures;
+        if (!temperatures){
+            NSLog(@"No recorded temperatures");
+        }
+        else {
+            NSMutableDictionary* temp = [NSMutableDictionary dictionaryWithCapacity:3];
+            [temp setObject:@(camera.temperatureFrequency) forKey:@"frequency"];
+            [temp setObject:temperatures forKey:@"temperatures"];
+            [temp setObject:@(camera.targetTemperature) forKey:@"setpoint"];
+            [meta setObject:temp forKey:@"temperature"];
+        }
     }
 
     [meta setObject:CASCreateUUID() forKey:@"uuid"];

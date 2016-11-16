@@ -63,17 +63,18 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 @property (nonatomic,readonly) BOOL capturing;
 
+// tmp; moved to settings but kept for compatibility with bindings
 @property (nonatomic,assign) BOOL temperatureLock;
+@property (nonatomic,assign) CGFloat targetTemperature;
 
 @property (nonatomic,readonly) CASExposureSettings* settings;
 
-@property (nonatomic,assign) CGFloat targetTemperature;
 @property (nonatomic,strong) NSDate* exposureStart;
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
 
 @property (nonatomic,strong) CASGuiderController* guider;
-@property (nonatomic,strong) CASFilterWheelController* filterWheel;
+@property (nonatomic,weak) CASFilterWheelController* filterWheel;
 
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
@@ -101,6 +102,9 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 - (CGSize)arcsecsPerPixelForFocalLength:(float)focalLength;
 - (CGSize)fieldSizeForFocalLength:(float)focalLength;
+
+@property (nonatomic) float focalLength;
++ (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController;
 
 @end
 

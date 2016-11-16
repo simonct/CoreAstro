@@ -9,6 +9,23 @@
 import Cocoa
 import CoreAstro
 
+extension CASCameraController {
+    var notificationSubtitle: String {
+        var subtitle: String = camera.deviceName
+        switch settings.exposureUnits {
+        case .seconds:
+            subtitle += ", \(settings.exposureDuration)s"
+        case .milliseconds:
+            subtitle += ", \(settings.exposureDuration)ms"
+        }
+        subtitle += ", \(settings.binning)x\(settings.binning)"
+        if let currentFilterName = filterWheel?.currentFilterName {
+            subtitle += ", \(currentFilterName)"
+        }
+        return subtitle
+    }
+}
+
 class CASLocalNotifier: NSObject {
 
     static var sharedInstance = CASLocalNotifier()
@@ -19,16 +36,16 @@ class CASLocalNotifier: NSObject {
         
         super.init()
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureStarted:"), name:kCASCameraControllerExposureStartedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("exposureCompleted:"), name:kCASCameraControllerExposureCompletedNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("filterSelected:"), name:kCASFilterWheelControllerSelectedFilterNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(exposureStarted(_:)), name:NSNotification.Name.casCameraControllerExposureStarted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(exposureCompleted(_:)), name:NSNotification.Name.casCameraControllerExposureCompleted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(filterSelected(_:)), name:NSNotification.Name.casFilterWheelControllerSelectedFilter, object: nil)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func postLocalNotification(title: String, subtitle: String? = nil) {
+    func postLocalNotification(_ title: String, subtitle: String? = nil) {
         if (!postLocalNotifications){
             return
         }
@@ -36,29 +53,43 @@ class CASLocalNotifier: NSObject {
         note.title = title;
         note.subtitle = subtitle;
         note.soundName = NSUserNotificationDefaultSoundName;
-        NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(note);
+        NSUserNotificationCenter.default.deliver(note);
         var message = title
         if (subtitle != nil) {
             message = message + ": \(subtitle)"
         }
-        print(message)
+//        print(message)
     }
     
-    func exposureStarted(note: NSNotification) {
-        postLocalNotification("Exposure started")
+    func exposureStarted(_ note: Notification) {
+        var subtitle: String?
+        if let camera = note.object as? CASCameraController {
+            if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
+                return
+            }
+            subtitle = camera.notificationSubtitle
+        }
+        postLocalNotification("Exposure started", subtitle: subtitle)
     }
 
-    func exposureCompleted(note: NSNotification) {
-        if let _ = note.userInfo?["error"] as? NSError {
+    func exposureCompleted(_ note: Notification) {
+        var subtitle: String?
+        if let _ = (note as NSNotification).userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
         }
         else {
-            postLocalNotification("Exposure completed")
+            if let camera = note.object as? CASCameraController {
+                if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
+                    return
+                }
+                subtitle = camera.notificationSubtitle
+            }
+            postLocalNotification("Exposure completed", subtitle: subtitle)
         }
     }
     
-    func filterSelected(note: NSNotification) {
-        if let filter = note.userInfo?["filter"] as? String {
+    func filterSelected(_ note: Notification) {
+        if let filter = (note as NSNotification).userInfo?["filter"] as? String {
             postLocalNotification("Filter \(filter) selected")
         }
         else {

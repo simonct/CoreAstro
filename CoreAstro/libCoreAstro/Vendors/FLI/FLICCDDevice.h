@@ -2,7 +2,7 @@
 //  FLICCDDevice.h
 //  CoreAstro
 //
-//  Copyright (c) 2013, Simon Taylor
+//  Copyright (c) 2016, Simon Taylor
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@
 @property (readonly) NSInteger fli_domain;
 @property (readonly) NSInteger fli_status;
 @property (readonly) NSInteger fli_hwVersion, fli_fwVersion;
-@property (readonly) double fli_ccdTemp, fli_baseTemp, fli_coolerPower;
+@property (readonly) double fli_ccdTemp, fli_coolerPower;
 @property (readonly) CGSize fli_pixelSize;
 @property (readonly) CGRect fli_area;
 @property (readonly) NSString* fli_pixelSizeString;

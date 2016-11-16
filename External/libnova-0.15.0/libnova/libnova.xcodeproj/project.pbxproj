@@ -7,39 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F41AAC171BDB8CC1003757C7 /* aberration.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF31BDB8CC1003757C7 /* aberration.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC181BDB8CC1003757C7 /* airmass.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF41BDB8CC1003757C7 /* airmass.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC191BDB8CC1003757C7 /* angular_separation.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF51BDB8CC1003757C7 /* angular_separation.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1A1BDB8CC1003757C7 /* apparent_position.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF61BDB8CC1003757C7 /* apparent_position.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1B1BDB8CC1003757C7 /* asteroid.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF71BDB8CC1003757C7 /* asteroid.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1C1BDB8CC1003757C7 /* comet.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF81BDB8CC1003757C7 /* comet.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1D1BDB8CC1003757C7 /* dynamical_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF91BDB8CC1003757C7 /* dynamical_time.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1E1BDB8CC1003757C7 /* earth.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFA1BDB8CC1003757C7 /* earth.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC1F1BDB8CC1003757C7 /* elliptic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFB1BDB8CC1003757C7 /* elliptic_motion.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC201BDB8CC1003757C7 /* heliocentric_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFC1BDB8CC1003757C7 /* heliocentric_time.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC211BDB8CC1003757C7 /* hyperbolic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFD1BDB8CC1003757C7 /* hyperbolic_motion.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC221BDB8CC1003757C7 /* julian_day.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFE1BDB8CC1003757C7 /* julian_day.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC231BDB8CC1003757C7 /* jupiter.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFF1BDB8CC1003757C7 /* jupiter.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC241BDB8CC1003757C7 /* lunar.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC011BDB8CC1003757C7 /* lunar.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC251BDB8CC1003757C7 /* mars.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC041BDB8CC1003757C7 /* mars.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC261BDB8CC1003757C7 /* mercury.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC051BDB8CC1003757C7 /* mercury.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC271BDB8CC1003757C7 /* neptune.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC061BDB8CC1003757C7 /* neptune.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC281BDB8CC1003757C7 /* nutation.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC071BDB8CC1003757C7 /* nutation.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC291BDB8CC1003757C7 /* parabolic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC081BDB8CC1003757C7 /* parabolic_motion.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2A1BDB8CC1003757C7 /* parallax.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC091BDB8CC1003757C7 /* parallax.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2B1BDB8CC1003757C7 /* pluto.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0A1BDB8CC1003757C7 /* pluto.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2C1BDB8CC1003757C7 /* precession.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0B1BDB8CC1003757C7 /* precession.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2D1BDB8CC1003757C7 /* proper_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0C1BDB8CC1003757C7 /* proper_motion.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2E1BDB8CC1003757C7 /* refraction.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0D1BDB8CC1003757C7 /* refraction.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC2F1BDB8CC1003757C7 /* rise_set.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0E1BDB8CC1003757C7 /* rise_set.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC301BDB8CC1003757C7 /* saturn.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0F1BDB8CC1003757C7 /* saturn.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC311BDB8CC1003757C7 /* sidereal_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC101BDB8CC1003757C7 /* sidereal_time.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC321BDB8CC1003757C7 /* solar.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC111BDB8CC1003757C7 /* solar.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC331BDB8CC1003757C7 /* transform.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC121BDB8CC1003757C7 /* transform.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC341BDB8CC1003757C7 /* uranus.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC131BDB8CC1003757C7 /* uranus.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC351BDB8CC1003757C7 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC141BDB8CC1003757C7 /* utility.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC361BDB8CC1003757C7 /* venus.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC151BDB8CC1003757C7 /* venus.c */; settings = {ASSET_TAGS = (); }; };
-		F41AAC371BDB8CC1003757C7 /* vsop87.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC161BDB8CC1003757C7 /* vsop87.c */; settings = {ASSET_TAGS = (); }; };
+		F41AAC171BDB8CC1003757C7 /* aberration.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF31BDB8CC1003757C7 /* aberration.c */; };
+		F41AAC181BDB8CC1003757C7 /* airmass.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF41BDB8CC1003757C7 /* airmass.c */; };
+		F41AAC191BDB8CC1003757C7 /* angular_separation.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF51BDB8CC1003757C7 /* angular_separation.c */; };
+		F41AAC1A1BDB8CC1003757C7 /* apparent_position.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF61BDB8CC1003757C7 /* apparent_position.c */; };
+		F41AAC1B1BDB8CC1003757C7 /* asteroid.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF71BDB8CC1003757C7 /* asteroid.c */; };
+		F41AAC1C1BDB8CC1003757C7 /* comet.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF81BDB8CC1003757C7 /* comet.c */; };
+		F41AAC1D1BDB8CC1003757C7 /* dynamical_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABF91BDB8CC1003757C7 /* dynamical_time.c */; };
+		F41AAC1E1BDB8CC1003757C7 /* earth.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFA1BDB8CC1003757C7 /* earth.c */; };
+		F41AAC1F1BDB8CC1003757C7 /* elliptic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFB1BDB8CC1003757C7 /* elliptic_motion.c */; };
+		F41AAC201BDB8CC1003757C7 /* heliocentric_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFC1BDB8CC1003757C7 /* heliocentric_time.c */; };
+		F41AAC211BDB8CC1003757C7 /* hyperbolic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFD1BDB8CC1003757C7 /* hyperbolic_motion.c */; };
+		F41AAC221BDB8CC1003757C7 /* julian_day.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFE1BDB8CC1003757C7 /* julian_day.c */; };
+		F41AAC231BDB8CC1003757C7 /* jupiter.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AABFF1BDB8CC1003757C7 /* jupiter.c */; };
+		F41AAC241BDB8CC1003757C7 /* lunar.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC011BDB8CC1003757C7 /* lunar.c */; };
+		F41AAC251BDB8CC1003757C7 /* mars.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC041BDB8CC1003757C7 /* mars.c */; };
+		F41AAC261BDB8CC1003757C7 /* mercury.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC051BDB8CC1003757C7 /* mercury.c */; };
+		F41AAC271BDB8CC1003757C7 /* neptune.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC061BDB8CC1003757C7 /* neptune.c */; };
+		F41AAC281BDB8CC1003757C7 /* nutation.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC071BDB8CC1003757C7 /* nutation.c */; };
+		F41AAC291BDB8CC1003757C7 /* parabolic_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC081BDB8CC1003757C7 /* parabolic_motion.c */; };
+		F41AAC2A1BDB8CC1003757C7 /* parallax.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC091BDB8CC1003757C7 /* parallax.c */; };
+		F41AAC2B1BDB8CC1003757C7 /* pluto.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0A1BDB8CC1003757C7 /* pluto.c */; };
+		F41AAC2C1BDB8CC1003757C7 /* precession.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0B1BDB8CC1003757C7 /* precession.c */; };
+		F41AAC2D1BDB8CC1003757C7 /* proper_motion.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0C1BDB8CC1003757C7 /* proper_motion.c */; };
+		F41AAC2E1BDB8CC1003757C7 /* refraction.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0D1BDB8CC1003757C7 /* refraction.c */; };
+		F41AAC2F1BDB8CC1003757C7 /* rise_set.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0E1BDB8CC1003757C7 /* rise_set.c */; };
+		F41AAC301BDB8CC1003757C7 /* saturn.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC0F1BDB8CC1003757C7 /* saturn.c */; };
+		F41AAC311BDB8CC1003757C7 /* sidereal_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC101BDB8CC1003757C7 /* sidereal_time.c */; };
+		F41AAC321BDB8CC1003757C7 /* solar.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC111BDB8CC1003757C7 /* solar.c */; };
+		F41AAC331BDB8CC1003757C7 /* transform.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC121BDB8CC1003757C7 /* transform.c */; };
+		F41AAC341BDB8CC1003757C7 /* uranus.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC131BDB8CC1003757C7 /* uranus.c */; };
+		F41AAC351BDB8CC1003757C7 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC141BDB8CC1003757C7 /* utility.c */; };
+		F41AAC361BDB8CC1003757C7 /* venus.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC151BDB8CC1003757C7 /* venus.c */; };
+		F41AAC371BDB8CC1003757C7 /* vsop87.c in Sources */ = {isa = PBXBuildFile; fileRef = F41AAC161BDB8CC1003757C7 /* vsop87.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -191,6 +191,7 @@
 				TargetAttributes = {
 					F41AAB641BDB890A003757C7 = {
 						CreatedOnToolsVersion = 7.0.1;
+						DevelopmentTeam = D8EQ3MVHHB;
 					};
 				};
 			};
@@ -335,7 +336,8 @@
 		F41AAB6A1BDB890A003757C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
@@ -348,7 +350,8 @@
 		F41AAB6B1BDB890A003757C7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;

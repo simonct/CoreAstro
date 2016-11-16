@@ -206,6 +206,17 @@
 		<key>sensor-size</key>
 		<string>{12.49,9.99}</string>
 	</dict>
+	<key>393</key>
+	<dict>
+		<key>name</key>
+		<string>SX-825</string>
+		<key>image</key>
+		<string>H694</string>
+		<key>has-cooler</key>
+		<true/>
+		<key>sensor-size</key>
+		<string>{9,6.7}</string>
+	</dict>
 	<key>1317</key>
 	<dict>
 		<key>name</key>

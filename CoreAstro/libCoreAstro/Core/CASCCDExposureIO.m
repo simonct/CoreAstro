@@ -721,47 +721,70 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 //NSLog(@"CASCCDExposureFITS: BSCALE: %f, BZERO: %f",scale,zero);
                                 
                 // pixels
-                float* pixels = nil;
+                UInt16* shortPixels = nil;
+                float* floatPixels = nil;
                 if (readPixels){
                     
                     // create a buffer todo; round to 4 or 16 bytes ?
-                    pixels = calloc(naxes[0] * naxes[1],sizeof(float));
+                    if (type == USHORT_IMG || type == SHORT_IMG){
+                        shortPixels = calloc(naxes[0] * naxes[1],sizeof(UInt16));
+                    }
+                    else {
+                        floatPixels = calloc(naxes[0] * naxes[1],sizeof(float));
+                    }
                     
-                    if (!pixels){
+                    if (!floatPixels && !shortPixels){
                         error = createFITSError(memFullErr,@"Out of memory");
                     }
                     else {
                         
                         long fpixel[2] = {1,0};
-                        float* pix = pixels;
+                        float* floatPix = floatPixels;
+                        UInt16* shortPix = shortPixels;
                         
                         for (fpixel[1] = 1; fpixel[1] <= naxes[1]; fpixel[1]++) {
                             
                             // read a row of pixels into the bitmap
-                            if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,pix,0,&status)){
-                                error = createFITSError(status,[NSString stringWithFormat:@"Failed to read a row %d: %@",status,path]);
-                                break;
+                            if (floatPix){
+                                if (fits_read_pix(fptr,TFLOAT,fpixel,naxes[0],0,floatPix,0,&status)){
+                                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to read a row %d: %@",status,path]);
+                                    break;
+                                }
                             }
-                            
+                            if (shortPix){
+                                if (fits_read_pix(fptr,TUSHORT,fpixel,naxes[0],0,shortPix,0,&status)){
+                                    error = createFITSError(status,[NSString stringWithFormat:@"Failed to read a row %d: %@",status,path]);
+                                    break;
+                                }
+                            }
+
                             // handle scale and offset
-                            if (zero != 0 || scale != 1){
+                            if (floatPix){
                                 
-                                if (zero == 32768 && scale == 1){
-                                    // frames from before setting the scale and zero keys for every exposure
-                                    zero = 0;
-                                    scale = 1.0/65535.0;
-                                    vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
-                                }
-                                else if (zero == 0 && scale == 65535){
-                                    // nothing, already in the 0-1 scale
-                                }
-                                else {
-                                    vDSP_vsmsa(pix,1,&scale,&zero,pix,1,naxes[0]);
+                                if (zero != 0 || scale != 1){
+                                    
+                                    if (zero == 32768 && scale == 1){
+                                        // frames from before setting the scale and zero keys for every exposure
+                                        zero = 0;
+                                        scale = 1.0/65535.0;
+                                        vDSP_vsmsa(floatPix,1,&scale,&zero,floatPix,1,naxes[0]);
+                                    }
+                                    else if (zero == 0 && scale == 65535){
+                                        // nothing, already in the 0-1 scale
+                                    }
+                                    else {
+                                        vDSP_vsmsa(floatPix,1,&scale,&zero,floatPix,1,naxes[0]);
+                                    }
                                 }
                             }
                             
                             // advance the pixel pointer a row
-                            pix += naxes[0];
+                            if (floatPix){
+                                floatPix += naxes[0];
+                            }
+                            if (shortPix){
+                                shortPix += naxes[0];
+                            }
                         }
                     }
                 }
@@ -771,7 +794,12 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                 if (!metadata){
                                         
                     NSMutableDictionary* mmetadata = [NSMutableDictionary dictionaryWithCapacity:5];
-                    mmetadata[@"format"] = @(kCASCCDExposureFormatFloat);
+                    if (floatPixels){
+                        mmetadata[@"format"] = @(kCASCCDExposureFormatFloat);
+                    }
+                    if (shortPixels){
+                        mmetadata[@"format"] = @(kCASCCDExposureFormatUInt16);
+                    }
                     
                     NSMutableDictionary* deviceParams = [NSMutableDictionary dictionaryWithCapacity:5];
                     
@@ -862,8 +890,11 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     }
                 }
                 
-                if (pixels){
-                    exposure.floatPixels = [NSData dataWithBytesNoCopy:pixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
+                if (shortPixels){
+                    exposure.pixels = [NSData dataWithBytesNoCopy:shortPixels length:naxes[0]*naxes[1]*sizeof(UInt16) freeWhenDone:YES];
+                }
+                if (floatPixels){
+                    exposure.floatPixels = [NSData dataWithBytesNoCopy:floatPixels length:naxes[0]*naxes[1]*sizeof(float) freeWhenDone:YES];
                 }
                 exposure.meta = metadata;
                 exposure.params = CASExposeParamsFromNSString([metadata objectForKey:@"exposure"]);

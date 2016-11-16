@@ -15,11 +15,13 @@
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
 @property (copy) NSNumber* siteLongitude, *siteLatitude;
-@property BOOL synced; // YES if the initial sync command has been sent
+@property (nonatomic,readonly) BOOL shouldConfigureMount;
 @end
 
 @implementation CASAPGTOMount {
     BOOL _parking;
+    BOOL _synced;
+    NSInteger _skipSlewStateCount;
     CASMountDirection _direction;
     CASAPGTOMountMovingRate _movingRate;
     CASAPGTOMountTrackingRate _trackingRate;
@@ -43,7 +45,7 @@
     self.siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
     self.siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
     if (!self.siteLatitude || !self.siteLongitude){
-        [self completeInitialiseMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
+        [self completeInitialisingMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
         return;
     }
     
@@ -65,26 +67,38 @@
             NSLog(@"Failed to parse scope sidereal time of %@",response);
         }
         else {
+            
+            // todo; may have to read mount longitude and use that when calculating the LST as it seems to round the values we send
+            
             NSCalendar* cal = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
             NSDateComponents* scopeSiderealComps = [cal components:NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond fromDate:scopeSiderealTime];
             const double scopeSiderealTimeValue = scopeSiderealComps.hour + (scopeSiderealComps.minute/60.0) + (scopeSiderealComps.second/3600.0);
             const double lst = [CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue];
             const double diffSeconds = fabs(scopeSiderealTimeValue - lst)*3600.0;
-            scopeConfigured = diffSeconds < 300; // todo; make this limit configurable, probably should be lower
+            scopeConfigured = diffSeconds < 30; // todo; make this limit configurable, probably should be lower
             if (scopeConfigured){
                 NSLog(@"Difference between local and scope sidereal time of %.0f seconds, skipping the rest of the setup",diffSeconds);
             }
             else {
-                NSLog(@"Difference between local and scope sidereal timeof %.0f seconds, assuming mount needs configuring",diffSeconds);
+                if (!self.shouldConfigureMount){
+                    NSLog(@"Difference between local and scope sidereal time of %.0f seconds, but mount configuration is suppressed",diffSeconds);
+                }
+                else {
+                    NSLog(@"Difference between local and scope sidereal time of %.0f seconds, assuming the mount needs configuring",diffSeconds);
+                }
             }
         }
 
-        if (scopeConfigured){
-            [self completeInitialiseMount:nil];
+        if (scopeConfigured || !self.shouldConfigureMount){
+            [self completeInitialisingMount:nil];
         }
         else {
             
             NSLog(@"Configuring %@",self.name);
+            
+            // switch on command logging
+            const BOOL saveLogCommands = self.logCommands;
+            self.logCommands = YES;
             
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
@@ -112,23 +126,29 @@
                 if (![response isEqualToString:@"1"]) NSLog(@"Set longitude: %@",response);
             }];
             
-            // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1
-            NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
+            // :SG sHH# or :SG sHH:MM.M# or :SG sHH:MM:SS# -> 1 (total difference between local and GMT including any daylight savings)
+            NSTimeZone* tz = [NSTimeZone systemTimeZone];
             [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){
                 
                 if (![response isEqualToString:@"1"]) NSLog(@"Set GMT offset: %@",response);
                 
                 // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
-                [self completeInitialiseMount:nil];
+                [self completeInitialisingMount:nil];
             }];
             
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
             [self sendCommand:@":Q#"];
+            
+            // switch PEC off, todo; make configurable in the UI
+            [self sendCommand:@":p#"];
+
+            // restore logging state
+            self.logCommands = saveLogCommands;
         }
     }];
 }
 
-- (void)completeInitialiseMount:(NSError*)error
+- (void)completeInitialisingMount:(NSError*)error
 {
     if (error){
         if (self.connectCompletion){
@@ -139,17 +159,34 @@
     else {
         self.connected = YES;
         
-        [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
-        [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
-
-        self.movingRate = CASAPGTOMountMovingRate600;
-        self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+        if (!self.shouldConfigureMount){
+            // we can't get the rate from the mount so it needs to be marked as unknown
+            self.movingRate = CASAPGTOMountMovingRateUnknown;
+            self.trackingRate = CASAPGTOMountTrackingRateUnknown;
+        }
+        else {
+            // todo; save in defaults
+            [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
+            [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
+            
+            self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above
+            self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+        }
 
         // magic delay seemingly required after setting rates... (still needed?)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
+        
+        // pop an alert reminding that you need to sync the mount with a 'don't show again' checkbox
+        // or some red text on the status label ??
+        // offer to let the user set the synced flag if it was already done with the handset
     }
+}
+
+- (BOOL) shouldConfigureMount
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"CASConfigureMountOnConnect"];
 }
 
 - (void)disconnect
@@ -177,6 +214,19 @@
     // :GD# -> sDD*MM:SS#
     [self sendCommand:@":GD#" completion:^(NSString *response) {
         //NSLog(@"Get Dec: %@",response);
+        
+        // remove any spurious letter characters
+        NSCharacterSet* letterCharacterSet = [NSCharacterSet letterCharacterSet];
+        NSMutableString* mutableResponse = [response mutableCopy];
+        while (1) {
+            const NSRange range = [mutableResponse rangeOfCharacterFromSet:letterCharacterSet];
+            if (range.location == NSNotFound){
+                break;
+            }
+            [mutableResponse replaceCharactersInRange:range withString:@""];
+        }
+        response = [mutableResponse copy];
+
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
@@ -199,7 +249,12 @@
             // sidereal rate ~ 0.0042 dec/sec
             // anything over ~ 2 deg/sec is slewing
             // normal tracking should be ~ 0
-            self.slewing = (fabs(degreesPerSecond) > threshold);
+            if (_skipSlewStateCount > 0){
+                _skipSlewStateCount--; // skip the first few slew states from the mount as it may not have started moving yet
+            }
+            else {
+                self.slewing = (fabs(degreesPerSecond) > threshold);
+            }
         }
         _lastMountPollTime = [NSDate timeIntervalSinceReferenceDate];
     }];
@@ -207,28 +262,44 @@
     // :GA# -> sDD*MM:SS#
     [self sendCommand:@":GA#" completion:^(NSString *response) {
         //NSLog(@"Get Alt: %@",response);
-        self.alt = @([CASLX200Commands fromDecString:response]);
+        if (!_synced){
+            self.alt = nil;
+        }
+        else {
+            self.alt = @([CASLX200Commands fromDecString:response]);
+        }
     }];
 
     // :GZ# -> sDD*MM:SS#
     [self sendCommand:@":GZ#" completion:^(NSString *response) {
         //NSLog(@"Get Az: %@",response);
-        self.az = @([CASLX200Commands fromDecString:response]);
+        if (!_synced){
+            self.az = nil;
+        }
+        else {
+            self.az = @([CASLX200Commands fromDecString:response]);
+        }
     }];
     
     // :pS# -> “East#” or “West#”
     [self sendCommand:@":pS#" completion:^(NSString *response) {
         
-        //NSLog(@"Get pier side: %@",response);
-        
-        if ([response isEqualToString:@"East"]){
-            self.pierSide = CASMountPierSideEast;
-        }
-        else if ([response isEqualToString:@"West"]){
-            self.pierSide = CASMountPierSideWest;
+        if (!_synced){
+//            NSLog(@"Get pier side: %@ but ignoring as the mount has not yet been synced",response);
+            self.pierSide = 0;
         }
         else {
-            self.pierSide = 0;
+//            NSLog(@"Get pier side: %@",response);
+            
+            if ([response isEqualToString:@"East"]){
+                self.pierSide = CASMountPierSideEast;
+            }
+            else if ([response isEqualToString:@"West"]){
+                self.pierSide = CASMountPierSideWest;
+            }
+            else {
+                self.pierSide = 0;
+            }
         }
     }];
     
@@ -267,6 +338,24 @@
     // :GG# -> gmt offset
     [self sendCommand:@":GG#" completion:^(NSString *response) {
         //NSLog(@"Get Local Time: %@",response);
+        
+        // GTOCP1/2 magic return values
+        if ([response hasPrefix:@"A"]){
+            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+            if (offset <= 5 && offset >= 1){
+                response = [NSString stringWithFormat:@"-%02ld:00:00",(3 - labs(offset)) + 3];
+            }
+        }
+        else if ([response hasPrefix:@"00"]){
+            response = @"-06:00:00";
+        }
+        else if ([response hasPrefix:@"@"]){
+            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+            if (offset <= 9 && offset >= 3){
+                response = [NSString stringWithFormat:@"-%02ld:00:00",(8 - labs(offset)) + 8];
+            }
+        }
+
         self.gmtOffset = response;
     }];
 
@@ -286,18 +375,22 @@
     }];
 }
 
-- (NSInteger)parkPosition
+- (NSInteger)defaultParkPosition
 {
     return 3;
 }
 
-- (void)park
+- (void)park:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
+{
+    [self parkToPosition:[self defaultParkPosition] completion:completion];
+}
+
+- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     [self halt];
     
     double parkRA = 0, parkDec = 0;
     
-    const NSInteger parkPosition = [self parkPosition];
     switch (parkPosition) {
         case 2:{
             parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
@@ -311,30 +404,41 @@
             break;
         case 4:{
             parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 360, 360);
-            parkDec = self.siteLatitude.doubleValue - 90;
+            const double latitude = self.siteLatitude.doubleValue;
+            if (latitude < 0){
+                parkDec = latitude + 90;
+            }
+            else {
+                parkDec = latitude - 90;
+            }
         }
             break;
         default:
             NSLog(@"Unrecognised park position: %ld",parkPosition);
-            return;
+            return NO;
     }
     
-    // todo; southern hemisphere?
-    NSLog(@"Parking at RA: %f DEC: %f",parkRA,parkDec);
+    NSLog(@"Parking mount to position %ld at RA: %f DEC: %f",parkPosition,parkRA,parkDec);
     
-    [self parkWithRA:parkRA dec:parkDec];
+    [self parkWithRA:parkRA dec:parkDec completion:completion];
+    
+    return YES;
 }
 
-- (void)parkWithRA:(double)parkRA dec:(double)parkDec
+- (void)parkWithRA:(double)parkRA dec:(double)parkDec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
     [self startSlewToRA:parkRA dec:parkDec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         if (error == CASMountSlewErrorNone){
             _parking = YES;
-            NSLog(@"Starting park");
+            _skipSlewStateCount = 5;
+            NSLog(@"Starting mount park");
         }
         else {
             _parking = NO;
             NSLog(@"Park failed with result: %ld, ra: %f, dec: %f",error,parkRA,parkDec);
+        }
+        if (completion){
+            completion(error,_parking ? [CASMountSlewObserver observerWithMount:self] : nil);
         }
     }];
 }
@@ -344,9 +448,9 @@
     [self sendCommand:@":PO#"];
 }
 
-- (void)gotoHomePosition
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
-    [self park];
+    [self park:completion];
 }
 
 - (void)setSlewing:(BOOL)slewing
@@ -439,32 +543,37 @@
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
 {
-    if (!self.synced){
-        NSLog(@"Re-cal without initial sync...");
-    }
-    
     [self syncCommand:@":CMR#" ToRA:ra dec:dec completion:completion];
 }
 
 - (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
 {
-    if (self.weightsHigh){
-        NSLog(@"Attempt to perform initial sync of the mount while it's weights-high");
-        completion(CASMountSlewErrorInvalidLocation); // todo; need a new error code
-        return;
-    }
     
-    self.synced = YES;
-    
-    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:completion];
+    [self syncCommand:@":CM#" ToRA:ra dec:dec completion:^(CASMountSlewError error) {
+       
+        if (error == CASMountSlewErrorNone){
+            _synced = YES;
+        }
+        if (completion){
+            completion(error);
+        }
+    }];
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
+    // set this immediately rather than wait for the next mount status poll
+    self.slewing = YES;
+    _skipSlewStateCount = 5;
+    self.trackingRate = CASAPGTOMountTrackingRateSidereal;
+    
     // todo; the mount can apparently not respond at all to this command under some circumstances
     [self sendCommand:[CASLX200Commands slewToTargetObject] readCount:1 completion:^(NSString *slewResponse) {
         const CASMountSlewError error = [slewResponse isEqualToString:@"0"] ? CASMountSlewErrorNone : CASMountSlewErrorInvalidLocation;
         CASMountSlewObserver* observer = (error == CASMountSlewErrorNone) ? [CASMountSlewObserver observerWithMount:self] : nil;
+        if (error){
+            self.slewing = NO;
+        }
         completion(error,observer);
     }];
 }
@@ -483,6 +592,8 @@
     if (trackingRate != _trackingRate){
         _trackingRate = trackingRate;
         switch (_trackingRate) {
+            case CASAPGTOMountTrackingRateUnknown:
+                break;
             case CASAPGTOMountTrackingRateLunar:
                 [self sendCommand:@":RT0#"];
                 break;
@@ -504,7 +615,7 @@
 
 - (NSArray<NSString*>*)trackingRateValues
 {
-    return @[@"Lunar",@"Solar",@"Sidereal",@"None"];
+    return @[@"Unknown",@"Lunar",@"Solar",@"Sidereal",@"None"];
 }
 
 - (CASAPGTOMountMovingRate)movingRate
@@ -521,6 +632,8 @@
     if (movingRate != _movingRate){
         _movingRate = movingRate;
         switch (_movingRate) {
+            case CASAPGTOMountMovingRateUnknown:
+                break;
             case CASAPGTOMountMovingRate1200:
                 [self sendCommand:@":RC3#"];
                 break;
@@ -542,7 +655,7 @@
 
 - (NSArray<NSString*>*)movingRateValues
 {
-    return @[@"12x",@"64x",@"600x",@"1200x"];
+    return @[@"Unknown",@"12x",@"64x",@"600x",@"1200x"];
 }
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms

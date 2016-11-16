@@ -25,6 +25,10 @@
                 <cocoa key="mountControllers"/>
             </element>
             
+            <element type="exposure" access="r">
+                <cocoa key="exposures"/>
+            </element>
+            
             <!--
              <element type="focuser" access="r">
              <cocoa key="focuserControllers"/>
@@ -71,6 +75,10 @@
                 <cocoa key="scriptingTemperature"/>
             </property>
             
+            <property name="sequence start index" code="SeqS" type="number" description="The start index to use in exposures captures in the sequence">
+                <cocoa key="scriptingStartIndex"/>
+            </property>
+
             <property name="sequence count" code="SeqC" type="number" description="The number of exposures in the current sequence">
                 <cocoa key="scriptingSequenceCount"/>
             </property>
@@ -102,7 +110,11 @@
             <responds-to name="capture">
                 <cocoa method="scriptingCapture:"/>
             </responds-to>
-            
+
+            <responds-to name="cancel capture">
+                <cocoa method="scriptingCancel:"/>
+            </responds-to>
+
         </class>
         
         <class name="filter wheel" plural="filter wheels" code="CASF" description="A filter wheel object." inherits="device">
@@ -266,7 +278,15 @@
             </result>
             
         </command>
-        
+
+        <command name="cancel capture" code="CASSCACL" description="Cancel image capture.">
+    
+            <direct-parameter description="The camera to cancel.">
+                <type type="camera" list="no"/>
+            </direct-parameter>
+    
+        </command>
+
         <command name="make movie" code="CASSMKMV" description="Make a movie.">
             
             <parameter name="path" code="Path" optional="no" description="the path to export the movie to">
@@ -309,6 +329,14 @@
             
             <parameter name="coordinates" code="Crds" optional="yes" type="coordinates" description="The coordinates to slew to">
                 <cocoa key="coordinates"/>
+            </parameter>
+            
+            <parameter name="bookmark" code="Book" optional="yes" type="text" description="The bookmark to slew to">
+                <cocoa key="bookmark"/>
+            </parameter>
+
+            <parameter name="with plate solving" code="Solv" optional="yes" type="boolean" description="Whether to use plate solving to refine the slew (requires the mount's camera to be set)">
+                <cocoa key="plateSolving"/>
             </parameter>
 
         </command>

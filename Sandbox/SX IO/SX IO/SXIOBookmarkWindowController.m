@@ -60,6 +60,7 @@
 @interface SXIOBookmarkWindowController ()
 @property (weak) IBOutlet NSTableView *bookmarksTableView;
 @property (strong) IBOutlet NSArrayController *bookmarksArrayController;
+@property (nonatomic,copy) NSString* searchString;
 @end
 
 @implementation SXIOBookmarkWindowController {
@@ -99,8 +100,26 @@
     return _bookmarks;
 }
 
-- (IBAction)ok:(id)sender {
-    
+- (void)setSearchString:(NSString *)searchString
+{
+    if (searchString != _searchString){
+        _searchString = [searchString copy];
+        if (!_searchString){
+            self.bookmarksArrayController.filterPredicate = nil;
+        }
+        else {
+            self.bookmarksArrayController.filterPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS[cd] %@",_searchString];
+        }
+    }
+}
+
+- (void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray *)oldDescriptors
+{
+    self.bookmarksArrayController.sortDescriptors = tableView.sortDescriptors;
+}
+
+- (IBAction)ok:(id)sender
+{
     NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
     for (SXIOEditingBookmark* bookmark in _bookmarks){
         NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
@@ -119,7 +138,8 @@
     [self endSheetWithCode:NSOKButton];
 }
 
-- (IBAction)cancel:(id)sender {
+- (IBAction)cancel:(id)sender
+{
     [self endSheetWithCode:NSCancelButton];
 }
 

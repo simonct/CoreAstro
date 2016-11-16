@@ -397,6 +397,11 @@
 			attributes = {
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Simon Taylor";
+				TargetAttributes = {
+					F4D967EC161894A100465163 = {
+						DevelopmentTeam = D8EQ3MVHHB;
+					};
+				};
 			};
 			buildConfigurationList = F4D967E7161894A100465163 /* Build configuration list for PBXProject "cfitsio" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -558,7 +563,8 @@
 		F4D967F2161894A100465163 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				EXECUTABLE_PREFIX = lib;
 				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -568,7 +574,8 @@
 		F4D967F3161894A100465163 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = D8EQ3MVHHB;
 				EXECUTABLE_PREFIX = lib;
 				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";

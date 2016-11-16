@@ -58,8 +58,6 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
     CASMountDirectionWest
 };
 
-@optional
-
 @property (nonatomic,readonly) CASMountDirection direction;
 - (void)startMoving:(CASMountDirection)direction;
 - (void)stopMoving;
@@ -68,18 +66,23 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 
 - (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 
-- (void)park;
+- (void)park:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 - (void)unpark;
-- (void)gotoHomePosition;
+- (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 
 typedef NS_ENUM(NSInteger, CASMountPierSide) {
     CASMountPierSideEast = 1,
     CASMountPierSideWest = 2
 };
 @property (nonatomic,readonly) CASMountPierSide pierSide;
+
+@optional
+
+- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 
 @end
 

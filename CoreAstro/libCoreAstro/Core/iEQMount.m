@@ -79,7 +79,7 @@
 
     // gmt offset
     NSTimeZone* tz = [NSCalendar currentCalendar].timeZone;
-    [self sendCommand:[CASLX200Commands setTelescopeGMTOffset:tz] readCount:1 completion:^(NSString* response){ NSLog(@"set gmt off: %@",response); }];
+    [self sendCommand:[CASLX200Commands setTelescopeGMTOffsetExDST:tz] readCount:1 completion:^(NSString* response){ NSLog(@"set gmt off: %@",response); }];
 
     // daylight savings flag
     [self sendCommand:[CASLX200Commands setTelescopeDaylightSavings:tz] readCount:1 completion:^(NSString* response){ NSLog(@"set dst: %@",response); }];
@@ -203,7 +203,7 @@
 }
 
 - (NSArray<NSString*>*)movingRateValues {
-    return @[@"1x",@"2x",@"8x",@"16x",@"64x",@"128x",@"256x",@"512x",@"Max"];
+    return @[@"Unknown",@"1x",@"2x",@"8x",@"16x",@"64x",@"128x",@"256x",@"512x",@"Max"];
 }
 
 - (void)dumpInfo
