@@ -7,6 +7,8 @@
      -->
     <suite name="SX IO Suite" code="CASS" description="SX IO specific classes and commands.">
         
+        <access-group identifier="*"/>
+
         <!-- Classes -->
         
         <class name="application" code="capp" description="An application's top level scripting object.">
