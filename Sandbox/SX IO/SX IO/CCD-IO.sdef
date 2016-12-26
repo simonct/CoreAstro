@@ -7,7 +7,7 @@
      -->
     <suite name="SX IO Suite" code="CASS" description="SX IO specific classes and commands.">
         
-        <access-group identifier="*"/>
+        <access-group identifier="org.coreastro.camera" access="rw"/>
 
         <!-- Classes -->
         
