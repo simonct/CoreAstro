@@ -951,16 +951,7 @@ static void* kvoContext;
 //
 - (void)startMountMeridianFlip
 {
-    // captures current mount state, suspends capture and stops guiding
-    [self prepareForMountSlewHandling];
-    
-    // set the retore on complete flag; this is the *only* place we do this - yes, but where do we clear it ??
-    self.mountState.restoreStateWhenComplete = YES;
-    
-    // pop the slew sheet so that we can set the label text to something specific
-    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
-    
-    // start the slew to the flipped position
+    // grab the current locked solution or, if there is none, the current mount position
     NSNumber* ra, *dec;
     CASPlateSolveSolution* lockedSolution = self.exposureView.lockedPlateSolveSolution;
     if (lockedSolution){
@@ -975,10 +966,26 @@ static void* kvoContext;
     
     if (!ra || !dec){
         [self presentAlertWithTitle:@"Failed to Slew Mount"
-                            message:@"There is no current locked solution and the mount position is not available either so the mount cannot be slewed to its current position"];
+                            message:@"There is no current locked solution and the mount position is not available so the mount cannot be flipped"];
     }
     else {
         
+        // todo; put in an 'at least' param for ap mounts
+        // todo; 30s beeping countdown alert ?
+        // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
+        
+        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount"
+                                                        subtitle:@"Mount has passed meridian while capturing, triggering flip"];
+        
+        // captures current mount state, suspends capture and stops guiding
+        [self prepareForMountSlewHandling];
+        
+        // set the restore on complete flag; this is the *only* place we do this (this is cleared in -completeMountSlewHandling which nils out the state object)
+        self.mountState.restoreStateWhenComplete = YES;
+        
+        // pop the slew sheet so that we can set the label text to something specific
+        [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+
         self.mountWindowController.cameraController = self.cameraController;
         self.mountWindowController.mountWindowDelegate = self;
         self.mountWindowController.mountController.usePlateSolving = YES;
@@ -986,6 +993,7 @@ static void* kvoContext;
         __weak __typeof(self) weakSelf = self;
         [self.mountWindowController.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
             if (error){
+                [weakSelf completeMountSlewHandling]; // clear the saved mount state, dismisses the progress sheet
                 [NSApp presentError:error];
             }
             else {
@@ -2165,13 +2173,6 @@ static void* kvoContext;
                 case 1:
                     if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
                         
-                        // todo; put in an 'at least' param for ap mounts
-                        // todo; 30s beeping countdown alert ?
-                        // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
-                        
-                        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount"
-                                                                        subtitle:@"Mount has passed meridian while capturing, triggering flip"];
-                        
                         // start the slew to the flipped position
                         [self startMountMeridianFlip];
                     }
@@ -2597,19 +2598,19 @@ static void* kvoContext;
             
             NSLog(@"Mount sync completed successfully");
             
-            // check to see if we triggered the slew and restart capture and guiding
+            // check to see if the slew was an intentional meridian flip and restart capture and guiding
             if (self.mountState.restoreStateWhenComplete){
                 [self restoreStateAfterMountSlewCompleted];
             }
             else {
-                // just cleanup and we're done
+                // just clean up and we're done
                 // this would happen if the synchroniser was running the slew but it wasn't as a result of us triggering the flip e.g. the user used the mount window to slew to a target
                 [self completeMountSlewHandling];
                 
                 // pop a temporary alert to confirm the slew completed
+                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismissModal) object:nil];
                 [self performSelector:@selector(dismissModal) withObject:nil afterDelay:5 inModes:@[NSRunLoopCommonModes]];
                 [self presentAlertWithTitle:@"Slew Complete" message:@"The mount successfully synced to the target"];
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismissModal) object:nil];
             }
         }
         
