@@ -1237,6 +1237,9 @@ static void* kvoContext;
 
 - (CASPlateSolveSolution*)plateSolveSolution
 {
+    if (self.exposureView.lockedPlateSolveSolution){
+        return self.exposureView.lockedPlateSolveSolution;
+    }
     return self.exposureView.plateSolveSolution;
 }
 
