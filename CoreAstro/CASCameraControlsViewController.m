@@ -46,6 +46,7 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,assign) NSInteger otherExposureCount;
 @property (weak) IBOutlet NSTextField *exposureCompletionLabel;
+@property (weak) IBOutlet NSTextField *phdEventLabel;
 @end
 
 @implementation CASCameraControlsViewController
@@ -72,7 +73,8 @@ static void* kvoContext;
     [self.cameraController removeObserver:self forKeyPath:@"settings.exposureUnits" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"settings.exposureInterval" context:&kvoContext];
     [self.cameraController removeObserver:self forKeyPath:@"capturing" context:&kvoContext];
-    
+    [self.cameraController.phd2Client removeObserver:self forKeyPath:@"lastEvent" context:&kvoContext];
+
     self.representedObject = cameraController;
     
     if (self.cameraController){
@@ -82,6 +84,7 @@ static void* kvoContext;
         [self.cameraController addObserver:self forKeyPath:@"settings.exposureUnits" options:0 context:&kvoContext];
         [self.cameraController addObserver:self forKeyPath:@"settings.exposureInterval" options:0 context:&kvoContext];
         [self.cameraController addObserver:self forKeyPath:@"capturing" options:0 context:&kvoContext];
+        [self.cameraController.phd2Client addObserver:self forKeyPath:@"lastEvent" options:0 context:&kvoContext];
         [self configureForCameraController];
     }
 }
@@ -90,23 +93,28 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
         
-        if ([keyPath isEqualToString:@"settings.subframe"]){
-            
-            const CGRect subframe = self.cameraController.settings.subframe;
-            if (CGRectIsEmpty(subframe)){
-                [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
-            }
-            else {
-                [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
-            }
-        }
-        else if ([keyPath isEqualToString:@"capturing"]){
-            [self configureBinningControls];
-            [self configureExposureCountMenu];
-            [self updateCompletionLabel];
+        if (object == self.cameraController.phd2Client) {
+            [self.phdEventLabel setStringValue:self.cameraController.phd2Client.lastEvent ?: @""];
         }
         else {
-            [self updateCompletionLabel];
+            if ([keyPath isEqualToString:@"settings.subframe"]){
+                
+                const CGRect subframe = self.cameraController.settings.subframe;
+                if (CGRectIsEmpty(subframe)){
+                    [self.subframeDisplay setStringValue:@"Make a selection to define a subframe"];
+                }
+                else {
+                    [self.subframeDisplay setStringValue:[NSString stringWithFormat:@"x=%.0f y=%.0f\nw=%.0f h=%.0f",subframe.origin.x,subframe.origin.y,subframe.size.width,subframe.size.height]];
+                }
+            }
+            else if ([keyPath isEqualToString:@"capturing"]){
+                [self configureBinningControls];
+                [self configureExposureCountMenu];
+                [self updateCompletionLabel];
+            }
+            else {
+                [self updateCompletionLabel];
+            }
         }
     }
     else {
@@ -148,6 +156,7 @@ static void* kvoContext;
     
     [self configureBinningControls];
     [self configureExposureCountMenu];
+    [self configureGuidingControls];
     [self updateCompletionLabel];
 }
 
@@ -201,6 +210,11 @@ static void* kvoContext;
     }
     
     [self didChangeValueForKey:@"captureMenuSelectedIndex"];
+}
+
+- (void)configureGuidingControls
+{
+    [self.phdEventLabel setStringValue:@""];
 }
 
 - (void)setExposure:(CASCCDExposure *)exposure

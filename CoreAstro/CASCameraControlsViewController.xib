@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CASCameraControlsViewController">
@@ -15,6 +16,7 @@
                 <outlet property="measuredTemperatureField" destination="9" id="397"/>
                 <outlet property="measuredTemperatureLabel" destination="12" id="477"/>
                 <outlet property="otherCountViewController" destination="527" id="530"/>
+                <outlet property="phdEventLabel" destination="uSq-0V-3a1" id="tpn-98-FIE"/>
                 <outlet property="sensorLabel" destination="5" id="850"/>
                 <outlet property="sensorPixelsField" destination="8" id="396"/>
                 <outlet property="sensorSizeField" destination="7" id="395"/>
@@ -606,6 +608,14 @@
                         <binding destination="-2" name="value" keyPath="cameraController.settings.startGuiding" id="944"/>
                     </connections>
                 </button>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uSq-0V-3a1">
+                    <rect key="frame" x="153" y="44" width="48" height="14"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="&lt;event&gt;" id="g3G-t1-s5p">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" red="0.52941176469999995" green="0.52941176469999995" blue="0.52941176469999995" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
                 <constraint firstItem="22" firstAttribute="top" secondItem="13" secondAttribute="bottom" constant="8" symbolic="YES" id="95"/>
@@ -639,6 +649,7 @@
                 <constraint firstItem="1057" firstAttribute="top" secondItem="19" secondAttribute="bottom" constant="8" symbolic="YES" id="QlS-iK-i3P"/>
                 <constraint firstAttribute="trailing" secondItem="21" secondAttribute="trailing" constant="16" id="Qxg-qm-A5e"/>
                 <constraint firstItem="11" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="R3b-xK-Qfn"/>
+                <constraint firstItem="uSq-0V-3a1" firstAttribute="centerY" secondItem="1057" secondAttribute="centerY" id="Tm5-U5-SHK"/>
                 <constraint firstItem="24" firstAttribute="centerY" secondItem="25" secondAttribute="centerY" id="UF1-fq-2dv"/>
                 <constraint firstItem="19" firstAttribute="top" secondItem="23" secondAttribute="bottom" constant="8" id="V5X-9u-2hA"/>
                 <constraint firstItem="9" firstAttribute="centerY" secondItem="10" secondAttribute="centerY" constant="-0.5" id="YRN-OB-8ze"/>
@@ -652,6 +663,7 @@
                 <constraint firstItem="928" firstAttribute="top" secondItem="1057" secondAttribute="bottom" constant="7" id="fTs-Fq-rmQ"/>
                 <constraint firstItem="23" firstAttribute="leading" secondItem="15" secondAttribute="leading" id="fVg-Ox-fsL"/>
                 <constraint firstItem="12" firstAttribute="top" secondItem="11" secondAttribute="bottom" constant="2" id="g4T-em-Kn3"/>
+                <constraint firstAttribute="trailing" secondItem="uSq-0V-3a1" secondAttribute="trailing" constant="14" id="gT8-0y-Vj9"/>
                 <constraint firstItem="23" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="8" id="kuB-rr-Ijb"/>
                 <constraint firstItem="5" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="11" id="mpM-xk-NAG"/>
                 <constraint firstItem="22" firstAttribute="leading" secondItem="13" secondAttribute="leading" id="pgh-Au-ubz"/>

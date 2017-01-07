@@ -16,6 +16,7 @@
 @interface CASPHD2Client : NSObject
 @property (nonatomic,readonly) BOOL connected;
 @property (nonatomic,readonly) BOOL guiding;
+@property (nonatomic,readonly,copy) NSString* lastEvent;
 @property (weak) id<CASPHD2ClientDelegate> delegate;
 
 - (void)connectWithCompletion:(void(^)())completion;

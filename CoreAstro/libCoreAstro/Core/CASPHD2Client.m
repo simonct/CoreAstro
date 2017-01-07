@@ -12,6 +12,7 @@
 @property (nonatomic,strong) CASJSONRPCSocketClient* client;
 @property (nonatomic,assign) BOOL guiding;
 @property (nonatomic,assign) BOOL connected;
+@property (nonatomic,copy) NSString* lastEvent;
 @property (nonatomic,copy) void(^connectCompletion)();
 @property (nonatomic,copy) void(^settleCompletion)(BOOL);
 @end
@@ -200,6 +201,8 @@ static void* kvoContext;
                                                                   userInfo:@{NSLocalizedDescriptionKey:@"Star was lost for more that 30s"}]];
         }
     }
+
+    self.lastEvent = event;
 
     // CalibrationFailed
     // StarLost, accumulate a count and then fail if it exceeds some threshold
