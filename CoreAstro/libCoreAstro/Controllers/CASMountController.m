@@ -129,6 +129,8 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     
     if (!self.usePlateSolving){
         
+        NSLog(@"Slewing without plate solving");
+        
         // not doing anything clever, just ask the mount to slew and return when it confirms that it's on its way (todo; this should wait until it's completed the slew...)
         __weak __typeof(self) weakSelf = self;
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
@@ -151,6 +153,8 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         }
         else {
             
+            NSLog(@"Slewing with plate solving");
+
             // ok, looks like we're plate solving so we need to set up the mount synchroniser
             [self.cameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
             
