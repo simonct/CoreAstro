@@ -218,7 +218,7 @@ static void* kvoContext;
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
 }
 
-- (NSWindowController*)findWindowController:(CASDeviceController*)controller
+- (NSWindowController*)findDeviceWindowController:(CASDeviceController*)controller
 {
     for (id window in _windows){
         if ([window isKindOfClass:[SXIOCameraWindowController class]] && (((SXIOCameraWindowController*)window).cameraController == controller || [((SXIOCameraWindowController*)window).cameraDeviceID isEqualToString:controller.device.uniqueID])){
@@ -243,8 +243,8 @@ static void* kvoContext;
             case NSKeyValueChangeInsertion:{
                 [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 
-                    NSWindowController* windowController = [self findWindowController:obj];
-                    if (windowController){
+                    NSWindowController* windowController = [self findDeviceWindowController:obj];
+                    if ([windowController isKindOfClass:[SXIOCameraWindowController class]]){
                         SXIOCameraWindowController* cameraWindow = (SXIOCameraWindowController*)windowController;
                         cameraWindow.cameraController = obj;
                     }
@@ -302,7 +302,7 @@ static void* kvoContext;
             case NSKeyValueChangeRemoval:{
                 [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     
-                    NSWindowController* window = [self findWindowController:obj];
+                    NSWindowController* window = [self findDeviceWindowController:obj];
                     if (window){
                         
                         // default behaviour is to close the window and remove from the Window menu
@@ -488,7 +488,7 @@ static void* kvoContext;
 - (IBAction)sequence:(id)sender
 {
     SXIOSequenceEditorWindowController* sequence = [SXIOSequenceEditorWindowController sharedWindowController];
-    [sequence.window makeKeyAndOrderFront:nil];
+    [sequence showWindow:nil];
 }
 
 - (IBAction)fixupM25CFrames:(id)sender

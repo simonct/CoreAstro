@@ -10,6 +10,7 @@
 #import <CoreAstro/CoreAstro.h>
 
 #import "CASMountWindowController.h" // tmp until this is refactored into a mount controller
+#import "SXIOAppDelegate.h"
 
 static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
 
@@ -730,8 +731,8 @@ static void* kvoContext;
 
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
-    [closeButton setAction:@selector(close)];
-    
+    [closeButton setAction:@selector(closeWindow:)];
+
     if (self.sequence){
         self.stepsController.content = self.sequence.steps;
     }
@@ -746,6 +747,31 @@ static void* kvoContext;
 {
     self.sequenceRunner = nil;
     [self.stepsController removeObserver:self forKeyPath:@"arrangedObjects" context:&kvoContext];
+}
+
+- (void)showWindow:(id)sender
+{
+    [super showWindow:sender];
+    
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self]; // todo; check already in it ?
+#endif
+}
+
+- (void)closeWindow:sender
+{
+    // check we're not running a sequence
+    if (!_stopped){
+        NSBeep();
+        NSLog(@"Currently running a sequence...");
+        return;
+    }
+
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+#endif
+    
+    [self close];
 }
 
 - (NSArray*)cameraControllers

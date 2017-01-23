@@ -911,7 +911,7 @@ static void* kvoContext;
     if (self.sequenceEditorWindowController.target == nil) {
         self.sequenceEditorWindowController.target = self;
     }
-    [self.sequenceEditorWindowController.window makeKeyAndOrderFront:nil];
+    [self.sequenceEditorWindowController showWindow:nil];
 }
 
 #pragma mark - Mount Control
