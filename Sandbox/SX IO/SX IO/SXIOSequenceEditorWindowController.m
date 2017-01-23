@@ -560,18 +560,18 @@ static void* kvoContext;
 @end
 
 @implementation SXIOSequenceEditorRowView
-@end
-
-@interface SXIOSequenceEditorExposureStepView : SXIOSequenceEditorRowView
-@end
-
-@implementation SXIOSequenceEditorExposureStepView
 
 - (void)setSelectionHighlightStyle:(NSTableViewSelectionHighlightStyle)selectionHighlightStyle
 {
     // suppressing this with the table view selection style set to none, seems (a) enable highlighting and (b) fix editing of text fields. I have no idea why.
 }
 
+@end
+
+@interface SXIOSequenceEditorExposureStepView : SXIOSequenceEditorRowView
+@end
+
+@implementation SXIOSequenceEditorExposureStepView
 @end
 
 @interface SXIOSequenceEditorSlewStepView : SXIOSequenceEditorRowView
