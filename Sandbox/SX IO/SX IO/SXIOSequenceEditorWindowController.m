@@ -581,7 +581,17 @@ static void* kvoContext;
 
 - (NSArray*)bookmarks
 {
-    return CASBookmarks.sharedInstance.bookmarks;
+    return self.sharedBookmarks.bookmarks;
+}
+
+- (CASBookmarks*)sharedBookmarks // this only exists so that we can reference it in the method below
+{
+    return CASBookmarks.sharedInstance;
+}
+
++ (NSSet*)keyPathsForValuesAffectingBookmarks
+{
+    return [NSSet setWithArray:@[@"sharedBookmarks.bookmarks"]];
 }
 
 @end
