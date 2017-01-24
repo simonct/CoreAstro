@@ -316,7 +316,7 @@ static void* kvoContext;
         else{
             
 #if defined(SXIO) || defined(CCDIO)
-            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findWindowController:cameraController];
+            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:cameraController];
             if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
                 
                 self.mountWindowDelegate = (id)cameraWindowController;

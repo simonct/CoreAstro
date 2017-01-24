@@ -16,7 +16,7 @@
 - (void)removeWindowFromWindowMenu:(NSWindowController*)windowController;
 - (void)updateWindowInWindowMenu:(NSWindowController*)windowController;
 
-- (NSWindowController*)findWindowController:(CASDeviceController*)controller;
+- (NSWindowController*)findDeviceWindowController:(CASDeviceController*)controller;
 
 + (instancetype)sharedInstance;
 
