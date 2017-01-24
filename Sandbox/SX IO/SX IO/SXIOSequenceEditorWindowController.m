@@ -14,9 +14,16 @@
 
 static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
 
+@class SXIOSequenceEditorWindowController;
+
+@interface SXIOSequenceEditorWindowController () // need to forward declare this for -setFilterNameOnObject:
+@property (nonatomic,readonly) CASCameraController* selectedCameraController;
+@end
+
 @interface CASSequenceStep : NSObject<NSCoding,NSCopying>
 @property (nonatomic,readonly,copy) NSString* type;
 @property (nonatomic,readonly,getter=isValid) BOOL valid;
+@property (nonatomic,weak) SXIOSequenceEditorWindowController* windowController;
 @end
 
 @interface CASSequenceStep ()
@@ -158,9 +165,51 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     return [NSSet setWithObject:@"binning"];
 }
 
+- (NSArray*)filterNames
+{
+    CASFilterWheelController* filterWheel = self.windowController.selectedCameraController.filterWheel;
+    if (!filterWheel){
+        return nil;
+    }
+    
+    NSDictionary* filterNames = filterWheel.filterNames;
+    if (filterNames.count > 0){
+        return [[[filterWheel.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
+            return [evaluatedObject length] > 0;
+        }]] sortedArrayUsingSelector:@selector(compare:)];
+    }
+    
+    const NSInteger filterCount = filterWheel.filterCount;
+    NSMutableArray* filterNamesArray = [NSMutableArray arrayWithCapacity:filterCount];
+    for (NSUInteger i = 0; i < filterCount; ++i){
+        NSString* filterName = filterWheel.filterNames[[@(i) description]] ?: [NSString stringWithFormat:@"Filter %ld",i+1];
+        [filterNamesArray addObject:filterName];
+    }
+    
+    return [filterNamesArray copy];
+}
+
++ (NSSet*)keyPathsForValuesAffectingFilterNames
+{
+    return [NSSet setWithObjects:@"windowController.selectedCameraController.filterWheel",nil];
+}
+
 - (NSString*)selectedFilter
 {
+    CASFilterWheelController* filterWheel = self.windowController.selectedCameraController.filterWheel;
+    if (!filterWheel){
+        return nil;
+    }
+
+    if (!self.filter){
+        self.filter = self.filterNames.firstObject;
+    }
     return self.filter;
+}
+
++ (NSSet*)keyPathsForValuesAffectingSelectedFilter
+{
+    return [NSSet setWithObjects:@"filterNames",nil];
 }
 
 - (void)setSelectedFilter:(NSString *)filter
@@ -606,24 +655,7 @@ static void* kvoContext;
 @property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
 @end
 
-@interface SXIOSequenceEditorWindowController () // need to forward declare this for -setFilterNameOnObject:
-@property (nonatomic,readonly) CASCameraController* selectedCameraController;
-@end
-
 @implementation SXIOSequenceEditorWindowControllerStepsController
-
-- (void)setFilterNameOnObject:(id)object
-{
-    CASSequenceExposureStep* step = object;
-    if ([step respondsToSelector:@selector(setFilterNames:)]){
-        step.filterNames = [[[self.windowController.selectedCameraController.filterWheel.filterNames allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* evaluatedObject, NSDictionary *_) {
-            return [evaluatedObject length] > 0;
-        }]] sortedArrayUsingSelector:@selector(compare:)];
-        if (!step.selectedFilter){
-            step.selectedFilter = step.filterNames.firstObject;
-        }
-    }
-}
 
 - (void)setContent:(id)content
 {
@@ -636,8 +668,8 @@ static void* kvoContext;
         [step isKindOfClass:[CASSequenceParkStep class]];
     }];
     
-    for (id object in self.content){
-        [self setFilterNameOnObject:object];
+    for (CASSequenceStep* step in self.content){
+        step.windowController = self.windowController;
     }
 }
 
@@ -650,15 +682,16 @@ static void* kvoContext;
 {
     [super addObject:object];
     
-    [self setFilterNameOnObject:object];
+    CASSequenceStep* step = object;
+    step.windowController = self.windowController;
 }
 
 - (void)addObjects:(NSArray*)objects
 {
     [super addObjects:objects];
     
-    for (id object in objects){
-        [self setFilterNameOnObject:object];
+    for (CASSequenceStep* step in self.content){
+        step.windowController = self.windowController;
     }
 }
 
@@ -730,6 +763,8 @@ static void* kvoContext;
 {
     [super windowDidLoad];
     
+    _stopped = YES;
+
     self.tableView.delegate = self;
     self.tableView.dataSource = self; // for dragging
     self.tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone; // see comment about with SXIOSequenceEditorExposureStepView

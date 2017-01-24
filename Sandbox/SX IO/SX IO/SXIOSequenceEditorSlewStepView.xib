@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
@@ -32,7 +33,7 @@
                     <rect key="frame" x="2" y="0.0" width="407" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="5" width="65" height="17"/>
+                            <rect key="frame" x="-2" y="5.5" width="65" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Bookmark" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -40,7 +41,7 @@
                             </textFieldCell>
                         </textField>
                         <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p9o-Qd-IRk">
-                            <rect key="frame" x="67" y="0.0" width="156" height="26"/>
+                            <rect key="frame" x="67" y="0.5" width="156" height="26"/>
                             <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="wOb-V1-Zby" id="UdR-Wa-31p">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
@@ -101,7 +102,7 @@
                 <constraint firstAttribute="trailing" secondItem="al7-HM-xzC" secondAttribute="trailing" constant="4" id="mlG-TK-8rN"/>
                 <constraint firstItem="al7-HM-xzC" firstAttribute="centerY" secondItem="4mP-az-EyK" secondAttribute="centerY" id="nGO-Gi-gxe"/>
             </constraints>
-            <point key="canvasLocation" x="-3087.5" y="-1585"/>
+            <point key="canvasLocation" x="-3001" y="-1609"/>
         </customView>
         <objectController objectClassName="SXIOSequenceEditorSlewStepView" id="5Zq-Z6-Rt2">
             <connections>
