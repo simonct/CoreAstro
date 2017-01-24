@@ -11,4 +11,5 @@
 
 @interface SXIOBookmarkWindowController : CASAuxWindowController
 @property (strong) CASPlateSolveSolution* solution;
++ (SXIOBookmarkWindowController*)sharedController;
 @end

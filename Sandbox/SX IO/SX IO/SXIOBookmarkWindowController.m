@@ -7,6 +7,8 @@
 //
 
 #import "SXIOBookmarkWindowController.h"
+#import "SXIOAppDelegate.h"
+
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -67,9 +69,25 @@
     NSMutableArray* _bookmarks;
 }
 
-- (void)windowDidLoad {
++ (SXIOBookmarkWindowController*)sharedController
+{
+    static SXIOBookmarkWindowController* _shared;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _shared = [SXIOBookmarkWindowController createWindowController];
+    });
+    return _shared;
+}
+
+- (void)windowDidLoad
+{
     [super windowDidLoad];
     
+    NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
+    [closeButton setTarget:self];
+    [closeButton setAction:@selector(closeWindow:)];
+
+    // no longer here - in solution setter?
     if (!self.solution){
         self.bookmarksArrayController.selectedObjects = @[];
     }
@@ -80,6 +98,24 @@
         self.bookmarksArrayController.selectedObjects = @[bookmark];
         [self.bookmarksTableView editColumn:0 row:bookmarks.count - 1 withEvent:nil select:YES];
     }
+}
+
+- (void)showWindow:(id)sender
+{
+    [super showWindow:sender];
+    
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self]; // todo; check already in it ?
+#endif
+}
+
+- (void)closeWindow:sender
+{
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+#endif
+    
+    [self close];
 }
 
 - (NSMutableArray*)bookmarks

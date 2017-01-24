@@ -37,6 +37,7 @@
 #import "CASCameraServer.h"
 #import "CASMountWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
+#import "SXIOBookmarkWindowController.h"
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -489,6 +490,11 @@ static void* kvoContext;
 {
     SXIOSequenceEditorWindowController* sequence = [SXIOSequenceEditorWindowController sharedWindowController];
     [sequence showWindow:nil];
+}
+
+- (IBAction)editBookmarks:sender
+{
+    [[SXIOBookmarkWindowController sharedController] showWindow:nil];
 }
 
 - (IBAction)fixupM25CFrames:(id)sender
