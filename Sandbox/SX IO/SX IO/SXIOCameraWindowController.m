@@ -114,9 +114,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 // focusing
 @property (strong) SXIOFocuserWindowController* focuserWindowController;
 
-// bookmarks
-@property (strong) SXIOBookmarkWindowController* bookmarksWindowController;
-
 // obsolete but required until the xib format is updated
 @property (weak) IBOutlet id mountConnectWindow;
 @property id serialPortManager, selectedSerialPort;
@@ -1441,11 +1438,8 @@ static void* kvoContext;
 
 - (void)openBookmarksWithSolution:(CASPlateSolveSolution*)solution
 {
-    self.bookmarksWindowController = [SXIOBookmarkWindowController createWindowController];
-    self.bookmarksWindowController.solution = solution;
-    [self.bookmarksWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger _) {
-        self.bookmarksWindowController = nil;
-    }];
+    [SXIOBookmarkWindowController sharedController].solution = solution;
+    [[SXIOBookmarkWindowController sharedController] showWindow:nil];
 }
 
 - (IBAction)addBookmark:sender
