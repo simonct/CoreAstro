@@ -21,6 +21,7 @@
 @implementation CASAPGTOMount {
     BOOL _parking;
     BOOL _synced;
+    BOOL _cp3;
     NSInteger _skipSlewStateCount;
     CASMountDirection _direction;
     CASAPGTOMountMovingRate _movingRate;
@@ -51,8 +52,16 @@
     
     self.name = @"Astro-Physics GTO";
     
+    _cp3 = YES;
+    
+    _synced = NO;
+    
     [self sendCommand:@"#"];
     [self sendCommand:@":U#"];
+    
+    [self sendCommand:@":V#" completion:^(NSString *version) {
+        NSLog(@"Version: %@",version);
+    }];
 
     // get mount sidereal time to try and see if it's already been configured
     [self sendCommand:@":GS#" completion:^(NSString* response){
@@ -89,16 +98,19 @@
             }
         }
 
+        // switch on command logging
+        const BOOL saveLogCommands = self.logCommands;
+        self.logCommands = YES;
+
         if (scopeConfigured || !self.shouldConfigureMount){
+            
+            _synced = YES; // not strictly true but assume that the mount has been synced externally
+            
             [self completeInitialisingMount:nil];
         }
         else {
             
             NSLog(@"Configuring %@",self.name);
-            
-            // switch on command logging
-            const BOOL saveLogCommands = self.logCommands;
-            self.logCommands = YES;
             
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
@@ -136,15 +148,15 @@
                 [self completeInitialisingMount:nil];
             }];
             
-            [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above
+            [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above - not required for CP3/4 but doesn't unlock the keypad if you don't
             [self sendCommand:@":Q#"];
             
             // switch PEC off, todo; make configurable in the UI
             [self sendCommand:@":p#"];
-
-            // restore logging state
-            self.logCommands = saveLogCommands;
         }
+        
+        // restore logging state
+        self.logCommands = saveLogCommands;
     }];
 }
 
@@ -169,7 +181,7 @@
             [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
             [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
             
-            self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above
+            self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above (confusingly we don't show the slew rate in the UI)
             self.trackingRate = CASAPGTOMountTrackingRateSidereal;
         }
 
@@ -339,20 +351,22 @@
     [self sendCommand:@":GG#" completion:^(NSString *response) {
         //NSLog(@"Get Local Time: %@",response);
         
-        // GTOCP1/2 magic return values
-        if ([response hasPrefix:@"A"]){
-            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
-            if (offset <= 5 && offset >= 1){
-                response = [NSString stringWithFormat:@"-%02ld:00:00",(3 - labs(offset)) + 3];
+        if (!_cp3) {
+            // GTOCP1/2 magic return values
+            if ([response hasPrefix:@"A"]){
+                const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+                if (offset <= 5 && offset >= 1){
+                    response = [NSString stringWithFormat:@"-%02ld:00:00",(3 - labs(offset)) + 3];
+                }
             }
-        }
-        else if ([response hasPrefix:@"00"]){
-            response = @"-06:00:00";
-        }
-        else if ([response hasPrefix:@"@"]){
-            const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
-            if (offset <= 9 && offset >= 3){
-                response = [NSString stringWithFormat:@"-%02ld:00:00",(8 - labs(offset)) + 8];
+            else if ([response hasPrefix:@"00"]){
+                response = @"-06:00:00";
+            }
+            else if ([response hasPrefix:@"@"]){
+                const NSInteger offset = [[response substringWithRange:NSMakeRange(1, 1)] integerValue];
+                if (offset <= 9 && offset >= 3){
+                    response = [NSString stringWithFormat:@"-%02ld:00:00",(8 - labs(offset)) + 8];
+                }
             }
         }
 
@@ -548,7 +562,6 @@
 
 - (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion
 {
-    
     [self syncCommand:@":CM#" ToRA:ra dec:dec completion:^(CASMountSlewError error) {
        
         if (error == CASMountSlewErrorNone){
@@ -562,6 +575,12 @@
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
+    if (!_synced){
+        NSLog(@"Mount must be synced before slewing after full initialisation");
+        completion(CASMountSlewErrorInvalidState,nil);
+        return;
+    }
+    
     // set this immediately rather than wait for the next mount status poll
     self.slewing = YES;
     _skipSlewStateCount = 5;

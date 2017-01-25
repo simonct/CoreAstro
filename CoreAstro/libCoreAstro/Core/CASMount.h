@@ -44,7 +44,8 @@ typedef NS_ENUM(NSInteger, CASMountSlewError) {
     CASMountSlewErrorNone,
     CASMountSlewErrorInvalidRA,
     CASMountSlewErrorInvalidDec,
-    CASMountSlewErrorInvalidLocation
+    CASMountSlewErrorInvalidLocation,
+    CASMountSlewErrorInvalidState
 };
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion; // for subclasses
@@ -65,8 +66,8 @@ typedef NS_ENUM(NSInteger, CASMountDirection) {
 - (void)stopSlewing;
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 
-- (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
-- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion;
+- (void)syncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion; // -> calibrate
+- (void)fullSyncToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError))completion; // -> sync
 
 - (void)setTargetRA:(double)ra dec:(double)dec completion:(void(^)(CASMountSlewError))completion;
 
