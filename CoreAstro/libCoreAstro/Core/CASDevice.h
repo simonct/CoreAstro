@@ -65,5 +65,7 @@ typedef enum {
 
 - (NSData*)randomDataOfLength:(NSInteger)length;
 
+- (NSViewController*)configurationViewController;
+
 @end
 

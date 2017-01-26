@@ -115,5 +115,10 @@
     return data;
 }
 
+- (NSViewController*)configurationViewController
+{
+    return nil;
+}
+
 @end
 

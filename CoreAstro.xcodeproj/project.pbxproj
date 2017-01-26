@@ -182,6 +182,7 @@
 		F498A52F15FE7FE2006E8376 /* superstar.png in Resources */ = {isa = PBXBuildFile; fileRef = F4125F1115D7A7D300E04052 /* superstar.png */; };
 		F498A53715FE8148006E8376 /* CoreAstro.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F44EDEFA15FCC385003B1B4C /* CoreAstro.framework */; };
 		F498A53B15FE821E006E8376 /* SXDevicesPlugin.casPlugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = F498A51915FE7F96006E8376 /* SXDevicesPlugin.casPlugin */; };
+		F49A96491E3A0A07008321D4 /* CASAPGTOMount.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F49A96481E3A0A07008321D4 /* CASAPGTOMount.storyboard */; };
 		F49E52C215A971610018DC75 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F49E52C115A971610018DC75 /* Cocoa.framework */; };
 		F49E52CC15A971610018DC75 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F49E52CA15A971610018DC75 /* InfoPlist.strings */; };
 		F49E52CE15A971610018DC75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E52CD15A971610018DC75 /* main.m */; };
@@ -771,6 +772,7 @@
 		F498A51D15FE7F96006E8376 /* SXDevicesPlugin-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SXDevicesPlugin-Info.plist"; sourceTree = "<group>"; };
 		F498A51F15FE7F96006E8376 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F498A52115FE7F96006E8376 /* SXDevicesPlugin-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SXDevicesPlugin-Prefix.pch"; sourceTree = "<group>"; };
+		F49A96481E3A0A07008321D4 /* CASAPGTOMount.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CASAPGTOMount.storyboard; sourceTree = "<group>"; };
 		F49E52BD15A971610018DC75 /* CoreAstro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreAstro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49E52C115A971610018DC75 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F49E52C415A971610018DC75 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -2114,6 +2116,7 @@
 				F4E424271A86746C00C2A87E /* iEQMount.m */,
 				F44F071D1BF2C25100356A73 /* CASAPGTOMount.h */,
 				F44F071E1BF2C25100356A73 /* CASAPGTOMount.m */,
+				F49A96481E3A0A07008321D4 /* CASAPGTOMount.storyboard */,
 				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
 				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
 				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
@@ -3544,6 +3547,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F49A96491E3A0A07008321D4 /* CASAPGTOMount.storyboard in Resources */,
 				F44EDF0115FCC385003B1B4C /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

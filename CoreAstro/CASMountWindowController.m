@@ -49,7 +49,7 @@
 
 @end
 
-@interface CASMountWindowController ()<NSWindowDelegate>
+@interface CASMountWindowController ()<NSWindowDelegate,NSPopoverDelegate>
 @property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
 @property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
@@ -67,6 +67,8 @@
 @property (strong) NSNumber* targetDec;
 @property (strong) CASObjectLookup* lookup;
 @property (strong) CASMountSlewObserver* slewObserver;
+@property (weak) IBOutlet NSButton *mountConfigurationButton;
+@property (strong) NSPopover* mountPopover;
 @end
 
 // todo;
@@ -534,6 +536,29 @@ static void* kvoContext;
 - (IBAction)cancelPressed:(id)sender
 {
     [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseCancel];
+}
+
+// todo; we should really embed the config UI in the main window in the Mount section
+- (IBAction)mountButtonPressed:(NSButton*)sender
+{
+    NSViewController* configure = self.mount.configurationViewController;
+    if (!configure){
+        [self presentAlertWithMessage:@"This mount doesn't provide a configuration UI"];
+    }
+    else {
+        self.mountPopover = [[NSPopover alloc] init];
+        self.mountPopover.delegate = self;
+        self.mountPopover.contentViewController = configure;
+        self.mountPopover.behavior = NSPopoverBehaviorTransient;
+        [self.mountPopover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSMaxXEdge];
+    }
+}
+
+#pragma mark - Popover delegate
+
+- (void)popoverDidClose:(NSNotification *)notification
+{
+    self.mountPopover = nil;
 }
 
 #pragma mark - Window delegate

@@ -37,7 +37,15 @@
 @synthesize gmtOffset = _gmtOffset;
 @synthesize siderealTime = _siderealTime;
 
-- (NSString*)vendorName {
++ (void)initialize
+{
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"APGTOCP3Plus":@YES,
+                                                              @"APGTOAllowUnsynchedSlew":@NO,
+                                                              @"APGTOParkPositionIndex":@(1)}];
+}
+
+- (NSString*)vendorName
+{
     return @"Astro-Physics";
 }
 
@@ -52,7 +60,10 @@
     
     self.name = @"Astro-Physics GTO";
     
-    _cp3 = YES;
+    // always set this to NO when starting
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"APGTOAllowUnsynchedSlew"];
+    
+    _cp3 = [[NSUserDefaults standardUserDefaults] boolForKey:@"APGTOCP3Plus"];
     
     _synced = NO;
     
@@ -391,6 +402,15 @@
 
 - (NSInteger)defaultParkPosition
 {
+    const NSInteger index = [[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOParkPositionIndex"];
+    switch (index) {
+        case 0:
+            return 2;
+        case 1:
+            return 3;
+        case 2:
+            return 4;
+    }
     return 3;
 }
 
@@ -575,7 +595,7 @@
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
 {
-    if (!_synced){
+    if (!_synced && ![[NSUserDefaults standardUserDefaults] boolForKey:@"APGTOAllowUnsynchedSlew"]){
         NSLog(@"Mount must be synced before slewing after full initialisation");
         completion(CASMountSlewErrorInvalidState,nil);
         return;
@@ -680,6 +700,12 @@
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
 {
     NSLog(@"-pulseInDirection:ms: not implemented, needs GTOCP3");
+}
+
+- (NSViewController*)configurationViewController
+{
+    NSStoryboard* sb = [NSStoryboard storyboardWithName:@"CASAPGTOMount" bundle:[NSBundle bundleForClass:[self class]]];
+    return [sb instantiateInitialController];
 }
 
 @end

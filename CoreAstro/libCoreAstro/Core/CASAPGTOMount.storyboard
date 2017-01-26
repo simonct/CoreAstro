@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="zVF-pF-hm0">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="gkI-tr-W6J">
+            <objects>
+                <viewController id="zVF-pF-hm0" sceneMemberID="viewController">
+                    <view key="view" id="h7y-it-4AU">
+                        <rect key="frame" x="0.0" y="0.0" width="333" height="140"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4uV-R4-XHy">
+                                <rect key="frame" x="18" y="72" width="284" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Allow slew before mount has been synched" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="KP1-HA-Uba">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <binding destination="rMy-7Z-Hmg" name="value" keyPath="values.APGTOAllowUnsynchedSlew" id="44A-GZ-esh"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uH1-KF-psb">
+                                <rect key="frame" x="19" y="104" width="87" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="GTO CP3+" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xAv-R3-nIl">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <binding destination="rMy-7Z-Hmg" name="value" keyPath="values.APGTOCP3Plus" id="E1f-p8-kiY"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c88-kz-goK">
+                                <rect key="frame" x="19" y="43" width="87" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Park position:" id="y1B-2w-kJk">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <matrix verticalHuggingPriority="750" fixedFrame="YES" allowsEmptySelection="NO" autosizesCells="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BlN-kE-zlu">
+                                <rect key="frame" x="21" y="17" width="279" height="18"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                <size key="cellSize" width="93" height="18"/>
+                                <buttonCell key="prototype" type="radio" title="Radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="DzG-JJ-PFa">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <cells>
+                                    <column>
+                                        <buttonCell type="radio" title="Park 2" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="mSS-qC-Dhe">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </column>
+                                    <column>
+                                        <buttonCell type="radio" title="Park 3" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Q7a-bY-WXb">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </column>
+                                    <column>
+                                        <buttonCell type="radio" title="Park 4" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="qV5-0n-TUJ">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </column>
+                                </cells>
+                                <connections>
+                                    <binding destination="rMy-7Z-Hmg" name="selectedIndex" keyPath="values.APGTOParkPositionIndex" id="6da-ry-Bj5"/>
+                                </connections>
+                            </matrix>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="bcp-RV-ois" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController id="fwv-bf-GhA"/>
+                <userDefaultsController representsSharedInstance="YES" id="rMy-7Z-Hmg"/>
+            </objects>
+            <point key="canvasLocation" x="61.5" y="-26"/>
+        </scene>
+    </scenes>
+</document>
