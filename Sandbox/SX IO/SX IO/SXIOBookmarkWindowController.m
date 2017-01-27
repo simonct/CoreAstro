@@ -19,6 +19,8 @@
 @property (copy) NSString* name;
 @property (copy) NSString* ra;
 @property (copy) NSString* dec;
+@property (copy) NSNumber* originalRA;
+@property (copy) NSNumber* originalDec;
 @property (strong) CASPlateSolveSolution* solution;
 @end
 
@@ -54,6 +56,8 @@
     editingBookmark.name = name;
     editingBookmark.ra = [CASLX200Commands highPrecisionRA:ra]; // todo; want a more natual presention format
     editingBookmark.dec = [CASLX200Commands highPrecisionDec:dec];
+    editingBookmark.originalRA = @(ra);
+    editingBookmark.originalDec = @(dec);
     return editingBookmark;
 }
 
@@ -164,8 +168,8 @@
         }
         else {
             [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,
-                                   CASBookmarks.centreRaKey:@([CASLX200Commands fromRAString:bookmark.ra asDegrees:NO]),
-                                   CASBookmarks.centreDecKey:@([CASLX200Commands fromDecString:bookmark.dec])}];
+                                   CASBookmarks.centreRaKey:@(bookmark.originalRA.doubleValue),
+                                   CASBookmarks.centreDecKey:@(bookmark.originalDec.doubleValue)}];
         }
     }
     
