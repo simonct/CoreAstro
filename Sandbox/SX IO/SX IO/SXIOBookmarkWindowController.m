@@ -69,9 +69,7 @@
 @property (nonatomic,copy) NSString* searchString;
 @end
 
-@implementation SXIOBookmarkWindowController {
-    NSMutableArray* _bookmarks;
-}
+@implementation SXIOBookmarkWindowController
 
 + (SXIOBookmarkWindowController*)sharedController
 {
@@ -124,20 +122,28 @@
 
 - (NSMutableArray*)bookmarks
 {
-    if (!_bookmarks){
-        NSArray* storedBookmarks = CASBookmarks.sharedInstance.bookmarks;
-        _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
-        for (NSDictionary* bookmark in storedBookmarks){
-            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
-            if (solution){
-                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
-            }
-            else {
-                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
-            }
+    NSArray* storedBookmarks = self.sharedBookmarks.bookmarks;
+    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
+    for (NSDictionary* bookmark in storedBookmarks){
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+        if (solution){
+            [bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
+        }
+        else {
+            [bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
         }
     }
-    return _bookmarks;
+    return bookmarks;
+}
+
+- (CASBookmarks*)sharedBookmarks
+{
+    return CASBookmarks.sharedInstance;
+}
+
++ (NSSet*)keyPathsForValuesAffectingBookmarks
+{
+    return [NSSet setWithObject:@"sharedBookmarks.bookmarks"];
 }
 
 - (void)setSearchString:(NSString *)searchString
@@ -160,8 +166,9 @@
 
 - (IBAction)ok:(id)sender
 {
-    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
-    for (SXIOEditingBookmark* bookmark in _bookmarks){
+    NSMutableArray* existingBookmarks = self.bookmarks;
+    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:existingBookmarks.count];
+    for (SXIOEditingBookmark* bookmark in existingBookmarks){
         NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
         if (solutionDictionary){
             [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,CASBookmarks.solutionDictionaryKey:solutionDictionary}];
@@ -173,7 +180,7 @@
         }
     }
     
-    CASBookmarks.sharedInstance.bookmarks = bookmarks;
+    self.sharedBookmarks.bookmarks = bookmarks;
     
     [self endSheetWithCode:NSOKButton];
 }

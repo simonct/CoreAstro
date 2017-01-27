@@ -46,9 +46,11 @@ open class CASBookmarks: NSObject {
     }
     
     fileprivate func appendBookmark(_ bookmark: NSDictionary) {
+        willChangeValue(forKey: "bookmarks")
         var bookmarks = self.bookmarks;
         bookmarks.append(bookmark)
         self.bookmarks = bookmarks
+        didChangeValue(forKey: "bookmarks")
     }
     
     open func addBookmark(_ name: String, solution: CASPlateSolveSolution) {
