@@ -192,6 +192,7 @@
 					F41AAB641BDB890A003757C7 = {
 						CreatedOnToolsVersion = 7.0.1;
 						DevelopmentTeam = D8EQ3MVHHB;
+						LastSwiftMigration = 0820;
 					};
 				};
 			};
@@ -344,6 +345,7 @@
 				GCC_PREFIX_HEADER = libnova.pch;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../src/\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -358,6 +360,7 @@
 				GCC_PREFIX_HEADER = libnova.pch;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../src/\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

@@ -400,6 +400,7 @@
 				TargetAttributes = {
 					F4D967EC161894A100465163 = {
 						DevelopmentTeam = D8EQ3MVHHB;
+						LastSwiftMigration = 0820;
 					};
 				};
 			};
@@ -568,6 +569,7 @@
 				EXECUTABLE_PREFIX = lib;
 				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -579,6 +581,7 @@
 				EXECUTABLE_PREFIX = lib;
 				INSTALL_PATH = "@rpath/CoreAstro.framework/Versions/A/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
