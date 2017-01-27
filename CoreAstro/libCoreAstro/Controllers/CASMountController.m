@@ -135,7 +135,12 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         __weak __typeof(self) weakSelf = self;
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
             if (slewError != CASMountSlewErrorNone){
-                [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
+                if (slewError == CASMountSlewErrorInvalidState){
+                    [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:16 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The mount has not yet been synched to the sky."}]];
+                }
+                else {
+                    [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
+                }
             }
             else {
                 self.slewObserver = observer;
@@ -370,7 +375,12 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             [self.mount startSlewToRA:ra dec:dec completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
                 if (error != CASMountSlewErrorNone){
                     command.scriptErrorNumber = paramErr;
-                    command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
+                    if (error == CASMountSlewErrorInvalidState){
+                        command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. The mount has not yet been synched to the sky.", nil);
+                    }
+                    else {
+                        command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
+                    }
                     [command resumeExecutionWithResult:nil];
                 }
                 else {
