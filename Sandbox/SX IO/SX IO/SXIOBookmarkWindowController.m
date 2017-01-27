@@ -69,7 +69,11 @@
 @property (nonatomic,copy) NSString* searchString;
 @end
 
-@implementation SXIOBookmarkWindowController
+@implementation SXIOBookmarkWindowController {
+    NSMutableArray* _bookmarks;
+}
+
+static void* context;
 
 + (SXIOBookmarkWindowController*)sharedController
 {
@@ -100,6 +104,8 @@
         self.bookmarksArrayController.selectedObjects = @[bookmark];
         [self.bookmarksTableView editColumn:0 row:bookmarks.count - 1 withEvent:nil select:YES];
     }
+    
+    [CASBookmarks.sharedInstance addObserver:self forKeyPath:@"bookmarks" options:NSKeyValueObservingOptionInitial context:&context];
 }
 
 - (void)showWindow:(id)sender
@@ -120,20 +126,31 @@
     [self close];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)aContext
+{
+    if (aContext == &context) {
+        _bookmarks = nil;
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
 - (NSMutableArray*)bookmarks
 {
-    NSArray* storedBookmarks = self.sharedBookmarks.bookmarks;
-    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
-    for (NSDictionary* bookmark in storedBookmarks){
-        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
-        if (solution){
-            [bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
-        }
-        else {
-            [bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
+    if (!_bookmarks){
+        NSArray* storedBookmarks = self.sharedBookmarks.bookmarks;
+        _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
+        for (NSDictionary* bookmark in storedBookmarks){
+            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+            if (solution){
+                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
+            }
+            else {
+                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
+            }
         }
     }
-    return bookmarks;
+    return _bookmarks;
 }
 
 - (CASBookmarks*)sharedBookmarks
@@ -166,9 +183,8 @@
 
 - (IBAction)ok:(id)sender
 {
-    NSMutableArray* existingBookmarks = self.bookmarks;
-    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:existingBookmarks.count];
-    for (SXIOEditingBookmark* bookmark in existingBookmarks){
+    NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
+    for (SXIOEditingBookmark* bookmark in _bookmarks){
         NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
         if (solutionDictionary){
             [bookmarks addObject:@{CASBookmarks.nameKey:bookmark.name,CASBookmarks.solutionDictionaryKey:solutionDictionary}];
