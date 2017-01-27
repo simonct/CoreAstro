@@ -3475,7 +3475,10 @@
 				TargetAttributes = {
 					F44EDEF915FCC385003B1B4C = {
 						DevelopmentTeam = D8EQ3MVHHB;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
+					};
+					F498A51815FE7F96006E8376 = {
+						LastSwiftMigration = 0820;
 					};
 					F49E52BC15A971610018DC75 = {
 						DevelopmentTeam = D8EQ3MVHHB;
@@ -4207,6 +4210,7 @@
 				INFOPLIST_FILE = "SXDevicesPlugin/SXDevicesPlugin-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = casPlugin;
 			};
 			name = Debug;
@@ -4223,6 +4227,7 @@
 				INFOPLIST_FILE = "SXDevicesPlugin/SXDevicesPlugin-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = casPlugin;
 			};
 			name = Release;

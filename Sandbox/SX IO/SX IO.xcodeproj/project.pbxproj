@@ -1343,11 +1343,21 @@
 					};
 					F40EC0FC1AFF46E700DC7EE4 = {
 						CreatedOnToolsVersion = 6.3.1;
+						LastSwiftMigration = 0820;
 						TestTargetID = F4FD22FE179B30D60049F5B5;
+					};
+					F415C53317C95B7C001C42F1 = {
+						LastSwiftMigration = 0820;
+					};
+					F48F463C17C40971008FCEBE = {
+						LastSwiftMigration = 0820;
+					};
+					F4F9B1FD17B15A9A0063DD0D = {
+						LastSwiftMigration = 0820;
 					};
 					F4FD22FE179B30D60049F5B5 = {
 						DevelopmentTeam = D8EQ3MVHHB;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 1;
@@ -2003,6 +2013,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
 			};
 			name = Debug;
@@ -2034,6 +2045,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SX IO.app/Contents/MacOS/SX IO";
 			};
 			name = Release;
@@ -2050,6 +2062,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks @loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Debug;
@@ -2066,6 +2079,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../../Frameworks @loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Release;
@@ -2081,6 +2095,7 @@
 				LIBRARY_STYLE = BUNDLE;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = Debayer;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = plugin;
 			};
 			name = Debug;
@@ -2096,6 +2111,7 @@
 				LIBRARY_STYLE = BUNDLE;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = Debayer;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = plugin;
 			};
 			name = Release;
@@ -2111,6 +2127,7 @@
 				LIBRARY_STYLE = BUNDLE;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = plugin;
 			};
 			name = Debug;
@@ -2126,6 +2143,7 @@
 				LIBRARY_STYLE = BUNDLE;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = plugin;
 			};
 			name = Release;
