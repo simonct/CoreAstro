@@ -132,7 +132,7 @@ static void* kvoContext;
     
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
-    [close setAction:@selector(closeWindow:)];
+    [close setAction:@selector(hideWindow:)];
     
     self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
     self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
@@ -158,6 +158,11 @@ static void* kvoContext;
 #endif
 }
 
+- (void)hideWindow:sender
+{
+    [self close];
+}
+
 - (void)closeWindow:sender
 {
     if (self.mountController.synchronising){
@@ -166,6 +171,10 @@ static void* kvoContext;
         return;
     }
     
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+#endif
+
     [self close];
 }
 
