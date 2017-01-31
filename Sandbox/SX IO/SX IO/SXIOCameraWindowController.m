@@ -1438,8 +1438,11 @@ static void* kvoContext;
 
 - (void)openBookmarksWithSolution:(CASPlateSolveSolution*)solution
 {
-    [SXIOBookmarkWindowController sharedController].solution = solution;
     [[SXIOBookmarkWindowController sharedController] showWindow:nil];
+    
+    if (solution){
+        [[SXIOBookmarkWindowController sharedController] addSolutionBookmark:solution];
+    }
 }
 
 - (IBAction)addBookmark:sender

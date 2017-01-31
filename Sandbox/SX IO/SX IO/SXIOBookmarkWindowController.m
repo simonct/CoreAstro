@@ -97,17 +97,7 @@ static void* context;
     [closeButton setTarget:self];
     [closeButton setAction:@selector(closeWindow:)];
 
-    // no longer here - in solution setter?
-    if (!self.solution){
-        self.bookmarksArrayController.selectedObjects = @[];
-    }
-    else{
-        SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:self.solution];
-        NSMutableArray* bookmarks = [self mutableArrayValueForKey:@"bookmarks"];
-        [bookmarks addObject:bookmark];
-        self.bookmarksArrayController.selectedObjects = @[bookmark];
-        [self.bookmarksTableView editColumn:0 row:bookmarks.count - 1 withEvent:nil select:YES];
-    }
+    self.bookmarksArrayController.selectedObjects = @[];
     
     [CASBookmarks.sharedInstance addObserver:self forKeyPath:@"bookmarks" options:NSKeyValueObservingOptionInitial context:&context];
 }
@@ -128,6 +118,18 @@ static void* context;
 #endif
     
     [self close];
+}
+
+- (void)addSolutionBookmark:(CASPlateSolveSolution*)solution
+{
+    if (!solution){
+        return;
+    }
+    SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:solution];
+    NSMutableArray* bookmarks = [self mutableArrayValueForKey:@"bookmarks"];
+    [bookmarks addObject:bookmark];
+    self.bookmarksArrayController.selectedObjects = @[bookmark];
+    [self.bookmarksTableView editColumn:0 row:bookmarks.count - 1 withEvent:nil select:YES];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)aContext

@@ -10,6 +10,6 @@
 #import "CASAuxWindowController.h"
 
 @interface SXIOBookmarkWindowController : CASAuxWindowController
-@property (strong) CASPlateSolveSolution* solution;
+- (void)addSolutionBookmark:(CASPlateSolveSolution*)solution;
 + (SXIOBookmarkWindowController*)sharedController;
 @end
