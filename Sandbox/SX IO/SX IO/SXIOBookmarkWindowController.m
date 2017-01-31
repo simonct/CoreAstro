@@ -117,6 +117,8 @@ static void* context;
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
     
+    [self ok:nil];
+    
     [self close];
 }
 
@@ -125,6 +127,9 @@ static void* context;
     if (!solution){
         return;
     }
+    
+    // todo; check for duplicates ?
+    
     SXIOEditingBookmark* bookmark = [SXIOEditingBookmark bookmarkWithName:@"Untitled" solution:solution];
     NSMutableArray* bookmarks = [self mutableArrayValueForKey:@"bookmarks"];
     [bookmarks addObject:bookmark];
@@ -211,11 +216,6 @@ static void* context;
     self.sharedBookmarks.bookmarks = bookmarks;
     
     [self endSheetWithCode:NSOKButton];
-}
-
-- (IBAction)cancel:(id)sender
-{
-    [self endSheetWithCode:NSCancelButton];
 }
 
 - (IBAction)lookupTapped:(id)sender

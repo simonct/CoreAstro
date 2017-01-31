@@ -28,8 +28,8 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ODh-4v-WWv">
-                        <rect key="frame" x="379" y="6" width="82" height="32"/>
-                        <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rx6-qv-nto">
+                        <rect key="frame" x="389" y="6" width="72" height="32"/>
+                        <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="rx6-qv-nto">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
@@ -38,19 +38,6 @@ DQ
                         </buttonCell>
                         <connections>
                             <action selector="ok:" target="-2" id="Uub-NP-5LK"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vi0-gV-6be">
-                        <rect key="frame" x="298" y="6" width="82" height="32"/>
-                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="UfE-qu-8U1">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="cancel:" target="-2" id="kgN-Cz-nSb"/>
                         </connections>
                     </button>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BEY-Ik-57k">
@@ -269,12 +256,11 @@ Gw
                 <constraints>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="-1" id="17Z-PU-Tly"/>
                     <constraint firstItem="ipd-1G-a0g" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="10" id="1Xd-03-dEX"/>
+                    <constraint firstItem="ODh-4v-WWv" firstAttribute="top" secondItem="BEY-Ik-57k" secondAttribute="bottom" constant="16" id="1ni-hT-eZv"/>
                     <constraint firstItem="vmg-Vx-dhK" firstAttribute="leading" secondItem="ixq-Yw-Hu3" secondAttribute="trailing" constant="14" id="3YR-c3-DRo"/>
                     <constraint firstItem="ipd-1G-a0g" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="H14-CJ-u8J"/>
-                    <constraint firstItem="vi0-gV-6be" firstAttribute="baseline" secondItem="ODh-4v-WWv" secondAttribute="baseline" id="HOa-ER-82H"/>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="top" secondItem="bqU-Ic-0VP" secondAttribute="bottom" constant="8" id="KTW-lS-eah"/>
                     <constraint firstItem="vmg-Vx-dhK" firstAttribute="centerY" secondItem="ipd-1G-a0g" secondAttribute="centerY" id="MZN-7W-wPp"/>
-                    <constraint firstItem="vi0-gV-6be" firstAttribute="top" secondItem="BEY-Ik-57k" secondAttribute="bottom" constant="16" id="OtF-e5-tyV"/>
                     <constraint firstItem="bqU-Ic-0VP" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="10" id="Qco-iJ-Bky"/>
                     <constraint firstAttribute="bottom" secondItem="Eb4-GS-wrP" secondAttribute="bottom" constant="13" id="Qii-88-k0e"/>
                     <constraint firstAttribute="trailing" secondItem="ODh-4v-WWv" secondAttribute="trailing" constant="20" id="WZV-qA-Ddo"/>
@@ -284,8 +270,6 @@ Gw
                     <constraint firstItem="ixq-Yw-Hu3" firstAttribute="centerY" secondItem="vmg-Vx-dhK" secondAttribute="centerY" id="jgE-IA-1R0"/>
                     <constraint firstAttribute="trailing" secondItem="bqU-Ic-0VP" secondAttribute="trailing" constant="20" id="nlA-DE-W97"/>
                     <constraint firstAttribute="trailing" secondItem="BEY-Ik-57k" secondAttribute="trailing" constant="-1" id="rHz-Zi-uis"/>
-                    <constraint firstItem="ODh-4v-WWv" firstAttribute="leading" secondItem="vi0-gV-6be" secondAttribute="trailing" constant="11" id="sll-yU-vMY"/>
-                    <constraint firstItem="ODh-4v-WWv" firstAttribute="width" secondItem="vi0-gV-6be" secondAttribute="width" id="snw-u7-1DC"/>
                 </constraints>
             </view>
             <connections>
