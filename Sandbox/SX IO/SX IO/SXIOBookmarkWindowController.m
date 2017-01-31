@@ -67,6 +67,10 @@
 @property (weak) IBOutlet NSTableView *bookmarksTableView;
 @property (strong) IBOutlet NSArrayController *bookmarksArrayController;
 @property (nonatomic,copy) NSString* searchString;
+@property (weak) IBOutlet NSTextField *lookupField;
+@property (nonatomic,copy) NSString* lookupString;
+@property (weak) IBOutlet NSProgressIndicator *lookupSpinner;
+@property (strong) CASObjectLookup* lookup;
 @end
 
 @implementation SXIOBookmarkWindowController {
@@ -129,26 +133,31 @@ static void* context;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)aContext
 {
     if (aContext == &context) {
-        _bookmarks = nil;
+        [self refreshBookmarks];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)refreshBookmarks
+{
+    NSArray* storedBookmarks = self.sharedBookmarks.bookmarks;
+    _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
+    for (NSDictionary* bookmark in storedBookmarks){
+        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+        if (solution){
+            [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
+        }
+        else {
+            [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
+        }
     }
 }
 
 - (NSMutableArray*)bookmarks
 {
     if (!_bookmarks){
-        NSArray* storedBookmarks = self.sharedBookmarks.bookmarks;
-        _bookmarks = [NSMutableArray arrayWithCapacity:storedBookmarks.count ?: 10];
-        for (NSDictionary* bookmark in storedBookmarks){
-            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
-            if (solution){
-                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] solution:solution]];
-            }
-            else {
-                [_bookmarks addObject:[SXIOEditingBookmark bookmarkWithName:bookmark[CASBookmarks.nameKey] ra:[bookmark[CASBookmarks.centreRaKey] doubleValue] dec:[bookmark[CASBookmarks.centreDecKey] doubleValue]]];
-            }
-        }
+        [self refreshBookmarks];
     }
     return _bookmarks;
 }
@@ -183,6 +192,7 @@ static void* context;
 
 - (IBAction)ok:(id)sender
 {
+    // todo; only want to save changes if there have actually been edits
     NSMutableArray* bookmarks = [NSMutableArray arrayWithCapacity:_bookmarks.count];
     for (SXIOEditingBookmark* bookmark in _bookmarks){
         NSDictionary* solutionDictionary = bookmark.solution.solutionDictionary;
@@ -204,6 +214,37 @@ static void* context;
 - (IBAction)cancel:(id)sender
 {
     [self endSheetWithCode:NSCancelButton];
+}
+
+- (IBAction)lookupTapped:(id)sender
+{
+    if (![self.lookupString length] || self.lookup){
+        NSBeep();
+        return;
+    }
+    
+    [self.lookupSpinner startAnimation:nil];
+    
+    self.lookup = [CASObjectLookup new];
+    [self.lookup lookupObject:self.lookupString withCompletion:^(BOOL success, NSString* objectName, double ra, double dec) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            self.lookup = nil;
+            
+            [self.lookupSpinner stopAnimation:nil];
+            
+            if (!success){
+                [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
+            }
+            else {
+                NSLog(@"Found %@",objectName);
+                //[self willChangeValueForKey:@"bookmarks"];
+                [CASBookmarks.sharedInstance addBookmark:self.lookupString ra:ra dec:dec];
+                //[self didChangeValueForKey:@"bookmarks"];
+            }
+        });
+    }];
 }
 
 @end

@@ -10,6 +10,8 @@
             <connections>
                 <outlet property="bookmarksArrayController" destination="KT4-sd-ZW9" id="xJr-oz-veP"/>
                 <outlet property="bookmarksTableView" destination="vov-7d-XI0" id="4ps-wk-7BB"/>
+                <outlet property="lookupField" destination="ipd-1G-a0g" id="L4R-O9-QmX"/>
+                <outlet property="lookupSpinner" destination="ixq-Yw-Hu3" id="UZn-fz-uV7"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -20,6 +22,7 @@
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="475" height="295"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <value key="minSize" type="size" width="475" height="295"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="475" height="295"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -231,17 +234,54 @@ Gw
                             </binding>
                         </connections>
                     </searchField>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ipd-1G-a0g">
+                        <rect key="frame" x="20" y="263" width="165" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="165" id="axU-zs-Mp8"/>
+                        </constraints>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="H7e-HZ-Zlr">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="lookupString" id="lKg-fX-Bsb">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vmg-Vx-dhK">
+                        <rect key="frame" x="187" y="257" width="85" height="32"/>
+                        <buttonCell key="cell" type="push" title="Lookup" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pO6-ex-ju4">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="lookupTapped:" target="-2" id="ehl-a6-ROP"/>
+                        </connections>
+                    </button>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="ixq-Yw-Hu3">
+                        <rect key="frame" x="163" y="266" width="16" height="16"/>
+                    </progressIndicator>
                 </subviews>
                 <constraints>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="-1" id="17Z-PU-Tly"/>
+                    <constraint firstItem="ipd-1G-a0g" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="10" id="1Xd-03-dEX"/>
+                    <constraint firstItem="vmg-Vx-dhK" firstAttribute="leading" secondItem="ixq-Yw-Hu3" secondAttribute="trailing" constant="14" id="3YR-c3-DRo"/>
+                    <constraint firstItem="ipd-1G-a0g" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="H14-CJ-u8J"/>
                     <constraint firstItem="vi0-gV-6be" firstAttribute="baseline" secondItem="ODh-4v-WWv" secondAttribute="baseline" id="HOa-ER-82H"/>
                     <constraint firstItem="BEY-Ik-57k" firstAttribute="top" secondItem="bqU-Ic-0VP" secondAttribute="bottom" constant="8" id="KTW-lS-eah"/>
+                    <constraint firstItem="vmg-Vx-dhK" firstAttribute="centerY" secondItem="ipd-1G-a0g" secondAttribute="centerY" id="MZN-7W-wPp"/>
                     <constraint firstItem="vi0-gV-6be" firstAttribute="top" secondItem="BEY-Ik-57k" secondAttribute="bottom" constant="16" id="OtF-e5-tyV"/>
                     <constraint firstItem="bqU-Ic-0VP" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="10" id="Qco-iJ-Bky"/>
                     <constraint firstAttribute="bottom" secondItem="Eb4-GS-wrP" secondAttribute="bottom" constant="13" id="Qii-88-k0e"/>
                     <constraint firstAttribute="trailing" secondItem="ODh-4v-WWv" secondAttribute="trailing" constant="20" id="WZV-qA-Ddo"/>
+                    <constraint firstItem="vmg-Vx-dhK" firstAttribute="leading" secondItem="ipd-1G-a0g" secondAttribute="trailing" constant="8" id="YAG-LE-Nba"/>
                     <constraint firstItem="Eb4-GS-wrP" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="d2O-Z0-Qbf"/>
                     <constraint firstAttribute="bottom" secondItem="ODh-4v-WWv" secondAttribute="bottom" constant="13" id="eaN-iJ-JxD"/>
+                    <constraint firstItem="ixq-Yw-Hu3" firstAttribute="centerY" secondItem="vmg-Vx-dhK" secondAttribute="centerY" id="jgE-IA-1R0"/>
                     <constraint firstAttribute="trailing" secondItem="bqU-Ic-0VP" secondAttribute="trailing" constant="20" id="nlA-DE-W97"/>
                     <constraint firstAttribute="trailing" secondItem="BEY-Ik-57k" secondAttribute="trailing" constant="-1" id="rHz-Zi-uis"/>
                     <constraint firstItem="ODh-4v-WWv" firstAttribute="leading" secondItem="vi0-gV-6be" secondAttribute="trailing" constant="11" id="sll-yU-vMY"/>
@@ -251,7 +291,7 @@ Gw
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="32" y="108"/>
+            <point key="canvasLocation" x="-36" y="97"/>
         </window>
         <arrayController objectClassName="SXIOEditingBookmark" id="KT4-sd-ZW9">
             <connections>
