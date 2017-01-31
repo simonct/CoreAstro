@@ -148,15 +148,38 @@
     }
     else {
         self.connectCompletion = completion;
+        [self startConnectionTimeout];
         [self.port open];
     }
 }
 
 - (void)disconnect
 {
+    [self stopConnectionTimeout];
     [self.port close];
     self.connected = NO;
     [super disconnect];
+}
+
+- (void)startConnectionTimeout
+{
+    [self performSelector:@selector(connectionTimeout) withObject:nil afterDelay:5]; // 5s should be enough for a directly connected device
+}
+
+- (void)stopConnectionTimeout
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(connectionTimeout) object:nil];
+}
+
+- (void)connectionTimeout
+{
+    [self disconnect];
+    
+    if (self.connectCompletion){
+        NSError* error = [NSError errorWithDomain:@"CASLX200Mount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Connection timed out"}];
+        self.connectCompletion(error);
+        self.connectCompletion = nil;
+    }
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
@@ -460,6 +483,8 @@
 {
     NSLog(@"serialPortWasRemovedFromSystem");
     
+    [self stopConnectionTimeout];
+
     self.connected = NO;
 }
 
@@ -467,6 +492,8 @@
 {
     NSLog(@"didEncounterError: %@",error);
     
+    [self stopConnectionTimeout];
+
     if (self.connectCompletion){
         self.connectCompletion(error);
         self.connectCompletion = nil;
@@ -485,6 +512,8 @@
 - (void)serialPortWasClosed:(ORSSerialPort *)serialPort
 {
     NSLog(@"serialPortWasClosed");
+
+    [self stopConnectionTimeout];
 
     self.connected = NO;
 }
