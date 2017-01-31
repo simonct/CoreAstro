@@ -63,6 +63,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self.port close];
+}
+
 - (NSString*)deviceName {
     return self.name;
 }

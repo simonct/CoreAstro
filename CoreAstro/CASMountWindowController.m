@@ -166,12 +166,6 @@ static void* kvoContext;
         return;
     }
     
-#if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
-#endif
-    
-    // todo; just hide window have an explicit disconnect command
-
     [self close];
 }
 
@@ -182,15 +176,6 @@ static void* kvoContext;
 
     [[CASDeviceManager sharedManager] removeMountController:self.mountController];
     self.mountController = nil;
-}
-
-- (void)close
-{
-    [self.mountWindowDelegate mountWindowControllerWillClose:self];
-
-    [self cleanup];
-
-    [super close];
 }
 
 - (void)presentAlertWithMessage:(NSString*)message
@@ -536,6 +521,23 @@ static void* kvoContext;
 - (IBAction)cancelPressed:(id)sender
 {
     [self.window endSheet:self.mountConnectWindow returnCode:NSModalResponseCancel];
+}
+
+- (IBAction)disconnectButtonPressed:(id)sender
+{
+    if (self.mountController.synchronising){
+        // need a way of cancelling a solve
+        NSLog(@"Currently solving...");
+        return;
+    }
+
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+#endif
+
+    [self cleanup];
+    
+    [self close];
 }
 
 // todo; we should really embed the config UI in the main window in the Mount section
