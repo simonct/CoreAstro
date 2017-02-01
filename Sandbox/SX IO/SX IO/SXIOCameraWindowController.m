@@ -336,9 +336,6 @@ static void* kvoContext;
 
 #pragma mark - Actions
 
-// obsolete but required until the xib format is updated
-- (IBAction)connectButtonPressed:(id)sender {}
-
 - (NSURL*)beginAccessToSaveTarget // todo; NSError** param with reasons for failure
 {
     if (_targetFolder){
@@ -913,10 +910,22 @@ static void* kvoContext;
 
 #pragma mark - Mount Control
 
+// obsolete but required until the xib format is updated
+- (IBAction)connectButtonPressed:(id)sender {}
+
 - (IBAction)connectToMount:(id)sender
 {
     // keep things simple and have a single mount window across the app for now
     CASMountWindowController* mountWindowController = [CASMountWindowController sharedMountWindowController];
+    
+    
+    // if the singleton mount window controller already has a connected mount just show the window, the user will have
+    // to disconnect from the current mount before connecting to a new one
+    if (mountWindowController.mountController.mount.connected) {
+        [self.mountWindowController showWindow:nil];
+        return;
+    }
+    
     [mountWindowController connectToMount:^{
         
         self.mountWindowController = mountWindowController; // only set this once it's connected as it observes the mount controller status
