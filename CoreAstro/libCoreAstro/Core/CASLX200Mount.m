@@ -129,6 +129,16 @@
     [self sendCommand:command readCount:0 completion:nil];
 }
 
+- (void)callConnectionCompletion:(NSError*)error
+{
+    [self stopConnectionTimeout];
+    
+    if (self.connectCompletion){
+        self.connectCompletion(error);
+        self.connectCompletion = nil;
+    }
+}
+
 - (void)initialiseMount
 {
     NSLog(@"initialiseMount needs to be implemented by subclasses");
@@ -163,7 +173,7 @@
 
 - (void)startConnectionTimeout
 {
-    [self performSelector:@selector(connectionTimeout) withObject:nil afterDelay:5]; // 5s should be enough for a directly connected device
+    [self performSelector:@selector(connectionTimeout) withObject:nil afterDelay:10]; // 10s should be enough for a directly connected device
 }
 
 - (void)stopConnectionTimeout
@@ -175,11 +185,8 @@
 {
     [self disconnect];
     
-    if (self.connectCompletion){
-        NSError* error = [NSError errorWithDomain:@"CASLX200Mount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Connection timed out"}];
-        self.connectCompletion(error);
-        self.connectCompletion = nil;
-    }
+    NSError* error = [NSError errorWithDomain:@"CASLX200Mount" code:1 userInfo:@{NSLocalizedDescriptionKey:@"Connection timed out"}];
+    [self callConnectionCompletion:error];
 }
 
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion {
@@ -494,10 +501,7 @@
     
     [self stopConnectionTimeout];
 
-    if (self.connectCompletion){
-        self.connectCompletion(error);
-        self.connectCompletion = nil;
-    }
+    [self callConnectionCompletion:error];
     
     self.connected = NO;
 }

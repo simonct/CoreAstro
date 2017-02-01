@@ -174,10 +174,7 @@
 - (void)completeInitialisingMount:(NSError*)error
 {
     if (error){
-        if (self.connectCompletion){
-            self.connectCompletion(error);
-            self.connectCompletion = nil;
-        }
+        [self callConnectionCompletion:error];
     }
     else {
         self.connected = YES;
@@ -393,10 +390,7 @@
         [self performSelector:_cmd withObject:nil afterDelay:0.5 inModes:@[NSRunLoopCommonModes]];
         
         // call the completion block after the first poll of the mount
-        if (self.connectCompletion){
-            self.connectCompletion(nil);
-            self.connectCompletion = nil;
-        }
+        [self callConnectionCompletion:nil];
     }];
 }
 

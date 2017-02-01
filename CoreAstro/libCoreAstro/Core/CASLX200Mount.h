@@ -37,5 +37,7 @@
 - (void)sendCommand:(NSString*)command completion:(void (^)(NSString*))completion;
 - (void)sendCommand:(NSString*)command;
 
+- (void)callConnectionCompletion:(NSError*)error;
+
 @end
 
