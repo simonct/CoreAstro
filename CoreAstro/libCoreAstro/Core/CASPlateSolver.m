@@ -418,7 +418,7 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         // close the sandbox
         [self.indexDirectoryURL stopAccessingSecurityScopedResource];
 
-        if (!self.cancelled && block){
+        if (block){
             block(error,results);
         }
     };
@@ -606,26 +606,38 @@ NSString* const kCASAstrometryIndexDirectoryBookmarkKey = @"CASAstrometryIndexDi
         
         // export the exposure we want to solve to a png (todo; this is probably obsolete now since exposures use the fits format by default)
         NSData* data = [[self.exposure newImage] dataForUTType:(id)kUTTypePNG options:nil];
+        if (self.cancelled){
+            complete(nil,nil);
+            return;
+        }
+        
         if (!data){
             complete([self errorWithCode:9 reason:@"Failed to export exposure to an image"],nil);
             return;
         }
+        
         NSString* imagePath = [self.cacheDirectory stringByAppendingPathComponent:@"solve.png"];
         if (![data writeToFile:imagePath options:NSDataWritingAtomic error:&error]){
             complete(error,nil);
             return;
         }
         
-        // solve it
-        [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
-            
-            // todo; save to solution cache
-            
-            // delete the cache
-            [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
-            
-            complete(error,results);
-        }];
+        if (self.cancelled){
+            complete(nil,nil);
+        }
+        else{
+        
+            // solve it
+            [self solveImageAtPath:imagePath completion:^(NSError *error, NSDictionary *results) {
+                
+                // todo; save to solution cache
+                
+                // delete the cache
+                [[NSFileManager defaultManager] removeItemAtPath:self.cacheDirectory error:nil];
+                
+                complete(error,results);
+            }];
+        }
     });
 }
 

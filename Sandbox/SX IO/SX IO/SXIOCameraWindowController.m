@@ -1354,6 +1354,11 @@ static void* kvoContext;
         progress.label.stringValue = NSLocalizedString(@"Solving...", @"Progress sheet status label");
         [progress.progressBar setIndeterminate:YES];
         
+        progress.canCancel = YES;
+        progress.cancelBlock = ^{
+            [self.plateSolver cancel];
+        };
+        
         // solve async - beware of races here since we're doing this async
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
@@ -1362,7 +1367,7 @@ static void* kvoContext;
 
             [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
                 
-                if (!error){
+                if (!progress.cancelled && !error){
                     
                     // post notification so that mount controller window can pick up the new solution ?
                     
@@ -1383,13 +1388,15 @@ static void* kvoContext;
                     
                     [progress endSheetWithCode:NSOKButton];
                     
-                    if (error){
-                        [NSApp presentError:error];
-                    }
-                    else {
-                        self.showPlateSolution = YES;
-                        self.exposureView.plateSolveSolution = results[@"solution"];
-                        // no longer resetting display as that then immediately nils out the solution
+                    if (!progress.cancelled) {
+                        if (error){
+                            [NSApp presentError:error];
+                        }
+                        else {
+                            self.showPlateSolution = YES;
+                            self.exposureView.plateSolveSolution = results[@"solution"];
+                            // no longer resetting display as that then immediately nils out the solution
+                        }
                     }
                     self.plateSolver = nil;
                 });
