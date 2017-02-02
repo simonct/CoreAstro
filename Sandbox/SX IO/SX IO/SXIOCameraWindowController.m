@@ -1376,11 +1376,39 @@ static void* kvoContext;
                         CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
                         [record setObject:exposure.uuid forKey:@"UUID"];
                         [record setObject:solutionData forKey:@"Solution"];
-                        [[CKContainer defaultContainer].publicCloudDatabase saveRecord:record completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-                            if (error){
-                                NSLog(@"Failed to save plate solution to CloudKit: %@",error);
+                        
+                        // we need to remove any existing solutions first
+                        [self lookupSolutionCloudRecordsWithUUID:exposure.uuid completion:^(NSError *error, NSArray<CKRecord *> *results) {
+                           
+                            void (^addRecord)(CKRecord*) = ^(CKRecord* record){
+                                [[CKContainer defaultContainer].publicCloudDatabase saveRecord:record completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+                                    if (error){
+                                        NSLog(@"Failed to save plate solution to CloudKit: %@",error);
+                                    }
+                                }];
+                            };
+                            
+                            if (results.count == 0) {
+                                addRecord(record);
+                            }
+                            else {
+
+                                CKModifyRecordsOperation* op = [[CKModifyRecordsOperation alloc] init];
+                                op.container = [CKContainer defaultContainer];
+                                op.database = [CKContainer defaultContainer].publicCloudDatabase;
+
+                                NSMutableArray* recordIds = [NSMutableArray arrayWithCapacity:results.count];
+                                [results enumerateObjectsUsingBlock:^(CKRecord * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                    [recordIds addObject:obj.recordID];
+                                }];
+                                op.recordIDsToDelete = recordIds;
+                                op.modifyRecordsCompletionBlock = ^(NSArray<CKRecord *> * _Nullable savedRecords, NSArray<CKRecordID *> * _Nullable deletedRecordIDs, NSError * _Nullable operationError){
+                                    addRecord(record); // called on bg thread
+                                };
+                                [op.database addOperation:op];
                             }
                         }];
+                         
                     }
                 }
 
@@ -1818,6 +1846,14 @@ static void* kvoContext;
     }
 }
 
+- (void)lookupSolutionCloudRecordsWithUUID:(NSString*)uuid completion:(void(^)(NSError* error,NSArray<CKRecord *> *))completion
+{
+    CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",uuid]];
+    [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
+        completion(error,results);
+    }];
+}
+
 - (void)lookupSolutionForExposure:(CASCCDExposure*)exposure completion:(void(^)(CASCCDExposure*,CASPlateSolveSolution*))completion
 {
     NSData* solutionData;
@@ -1840,8 +1876,7 @@ static void* kvoContext;
     // then, try CloudKit
     if (!solutionData){
         
-        CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",exposure.uuid]];
-        [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
+        [self lookupSolutionCloudRecordsWithUUID:exposure.uuid completion:^(NSError *error, NSArray<CKRecord *> *results) {
             
             if (!error && results.count > 0){
                 
