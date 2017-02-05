@@ -379,10 +379,10 @@ static void* kvoContext;
         NSString* filterName = [self.filterWheel.currentFilterName copy];
 
         if (filterName){
-            NSLog(@"Starting exposure of %ldms, binning %ld, filter '%@'",_expParams.ms,_expParams.bin.width,filterName);
+            NSLog(@"Starting exposure of %ldms, binning %ld, filter '%@' (%ld/%ld)",_expParams.ms,_expParams.bin.width,filterName,self.settings.currentCaptureIndex,self.settings.captureCount);
         }
         else {
-            NSLog(@"Starting exposure of %ldms, binning %ld",_expParams.ms,_expParams.bin.width);
+            NSLog(@"Starting exposure of %ldms, binning %ld (%ld/%ld)",_expParams.ms,_expParams.bin.width,self.settings.currentCaptureIndex,self.settings.captureCount);
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:kCASCameraControllerExposureStartedNotification object:self];
         // todo; call delegate to inform an exposure will start.
@@ -442,7 +442,7 @@ static void* kvoContext;
             break;
         default:{
             // dither if requested and we're not in continuous capture or on the first exposure of a sequence
-            if (self.settings.continuous || !self.ditherEnabled || self.settings.currentCaptureIndex == 0){
+            if (self.settings.continuous || !self.ditherEnabled || self.settings.currentCaptureIndex == 0 || self.suppressDither){
                 startExposure();
             }
             else{
@@ -463,6 +463,8 @@ static void* kvoContext;
                     }
                 }];
             }
+            
+            self.suppressDither = NO; // this flag is one-shot, always immediately clear after using
         }
             break;
     }
@@ -698,6 +700,8 @@ static void* kvoContext;
     
     NSParameterAssert(settings);
     
+    NSLog(@"Pushing camera settings: %@",settings);
+    
     if (!_settingsStack){
         _settingsStack = [NSMutableArray arrayWithCapacity:3];
     }
@@ -712,6 +716,8 @@ static void* kvoContext;
     self.settings = [_settingsStack lastObject];  // does this trigger kvo ?
     [_settingsStack removeLastObject];
     
+    NSLog(@"Popping camera settings: %@",self.settings);
+
     if (!self.settings){
         NSLog(@"Settings nil after popping the stack !");
     }

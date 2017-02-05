@@ -82,6 +82,7 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 @property (nonatomic,strong) id<CASCameraControllerSink> sink;
 
 @property (nonatomic,strong,readonly) CASPHD2Client* phd2Client;
+@property BOOL suppressDither;
 
 @property (nonatomic,readonly) BOOL cancelled;
 @property (readonly) BOOL suspended;

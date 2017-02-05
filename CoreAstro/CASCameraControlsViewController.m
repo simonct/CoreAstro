@@ -227,6 +227,8 @@ static void* kvoContext;
 
 - (void)configureForExposure
 {
+    // todo; this is clearing the camera temp and replacing it with the exposure's
+    
     NSDictionary* params = [self.exposure.meta valueForKeyPath:@"device.params"];
     if (!params){
         self.exposureField.stringValue = self.sensorSizeField.stringValue = self.sensorPixelsField.stringValue = self.measuredTemperatureField.stringValue = @"";

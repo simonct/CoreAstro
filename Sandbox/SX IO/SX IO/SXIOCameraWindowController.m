@@ -2224,6 +2224,8 @@ static void* kvoContext;
                 case 1:
                     if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
                         
+                        NSLog(@"Flipping mount after %ld out of %ld exposures",controller.settings.currentCaptureIndex,controller.settings.captureCount);
+                        
                         // start the slew to the flipped position
                         [self startMountMeridianFlip];
                     }
@@ -2537,6 +2539,9 @@ static void* kvoContext;
     
     // ensure this is recorded as a light frame
     self.cameraController.settings.exposureType = kCASCCDExposureLightType;
+    
+    // suppress the next attempt to dither (this is relevant if we've restarted after a flip)
+    self.cameraController.suppressDither = YES;
     
     // issue the capture command
     [self.cameraController captureWithBlock:^(NSError *error,CASCCDExposure* exposure) {
