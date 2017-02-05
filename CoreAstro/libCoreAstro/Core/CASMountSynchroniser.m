@@ -57,6 +57,8 @@
     NSParameterAssert(raInDegrees >= 0 && raInDegrees <= 360);
     NSParameterAssert(decInDegrees >= -90 && decInDegrees <= 90);
 
+    NSLog(@"Synchroniser slewing to RA: %f, Dec: %f",raInDegrees,decInDegrees);
+    
     self.busy = YES;
 
     _syncCount = 0;
@@ -173,7 +175,10 @@
 
 - (void)restoreCameraSettings
 {
-    if (_pushedSettings){
+    if (!_pushedSettings){
+        NSLog(@"Attempting to restore camera settings without having pushed any");
+    }
+    else{
         _pushedSettings = NO;
         [self.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
         self.cameraController.temperatureLock = _saveTemperatureLock;
