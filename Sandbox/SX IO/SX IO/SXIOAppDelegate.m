@@ -214,6 +214,12 @@ static void* kvoContext;
     return result;
 }
 
+- (NSError *)application:(NSApplication *)application willPresentError:(NSError *)error
+{
+    NSLog(@"willPresentError: %@",error); // broadcast error messages via email, text, etc
+    return error;
+}
+
 - (void)quitConfirmSheetCompleted:(NSAlert*)sender returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     [NSApp replyToApplicationShouldTerminate:(returnCode == 0)];
@@ -358,6 +364,7 @@ static void* kvoContext;
         [self.windowMenu addItem:[NSMenuItem separatorItem]];
     }
     
+    // hook up the item to the -activateWindow: action
     NSMenuItem *windowControllerItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(activateWindow:) keyEquivalent:@""];
     windowControllerItem.target = self;
     windowControllerItem.representedObject = windowController;
