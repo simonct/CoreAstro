@@ -282,7 +282,7 @@
     // :GA# -> sDD*MM:SS#
     [self sendCommand:@":GA#" completion:^(NSString *response) {
         //NSLog(@"Get Alt: %@",response);
-        if (!_synced){
+        if (!_synced && ![[NSUserDefaults standardUserDefaults] boolForKey:@"APGTOAllowUnsynchedSlew"]){
             self.alt = nil;
         }
         else {
@@ -293,7 +293,7 @@
     // :GZ# -> sDD*MM:SS#
     [self sendCommand:@":GZ#" completion:^(NSString *response) {
         //NSLog(@"Get Az: %@",response);
-        if (!_synced){
+        if (!_synced && ![[NSUserDefaults standardUserDefaults] boolForKey:@"APGTOAllowUnsynchedSlew"]){
             self.az = nil;
         }
         else {
@@ -304,7 +304,7 @@
     // :pS# -> “East#” or “West#”
     [self sendCommand:@":pS#" completion:^(NSString *response) {
         
-        if (!_synced){
+        if (!_synced && ![[NSUserDefaults standardUserDefaults] boolForKey:@"APGTOAllowUnsynchedSlew"]){
 //            NSLog(@"Get pier side: %@ but ignoring as the mount has not yet been synced",response);
             self.pierSide = 0;
         }
