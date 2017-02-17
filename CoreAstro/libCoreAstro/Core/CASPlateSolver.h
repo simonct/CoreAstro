@@ -48,6 +48,13 @@
 + (instancetype)solutionWithDictionary:(NSDictionary*)dictionary;
 @end
 
+@interface CASPlateSolveSolutionRegistery : NSObject
++ (instancetype)sharedRegistry;
+@property (nonatomic,readonly) NSArray<CASPlateSolveSolution*>* solutions;
+- (CASPlateSolveSolution*)solutionForKey:(NSString*)key;
+- (void)setSolution:(CASPlateSolveSolution*)solution forKey:(NSString*)key;
+@end
+
 @protocol CASPlateSolver <NSObject>
 @optional
 

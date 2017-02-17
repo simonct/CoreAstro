@@ -12,14 +12,7 @@
 @class CASMountController;
 @class CASMountWindowController;
 
-@protocol CASMountWindowControllerDelegate <NSObject>
-- (CASPlateSolveSolution*)plateSolveSolution;
-- (void)mountWindowControllerWillClose:(CASMountWindowController*)windowController;
-@end
-
 @interface CASMountWindowController : NSWindowController
-@property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
-@property (nonatomic,weak) id<CASMountWindowControllerDelegate> mountWindowDelegate;
 @property (nonatomic,readonly) double separation;
 @property (nonatomic,strong,readonly) CASMountController* mountController;
 @end

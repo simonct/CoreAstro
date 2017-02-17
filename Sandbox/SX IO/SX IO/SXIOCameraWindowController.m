@@ -11,6 +11,7 @@
 #import "CASExposureView.h"
 #import "CASCameraControlsViewController.h"
 #import "SXIOSaveTargetViewController.h"
+#import "SXIOMountControlsViewController.h"
 #import "CASFilterWheelControlsViewController.h"
 #import "CASProgressWindowController.h"
 #import "CASShadowView.h"
@@ -65,7 +66,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASMountWindowControllerDelegate>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet NSScrollView *containerScrollView;
@@ -85,6 +86,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (copy) void(^captureCompletion)(NSError*);
 
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
+@property (strong) SXIOMountControlsViewController *mountControlsViewController;
 @property (strong) CASCameraControlsViewController *cameraControlsViewController;
 @property (strong) CASFilterWheelControlsViewController *filterWheelControlsViewController;
 @property (assign) BOOL equalise;
@@ -108,7 +110,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 // mount control
 @property (strong) SXIOMountState* mountState;
-@property (strong,nonatomic) CASMountWindowController* mountWindowController;
+@property (strong,nonatomic) CASMountController* mountController;
 @property (strong) CASProgressWindowController* mountSlewProgressSheet;
 
 // focusing
@@ -176,11 +178,23 @@ static void* kvoContext;
     self.saveTargetControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:self.saveTargetControlsViewController.view];
     
+    // mount controls view
+    self.mountControlsViewController = [[SXIOMountControlsViewController alloc] initWithNibName:@"SXIOMountControlsViewController" bundle:nil];
+    self.mountControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.mountControlsViewController.mountControllerHost = (id<SXIOMountControllerHost>)self;
+    [container addSubview:self.mountControlsViewController.view];
+
+    // layout mount controls
+    id mountControlsViewController1 = self.mountControlsViewController.view;
+    viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,mountControlsViewController1);
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mountControlsViewController1]|" options:0 metrics:nil views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][mountControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+
     // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
-    viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,saveTargetControlsViewController1);
+    viewNames = NSDictionaryOfVariableBindings(mountControlsViewController1,saveTargetControlsViewController1);
     [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[saveTargetControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[mountControlsViewController1][saveTargetControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
     
     CGFloat height = 0;
     for (NSView* view in container.subviews){
@@ -211,32 +225,6 @@ static void* kvoContext;
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
-    
-    // move solutions from cache to cloudkit?
-#if 0
-    NSString* s;
-    NSString* caches = self.cachesDirectory;
-    NSMutableArray* records = [NSMutableArray array];
-    NSDirectoryEnumerator* e = [[NSFileManager defaultManager] enumeratorAtPath:caches];
-    while ((s = e.nextObject)) {
-        if ([s.pathExtension isEqualToString:@"caPlateSolution"]){
-            s = [caches stringByAppendingPathComponent:s];
-            CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithData:[NSData dataWithContentsOfFile:s]];
-            if (solution){
-                CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
-                NSString* name = [[s lastPathComponent] stringByDeletingPathExtension];
-                [record setObject:name forKey:@"UUID"];
-                [record setObject:[solution solutionData] forKey:@"Solution"];
-                [records addObject:record];
-            }
-        }
-    }
-    
-    if (records.count){
-        CKModifyRecordsOperation* op = [[CKModifyRecordsOperation alloc] initWithRecordsToSave:records recordIDsToDelete:nil];
-        [[CKContainer defaultContainer].publicCloudDatabase addOperation:op];
-    }
-#endif
 }
 
 - (void)dealloc
@@ -244,7 +232,7 @@ static void* kvoContext;
     if (_targetFolder){
         [_targetFolder stopAccessingSecurityScopedResource];
     }
-    self.mountWindowController = nil; // unobserve status
+    self.mountController = nil; // unobserve status
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -276,9 +264,9 @@ static void* kvoContext;
             }
         }
         
-        if (object == self.mountWindowController.mountController){
+        if (object == self.mountController){
             if ([keyPath isEqualToString:@"status"]){
-                NSString* status = self.mountWindowController.mountController.status;
+                NSString* status = self.mountController.status;
                 if (status){
                     self.mountSlewProgressSheet.label.stringValue = status;
                 }
@@ -316,12 +304,12 @@ static void* kvoContext;
     }
 }
 
-- (void)setMountWindowController:(CASMountWindowController *)mountWindowController
+- (void)setMountController:(CASMountController *)mountController
 {
-    if (mountWindowController != _mountWindowController){
-        [_mountWindowController.mountController removeObserver:self forKeyPath:@"status" context:&kvoContext];
-        _mountWindowController = mountWindowController;
-        [_mountWindowController.mountController addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
+    if (mountController != _mountController){
+        [_mountController removeObserver:self forKeyPath:@"status" context:&kvoContext];
+        _mountController = mountController;
+        [_mountController addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
     }
 }
 
@@ -860,6 +848,9 @@ static void* kvoContext;
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
+    if (!self.showPlateSolution){
+        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:nil forKey:self.cameraDeviceID];
+    }
     [self resetAndRedisplayCurrentExposure];
     [self.cameraController.camera setDefaultsObject:@(self.showPlateSolution) forKey:@"SXIODisplayShowPlateSolution"];
 }
@@ -922,26 +913,25 @@ static void* kvoContext;
     // if the singleton mount window controller already has a connected mount just show the window, the user will have
     // to disconnect from the current mount before connecting to a new one
     if (mountWindowController.mountController.mount.connected) {
-        [self.mountWindowController showWindow:nil];
+        [mountWindowController showWindow:nil];
         return;
     }
     
     [mountWindowController connectToMount:^{
         
-        self.mountWindowController = mountWindowController; // only set this once it's connected as it observes the mount controller status
+        self.mountController = mountWindowController.mountController; // only set this once it's connected as it observes the mount controller status
 
-        // only configure the mount window if it doesn't already have a camera controller
-        if (mountWindowController.cameraController != nil){
-            NSLog(@"Not configuring mount window as it already has a camera controller: %@",mountWindowController.cameraController);
+        // only configure the mount window if it doesn't already have a camera controller // ??
+        if (self.mountController.cameraController != nil){
+            NSLog(@"Not configuring mount window as it already has a camera controller: %@",self.mountController.cameraController);
         }
         else{
         
-            self.mountWindowController.cameraController = self.cameraController;
-            self.mountWindowController.mountWindowDelegate = self; // this isn't set when the user picks from the popup menu
+            self.mountController.cameraController = self.cameraController;
             CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
             if (solution){
                 // todo; check to see we're not slewing, etc
-                [self.mountWindowController.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
+                [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
                     if (error){
                         [NSApp presentError:error];
                     }
@@ -965,7 +955,7 @@ static void* kvoContext;
         dec = @(lockedSolution.centreDec);
     }
     else {
-        id<CASMount> mount = self.mountWindowController.mountController.mount;
+        id<CASMount> mount = self.mountController.mount;
         ra = mount.ra;
         dec = mount.dec;
     }
@@ -992,18 +982,17 @@ static void* kvoContext;
         // pop the slew sheet so that we can set the label text to something specific
         [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
 
-        self.mountWindowController.cameraController = self.cameraController;
-        self.mountWindowController.mountWindowDelegate = self;
-        self.mountWindowController.mountController.usePlateSolving = YES;
+        self.mountController.cameraController = self.cameraController;
+        self.mountController.usePlateSolving = YES;
         
         __weak __typeof(self) weakSelf = self;
-        [self.mountWindowController.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
+        [self.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
             if (error){
                 [weakSelf completeMountSlewHandling]; // clear the saved mount state, dismisses the progress sheet
                 [NSApp presentError:error];
             }
             else {
-                [weakSelf.mountWindowController.mountController slewToTargetWithCompletion:^(NSError* _) {
+                [weakSelf.mountController slewToTargetWithCompletion:^(NSError* _) {
                     // actual completion handling done in -mountCompletedSync:
                 }];
             }
@@ -1017,7 +1006,7 @@ static void* kvoContext;
 //
 - (void)restoreStateAfterMountSlewCompleted // only called after the synchroniser has completed successfully
 {
-    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountWindowController.mountController.mount.pierSide);
+    const BOOL flipped = (self.mountState.pierSideWhenSlewStarted != self.mountController.mount.pierSide);
     
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self completeMountSlewHandling];
@@ -1120,7 +1109,7 @@ static void* kvoContext;
     if (!self.mountState){
         self.mountState = [SXIOMountState new];
         self.mountState.capturingWhenSlewStarted = self.cameraController.capturing;
-        self.mountState.pierSideWhenSlewStarted = self.mountWindowController.mountController.mount.pierSide;
+        self.mountState.pierSideWhenSlewStarted = self.mountController.mount.pierSide;
         self.mountState.guidingWhenSlewStarted = self.cameraController.phd2Client.guiding;
     }
     
@@ -1175,12 +1164,12 @@ static void* kvoContext;
 //
 - (void)handleMountSlewStateChanged
 {
-    if (!self.mountWindowController){ // todo; remove dependency on the window
-        NSLog(@"Mount slew state changed but currently need mount window open to do anything");
+    if (!self.mountController){
+        NSLog(@"Mount slew state changed but no connected mount controller");
         return;
     }
     
-    if (self.mountWindowController.mountController.mount.slewing){
+    if (self.mountController.mount.slewing){
         
         if (!self.mountState.slewStarted){
             
@@ -1192,7 +1181,7 @@ static void* kvoContext;
             self.mountState.slewStarted = YES;
 
             // check to see if this is a slew triggered by the mount synchroniser which will happen after we've slewed and need to resync to the locked solution
-            self.mountState.synchronisingWhenSlewStarted = self.mountWindowController.mountController.synchronising;
+            self.mountState.synchronisingWhenSlewStarted = self.mountController.synchronising;
             if (self.mountState.synchronisingWhenSlewStarted){
                 
                 NSLog(@"Mount slew started but being handled by mount synchroniser so not capturing state");
@@ -1236,23 +1225,6 @@ static void* kvoContext;
                 [self completeMountSlewHandling];
             }
         }
-    }
-}
-
-#pragma mark - Mount Window Controller Delegate
-
-- (CASPlateSolveSolution*)plateSolveSolution
-{
-    if (self.exposureView.lockedPlateSolveSolution){
-        return self.exposureView.lockedPlateSolveSolution;
-    }
-    return self.exposureView.plateSolveSolution;
-}
-
-- (void)mountWindowControllerWillClose:(CASMountWindowController*)windowController;
-{
-    if (windowController == self.mountWindowController){
-        self.mountWindowController = nil;
     }
 }
 
@@ -1423,6 +1395,7 @@ static void* kvoContext;
                         else {
                             self.showPlateSolution = YES;
                             self.exposureView.plateSolveSolution = results[@"solution"];
+                            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
                             // no longer resetting display as that then immediately nils out the solution
                         }
                     }
@@ -1474,9 +1447,11 @@ static void* kvoContext;
 {
     if (self.exposureView.lockedPlateSolveSolution){
         self.exposureView.lockedPlateSolveSolution = nil;
+        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
     }
     else {
         self.exposureView.lockedPlateSolveSolution = self.exposureView.plateSolveSolution;
+        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.lockedPlateSolveSolution forKey:self.cameraDeviceID];
     }
 }
 
@@ -2199,14 +2174,14 @@ static void* kvoContext;
         }
         
         // check to see if we crossed the meridian during the exposure
-        if (self.mountWindowController.mountController.mount.weightsHigh){
+        if (self.mountController.mount.weightsHigh){
             
             void (^stopMountTracking)() = ^{
                 
                 [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount"
                                                                 subtitle:@"Mount has passed meridian so stopping tracking"];
                 
-                [self.mountWindowController.mountController stop]; // todo; option to park
+                [self.mountController stop]; // todo; option to park
                 
                 [self.cameraController cancelCapture];
                 
@@ -2505,7 +2480,7 @@ static void* kvoContext;
 
 - (CASMountController*) sequenceMountController // tmp
 {
-    return self.mountWindowController.mountController;
+    return self.mountController;
 }
 
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
@@ -2588,12 +2563,12 @@ static void* kvoContext;
 
 - (void)slewToBookmark:(NSDictionary*)bookmark plateSolve:(BOOL)plateSolve completion:(void(^)(NSError*))completion
 {
-    [self.mountWindowController.mountController slewToBookmark:bookmark plateSolve:plateSolve completion:completion];
+    [self.mountController slewToBookmark:bookmark plateSolve:plateSolve completion:completion];
 }
 
 - (void)parkMountWithCompletion:(void(^)(NSError*))completion
 {
-    [self.mountWindowController.mountController parkMountWithCompletion:completion];
+    [self.mountController parkMountWithCompletion:completion];
 }
 
 - (void)captureCompletedWithError:(NSError*)error
@@ -2617,28 +2592,28 @@ static void* kvoContext;
 
 - (void)mountSlewingStateChanged:(NSNotification*)note // todo; post from mount controller instead ?
 {
-    if (note.object == self.mountWindowController.mountController.mount){
+    if (note.object == self.mountController.mount){
         [self handleMountSlewStateChanged];
     }
 }
 
 - (void)mountCapturedSyncExposure:(NSNotification*)note
 {
-    if (note.object == self.mountWindowController.mountController){
+    if (note.object == self.mountController){
         [self setCurrentExposure:note.userInfo[@"exposure"] resetDisplay:YES];
     }
 }
 
 - (void)mountSolvedSyncExposure:(NSNotification*)note
 {
-    if (note.object == self.mountWindowController.mountController){
+    if (note.object == self.mountController){
         self.exposureView.plateSolveSolution = note.userInfo[@"solution"];
     }
 }
 
 - (void)mountCompletedSync:(NSNotification*)note
 {
-    if (note.object == self.mountWindowController.mountController){
+    if (note.object == self.mountController){
         
         NSError* error = note.userInfo[@"error"];
         if (error){

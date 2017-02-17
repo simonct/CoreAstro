@@ -261,6 +261,55 @@
 
 @end
 
+@implementation CASPlateSolveSolutionRegistery {
+    NSMutableDictionary<NSString*,CASPlateSolveSolution*>* _registry;
+}
+
++ (instancetype)sharedRegistry
+{
+    static CASPlateSolveSolutionRegistery* _shared;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _shared = [[CASPlateSolveSolutionRegistery alloc] init];
+    });
+    return _shared;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _registry = [NSMutableDictionary dictionaryWithCapacity:10];
+    }
+    return self;
+}
+
+- (NSArray<CASPlateSolveSolution*>*)solutions
+{
+    return [_registry allValues]; // sort
+}
+
+- (CASPlateSolveSolution*)solutionForKey:(NSString*)key
+{
+    NSParameterAssert(key);
+    
+    return _registry[key];
+}
+
+- (void)setSolution:(CASPlateSolveSolution*)solution forKey:(NSString*)key
+{
+    NSParameterAssert(key);
+    
+    if (solution){
+        _registry[key] = solution;
+    }
+    else {
+        [_registry removeObjectForKey:key];
+    }
+}
+
+@end
+
 @interface CASPlateSolver ()
 @property (nonatomic,strong) CASCCDExposure* exposure;
 @property (nonatomic,strong) CASTaskWrapper* solverTask;

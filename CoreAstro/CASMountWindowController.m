@@ -223,9 +223,9 @@ static void* kvoContext;
     
     // if the delegate has a solution, add that as a temp bookmark (would be nice to be able to add a separator but we're using bindings atm)
     // todo; pick up changes in the delegate's solution
-    BOOL hasCurrentSolutionBookmark = NO;
-    CASPlateSolveSolution* solution = self.mountWindowDelegate.plateSolveSolution;
-    if (solution){
+    __block BOOL hasCurrentSolutionBookmark = NO;
+    NSArray<CASPlateSolveSolution*>* solutions = [CASPlateSolveSolutionRegistery sharedRegistry].solutions;
+    [solutions enumerateObjectsUsingBlock:^(CASPlateSolveSolution * _Nonnull solution, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary* solutionDictionary = solution.solutionDictionary;
         if (solutionDictionary){
             NSString* name = [NSString stringWithFormat:@"Current Solution (%@, %@)",solution.displayCentreRA,solution.displayCentreDec];
@@ -234,7 +234,7 @@ static void* kvoContext;
             [bookmarks insertObject:@{CASBookmarks.nameKey:@"<separator>"} atIndex:1];
             hasCurrentSolutionBookmark = YES;
         }
-    }
+    }];
     
     self.hasCurrentSolutionBookmark = hasCurrentSolutionBookmark;
 
@@ -293,44 +293,46 @@ static void* kvoContext;
     return [CASDeviceManager sharedManager].cameraControllers;
 }
 
-- (CASCameraController*)cameraController
-{
-    return self.mountController.cameraController;
-}
-
-- (void)setCameraController:(CASCameraController *)cameraController
-{
-    NSAssert(self.mountController, @"Need a mount controller");
-
-    if (self.mountController.cameraController != cameraController){
-        
-        self.mountController.cameraController = cameraController;
-        
-        if (!cameraController){
-            self.mountWindowDelegate = nil;
-        }
-        else{
-            
-#if defined(SXIO) || defined(CCDIO)
-            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:cameraController];
-            if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
-                
-                self.mountWindowDelegate = (id)cameraWindowController;
-                /*
-                 CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
-                 if (solution){
-                 // todo; check to see we're not slewing, etc
-                 [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec];
-                 }
-                 */
-            }
-            else {
-                self.mountWindowDelegate = nil;
-            }
-#endif
-        }
-    }
-}
+//- (CASCameraController*)cameraController
+//{
+//    return self.mountController.cameraController;
+//}
+//
+//- (void)setCameraController:(CASCameraController *)cameraController
+//{
+//    self.mountController.cameraController = self.cameraController;
+//
+////    NSAssert(self.mountController, @"Need a mount controller");
+////
+////    if (self.mountController.cameraController != cameraController){
+////        
+////        self.mountController.cameraController = cameraController;
+////        
+////        if (!cameraController){
+////            self.mountWindowDelegate = nil;
+////        }
+////        else{
+////            
+////#if defined(SXIO) || defined(CCDIO)
+////            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:cameraController];
+////            if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
+////                
+////                self.mountWindowDelegate = (id)cameraWindowController;
+////                /*
+////                 CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
+////                 if (solution){
+////                 // todo; check to see we're not slewing, etc
+////                 [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec];
+////                 }
+////                 */
+////            }
+////            else {
+////                self.mountWindowDelegate = nil;
+////            }
+////#endif
+////        }
+////    }
+//}
 
 - (void)startMoving:(CASMountDirection)direction
 {
