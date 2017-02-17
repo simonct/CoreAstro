@@ -211,6 +211,10 @@
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in Copy SXDevices plugin */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
 		F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */; };
+		F4DE8A781E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DE8A761E574BC1005A9B78 /* SXIOMountControlsViewController.m */; };
+		F4DE8A791E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DE8A761E574BC1005A9B78 /* SXIOMountControlsViewController.m */; };
+		F4DE8A7A1E574BC1005A9B78 /* SXIOMountControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DE8A771E574BC1005A9B78 /* SXIOMountControlsViewController.xib */; };
+		F4DE8A7B1E574BC1005A9B78 /* SXIOMountControlsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4DE8A771E574BC1005A9B78 /* SXIOMountControlsViewController.xib */; };
 		F4E6422E179BDF8F0044B349 /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4E6422D179BDF8F0044B349 /* loop.png */; };
 		F4E6424C179BEE540044B349 /* SXIOSaveTargetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E6424A179BEE540044B349 /* SXIOSaveTargetViewController.m */; };
 		F4E6424D179BEE540044B349 /* SXIOSaveTargetViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E6424B179BEE540044B349 /* SXIOSaveTargetViewController.xib */; };
@@ -621,6 +625,9 @@
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
 		F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOCameraWindowController.xib; sourceTree = "<group>"; };
+		F4DE8A751E574BC1005A9B78 /* SXIOMountControlsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOMountControlsViewController.h; sourceTree = "<group>"; };
+		F4DE8A761E574BC1005A9B78 /* SXIOMountControlsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOMountControlsViewController.m; sourceTree = "<group>"; };
+		F4DE8A771E574BC1005A9B78 /* SXIOMountControlsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOMountControlsViewController.xib; sourceTree = "<group>"; };
 		F4E6422D179BDF8F0044B349 /* loop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = loop.png; path = ../../../CoreAstro/Resources/loop.png; sourceTree = "<group>"; };
 		F4E64242179BEB580044B349 /* sxio.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = sxio.xcconfig; sourceTree = "<group>"; };
 		F4E64249179BEE540044B349 /* SXIOSaveTargetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSaveTargetViewController.h; sourceTree = "<group>"; };
@@ -1081,6 +1088,9 @@
 				F4E64249179BEE540044B349 /* SXIOSaveTargetViewController.h */,
 				F4E6424A179BEE540044B349 /* SXIOSaveTargetViewController.m */,
 				F4E6424B179BEE540044B349 /* SXIOSaveTargetViewController.xib */,
+				F4DE8A751E574BC1005A9B78 /* SXIOMountControlsViewController.h */,
+				F4DE8A761E574BC1005A9B78 /* SXIOMountControlsViewController.m */,
+				F4DE8A771E574BC1005A9B78 /* SXIOMountControlsViewController.xib */,
 				F48534F117D23C7600C5EE8C /* SXIOCalibrationWindowController.h */,
 				F48534F217D23C7700C5EE8C /* SXIOCalibrationWindowController.m */,
 				F48534F317D23C7700C5EE8C /* SXIOCalibrationWindowController.xib */,
@@ -1499,6 +1509,7 @@
 				F40D5B701849EC5E00977FA9 /* CASProgressWindowController.xib in Resources */,
 				F40D5B711849EC5E00977FA9 /* SXIOFilterWindowController.xib in Resources */,
 				F48F79A0187CB31100DFB0F2 /* SXIOPreferencesWindowController.xib in Resources */,
+				F4DE8A7B1E574BC1005A9B78 /* SXIOMountControlsViewController.xib in Resources */,
 				F40D5B721849EC5E00977FA9 /* CASCaptureWindowController.xib in Resources */,
 				F40D5B731849EC5E00977FA9 /* SXIOCalibrationWindowController.xib in Resources */,
 			);
@@ -1565,6 +1576,7 @@
 				F4A258CB179BC1D90013D220 /* CASPHDControlsViewController.xib in Resources */,
 				F4D3CE16179BD10400B42D04 /* SXIOCameraWindowController.xib in Resources */,
 				F4BF8E461CE7537800EE3374 /* SXIOSequenceEditorExposureStepView.xib in Resources */,
+				F4DE8A7A1E574BC1005A9B78 /* SXIOMountControlsViewController.xib in Resources */,
 				F4F2A4D31AED0FBF00CCC40F /* CASMountWindowController.xib in Resources */,
 				F4E8B0DB18674444001A36EC /* CCD-IO.sdef in Resources */,
 				F42437C51CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib in Resources */,
@@ -1713,6 +1725,7 @@
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
+				F4DE8A791E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1805,6 +1818,7 @@
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
+				F4DE8A781E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
