@@ -26,10 +26,38 @@
 #import "SXIOMountControlsViewController.h"
 #import <CoreAstro/CoreAstro.h>
 
+@interface SXIOMountControlsNameTransformer : NSValueTransformer
+@end
+
+@implementation SXIOMountControlsNameTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    CASMountController* controller = value;
+    if ([controller isKindOfClass:[CASMountController class]]){
+        return controller.mount.deviceName;
+    }
+    return nil;
+}
+
+@end
+
 @interface SXIOMountControlsViewController ()
 @end
 
 @implementation SXIOMountControlsViewController {
+}
+
++ (void)initialize
+{
+    if (self == [SXIOMountControlsViewController class]){
+        [NSValueTransformer setValueTransformer:[[SXIOMountControlsNameTransformer alloc] init] forName:@"SXIOMountControlsNameTransformer"];
+    }
 }
 
 - (NSArray<CASMountController*>*)mountControllers

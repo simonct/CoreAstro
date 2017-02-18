@@ -69,6 +69,7 @@
 @property (strong) CASMountSlewObserver* slewObserver;
 @property (weak) IBOutlet NSButton *mountConfigurationButton;
 @property (strong) NSPopover* mountPopover;
+@property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @end
 
 // todo;
@@ -293,14 +294,14 @@ static void* kvoContext;
     return [CASDeviceManager sharedManager].cameraControllers;
 }
 
-//- (CASCameraController*)cameraController
-//{
-//    return self.mountController.cameraController;
-//}
-//
-//- (void)setCameraController:(CASCameraController *)cameraController
-//{
-//    self.mountController.cameraController = self.cameraController;
+- (CASCameraController*)cameraController
+{
+    return self.mountController.cameraController;
+}
+
+- (void)setCameraController:(CASCameraController *)cameraController
+{
+    self.mountController.cameraController = self.cameraController;
 //
 ////    NSAssert(self.mountController, @"Need a mount controller");
 ////
@@ -332,7 +333,7 @@ static void* kvoContext;
 ////#endif
 ////        }
 ////    }
-//}
+}
 
 - (void)startMoving:(CASMountDirection)direction
 {
