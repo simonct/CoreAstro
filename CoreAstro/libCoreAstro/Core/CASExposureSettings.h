@@ -18,7 +18,8 @@
 @property (nonatomic,assign) BOOL continuous;
 
 @property (nonatomic,assign) NSInteger captureCount;
-@property (nonatomic,readonly) NSInteger currentCaptureIndex;
+@property (nonatomic,readonly) NSInteger currentCaptureIndex; // shouldn't settings be immutable ?
+@property (nonatomic,assign) BOOL suspended;
 
 @property (nonatomic,assign) NSInteger exposureDuration;
 

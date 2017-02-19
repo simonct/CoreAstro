@@ -85,12 +85,13 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 @property BOOL suppressDither;
 
 @property (nonatomic,readonly) BOOL cancelled;
-@property (readonly) BOOL suspended;
 
 - (id)initWithCamera:(CASCCDDevice*)camera;
 
 - (void)connect:(void(^)(NSError*))block;
 - (void)disconnect;
+
+- (void)resetCapture; // clears suspended flag, sets capture index back to 0
 
 - (void)captureWithBlock:(void(^)(NSError*,CASCCDExposure*))block;
 - (void)captureWithRole:(CASCameraControllerRole)role block:(void(^)(NSError*,CASCCDExposure*))block;

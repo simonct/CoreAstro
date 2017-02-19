@@ -53,7 +53,6 @@ NSString* const kCASCameraControllerGuideCommandNotification = @"kCASCameraContr
 @property (nonatomic,strong) CASPHD2Client* phd2Client; // todo; guide/dither interface ?
 @property (nonatomic,readonly) NSArray* slaves;
 @property (nonatomic,readonly) BOOL ditherEnabled;
-@property BOOL suspended;
 @property (strong) NSScriptCommand* cancelCommand;
 @end
 
@@ -224,6 +223,12 @@ static void* kvoContext;
     return _phd2Client;
 }
 
+- (void)resetCapture // still need this ?
+{
+    self.settings.suspended = NO;
+    self.settings.currentCaptureIndex = 0;
+}
+
 - (void)captureWithBlockImpl:(void(^)(NSError*,CASCCDExposure*))block
 {
     void (^scheduleNextCapture)(NSTimeInterval) = ^(NSTimeInterval t) {
@@ -239,7 +244,7 @@ static void* kvoContext;
         // remember the last exposure
         self.lastExposure = exp;
         
-        // figure out if we need to go round again
+        // figure out if we need to go round again - yuk, not consistently advancing the index
         if (!error && !_cancelled && (self.settings.continuous || ++self.settings.currentCaptureIndex < self.settings.captureCount) ){
             
             self.state = CASCameraControllerStateWaitingForNextExposure;
@@ -482,11 +487,17 @@ static void* kvoContext;
         return;
     }
     
-    if (!_suspended){
+    if (!self.settings.suspended){
         self.settings.currentCaptureIndex = 0;
     }
-    else{
+    else {
         self.settings.currentCaptureIndex += 1;
+    }
+    
+    self.settings.suspended = NO;
+    _cancelled = NO;
+
+    {
         if (self.settings.currentCaptureIndex >= self.settings.captureCount){
             // getting this after trying to restart capture after slew
             NSString* message = [NSString stringWithFormat:@"Attempted to resume capture when sequence is complete, current index of %ld vs count of %ld",self.settings.currentCaptureIndex,self.settings.captureCount];
@@ -495,8 +506,6 @@ static void* kvoContext;
         }
     }
     
-    _cancelled = NO;
-    _suspended = NO;
     
     void (^startCapture)() = ^{
         
@@ -637,7 +646,7 @@ static void* kvoContext;
 - (void)suspendCapture
 {
     if (self.capturing){
-        self.suspended = YES; // set this before calling -cancelCapture
+        self.settings.suspended = YES; // set this before calling -cancelCapture
         NSLog(@"Suspending capture, current index is %ld",self.settings.currentCaptureIndex);
         [self cancelCapture];
     }

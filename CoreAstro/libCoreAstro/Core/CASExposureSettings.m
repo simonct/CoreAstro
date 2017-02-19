@@ -59,10 +59,10 @@
     copy.continuous = self.continuous;
     copy.captureCount = self.captureCount;
     copy.currentCaptureIndex = self.currentCaptureIndex;
+    copy.suspended = self.suspended;
     copy.exposureDuration = self.exposureDuration;
     copy.exposureUnits = self.exposureUnits;
     copy.exposureInterval = self.exposureInterval;
-    copy.subframe = self.subframe;
     copy.subframe = self.subframe;
     copy.binning = self.binning;
     copy.exposureType = self.exposureType;

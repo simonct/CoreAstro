@@ -448,6 +448,9 @@ static void* kvoContext;
         }
     };
     
+    // reset the capture index
+    [self.cameraController resetCapture];
+    
     // kick off the capture
     [self startCapture];
 }
@@ -2546,7 +2549,7 @@ static void* kvoContext;
             
             // only call the completion block if the camera isn't suspended
             // (this would happen if the exposure has been cancelled by a mount slew but will be restarted in which case we don't want to call the completion block just yet, this is just a temporary interruption)
-            if (self.cameraController.suspended){
+            if (self.cameraController.settings.suspended){
                 if (error){
                     [self captureCompletedWithError:error];
                 }
