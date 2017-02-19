@@ -49,6 +49,8 @@
             
             self.result = [NSMutableArray arrayWithCapacity:controller.settings.captureCount];
             
+            [controller resetCapture];
+            
             [controller captureWithBlock:^(NSError *error, CASCCDExposure *exposure) {
                 
                 if (error){
