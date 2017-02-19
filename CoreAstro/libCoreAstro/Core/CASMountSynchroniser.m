@@ -40,6 +40,50 @@
                                                               @"CASMountSlewControllerSearchRadius":@(5)}];
 }
 
+- (void)autoSync
+{
+    NSParameterAssert(self.mount);
+    NSParameterAssert(self.mount.connected);
+    NSParameterAssert(self.cameraController);
+    NSParameterAssert(!self.busy);
+
+    self.busy = YES;
+
+    // todo; need to be able to save and restore the slew speed
+    
+    // slew x seconds in both ra and dec to get out of park position
+    [self.mount startMoving:CASMountDirectionWest];
+    [self.mount startMoving:CASMountDirectionNorth];
+    
+    // wait x seconds
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        // stop the slew
+        [self.mount stopMoving];
+        
+        // plate solve
+        [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
+            
+            if (error){
+                [self completeWithError:error];
+            }
+            else {
+                
+                // sync the mount to this location
+                [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                    
+                    if (slewError != CASMountSlewErrorNone){
+                        [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
+                    }
+                    else {
+                        [self completeWithError:nil];
+                    }
+                }];
+            }
+        }];
+    });
+}
+
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees
 {
 #if CAS_SLEW_AND_SYNC_TEST

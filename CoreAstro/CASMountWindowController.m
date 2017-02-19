@@ -49,7 +49,7 @@
 
 @end
 
-@interface CASMountWindowController ()<NSWindowDelegate,NSPopoverDelegate>
+@interface CASMountWindowController ()<NSWindowDelegate,NSPopoverDelegate,CASMountMountSynchroniserDelegate>
 @property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
 @property (nonatomic,strong) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
@@ -70,6 +70,7 @@
 @property (weak) IBOutlet NSButton *mountConfigurationButton;
 @property (strong) NSPopover* mountPopover;
 @property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
+@property CASMountSynchroniser* synchroniser;
 @end
 
 // todo;
@@ -565,6 +566,39 @@ static void* kvoContext;
         self.mountPopover.contentViewController = configure;
         self.mountPopover.behavior = NSPopoverBehaviorTransient;
         [self.mountPopover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSMaxXEdge];
+    }
+}
+
+- (IBAction)autoSyncButtonPressed:(id)sender
+{
+    // todo; make auto-sync part of mount controller
+    self.synchroniser = [[CASMountSynchroniser alloc] init];
+    self.synchroniser.mount = self.mount;
+    self.synchroniser.delegate = self;
+    [self.synchroniser autoSync];
+}
+
+#pragma mark - Mount sync delegate
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
+{
+    NSLog(@"mountSynchroniser:didCaptureExposure:");
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    NSLog(@"mountSynchroniser:didSolveExposure:");
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
+{
+    NSLog(@"mountSynchroniser:didCompleteWithError: %@",error);
+
+    if (error){
+        [NSApp presentError:error];
+    }
+    else {
+        [self presentAlertWithMessage:@"The mount is now synced to the sky"];
     }
 }
 
