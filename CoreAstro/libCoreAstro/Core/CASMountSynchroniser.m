@@ -47,40 +47,47 @@
     NSParameterAssert(self.cameraController);
     NSParameterAssert(!self.busy);
 
+    const NSInteger slewDuration = 20; // todo; this depends on the current slew speed, need to be able to save and restore the slew speed
+    
     self.busy = YES;
-
-    // todo; need to be able to save and restore the slew speed
     
     // slew x seconds in both ra and dec to get out of park position
     [self.mount startMoving:CASMountDirectionWest];
-    [self.mount startMoving:CASMountDirectionNorth];
     
     // wait x seconds
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         // stop the slew
         [self.mount stopMoving];
-        
-        // plate solve
-        [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
+
+        [self.mount startMoving:CASMountDirectionSouth];
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
-            if (error){
-                [self completeWithError:error];
-            }
-            else {
+            // stop the slew
+            [self.mount stopMoving];
+
+            // plate solve
+            [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
                 
-                // sync the mount to this location
-                [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                if (error){
+                    [self completeWithError:error];
+                }
+                else {
                     
-                    if (slewError != CASMountSlewErrorNone){
-                        [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
-                    }
-                    else {
-                        [self completeWithError:nil];
-                    }
-                }];
-            }
-        }];
+                    // sync the mount to this location
+                    [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                        
+                        if (slewError != CASMountSlewErrorNone){
+                            [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
+                        }
+                        else {
+                            [self completeWithError:nil];
+                        }
+                    }];
+                }
+            }];
+        });
     });
 }
 

@@ -575,6 +575,7 @@ static void* kvoContext;
     self.synchroniser = [[CASMountSynchroniser alloc] init];
     self.synchroniser.mount = self.mount;
     self.synchroniser.delegate = self;
+    self.synchroniser.cameraController = self.cameraController;
     [self.synchroniser autoSync];
 }
 
@@ -600,6 +601,8 @@ static void* kvoContext;
     else {
         [self presentAlertWithMessage:@"The mount is now synced to the sky"];
     }
+    
+    self.synchroniser = nil;
 }
 
 #pragma mark - Popover delegate
