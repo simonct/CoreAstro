@@ -1,5 +1,5 @@
 //
-//  CASMountSlewController.h
+//  CASMountSynchroniser.h
 //  astrometry-test
 //
 //  Created by Simon Taylor on 24/03/2015.
