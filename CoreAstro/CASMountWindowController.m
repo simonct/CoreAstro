@@ -59,6 +59,7 @@
 @property (strong) IBOutlet NSPanel *morePanel;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (weak) IBOutlet NSProgressIndicator *lookupSpinner;
+@property (weak) IBOutlet NSButton *syncButton;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (copy) void(^slewCompletion)(NSError*);
@@ -350,28 +351,52 @@ static void* kvoContext;
     [self.mountController.mount stopMoving];
 }
 
+- (void)flagsChanged:(NSEvent *)event
+{
+    [super flagsChanged:event];
+    
+    if ((event.modifierFlags & NSEventModifierFlagOption) != 0){
+        [self.syncButton setTitle:@"Auto"];
+    }
+    else {
+        [self.syncButton setTitle:@"Sync"];
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)sync:(id)sender
 {
-    NSNumber* ra = self.mount.ra;
-    NSNumber* dec = self.mount.dec;
-    if (ra && dec){
-        const NSModalResponse response = [[NSAlert alertWithMessageText:@"Confirm Sync"
-                                                          defaultButton:@"Sync"
-                                                        alternateButton:@"Cancel"
-                                                            otherButton:nil
-                                              informativeTextWithFormat:@"Confirm that you want to sync the mount to this target"] runModal];
-        if (response == NSOKButton){
-            [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
-                if (error != CASMountSlewErrorNone){
-                    [self presentAlertWithMessage:@"Failed to sync the mount"];
-                }
-            }];
-        }
+    if (([NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
+        self.synchroniser = [[CASMountSynchroniser alloc] init];
+        self.synchroniser.mount = self.mount;
+        self.synchroniser.delegate = self;
+        self.synchroniser.cameraController = self.cameraController;
+        [self.synchroniser autoSync];
     }
     else {
-        [self presentAlertWithMessage:@"The mount is not currently reporting a positon so cannot be synced"];
+        NSNumber* ra = self.mount.ra;
+        NSNumber* dec = self.mount.dec;
+        if (ra && dec){
+            const NSModalResponse response = [[NSAlert alertWithMessageText:@"Confirm Sync"
+                                                              defaultButton:@"Sync"
+                                                            alternateButton:@"Cancel"
+                                                                otherButton:nil
+                                                  informativeTextWithFormat:@"Confirm that you want to sync the mount to this target"] runModal];
+            if (response == NSOKButton){
+                [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
+                    if (error != CASMountSlewErrorNone){
+                        [self presentAlertWithMessage:@"Failed to sync the mount"];
+                    }
+                    else {
+                        [self presentAlertWithMessage:@"The mount is now synced to the sky"];
+                    }
+                }];
+            }
+        }
+        else {
+            [self presentAlertWithMessage:@"The mount is not currently reporting a positon so cannot be synced"];
+        }
     }
 }
 
@@ -567,16 +592,6 @@ static void* kvoContext;
         self.mountPopover.behavior = NSPopoverBehaviorTransient;
         [self.mountPopover showRelativeToRect:sender.bounds ofView:sender preferredEdge:NSMaxXEdge];
     }
-}
-
-- (IBAction)autoSyncButtonPressed:(id)sender
-{
-    // todo; make auto-sync part of mount controller
-    self.synchroniser = [[CASMountSynchroniser alloc] init];
-    self.synchroniser.mount = self.mount;
-    self.synchroniser.delegate = self;
-    self.synchroniser.cameraController = self.cameraController;
-    [self.synchroniser autoSync];
 }
 
 #pragma mark - Mount sync delegate

@@ -13,6 +13,7 @@
                 <outlet property="lookupSpinner" destination="3qC-bE-egp" id="pyo-AX-TGz"/>
                 <outlet property="morePanel" destination="9Jl-UB-2vZ" id="1nb-ZV-X5n"/>
                 <outlet property="mountConnectWindow" destination="dIP-qc-kdb" id="nCf-Zn-xsP"/>
+                <outlet property="syncButton" destination="3Fv-Bv-XJR" id="xXl-xi-BcZ"/>
                 <outlet property="window" destination="mjq-79-kKX" id="9G2-t1-L1g"/>
             </connections>
         </customObject>
@@ -378,17 +379,6 @@ Gw
                                     </buttonCell>
                                     <connections>
                                         <action selector="disconnectButtonPressed:" target="-2" id="bVq-ya-NCJ"/>
-                                    </connections>
-                                </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="46i-Cj-VKc">
-                                    <rect key="frame" x="156" y="7" width="113" height="32"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <buttonCell key="cell" type="push" title="Auto Sync..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Wj9-ih-cxl">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="autoSyncButtonPressed:" target="-2" id="DN1-2D-JGX"/>
                                     </connections>
                                 </button>
                             </subviews>
