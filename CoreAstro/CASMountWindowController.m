@@ -367,7 +367,7 @@ static void* kvoContext;
 
 - (IBAction)sync:(id)sender
 {
-    if (([NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
+    if (([[NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
         self.synchroniser = [[CASMountSynchroniser alloc] init];
         self.synchroniser.mount = self.mount;
         self.synchroniser.delegate = self;
