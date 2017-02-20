@@ -362,6 +362,8 @@
 		F4CA81A71B0915BB00BEEAA3 /* CASFocuser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4CFB5501D3187EE004BBE18 /* FLIFWDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CFB54F1D3187EE004BBE18 /* FLIFWDevice.m */; };
 		F4D45A4E1658027200C24E93 /* CASGuideCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D45A4B1658026400C24E93 /* CASGuideCommand.m */; };
+		F4DE8A941E5AA4A0005A9B78 /* CASCaptureCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = F4DE8A921E5AA4A0005A9B78 /* CASCaptureCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4DE8A951E5AA4A0005A9B78 /* CASCaptureCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = F4DE8A931E5AA4A0005A9B78 /* CASCaptureCoordinator.m */; };
 		F4E424101A8630A700C2A87E /* CASObjectLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4E424111A8630A700C2A87E /* CASObjectLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */; };
 		F4E4241E1A86741F00C2A87E /* CASCoordinateUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F4E4241A1A86741F00C2A87E /* CASCoordinateUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1447,6 +1449,8 @@
 		F4CFB54F1D3187EE004BBE18 /* FLIFWDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLIFWDevice.m; sourceTree = "<group>"; };
 		F4D45A4A1658026400C24E93 /* CASGuideCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASGuideCommand.h; sourceTree = "<group>"; };
 		F4D45A4B1658026400C24E93 /* CASGuideCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASGuideCommand.m; sourceTree = "<group>"; };
+		F4DE8A921E5AA4A0005A9B78 /* CASCaptureCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCaptureCoordinator.h; sourceTree = "<group>"; };
+		F4DE8A931E5AA4A0005A9B78 /* CASCaptureCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASCaptureCoordinator.m; sourceTree = "<group>"; };
 		F4E4240E1A8630A700C2A87E /* CASObjectLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASObjectLookup.h; sourceTree = "<group>"; };
 		F4E4240F1A8630A700C2A87E /* CASObjectLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASObjectLookup.m; sourceTree = "<group>"; };
 		F4E4241A1A86741F00C2A87E /* CASCoordinateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASCoordinateUtils.h; sourceTree = "<group>"; };
@@ -2124,6 +2128,8 @@
 				F46879D31B18A5E200C61449 /* CASINDIContainer.m */,
 				F4B099FB1BEE4DE4005BAAB5 /* CASNova.h */,
 				F4B099FC1BEE4DE4005BAAB5 /* CASNova.m */,
+				F4DE8A921E5AA4A0005A9B78 /* CASCaptureCoordinator.h */,
+				F4DE8A931E5AA4A0005A9B78 /* CASCaptureCoordinator.m */,
 				F4E424791A86757700C2A87E /* ORSSerialPort */,
 			);
 			name = Core;
@@ -3172,6 +3178,7 @@
 				F4CA53C3169CC9FD00832CFF /* constellations.h in Headers */,
 				F4CA53C4169CC9FD00832CFF /* convolve-image.h in Headers */,
 				F4CA53C5169CC9FD00832CFF /* ctmf.h in Headers */,
+				F4DE8A941E5AA4A0005A9B78 /* CASCaptureCoordinator.h in Headers */,
 				F4CA81A71B0915BB00BEEAA3 /* CASFocuser.h in Headers */,
 				F4CA53C6169CC9FD00832CFF /* dimage.h in Headers */,
 				F4CA53C7169CC9FD00832CFF /* dualtree.h in Headers */,
@@ -3735,6 +3742,7 @@
 				F44EDF2915FCC6D8003B1B4C /* CASCCDExposureLibrary.m in Sources */,
 				F44EDF2B15FCC6D8003B1B4C /* CASAutoGuider.mm in Sources */,
 				F4F59BA7183C0184006331E3 /* CASFITSUtilities.m in Sources */,
+				F4DE8A951E5AA4A0005A9B78 /* CASCaptureCoordinator.m in Sources */,
 				F44EDF2D15FCC6D8003B1B4C /* CASCCDProperties.m in Sources */,
 				F44EDF3115FCC6D8003B1B4C /* CASDeviceManager.m in Sources */,
 				F458724A183EAAC800CB53D1 /* CASHalfFluxDiameter.m in Sources */,
