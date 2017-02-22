@@ -2625,7 +2625,14 @@ static void* kvoContext;
             
             [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing failed" subtitle:error.localizedDescription];
             
+            // get rid of the mount slewing sheet
             [self completeMountSlewHandling];
+            
+            // if we're running a sequence, propagate the error
+            if (self.isRunningSequence) {
+                [self captureCompletedWithError:error];
+            }
+            
             [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
         }
         else {
