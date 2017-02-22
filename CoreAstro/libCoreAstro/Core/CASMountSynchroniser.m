@@ -37,7 +37,8 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountSlewControllerBinning":@(4),
                                                               @"CASMountSlewControllerDuration":@(5),
                                                               @"CASMountSlewControllerConvergence":@(0.02),
-                                                              @"CASMountSlewControllerSearchRadius":@(5)}];
+                                                              @"CASMountSlewControllerSearchRadius":@(5),
+                                                              @"CASMountSlewControllerAutoSyncSlewDuration":@(15)}];
 }
 
 - (void)autoSync
@@ -47,7 +48,7 @@
     NSParameterAssert(self.cameraController);
     NSParameterAssert(!self.busy);
 
-    const NSInteger slewDuration = 20; // todo; this depends on the current slew speed, need to be able to save and restore the slew speed
+    const NSInteger slewDuration = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountSlewControllerAutoSyncSlewDuration"]; // todo; this depends on the current slew speed, need to be able to save and restore the slew speed
     
     self.busy = YES;
     
