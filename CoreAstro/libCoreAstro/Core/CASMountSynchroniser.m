@@ -41,7 +41,7 @@
                                                               @"CASMountSlewControllerAutoSyncSlewDuration":@(15)}];
 }
 
-- (void)autoSync
+- (void)findLocation
 {
     NSParameterAssert(self.mount);
     NSParameterAssert(self.mount.connected);

@@ -372,7 +372,7 @@ static void* kvoContext;
         self.synchroniser.mount = self.mount;
         self.synchroniser.delegate = self;
         self.synchroniser.cameraController = self.cameraController;
-        [self.synchroniser autoSync];
+        [self.synchroniser findLocation];
     }
     else {
         NSNumber* ra = self.mount.ra;

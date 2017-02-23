@@ -23,7 +23,7 @@
 @property (strong) id<CASMount> mount;
 @property (strong) CASCameraController* cameraController;
 @property (weak) id<CASMountMountSynchroniserDelegate> delegate;
-- (void)autoSync;
+- (void)findLocation;
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees;
 - (void)cancel;
 @end
