@@ -196,6 +196,10 @@
                 <cocoa method="scriptingPark:"/>
             </responds-to>
             
+            <responds-to name="find location">
+                <cocoa method="scriptingFindLocation:"/>
+            </responds-to>
+
         </class>
         
         <!--
@@ -341,6 +345,14 @@
 
         </command>
         
+        <command name="find location" code="CASSFIND" description="Ask a mount to sync itself to the sky">
+            
+            <direct-parameter description="The mount to send the slew command to.">
+                <type type="mount" list="no"/>
+            </direct-parameter>
+            
+        </command>
+
         <command name="stop" code="CASSSTOP" description="Stop the mount moving">
             
             <direct-parameter description="The mount to send the stop command to.">

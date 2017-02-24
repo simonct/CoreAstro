@@ -23,6 +23,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 @property (strong) CASMountSynchroniser* mountSynchroniser;
 @property (copy) void(^slewCompletion)(NSError*);
 @property (strong) CASMountSlewObserver* slewObserver;
+@property (strong) NSScriptCommand* findCommand;
 @end
 
 @implementation CASMountController
@@ -83,6 +84,15 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         }
         [self.slewCommand resumeExecutionWithResult:nil];
         self.slewCommand = nil;
+    }
+
+    if (self.findCommand){
+        if (error){
+            self.findCommand.scriptErrorNumber = error.code;
+            self.findCommand.scriptErrorString = error.localizedDescription;
+        }
+        [self.findCommand resumeExecutionWithResult:nil];
+        self.findCommand = nil;
     }
 
     [self callSlewCompletion:error];
@@ -477,6 +487,23 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             parkCompletion(error,observer);
         }];
     }
+}
+
+- (void)scriptingFindLocation:(NSScriptCommand*)command
+{
+    if (self.mount.slewing || self.mountSynchroniser.busy){
+        command.scriptErrorNumber = paramErr;
+        command.scriptErrorString = NSLocalizedString(@"The mount is currently slewing", nil);
+        return;
+    }
+    
+    self.findCommand = command;
+    
+    [self.findCommand suspendExecution];
+
+    self.mountSynchroniser.mount = self.mount;
+    self.mountSynchroniser.cameraController = self.cameraController;
+    [self.mountSynchroniser findLocation];
 }
 
 @end
