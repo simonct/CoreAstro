@@ -51,7 +51,8 @@
     const NSInteger slewDuration = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountSlewControllerAutoSyncSlewDuration"]; // todo; this depends on the current slew speed, need to be able to save and restore the slew speed
     
     self.busy = YES;
-    
+    _cancelled = NO;
+
     // slew x seconds in both ra and dec to get out of park position
     [self.mount startMoving:CASMountDirectionWest];
     
@@ -112,6 +113,7 @@
     NSLog(@"Synchroniser slewing to RA: %f, Dec: %f",raInDegrees,decInDegrees);
     
     self.busy = YES;
+    _cancelled = NO;
 
     _syncCount = 0;
     _raInDegrees = raInDegrees;
