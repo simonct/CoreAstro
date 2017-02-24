@@ -759,7 +759,7 @@ static void* kvoContext;
 //        return;
 //    }
     
-    // enfore a single mount connected policy
+    // enforce a single mount connected policy
     if (self.mountController.mount){
         NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:8 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The mount window is already connected to the mount '%@'",self.mountController.mount.deviceName]}];
         completion(error,nil);
