@@ -368,6 +368,10 @@ static void* kvoContext;
 - (IBAction)sync:(id)sender
 {
     if (([[NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
+        if (!self.cameraController){
+            NSLog(@"Camera controller must be set before finding location");
+            return;
+        }
         self.synchroniser = [[CASMountSynchroniser alloc] init];
         self.synchroniser.mount = self.mount;
         self.synchroniser.delegate = self;
@@ -598,12 +602,16 @@ static void* kvoContext;
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
 {
-    NSLog(@"mountSynchroniser:didCaptureExposure:");
+    // todo; same code as in mount controller, find location should probably be in there
+    NSDictionary* userInfo = exposure ? @{@"exposure":exposure} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerCapturedSyncExposureNotification object:self.mountController userInfo:userInfo];
 }
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution
 {
-    NSLog(@"mountSynchroniser:didSolveExposure:");
+    // todo; same code as in mount controller, find location should probably be in there
+    NSDictionary* userInfo = solution ? @{@"solution":solution} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerSolvedSyncExposureNotification object:self.mountController userInfo:userInfo];
 }
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
