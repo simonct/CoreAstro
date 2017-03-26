@@ -34,6 +34,19 @@
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
+@interface CASToolbarItem : NSToolbarItem
+@end
+@implementation CASToolbarItem
+- (NSSize)minSize
+{
+    return NSMakeSize(69, 25);
+}
+- (NSSize)maxSize
+{
+    return [self minSize];
+}
+@end
+
 @interface CASControlsInnerContainerView : NSView
 @end
 @implementation CASControlsInnerContainerView
@@ -2196,25 +2209,31 @@ static void* kvoContext;
             
             switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
                 case 0:
-                    // no nothing
+                    NSLog(@"Mount crossed meridian but selected behaviour is to keep tracking");
                     break;
                     
                 case 1:
                     if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
                         
-                        NSLog(@"Flipping mount after %ld out of %ld exposures",controller.settings.currentCaptureIndex,controller.settings.captureCount);
+                        NSLog(@"Mount crossed meridian - flipping mount after %ld out of %ld exposures",controller.settings.currentCaptureIndex,controller.settings.captureCount);
+                        
+                        // todo; stop exposures, etc
+                        // todo; start flip spoken countdown
+                        // todo; flip the mount
                         
                         // start the slew to the flipped position
                         [self startMountMeridianFlip];
                     }
                     else {
                         
+                        NSLog(@"Mount crossed meridian and completed all exposures - stopping tracking");
                         stopMountTracking();
                     }
                     break;
                     
                 case 2:
                 default:
+                    NSLog(@"Mount crossed meridian - stopping tracking");
                     stopMountTracking();
                     break;
             }
@@ -2236,7 +2255,7 @@ static void* kvoContext;
                                         menu:(NSMenu *)menu
 {
     // here we create the NSToolbarItem and setup its attributes in line with the parameters
-    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    NSToolbarItem *item = [[CASToolbarItem alloc] initWithItemIdentifier:identifier];
     
     [item setLabel:label];
     [item setPaletteLabel:paletteLabel];
