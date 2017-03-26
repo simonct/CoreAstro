@@ -146,7 +146,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         [self.mount startSlewToRA:raInDegrees dec:decInDegrees completion:^(CASMountSlewError slewError,CASMountSlewObserver* observer) {
             if (slewError != CASMountSlewErrorNone){
                 if (slewError == CASMountSlewErrorInvalidState){
-                    [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:16 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The mount has not yet been synched to the sky."}]];
+                    [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:16 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The mount has not yet been synced to the sky."}]];
                 }
                 else {
                     [self callSlewCompletion:[NSError errorWithDomain:NSStringFromClass([self class]) code:10 userInfo:@{NSLocalizedDescriptionKey:@"Start slew failed. The object may be below the local horizon"}]];
@@ -386,7 +386,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
                 if (error != CASMountSlewErrorNone){
                     command.scriptErrorNumber = paramErr;
                     if (error == CASMountSlewErrorInvalidState){
-                        command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. The mount has not yet been synched to the sky.", nil);
+                        command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. The mount has not yet been synced to the sky.", nil);
                     }
                     else {
                         command.scriptErrorString = NSLocalizedString(@"Failed to start slewing to that object. It may be below the local horizon.", nil);
