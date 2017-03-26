@@ -59,6 +59,10 @@
     // wait x seconds
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
+        if (_cancelled){
+            return;
+        }
+        
         // stop the slew
         [self.mount stopMoving];
 
@@ -66,12 +70,20 @@
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
+            if (_cancelled){
+                return;
+            }
+
             // stop the slew
             [self.mount stopMoving];
 
             // plate solve
             [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
                 
+                if (_cancelled){
+                    return;
+                }
+
                 if (error){
                     [self completeWithError:error];
                 }
@@ -84,6 +96,7 @@
                             [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
                         }
                         else {
+                            NSLog(@"Synchronised mount to RA: %f, Dec: %f",ra,dec);
                             [self completeWithError:nil];
                         }
                     }];
@@ -178,6 +191,7 @@
     _cancelled = YES;
     [self.cameraController cancelCapture];
     [self.plateSolver cancel];
+    [self.mount stopMoving]; // in case we're location finding
     [self.mount stopSlewing];
 }
 
