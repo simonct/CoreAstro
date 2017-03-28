@@ -695,19 +695,26 @@ static void* kvoContext;
             exposure.filters = @[filterName];
         }
         
-        // construct the exposure name
+        // ensure we have a unique filename
         NSURL* finalUrl;
-        NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
-        if ([prefix rangeOfString:@"$type"].location == NSNotFound){
-            prefix = [prefix stringByAppendingString:@"_$type"];
+        while (true) {
+            
+            // construct the exposure name
+            NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
+            if ([prefix rangeOfString:@"$type"].location == NSNotFound){
+                prefix = [prefix stringByAppendingString:@"_$type"];
+            }
+            if (sequence > 0){
+                prefix = [NSString stringWithFormat:@"%@_%03ld",prefix,sequence];
+            }
+            finalUrl = [[_targetFolder URLByAppendingPathComponent:[exposure stringBySubstitutingPlaceholders:prefix]] URLByAppendingPathExtension:@"fits"];
+            
+            if (![[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]){
+                break;
+            }
+            
+            sequence += 1;
         }
-        if (sequence > 0){
-            prefix = [NSString stringWithFormat:@"%@_%03ld",prefix,sequence];
-        }
-        finalUrl = [[_targetFolder URLByAppendingPathComponent:[exposure stringBySubstitutingPlaceholders:prefix]] URLByAppendingPathExtension:@"fits"];
-        
-        // remove existing one
-        [[NSFileManager defaultManager] removeItemAtURL:finalUrl error:nil];
         
         // save new one
         return [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:exposure writePixels:YES error:error];
@@ -737,6 +744,9 @@ static void* kvoContext;
                 __block NSInteger sequence = 0;
                 __block BOOL inPostProcessing = NO;
                 
+                // disable sleep
+                [CASPowerMonitor sharedInstance].disableSleep = YES;
+                
                 [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -764,6 +774,9 @@ static void* kvoContext;
                     
                 } completion:^(NSError *error,CASCCDExposure* result) {
                     
+                    // restore sleep setting
+                    [CASPowerMonitor sharedInstance].disableSleep = NO;
+
                     if (error){
                         [NSApp presentError:error];
                     }
