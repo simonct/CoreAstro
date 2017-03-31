@@ -186,6 +186,27 @@
                     // todo; check the exposure time doesn't vary too much, this might happen if the intensity of the light source for the flat changes
                     // once we've started saving exposures we should probably reduce the tolerance ?
                     // alternatively, scale before averaging all the flats to match the first one ?
+                    
+                    if (saveExposure && exposureTime < 1000) {
+                        
+                        NSString* const flatsWarningKey = @"SXIOSuppressFlatsWarning";
+                        if (![[NSUserDefaults standardUserDefaults] boolForKey:flatsWarningKey]){
+                            
+                            NSAlert* alert = [NSAlert alertWithMessageText:@"Short Exposure"
+                                                             defaultButton:@"OK"
+                                                           alternateButton:nil
+                                                               otherButton:nil
+                                                 informativeTextWithFormat:@"Exposures of less than 1s or so can result in artefacts on the calibration frame. Consider lowering the intensity of the light source in order to increase the exposure time."];
+                            
+                            alert.showsSuppressionButton = YES;
+                            
+                            [alert runModal];
+                            
+                            if ([[alert suppressionButton] state]){
+                                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:flatsWarningKey];
+                            }
+                        }
+                    }
                 }
                 
                 if (!saveExposure) {
