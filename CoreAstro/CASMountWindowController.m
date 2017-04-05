@@ -72,6 +72,8 @@
 @property (strong) NSPopover* mountPopover;
 @property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @property CASMountSynchroniser* synchroniser;
+@property BOOL synced;
+@property BOOL slewAfterFindLocation;
 @end
 
 // todo;
@@ -202,6 +204,20 @@ static void* kvoContext;
                    alternateButton:nil
                        otherButton:nil
          informativeTextWithFormat:@"%@",message] runModal];
+}
+
+- (void)findLocationAndSlew:(BOOL)slew
+{
+    if (!self.cameraController){
+        NSLog(@"Camera controller must be set before finding location");
+        return;
+    }
+    self.slewAfterFindLocation = slew;
+    self.synchroniser = [[CASMountSynchroniser alloc] init];
+    self.synchroniser.mount = self.mount;
+    self.synchroniser.delegate = self;
+    self.synchroniser.cameraController = self.cameraController;
+    [self.synchroniser findLocation];
 }
 
 #pragma mark - Bindings convenience
@@ -368,15 +384,7 @@ static void* kvoContext;
 - (IBAction)sync:(id)sender
 {
     if (([[NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
-        if (!self.cameraController){
-            NSLog(@"Camera controller must be set before finding location");
-            return;
-        }
-        self.synchroniser = [[CASMountSynchroniser alloc] init];
-        self.synchroniser.mount = self.mount;
-        self.synchroniser.delegate = self;
-        self.synchroniser.cameraController = self.cameraController;
-        [self.synchroniser findLocation];
+        [self findLocationAndSlew:NO];
     }
     else {
         NSNumber* ra = self.mount.ra;
@@ -427,9 +435,28 @@ static void* kvoContext;
 - (IBAction)slew:(id)sender
 {
     if (!self.targetRA || !self.targetDec){
+        NSLog(@"No target location has been set");
         return;
     }
     
+    // check synced, offer to find location and then slew
+    if (!self.synced){
+        const NSInteger response = [[NSAlert alertWithMessageText:@"Sync Mount"
+                                                    defaultButton:@"Sync"
+                                                  alternateButton:@"Slew"
+                                                      otherButton:@"Cancel"
+                                        informativeTextWithFormat:@"The mount should be synced before slewing. Press OK to sync the mount first."] runModal];
+        if (response == -1){
+            return;
+        }
+        
+        if (response == 1){
+            [self findLocationAndSlew:YES];
+            return;
+        }
+    }
+    
+    // slew to the current target location
     __weak __typeof (self) weakSelf = self;
     [self.mountController setTargetRA:self.targetRA.doubleValue dec:self.targetDec.doubleValue completion:^(NSError* error) {
         if (error){
@@ -447,6 +474,8 @@ static void* kvoContext;
 
 - (IBAction)stop:(id)sender
 {
+    self.slewAfterFindLocation = NO;
+    
     [self.mountController stop];
 }
 
@@ -622,7 +651,13 @@ static void* kvoContext;
         [NSApp presentError:error];
     }
     else {
-        [self presentAlertWithMessage:@"The mount is now synced to the sky"];
+        self.synced = YES;
+        if (self.slewAfterFindLocation){
+            [self slew:nil];
+        }
+        else {
+            [self presentAlertWithMessage:@"The mount is now synced to the sky"];
+        }
     }
     
     self.synchroniser = nil;
