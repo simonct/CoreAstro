@@ -31,6 +31,7 @@
 @property (nonatomic,strong,readonly) NSNumber* targetDec;
 @property (nonatomic,strong,readonly) NSNumber* alt;
 @property (nonatomic,strong,readonly) NSNumber* az;
+@property (nonatomic,strong,readonly) NSNumber* ha;
 
 @property (nonatomic,readonly) NSNumber* secondsUntilTransit;
 
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSInteger, CASMountSlewError) {
     CASMountSlewErrorInvalidLocation,
     CASMountSlewErrorInvalidState
 };
+- (BOOL)horizonCheckRA:(double)ra dec:(double)dec;
 - (void)startSlewToRA:(double)ra dec:(double)dec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion;
 - (void)startSlewToTarget:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion; // for subclasses
 - (void)halt;

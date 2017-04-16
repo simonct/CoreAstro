@@ -21,6 +21,7 @@
 @property (nonatomic,strong) NSNumber* dec;
 @property (nonatomic,strong) NSNumber* alt;
 @property (nonatomic,strong) NSNumber* az;
+@property (nonatomic,strong) NSNumber* ha;
 @property (nonatomic,assign) CASMountPierSide pierSide;
 
 @property BOOL logCommands;

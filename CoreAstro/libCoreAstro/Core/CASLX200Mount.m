@@ -37,7 +37,7 @@
 }
 
 @synthesize connected,tracking;
-@synthesize ra,dec,alt,az,targetRa,targetDec;
+@synthesize ra,dec,alt,az,ha,targetRa,targetDec;
 @synthesize pierSide = _pierSide;
 @synthesize slewing = _slewing;
 

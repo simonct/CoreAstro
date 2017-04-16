@@ -229,6 +229,7 @@
     [self sendCommand:@":GR#" completion:^(NSString *response) {
         //NSLog(@"Get RA: %@",response);
         self.ra = @([CASLX200Commands fromRAString:response asDegrees:YES]);
+        self.ha = @(fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]) - self.ra.doubleValue + 360, 360));
     }];
     
     // :GD# -> sDD*MM:SS#
