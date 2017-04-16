@@ -1148,10 +1148,7 @@ static void* kvoContext;
     }
     
     // stop guiding and disconnect, we'll reconnect when the slew completes
-    if (self.cameraController.phd2Client.connected){
-        [self.cameraController.phd2Client stop];
-        [self.cameraController.phd2Client disconnect];
-    }
+    [self stopGuiding];
 }
 
 - (void)completeMountSlewHandling
@@ -2086,17 +2083,12 @@ static void* kvoContext;
 
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
+    NSString* const passedMeridianMessage = @"Mount has passed meridian so stopping tracking";
+    
+    // check to see if the exposure failed - if it did stop capture, tracking and guiding
     if (error){
-        
-        [self.cameraController cancelCapture];
-        
-        if (self.cameraController.phd2Client.connected){
-            [self.cameraController.phd2Client stop];
-            [self.cameraController.phd2Client disconnect];
-        }
-
+        [self stopEverything:[NSString stringWithFormat:@"Capture error: %@",error.localizedDescription]];
         [NSApp presentError:error];
-
         return;
     }
     
@@ -2202,23 +2194,15 @@ static void* kvoContext;
             self.calibratedExposure = nil;
         }
         
+        // check to see if the mount is now pointing below the local horizon
+        CASDevice<CASMount>* mount = self.mountController.mount;
+        if (mount && ![mount horizonCheckRA:mount.ra.doubleValue dec:mount.dec.doubleValue]) {
+            [self stopEverything:[NSString stringWithFormat:@"Mount is pointing below the local horizon"]];
+            return;
+        }
+        
         // check to see if we crossed the meridian during the exposure
         if (self.mountController.mount.weightsHigh){
-            
-            void (^stopMountTracking)() = ^{
-                
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping mount"
-                                                                subtitle:@"Mount has passed meridian so stopping tracking"];
-                
-                [self.mountController stop]; // todo; option to park
-                
-                [self.cameraController cancelCapture];
-                
-                if (self.cameraController.phd2Client.connected){
-                    [self.cameraController.phd2Client stop];
-                    [self.cameraController.phd2Client disconnect];
-                }
-            };
             
             switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
                 case 0:
@@ -2240,14 +2224,14 @@ static void* kvoContext;
                     else {
                         
                         NSLog(@"Mount crossed meridian and completed all exposures - stopping tracking");
-                        stopMountTracking();
+                        [self stopEverything:passedMeridianMessage];
                     }
                     break;
                     
                 case 2:
                 default:
                     NSLog(@"Mount crossed meridian - stopping tracking");
-                    stopMountTracking();
+                    [self stopEverything:passedMeridianMessage];
                     break;
             }
         }
@@ -2621,6 +2605,26 @@ static void* kvoContext;
     self.isRunningSequence = NO;
 
     [self.cameraController cancelCapture]; // not calling the -cancelCapture: action on this class as that disables the Cancel button
+}
+
+- (void)stopGuiding
+{
+    if (self.cameraController.phd2Client.connected){
+        [self.cameraController.phd2Client stop];
+        [self.cameraController.phd2Client disconnect];
+    }
+}
+
+- (void)stopEverything:(NSString*)message
+{
+    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping capture, guiding and tracking"
+                                                    subtitle:message];
+    
+    [self.mountController stop]; // todo; option to park
+    
+    [self.cameraController cancelCapture];
+    
+    [self stopGuiding];
 }
 
 #pragma mark - Notifications
