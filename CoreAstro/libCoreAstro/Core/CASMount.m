@@ -13,7 +13,7 @@ NSString* const CASMountSlewingNotification = @"CASMountSlewingNotification";
 NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 @interface CASMount ()
-@property (strong) CASNova* nova;
+@property (strong,nonatomic) CASNova* nova;
 @end
 
 @implementation CASMount
@@ -87,6 +87,16 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     return nil;
 }
 
+- (CASNova*) nova {
+    if (!_nova){
+        NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"]; // todo; using SXIO namespace defaults...
+        NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+        if (latitude && longitude){
+            _nova = [[CASNova alloc] initWithObserverLatitude:latitude.doubleValue longitude:longitude.doubleValue];
+        }
+    }
+    return _nova;
+}
 - (NSNumber*) secondsUntilTransit {
     
     NSNumber* result;
@@ -94,14 +104,6 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
     NSNumber* ra = self.ra;
     NSNumber* dec = self.dec;    
     if (ra && dec){
-        
-        if (!self.nova){
-            NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"]; // todo; using SXIO namespace defaults...
-            NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
-            if (latitude && longitude){
-                self.nova = [[CASNova alloc] initWithObserverLatitude:latitude.doubleValue longitude:longitude.doubleValue];
-            }
-        }
         
         if (self.nova){
             const CASRST rst = [self.nova rstForObjectRA:ra.doubleValue dec:dec.doubleValue jd:[CASNova today]];
@@ -122,6 +124,9 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (BOOL)horizonCheckRA:(double)ra dec:(double)dec
 {
+    if (!self.nova){
+        return false;
+    }
     const CASAltAz altaz = [self.nova objectAltAzFromRA:ra dec:dec];
     return (altaz.alt > 0);
 }
