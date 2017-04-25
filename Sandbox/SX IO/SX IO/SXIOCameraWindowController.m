@@ -1921,46 +1921,49 @@ static void* kvoContext;
     // check image view is actually visible before bothering to display it
     if (!self.exposureView.isHiddenOrHasHiddenAncestor){
         
-        // stash this as we may replace the exposure below and the uuids will no longer match
-        self.currentExposureUUID = exposure.uuid;
-        
-        // lookup any solution, this runs asynchronously so we need to track the current image uuid or when it completes
-        self.exposureView.plateSolveSolution = nil;
-        if (self.showPlateSolution){
-            [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
-                if ([solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
-                    self.exposureView.plateSolveSolution = solution;
-                }
-            }];
-        }
-        
-        // live calibrate using saved bias and flat frames
-        self.calibratedExposure = nil;
-        if (self.calibrate){
+        if (![exposure.uuid isEqualToString:self.currentExposureUUID]){
             
-            NSURL* url = [self beginAccessToSaveTarget];
-            if (url){
-                
-                __block BOOL called = NO;
-                __block CASCCDExposure* corrected = exposure;
-                CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
-                corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
-                corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
-                corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
-                [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-                    if (!called){
-                        *exposurePtr = exposure;
-                    }
-                    else {
-                        *exposurePtr = nil;
-                    }
-                    called = YES;
-                } completion:^(NSError *error, CASCCDExposure *result) {
-                    if (!error){
-                        corrected = result;
+            // stash this as we may replace the exposure below and the uuids will no longer match
+            self.currentExposureUUID = exposure.uuid;
+            
+            // lookup any solution, this runs asynchronously so we need to track the current image uuid or when it completes
+            self.exposureView.plateSolveSolution = nil;
+            if (self.showPlateSolution){
+                [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
+                    if ([solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
+                        self.exposureView.plateSolveSolution = solution;
                     }
                 }];
-                self.calibratedExposure = exposure = corrected;
+            }
+            
+            // live calibrate using saved bias and flat frames
+            self.calibratedExposure = nil;
+            if (self.calibrate){
+                
+                NSURL* url = [self beginAccessToSaveTarget];
+                if (url){
+                    
+                    __block BOOL called = NO;
+                    __block CASCCDExposure* corrected = exposure;
+                    CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
+                    corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
+                    corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
+                    corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
+                    [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+                        if (!called){
+                            *exposurePtr = exposure;
+                        }
+                        else {
+                            *exposurePtr = nil;
+                        }
+                        called = YES;
+                    } completion:^(NSError *error, CASCCDExposure *result) {
+                        if (!error){
+                            corrected = result;
+                        }
+                    }];
+                    self.calibratedExposure = exposure = corrected;
+                }
             }
         }
         
