@@ -62,7 +62,23 @@
 
 - (NSArray<CASMountController*>*)mountControllers
 {
+    // todo; need a None item
     return [CASDeviceManager sharedManager].mountControllers;
+}
+
+- (CASMountController*)mountController
+{
+    return self.mountControllerHost.mountController;
+}
+
+- (void)setMountController:(CASMountController *)mountController
+{
+    self.mountControllerHost.mountController = mountController;
+}
+
++ (NSSet*)keyPathsForValuesAffectingMountController
+{
+    return [NSSet setWithObjects:@"mountControllerHost",@"mountControllerHost.mountController§§ ",nil];
 }
 
 @end

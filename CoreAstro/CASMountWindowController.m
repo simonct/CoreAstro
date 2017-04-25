@@ -70,7 +70,6 @@
 @property (strong) CASMountSlewObserver* slewObserver;
 @property (weak) IBOutlet NSButton *mountConfigurationButton;
 @property (strong) NSPopover* mountPopover;
-@property (nonatomic,weak) CASCameraController* cameraController; // override the popup menu with a designated camera controller
 @property CASMountSynchroniser* synchroniser;
 @property BOOL synced;
 @property BOOL slewAfterFindLocation;
@@ -319,38 +318,7 @@ static void* kvoContext;
 
 - (void)setCameraController:(CASCameraController *)cameraController
 {
-    self.mountController.cameraController = self.cameraController;
-//
-////    NSAssert(self.mountController, @"Need a mount controller");
-////
-////    if (self.mountController.cameraController != cameraController){
-////        
-////        self.mountController.cameraController = cameraController;
-////        
-////        if (!cameraController){
-////            self.mountWindowDelegate = nil;
-////        }
-////        else{
-////            
-////#if defined(SXIO) || defined(CCDIO)
-////            SXIOCameraWindowController* cameraWindowController = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:cameraController];
-////            if ([cameraWindowController isKindOfClass:[SXIOCameraWindowController class]]){
-////                
-////                self.mountWindowDelegate = (id)cameraWindowController;
-////                /*
-////                 CASPlateSolveSolution* solution = cameraWindowController.exposureView.plateSolveSolution;
-////                 if (solution){
-////                 // todo; check to see we're not slewing, etc
-////                 [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec];
-////                 }
-////                 */
-////            }
-////            else {
-////                self.mountWindowDelegate = nil;
-////            }
-////#endif
-////        }
-////    }
+    self.mountController.cameraController = cameraController;
 }
 
 - (void)startMoving:(CASMountDirection)direction

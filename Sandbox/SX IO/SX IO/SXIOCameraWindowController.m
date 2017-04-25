@@ -946,26 +946,21 @@ static void* kvoContext;
         return;
     }
     
+    // as the mount window to show the connect UI
     [mountWindowController connectToMount:^{
         
         self.mountController = mountWindowController.mountController; // only set this once it's connected as it observes the mount controller status
 
-        // only configure the mount window if it doesn't already have a camera controller // ??
-        if (self.mountController.cameraController != nil){
-            NSLog(@"Not configuring mount window as it already has a camera controller: %@",self.mountController.cameraController);
-        }
-        else{
+        mountWindowController.cameraController = self.cameraController; // set the mount and mount controller's camera to this camera conroller
         
-            self.mountController.cameraController = self.cameraController;
-            CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
-            if (solution){
-                // todo; check to see we're not slewing, etc
-                [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
-                    if (error){
-                        [NSApp presentError:error];
-                    }
-                }];
-            }
+        // if there's a current plate solution, set that as the current target - necessary? doesn't it appear in the popup now ?
+        CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
+        if (solution){
+            [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
+                if (error){
+                    [NSApp presentError:error];
+                }
+            }];
         }
     }];
 }
