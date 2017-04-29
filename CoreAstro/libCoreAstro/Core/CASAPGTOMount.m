@@ -41,7 +41,10 @@
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"APGTOCP3Plus":@YES,
                                                               @"APGTOAllowUnsynchedSlew":@NO,
-                                                              @"APGTOParkPositionIndex":@(1)}];
+                                                              @"APGTOParkPositionIndex":@(1),
+                                                              @"APGTOGuideRateIndex":@(2),
+                                                              @"APGTORABacklashArcSeconds":@(0),
+                                                              @"APGTODecBacklashArcSeconds":@(0)}];
 }
 
 - (NSString*)vendorName
@@ -123,11 +126,6 @@
             
             NSLog(@"Configuring %@",self.name);
             
-            // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
-            [self sendCommand:@":Br 00:00:00#" readCount:1 completion:^(NSString *response) {
-                if (![response isEqualToString:@"1"]) NSLog(@"Set backlash: %@",response);
-            }];
-            
             // :SL HH:MM:SS# -> 1
             [self sendCommand:[CASLX200Commands setTelescopeLocalTime:date] readCount:1 completion:^(NSString* response){
                 if (![response isEqualToString:@"1"]) NSLog(@"Set local time: %@",response);
@@ -157,6 +155,9 @@
                 
                 // I'm assuming this will be the last command that gets a response so at this point we're done (although the mount may not yet have actually processed the PO and Q commands)
                 [self completeInitialisingMount:nil];
+                
+                // restore logging state
+                self.logCommands = saveLogCommands;
             }];
             
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above - not required for CP3/4 but doesn't unlock the keypad if you don't
@@ -165,9 +166,6 @@
             // switch PEC off, todo; make configurable in the UI
             [self sendCommand:@":p#"];
         }
-        
-        // restore logging state
-        self.logCommands = saveLogCommands;
     }];
 }
 
@@ -185,11 +183,39 @@
             self.trackingRate = CASAPGTOMountTrackingRateUnknown;
         }
         else {
-            // todo; save in defaults
-            [self sendCommand:@":RG1#"]; // 0.5x guide rate (todo; try 0.25x, 0.5x defintely seems smoother than 1x)
-            [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount, not the NESW arrow keys which use the centring rate)
+            
+            // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
+            const NSInteger backlashArcSecondsRA = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]));
+            NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*00:%02ld#",(long)backlashArcSecondsRA];
+            [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
+                if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
+            }];
+            
+            // :Bd DD*MM:SS#  -> 1
+            const NSInteger backlashArcSecondsDec = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]));
+            NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*00:%02ld#",(long)backlashArcSecondsDec];
+            [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
+                if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
+            }];
+            
+            // guide rate
+            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOGuideRateIndex"]) {
+                case 0:
+                    [self sendCommand:@":RG0#"]; // 0.25x
+                    break;
+                case 1:
+                    [self sendCommand:@":RG1#"]; // 0.5x
+                    break;
+                case 2:
+                default:
+                    [self sendCommand:@":RG2#"]; // 1x
+                    break;
+            }
+            
+            [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount to a target, not the NESW arrow keys which use the centring rate)
             
             self.movingRate = CASAPGTOMountMovingRate600; // this is button rate, not the slew rate which is set above (confusingly we don't show the slew rate in the UI)
+            
             self.trackingRate = CASAPGTOMountTrackingRateSidereal;
         }
 
@@ -197,10 +223,6 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
-        
-        // pop an alert reminding that you need to sync the mount with a 'don't show again' checkbox
-        // or some red text on the status label ??
-        // offer to let the user set the synced flag if it was already done with the handset
     }
 }
 
@@ -511,6 +533,7 @@
         
         _direction = direction;
         
+        // start moving at the current centering rate
         switch (_direction) {
             case CASMountDirectionNorth:
                 [self sendCommand:@":Mn#"];
