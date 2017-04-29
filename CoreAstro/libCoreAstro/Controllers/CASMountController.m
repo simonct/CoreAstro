@@ -408,7 +408,25 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     [command suspendExecution];
     
     if (coordinates.count){
-        slew([coordinates[@"ra"] doubleValue],[coordinates[@"dec"] doubleValue]);
+        NSNumber* alt = coordinates[@"alt"];
+        NSNumber* az = coordinates[@"az"];
+        if (alt && az) {
+            NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"]; // todo; using SXIO namespace defaults...
+            NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+            if (latitude && longitude){
+                CASNova* nova = [[CASNova alloc] initWithObserverLatitude:latitude.doubleValue longitude:longitude.doubleValue];
+                const CASRaDec radec = [nova objectRADecFromAltAz:[alt doubleValue] dec:[az doubleValue]];
+                slew(radec.ra,radec.dec);
+            }
+            else {
+                command.scriptErrorNumber = paramErr;
+                command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Site latitude and longitude must be set before slewing to an Alt Az coordinate",@"")];
+                [command resumeExecutionWithResult:nil];
+            }
+        }
+        else {
+            slew([coordinates[@"ra"] doubleValue],[coordinates[@"dec"] doubleValue]);
+        }
     }
     else if (bookmark.length) {
         NSDictionary* bookmarkDict = [self bookmarkWithName:bookmark];

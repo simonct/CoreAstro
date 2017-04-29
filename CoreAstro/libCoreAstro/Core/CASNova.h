@@ -34,4 +34,9 @@ typedef struct {
 } CASAltAz;
 - (CASAltAz)objectAltAzFromRA:(double)ra dec:(double)dec;
 
+typedef struct {
+    double ra, dec;
+} CASRaDec;
+- (CASRaDec)objectRADecFromAltAz:(double)alt dec:(double)az;
+
 @end

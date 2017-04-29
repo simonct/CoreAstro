@@ -102,4 +102,27 @@
     return result;
 }
 
+- (CASRaDec)objectRADecFromAltAz:(double)alt dec:(double)az
+{
+    const double now = [[self class] now];
+    
+    struct ln_hrz_posn object = {
+        .alt = alt,
+        .az = az
+    };
+    struct ln_lnlat_posn observer = {
+        .lat = self.latitude,
+        .lng = self.longitude
+    };
+
+    struct ln_equ_posn radec;
+    ln_get_equ_from_hrz(&object, &observer, now, &radec);
+    
+    const CASRaDec result = {
+        .ra = radec.ra,
+        .dec = radec.dec
+    };
+    return result;
+}
+
 @end
