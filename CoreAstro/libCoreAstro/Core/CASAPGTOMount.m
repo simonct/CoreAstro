@@ -121,6 +121,8 @@
             _synced = YES; // not strictly true but assume that the mount has been synced externally
             
             [self completeInitialisingMount:nil];
+            
+            self.logCommands = saveLogCommands;
         }
         else {
             
