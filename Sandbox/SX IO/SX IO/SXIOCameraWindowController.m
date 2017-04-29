@@ -234,6 +234,9 @@ static void* kvoContext;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountSolvedSyncExposure:) name:kCASMountControllerSolvedSyncExposureNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountCompletedSync:) name:kCASMountControllerCompletedSyncNotification object:nil];
 
+    // listen for mount removed notifications
+    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"mountControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
+
     // map close button to hide window
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
@@ -247,6 +250,7 @@ static void* kvoContext;
     }
     self.mountController = nil; // unobserve status
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
 }
 
 - (void)hideWindow:sender
@@ -282,6 +286,20 @@ static void* kvoContext;
                 NSString* status = self.mountController.status;
                 if (status){
                     self.mountSlewProgressSheet.label.stringValue = status;
+                }
+            }
+        }
+        
+        if (object == [CASDeviceManager sharedManager]) {
+            if ([change[NSKeyValueChangeKindKey] integerValue] == NSKeyValueChangeRemoval) {
+                NSArray* mountControllers = change[NSKeyValueChangeOldKey];
+                if ([mountControllers isKindOfClass:[NSArray class]]) {
+                    [mountControllers enumerateObjectsUsingBlock:^(CASMountController* mountController, NSUInteger idx, BOOL * _Nonnull stop) {
+                        if (mountController == self.mountController) {
+                            self.mountController = nil;
+                            // dismiss slew progress, etc ?
+                        }
+                    }];
                 }
             }
         }
