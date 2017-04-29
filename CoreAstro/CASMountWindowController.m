@@ -316,6 +316,11 @@ static void* kvoContext;
     return self.mountController.cameraController;
 }
 
++ (NSSet*)keyPathsForValuesAffectingCameraController
+{
+    return [NSSet setWithObject:@"mountController.cameraController"];
+}
+
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     self.mountController.cameraController = cameraController;
