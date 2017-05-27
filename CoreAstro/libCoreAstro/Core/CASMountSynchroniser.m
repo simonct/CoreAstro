@@ -70,38 +70,46 @@
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
-            if (_cancelled){
-                return;
-            }
-
             // stop the slew
             [self.mount stopMoving];
 
-            // plate solve
-            [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
-                
+            if (_cancelled){
+                return;
+            }
+            
+            // wait a couple of seconds for the mount to settle
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
                 if (_cancelled){
                     return;
                 }
 
-                if (error){
-                    [self completeWithError:error];
-                }
-                else {
+                // plate solve
+                [self captureAndSolveWithCompletion:^(NSError* error, double ra, double dec) {
                     
-                    // sync the mount to this location
-                    [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                    if (_cancelled){
+                        return;
+                    }
+                    
+                    if (error){
+                        [self completeWithError:error];
+                    }
+                    else {
                         
-                        if (slewError != CASMountSlewErrorNone){
-                            [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
-                        }
-                        else {
-                            NSLog(@"Synchronised mount to RA: %f, Dec: %f",ra,dec);
-                            [self completeWithError:nil];
-                        }
-                    }];
-                }
-            }];
+                        // sync the mount to this location
+                        [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                            
+                            if (slewError != CASMountSlewErrorNone){
+                                [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
+                            }
+                            else {
+                                NSLog(@"Synchronised mount to RA: %f, Dec: %f",ra,dec);
+                                [self completeWithError:nil];
+                            }
+                        }];
+                    }
+                }];
+            });
         });
     });
 }
