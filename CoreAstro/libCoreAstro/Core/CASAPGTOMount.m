@@ -189,6 +189,7 @@
             // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
             const NSInteger backlashArcSecondsRA = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]));
             NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*00:%02ld#",(long)backlashArcSecondsRA];
+            NSLog(@"RA backlash: %@",backlashCommandRA);
             [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
                 if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
             }];
@@ -196,6 +197,7 @@
             // :Bd DD*MM:SS#  -> 1
             const NSInteger backlashArcSecondsDec = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]));
             NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*00:%02ld#",(long)backlashArcSecondsDec];
+            NSLog(@"Dec backlash: %@",backlashCommandDec);
             [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
                 if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
             }];
