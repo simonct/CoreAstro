@@ -374,6 +374,7 @@ static void* kvoContext;
                         [self presentAlertWithMessage:@"Failed to sync the mount"];
                     }
                     else {
+                        self.synced = YES;
                         [self presentAlertWithMessage:@"The mount is now synced to the sky"];
                     }
                 }];
