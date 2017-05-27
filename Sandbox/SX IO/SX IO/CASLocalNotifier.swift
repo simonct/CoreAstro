@@ -56,7 +56,7 @@ class CASLocalNotifier: NSObject {
         NSUserNotificationCenter.default.deliver(note);
         var message = title
         if (subtitle != nil) {
-            message = message + ": \(subtitle)"
+            message = message + ": \(String(describing: subtitle))"
         }
 //        print(message)
     }
