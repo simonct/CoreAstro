@@ -310,13 +310,6 @@ static void* kvoContext;
     }
 }
 
-- (NSString*) cachesDirectory
-{
-    NSString* cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-    cache = [cache stringByAppendingPathComponent:[[NSBundle mainBundle] bundleIdentifier]];
-    return cache;
-}
-
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     if (_cameraController != cameraController){
@@ -1285,20 +1278,6 @@ static void* kvoContext;
 
 #pragma mark - Plate Solving
 
-- (NSURL*)plateSolutionURLForExposure:(CASCCDExposure*)exposure
-{
-    NSString* uuid = exposure.uuid;
-    if (![uuid length]){
-        uuid = [exposure.io.url lastPathComponent];
-    }
-    if (![uuid length]){
-        return nil;
-    }
-    NSString* caches = [self.cachesDirectory stringByAppendingPathComponent:@"Plate Solutions"];
-    [[NSFileManager defaultManager] createDirectoryAtPath:caches withIntermediateDirectories:YES attributes:nil error:nil];
-    return [NSURL fileURLWithPath:[[caches stringByAppendingPathComponent:uuid] stringByAppendingPathExtension:@"caPlateSolution"]];
-}
-
 - (void)preparePlateSolveWithCompletion:(void(^)(NSError*))completion
 {
     NSParameterAssert(completion);
@@ -1463,6 +1442,8 @@ static void* kvoContext;
     }
 }
 
+#pragma mark - Bookmarks
+
 - (void)openBookmarksWithSolution:(CASPlateSolveSolution*)solution
 {
     [[SXIOBookmarkWindowController sharedController] showWindow:nil];
@@ -1551,6 +1532,8 @@ static void* kvoContext;
     return calibration;
 }
 */
+
+#pragma mark - Saving
 
 - (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
 {
@@ -2558,7 +2541,7 @@ static void* kvoContext;
     [self stopGuiding];
 }
 
-#pragma mark - Notifications
+#pragma mark - Mount Notifications
 
 - (void)mountSlewingStateChanged:(NSNotification*)note // todo; post from mount controller instead ?
 {
