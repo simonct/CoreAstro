@@ -888,9 +888,12 @@ static void* kvoContext;
 
 - (IBAction)toggleCalibrate:(id)sender
 {
+    /*
     self.calibrate = !self.calibrate;
     [self resetAndRedisplayCurrentExposure];
     [self.cameraController.camera setDefaultsObject:@(self.equalise) forKey:@"SXIODisplayCalibrate"];
+    */
+    NSLog(@"toggleCalibrate: not implemented");
 }
 
 - (IBAction)toggleShowPlateSolution:(id)sender
@@ -1487,6 +1490,7 @@ static void* kvoContext;
     return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]] : nil;
 }
 
+/*
 - (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
 {
     if (!suffix || !_targetFolder){
@@ -1546,6 +1550,7 @@ static void* kvoContext;
     }
     return calibration;
 }
+*/
 
 - (void)runSavePanel:(NSSavePanel*)save forExposures:(NSArray*)exposures withProgressLabel:(NSString*)progressLabel exportBlock:(void(^)(CASCCDExposure*))exportBlock completionBlock:(void(^)(void))completionBlock
 {
@@ -1865,33 +1870,33 @@ static void* kvoContext;
         
         // live calibrate using saved bias and flat frames
         self.calibratedExposure = nil;
-        if (self.calibrate){
-            
-            NSURL* url = [self beginAccessToSaveTarget];
-            if (url){
-                
-                __block BOOL called = NO;
-                __block CASCCDExposure* corrected = exposure;
-                CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
-                corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
-                corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
-                corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
-                [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-                    if (!called){
-                        *exposurePtr = exposure;
-                    }
-                    else {
-                        *exposurePtr = nil;
-                    }
-                    called = YES;
-                } completion:^(NSError *error, CASCCDExposure *result) {
-                    if (!error){
-                        corrected = result;
-                    }
-                }];
-                self.calibratedExposure = exposure = corrected;
-            }
-        }
+//        if (self.calibrate){
+//            
+//            NSURL* url = [self beginAccessToSaveTarget];
+//            if (url){
+//                
+//                __block BOOL called = NO;
+//                __block CASCCDExposure* corrected = exposure;
+//                CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
+//                corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
+//                corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
+//                corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
+//                [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+//                    if (!called){
+//                        *exposurePtr = exposure;
+//                    }
+//                    else {
+//                        *exposurePtr = nil;
+//                    }
+//                    called = YES;
+//                } completion:^(NSError *error, CASCCDExposure *result) {
+//                    if (!error){
+//                        corrected = result;
+//                    }
+//                }];
+//                self.calibratedExposure = exposure = corrected;
+//            }
+//        }
     }
     
     // equalise
@@ -2098,6 +2103,7 @@ static void* kvoContext;
                     // todo; run any user-defined post-processing scripts e.g. NSUserAppleScriptTask
                 }
                 
+                /*
                 if (self.calibrate && self.calibratedExposure){
                     NSString* ext = [finalUrl pathExtension];
                     NSString* filename = [[[finalUrl lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:@"_calibrated"];
@@ -2112,6 +2118,7 @@ static void* kvoContext;
                         NSLog(@"Wrote calibrated exposure to %@",[finalUrl path]);
                     }
                 }
+                */
             }
             
             // clear any calibrated exposure set in the display code
