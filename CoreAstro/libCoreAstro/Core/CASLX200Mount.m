@@ -94,7 +94,7 @@
     }
 }
 
-- (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion
+- (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount priority:(BOOL)priority completion:(void (^)(NSString*))completion
 {
     //    if (!self.connected){
     //        NSLog(@"sendCommand but not connected");
@@ -105,18 +105,29 @@
         NSLog(@"Command: %@",command);
     }
     
-    if (!self.completionStack){
-        self.completionStack = [NSMutableArray arrayWithCapacity:3];
-    }
     CASLX200MountResponse* response = [CASLX200MountResponse new];
     response.completion = completion;
     response.readCount = readCount;
     response.useTerminator = (readCount == 0);
     response.command = command;
-    [self.completionStack addObject:response];
+
+    if (!self.completionStack){
+        self.completionStack = [NSMutableArray arrayWithCapacity:3];
+    }
+    if (priority) {
+        [self.completionStack insertObject:response atIndex:0];
+    }
+    else {
+        [self.completionStack addObject:response];
+    }
     //        NSLog(@"%ld commands in stack",[self.completionStack count]);
     
     [self sendNextCommand];
+}
+
+- (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion
+{
+    [self sendCommand:command readCount:readCount priority:false completion:completion];
 }
 
 - (void)sendCommand:(NSString*)command completion:(void (^)(NSString*))completion

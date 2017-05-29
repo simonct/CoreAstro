@@ -739,22 +739,30 @@
         NSLog(@"APGTO: Pulse guide duration of %ld is > 5000, ignoring",ms);
         return;
     }
+    
+    NSString* command;
+
     switch (direction) {
         case CASMountDirectionNorth:
-            [self sendCommand:[NSString stringWithFormat:@":Mn%03ld#",ms]];
+            command = [NSString stringWithFormat:@":Mn%03ld#",ms];
             break;
         case CASMountDirectionEast:
-            [self sendCommand:[NSString stringWithFormat:@":Me%03ld#",ms]];
+            command = [NSString stringWithFormat:@":Me%03ld#",ms];
             break;
         case CASMountDirectionSouth:
-            [self sendCommand:[NSString stringWithFormat:@":Ms%03ld#",ms]];
+            command = [NSString stringWithFormat:@":Ms%03ld#",ms];
             break;
         case CASMountDirectionWest:
-            [self sendCommand:[NSString stringWithFormat:@":Mw%03ld#",ms]];
+            command = [NSString stringWithFormat:@":Mw%03ld#",ms];
             break;
         default:
             NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
             break;
+    }
+    
+    if (command){
+        NSLog(@"APGTO: Pulse command '%@'",command);
+        [self sendCommand:command readCount:0 priority:true completion:nil];
     }
 }
 

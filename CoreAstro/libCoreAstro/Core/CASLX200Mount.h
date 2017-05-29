@@ -34,6 +34,7 @@
 - (void)disconnect;
 
 // for subclasses
+- (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount priority:(BOOL)priority completion:(void (^)(NSString*))completion;
 - (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion;
 - (void)sendCommand:(NSString*)command completion:(void (^)(NSString*))completion;
 - (void)sendCommand:(NSString*)command;
