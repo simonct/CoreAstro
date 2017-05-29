@@ -110,6 +110,8 @@
 		F42437BD1CE889BC0097E1E8 /* SXIOSequenceEditorSlewStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F42437BB1CE889BC0097E1E8 /* SXIOSequenceEditorSlewStepView.xib */; };
 		F42437C51CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */; };
 		F42437C61CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */; };
+		F42446061EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */; };
+		F42446071EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
 		F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
@@ -514,6 +516,8 @@
 		F418AF381BA09B7A00395C4A /* SXIOBookmarkWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOBookmarkWindowController.xib; sourceTree = "<group>"; };
 		F42437BB1CE889BC0097E1E8 /* SXIOSequenceEditorSlewStepView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorSlewStepView.xib; sourceTree = "<group>"; };
 		F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorParkStepView.xib; sourceTree = "<group>"; };
+		F42446041EDC7DF50058BF45 /* SXIOPlateSolutionLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolutionLookup.h; sourceTree = "<group>"; };
+		F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolutionLookup.m; sourceTree = "<group>"; };
 		F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSequenceEditorWindowController.h; sourceTree = "<group>"; };
 		F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOSequenceEditorWindowController.m; sourceTree = "<group>"; };
 		F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorWindowController.xib; sourceTree = "<group>"; };
@@ -1121,6 +1125,8 @@
 				F43A4A9E1B4BE498007BC28B /* CASRecentExposures.swift */,
 				F458CACF1CB9ED67004A166C /* SXIOM25CFixupTool.h */,
 				F458CAD01CB9ED67004A166C /* SXIOM25CFixupTool.m */,
+				F42446041EDC7DF50058BF45 /* SXIOPlateSolutionLookup.h */,
+				F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1725,6 +1731,7 @@
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
+				F42446071EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,
 				F4DE8A791E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1818,6 +1825,7 @@
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
+				F42446061EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,
 				F4DE8A781E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
