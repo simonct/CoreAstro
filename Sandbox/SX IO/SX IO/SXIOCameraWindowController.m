@@ -21,6 +21,8 @@
 #import "CASMountWindowController.h"
 #import "SXIOFocuserWindowController.h"
 #import "SXIOBookmarkWindowController.h"
+#import "SXIOPlateSolutionLookup.h"
+
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -30,7 +32,6 @@
 
 #import <Quartz/Quartz.h>
 #import <CoreLocation/CoreLocation.h>
-#import <CloudKit/CloudKit.h>
 
 static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"SXIOCameraWindowControllerDisplayedSleepWarning";
 
@@ -1384,42 +1385,7 @@ static void* kvoContext;
                     
                     NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
                     if (solutionData){
-                        CKRecord* record = [[CKRecord alloc] initWithRecordType:@"PlateSolution"];
-                        [record setObject:exposure.uuid forKey:@"UUID"];
-                        [record setObject:solutionData forKey:@"Solution"];
-                        
-                        // we need to remove any existing solutions first
-                        [self lookupSolutionCloudRecordsWithUUID:exposure.uuid completion:^(NSError *error, NSArray<CKRecord *> *results) {
-                           
-                            void (^addRecord)(CKRecord*) = ^(CKRecord* record){
-                                [[CKContainer defaultContainer].publicCloudDatabase saveRecord:record completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-                                    if (error){
-                                        NSLog(@"Failed to save plate solution to CloudKit: %@",error);
-                                    }
-                                }];
-                            };
-                            
-                            if (results.count == 0) {
-                                addRecord(record);
-                            }
-                            else {
-
-                                CKModifyRecordsOperation* op = [[CKModifyRecordsOperation alloc] init];
-                                op.container = [CKContainer defaultContainer];
-                                op.database = [CKContainer defaultContainer].publicCloudDatabase;
-
-                                NSMutableArray* recordIds = [NSMutableArray arrayWithCapacity:results.count];
-                                [results enumerateObjectsUsingBlock:^(CKRecord * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                                    [recordIds addObject:obj.recordID];
-                                }];
-                                op.recordIDsToDelete = recordIds;
-                                op.modifyRecordsCompletionBlock = ^(NSArray<CKRecord *> * _Nullable savedRecords, NSArray<CKRecordID *> * _Nullable deletedRecordIDs, NSError * _Nullable operationError){
-                                    addRecord(record); // called on bg thread
-                                };
-                                [op.database addOperation:op];
-                            }
-                        }];
-                         
+                        [[SXIOPlateSolutionLookup sharedLookup] storeSolutionData:solutionData forUUID:exposure.uuid];
                     }
                 }
 
@@ -1860,70 +1826,6 @@ static void* kvoContext;
     }
 }
 
-- (void)lookupSolutionCloudRecordsWithUUID:(NSString*)uuid completion:(void(^)(NSError* error,NSArray<CKRecord *> *))completion
-{
-    CKQuery* query = [[CKQuery alloc] initWithRecordType:@"PlateSolution" predicate:[NSPredicate predicateWithFormat:@"UUID == %@",uuid]];
-    [[CKContainer defaultContainer].publicCloudDatabase performQuery:query inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
-        completion(error,results);
-    }];
-}
-
-- (void)lookupSolutionForExposure:(CASCCDExposure*)exposure completion:(void(^)(CASCCDExposure*,CASPlateSolveSolution*))completion
-{
-    NSData* solutionData;
-    
-    // look for a solution file alongside the exposure
-    NSURL* exposureUrl = exposure.io.url;
-    if (exposureUrl){
-        NSURL* solutionUrl = [[exposureUrl URLByDeletingPathExtension] URLByAppendingPathExtension:@"caPlateSolution"];
-        solutionData = [NSData dataWithContentsOfURL:solutionUrl];
-    }
-    
-    if (solutionData){
-        CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-        if (solution){
-            completion(exposure,solution);
-            return;
-        }
-    }
-    
-    // then, try CloudKit
-    if (!solutionData){
-        
-        [self lookupSolutionCloudRecordsWithUUID:exposure.uuid completion:^(NSError *error, NSArray<CKRecord *> *results) {
-            
-            if (!error && results.count > 0){
-                
-                if (self.showPlateSolution){ // showPlateSolution should be on the exposure view
-                    
-                    NSData* solutionData = [results.firstObject objectForKey:@"Solution"];
-                    if ([solutionData length]){
-                        
-                        @try {
-                            CASPlateSolveSolution* solution = [NSKeyedUnarchiver unarchiveObjectWithData:solutionData];
-                            if (![solution isKindOfClass:[CASPlateSolveSolution class]]){
-                                NSLog(@"Root object in solution archive is a %@ and not a CASPlateSolveSolution",NSStringFromClass([solution class]));
-                                solution = nil;
-                            }
-                            if (!solution){
-                                // todo; start plate solve for this exposure, show solution hud but with a spinner
-                            }
-                            else {
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    completion(exposure,solution);
-                                });
-                            }
-                        }
-                        @catch (NSException *exception) {
-                            NSLog(@"Exception opening solution data: %@",exception);
-                        }
-                    }
-                }
-            }
-        }];
-    }
-}
-
 - (void)displayExposure:(CASCCDExposure*)exposure
 {
     [self displayExposure:exposure resetDisplay:YES];
@@ -1933,74 +1835,80 @@ static void* kvoContext;
 {
     if (!exposure){
         self.exposureView.currentExposure = nil;
+        self.exposureView.plateSolveSolution = nil;
         return;
     }
     
     // check image view is actually visible before bothering to display it
-    if (!self.exposureView.isHiddenOrHasHiddenAncestor){
+    if (self.exposureView.isHiddenOrHasHiddenAncestor){
+        return;
+    }
+    
+    // lookup any cached solution if the exposure uuid has changed
+    if (![exposure.uuid isEqualToString:self.currentExposureUUID]){
         
-        if (![exposure.uuid isEqualToString:self.currentExposureUUID]){
+        // stash this as we may replace the exposure below and the uuids will no longer match
+        self.currentExposureUUID = exposure.uuid;
+        
+        // clear any plate solution
+        self.exposureView.plateSolveSolution = nil;
+        
+        if (self.showPlateSolution){
             
-            // stash this as we may replace the exposure below and the uuids will no longer match
-            self.currentExposureUUID = exposure.uuid;
+            // lookup any solution, this runs asynchronously so we need to track the current image uuid for when it completes
+            [[SXIOPlateSolutionLookup sharedLookup] lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
+                if (self.showPlateSolution && [solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
+                    self.exposureView.plateSolveSolution = solution;
+                }
+            }];
+        }
+        
+        // live calibrate using saved bias and flat frames
+        self.calibratedExposure = nil;
+        if (self.calibrate){
             
-            // lookup any solution, this runs asynchronously so we need to track the current image uuid or when it completes
-            self.exposureView.plateSolveSolution = nil;
-            if (self.showPlateSolution){
-                [self lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
-                    if ([solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
-                        self.exposureView.plateSolveSolution = solution;
+            NSURL* url = [self beginAccessToSaveTarget];
+            if (url){
+                
+                __block BOOL called = NO;
+                __block CASCCDExposure* corrected = exposure;
+                CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
+                corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
+                corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
+                corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
+                [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
+                    if (!called){
+                        *exposurePtr = exposure;
+                    }
+                    else {
+                        *exposurePtr = nil;
+                    }
+                    called = YES;
+                } completion:^(NSError *error, CASCCDExposure *result) {
+                    if (!error){
+                        corrected = result;
                     }
                 }];
-            }
-            
-            // live calibrate using saved bias and flat frames
-            self.calibratedExposure = nil;
-            if (self.calibrate){
-                
-                NSURL* url = [self beginAccessToSaveTarget];
-                if (url){
-                    
-                    __block BOOL called = NO;
-                    __block CASCCDExposure* corrected = exposure;
-                    CASCCDCorrectionProcessor* corrector = [[CASCCDCorrectionProcessor alloc] init];
-                    corrector.dark = [self calibrationExposureOfType:@"dark" matchingExposure:exposure];
-                    corrector.bias = [self calibrationExposureOfType:@"bias" matchingExposure:exposure];
-                    corrector.flat = [self calibrationExposureOfType:@"flat" matchingExposure:exposure];
-                    [corrector processWithProvider:^(CASCCDExposure **exposurePtr, NSDictionary **info) {
-                        if (!called){
-                            *exposurePtr = exposure;
-                        }
-                        else {
-                            *exposurePtr = nil;
-                        }
-                        called = YES;
-                    } completion:^(NSError *error, CASCCDExposure *result) {
-                        if (!error){
-                            corrected = result;
-                        }
-                    }];
-                    self.calibratedExposure = exposure = corrected;
-                }
+                self.calibratedExposure = exposure = corrected;
             }
         }
-        
-        // equalise
-        if (self.equalise){
-            exposure = [self.imageProcessor equalise:exposure];
-        }
-
-        // debayer (we do this as the last step as equalise only works with single-channel images, todo; make it work with rgba images as well)
-        if (self.imageDebayer.mode != kCASImageDebayerNone){
-            CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
-            if (debayeredExposure){
-                exposure = debayeredExposure;
-            }
-        }
-        
-        // set the exposure
-        [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
     }
+    
+    // equalise
+    if (self.equalise){
+        exposure = [self.imageProcessor equalise:exposure];
+    }
+    
+    // debayer (we do this as the last step as equalise only works with single-channel images, todo; make it work with rgba images as well)
+    if (self.imageDebayer.mode != kCASImageDebayerNone){
+        CASCCDExposure* debayeredExposure = [self.imageDebayer debayer:exposure adjustRed:1 green:1 blue:1 all:1];
+        if (debayeredExposure){
+            exposure = debayeredExposure;
+        }
+    }
+    
+    // set the exposure
+    [self.exposureView setCurrentExposure:exposure resetDisplay:resetDisplay];
 }
 
 - (void)clearSelection
