@@ -7,15 +7,17 @@
 //
 
 #import "CASAPGTOMount.h"
+#import "CASAPGTOGuidePort.h"
 #import "CASLX200Commands.h"
 #import "CASCoordinateUtils.h"
 #import "CASNova.h"
 
-@interface CASAPGTOMount ()
+@interface CASAPGTOMount ()<CASAPGTOGuidePortDelegate>
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
 @property (copy) NSNumber* siteLongitude, *siteLatitude;
 @property (nonatomic,readonly) BOOL shouldConfigureMount;
+@property (strong) CASAPGTOGuidePort* guidePort;
 @end
 
 @implementation CASAPGTOMount {
@@ -169,6 +171,10 @@
             [self sendCommand:@":p#"];
         }
     }];
+    
+    if (_cp3){
+        self.guidePort = [[CASAPGTOGuidePort alloc] initWithDelegate:self];
+    }
 }
 
 - (void)completeInitialisingMount:(NSError*)error
@@ -721,7 +727,35 @@
 
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
 {
-    NSLog(@"-pulseInDirection:ms: not implemented, needs GTOCP3");
+    if (!self.connected){
+        NSLog(@"APGTO: Attempt to pulse guide while not connected");
+        return;
+    }
+    if (ms < 1){
+        NSLog(@"APGTO: Pulse guide duration of %ld is < 1, ignoring",ms);
+        return;
+    }
+    if (ms > 5000){
+        NSLog(@"APGTO: Pulse guide duration of %ld is > 5000, ignoring",ms);
+        return;
+    }
+    switch (direction) {
+        case CASMountDirectionNorth:
+            [self sendCommand:[NSString stringWithFormat:@":Mn%03ld#",ms]];
+            break;
+        case CASMountDirectionEast:
+            [self sendCommand:[NSString stringWithFormat:@":Me%03ld#",ms]];
+            break;
+        case CASMountDirectionSouth:
+            [self sendCommand:[NSString stringWithFormat:@":Ms%03ld#",ms]];
+            break;
+        case CASMountDirectionWest:
+            [self sendCommand:[NSString stringWithFormat:@":Mw%03ld#",ms]];
+            break;
+        default:
+            NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
+            break;
+    }
 }
 
 - (NSViewController*)configurationViewController
