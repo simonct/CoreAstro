@@ -505,6 +505,23 @@ static void* kvoContext;
     self.targetRA = nil;
     self.targetDec = nil;
     
+    // check for something that looks like an ra/dec
+    NSString* text = self.searchString;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9])+" options:0 error:nil];
+    NSArray<NSTextCheckingResult*>* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
+    if (matches.count == 6){
+        
+        self.targetRA = @([[text substringWithRange:matches[0].range] floatValue]*15 +
+        [[text substringWithRange:matches[1].range] floatValue]/60.0 +
+        [[text substringWithRange:matches[2].range] floatValue]/3600.0);
+        
+        self.targetDec = @([[text substringWithRange:matches[3].range] floatValue] +
+        [[text substringWithRange:matches[4].range] floatValue]/60.0 +
+        [[text substringWithRange:matches[5].range] floatValue]/3600);
+        
+        return;
+    }
+    
     [self.lookupSpinner startAnimation:nil];
     
     self.lookup = [CASObjectLookup new];
