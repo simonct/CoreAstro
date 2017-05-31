@@ -488,6 +488,7 @@ static void* kvoContext;
                     [weakSelf presentAlertWithMessage:error.localizedDescription];
                 }
                 else {
+                    [weakSelf disconnectButtonPressed:nil];
                     [weakSelf presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
                 }
             };
