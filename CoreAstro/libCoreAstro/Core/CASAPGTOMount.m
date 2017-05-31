@@ -29,6 +29,7 @@
     CASAPGTOMountMovingRate _movingRate;
     CASAPGTOMountTrackingRate _trackingRate;
     NSTimeInterval _lastMountPollTime;
+    BOOL _observingDefaults;
 }
 
 @synthesize name, connected;
@@ -39,6 +40,8 @@
 @synthesize gmtOffset = _gmtOffset;
 @synthesize siderealTime = _siderealTime;
 
+static void* kvoContext;
+
 + (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"APGTOCP3Plus":@YES,
@@ -47,6 +50,27 @@
                                                               @"APGTOGuideRateIndex":@(2),
                                                               @"APGTORABacklashArcSeconds":@(0),
                                                               @"APGTODecBacklashArcSeconds":@(0)}];
+}
+
+- (void)dealloc
+{
+    if (_observingDefaults){
+        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTOGuideRateIndex" context:&kvoContext];
+        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTORABacklashArcSeconds" context:&kvoContext];
+        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTODecBacklashArcSeconds" context:&kvoContext];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if (context == &kvoContext){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateMountConfiguration];
+        });
+    }
+    else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 - (NSString*)vendorName
@@ -192,35 +216,13 @@
         }
         else {
             
-            // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
-            const NSInteger backlashArcSecondsRA = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]));
-            NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*00:%02ld#",(long)backlashArcSecondsRA];
-            NSLog(@"RA backlash: %@",backlashCommandRA);
-            [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
-                if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
-            }];
-            
-            // :Bd DD*MM:SS#  -> 1
-            const NSInteger backlashArcSecondsDec = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]));
-            NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*00:%02ld#",(long)backlashArcSecondsDec];
-            NSLog(@"Dec backlash: %@",backlashCommandDec);
-            [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
-                if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
-            }];
-            
-            // guide rate
-            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOGuideRateIndex"]) {
-                case 0:
-                    [self sendCommand:@":RG0#"]; // 0.25x
-                    break;
-                case 1:
-                    [self sendCommand:@":RG1#"]; // 0.5x
-                    break;
-                case 2:
-                default:
-                    [self sendCommand:@":RG2#"]; // 1x
-                    break;
+            if (!_observingDefaults){
+                _observingDefaults = YES;
+                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTOGuideRateIndex" options:0 context:&kvoContext];
+                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTORABacklashArcSeconds" options:0 context:&kvoContext];
+                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTODecBacklashArcSeconds" options:0 context:&kvoContext];
             }
+            [self updateMountConfiguration];
             
             [self sendCommand:@":RS2#"]; // 1200x slew rate (this is used by commands that move the mount to a target, not the NESW arrow keys which use the centring rate)
             
@@ -233,6 +235,39 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
         });
+    }
+}
+
+- (void)updateMountConfiguration
+{
+    // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
+    const NSInteger backlashArcSecondsRA = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]));
+    NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*00:%02ld#",(long)backlashArcSecondsRA];
+    NSLog(@"RA backlash: %@",backlashCommandRA);
+    [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
+        if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
+    }];
+    
+    // :Bd DD*MM:SS#  -> 1
+    const NSInteger backlashArcSecondsDec = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]));
+    NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*00:%02ld#",(long)backlashArcSecondsDec];
+    NSLog(@"Dec backlash: %@",backlashCommandDec);
+    [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
+        if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
+    }];
+    
+    // guide rate
+    switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOGuideRateIndex"]) {
+        case 0:
+            [self sendCommand:@":RG0#"]; // 0.25x
+            break;
+        case 1:
+            [self sendCommand:@":RG1#"]; // 0.5x
+            break;
+        case 2:
+        default:
+            [self sendCommand:@":RG2#"]; // 1x
+            break;
     }
 }
 
