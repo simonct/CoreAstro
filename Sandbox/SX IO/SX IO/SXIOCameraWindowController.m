@@ -19,7 +19,6 @@
 #import "SXIOPlateSolveOptionsWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
 #import "CASMountWindowController.h"
-#import "SXIOFocuserWindowController.h"
 #import "SXIOBookmarkWindowController.h"
 #import "SXIOPlateSolutionLookup.h"
 
@@ -118,7 +117,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (assign) BOOL showPlateSolution;
 @property (nonatomic,strong) CASPlateSolver* plateSolver;
-@property (nonatomic,readonly) NSString* cachesDirectory;
 
 @property (copy) NSString* cameraDeviceID;
 
@@ -126,9 +124,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) SXIOMountState* mountState;
 @property (strong,nonatomic) CASMountController* mountController;
 @property (strong) CASProgressWindowController* mountSlewProgressSheet;
-
-// focusing
-@property (strong) SXIOFocuserWindowController* focuserWindowController;
 
 // obsolete but required until the xib format is updated
 @property (weak) IBOutlet id mountConnectWindow;
@@ -1264,18 +1259,6 @@ static void* kvoContext;
     }
 }
 
-#pragma mark - Focuser
-
-- (IBAction)showFocuserWindow:(id)sender
-{
-    if (!self.focuserWindowController){
-        self.focuserWindowController = [[SXIOFocuserWindowController alloc] initWithWindowNibName:@"SXIOFocuserWindowController"];
-    }
-    self.focuserWindowController.cameraController = self.cameraController;
-    // delegate
-    [self.focuserWindowController showWindow:nil];
-}
-
 #pragma mark - Plate Solving
 
 - (void)preparePlateSolveWithCompletion:(void(^)(NSError*))completion
@@ -1689,7 +1672,6 @@ static void* kvoContext;
         }];
         
         [self zoomImageToFit:nil];
-        
         
         // restore menu settings
         self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
