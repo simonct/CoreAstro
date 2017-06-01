@@ -25,8 +25,24 @@
 
 #import "CASCaptureWindowController.h"
 #import "CASExposuresController.h"
+#import "CASProgressWindowController.h"
 
 #import <CoreAstro/CoreAstro.h>
+
+@interface CASCaptureController : NSObject
+
+@property (nonatomic,strong) CASCaptureModel* model;
+@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,strong) CASImageProcessor* imageProcessor;
+@property (nonatomic,strong) CASExposuresController* exposuresController;
+@property (nonatomic,readonly) BOOL cancelled;
+
+- (void)cancelCapture;
+- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error,CASCCDExposure* result))completion;
+
++ (CASCaptureController*)captureControllerWithWindowController:(CASCaptureWindowController*)cwc;
+
+@end
 
 @implementation CASCaptureModel
 
@@ -47,6 +63,7 @@
 - (IBAction)cancel:(id)sender;
 @property (weak) IBOutlet NSButton *keepOriginalsCheckbox;
 @property (weak) IBOutlet NSButton *matchHistogramsCheckbox;
+@property (nonatomic,strong) CASCaptureController* captureController;
 @end
 
 @implementation CASCaptureWindowController
@@ -76,6 +93,81 @@
 - (IBAction)cancel:(id)sender
 {
     [self endSheetWithCode:NSCancelButton];
+}
+
+- (void)presentRelativeToWindow:(NSWindow*)window
+{
+    BOOL (^saveExposure)() = ^BOOL(CASCCDExposure* exposure){
+        return [self.delegate captureWindow:self didCapture:exposure mode:self.model.captureMode];
+    };
+    
+    [self beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        
+        if (result == NSOKButton){
+            
+            self.captureController = [CASCaptureController captureControllerWithWindowController:self];
+            if (self.captureController){
+                
+                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
+                [progress beginSheetModalForWindow:self.window];
+                [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
+                progress.canCancel = YES;
+                progress.cancelBlock = ^(){
+                    [self.captureController cancelCapture];
+                };
+                
+                self.captureController.imageProcessor = self.imageProcessor;
+                self.captureController.cameraController = self.cameraController;
+                
+                // self.cameraController pushExposureSettings
+                
+                __block BOOL inPostProcessing = NO;
+                
+                // disable sleep
+                [CASPowerMonitor sharedInstance].disableSleep = YES;
+                
+                [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        // check the cancelled flag as set in the progress window controller
+                        if (progress.cancelled){
+                            [self.captureController cancelCapture];
+                        }
+                        
+                        if (postProcessing && !inPostProcessing){
+                            inPostProcessing = YES;
+                            [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Combining...", @"Progress sheet label")];
+                        }
+                        if (self.captureController.model.combineMode == kCASCaptureModelCombineNone){
+                            saveExposure(exposure);
+                        }
+                        progress.progressBar.doubleValue++;
+                    });
+                    
+                } completion:^(NSError *error,CASCCDExposure* result) {
+                    
+                    // restore sleep setting
+                    [CASPowerMonitor sharedInstance].disableSleep = NO;
+                    
+                    if (error){
+                        [NSApp presentError:error];
+                    }
+                    else if (result) {
+                        if (!self.captureController.cancelled){
+                            saveExposure(result);
+                        }
+                    }
+                    
+                    [progress endSheetWithCode:NSOKButton];
+                    
+                    [self.delegate captureWindowDidComplete:self];
+                    
+                    // self.cameraController popExposureSettings
+                }];
+            }
+        }
+    }];
 }
 
 @end

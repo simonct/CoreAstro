@@ -79,7 +79,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASCaptureWindowControllerDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet NSScrollView *containerScrollView;
@@ -109,9 +109,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm; // used for star detection - todo; probably put into image metrics
 
 @property (assign) BOOL calibrate;
-@property (nonatomic,strong) CASCaptureController* captureController;
-@property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 
+@property (nonatomic,strong) CASCaptureWindowController* captureWindowController;
 @property (nonatomic,strong) SXIOPlateSolveOptionsWindowController* plateSolveOptionsWindowController;
 @property (nonatomic,strong) SXIOSequenceEditorWindowController* sequenceEditorWindowController;
 
@@ -676,138 +675,6 @@ static void* kvoContext;
             }
         });
     } completionBlock:nil];
-}
-
-- (void)presentCaptureControllerWithMode:(NSInteger)mode
-{
-    if (!self.cameraController || self.cameraController.capturing){
-        return;
-    }
-    
-    if (!self.saveTargetControlsViewController.saveImages || !_targetFolder){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
-        return;
-    }
-    
-    self.captureWindowController = [CASCaptureWindowController createWindowController];
-    self.captureWindowController.model.captureCount = 25;
-    self.captureWindowController.model.captureMode = mode;
-    self.captureWindowController.model.combineMode = kCASCaptureModelCombineAverage;
-    
-    BOOL (^saveExposure)() = ^BOOL(CASCCDExposure* exposure,NSInteger mode,NSInteger sequence,NSError** error){
-        
-        // check for a user-entered filter name
-        NSString* filterName = self.filterWheelControlsViewController.filterName;
-        if ([filterName length]){
-            exposure.filters = @[filterName];
-        }
-        
-        // ensure we have a unique filename
-        NSURL* finalUrl;
-        while (true) {
-            
-            // construct the exposure name
-            NSString* prefix = self.saveTargetControlsViewController.saveImagesPrefix;
-            if ([prefix rangeOfString:@"$type"].location == NSNotFound){
-                prefix = [prefix stringByAppendingString:@"_$type"];
-            }
-            if (sequence > 0){
-                prefix = [NSString stringWithFormat:@"%@_%03ld",prefix,sequence];
-            }
-            finalUrl = [[_targetFolder URLByAppendingPathComponent:[exposure stringBySubstitutingPlaceholders:prefix]] URLByAppendingPathExtension:@"fits"];
-            
-            if (![[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]){
-                break;
-            }
-            
-            sequence += 1;
-        }
-        
-        // save new one
-        return [[CASCCDExposureIO exposureIOWithPath:[finalUrl path]] writeExposure:exposure writePixels:YES error:error];
-    };
-    
-    [self.captureWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        
-        if (result == NSOKButton){
-            
-            self.captureController = [CASCaptureController captureControllerWithWindowController:self.captureWindowController];
-            self.captureWindowController = nil;
-            if (self.captureController){
-                
-                CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-                [progress beginSheetModalForWindow:self.window];
-                [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
-                progress.canCancel = YES;
-                progress.cancelBlock = ^(){
-                    [self.captureController cancelCapture];
-                };
-                
-                self.captureController.imageProcessor = self.imageProcessor;
-                self.captureController.cameraController = self.cameraController;
-                
-                // self.cameraController pushExposureSettings
-                
-                __block NSInteger sequence = 0;
-                __block BOOL inPostProcessing = NO;
-                
-                // disable sleep
-                [CASPowerMonitor sharedInstance].disableSleep = YES;
-                
-                [self.captureController captureWithProgressBlock:^(CASCCDExposure* exposure,BOOL postProcessing) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        // check the cancelled flag as set in the progress window controller
-                        if (progress.cancelled){
-                            [self.captureController cancelCapture];
-                        }
-                        
-                        if (postProcessing && !inPostProcessing){
-                            inPostProcessing = YES;
-                            [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Combining...", @"Progress sheet label")];
-                        }
-                        if (self.captureController.model.combineMode == kCASCaptureModelCombineNone){
-                            NSError* error;
-                            saveExposure(exposure,mode,++sequence,&error);
-                            if (error){
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    [NSApp presentError:error];
-                                });
-                            }
-                        }
-                        progress.progressBar.doubleValue++;
-                    });
-                    
-                } completion:^(NSError *error,CASCCDExposure* result) {
-                    
-                    // restore sleep setting
-                    [CASPowerMonitor sharedInstance].disableSleep = NO;
-
-                    if (error){
-                        [NSApp presentError:error];
-                    }
-                    else if (result) {
-                        
-                        if (!self.captureController.cancelled){
-                            
-                            NSError* error;
-                            saveExposure(result,mode,0,&error);
-                            if (error){
-                                [NSApp presentError:error];
-                            }
-
-                            self.currentExposure = result;
-                        }
-                    }
-                    
-                    [progress endSheetWithCode:NSOKButton];
-                    
-                    // self.cameraController popExposureSettings
-                }];
-            }
-        }
-    }];
 }
 
 - (IBAction)captureDarks:(id)sender
@@ -1607,6 +1474,43 @@ static void* kvoContext;
     }
 }
 
+- (NSURL*)saveURLForExposure:(CASCCDExposure*)exposure showType:(BOOL)showType
+{
+    NSURL* finalUrl;
+    
+    NSString* filterName = self.filterWheelControlsViewController.filterName;
+    if ([filterName length]){
+        exposure.filters = @[filterName];
+    }
+    
+    // construct the filename
+    const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
+    NSString* fileSuffix = [NSString stringWithFormat:@"%03ld",sequence+1];
+    if (showType){
+        fileSuffix = [NSString stringWithFormat:@"$type_%@",fileSuffix];
+    }
+    NSString* filename = [self exposureSaveNameWithSuffix:fileSuffix fileType:nil];
+    ++self.saveTargetControlsViewController.saveImagesSequence;
+    
+    // handle any placeholders
+    filename = [exposure stringBySubstitutingPlaceholders:filename];
+    
+    // ensure we have a unique filename (for instance, in case the sequence was reset)
+    NSInteger count = 2;
+    finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
+    while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
+        NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",count++] stringByAppendingPathExtension:[filename pathExtension]];
+        finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
+        if (count > 999){
+            NSLog(@"*** Gave up trying to find a unique filename");
+            finalUrl = nil;
+            break;
+        }
+    }
+
+    return finalUrl;
+}
+
 #pragma mark - Exposure Display
 
 - (void)updateWindowTitleWithExposurePath:(NSString*)path
@@ -1971,6 +1875,52 @@ static void* kvoContext;
     }
 }
 
+#pragma mark - CASCaptureWindowController
+
+- (void)presentCaptureControllerWithMode:(NSInteger)mode
+{
+    if (!self.cameraController || self.cameraController.capturing){
+        return;
+    }
+    
+    if (!self.saveTargetControlsViewController.saveImages || !_targetFolder){
+        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
+        return;
+    }
+    
+    self.captureWindowController = [CASCaptureWindowController createWindowController];
+    self.captureWindowController.model.captureCount = 25;
+    self.captureWindowController.model.captureMode = mode;
+    self.captureWindowController.model.combineMode = kCASCaptureModelCombineNone;
+    self.captureWindowController.delegate = self;
+    
+    [self.captureWindowController presentRelativeToWindow:self.window];
+}
+
+- (BOOL)captureWindow:(CASCaptureWindowController*)captureWindow didCapture:(CASCCDExposure*)exposure mode:(NSInteger)mode
+{
+    // save the calibration frame
+    NSError* error;
+    NSURL* url = [self saveURLForExposure:exposure showType:YES];
+    [[CASCCDExposureIO exposureIOWithPath:[url path]] writeExposure:exposure writePixels:YES error:&error];
+
+    // set current exposure
+    self.currentExposure = exposure;
+    
+    // report any errors and stop processing
+    if (error){
+        [NSApp presentError:error];
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void)captureWindowDidComplete:(CASCaptureWindowController*)captureWindow
+{
+    self.captureWindowController = nil;
+}
+
 #pragma mark - CASCameraControllerSink
 
 // todo; callback to allow the controller to check where the mount is pointing and to stop capture if the mount is below the horizon
@@ -1996,33 +1946,7 @@ static void* kvoContext;
         // check we have somewhere to save the file, a prefix and a sequence number
         const BOOL saveToFile = (self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
         if (saveToFile){
-            
-            // check for a user-entered filter name
-            NSString* filterName = self.filterWheelControlsViewController.filterName;
-            if ([filterName length]){
-                exposure.filters = @[filterName];
-            }
-            
-            // construct the filename
-            const NSInteger sequence = self.saveTargetControlsViewController.saveImagesSequence;
-            NSString* filename = [self exposureSaveNameWithSuffix:[NSString stringWithFormat:@"%03ld",sequence+1] fileType:nil];
-            ++self.saveTargetControlsViewController.saveImagesSequence;
-            
-            // handle any placeholders
-            filename = [exposure stringBySubstitutingPlaceholders:filename];
-            
-            // ensure we have a unique filename (for instance, in case the sequence was reset)
-            NSInteger suffix = 2;
-            finalUrl = [_targetFolder URLByAppendingPathComponent:filename];
-            while ([[NSFileManager defaultManager] fileExistsAtPath:finalUrl.path]) {
-                NSString* uniqueFilename = [[[filename stringByDeletingPathExtension] stringByAppendingFormat:@"_%ld",suffix++] stringByAppendingPathExtension:[filename pathExtension]];
-                finalUrl = [_targetFolder URLByAppendingPathComponent:uniqueFilename];
-                if (suffix > 999){
-                    NSLog(@"*** Gave up trying to find a unique filename");
-                    finalUrl = nil;
-                    break;
-                }
-            }
+            finalUrl = [self saveURLForExposure:exposure showType:NO];
         }
         
         // display the exposure

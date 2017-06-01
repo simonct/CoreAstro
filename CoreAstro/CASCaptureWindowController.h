@@ -48,17 +48,19 @@ enum {
 @property (nonatomic,assign) BOOL matchHistograms, showMatchHistograms;
 @end
 
-@interface CASCaptureWindowController : CASAuxWindowController
-@property (nonatomic,strong) CASCaptureModel* model;
+@class CASCaptureWindowController;
+
+@protocol CASCaptureWindowControllerDelegate <NSObject>
+- (BOOL)captureWindow:(CASCaptureWindowController*)captureWindow didCapture:(CASCCDExposure*)exposure mode:(NSInteger)mode;
+- (void)captureWindowDidComplete:(CASCaptureWindowController*)captureWindow;
 @end
 
-@interface CASCaptureController : NSObject
+@interface CASCaptureWindowController : CASAuxWindowController
 @property (nonatomic,strong) CASCaptureModel* model;
 @property (nonatomic,strong) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
-@property (nonatomic,strong) CASExposuresController* exposuresController;
-@property (nonatomic,readonly) BOOL cancelled;
-- (void)cancelCapture;
-- (void)captureWithProgressBlock:(void(^)(CASCCDExposure* exposure,BOOL postProcessing))progress completion:(void(^)(NSError* error,CASCCDExposure* result))completion;
-+ (CASCaptureController*)captureControllerWithWindowController:(CASCaptureWindowController*)cwc;
+@property (nonatomic,weak) id<CASCaptureWindowControllerDelegate> delegate;
+
+- (void)presentRelativeToWindow:(NSWindow*)window;
+
 @end
