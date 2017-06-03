@@ -21,6 +21,7 @@
 #import "CASMountWindowController.h"
 #import "SXIOBookmarkWindowController.h"
 #import "SXIOPlateSolutionLookup.h"
+#import "SXIOPlateSolveController.h"
 
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
@@ -79,7 +80,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @end
 
-@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASCaptureWindowControllerDelegate>
+@interface SXIOCameraWindowController ()<CASExposureViewDelegate,CASCameraControllerSink,CASCaptureWindowControllerDelegate,SXIOPlateSolveControllerDelegate>
 
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (weak) IBOutlet NSScrollView *containerScrollView;
@@ -115,7 +116,7 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) SXIOSequenceEditorWindowController* sequenceEditorWindowController;
 
 @property (assign) BOOL showPlateSolution;
-@property (nonatomic,strong) CASPlateSolver* plateSolver;
+@property (strong) SXIOPlateSolveController* plateSolveController;
 
 @property (copy) NSString* cameraDeviceID;
 
@@ -236,6 +237,11 @@ static void* kvoContext;
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
+    
+    // create a plate solver
+    self.plateSolveController = [[SXIOPlateSolveController alloc] init];
+    self.plateSolveController.window = self.window;
+    self.plateSolveController.delegate = self;
 }
 
 - (void)dealloc
@@ -1128,167 +1134,50 @@ static void* kvoContext;
 
 #pragma mark - Plate Solving
 
-- (void)preparePlateSolveWithCompletion:(void(^)(NSError*))completion
+- (void)plateSolver:(SXIOPlateSolveController*)plateSolver didStartSolvingExposure:(CASCCDExposure*)exposure
 {
-    NSParameterAssert(completion);
-    
-    if (self.plateSolver){
-        // todo; solvers should be per exposure
-        NSLog(@"Already solving something");
-        completion(NO);
-        return;
-    }
-    
-    CASCCDExposure* exposure = self.currentExposure;
-    if (!exposure){
-        NSLog(@"No current exposure");
-        completion(NO);
-        return;
-    }
-    
-    NSError* error = nil;
-    self.plateSolver = [CASPlateSolver plateSolverWithIdentifier:nil];
-    if ([self.plateSolver canSolveExposure:exposure error:&error]){
-        completion(nil);
-    }
-    else{
-        
-        if (error.code == 1){
-            
-            NSOpenPanel* openPanel = [NSOpenPanel openPanel];
-            
-            openPanel.canChooseFiles = NO;
-            openPanel.canChooseDirectories = YES;
-            openPanel.canCreateDirectories = YES;
-            openPanel.allowsMultipleSelection = NO;
-            openPanel.prompt = @"Choose";
-            openPanel.message = @"Locate the astrometry.net indexes";;
-            
-            [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-                if (result == NSFileHandlingPanelOKButton){
-                    self.plateSolver.indexDirectoryURL = openPanel.URL;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        completion(nil);
-                    });
-                }
-            }];
-        }
-        else if (error.code == 2) {
-            
-            [self presentAlertWithTitle:@"astrometry.net not installed" message:@"Please install the command line tools from astrometry.net before running this command."]; // link to blog page ?
-        }
-    }
+    // todo; show progress indicator, controller currently presents a progress sheet
 }
 
-- (void)plateSolveWithFieldSize:(CGSize)fieldSize arcsecsPerPixel:(float)arcsecsPerPixel
+- (void)plateSolver:(SXIOPlateSolveController*)plateSolver completedWithSolution:(CASPlateSolveSolution*)solution error:(NSError*)error
 {
-    CASCCDExposure* exposure = self.currentExposure;
-    
-    NSError* error;
-    if (![self.plateSolver canSolveExposure:exposure error:&error]){
+    if (error) {
         [NSApp presentError:error];
     }
-    else{
-        
-        // todo; should be per exposure rather than blocking the whole app
-        // todo; show the spinner on the plate solution hud
-        // todo; autosolve when show plate solution is on, lose the plate solve command
-        CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-        [progress beginSheetModalForWindow:self.window];
-        progress.label.stringValue = NSLocalizedString(@"Solving...", @"Progress sheet status label");
-        [progress.progressBar setIndeterminate:YES];
-        
-        progress.canCancel = YES;
-        progress.cancelBlock = ^{
-            [self.plateSolver cancel];
-        };
-        
-        // solve async - beware of races here since we're doing this async
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            self.plateSolver.fieldSizeDegrees = fieldSize;
-            self.plateSolver.arcsecsPerPixel = arcsecsPerPixel;
-
-            [self.plateSolver solveExposure:exposure completion:^(NSError *error, NSDictionary * results) {
-                
-                if (!progress.cancelled && !error){
-                    
-                    // post notification so that mount controller window can pick up the new solution ?
-                    
-                    NSData* solutionData = [NSKeyedArchiver archivedDataWithRootObject:results[@"solution"]];
-                    if (solutionData){
-                        [[SXIOPlateSolutionLookup sharedLookup] storeSolutionData:solutionData forUUID:exposure.uuid];
-                    }
-                }
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    [progress endSheetWithCode:NSOKButton];
-                    
-                    if (!progress.cancelled) {
-                        if (error){
-                            [NSApp presentError:error];
-                        }
-                        else {
-                            self.showPlateSolution = YES;
-                            self.exposureView.plateSolveSolution = results[@"solution"];
-                            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
-                            // no longer resetting display as that then immediately nils out the solution
-                        }
-                    }
-                    self.plateSolver = nil;
-                });
-            }];
-        });
+    else {
+        self.showPlateSolution = YES;
+        self.exposureView.plateSolveSolution = solution;
+        // no longer resetting display as that then immediately nils out the solution
+        if (self.cameraDeviceID){
+            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:solution forKey:self.cameraDeviceID];
+        }
     }
 }
 
 - (IBAction)plateSolve:(id)sender
 {
-    [self preparePlateSolveWithCompletion:^(NSError* error) {
-        if (!error){
-            [self plateSolveWithFieldSize:CGSizeZero arcsecsPerPixel:0];
-        }
-        else {
-            self.plateSolver = nil;
-        }
-    }];
+    [self.plateSolveController plateSolveExposure:self.currentExposure];
 }
 
 - (IBAction)plateSolveWithOptions:(id)sender
 {
-    [self preparePlateSolveWithCompletion:^(NSError* error) {
-        if (!error){
-            self.plateSolveOptionsWindowController = [SXIOPlateSolveOptionsWindowController createWindowController];
-            self.plateSolveOptionsWindowController.exposure = self.currentExposure;
-            self.plateSolveOptionsWindowController.cameraController = self.cameraController;
-            [self.plateSolveOptionsWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-                if (result == NSOKButton) {
-                    const CGSize fieldSize = self.plateSolveOptionsWindowController.enableFieldSize ? self.plateSolveOptionsWindowController.fieldSizeDegrees : CGSizeZero;
-                    const float arcsecsPerPixel = self.plateSolveOptionsWindowController.enablePixelSize ? self.plateSolveOptionsWindowController.arcsecsPerPixel: 0;
-                    [self plateSolveWithFieldSize:fieldSize arcsecsPerPixel:arcsecsPerPixel];
-                }
-                else {
-                    self.plateSolver = nil;
-                }
-                self.plateSolveOptionsWindowController = nil;
-            }];
-        }
-        else {
-            self.plateSolver = nil;
-        }
-    }];
+    self.plateSolveController.cameraController = self.cameraController;
+    [self.plateSolveController plateSolveExposureWithOptions:self.currentExposure];
 }
 
 - (IBAction)lockSolution:sender
 {
     if (self.exposureView.lockedPlateSolveSolution){
         self.exposureView.lockedPlateSolveSolution = nil;
-        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
+        if (self.cameraDeviceID){
+            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
+        }
     }
     else {
         self.exposureView.lockedPlateSolveSolution = self.exposureView.plateSolveSolution;
-        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.lockedPlateSolveSolution forKey:self.cameraDeviceID];
+        if (self.cameraDeviceID){
+            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.lockedPlateSolveSolution forKey:self.cameraDeviceID];
+        }
     }
 }
 
@@ -2289,7 +2178,7 @@ static void* kvoContext;
             break;
             
         case 11104: // Plate Solve...
-            enabled = (self.plateSolver == nil && self.currentExposure != nil);
+            enabled = (self.plateSolveController.busy == NO && self.currentExposure != nil);
             break;
             
         case 11105: // Sequence...
