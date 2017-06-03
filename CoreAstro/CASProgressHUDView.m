@@ -110,9 +110,7 @@
     
     self.progressView.progress = progress;
     
-    if (![self.label.stringValue isEqualToString:label]){
-        self.label.stringValue = label;
-    }
+    self.label.stringValue = label ?: @"";
 }
 
 @end

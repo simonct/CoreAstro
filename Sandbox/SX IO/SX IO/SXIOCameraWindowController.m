@@ -1508,6 +1508,8 @@ static void* kvoContext;
     void (^commonShowProgressSetup)(NSString*,BOOL) = ^(NSString* statusText,BOOL showIndicator){
         self.progressIndicator.hidden = NO;
         self.progressIndicator.indeterminate = NO;
+        self.exposureView.showProgress = showIndicator;
+        self.exposureView.progressInterval = self.cameraController.settings.exposureUnits ? self.cameraController.settings.exposureDuration/1000 : self.cameraController.settings.exposureDuration;
         [self setProgressStatusTextValue:statusText];
     };
     
