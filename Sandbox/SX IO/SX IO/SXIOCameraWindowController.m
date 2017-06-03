@@ -1781,8 +1781,9 @@ static void* kvoContext;
     self.captureWindowController.model.captureCount = 25;
     self.captureWindowController.model.captureMode = mode;
     self.captureWindowController.model.combineMode = kCASCaptureModelCombineNone;
+    self.captureWindowController.cameraController = self.cameraController;
     self.captureWindowController.delegate = self;
-    
+
     [self.captureWindowController presentRelativeToWindow:self.window];
 }
 

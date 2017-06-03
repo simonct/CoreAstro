@@ -109,7 +109,7 @@
             if (self.captureController){
                 
                 CASProgressWindowController* progress = [CASProgressWindowController createWindowController];
-                [progress beginSheetModalForWindow:self.window];
+                [progress beginSheetModalForWindow:window];
                 [progress configureWithRange:NSMakeRange(0, self.captureController.model.captureCount) label:NSLocalizedString(@"Capturing...", @"Progress sheet label")];
                 progress.canCancel = YES;
                 progress.cancelBlock = ^(){
