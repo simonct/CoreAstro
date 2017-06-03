@@ -158,7 +158,9 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 
     self.starInfoView = [CASStarInfoHUDView loadFromNib];
 
-    self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSMakeRect(10, self.bounds.size.height - 60, 200, 40)];
+    self.progressView = [[CASProgressHUDView alloc] initWithFrame:NSZeroRect];
+    self.progressView.translatesAutoresizingMaskIntoConstraints = YES;
+    self.progressView.frame = NSMakeRect(10, self.bounds.size.height - 60, 200, 40);
     
     self.plateSolutionView = [CASPlateSolutionHUDView loadFromNib];
     
