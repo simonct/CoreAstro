@@ -38,16 +38,16 @@ CASHMAngle CASHMAngleFromDegrees(double degrees)
     while (degrees > 360) {
         degrees -= 360.0;
     }
+    while (degrees < 0) {
+        degrees += 360.0;
+    }
     
-    const double hrs = fabs(degrees)/CASDegreesPerHour;
-    
-    const double h = trunc(hrs);
-    const double s = (hrs-h)*3600.0;
-    const double m = round(s/60.0);
+    const double hrs = degrees/CASDegreesPerHour;
+    const double mins = 60*(hrs - trunc(hrs));
     
     CASHMAngle result = {
-        .h = h,
-        .m = m
+        .h = trunc(hrs),
+        .m = mins
     };
     return result;
 }
@@ -57,9 +57,14 @@ CASDMSAngle CASDMSAngleFromDegrees(double degrees)
     const double trunc_degrees = trunc(degrees);
     
     const double d = trunc_degrees;
-    const double m = fabs(trunc((degrees - trunc_degrees)*60.0));
-    const double s = trunc(fabs(degrees - trunc_degrees)*3600.0 - 60.0*m);
+    double m = fabs(trunc((degrees - trunc_degrees)*60.0));
+    double s = round(fabs(degrees - trunc_degrees)*3600.0 - 60.0*m);
     
+    while (s >= 60){
+        s -= 60;
+        m += 1;
+    }
+
     CASDMSAngle result = {
         .d = d,
         .m = m,
@@ -73,17 +78,24 @@ CASHMSAngle CASHMSAngleFromDegrees(double degrees)
     while (degrees > 360) {
         degrees -= 360.0;
     }
+    while (degrees < 0) {
+        degrees += 360.0;
+    }
 
-    const double hrs = fabs(degrees)/CASDegreesPerHour;
+    const double hrs = degrees/CASDegreesPerHour;
     
-    const double h = trunc(hrs);
-    const double m = trunc((hrs-h)*60.0);
-    const double s = trunc((((hrs-h)*60.0)-m)*60.0);
+    double mins = trunc(60*(hrs - trunc(hrs)));
+    double secs = round(60*(60*(hrs - trunc(hrs)) - mins));
+    
+    while (secs >= 60){
+        secs -= 60;
+        mins += 1;
+    }
     
     CASHMSAngle result = {
-        .h = h,
-        .m = m,
-        .s = s
+        .h = trunc(hrs),
+        .m = mins,
+        .s = secs,
     };
     return result;
 }

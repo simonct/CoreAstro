@@ -36,7 +36,7 @@
     
     angle = CASHMAngleFromDegrees(45.5);
     XCTAssert(angle.h == 3);
-    XCTAssert(angle.m == 2);
+    XCTAssert(round(angle.m) == 2);
     
     angle = CASHMAngleFromDegrees(90);
     XCTAssert(angle.h == 6);
@@ -97,15 +97,15 @@
     XCTAssert(angle.m == 0);
     XCTAssert(angle.s == 0);
     
-    angle = CASHMSAngleFromDegrees(45.5);
-    XCTAssert(angle.h == 3);
-    XCTAssert(angle.m == 1);
-    XCTAssert(angle.s == 59);
-    
-    angle = CASHMSAngleFromDegrees(45.55);
+    angle = CASHMSAngleFromDegrees(45.5); // 3h 2m 0s
     XCTAssert(angle.h == 3);
     XCTAssert(angle.m == 2);
-    XCTAssert(angle.s == 11);
+    XCTAssert(angle.s == 0);
+    
+    angle = CASHMSAngleFromDegrees(45.55); // 3h 2m 11.9s
+    XCTAssert(angle.h == 3);
+    XCTAssert(angle.m == 2);
+    XCTAssert(angle.s == 12);
     
     angle = CASHMSAngleFromDegrees(90);
     XCTAssert(angle.h == 6);
@@ -144,8 +144,8 @@
     
     angle = CASDMSAngleFromDegrees(45.55);
     XCTAssert(angle.d == 45);
-    XCTAssert(angle.m == 32);
-    XCTAssert(angle.s == 59);
+    XCTAssert(angle.m == 33);
+    XCTAssert(angle.s == 0);
     
     angle = CASDMSAngleFromDegrees(0);
     XCTAssert(angle.d == 0);
@@ -154,8 +154,8 @@
     
     angle = CASDMSAngleFromDegrees(-45.55);
     XCTAssert(angle.d == -45);
-    XCTAssert(angle.m == 32);
-    XCTAssert(angle.s == 59);
+    XCTAssert(angle.m == 33);
+    XCTAssert(angle.s == 0);
     
     angle = CASDMSAngleFromDegrees(-90);
     XCTAssert(angle.d == -90);
@@ -165,11 +165,11 @@
 
 - (void)testHighPrecisionFormatting {
     
-    const double ra = 94.511300;
-    const double dec = 22.660000;
+    const double ra = 94.511300; // 6h 18m 2.7s
+    const double dec = 22.660000; // 22° 39' 36"
     
     NSString* hpra = [CASLX200Commands highPrecisionRA:ra];
-    XCTAssertEqualObjects(hpra,@"06:18:02");
+    XCTAssertEqualObjects(hpra,@"06:18:03");
     
     NSString* hpdec = [CASLX200Commands highPrecisionDec:dec];
     XCTAssertEqualObjects(hpdec,@"+22*39:36");
@@ -183,14 +183,14 @@
 
 - (void)testHighPrecisionFormatting2 {
     
-    const double ra = 274.633525;
-    const double dec = -45.983797;
+    const double ra = 274.633525; // 18h 18m 32s
+    const double dec = -45.983797; // -45° 59' 1.67"
     
     NSString* hpra = [CASLX200Commands highPrecisionRA:ra];
     XCTAssertEqualObjects(hpra,@"18:18:32");
     
     NSString* hpdec = [CASLX200Commands highPrecisionDec:dec];
-    XCTAssertEqualObjects(hpdec,@"-45*59:01");
+    XCTAssertEqualObjects(hpdec,@"-45*59:02");
     
     const double ra2 = [CASLX200Commands fromRAString:hpra asDegrees:YES];
     XCTAssertEqualWithAccuracy(ra,ra2,0.003); // not sure if this rounding error is justifiable or not
@@ -201,8 +201,8 @@
 
 - (void)testLowPrecisionFormatting {
     
-    const double ra = 94.511300;
-    const double dec = 22.660000;
+    const double ra = 94.511300; // 6h 18m 2.7s"
+    const double dec = 22.660000; // 22° 39' 36"
     
     NSString* lpra = [CASLX200Commands lowPrecisionRA:ra];
     XCTAssertEqualObjects(lpra,@"06:18.0");
@@ -213,11 +213,11 @@
 
 - (void)testLowPrecisionFormatting2 {
     
-    const double ra = 274.633525;
-    const double dec = -45.983797;
+    const double ra = 274.633525; // 18h 18m 32s
+    const double dec = -45.983797; // -45° 59' 1.67"
     
     NSString* lpra = [CASLX200Commands lowPrecisionRA:ra];
-    XCTAssertEqualObjects(lpra,@"18:19.0");
+    XCTAssertEqualObjects(lpra,@"18:18.5");
     
     NSString* lpdec = [CASLX200Commands lowPrecisionDec:dec];
     XCTAssertEqualObjects(lpdec,@"-45*59");
