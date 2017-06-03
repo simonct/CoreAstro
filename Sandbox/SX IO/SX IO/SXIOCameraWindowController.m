@@ -329,6 +329,77 @@ static void* kvoContext;
     }
 }
 
+- (void)configureForCameraController
+{
+    [self updateWindowTitleWithExposurePath:nil];
+    
+    if (self.cameraController){
+        
+        // only set the cameraDeviceID when setting the controller, not when clearing it
+        self.cameraDeviceID = self.cameraController.device.uniqueID;
+        
+        // use the sink interface to save the exposure if requested
+        self.cameraController.sink = self;
+        
+        // set the current displayed exposure to the last one recorded by this camera controller
+        // (specifically check for pixels as this will detect if the backing store has been deleted)
+        if (self.cameraController.lastExposure.pixels){
+            self.currentExposure = self.cameraController.lastExposure;
+        }
+        
+        // if there's no exposure, create a placeholder image
+        if (!self.currentExposure){
+            
+            const CGSize size = CGSizeMake(self.cameraController.camera.sensor.width, self.cameraController.camera.sensor.height);
+            CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(size.width, size.height) bitsPerPixel:16];
+            if (bitmap){
+                CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
+                CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
+                CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
+                if (CGImage){
+                    [self.exposureView setCGImage:CGImage];
+                    CGImageRelease(CGImage);
+                }
+                CGContextRelease(bitmap);
+            }
+        }
+        
+        [self.cameraController connect:^(NSError *error) {
+            
+            if (error){
+                [NSApp presentError:error];
+            }
+        }];
+        
+        [self zoomImageToFit:nil];
+        
+        // restore menu settings
+        self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
+        self.calibrate = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayCalibrate"] boolValue];
+        self.showPlateSolution = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowPlateSolution"] boolValue];
+        
+        self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
+        self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
+        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
+        self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
+        self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
+        self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
+        self.exposureView.showImageStats = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowImageStats"] boolValue];
+        self.exposureView.flipVertical = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipVertical"] boolValue];
+        self.exposureView.flipHorizontal = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipHorizontal"] boolValue];
+        
+        self.imageDebayer.mode = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayDebayerMode"] integerValue];
+    }
+    
+    // Subframes on the M26C aren't currently supported
+    if (!self.cameraController.camera.canSubframe){
+        [self.selectionControl setEnabled:NO forSegment:0];
+    }
+    
+    // set progress display if this camera is capturing
+    [self updateExposureIndicator];
+}
+
 - (void)setMountController:(CASMountController *)mountController
 {
     if (mountController != _mountController){
@@ -1206,12 +1277,6 @@ static void* kvoContext;
 
 #pragma mark - Path & Save Utilities
 
-- (NSString*)currentDeviceExposurePathWithName:(NSString*)name
-{
-    NSString* path = [_targetFolder path];
-    return (name && path) ? [[path stringByAppendingPathComponent:name] stringByAppendingPathExtension:[[NSUserDefaults standardUserDefaults] stringForKey:@"SXIODefaultExposureFileType"]] : nil;
-}
-
 /*
 - (CASCCDExposure*)calibrationExposureOfType:(NSString*)suffix matchingExposure:(CASCCDExposure*)exposure
 {
@@ -1422,77 +1487,6 @@ static void* kvoContext;
     else {
         self.window.title = @"";
     }
-}
-
-- (void)configureForCameraController
-{
-    [self updateWindowTitleWithExposurePath:nil];
-    
-    if (self.cameraController){
-        
-        // only set the cameraDeviceID when setting the controller, not when clearing it
-        self.cameraDeviceID = self.cameraController.device.uniqueID;
-
-        // use the sink interface to save the exposure if requested
-        self.cameraController.sink = self;
-
-        // set the current displayed exposure to the last one recorded by this camera controller
-        // (specifically check for pixels as this will detect if the backing store has been deleted)
-        if (self.cameraController.lastExposure.pixels){
-            self.currentExposure = self.cameraController.lastExposure;
-        }
-        
-        // if there's no exposure, create a placeholder image
-        if (!self.currentExposure){
-            
-            const CGSize size = CGSizeMake(self.cameraController.camera.sensor.width, self.cameraController.camera.sensor.height);
-            CGContextRef bitmap = [CASCCDImage newBitmapContextWithSize:CASSizeMake(size.width, size.height) bitsPerPixel:16];
-            if (bitmap){
-                CGContextSetRGBFillColor(bitmap,0.35,0.35,0.35,1);
-                CGContextFillRect(bitmap,CGRectMake(0, 0, size.width, size.height));
-                CGImageRef CGImage = CGBitmapContextCreateImage(bitmap);
-                if (CGImage){
-                    [self.exposureView setCGImage:CGImage];
-                    CGImageRelease(CGImage);
-                }
-                CGContextRelease(bitmap);
-            }
-        }
-        
-        [self.cameraController connect:^(NSError *error) {
-            
-            if (error){
-                [NSApp presentError:error];
-            }
-        }];
-        
-        [self zoomImageToFit:nil];
-        
-        // restore menu settings
-        self.equalise = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayEqualise"] boolValue];
-        self.calibrate = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayCalibrate"] boolValue];
-        self.showPlateSolution = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowPlateSolution"] boolValue];
-        
-        self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
-        self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
-        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
-        self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
-        self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
-        self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
-        self.exposureView.showImageStats = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowImageStats"] boolValue];
-        self.exposureView.flipVertical = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipVertical"] boolValue];
-        self.exposureView.flipHorizontal = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayFlipHorizontal"] boolValue];
-        
-        self.imageDebayer.mode = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayDebayerMode"] integerValue];
-    }
-    
-    // Subframes on the M26C aren't currently supported
-    if (!self.cameraController.camera.canSubframe){
-        [self.selectionControl setEnabled:NO forSegment:0];
-    }
-    
-    // set progress display if this camera is capturing
-    [self updateExposureIndicator];
 }
 
 - (void)setProgressStatusTextValue:(NSString*)text
