@@ -12,6 +12,7 @@
 #import "CASStarInfoHUDView.h"
 #import "CASHistogramHUDView.h"
 #import "CASPlateSolutionHUDView.h"
+#import "CASLabelHUDView.h"
 #import "CASPlateSolvedObject+Drawing.h"
 
 #import <CoreAstro/CoreAstro.h>
@@ -125,6 +126,7 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
 @property (nonatomic,assign) CGFloat rotationAngle, zoomFactor;
 @property (nonatomic,strong) CASHistogramHUDView* histogramView;
 @property (nonatomic,strong) CASProgressHUDView* progressView;
+@property (nonatomic,strong) CASLabelHUDView* solvingView;
 @property (nonatomic,strong) CASStarInfoHUDView* starInfoView;
 @property (nonatomic,strong) CASExposureInfoView* exposureInfoView;
 @property (nonatomic,strong) CASPlateSolutionHUDView* plateSolutionView;
@@ -162,9 +164,14 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
     self.progressView.translatesAutoresizingMaskIntoConstraints = YES;
     self.progressView.frame = NSMakeRect(10, self.bounds.size.height - 60, 200, 50);
     
+    self.solvingView = [[CASLabelHUDView alloc] initWithFrame:NSZeroRect];
+    self.solvingView.translatesAutoresizingMaskIntoConstraints = YES;
+    self.solvingView.frame = NSMakeRect(10, self.bounds.size.height - 60, 200, 50);
+    self.solvingView.label = NSLocalizedString(@"Solving...", @"Solving...");
+    
     self.plateSolutionView = [CASPlateSolutionHUDView loadFromNib];
     
-    self.huds = @[self.progressView,self.exposureInfoView,self.histogramView,self.starInfoView,self.plateSolutionView];
+    self.huds = @[self.solvingView,self.progressView,self.exposureInfoView,self.histogramView,self.starInfoView,self.plateSolutionView];
     
     for (NSView* hud in self.huds){
         hud.hidden = YES;
@@ -678,6 +685,15 @@ const CGPoint kCASImageViewInvalidStarLocation = {-1,-1};
         else {
             hud.hidden = YES;
         }
+    }
+}
+
+- (void)setShowSolving:(BOOL)showSolving
+{
+    if (showSolving != _showSolving){
+        _showSolving = showSolving;
+        self.solvingView.visible = _showSolving;
+        [self layoutHuds];
     }
 }
 

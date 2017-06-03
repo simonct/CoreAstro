@@ -37,6 +37,7 @@ typedef enum {
 @property (nonatomic,assign) BOOL scaleSubframe;
 @property (nonatomic,assign) BOOL displayingScaledSubframe;
 @property (nonatomic,assign) BOOL showProgress;
+@property (nonatomic,assign) BOOL showSolving;
 @property (nonatomic,assign) BOOL autoContrastStretch;
 @property (nonatomic,assign) NSInteger progressInterval;
 @property (nonatomic,assign) CGFloat progress;

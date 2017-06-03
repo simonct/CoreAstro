@@ -112,6 +112,10 @@
 		F42437C61CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */; };
 		F42446061EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */; };
 		F42446071EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */; };
+		F424461E1EE082210058BF45 /* SXIOPlateSolveController.m in Sources */ = {isa = PBXBuildFile; fileRef = F424461D1EE082210058BF45 /* SXIOPlateSolveController.m */; };
+		F42446251EE0822B0058BF45 /* SXIOPlateSolveController.m in Sources */ = {isa = PBXBuildFile; fileRef = F424461D1EE082210058BF45 /* SXIOPlateSolveController.m */; };
+		F42446351EE3448B0058BF45 /* CASLabelHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446341EE3448B0058BF45 /* CASLabelHUDView.m */; };
+		F42446361EE3448B0058BF45 /* CASLabelHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446341EE3448B0058BF45 /* CASLabelHUDView.m */; };
 		F424C60717CA1C1200E099BE /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4A25895179BC0CF0013D220 /* Accelerate.framework */; };
 		F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
 		F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */; };
@@ -518,6 +522,10 @@
 		F42437C41CE8B8ED0097E1E8 /* SXIOSequenceEditorParkStepView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorParkStepView.xib; sourceTree = "<group>"; };
 		F42446041EDC7DF50058BF45 /* SXIOPlateSolutionLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolutionLookup.h; sourceTree = "<group>"; };
 		F42446051EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolutionLookup.m; sourceTree = "<group>"; };
+		F424461C1EE082210058BF45 /* SXIOPlateSolveController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOPlateSolveController.h; sourceTree = "<group>"; };
+		F424461D1EE082210058BF45 /* SXIOPlateSolveController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOPlateSolveController.m; sourceTree = "<group>"; };
+		F42446331EE3448B0058BF45 /* CASLabelHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASLabelHUDView.h; path = ../../../CoreAstro/CASLabelHUDView.h; sourceTree = "<group>"; };
+		F42446341EE3448B0058BF45 /* CASLabelHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASLabelHUDView.m; path = ../../../CoreAstro/CASLabelHUDView.m; sourceTree = "<group>"; };
 		F428D61D1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOSequenceEditorWindowController.h; sourceTree = "<group>"; };
 		F428D61E1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOSequenceEditorWindowController.m; sourceTree = "<group>"; };
 		F428D6211A5AF7E20038B0B5 /* SXIOSequenceEditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SXIOSequenceEditorWindowController.xib; sourceTree = "<group>"; };
@@ -877,6 +885,8 @@
 				F4A2587E179BC0990013D220 /* CASStarInfoHUDView.xib */,
 				F4A2587F179BC0990013D220 /* CASProgressHUDView.h */,
 				F4A25880179BC0990013D220 /* CASProgressHUDView.m */,
+				F42446331EE3448B0058BF45 /* CASLabelHUDView.h */,
+				F42446341EE3448B0058BF45 /* CASLabelHUDView.m */,
 				F4A25881179BC0990013D220 /* CASHistogramHUDView.h */,
 				F4A25882179BC0990013D220 /* CASHistogramHUDView.m */,
 				F4A25883179BC0990013D220 /* CASHistogramHUDView.xib */,
@@ -1080,6 +1090,8 @@
 				F40A062B1860523400729934 /* SXIOImageAdjustmentWindowController.m */,
 				F40A062C1860523400729934 /* SXIOImageAdjustmentWindowController.xib */,
 				F4FD2317179B30D60049F5B5 /* MainMenu.xib */,
+				F424461C1EE082210058BF45 /* SXIOPlateSolveController.h */,
+				F424461D1EE082210058BF45 /* SXIOPlateSolveController.m */,
 				F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */,
 				F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */,
 				F4D3CE14179BD10400B42D04 /* SXIOCameraWindowController.xib */,
@@ -1685,6 +1697,7 @@
 			files = (
 				F40D5B2E1849EC5E00977FA9 /* main.m in Sources */,
 				F46A3EFF1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
+				F42446251EE0822B0058BF45 /* SXIOPlateSolveController.m in Sources */,
 				F40D5B2F1849EC5E00977FA9 /* SXIOAppDelegate.m in Sources */,
 				F440D25A19FCE318005510EB /* CASCameraServer.m in Sources */,
 				F40D5B301849EC5E00977FA9 /* CASImageView.m in Sources */,
@@ -1729,6 +1742,7 @@
 				F40D5B4D1849EC5E00977FA9 /* SMDoubleSlider.m in Sources */,
 				F428D6201A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F40D5B4F1849EC5E00977FA9 /* SXIOFilterWindowController.m in Sources */,
+				F42446361EE3448B0058BF45 /* CASLabelHUDView.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
 				F42446071EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,
@@ -1779,6 +1793,7 @@
 			files = (
 				F4FD230F179B30D60049F5B5 /* main.m in Sources */,
 				F46A3EFE1854EFDE00CD336C /* CASPlateSolvedObject+Drawing.m in Sources */,
+				F424461E1EE082210058BF45 /* SXIOPlateSolveController.m in Sources */,
 				F4FD2316179B30D60049F5B5 /* SXIOAppDelegate.m in Sources */,
 				F440D25919FCE318005510EB /* CASCameraServer.m in Sources */,
 				F4A25870179BC0100013D220 /* CASImageView.m in Sources */,
@@ -1823,6 +1838,7 @@
 				F4BDF8EF17B657AF00749F4B /* SMDoubleSlider.m in Sources */,
 				F428D61F1A5AF71C0038B0B5 /* SXIOSequenceEditorWindowController.m in Sources */,
 				F4EF194117C1428400B8AD23 /* SXIOFilterWindowController.m in Sources */,
+				F42446351EE3448B0058BF45 /* CASLabelHUDView.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
 				F42446061EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,

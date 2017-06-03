@@ -1136,11 +1136,13 @@ static void* kvoContext;
 
 - (void)plateSolver:(SXIOPlateSolveController*)plateSolver didStartSolvingExposure:(CASCCDExposure*)exposure
 {
-    // todo; show progress indicator, controller currently presents a progress sheet
+    self.exposureView.showSolving = YES;
 }
 
 - (void)plateSolver:(SXIOPlateSolveController*)plateSolver completedWithSolution:(CASPlateSolveSolution*)solution error:(NSError*)error
 {
+    self.exposureView.showSolving = NO;
+    
     if (error) {
         [NSApp presentError:error];
     }

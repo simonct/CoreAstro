@@ -40,6 +40,7 @@
 		F41AAC441BDB8DAD003757C7 /* liblibnova.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F41AAC401BDB8D22003757C7 /* liblibnova.dylib */; };
 		F42445E31EDA06E00058BF45 /* CASAPGTOGuidePort.h in Headers */ = {isa = PBXBuildFile; fileRef = F42445E11EDA06E00058BF45 /* CASAPGTOGuidePort.h */; };
 		F42445E41EDA06E00058BF45 /* CASAPGTOGuidePort.m in Sources */ = {isa = PBXBuildFile; fileRef = F42445E21EDA06E00058BF45 /* CASAPGTOGuidePort.m */; };
+		F42446281EE342CC0058BF45 /* CASLabelHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446271EE342CC0058BF45 /* CASLabelHUDView.m */; };
 		F43D311B18A6A1FC00087C52 /* CASPHD2Client.h in Headers */ = {isa = PBXBuildFile; fileRef = F43D311918A6A1FC00087C52 /* CASPHD2Client.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F43D311C18A6A1FC00087C52 /* CASPHD2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */; };
 		F445E58216597D5600965011 /* lodestar.png in Resources */ = {isa = PBXBuildFile; fileRef = F445E58116597D5600965011 /* lodestar.png */; };
@@ -658,6 +659,8 @@
 		F422B05D15FC8D5B00D86260 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
 		F42445E11EDA06E00058BF45 /* CASAPGTOGuidePort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAPGTOGuidePort.h; sourceTree = "<group>"; };
 		F42445E21EDA06E00058BF45 /* CASAPGTOGuidePort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAPGTOGuidePort.m; sourceTree = "<group>"; };
+		F42446261EE342CC0058BF45 /* CASLabelHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASLabelHUDView.h; sourceTree = "<group>"; };
+		F42446271EE342CC0058BF45 /* CASLabelHUDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASLabelHUDView.m; sourceTree = "<group>"; };
 		F43D311918A6A1FC00087C52 /* CASPHD2Client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASPHD2Client.h; sourceTree = "<group>"; };
 		F43D311A18A6A1FC00087C52 /* CASPHD2Client.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPHD2Client.m; sourceTree = "<group>"; };
 		F445E58116597D5600965011 /* lodestar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lodestar.png; sourceTree = "<group>"; };
@@ -2255,6 +2258,8 @@
 				F44791EF1680C260007A6815 /* CASStarInfoHUDView.xib */,
 				F44791E616806BB1007A6815 /* CASProgressHUDView.h */,
 				F44791E716806BB1007A6815 /* CASProgressHUDView.m */,
+				F42446261EE342CC0058BF45 /* CASLabelHUDView.h */,
+				F42446271EE342CC0058BF45 /* CASLabelHUDView.m */,
 				F44791F11680DB77007A6815 /* CASHistogramHUDView.h */,
 				F44791F21680DB78007A6815 /* CASHistogramHUDView.m */,
 				F44791F71680F5B6007A6815 /* CASHistogramHUDView.xib */,
@@ -3879,6 +3884,7 @@
 				F4AD8E8416E6973C00CF3083 /* CASTemperatureTransformer.m in Sources */,
 				F40572DD1763CFFE009CEC05 /* CASPlateSolvedObject+Drawing.m in Sources */,
 				F45FE02D1764AFEB007FB6D7 /* CASCameraControlsViewController.m in Sources */,
+				F42446281EE342CC0058BF45 /* CASLabelHUDView.m in Sources */,
 				F4489946176E0F4E00C0F8DD /* CASGuiderControlsViewController.m in Sources */,
 				F44899501770E5F400C0F8DD /* CASFilterWheelControlsViewController.m in Sources */,
 				F4A25843179BBC220013D220 /* CASPHDControlsViewController.m in Sources */,
