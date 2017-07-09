@@ -7,7 +7,10 @@
 //
 
 #import "CASCoordinateUtils.h"
+
+#if TARGET_OS_OSX == 1
 #import "libnova/angular_separation.h"
+#endif
 
 static inline double toRadians(double degrees)
 {
@@ -100,6 +103,7 @@ CASHMSAngle CASHMSAngleFromDegrees(double degrees)
     return result;
 }
 
+#if TARGET_OS_OSX == 1
 double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2)
 {
     struct ln_equ_posn p1 = {
@@ -110,3 +114,5 @@ double CASAngularSeparation(double ra1,double dec1,double ra2,double dec2)
     };
     return ln_get_angular_separation(&p1,&p2);
 }
+#endif
+
