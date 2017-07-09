@@ -34,17 +34,27 @@ static void* kvoContext;
 
 - (void)dealloc
 {
+    [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"cameraControllers" context:&kvoContext];
+    [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
+
     [self stop];
 }
 
-- (NSArray*)statusKeyPaths
+- (NSArray*)cameraStatusKeyPaths
 {
     return @[@"progress",@"state",@"lastExposure"];
+}
+
+- (NSArray*)mountStatusKeyPaths
+{
+    return @[@"ra",@"dec",@"alt",@"az",@"slewing",@"tracking",@"weightsHigh",@"pierSide",@"trackingRate",@"movingRate"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvoContext) {
+        
+//        NSLog(@"keyPath: %@, object: %@",keyPath,object);
         
         if (object == [CASDeviceManager sharedManager]){
             
@@ -53,13 +63,23 @@ static void* kvoContext;
                 case NSKeyValueChangeSetting:
                 case NSKeyValueChangeInsertion:{
                     [[change objectForKey:NSKeyValueChangeNewKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                        
                         if ([obj isKindOfClass:[CASCameraController class]]){
                             CASCameraController* camera = obj;
-                            for (NSString* keyPath in [self statusKeyPaths]){
+                            for (NSString* keyPath in [self cameraStatusKeyPaths]){
                                 [obj addObserver:self forKeyPath:keyPath options:0 context:&kvoContext];
-                                NSDictionary* cameraConnected = @{@"cmd":@"camera-connected",@"id":camera.uniqueID,@"status":[self cameraStatus:camera]};
-                                [self respondToCommand:nil withReply:cameraConnected toPeers:self.session.connectedPeers completion:nil];
                             }
+                            NSDictionary* cameraConnected = @{@"cmd":@"camera-connected",@"id":camera.uniqueID,@"status":[self cameraStatus:camera]};
+                            [self respondToCommand:nil withReply:cameraConnected toPeers:self.session.connectedPeers completion:nil];
+                        }
+                        
+                        if ([obj isKindOfClass:[CASMountController class]]){
+                            CASMountController* mount = obj;
+                            for (NSString* keyPath in [self mountStatusKeyPaths]){
+                                [mount.mount addObserver:self forKeyPath:keyPath options:0 context:&kvoContext];
+                            }
+                            NSDictionary* mountConnected = @{@"cmd":@"mount-connected",@"id":mount.uniqueID,@"status":[self mountStatus:mount.mount]};
+                            [self respondToCommand:nil withReply:mountConnected toPeers:self.session.connectedPeers completion:nil];
                         }
                     }];
                 }
@@ -67,13 +87,24 @@ static void* kvoContext;
                     
                 case NSKeyValueChangeRemoval:{
                     [[change objectForKey:NSKeyValueChangeOldKey] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                        
                         if ([obj isKindOfClass:[CASCameraController class]]){
                             CASCameraController* camera = obj;
-                            for (NSString* keyPath in [self statusKeyPaths]){
+                            for (NSString* keyPath in [self cameraStatusKeyPaths]){
                                 [obj removeObserver:self forKeyPath:keyPath context:&kvoContext];
-                                NSDictionary* cameraDisconnected = @{@"cmd":@"camera-disconnected",@"id":camera.uniqueID};
-                                [self respondToCommand:nil withReply:cameraDisconnected toPeers:self.session.connectedPeers completion:nil];
                             }
+                            NSDictionary* cameraDisconnected = @{@"cmd":@"camera-disconnected",@"id":camera.uniqueID};
+                            [self respondToCommand:nil withReply:cameraDisconnected toPeers:self.session.connectedPeers completion:nil];
+                        }
+                        
+                        // todo; really need to be observing the mount controller but it doesn't have the keys we need
+                        if ([obj isKindOfClass:[CASMountController class]]){
+                            CASMountController* mount = obj;
+                            for (NSString* keyPath in [self mountStatusKeyPaths]){
+                                [mount.mount removeObserver:self forKeyPath:keyPath context:&kvoContext];
+                            }
+                            NSDictionary* mountDisconnected = @{@"cmd":@"mount-disconnected",@"id":mount.uniqueID};
+                            [self respondToCommand:nil withReply:mountDisconnected toPeers:self.session.connectedPeers completion:nil];
                         }
                     }];
                 }
@@ -83,11 +114,18 @@ static void* kvoContext;
             }
         }
         else if ([object isKindOfClass:[CASCameraController class]]){
+            
             CASCameraController* camera = object;
-            NSDictionary* statusChanged = @{@"cmd":@"status-changed",@"id":camera.uniqueID,@"status":[self cameraStatus:camera]};
+            NSDictionary* statusChanged = @{@"cmd":@"camera-status-changed",@"id":camera.uniqueID,@"status":[self cameraStatus:camera]};
             [self respondToCommand:nil withReply:statusChanged toPeers:self.session.connectedPeers completion:nil];
         }
-        
+        else if ([object isKindOfClass:[CASMount class]]){
+            
+            CASMount* mount = object;
+            NSDictionary* statusChanged = @{@"cmd":@"mount-status-changed",@"id":mount.uniqueID,@"status":[self mountStatus:mount]};
+            [self respondToCommand:nil withReply:statusChanged toPeers:self.session.connectedPeers completion:nil];
+        }
+
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -105,9 +143,10 @@ static void* kvoContext;
     }
     
     [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
-
+    [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"mountControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
+    
     self.peerID = [[MCPeerID alloc] initWithDisplayName:[NSProcessInfo processInfo].hostName]; // no, want sharing name
-    self.session = [[MCSession alloc] initWithPeer:self.peerID];
+    self.session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionNone];
     self.session.delegate = self;
     
     self.assistant = [[MCAdvertiserAssistant alloc] initWithServiceType:@"sxio-server" discoveryInfo:nil session:self.session];
@@ -129,25 +168,36 @@ static void* kvoContext;
 
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state
 {
-    NSLog(@"didChangeState: %ld",state);
+    NSLog(@"didChangeState: %ld (%@)",state,peerID);
 }
 
 - (void)respondToCommand:(NSDictionary*)command withReply:(NSDictionary*)reply toPeers:(NSArray*)peers completion:(void(^)(NSError*,NSDictionary*))completion
 {
+    if (peers.count == 0){
+        if (completion){
+            completion(nil,nil);
+        }
+        return;
+    }
+    
     if (!reply){
         reply = @{};
     }
+    
     NSError* error;
     NSMutableDictionary* mutableReply = [reply mutableCopy];
     NSString* uuid = command[@"uuid"];
     if (uuid){
         mutableReply[@"uuid"] = uuid;
     }
-    NSLog(@"respondToCommand: %@",mutableReply);
+    
+//    NSLog(@"respondToCommand: %@",mutableReply);
+    
     NSData* data = [NSJSONSerialization dataWithJSONObject:mutableReply options:0 error:&error];
     if (!data){
         NSLog(@"dataWithJSONObject: %@",error);
     }
+    
     const BOOL success = [self.session sendData:data toPeers:peers withMode:MCSessionSendDataReliable error:&error];
     if (!success){
         NSLog(@"sendData: %@",error);
@@ -157,6 +207,63 @@ static void* kvoContext;
 - (void)respondToCommand:(NSDictionary*)command withReply:(NSDictionary*)reply toPeer:(MCPeerID*)peerID completion:(void(^)(NSError*,NSDictionary*))completion
 {
     [self respondToCommand:command withReply:reply toPeers:@[peerID] completion:completion];
+}
+
+- (CASMountController*)locateMount:(NSDictionary*)msg
+{
+    CASMountController* mount;
+    NSArray* mounts = [NSApp mountControllers];
+    NSString* ident = [msg[@"id"] description];
+    for (CASMountController* m in mounts){
+        if ([ident isEqualToString:[m.mount.uniqueID description]]){
+            mount = m;
+            break;
+        }
+    }
+    return mount;
+}
+
+- (NSDictionary*)mountStatus:(CASDevice<CASMount>*)mount
+{
+    NSParameterAssert(mount);
+    
+    NSMutableDictionary* props = [NSMutableDictionary dictionaryWithCapacity:5];
+    
+    props[@"name"] = mount.deviceName;
+    props[@"id"] = mount.uniqueID;
+    
+    if (mount.ra) {
+        props[@"ra"] = mount.ra;
+    }
+    if (mount.dec){
+        props[@"dec"] = mount.dec;
+    }
+    if (mount.alt){
+        props[@"alt"] = mount.alt;
+    }
+    if (mount.az){
+        props[@"az"] = mount.az;
+    }
+    if (mount.ha){
+        props[@"ha"] = mount.ha;
+    }
+    
+    props[@"connected"] = mount.connected ? @YES : @NO;
+    props[@"slewing"] = mount.slewing ? @YES : @NO;
+    props[@"tracking"] = mount.tracking ? @YES : @NO;
+    props[@"weightsHigh"] = mount.weightsHigh ? @YES : @NO;
+    props[@"pierSide"] = @(mount.pierSide);
+    
+    if ([mount respondsToSelector:@selector(trackingRate)]){
+        props[@"trackingRate"] = @([(id)mount trackingRate]);
+    }
+    if ([mount respondsToSelector:@selector(movingRate)]){
+        props[@"movingRate"] = @([(id)mount movingRate]);
+    }
+
+    // local time/date
+    
+    return [props copy];
 }
 
 - (CASCameraController*)locateCamera:(NSDictionary*)msg
@@ -219,7 +326,7 @@ static void* kvoContext;
                 for (CASCameraController* camera in cameras){
                     [response addObject:[self cameraStatus:camera]];
                 }
-                [self respondToCommand:msg withReply:@{@"devices":response} toPeer:peerID completion:nil];
+                [self respondToCommand:msg withReply:@{@"cameras":response} toPeer:peerID completion:nil];
             }
             else if ([cmd isEqualToString:@"start-capture"]){
                 
@@ -260,7 +367,7 @@ static void* kvoContext;
                 
                 CASCameraController* camera = [self locateCamera:msg];
                 if (!camera){
-                    // error
+                    [self respondToCommand:msg withReply:@{@"error":@"No such camera"} toPeer:peerID completion:nil];
                 }
                 else {
                     [self respondToCommand:msg withReply:@{@"status":[self cameraStatus:camera]} toPeer:peerID completion:nil];
@@ -291,6 +398,59 @@ static void* kvoContext;
                 }
             }
             else if ([cmd isEqualToString:@"get-thumbnail"]){ // or flag to get-image
+                
+            }
+            else if ([cmd isEqualToString:@"list-mounts"]){
+                
+                NSArray* mounts = [NSApp mountControllers];
+                NSMutableArray* response = [NSMutableArray arrayWithCapacity:[mounts count]];
+                for (CASMountController* mount in mounts){
+                    [response addObject:[self mountStatus:mount.mount]];
+                }
+                [self respondToCommand:msg withReply:@{@"mounts":response} toPeer:peerID completion:nil];
+            }
+            else if ([cmd isEqualToString:@"mount-status"]){
+                
+                CASMountController* mount = [self locateMount:msg];
+                if (!mount){
+                    [self respondToCommand:msg withReply:@{@"error":@"No such mount"} toPeer:peerID completion:nil];
+                }
+                else {
+                    [self respondToCommand:msg withReply:@{@"status":[self mountStatus:mount.mount]} toPeer:peerID completion:nil];
+                }
+            }
+            else if ([cmd isEqualToString:@"mount-move"]){
+                
+                CASMountController* mount = [self locateMount:msg];
+                if (!mount){
+                    [self respondToCommand:msg withReply:@{@"error":@"No such mount"} toPeer:peerID completion:nil];
+                }
+                else {
+                    const NSInteger direction = [msg[@"direction"] integerValue];
+                    [mount.mount startMoving:direction];
+                }
+            }
+            else if ([cmd isEqualToString:@"stop-mount-move"]){
+                
+                CASMountController* mount = [self locateMount:msg];
+                if (!mount){
+                    [self respondToCommand:msg withReply:@{@"error":@"No such mount"} toPeer:peerID completion:nil];
+                }
+                else {
+                    [mount.mount stopMoving];
+                }
+            }
+            else if ([cmd isEqualToString:@"set-mount-move-rate"]){
+                
+                CASMountController* mount = [self locateMount:msg];
+                if (!mount){
+                    [self respondToCommand:msg withReply:@{@"error":@"No such mount"} toPeer:peerID completion:nil];
+                }
+                else {
+                    if ([mount.mount respondsToSelector:@selector(setMovingRate:)]){
+                        [(id)mount.mount setMovingRate:[msg[@"rate"] integerValue]];
+                    }
+                }
             }
         }
     });
@@ -312,3 +472,4 @@ static void* kvoContext;
 }
 
 @end
+
