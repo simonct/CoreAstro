@@ -16,7 +16,20 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 @property (strong,nonatomic) CASNova* nova;
 @end
 
-@implementation CASMount
+@implementation CASMount {
+    NSInteger _mountID;
+}
+
+static NSInteger gMountID = 0;
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _mountID = gMountID++;
+    }
+    return self;
+}
 
 - (void)connect:(void(^)(NSError*))completion {
     if (completion){
@@ -190,6 +203,10 @@ NSString* const CASMountFlippedNotification = @"CASMountFlippedNotification";
 
 - (CASDeviceType)type {
     return kCASDeviceTypeMount;
+}
+
+- (NSString*)uniqueID {
+    return [NSString stringWithFormat:@"%@.%ld",self.deviceName,_mountID];
 }
 
 @end
