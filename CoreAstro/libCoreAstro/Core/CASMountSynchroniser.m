@@ -38,7 +38,7 @@
                                                               @"CASMountSlewControllerDuration":@(5),
                                                               @"CASMountSlewControllerConvergence":@(0.005), // relate to camera pixel size ?
                                                               @"CASMountSlewControllerSearchRadius":@(5),
-                                                              @"CASMountSlewControllerAutoSyncSlewDuration":@(15)}];
+                                                              @"CASMountSlewControllerAutoSyncSlewDuration":@(10)}];
 }
 
 - (void)findLocation
