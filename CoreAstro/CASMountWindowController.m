@@ -60,6 +60,7 @@
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (weak) IBOutlet NSProgressIndicator *lookupSpinner;
 @property (weak) IBOutlet NSButton *syncButton;
+@property (weak) IBOutlet NSButton *homeButton;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (copy) void(^slewCompletion)(NSError*);
@@ -156,7 +157,7 @@ static void* kvoContext;
 - (void)showWindow:(id)sender
 {
     [super showWindow:sender];
-
+    
 #if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
 #endif
@@ -178,7 +179,7 @@ static void* kvoContext;
 #if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
-
+    
     [self close];
 }
 
@@ -186,7 +187,7 @@ static void* kvoContext;
 {
     // check this is being called...
     [self.mountController.mount disconnect];
-
+    
     [[CASDeviceManager sharedManager] removeMountController:self.mountController];
     self.mountController = nil;
 }
@@ -255,7 +256,7 @@ static void* kvoContext;
     }];
     
     self.hasCurrentSolutionBookmark = hasCurrentSolutionBookmark;
-
+    
     return [bookmarks copy];
 }
 
@@ -328,7 +329,7 @@ static void* kvoContext;
 
 - (void)startMoving:(CASMountDirection)direction
 {
-//    NSLog(@"startMoving: %ld",direction);
+    //    NSLog(@"startMoving: %ld",direction);
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(stopMoving) object:nil];
     [self performSelector:@selector(stopMoving) withObject:nil afterDelay:0.25 inModes:@[NSRunLoopCommonModes]];
     [self.mountController.mount startMoving:direction];
@@ -336,7 +337,7 @@ static void* kvoContext;
 
 - (void)stopMoving
 {
-//    NSLog(@"stopMoving");
+    //    NSLog(@"stopMoving");
     [self.mountController.mount stopMoving];
 }
 
@@ -415,6 +416,9 @@ static void* kvoContext;
     
     // check synced, offer to find location and then slew
     if (!self.synced){
+        
+        // check can slew without sync flag
+        
         const NSInteger response = [[NSAlert alertWithMessageText:@"Sync Mount"
                                                     defaultButton:@"Sync"
                                                   alternateButton:@"Slew"
@@ -508,17 +512,18 @@ static void* kvoContext;
     
     // check for something that looks like an ra/dec
     NSString* text = self.searchString;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9])+" options:0 error:nil];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"(-?[0-9])+" options:0 error:nil];
     NSArray<NSTextCheckingResult*>* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
     if (matches.count == 6){
         
-        self.targetRA = @([[text substringWithRange:matches[0].range] floatValue]*15 +
-        [[text substringWithRange:matches[1].range] floatValue]/60.0 +
-        [[text substringWithRange:matches[2].range] floatValue]/3600.0);
+        self.targetRA = @(15*([[text substringWithRange:matches[0].range] doubleValue] +
+                              [[text substringWithRange:matches[1].range] doubleValue]/60.0 +
+                              [[text substringWithRange:matches[2].range] doubleValue]/3600.0));
         
-        self.targetDec = @([[text substringWithRange:matches[3].range] floatValue] +
-        [[text substringWithRange:matches[4].range] floatValue]/60.0 +
-        [[text substringWithRange:matches[5].range] floatValue]/3600);
+        const double decDegrees = [[text substringWithRange:matches[3].range] doubleValue];
+        self.targetDec = @((decDegrees < 0 ? -1 : 1) * (fabs(decDegrees) +
+                                                        [[text substringWithRange:matches[4].range] doubleValue]/60.0 +
+                                                        [[text substringWithRange:matches[5].range] doubleValue]/3600));
         
         return;
     }
@@ -593,12 +598,14 @@ static void* kvoContext;
         NSLog(@"Currently solving...");
         return;
     }
-
+    
 #if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
 #endif
-
+    
     [self cleanup];
+    
+    // are bindings hanging onto the mount ?
     
     [self close];
 }
@@ -638,7 +645,7 @@ static void* kvoContext;
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
 {
     NSLog(@"mountSynchroniser:didCompleteWithError: %@",error);
-
+    
     if (error){
         [NSApp presentError:error];
     }
@@ -668,7 +675,7 @@ static void* kvoContext;
 {
     [self willChangeValueForKey:@"bookmarks"];
     // force the bookmarks menu to redraw in case the associated window controller has a current plate solution
-    // todo; this is a workaround, we should bind to the mount window delegate somehow 
+    // todo; this is a workaround, we should bind to the mount window delegate somehow
     [self didChangeValueForKey:@"bookmarks"];
 }
 
@@ -713,7 +720,7 @@ static void* kvoContext;
         completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"No serial port has been selected"}]);
         return;
     }
-
+    
     if (port.isOpen){
         completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"Selected serial port is already open"}]);
         return;
@@ -745,7 +752,7 @@ static void* kvoContext;
 - (void)connectToMount:(void(^)())completion
 {
     NSParameterAssert(completion);
-
+    
     [self showWindow:nil]; // because we need to present a sheet
     
     if (self.mountController.mount){
@@ -783,16 +790,16 @@ static void* kvoContext;
 {
     NSParameterAssert(completion);
     
-//    // check to see if we're already connected to this mount
-//    if ([self.mountController.mount respondsToSelector:@selector(port)]){
-//        ORSSerialPort* port = [self.mountController.mount valueForKey:@"port"];
-//        if ([port.path isEqualToString:path]){
-//            // completion(nil,self.mountController); // except this seems to cause the make applevent handler to be called again ?
-//            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:9 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Mount '%@' already connected",self.mount.deviceName]}];
-//            completion(error,nil);
-//        }
-//        return;
-//    }
+    //    // check to see if we're already connected to this mount
+    //    if ([self.mountController.mount respondsToSelector:@selector(port)]){
+    //        ORSSerialPort* port = [self.mountController.mount valueForKey:@"port"];
+    //        if ([port.path isEqualToString:path]){
+    //            // completion(nil,self.mountController); // except this seems to cause the make applevent handler to be called again ?
+    //            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:9 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Mount '%@' already connected",self.mount.deviceName]}];
+    //            completion(error,nil);
+    //        }
+    //        return;
+    //    }
     
     // enforce a single mount connected policy
     if (self.mountController.mount){
@@ -800,7 +807,7 @@ static void* kvoContext;
         completion(error,nil);
         return;
     }
-
+    
     ORSSerialPort* port = [[ORSSerialPortManager sharedSerialPortManager].availablePorts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"path == %@",path]].firstObject;
     if (!port){
         completion([NSError errorWithDomain:NSStringFromClass([self class]) code:7 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"There is no serial port with the path '%@'",path]}],nil);
@@ -813,3 +820,4 @@ static void* kvoContext;
 }
 
 @end
+
