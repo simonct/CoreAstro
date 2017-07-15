@@ -197,6 +197,9 @@ static void* kvoContext;
             
             // switch PEC off, todo; make configurable in the UI
             [self sendCommand:@":p#"];
+            
+            // mark the mount as unparked
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"APGTOLastParkPosition"];
         }
     }];
     
@@ -515,31 +518,31 @@ static void* kvoContext;
     [self parkToPosition:[self defaultParkPosition] completion:completion];
 }
 
-- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
+struct ParkPosition {
+    double ra, dec;
+};
+
+- (BOOL)parkPosition:(NSInteger)parkPosition position:(struct ParkPosition*)position
 {
-    [self halt];
-    
-    double parkRA = 0, parkDec = 0;
-    
     switch (parkPosition) {
         case 2:{
-            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
-            parkDec = 0;
+            position->ra = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
+            position->dec = 0;
         }
             break;
         case 3:{
-            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
-            parkDec = 90;
+            position->ra = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 90 + 360, 360);
+            position->dec = 90;
         }
             break;
         case 4:{
-            parkRA = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 360, 360);
+            position->ra = fmod(([CASNova siderealTimeForLongitude:self.siteLongitude.doubleValue]*15) + 360, 360);
             const double latitude = self.siteLatitude.doubleValue;
             if (latitude < 0){
-                parkDec = latitude + 90;
+                position->dec = latitude + 90;
             }
             else {
-                parkDec = latitude - 90;
+                position->dec = latitude - 90;
             }
         }
             break;
@@ -548,11 +551,28 @@ static void* kvoContext;
             return NO;
     }
     
-    NSLog(@"Parking mount to position %ld at RA: %f DEC: %f",parkPosition,parkRA,parkDec);
-    
-    [self parkWithRA:parkRA dec:parkDec completion:completion];
-    
     return YES;
+}
+
+- (BOOL)parkToPosition:(NSInteger)parkPosition completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
+{
+    [self halt];
+    
+    struct ParkPosition position;
+    if ([self parkPosition:parkPosition position:&position]){
+        
+        NSLog(@"Parking mount to position %ld at RA: %f DEC: %f",parkPosition,position.ra,position.dec);
+        
+        [[NSUserDefaults standardUserDefaults] setInteger:parkPosition forKey:@"APGTOLastParkPosition"];
+        
+        [self parkWithRA:position.ra dec:position.dec completion:completion];
+        
+        return YES;
+    }
+    
+    NSLog(@"Unrecognised park position: %ld",parkPosition);
+    
+    return NO;
 }
 
 - (void)parkWithRA:(double)parkRA dec:(double)parkDec completion:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
