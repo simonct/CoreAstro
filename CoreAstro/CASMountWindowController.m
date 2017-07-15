@@ -458,21 +458,17 @@ static void* kvoContext;
 - (IBAction)park:(id)sender
 {
     __weak __typeof (self) weakSelf = self;
-    [self.mountController.mount park:^(CASMountSlewError error, CASMountSlewObserver* observer) {
-        if (error != CASMountSlewErrorNone){
-            [self presentAlertWithMessage:@"Failed to park the mount"];
+    
+    [self.mountController parkMountWithCompletion:^(NSError *error) {
+        if (error != nil){
+            [self presentAlertWithMessage:error.localizedDescription];
         }
         else {
-            self.slewObserver = observer;
-            self.slewObserver.completion = ^(NSError* error){
-                if (error){
-                    [weakSelf presentAlertWithMessage:error.localizedDescription];
-                }
-                else {
-                    [weakSelf disconnectButtonPressed:nil];
-                    [weakSelf presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
-                }
-            };
+            // this is a rather arbitrary delay to allow the park mode command to make it to the mount and have an effect
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [weakSelf disconnectButtonPressed:nil];
+                [weakSelf presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
+            });
         }
     }];
 }
