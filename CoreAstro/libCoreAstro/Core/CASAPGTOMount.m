@@ -11,6 +11,7 @@
 #import "CASLX200Commands.h"
 #import "CASCoordinateUtils.h"
 #import "CASNova.h"
+#import "CASUtilities.h"
 
 @interface CASAPGTOMount ()<CASAPGTOGuidePortDelegate>
 @property (nonatomic,assign) BOOL connected;
@@ -199,8 +200,8 @@ static void* kvoContext;
         }
     }];
     
-    if (_cp3){
-        self.guidePort = [[CASAPGTOGuidePort alloc] initWithDelegate:self];
+    if (_cp3 && !CASRunningInSandbox()){
+        self.guidePort = [[CASAPGTOGuidePort alloc] initWithMount:self delegate:self];
     }
 }
 
@@ -308,6 +309,10 @@ static void* kvoContext;
 - (void)disconnect
 {
     [super disconnect];
+    
+    [self.guidePort disconnect];
+    self.guidePort = nil;
+    
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(pollMountStatus) object:nil];
 }
 
