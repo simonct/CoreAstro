@@ -12,7 +12,9 @@
 - (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 @end
 
+@class CASAPGTOMount;
+
 @interface CASAPGTOGuidePort : NSObject
-@property (weak) id<CASAPGTOGuidePortDelegate> delegate;
-- (instancetype)initWithDelegate:(id<CASAPGTOGuidePortDelegate>)delegate;
+- (instancetype)initWithMount:(CASAPGTOMount*)mount delegate:(id<CASAPGTOGuidePortDelegate>)delegate;
+- (void)disconnect;
 @end
