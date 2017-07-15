@@ -249,7 +249,7 @@ static void* kvoContext;
 {
     if (!_sentBacklashCommands){
         
-        // sending the backlash commands mode than once seems to jam up the serial comms
+        // sending the backlash commands more than once seems to jam up the serial comms
         _sentBacklashCommands = YES;
         
         // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
@@ -289,7 +289,7 @@ static void* kvoContext;
         }
     }
     
-    // guide rate - sending this seems to bork the cp3...
+    // guide rate
     switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOGuideRateIndex"]) {
         case 0:
             [self sendCommand:@":RG0#"]; // 0.25x
