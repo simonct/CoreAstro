@@ -60,7 +60,6 @@
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
 @property (weak) IBOutlet NSProgressIndicator *lookupSpinner;
 @property (weak) IBOutlet NSButton *syncButton;
-@property (weak) IBOutlet NSButton *homeButton;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property (copy) void(^slewCompletion)(NSError*);
@@ -69,7 +68,6 @@
 @property (strong) NSNumber* targetDec;
 @property (strong) CASObjectLookup* lookup;
 @property (strong) CASMountSlewObserver* slewObserver;
-@property (weak) IBOutlet NSButton *mountConfigurationButton;
 @property (strong) NSPopover* mountPopover;
 @property CASMountSynchroniser* synchroniser;
 @property BOOL synced;
@@ -455,27 +453,6 @@ static void* kvoContext;
     self.slewAfterFindLocation = NO;
     
     [self.mountController stop];
-}
-
-- (IBAction)home:(id)sender
-{
-    __weak __typeof (self) weakSelf = self;
-    [self.mountController.mount gotoHomePosition:^(CASMountSlewError error, CASMountSlewObserver* observer){
-        if (error != CASMountSlewErrorNone) {
-            [self presentAlertWithMessage:@"Failed to home the mount"];
-        }
-        else {
-            self.slewObserver = observer;
-            self.slewObserver.completion = ^(NSError* error){
-                if (error){
-                    [weakSelf presentAlertWithMessage:error.localizedDescription];
-                }
-                else {
-                    [weakSelf presentAlertWithTitle:@"Home Complete" message:@"The mount is now in its Home position"];
-                }
-            };
-        }
-    }];
 }
 
 - (IBAction)park:(id)sender
