@@ -195,9 +195,6 @@ static void* kvoContext;
             [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above - not required for CP3/4 but doesn't unlock the keypad if you don't
             [self sendCommand:@":Q#"];
             
-            // switch PEC off, todo; make configurable in the UI
-            [self sendCommand:@":p#"];
-            
             // mark the mount as unparked
             [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"APGTOLastParkPosition"];
         }
@@ -238,6 +235,9 @@ static void* kvoContext;
             self.trackingRate = CASAPGTOMountTrackingRateSidereal;
         }
 
+        // switch PEC off, todo; make configurable in the UI
+        [self sendCommand:@":p#"];
+        
         // magic delay seemingly required after setting rates... (still needed?)
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pollMountStatus];
