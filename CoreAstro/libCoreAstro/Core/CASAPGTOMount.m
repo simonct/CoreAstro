@@ -30,6 +30,7 @@
     CASAPGTOMountTrackingRate _trackingRate;
     NSTimeInterval _lastMountPollTime;
     BOOL _observingDefaults;
+    BOOL _sentBacklashCommands;
 }
 
 @synthesize name, connected;
@@ -54,10 +55,12 @@ static void* kvoContext;
 
 - (void)dealloc
 {
+    NSLog(@"[CASAPGTOMount dealloc]");
+    
     if (_observingDefaults){
-        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTOGuideRateIndex" context:&kvoContext];
-        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTORABacklashArcSeconds" context:&kvoContext];
-        [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"APGTODecBacklashArcSeconds" context:&kvoContext];
+        [[self configurationDefaultsKeys] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:obj context:&kvoContext];
+        }];
     }
 }
 
@@ -218,9 +221,9 @@ static void* kvoContext;
             
             if (!_observingDefaults){
                 _observingDefaults = YES;
-                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTOGuideRateIndex" options:0 context:&kvoContext];
-                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTORABacklashArcSeconds" options:0 context:&kvoContext];
-                [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:@"APGTODecBacklashArcSeconds" options:0 context:&kvoContext];
+                [[self configurationDefaultsKeys] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [[NSUserDefaultsController sharedUserDefaultsController] addObserver:self forKeyPath:obj options:0 context:&kvoContext];
+                }];
             }
             [self updateMountConfiguration];
             
@@ -240,23 +243,49 @@ static void* kvoContext;
 
 - (void)updateMountConfiguration
 {
-    // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
-    const NSInteger backlashArcSecondsRA = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]));
-    NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*00:%02ld#",(long)backlashArcSecondsRA];
-    NSLog(@"RA backlash: %@",backlashCommandRA);
-    [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
-        if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
-    }];
+    if (!_sentBacklashCommands){
+        
+        // sending the backlash commands mode than once seems to jam up the serial comms
+        _sentBacklashCommands = YES;
+        
+        // :Br DD*MM:SS# or :Br HH:MM:SS# or :Br HH:MM:SS.S# -> 1
+        {
+            NSInteger backlashArcSecondsRA = MAX(0,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTORABacklashArcSeconds"]);
+            
+            NSInteger backlashArcMinutesRA = 0;
+            while (backlashArcSecondsRA > 59) {
+                backlashArcSecondsRA -= 60;
+                backlashArcMinutesRA++;
+            }
+            
+            NSString* backlashCommandRA = [NSString stringWithFormat:@":Br 00*%02ld:%02ld#",(long)backlashArcMinutesRA,(long)backlashArcSecondsRA];
+            NSLog(@"RA backlash: %@",backlashCommandRA);
+            
+            [self sendCommand:backlashCommandRA readCount:1 completion:^(NSString *response) {
+                if (![response isEqualToString:@"1"]) NSLog(@"Set RA backlash: %@",response);
+            }];
+        }
+        
+        // :Bd DD*MM:SS#  -> 1
+        {
+            NSInteger backlashArcSecondsDec = MAX(0,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]);
+            
+            NSInteger backlashArcMinutesDec = 0;
+            while (backlashArcSecondsDec > 59) {
+                backlashArcSecondsDec -= 60;
+                backlashArcMinutesDec++;
+            }
+            
+            NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*%02ld:%02ld#",(long)backlashArcMinutesDec,(long)backlashArcSecondsDec];
+            NSLog(@"Dec backlash: %@",backlashCommandDec);
+            
+            [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
+                if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
+            }];
+        }
+    }
     
-    // :Bd DD*MM:SS#  -> 1
-    const NSInteger backlashArcSecondsDec = MAX(0,MIN(59,[[NSUserDefaults standardUserDefaults] integerForKey:@"APGTODecBacklashArcSeconds"]));
-    NSString* backlashCommandDec = [NSString stringWithFormat:@":Bd 00*00:%02ld#",(long)backlashArcSecondsDec];
-    NSLog(@"Dec backlash: %@",backlashCommandDec);
-    [self sendCommand:backlashCommandDec readCount:1 completion:^(NSString *response) {
-        if (![response isEqualToString:@"1"]) NSLog(@"Set Dec backlash: %@",response);
-    }];
-    
-    // guide rate
+    // guide rate - sending this seems to bork the cp3...
     switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOGuideRateIndex"]) {
         case 0:
             [self sendCommand:@":RG0#"]; // 0.25x
@@ -777,28 +806,9 @@ static void* kvoContext;
     
     NSString* command;
 
-    switch (direction) {
-        case CASMountDirectionNorth:
-            command = [NSString stringWithFormat:@":Mn%03ld#",ms];
-            break;
-        case CASMountDirectionEast:
-            command = [NSString stringWithFormat:@":Me%03ld#",ms];
-            break;
-        case CASMountDirectionSouth:
-            command = [NSString stringWithFormat:@":Ms%03ld#",ms];
-            break;
-        case CASMountDirectionWest:
-            command = [NSString stringWithFormat:@":Mw%03ld#",ms];
-            break;
-        default:
-            NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
-            break;
-    }
-    
-    if (command){
-        NSLog(@"APGTO: Pulse command '%@'",command);
-        [self sendCommand:command readCount:0 priority:true completion:nil];
-    }
+- (NSArray<NSString*>*)configurationDefaultsKeys
+{
+    return @[@"values.APGTOGuideRateIndex",@"values.APGTORABacklashArcSeconds",@"values.APGTODecBacklashArcSeconds"];
 }
 
 - (NSViewController*)configurationViewController
