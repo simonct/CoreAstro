@@ -627,9 +627,7 @@ static void* kvoContext;
 
 - (IBAction)nextExposure:(id)sender
 {
-    // Xcode 7
-//    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
-    NSArray* exposures = self.cameraController.recentURLs;
+    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
     if (exposures.count > 0){
         const NSInteger index = [exposures indexOfObject:self.currentExposure.io.url];
         NSLog(@"nextExposure index: %ld, count: %ld",index,exposures.count);
@@ -648,9 +646,7 @@ static void* kvoContext;
 
 - (IBAction)previousExposure:(id)sender
 {
-    // Xcode 7
-//    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
-    NSArray* exposures = self.cameraController.recentURLs;
+    NSArray<NSURL*>* exposures = self.cameraController.recentURLs;
     if (exposures.count > 0){
         if (!self.currentExposure.io.url){
             [self openExposureAtPath:((NSURL*)exposures.firstObject).path];
