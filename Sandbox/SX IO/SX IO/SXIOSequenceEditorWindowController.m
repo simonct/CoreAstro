@@ -226,9 +226,11 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
-@interface CASSequenceSlewStep : CASSequenceStep
+@interface CASSequenceSlewStep : CASSequenceStep<NSSpeechSynthesizerDelegate>
 @property (nonatomic,copy) NSDictionary* bookmark;
 @property BOOL plateSolve;
+@property (weak) id<SXIOSequenceTarget> target;
+@property (copy) void(^completion)(NSError*);
 @end
 
 @implementation CASSequenceSlewStep
@@ -272,14 +274,49 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
     return @"slew";
 }
 
+- (NSString*)warning
+{
+    return @"Mount will start slewing to target";
+}
+
 - (BOOL)isValid
 {
     return (self.bookmark.count > 0); // and mount connected
 }
 
+- (void)execute:(id<SXIOSequenceTarget>)target completion:(void(^)(NSError*))completion
+{
+    self.target = target;
+    self.completion = completion;
+    
+    NSString* warning = [self warning];
+    if (![warning length]){
+        [self warningCompleted];
+    }
+    else {
+        NSSpeechSynthesizer* speech = [[NSSpeechSynthesizer alloc] init];
+        speech.delegate = self;
+        [speech startSpeakingString:warning];
+    }
+}
+
+- (void)speechSynthesizer:(NSSpeechSynthesizer *)sender didFinishSpeaking:(BOOL)finishedSpeaking
+{
+    [self warningCompleted]; // todo; want an additional countdown timer
+}
+
+- (void)warningCompleted
+{
+    [self.target slewToBookmark:self.bookmark plateSolve:self.plateSolve completion:^(NSError* error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.completion(error);
+        });
+    }];
+}
+
 @end
 
-@interface CASSequenceParkStep : CASSequenceStep
+@interface CASSequenceParkStep : CASSequenceSlewStep
 @end
 
 @implementation CASSequenceParkStep
@@ -287,6 +324,25 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 - (NSString*)type
 {
     return @"park";
+}
+
+- (NSString*)warning
+{
+    return @"Mount will start slewing to park position";
+}
+
+- (BOOL)isValid
+{
+    return YES;
+}
+
+- (void)warningCompleted
+{
+    [self.target parkMountWithCompletion:^(NSError* error){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.completion(error);
+        });
+    }];
 }
 
 @end
@@ -467,16 +523,7 @@ static void* kvoContext;
 - (void)capture
 {
     [self.target captureWithCompletion:^(NSError* error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error){
-                [self stopWithError:error];
-            }
-            else {
-                if (!_stopped){
-                    [self advanceToNextStep];
-                }
-            }
-        });
+        [self stepCompletedWithError:error];
     }];
 }
 
@@ -550,41 +597,28 @@ static void* kvoContext;
 
 - (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
 {
-//    // speak/beep warning for a few seconds ?
-//    NSSpeechSynthesizer* speech = [[NSSpeechSynthesizer alloc] init];
-//    [speech startSpeakingString:@"Mount will start slewing"];
-    // - (void)speechSynthesizer:(NSSpeechSynthesizer *)sender didFinishSpeaking:(BOOL)finishedSpeaking
-    [self.target slewToBookmark:sequenceStep.bookmark plateSolve:sequenceStep.plateSolve completion:^(NSError* error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error){
-                [self stopWithError:error];
-            }
-            else {
-                if (!_stopped){
-                    [self advanceToNextStep];
-                }
-            }
-        });
+    [sequenceStep execute:self.target completion:^(NSError* error) {
+        [self stepCompletedWithError:error];
     }];
 }
 
 - (void)executeParkStep:(CASSequenceParkStep*)parkStep
 {
-//    // speak/beep warning for a few seconds ?
-//    NSSpeechSynthesizer* speech = [[NSSpeechSynthesizer alloc] init];
-//    [speech startSpeakingString:@"Mount will start parking"];
-    [self.target parkMountWithCompletion:^(NSError* error){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error){
-                [self stopWithError:error];
-            }
-            else {
-                if (!_stopped){
-                    [self advanceToNextStep];
-                }
-            }
-        });
+    [parkStep execute:self.target completion:^(NSError* error) {
+        [self stepCompletedWithError:error];
     }];
+}
+
+- (void)stepCompletedWithError:(NSError*)error
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (error){
+            [self stopWithError:error];
+        }
+        else {
+            [self advanceToNextStep];
+        }
+    });
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -1000,6 +1034,7 @@ static void* kvoContext;
                     [weakSelf performSelector:@selector(restartTimerFired) withObject:nil afterDelay:delay];
                 }
                 else {
+                    _stopped = YES;
                     weakSelf.nextRunTime = nil;
                     weakSelf.startButton.title = @"Start";
                 }
@@ -1101,7 +1136,10 @@ static void* kvoContext;
     self.sequenceURL = url; // this isn't being shown while it's a sheet
     self.window.representedURL = url; // need scoped bookmark data ?
     NSString* name = [url isFileURL] ? [[NSFileManager defaultManager] displayNameAtPath:url.path] : [url lastPathComponent];
-    [self.window setTitleWithRepresentedFilename:name];
+    [self.window setTitleWithRepresentedFilename:name]; // and the window menu item ?
+#if defined(SXIO) || defined(CCDIO)
+    [[SXIOAppDelegate sharedInstance] updateWindowInWindowMenu:self];
+#endif
 }
 
 - (IBAction)save:(id)sender
