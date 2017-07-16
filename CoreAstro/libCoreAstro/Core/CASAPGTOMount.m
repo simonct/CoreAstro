@@ -859,36 +859,49 @@ struct ParkPosition {
         return;
     }
     
-    // pulse guide commands seem to be limited to 999ms, could possibly use an start move command and a timer to simulate longer pulses
-    const NSInteger maxDuration = 999;
+    // filter out excessively long pulse commands
+    const NSInteger maxDuration = 5000;
     if (ms > maxDuration){
-        NSLog(@"APGTO: Pulse guide duration of %ld is > %ld, setting to max",ms,maxDuration);
-        ms = maxDuration;
+        NSLog(@"APGTO: Pulse guide duration of %ld is > %ld, ignoring",ms,maxDuration);
+        return;
     }
     
-    NSString* command;
-    
-    switch (direction) {
-        case CASMountDirectionNorth:
-            command = [NSString stringWithFormat:@":Mn%03ld#",ms];
-            break;
-        case CASMountDirectionEast:
-            command = [NSString stringWithFormat:@":Me%03ld#",ms];
-            break;
-        case CASMountDirectionSouth:
-            command = [NSString stringWithFormat:@":Ms%03ld#",ms];
-            break;
-        case CASMountDirectionWest:
-            command = [NSString stringWithFormat:@":Mw%03ld#",ms];
-            break;
-        default:
-            NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
-            break;
-    }
-    
-    if (command){
-        NSLog(@"APGTO: Pulse command '%@'",command);
-        [self sendCommand:command readCount:0 priority:true completion:nil];
+    // break pulses down into 999ms increments
+    const NSInteger maxPulseDuration = 999;
+    while (ms > 0) {
+        
+        NSString* command;
+        
+        const NSInteger duration = MIN(maxPulseDuration, ms);
+        switch (direction) {
+            case CASMountDirectionNorth:
+                command = [NSString stringWithFormat:@":Mn%03ld#",duration];
+                break;
+            case CASMountDirectionEast:
+                command = [NSString stringWithFormat:@":Me%03ld#",duration];
+                break;
+            case CASMountDirectionSouth:
+                command = [NSString stringWithFormat:@":Ms%03ld#",duration];
+                break;
+            case CASMountDirectionWest:
+                command = [NSString stringWithFormat:@":Mw%03ld#",duration];
+                break;
+            default:
+                NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
+                break;
+        }
+        
+        if (command){
+            NSLog(@"APGTO: Pulse command '%@'",command);
+            [self sendCommand:command readCount:0 priority:true completion:nil];
+        }
+        
+        ms -= duration;
+        
+        // wait for 'duration' ms if we have a follow-on pulse (todo; this could be blocking the main thread, need a comms queue)
+        if (ms > 0) {
+            [NSThread sleepForTimeInterval:duration/1000.0];
+        }
     }
 }
 
