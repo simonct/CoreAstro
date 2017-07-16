@@ -9,7 +9,7 @@
 #import "SXIOSequenceEditorWindowController.h"
 #import <CoreAstro/CoreAstro.h>
 
-#import "CASMountWindowController.h" // tmp until this is refactored into a mount controller
+#if defined(SXIO) || defined(CCDIO)
 #import "SXIOAppDelegate.h"
 
 static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
