@@ -17,6 +17,7 @@
 @property (nonatomic,assign) BOOL connected;
 @property (nonatomic,copy) NSString* name;
 @property (copy) NSNumber* siteLongitude, *siteLatitude;
+@property (copy) NSNumber* speed;
 @property (nonatomic,readonly) BOOL shouldConfigureMount;
 @property (strong) CASAPGTOGuidePort* guidePort;
 @end
@@ -152,6 +153,11 @@ static void* kvoContext;
             
             [self completeInitialisingMount:nil];
             
+            // if we parked the mount, unpark it now
+            if ([self isParked]) {
+                [self unpark];
+            }
+            
             self.logCommands = saveLogCommands;
         }
         else {
@@ -192,11 +198,8 @@ static void* kvoContext;
                 self.logCommands = saveLogCommands;
             }];
             
-            [self sendCommand:@":PO#"]; // this will cause problems if the mount is already unparked hence the time check above - not required for CP3/4 but doesn't unlock the keypad if you don't
+            [self unpark]; // this will cause problems if the mount is already unparked hence the time check above - not required for CP3/4 but doesn't unlock the keypad if you don't
             [self sendCommand:@":Q#"];
-            
-            // mark the mount as unparked
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"APGTOLastParkPosition"];
         }
     }];
     
@@ -378,6 +381,7 @@ static void* kvoContext;
                 _skipSlewStateCount--; // skip the first few slew states from the mount as it may not have started moving yet
             }
             else {
+                self.speed = @(fabs(degreesPerSecond));
                 self.slewing = (fabs(degreesPerSecond) > threshold);
             }
         }
@@ -596,6 +600,34 @@ struct ParkPosition {
 - (void)unpark
 {
     [self sendCommand:@":PO#"];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"APGTOParked"];
+}
+
+- (BOOL)isParked
+{
+    return [[NSUserDefaults standardUserDefaults]  boolForKey:@"APGTOParked"];
+}
+
+- (BOOL)inParkPosition
+{
+    const NSInteger parkPosition = [[NSUserDefaults standardUserDefaults] integerForKey:@"APGTOLastParkPosition"];
+    switch (parkPosition) {
+        case 2:
+        case 3:
+        case 4:{
+            struct ParkPosition position;
+            if ([self parkPosition:parkPosition position:&position] && self.ra){
+                double diff = fabs(self.ra.doubleValue - position.ra);
+                if (diff > 180) {
+                    diff = 360 - diff;
+                }
+                return diff < 0.5; // slightly arbitrary, could probably be lower
+            }
+            break;
+        }
+    }
+    
+    return NO;
 }
 
 - (void)gotoHomePosition:(void (^)(CASMountSlewError,CASMountSlewObserver*))completion
@@ -612,6 +644,7 @@ struct ParkPosition {
         _parking = NO;
         self.trackingRate = CASAPGTOMountTrackingRateZero;
         [self sendCommand:@":KA#"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"APGTOParked"];
     }
 }
 
