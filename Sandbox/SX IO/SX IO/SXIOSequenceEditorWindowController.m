@@ -829,6 +829,16 @@ static void* kvoContext;
     return self.camerasController.selectedObjects.firstObject;
 }
 
+- (CASDeviceManager*)deviceManager
+{
+    return [CASDeviceManager sharedManager];
+}
+
++ (NSSet*)keyPathsForValuesAffectingCameraControllers
+{
+    return [NSSet setWithObject:@"deviceManager.cameraControllers"];
+}
+
 - (void)close
 {
     // warn first...
@@ -915,6 +925,11 @@ static void* kvoContext;
 
 - (IBAction)start:(id)sender
 {
+    if (![self canStart]){
+        NSBeep();
+        return;
+    }
+    
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(restartTimerFired) object:nil];
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
