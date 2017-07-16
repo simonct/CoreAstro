@@ -853,16 +853,44 @@ struct ParkPosition {
         NSLog(@"APGTO: Attempt to pulse guide while not connected");
         return;
     }
+    
     if (ms < 1){
         NSLog(@"APGTO: Pulse guide duration of %ld is < 1, ignoring",ms);
         return;
     }
-    if (ms > 5000){
-        NSLog(@"APGTO: Pulse guide duration of %ld is > 5000, ignoring",ms);
-        return;
+    
+    // pulse guide commands seem to be limited to 999ms, could possibly use an start move command and a timer to simulate longer pulses
+    const NSInteger maxDuration = 999;
+    if (ms > maxDuration){
+        NSLog(@"APGTO: Pulse guide duration of %ld is > %ld, setting to max",ms,maxDuration);
+        ms = maxDuration;
     }
     
     NSString* command;
+    
+    switch (direction) {
+        case CASMountDirectionNorth:
+            command = [NSString stringWithFormat:@":Mn%03ld#",ms];
+            break;
+        case CASMountDirectionEast:
+            command = [NSString stringWithFormat:@":Me%03ld#",ms];
+            break;
+        case CASMountDirectionSouth:
+            command = [NSString stringWithFormat:@":Ms%03ld#",ms];
+            break;
+        case CASMountDirectionWest:
+            command = [NSString stringWithFormat:@":Mw%03ld#",ms];
+            break;
+        default:
+            NSLog(@"APGTO: Unrecognised guide direction: %ld",(long)direction);
+            break;
+    }
+    
+    if (command){
+        NSLog(@"APGTO: Pulse command '%@'",command);
+        [self sendCommand:command readCount:0 priority:true completion:nil];
+    }
+}
 
 - (NSArray<NSString*>*)configurationDefaultsKeys
 {
