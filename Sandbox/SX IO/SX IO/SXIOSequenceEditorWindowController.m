@@ -541,8 +541,9 @@ static void* kvoContext;
 - (void)executeCurrentStep
 {
     if (![self.currentStep isValid]){
-        NSLog(@"Skipping invalid step: %@",self.currentStep);
-        [self advanceToNextStep];
+        [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                code:2
+                                            userInfo:@{NSLocalizedFailureReasonErrorKey:@"Encountered an invalid step"}]];
     }
     else {
         
@@ -556,7 +557,9 @@ static void* kvoContext;
             [self executeParkStep:(CASSequenceParkStep*)self.currentStep];
         }
         else {
-            NSLog(@"Unknown sequence step %@",self.currentStep.type);
+            [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                    code:3
+                                                userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"Unknown sequence step %@",self.currentStep.type]}]];
         }
     }
 }
@@ -579,8 +582,9 @@ static void* kvoContext;
         // need to check it's a known filter name
         CASFilterWheelController* filterWheel = self.cameraController.filterWheel;
         if (!filterWheel){
-            NSLog(@"*** Filter wheel hasn't been selected in capture window");
-            [self advanceToNextStep];
+            [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                    code:1
+                                                userInfo:@{NSLocalizedFailureReasonErrorKey:@"An exposure step has a filter setting but no filter wheel has been selected"}]];
             return;
         }
         else {
