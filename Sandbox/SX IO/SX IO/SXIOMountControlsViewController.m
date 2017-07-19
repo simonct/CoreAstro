@@ -26,10 +26,33 @@
 #import "SXIOMountControlsViewController.h"
 #import <CoreAstro/CoreAstro.h>
 
+@interface CASNilableArrayController : NSArrayController
+
+@end
+
+@implementation CASNilableArrayController
+
+- (void)setNilValueForKey:(NSString *)key
+{
+    if ([key isEqualToString:@"selectionIndex"]){
+        self.selectionIndex = NSNotFound;
+    }
+    else {
+        [super setNilValueForKey:key];
+    }
+}
+
+@end
+
 @interface SXIOMountControlsNameTransformer : NSValueTransformer
 @end
 
 @implementation SXIOMountControlsNameTransformer
+
++ (Class)transformedValueClass
+{
+    return [NSString class];
+}
 
 + (BOOL)allowsReverseTransformation
 {
@@ -38,25 +61,68 @@
 
 - (id)transformedValue:(id)value
 {
+    if ([value isKindOfClass:[NSArray class]]) {
+        NSArray* array = (NSArray*)value;
+        NSMutableArray *result = [NSMutableArray arrayWithCapacity:array.count];
+        for (id object in array){
+            id transformed = [self transformedValue:object];
+            if (transformed){
+                [result addObject:transformed];
+            }
+        }
+        return result;
+    }
+
     CASMountController* controller = value;
     if ([controller isKindOfClass:[CASMountController class]]){
         return controller.mount.deviceName;
     }
+    
     return nil;
 }
 
 @end
 
 @interface SXIOMountControlsViewController ()
+@property (strong) IBOutlet CASNilableArrayController *mountsArrayController;
 @end
 
 @implementation SXIOMountControlsViewController {
 }
 
+static void* kvoContext;
+
 + (void)initialize
 {
     if (self == [SXIOMountControlsViewController class]){
         [NSValueTransformer setValueTransformer:[[SXIOMountControlsNameTransformer alloc] init] forName:@"SXIOMountControlsNameTransformer"];
+    }
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    [self.mountsArrayController addObserver:self forKeyPath:@"selectionIndex" options:0 context:&kvoContext];
+}
+
+- (void)dealloc
+{
+    [self.mountsArrayController removeObserver:self forKeyPath:@"selectionIndex" context:&kvoContext];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        CASMountController* mountController = (CASMountController*)self.mountsArrayController.selectedObjects.firstObject;
+        if ([mountController isKindOfClass:[CASMountController class]]){
+            self.mountControllerHost.mountController = mountController;
+        }
+        else {
+            self.mountControllerHost.mountController = nil;
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
@@ -74,21 +140,6 @@
 + (NSSet*)keyPathsForValuesAffectingMountControllers
 {
     return [NSSet setWithObject:@"deviceManager.mountControllers"];
-}
-
-- (CASMountController*)mountController
-{
-    return self.mountControllerHost.mountController;
-}
-
-- (void)setMountController:(CASMountController *)mountController
-{
-    self.mountControllerHost.mountController = mountController;
-}
-
-+ (NSSet*)keyPathsForValuesAffectingMountController
-{
-    return [NSSet setWithObjects:@"mountControllerHost",@"mountControllerHost.mountController",@"mountControllers",nil];
 }
 
 @end

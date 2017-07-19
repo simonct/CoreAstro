@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SXIOMountControlsViewController">
             <connections>
+                <outlet property="mountsArrayController" destination="DyS-oA-lnd" id="3D5-Oj-aCB"/>
                 <outlet property="view" destination="478" id="526"/>
             </connections>
         </customObject>
@@ -38,16 +39,14 @@
                         </menu>
                     </popUpButtonCell>
                     <connections>
-                        <binding destination="DyS-oA-lnd" name="contentValues" keyPath="arrangedObjects" id="asf-Ka-i9T">
+                        <binding destination="DyS-oA-lnd" name="content" keyPath="arrangedObjects" id="yRM-RY-IvQ">
                             <dictionary key="options">
-                                <string key="NSNullPlaceholder">No Mounts</string>
-                            </dictionary>
-                        </binding>
-                        <binding destination="-2" name="selectedObject" keyPath="mountController" previousBinding="asf-Ka-i9T" id="pbN-X5-mKe">
-                            <dictionary key="options">
+                                <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                <string key="NSNullPlaceholder">None</string>
                                 <string key="NSValueTransformerName">SXIOMountControlsNameTransformer</string>
                             </dictionary>
                         </binding>
+                        <binding destination="DyS-oA-lnd" name="selectedIndex" keyPath="selectionIndex" previousBinding="yRM-RY-IvQ" id="EO9-Yc-GdU"/>
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojs-E8-mZs">
@@ -158,7 +157,7 @@
             <point key="canvasLocation" x="-394" y="-366.5"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="622"/>
-        <arrayController id="DyS-oA-lnd" userLabel="Mounts Array Controller">
+        <arrayController objectClassName="CASMountController" avoidsEmptySelection="NO" id="DyS-oA-lnd" userLabel="Mounts Array Controller" customClass="CASNilableArrayController">
             <connections>
                 <binding destination="-2" name="contentArray" keyPath="mountControllers" id="4aH-ZS-XtX"/>
             </connections>
