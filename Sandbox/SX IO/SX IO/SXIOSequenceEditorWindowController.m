@@ -857,19 +857,19 @@ static void* kvoContext;
     [self close];
 }
 
+- (CASDeviceManager*)deviceManager
+{
+    return [CASDeviceManager sharedManager];
+}
+
 - (NSArray*)cameraControllers
 {
-    return [CASDeviceManager sharedManager].cameraControllers;
+    return self.deviceManager.cameraControllers;
 }
 
 - (CASCameraController*)selectedCameraController
 {
     return self.camerasController.selectedObjects.firstObject;
-}
-
-- (CASDeviceManager*)deviceManager
-{
-    return [CASDeviceManager sharedManager];
 }
 
 + (NSSet*)keyPathsForValuesAffectingCameraControllers
@@ -963,6 +963,14 @@ static void* kvoContext;
 
 - (IBAction)start:(id)sender
 {
+#if defined(SXIO) || defined(CCDIO)
+    // ensure the target is set to the current camera controller
+    SXIOCameraWindowController* cameraWindow = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:self.selectedCameraController];
+    if (cameraWindow){
+        self.target = cameraWindow;
+    }
+#endif
+
     if (![self canStart]){
         NSBeep();
         return;
