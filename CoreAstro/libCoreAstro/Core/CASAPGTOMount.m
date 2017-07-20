@@ -88,7 +88,7 @@ static void* kvoContext;
     self.siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
     self.siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
     if (!self.siteLatitude || !self.siteLongitude){
-        [self completeInitialisingMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{@"NSLocalizedDescriptionKey":@"Location must be set to initialise an AP mount"}]];
+        [self completeInitialisingMount:[NSError errorWithDomain:@"CASAPGTOMount" code:1 userInfo:@{NSLocalizedFailureReasonErrorKey:@"Location must be set to initialise an AP mount"}]];
         return;
     }
     
