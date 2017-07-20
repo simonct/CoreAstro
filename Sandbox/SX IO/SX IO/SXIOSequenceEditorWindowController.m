@@ -333,7 +333,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 - (BOOL)isValid
 {
-    return YES;
+    return YES; // override bookmark check
 }
 
 - (void)warningCompleted
@@ -343,6 +343,60 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
             self.completion(error);
         });
     }];
+}
+
+@end
+
+@interface CASSequenceSynchroniseStep : CASSequenceSlewStep<CASMountMountSynchroniserDelegate>
+@property (strong) CASMountSynchroniser* synchroniser;
+@end
+
+@implementation CASSequenceSynchroniseStep
+
+- (NSString*)type
+{
+    return @"synchronise";
+}
+
+- (NSString*)warning
+{
+    return @"Mount will start synchronising with the sky";
+}
+
+- (BOOL)isValid
+{
+    return YES; // override bookmark check
+}
+
+- (void)warningCompleted
+{
+    // identical to mount controller
+    self.synchroniser = [[CASMountSynchroniser alloc] init];
+    self.synchroniser.mount = [self.target sequenceMountController].mount;
+    self.synchroniser.delegate = self;
+    self.synchroniser.cameraController = [self.target sequenceCameraController];
+    [self.synchroniser findLocation];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure
+{
+    // identical to mount controller - do we need this callback at all ?
+    NSDictionary* userInfo = exposure ? @{@"exposure":exposure} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerCapturedSyncExposureNotification object:[self.target sequenceMountController] userInfo:userInfo];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution
+{
+    // identical to mount controller - do we need this callback at all ?
+    NSDictionary* userInfo = solution ? @{@"solution":solution} : nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerSolvedSyncExposureNotification object:[self.target sequenceMountController] userInfo:userInfo];
+}
+
+- (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.completion(error);
+    });
 }
 
 @end
@@ -556,6 +610,9 @@ static void* kvoContext;
         else if ([self.currentStep.type isEqualToString:@"park"]){
             [self executeParkStep:(CASSequenceParkStep*)self.currentStep];
         }
+        else if ([self.currentStep.type isEqualToString:@"synchronise"]){
+            [self executeSynchroniseStep:(CASSequenceSynchroniseStep*)self.currentStep];
+        }
         else {
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                     code:3
@@ -609,6 +666,13 @@ static void* kvoContext;
 - (void)executeParkStep:(CASSequenceParkStep*)parkStep
 {
     [parkStep execute:self.target completion:^(NSError* error) {
+        [self stepCompletedWithError:error];
+    }];
+}
+
+- (void)executeSynchroniseStep:(CASSequenceSynchroniseStep*)synchroniseStep
+{
+    [synchroniseStep execute:self.target completion:^(NSError* error) {
         [self stepCompletedWithError:error];
     }];
 }
@@ -687,6 +751,12 @@ static void* kvoContext;
 @end
 
 @implementation SXIOSequenceEditorParkStepView
+@end
+
+@interface SXIOSequenceEditorSynchroniseStepView : SXIOSequenceEditorRowView
+@end
+
+@implementation SXIOSequenceEditorSynchroniseStepView
 @end
 
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
@@ -811,6 +881,7 @@ static void* kvoContext;
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorExposureStepView" bundle:nil] forIdentifier:@"exposure"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorParkStepView" bundle:nil] forIdentifier:@"park"];
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSynchroniseStepView" bundle:nil] forIdentifier:@"synchronise"];
 
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -1277,6 +1348,11 @@ static void* kvoContext;
 - (IBAction)addParkStep:(id)sender
 {
     [self.stepsController addObject:[CASSequenceParkStep new]];
+}
+
+- (IBAction)addSynchroniseStep:(id)sender
+{
+    [self.stepsController addObject:[CASSequenceSynchroniseStep new]];
 }
 
 #pragma mark - Drag & Drop

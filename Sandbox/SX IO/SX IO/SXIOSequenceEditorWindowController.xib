@@ -420,6 +420,12 @@ Gw
                         <action selector="addParkStep:" target="-2" id="49T-Gj-Nro"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Add Synchronise Step" id="mco-vy-jum">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addSynchroniseStep:" target="-2" id="AAl-CH-sT3"/>
+                    </connections>
+                </menuItem>
             </items>
             <point key="canvasLocation" x="-187" y="-83.5"/>
         </menu>

@@ -2206,6 +2206,11 @@ static void* kvoContext;
     return self.mountController;
 }
 
+- (CASCameraController*) sequenceCameraController // tmp
+{
+    return self.cameraController;
+}
+
 - (BOOL)prepareToStartSequenceWithError:(NSError**)error
 {
     if (![self checkReadyToCapture:error]){
