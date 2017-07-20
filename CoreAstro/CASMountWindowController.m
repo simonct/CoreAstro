@@ -195,16 +195,7 @@ static void* kvoContext;
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
-- (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
-{
-    [[NSAlert alertWithMessageText:title
-                     defaultButton:nil
-                   alternateButton:nil
-                       otherButton:nil
-         informativeTextWithFormat:@"%@",message] runModal];
-}
-
-- (void)findLocationAndSlew:(BOOL)slew
+- (void)findLocationAndSlew:(BOOL)slew // todo; check the mount is in its last park position
 {
     if (!self.cameraController){
         NSLog(@"Camera controller must be set before finding location");
@@ -436,12 +427,12 @@ static void* kvoContext;
     __weak __typeof (self) weakSelf = self;
     [self.mountController setTargetRA:self.targetRA.doubleValue dec:self.targetDec.doubleValue completion:^(NSError* error) {
         if (error){
-            [weakSelf presentAlertWithMessage:error.localizedDescription];
+            [NSApp presentError:error];
         }
         else{
             [weakSelf.mountController slewToTargetWithCompletion:^(NSError* error) {
                 if (error){
-                    [weakSelf presentAlertWithMessage:error.localizedDescription];
+                    [NSApp presentError:error];
                 }
             }];
         }
@@ -461,13 +452,13 @@ static void* kvoContext;
     
     [self.mountController parkMountWithCompletion:^(NSError *error) {
         if (error != nil){
-            [self presentAlertWithMessage:error.localizedDescription];
+            [NSApp presentError:error];
         }
         else {
             // this is a rather arbitrary delay to allow the park mode command to make it to the mount and have an effect
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [weakSelf disconnectButtonPressed:nil];
-                [weakSelf presentAlertWithTitle:@"Park Complete" message:@"The mount is now parked"];
+                [weakSelf presentAlertWithMessage:@"The mount is now parked"];
             });
         }
     }];
@@ -748,7 +739,7 @@ static void* kvoContext;
                 [self connectToMountWithPort:self.selectedSerialPort completion:^(NSError* error) {
                     if (error){
                         [self closeWindow:nil];
-                        [self presentAlertWithTitle:nil message:[error localizedDescription]];
+                        [NSApp presentError:error];
                     }
                     else {
                         completion();
