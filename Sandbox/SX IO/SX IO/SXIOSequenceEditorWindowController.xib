@@ -102,9 +102,18 @@
                             </menu>
                         </popUpButtonCell>
                         <connections>
-                            <binding destination="gdZ-KH-tco" name="content" keyPath="arrangedObjects" id="ou7-hy-YHy"/>
-                            <binding destination="gdZ-KH-tco" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="ou7-hy-YHy" id="0xq-XT-QO0"/>
-                            <binding destination="gdZ-KH-tco" name="selectedIndex" keyPath="selectionIndex" previousBinding="0xq-XT-QO0" id="DyQ-Ga-7ke"/>
+                            <binding destination="gdZ-KH-tco" name="content" keyPath="arrangedObjects" id="xEM-SQ-hHf">
+                                <dictionary key="options">
+                                    <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                </dictionary>
+                            </binding>
+                            <binding destination="gdZ-KH-tco" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="xEM-SQ-hHf" id="xBI-5q-Qps">
+                                <dictionary key="options">
+                                    <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                    <string key="NSNullPlaceholder">None</string>
+                                </dictionary>
+                            </binding>
+                            <binding destination="gdZ-KH-tco" name="selectedIndex" keyPath="selectionIndex" previousBinding="xBI-5q-Qps" id="mkG-5J-MHt"/>
                         </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jpa-Un-Byf">
@@ -386,7 +395,7 @@ Gw
                 <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
             </connections>
         </arrayController>
-        <arrayController objectClassName="CASCameraController" id="gdZ-KH-tco" userLabel="Cameras Controller">
+        <arrayController objectClassName="CASCameraController" id="gdZ-KH-tco" userLabel="Cameras Controller" customClass="CASNilableArrayController">
             <connections>
                 <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="dih-xA-Ixt"/>
             </connections>
