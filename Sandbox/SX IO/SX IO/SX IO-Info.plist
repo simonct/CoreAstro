@@ -4,6 +4,25 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sxioSequence</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>SXIO Sequence</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.coreastro.sxio.sequence</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
@@ -47,5 +66,25 @@
 	<string>NSApplication</string>
 	<key>OSAScriptingDefinition</key>
 	<string>CCD-IO.sdef</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>SXIO Sequence</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.coreastro.sxio.sequence</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>sxioSequence</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

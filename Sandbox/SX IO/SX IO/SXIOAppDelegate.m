@@ -194,21 +194,33 @@ static void* kvoContext;
 {
     BOOL result = NO;
     
-    // todo; find the bext matching window for solution e.g. if possible for the camera that generated the exposure
-    // todo; camera windows should work better with no connected camera esp. wrt device defaults
-
-    // assume this is targeted at the frontmost camera window
-    SXIOCameraWindowController* cameraWindow = [[[NSApplication sharedApplication] mainWindow] windowController];
-    if ([cameraWindow isKindOfClass:[SXIOCameraWindowController class]]){
-        result = [cameraWindow openExposureAtPath:filename];
+    NSString* extension = [filename pathExtension];
+    
+    if ([extension isEqualToString:@"sxioSequence"]){
+        
+        SXIOSequenceEditorWindowController* editor = [SXIOSequenceEditorWindowController sharedWindowController];
+        if (editor.stopped){
+            result = [editor openURL:[NSURL fileURLWithPath:filename]];
+        }
     }
-    else {
+    else if ([extension isEqualToString:@"fit"] || [extension isEqualToString:@"fits"]){
+        
+        // todo; find the bext matching window for solution e.g. if possible for the camera that generated the exposure
+        // todo; camera windows should work better with no connected camera esp. wrt device defaults
+        
+        // assume this is targeted at the frontmost camera window
+        SXIOCameraWindowController* cameraWindow = [[[NSApplication sharedApplication] mainWindow] windowController];
+        if ([cameraWindow isKindOfClass:[SXIOCameraWindowController class]]){
+            result = [cameraWindow openExposureAtPath:filename];
+        }
+        else {
 #if DEBUG
-        SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
-        [cameraWindow.window makeKeyAndOrderFront:nil];
-        [self addWindowToWindowMenu:cameraWindow];
-        result = [cameraWindow openExposureAtPath:filename];
+            SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
+            [cameraWindow.window makeKeyAndOrderFront:nil];
+            [self addWindowToWindowMenu:cameraWindow];
+            result = [cameraWindow openExposureAtPath:filename];
 #endif
+        }
     }
     
     return result;

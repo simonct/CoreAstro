@@ -847,6 +847,8 @@ static void* kvoContext;
 @property (copy) void(^startTimeCompletion)();
 @property (strong) NSDate* nextRunTime;
 
+@property (nonatomic) BOOL stopped;
+
 @end
 
 @implementation SXIOSequenceEditorWindowController {
@@ -856,6 +858,7 @@ static void* kvoContext;
 static void* kvoContext;
 
 @synthesize sequence = _sequence;
+@synthesize stopped = _stopped;
 
 + (instancetype)sharedWindowController
 {
@@ -867,11 +870,18 @@ static void* kvoContext;
     return _sharedWindowController;
 }
 
+- (instancetype)initWithWindow:(nullable NSWindow *)window
+{
+    self = [super initWithWindow:window];
+    if (self) {
+        _stopped = YES;
+    }
+    return self;
+}
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    
-    _stopped = YES;
 
     self.tableView.delegate = self;
     self.tableView.dataSource = self; // for dragging
@@ -1264,6 +1274,26 @@ static void* kvoContext;
     return [NSSet setWithArray:@[@"stepsController.arrangedObjects"]];
 }
 
+- (BOOL)openURL:(NSURL*)url
+{
+    if ([self openSequenceWithURL:url]){
+        CASSaveUrlToDefaults(url,kSXIOSequenceEditorWindowControllerBookmarkKey);
+        [self.window makeKeyAndOrderFront:nil];
+        return YES;
+    }
+    else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
+                                             defaultButton:@"OK"
+                                           alternateButton:nil
+                                               otherButton:nil
+                                 informativeTextWithFormat:@"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+            [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+        });
+        return NO;
+    }
+}
+
 - (BOOL)openSequenceWithURL:(NSURL*)url
 {
     BOOL success = NO;
@@ -1299,19 +1329,7 @@ static void* kvoContext;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            if ([self openSequenceWithURL:open.URL]){
-                CASSaveUrlToDefaults(open.URL,kSXIOSequenceEditorWindowControllerBookmarkKey);
-            }
-            else{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-                });
-            }
+            [self openURL:open.URL];
         }
     }];
 }

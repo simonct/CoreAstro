@@ -31,6 +31,9 @@
 
 @property (nonatomic,strong) CASSequence* sequence;
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
+@property (nonatomic,readonly) BOOL stopped;
+
+- (BOOL)openURL:(NSURL*)url;
 
 + (instancetype)sharedWindowController;
 
