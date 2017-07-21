@@ -1481,4 +1481,9 @@ static void* kvoContext;
     return result;
 }
 
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+    return 28;
+}
+
 @end
