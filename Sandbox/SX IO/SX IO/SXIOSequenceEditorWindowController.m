@@ -547,19 +547,25 @@ static void* kvoContext;
         }
     };
     
-    // park the mount if we've got one (todo; make this optional)
-    CASMountController* mount = [self.target sequenceMountController];
-    if (!mount){
-        complete(error);
+    if (!error) {
+        complete(nil);
     }
-    else {
-        CASSequenceParkStep* parkStep = [[CASSequenceParkStep alloc] init];
-        [parkStep execute:self.target completion:^(NSError *parkError) {
+    else{
+        
+        // on error, park the mount if we've got one (todo; make this optional)
+        CASMountController* mount = [self.target sequenceMountController];
+        if (!mount){
             complete(error);
-            if (parkError){
-                [NSApp presentError:parkError];
-            }
-        }];
+        }
+        else {
+            CASSequenceParkStep* parkStep = [[CASSequenceParkStep alloc] init];
+            [parkStep execute:self.target completion:^(NSError *parkError) {
+                complete(error);
+                if (parkError){
+                    [NSApp presentError:parkError];
+                }
+            }];
+        }
     }
 }
 
