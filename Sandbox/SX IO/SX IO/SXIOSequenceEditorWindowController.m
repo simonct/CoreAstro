@@ -16,8 +16,12 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @class SXIOSequenceEditorWindowController;
 
-@interface SXIOSequenceEditorWindowController () // need to forward declare this for -setFilterNameOnObject:
-@property (nonatomic,readonly) CASCameraController* selectedCameraController;
+@interface SXIOSequenceEditorWindowController ()
+@property (nonatomic) CASCameraController* selectedCameraController;
+@end
+
+@protocol SequenceExecutable <NSObject>
+- (void)execute:(id<SXIOSequenceTarget>)target completion:(void(^)(NSError*))completion;
 @end
 
 @interface CASSequenceStep : NSObject<NSCoding,NSCopying>
@@ -226,7 +230,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
-@interface CASSequenceSlewStep : CASSequenceStep<NSSpeechSynthesizerDelegate>
+@interface CASSequenceSlewStep : CASSequenceStep<NSSpeechSynthesizerDelegate,SequenceExecutable>
 @property (nonatomic,copy) NSDictionary* bookmark;
 @property BOOL plateSolve;
 @property (weak) id<SXIOSequenceTarget> target;
@@ -624,17 +628,14 @@ static void* kvoContext;
     }
     else {
         
-        if ([self.currentStep.type isEqualToString:@"exposure"]){
+        if ([self.currentStep conformsToProtocol:@protocol(SequenceExecutable)]){
+            id<SequenceExecutable> executable = (id<SequenceExecutable>)self.currentStep;
+            [executable execute:self.target completion:^(NSError* error) {
+                [self stepCompletedWithError:error];
+            }];
+        }
+        else if ([self.currentStep.type isEqualToString:@"exposure"]){
             [self executeExposureStep:(CASSequenceExposureStep*)self.currentStep];
-        }
-        else if ([self.currentStep.type isEqualToString:@"slew"]){
-            [self executeSlewStep:(CASSequenceSlewStep*)self.currentStep];
-        }
-        else if ([self.currentStep.type isEqualToString:@"park"]){
-            [self executeParkStep:(CASSequenceParkStep*)self.currentStep];
-        }
-        else if ([self.currentStep.type isEqualToString:@"synchronise"]){
-            [self executeSynchroniseStep:(CASSequenceSynchroniseStep*)self.currentStep];
         }
         else {
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
@@ -677,27 +678,6 @@ static void* kvoContext;
     }
     
     [self capture];
-}
-
-- (void)executeSlewStep:(CASSequenceSlewStep*)sequenceStep
-{
-    [sequenceStep execute:self.target completion:^(NSError* error) {
-        [self stepCompletedWithError:error];
-    }];
-}
-
-- (void)executeParkStep:(CASSequenceParkStep*)parkStep
-{
-    [parkStep execute:self.target completion:^(NSError* error) {
-        [self stepCompletedWithError:error];
-    }];
-}
-
-- (void)executeSynchroniseStep:(CASSequenceSynchroniseStep*)synchroniseStep
-{
-    [synchroniseStep execute:self.target completion:^(NSError* error) {
-        [self stepCompletedWithError:error];
-    }];
 }
 
 - (void)stepCompletedWithError:(NSError*)error
