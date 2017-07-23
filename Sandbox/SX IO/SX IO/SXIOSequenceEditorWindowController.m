@@ -853,7 +853,9 @@ static void* kvoContext;
 - (BOOL)preflightSequence // todo; this should probably just return an error
 {
     for (CASSequenceStep* step in self.sequence.steps){
+        
         if ([step isKindOfClass:[CASSequenceExposureStep class]]){
+            
             if (!self.target.sequenceCameraController){
                 NSAlert* alert = [NSAlert alertWithMessageText:@"Select Camera"
                                                  defaultButton:@"OK"
@@ -875,9 +877,19 @@ static void* kvoContext;
                     [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
                     return NO;
                 }
+                if (![filterWheel.filterNames.allValues containsObject:exposureStep.filter]){
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Unknown Filter"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"The filter '%@' isn't recognised by '%@'",exposureStep.filter,filterWheel.filterWheel.deviceName];
+                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    return NO;
+                }
             }
         }
         else if ([step isKindOfClass:[CASSequenceSlewStep class]]){
+            
             CASSequenceSlewStep* slewStep = (CASSequenceSlewStep*)step;
             if (!self.target.sequenceMountController){
                 NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
@@ -996,7 +1008,6 @@ static void* kvoContext;
     
     NSString* filter = sequenceStep.filter;
     if ([filter length]){
-        // need to check it's a known filter name
         CASFilterWheelController* filterWheel = self.target.sequenceCameraController.filterWheel;
         if (!filterWheel){
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
@@ -1005,6 +1016,12 @@ static void* kvoContext;
             return;
         }
         else {
+            if (![filterWheel.filterNames.allValues containsObject:filter]){
+                [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                        code:2
+                                                    userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"Unrecognised filter '%@'",filter]}]];
+                return;
+            }
             filterWheel.currentFilterName = filter;
             if (filterWheel.filterWheel.moving){
                 [self observeFilterWheel];
