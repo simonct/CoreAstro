@@ -23,7 +23,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="417"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="480" height="270"/>
             <value key="maxSize" type="size" width="480" height="1024"/>
             <view key="contentView" id="EiT-Mj-1SZ">
@@ -388,9 +388,9 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-3452" y="-1570.5"/>
+            <point key="canvasLocation" x="-3719" y="-1639"/>
         </window>
-        <arrayController objectClassName="SXIOSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
+        <arrayController objectClassName="CASSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>
                 <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
             </connections>
@@ -424,6 +424,12 @@ Gw
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="addSynchroniseStep:" target="-2" id="AAl-CH-sT3"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Preflight Step" id="BaR-U5-mIn">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addPreflightStep:" target="-2" id="7IZ-74-MX9"/>
                     </connections>
                 </menuItem>
             </items>

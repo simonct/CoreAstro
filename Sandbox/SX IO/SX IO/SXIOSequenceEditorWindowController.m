@@ -68,6 +68,210 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @end
 
+@interface CASSequencePreflightStep : CASSequenceStep<SequenceExecutable>
+@property (nonatomic,copy) NSString* camera;
+@property (nonatomic,copy) NSString* mountClass;
+@property (nonatomic,copy) NSString* mountName;
+@property (nonatomic,copy) NSString* mountPath;
+@property (nonatomic,copy) NSString* status;
+@property BOOL preparePHD2;
+@property (copy) void (^completion)(NSError *);
+@end
+
+enum {
+    StateNone = 0,
+    StateCamera,
+    StateMount,
+    StatePHD2
+};
+
+@implementation CASSequencePreflightStep {
+    NSInteger _state;
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        self.camera = [coder decodeObjectOfClass:[NSString class] forKey:@"camera"];
+        self.mountClass = [coder decodeObjectOfClass:[NSString class] forKey:@"mountClass"];
+        self.mountName = [coder decodeObjectOfClass:[NSString class] forKey:@"mountName"];
+        self.mountPath = [coder decodeObjectOfClass:[NSString class] forKey:@"mountPath"];
+        self.preparePHD2 = [coder decodeBoolForKey:@"preparePHD2"];
+        [self updateStatus];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeBool:self.preparePHD2 forKey:@"preparePHD2"];
+    [aCoder encodeObject:self.mountPath forKey:@"mountPath"];
+    [aCoder encodeObject:self.mountClass forKey:@"mountClass"];
+    [aCoder encodeObject:self.mountName forKey:@"mountName"];
+    [aCoder encodeObject:self.camera forKey:@"camera"];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    CASSequencePreflightStep* copy = [super copyWithZone:zone];
+    
+    copy.camera = [self.camera copy];
+    copy.mountClass = [self.mountClass copy];
+    copy.mountName = [self.mountName copy];
+    copy.mountPath = [self.mountPath copy];
+    [copy updateStatus];
+    
+    return copy;
+}
+
+- (NSString*)type
+{
+    return @"preflight";
+}
+
+- (BOOL)isValid
+{
+    return self.camera != nil;
+}
+
+- (void)capture
+{
+    CASCameraController* camera = self.windowController.selectedCameraController;
+    self.camera = camera.camera.deviceName;
+
+    // yuk - this should be associated with the camera controller
+    SXIOCameraWindowController* window = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:camera];
+    CASMountController* mount = window.sequenceMountController;
+    
+    self.mountName = mount.mount.deviceName;
+    self.mountClass = NSStringFromClass([mount.mount class]);
+    
+    CASLX200Mount* lx200 = (CASLX200Mount*)mount.mount;
+    if ([lx200 isKindOfClass:[CASLX200Mount class]]){
+        self.mountPath = lx200.port.path;
+    }
+    
+    [self updateStatus];
+}
+
+- (void)updateStatus
+{
+    self.status = @"";
+    if (self.camera){
+        self.status = [self.status stringByAppendingString:self.camera];
+    }
+    if (self.mountName){
+        if (self.status){
+            self.status = [self.status stringByAppendingString:@", "];
+        }
+        self.status = [self.status stringByAppendingString:self.mountName];
+    }
+}
+
+- (void)execute:(id<SXIOSequenceTarget>)target completion:(void (^)(NSError *))completion
+{
+    completion(nil); // just advance immediately to the next step
+}
+
+- (void)preflight:(void (^)(NSError *))completion
+{
+    self.completion = completion;
+    
+    [self performNextState:StateNone error:nil];
+}
+
+- (void)performNextState:(NSInteger)state error:(NSError*)error
+{
+    if (error){
+        self.completion(error);
+        return;
+    }
+    
+    _state = state;
+    
+    switch (_state) {
+            
+        case StateNone:{
+            
+            NSArray* cameras = [[[CASDeviceManager sharedManager] cameraControllers] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                CASCameraController* camera = evaluatedObject;
+                return [camera.device.deviceName isEqualToString:self.camera];
+            }]];
+            
+            if (cameras.count == 0){
+                [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                          code:1
+                                                      userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"No camera matching the name '%@' was found",self.camera]}]];
+                return;
+            }
+            
+            self.windowController.selectedCameraController = cameras.firstObject;
+            
+            [self performNextState:StateCamera error:nil];
+        }
+            break;
+            
+        case StateCamera: {
+            
+            if (self.mountClass && self.mountPath && self.mountName){
+                
+                NSArray* mounts = [[[CASDeviceManager sharedManager] mountControllers] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                    CASMountController* mount = evaluatedObject;
+                    return [mount.device.deviceName isEqualToString:self.mountName];
+                }]];
+                
+                void (^completeWithMount)(CASMountController*) = ^(CASMountController* mount) {
+                    // yuk - this should be associated with the camera controller
+                    SXIOCameraWindowController* window = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:self.windowController.selectedCameraController];
+                    window.mountController = mount;
+                    
+                    [self performNextState:StateMount error:nil];
+                };
+                
+                if (mounts.count > 0){
+                    completeWithMount(mounts.firstObject);
+                }
+                else {
+                    [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:self.mountPath completion:^(NSError* error,CASMountController* mountController){
+                        if (error){
+                            [self performNextState:StateMount error:error];
+                        }
+                        else {
+                            completeWithMount(mountController);
+                        }
+                    }];
+                }
+            }
+            else {
+                [self performNextState:StateMount error:nil];
+            }
+
+        }
+            break;
+            
+        case StateMount: {
+            // Connect PHD2
+            if (self.preparePHD2){
+                
+            }
+            [self performNextState:StatePHD2 error:nil];
+        }
+            break;
+            
+        case StatePHD2:
+            self.completion(nil);
+            break;
+            
+        default:
+            NSLog(@"CASSequencePreflightStep: unrecognised state: %ld",_state);
+            break;
+    }
+}
+
+@end
+
 @interface CASSequenceExposureStep : CASSequenceStep
 @property (nonatomic,assign) NSInteger count;
 @property (nonatomic,assign) NSInteger duration;
@@ -232,7 +436,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @interface CASSequenceSlewStep : CASSequenceStep<NSSpeechSynthesizerDelegate,SequenceExecutable>
 @property (nonatomic,copy) NSDictionary* bookmark;
-@property BOOL plateSolve;
+@property (nonatomic) BOOL plateSolve;
 @property (weak) id<SXIOSequenceTarget> target;
 @property (copy) void(^completion)(NSError*);
 @end
@@ -325,6 +529,11 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @implementation CASSequenceParkStep
 
+- (BOOL) plateSolve
+{
+    return NO;
+}
+
 - (NSString*)type
 {
     return @"park";
@@ -406,7 +615,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @end
 
 @interface CASSequence ()
-@property (nonatomic,strong) NSMutableArray* steps;
+@property (nonatomic,strong) NSMutableArray<CASSequenceStep*>* steps;
 @property (nonatomic,copy) NSString* prefix;
 @property (nonatomic,assign) NSInteger dither;
 @property (nonatomic,assign) NSInteger temperature;
@@ -480,10 +689,10 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @interface SXIOSequenceRunner : NSObject // use an operation queue?
 @property (nonatomic,weak) CASSequence* sequence; // copy ?
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
-@property (nonatomic,weak) CASCameraController* cameraController;
+@property (nonatomic,weak) SXIOSequenceEditorWindowController* windowController;
 @property (nonatomic,weak,readonly) CASSequenceStep* currentStep;
 @property (nonatomic,copy) void(^completion)(NSError*);
-- (BOOL)startWithError:(NSError**)error;
+- (void)start:(void (^)(NSError *))completion;
 - (void)stopWithError:(NSError*)error; // todo; cancelled flag/error ?
 @end
 
@@ -503,27 +712,55 @@ static void* kvoContext;
     [self unobserveFilterWheel];
 }
 
-- (BOOL)startWithError:(NSError**)error
+- (void)start:(void (^)(NSError *))completion
 {
-    NSParameterAssert(self.target);
+    // locate any preflight step and run that first
+    NSArray* preflight = [self.sequence.steps filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        return [evaluatedObject isKindOfClass:[CASSequencePreflightStep class]];
+    }]];
     
-    _stopped = NO;
+    void (^start)() = ^(){
+        
+        if (![self preflightSequence]){
+            completion(nil); // todo; pass error back
+            return;
+        }
+        
+        _stopped = NO;
+        
+        NSError* error;
+        if (![self.target prepareToStartSequenceWithError:&error]){
+            completion(error);
+            return;
+        }
+        
+        // todo; alternatively we could create all steps at once as dependent nsoperations, which would allow some to run in parallel
+        self.currentStep = [self.sequence.steps firstObject];
+        
+        // table cell subviews only seem to be able to bind to the container table view cell so
+        // we need to set a property on its objectValue directly rather than going through the
+        // File Owner proxy
+        for (CASSequenceStep* step in self.sequence.steps){
+            step.sequenceRunning = YES;
+        }
+    };
     
-    if (![self.target prepareToStartSequenceWithError:error]){
-        return NO;
+    if (preflight.count == 0){
+        start();
     }
-    
-    // todo; alternatively we could create all steps at once as dependent nsoperations, which would allow some to run in parallel
-    self.currentStep = [self.sequence.steps firstObject];
-    
-    // table cell subviews only seem to be able to bind to the container table view cell so
-    // we need to set a property on its objectValue directly rather than going through the
-    // File Owner proxy
-    for (CASSequenceStep* step in self.sequence.steps){
-        step.sequenceRunning = YES;
+    else {
+        CASSequencePreflightStep* step = preflight.firstObject; // just run the first, ignore any others
+        step.windowController = self.windowController;
+        [step preflight:^(NSError * error) {
+            if (error){
+                completion(error);
+            }
+            else {
+                self.target = self.windowController.target;
+                start();
+            }
+        }];
     }
-    
-    return YES;
 }
 
 - (void)stopWithError:(NSError*)error
@@ -573,18 +810,74 @@ static void* kvoContext;
     }
 }
 
-- (void)observeFilterWheel
+- (BOOL)preflightSequence // todo; this should probably just return an error
+{
+    for (CASSequenceStep* step in self.sequence.steps){
+        if ([step isKindOfClass:[CASSequenceExposureStep class]]){
+            if (!self.target.sequenceCameraController){
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Camera"
+                                                 defaultButton:@"OK"
+                                               alternateButton:nil
+                                                   otherButton:nil
+                                     informativeTextWithFormat:@"Please select a camera from the pop-up menu before running this sequence"];
+                [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                return NO;
+            }
+            CASSequenceExposureStep* exposureStep = (CASSequenceExposureStep*)step;
+            if ([exposureStep.filter length]){
+                CASFilterWheelController* filterWheel = self.target.sequenceCameraController.filterWheel;
+                if (!filterWheel){
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
+                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    return NO;
+                }
+            }
+        }
+        else if ([step isKindOfClass:[CASSequenceSlewStep class]]){
+            CASSequenceSlewStep* slewStep = (CASSequenceSlewStep*)step;
+            if (!self.target.sequenceMountController){
+                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
+                                                 defaultButton:@"OK"
+                                               alternateButton:nil
+                                                   otherButton:nil
+                                     informativeTextWithFormat:@"Please connect to a mount before before running this sequence"];
+                [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                return NO;
+            }
+            if (slewStep.plateSolve){
+                CASPlateSolver* solver = [CASPlateSolver plateSolverWithIdentifier:nil];
+                if (![solver canSolveExposure:nil error:nil]){
+                    NSAlert* alert = [NSAlert alertWithMessageText:@"Plate Solve"
+                                                     defaultButton:@"OK"
+                                                   alternateButton:nil
+                                                       otherButton:nil
+                                         informativeTextWithFormat:@"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps"];
+                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    return NO;
+                }
+            }
+        }
+    }
+    
+    return YES;
+}
+
+- (void)observeFilterWheel // todo; put into exposure step
 {
     if (!_observing){
-        [self.cameraController.filterWheel.filterWheel addObserver:self forKeyPath:@"moving" options:0 context:&kvoContext];
+        [self.target.sequenceCameraController.filterWheel.filterWheel addObserver:self forKeyPath:@"moving" options:0 context:&kvoContext];
         _observing = YES;
     }
 }
 
-- (void)unobserveFilterWheel
+- (void)unobserveFilterWheel // todo; put into exposure step
 {
     if (_observing){
-        [self.cameraController.filterWheel.filterWheel removeObserver:self forKeyPath:@"moving" context:&kvoContext];
+        [self.target.sequenceCameraController.filterWheel.filterWheel removeObserver:self forKeyPath:@"moving" context:&kvoContext];
         _observing = NO;
     }
 }
@@ -594,7 +887,7 @@ static void* kvoContext;
     if (_currentStep != currentStep){
         _currentStep.active = NO;
         _currentStep = currentStep;
-        if (_currentStep){
+        if (_currentStep && !_stopped){
             [self executeCurrentStep];
             _currentStep.active = YES;
         }
@@ -603,7 +896,7 @@ static void* kvoContext;
 
 - (void)capture
 {
-    [self.target captureWithCompletion:^(NSError* error){
+    [self.target captureWithCompletion:^(NSError* error){ // todo; put into exposure step
         [self stepCompletedWithError:error];
     }];
 }
@@ -612,7 +905,10 @@ static void* kvoContext;
 {
     const NSInteger index = [self.sequence.steps indexOfObject:self.currentStep]; // get from array controller instead ?
     if (index != NSNotFound && index < [self.sequence.steps count] - 1){
-        self.currentStep = self.sequence.steps[index + 1];
+        const NSInteger delay = 0.5;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.currentStep = self.sequence.steps[index + 1];
+        });
     }
     else {
         [self stopWithError:nil];
@@ -645,9 +941,9 @@ static void* kvoContext;
     }
 }
 
-- (void)executeExposureStep:(CASSequenceExposureStep*)sequenceStep
+- (void)executeExposureStep:(CASSequenceExposureStep*)sequenceStep // todo; put into exposure step
 {
-    CASExposureSettings* settings = self.cameraController.settings;
+    CASExposureSettings* settings = self.target.sequenceCameraController.settings;
     
     settings.captureCount = sequenceStep.count;
     settings.exposureUnits = 0;
@@ -661,7 +957,7 @@ static void* kvoContext;
     NSString* filter = sequenceStep.filter;
     if ([filter length]){
         // need to check it's a known filter name
-        CASFilterWheelController* filterWheel = self.cameraController.filterWheel;
+        CASFilterWheelController* filterWheel = self.target.sequenceCameraController.filterWheel;
         if (!filterWheel){
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                     code:1
@@ -692,11 +988,11 @@ static void* kvoContext;
     });
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context // todo; put into exposure step
 {
     if (context == &kvoContext) {
         if ([@"moving" isEqualToString:keyPath]){
-            if (!self.cameraController.filterWheel.filterWheel.moving && [self.cameraController.filterWheel.currentFilterName isEqualToString:((CASSequenceExposureStep*)self.currentStep).filter]){
+            if (!self.target.sequenceCameraController.filterWheel.filterWheel.moving && [self.target.sequenceCameraController.filterWheel.currentFilterName isEqualToString:((CASSequenceExposureStep*)self.currentStep).filter]){
                 [self unobserveFilterWheel];
                 [self capture];
             }
@@ -762,6 +1058,19 @@ static void* kvoContext;
 @implementation SXIOSequenceEditorSynchroniseStepView
 @end
 
+@interface SXIOSequenceEditorPreflightStepView : SXIOSequenceEditorRowView
+@property (weak) IBOutlet NSTextField *statusLabel;
+@end
+
+@implementation SXIOSequenceEditorPreflightStepView
+
+- (IBAction)capture:(id)sender
+{
+    [(CASSequencePreflightStep*)self.step capture];
+}
+
+@end
+
 @interface SXIOSequenceEditorWindowControllerStepsController : NSArrayController
 @property (weak) IBOutlet SXIOSequenceEditorWindowController *windowController;
 @end
@@ -774,9 +1083,10 @@ static void* kvoContext;
     
     // only supporting exposure types for now but in the future could have focus, slew, etc
     self.filterPredicate = [NSPredicate predicateWithBlock:^BOOL(CASSequenceStep* step, NSDictionary *bindings) {
-        return [step isKindOfClass:[CASSequenceExposureStep class]] ||
-        [step isKindOfClass:[CASSequenceSlewStep class]] ||
-        [step isKindOfClass:[CASSequenceParkStep class]];
+        return
+        [step isKindOfClass:[CASSequenceExposureStep class]] ||
+        [step isKindOfClass:[CASSequenceSlewStep class]] || // inc. synchronise and park steps
+        [step isKindOfClass:[CASSequencePreflightStep class]];
     }];
     
     for (CASSequenceStep* step in self.content){
@@ -895,6 +1205,7 @@ static void* kvoContext;
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSlewStepView" bundle:nil] forIdentifier:@"slew"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorParkStepView" bundle:nil] forIdentifier:@"park"];
     [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorSynchroniseStepView" bundle:nil] forIdentifier:@"synchronise"];
+    [self.tableView registerNib:[[NSNib alloc] initWithNibNamed:@"SXIOSequenceEditorPreflightStepView" bundle:nil] forIdentifier:@"preflight"];
 
     NSButton* closeButton = [self.window standardWindowButton:NSWindowCloseButton];
     [closeButton setTarget:self];
@@ -956,6 +1267,12 @@ static void* kvoContext;
     return self.camerasController.selectedObjects.firstObject;
 }
 
+- (void)setSelectedCameraController:(CASCameraController *)selectedCameraController
+{
+    self.camerasController.selectedObjects = selectedCameraController ? @[selectedCameraController] : nil;
+    self.target = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:selectedCameraController];
+}
+
 + (NSSet*)keyPathsForValuesAffectingCameraControllers
 {
     return [NSSet setWithObject:@"deviceManager.cameraControllers"];
@@ -989,62 +1306,6 @@ static void* kvoContext;
     }
 }
 
-- (BOOL)preflightSequence
-{
-    for (CASSequenceStep* step in self.sequence.steps){
-        if ([step isKindOfClass:[CASSequenceExposureStep class]]){
-            if (!self.selectedCameraController){
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Camera"
-                                                 defaultButton:@"OK"
-                                               alternateButton:nil
-                                                   otherButton:nil
-                                     informativeTextWithFormat:@"Please select a camera from the pop-up menu before running this sequence"];
-                [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-                return NO;
-            }
-            CASSequenceExposureStep* exposureStep = (CASSequenceExposureStep*)step;
-            if ([exposureStep.filter length]){
-                CASFilterWheelController* filterWheel = self.selectedCameraController.filterWheel;
-                if (!filterWheel){
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
-                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-                    return NO;
-                }
-            }
-        }
-        else if ([step isKindOfClass:[CASSequenceSlewStep class]]){
-            CASSequenceSlewStep* slewStep = (CASSequenceSlewStep*)step;
-            if (!self.target.sequenceMountController){
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
-                                                 defaultButton:@"OK"
-                                               alternateButton:nil
-                                                   otherButton:nil
-                                     informativeTextWithFormat:@"Please connect to a mount before before running this sequence"];
-                [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-                return NO;
-            }
-            if (slewStep.plateSolve){
-                CASPlateSolver* solver = [CASPlateSolver plateSolverWithIdentifier:nil];
-                if (![solver canSolveExposure:nil error:nil]){
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Plate Solve"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps"];
-                    [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-                    return NO;
-                }
-            }
-        }
-    }
-    
-    return YES;
-}
-
 - (IBAction)start:(id)sender
 {
 #if defined(SXIO) || defined(CCDIO)
@@ -1073,7 +1334,6 @@ static void* kvoContext;
         return;
     }
     
-    NSParameterAssert(self.target);
     NSParameterAssert([self.sequence.steps count] > 0);
 
     _stopped = NO;
@@ -1081,67 +1341,62 @@ static void* kvoContext;
 
     [self waitForStartTimeWithCompletion:^{
         
-        if (![self preflightSequence]){
+        self.sequenceRunner = [SXIOSequenceRunner new];
+        self.sequenceRunner.windowController = self;
+        self.sequenceRunner.target = self.target; // might be nil
+        self.sequenceRunner.sequence = self.sequence;
         
-            self.nextRunTime = nil;
-            self.startButton.title = @"Start";
-        }
-        else{
-        
-            self.sequenceRunner = [SXIOSequenceRunner new];
-            self.sequenceRunner.target = self.target;
-            self.sequenceRunner.cameraController = self.selectedCameraController;
-            self.sequenceRunner.sequence = self.sequence;
+        __typeof(self) weakSelf = self;
+        self.sequenceRunner.completion = ^(NSError* error){
             
-            __typeof(self) weakSelf = self;
-            self.sequenceRunner.completion = ^(NSError* error){
+            weakSelf.sequenceRunner = nil;
+            
+            // todo; have an option to continue or stop if the sequence ended with an error
+            
+            // check for the repeat sequence option
+            if (!_stopped && self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
                 
-                weakSelf.sequenceRunner = nil;
-
-                // todo; have an option to continue or stop if the sequence ended with an error
-                
-                // check for the repeat sequence option
-                if (!_stopped && self.sequence.repeat && self.sequence.repeatHoursInterval > 0){
-                    
-                    // figure out the date to repeat from
-                    NSDate* date;
-                    if (self.sequence.hasStartTime && self.sequence.startTime){
-                        date = self.sequence.startTime;
-                    }
-                    else {
-                        date = [NSDate date];
-                    }
-                    
-                    // increment it by the interval
-                    NSCalendarUnit unit = NSCalendarUnitMinute; // NSCalendarUnitHour;
-                    date = [[NSCalendar currentCalendar] dateByAddingUnit:unit value:weakSelf.sequence.repeatHoursInterval toDate:date options:0];
-                    
-                    // update the start date if we're using that
-                    if (self.sequence.hasStartTime && self.sequence.startTime){
-                        weakSelf.sequence.startTime = date;
-                    }
-                    
-                    // set the next run date text label...
-                    
-                    // set a timer
-                    NSLog(@"Restarting at %@",date);
-                    const NSTimeInterval delay = date.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate];
-                    weakSelf.nextRunTime = [NSDate dateWithTimeIntervalSinceNow:delay];
-                    [weakSelf performSelector:@selector(restartTimerFired) withObject:nil afterDelay:delay];
+                // figure out the date to repeat from
+                NSDate* date;
+                if (self.sequence.hasStartTime && self.sequence.startTime){
+                    date = self.sequence.startTime;
                 }
                 else {
-                    _stopped = YES;
-                    weakSelf.nextRunTime = nil;
-                    weakSelf.startButton.title = @"Start";
+                    date = [NSDate date];
                 }
-            };
-            
-            NSError* error;
-            if (![self.sequenceRunner startWithError:&error]){
+                
+                // increment it by the interval
+                NSCalendarUnit unit = NSCalendarUnitMinute; // NSCalendarUnitHour;
+                date = [[NSCalendar currentCalendar] dateByAddingUnit:unit value:weakSelf.sequence.repeatHoursInterval toDate:date options:0];
+                
+                // update the start date if we're using that
+                if (self.sequence.hasStartTime && self.sequence.startTime){
+                    weakSelf.sequence.startTime = date;
+                }
+                
+                // set the next run date text label...
+                
+                // set a timer
+                NSLog(@"Restarting at %@",date);
+                const NSTimeInterval delay = date.timeIntervalSinceReferenceDate - [NSDate timeIntervalSinceReferenceDate];
+                weakSelf.nextRunTime = [NSDate dateWithTimeIntervalSinceNow:delay];
+                [weakSelf performSelector:@selector(restartTimerFired) withObject:nil afterDelay:delay];
+            }
+            else {
+                _stopped = YES;
+                weakSelf.nextRunTime = nil;
+                weakSelf.startButton.title = @"Start";
+            }
+        };
+        
+        [self.sequenceRunner start:^(NSError *error) {
+            if (error){
                 self.sequenceRunner = nil;
+                self.nextRunTime = nil;
+                self.startButton.title = @"Start";
                 [NSApp presentError:error];
             }
-        }
+        }];
     }];
 }
 
@@ -1219,7 +1474,7 @@ static void* kvoContext;
 
 - (BOOL)canStart
 {
-    return self.target != nil && [self.sequence.steps count] > 0;
+    return [self.sequence.steps count] > 0;
 }
 
 + (NSSet*)keyPathsForValuesAffectingCanStart
@@ -1374,6 +1629,12 @@ static void* kvoContext;
 - (IBAction)addSynchroniseStep:(id)sender
 {
     [self.stepsController addObject:[CASSequenceSynchroniseStep new]];
+}
+
+- (IBAction)addPreflightStep:(id)sender
+{
+    // force to the start of the array ? prevent duplicates ?
+    [self.stepsController addObject:[CASSequencePreflightStep new]];
 }
 
 #pragma mark - Drag & Drop

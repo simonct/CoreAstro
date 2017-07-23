@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SXIOSequenceEditorSlewStepView">
+            <connections>
+                <outlet property="objectController" destination="5Zq-Z6-Rt2" id="uAQ-Z3-j5O"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="4mP-az-EyK" customClass="SXIOSequenceEditorPreflightStepView">
+            <rect key="frame" x="0.0" y="0.0" width="322" height="28"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="al7-HM-xzC">
+                    <rect key="frame" x="302" y="6" width="16" height="16"/>
+                    <connections>
+                        <binding destination="5Zq-Z6-Rt2" name="hidden" keyPath="selection.step.active" id="Fyf-Yb-sgi">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                            </dictionary>
+                        </binding>
+                        <binding destination="5Zq-Z6-Rt2" name="animate" keyPath="selection.step.active" id="cFo-pX-aQD"/>
+                    </connections>
+                </progressIndicator>
+                <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KCm-jB-IDc">
+                    <rect key="frame" x="4" y="0.0" width="294" height="28"/>
+                    <subviews>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xmA-De-eUF">
+                            <rect key="frame" x="-5" y="-1" width="160" height="28"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="150" id="LT9-IN-9kB"/>
+                            </constraints>
+                            <buttonCell key="cell" type="push" title="Capture Devices" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="80O-ko-Vh3">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="smallSystem"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="capture:" target="4mP-az-EyK" id="LGX-69-6HT"/>
+                            </connections>
+                        </button>
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MvB-fv-QL5">
+                            <rect key="frame" x="156" y="7" width="72" height="14"/>
+                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="RC1-KM-3xZ">
+                                <font key="font" metaFont="smallSystem"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                            <connections>
+                                <binding destination="5Zq-Z6-Rt2" name="value" keyPath="selection.step.status" id="dSj-Nk-cOe"/>
+                            </connections>
+                        </textField>
+                        <button translatesAutoresizingMaskIntoConstraints="NO" id="YH9-ZG-B9m">
+                            <rect key="frame" x="231" y="5" width="65" height="18"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="FBe-Ba-b8T"/>
+                            </constraints>
+                            <buttonCell key="cell" type="check" title="PHD2" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="A9O-DP-vzi">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="smallSystem"/>
+                            </buttonCell>
+                        </button>
+                    </subviews>
+                    <visibilityPriorities>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                    </visibilityPriorities>
+                    <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                    </customSpacing>
+                </stackView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="KCm-jB-IDc" secondAttribute="bottom" id="1rA-m2-pBt"/>
+                <constraint firstItem="al7-HM-xzC" firstAttribute="centerY" secondItem="4mP-az-EyK" secondAttribute="centerY" id="3sA-xJ-LD7"/>
+                <constraint firstItem="al7-HM-xzC" firstAttribute="leading" secondItem="KCm-jB-IDc" secondAttribute="trailing" constant="4" id="Ob3-Pf-wLn"/>
+                <constraint firstItem="KCm-jB-IDc" firstAttribute="top" secondItem="4mP-az-EyK" secondAttribute="top" id="XPy-Hb-YhL"/>
+                <constraint firstAttribute="trailing" secondItem="al7-HM-xzC" secondAttribute="trailing" constant="4" id="cGf-xH-mUL"/>
+                <constraint firstItem="KCm-jB-IDc" firstAttribute="leading" secondItem="4mP-az-EyK" secondAttribute="leading" constant="4" id="dQr-d7-cQ5"/>
+            </constraints>
+            <connections>
+                <outlet property="statusLabel" destination="MvB-fv-QL5" id="B63-rD-aeE"/>
+            </connections>
+            <point key="canvasLocation" x="-3127" y="-1597"/>
+        </customView>
+        <objectController objectClassName="SXIOSequenceEditorSlewStepView" id="5Zq-Z6-Rt2">
+            <connections>
+                <outlet property="content" destination="4mP-az-EyK" id="ggJ-x7-5xv"/>
+            </connections>
+        </objectController>
+    </objects>
+</document>

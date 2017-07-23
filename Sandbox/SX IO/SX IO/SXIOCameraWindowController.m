@@ -122,7 +122,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 // mount control
 @property (strong) SXIOMountState* mountState;
-@property (strong,nonatomic) CASMountController* mountController;
 @property (strong) CASProgressWindowController* mountSlewProgressSheet;
 
 // obsolete but required until the xib format is updated
@@ -2296,7 +2295,7 @@ static void* kvoContext;
 
 - (void)parkMountWithCompletion:(void(^)(NSError*))completion
 {
-    [self.mountController parkMountWithCompletion:completion];
+    [[CASMountWindowController sharedMountWindowController] parkWithCompletion:completion];
 }
 
 - (void)captureCompletedWithError:(NSError*)error
