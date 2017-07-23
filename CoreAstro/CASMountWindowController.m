@@ -448,20 +448,7 @@ static void* kvoContext;
 
 - (IBAction)park:(id)sender
 {
-    __weak __typeof (self) weakSelf = self;
-    
-    [self.mountController parkMountWithCompletion:^(NSError *error) {
-        if (error != nil){
-            [NSApp presentError:error];
-        }
-        else {
-            // this is a rather arbitrary delay to allow the park mode command to make it to the mount and have an effect
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [weakSelf disconnectButtonPressed:nil];
-                [weakSelf presentAlertWithMessage:@"The mount is now parked"];
-            });
-        }
-    }];
+    [self parkWithCompletion:^(NSError *error) {}];
 }
 
 - (IBAction)lookup:(id)sender
@@ -781,6 +768,27 @@ static void* kvoContext;
             completion(error,self.mountController);
         }];
     }
+}
+
+- (void)parkWithCompletion:(void(^)(NSError*))completion
+{
+    __weak __typeof (self) weakSelf = self;
+    
+    // this won't work if the mount was externally parked e.g. via a sequence or scripting
+    [self.mountController parkMountWithCompletion:^(NSError *error) {
+        if (error != nil){
+            completion(error);
+            [NSApp presentError:error];
+        }
+        else {
+            // this is a rather arbitrary delay to allow the park mode command to make it to the mount and have an effect
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [weakSelf disconnectButtonPressed:nil];
+                [weakSelf presentAlertWithMessage:@"The mount is now parked"]; // this blocks, want it to auto-dismiss
+                completion(error);
+            });
+        }
+    }];
 }
 
 @end

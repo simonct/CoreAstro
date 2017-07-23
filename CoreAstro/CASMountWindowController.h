@@ -21,5 +21,6 @@
 @interface CASMountWindowController (Global)
 - (void)connectToMount:(void(^)())completion;
 - (void)connectToMountAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion;
+- (void)parkWithCompletion:(void(^)(NSError*))completion;
 + (instancetype)sharedMountWindowController;
 @end
