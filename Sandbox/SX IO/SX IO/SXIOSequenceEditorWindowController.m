@@ -70,6 +70,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 @interface CASSequencePreflightStep : CASSequenceStep<SequenceExecutable>
 @property (nonatomic,copy) NSString* camera;
+@property (nonatomic,copy) NSString* filterWheel;
 @property (nonatomic,copy) NSString* mountClass;
 @property (nonatomic,copy) NSString* mountName;
 @property (nonatomic,copy) NSString* mountPath;
@@ -81,6 +82,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 enum {
     StateNone = 0,
     StateCamera,
+    StateFilterWheel,
     StateMount,
     StatePHD2
 };
@@ -94,6 +96,7 @@ enum {
     self = [super initWithCoder:coder];
     if (self) {
         self.camera = [coder decodeObjectOfClass:[NSString class] forKey:@"camera"];
+        self.filterWheel = [coder decodeObjectOfClass:[NSString class] forKey:@"filterWheel"];
         self.mountClass = [coder decodeObjectOfClass:[NSString class] forKey:@"mountClass"];
         self.mountName = [coder decodeObjectOfClass:[NSString class] forKey:@"mountName"];
         self.mountPath = [coder decodeObjectOfClass:[NSString class] forKey:@"mountPath"];
@@ -111,6 +114,7 @@ enum {
     [aCoder encodeObject:self.mountClass forKey:@"mountClass"];
     [aCoder encodeObject:self.mountName forKey:@"mountName"];
     [aCoder encodeObject:self.camera forKey:@"camera"];
+    [aCoder encodeObject:self.filterWheel forKey:@"filterWheel"];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -118,6 +122,7 @@ enum {
     CASSequencePreflightStep* copy = [super copyWithZone:zone];
     
     copy.camera = [self.camera copy];
+    copy.filterWheel = [self.filterWheel copy];
     copy.mountClass = [self.mountClass copy];
     copy.mountName = [self.mountName copy];
     copy.mountPath = [self.mountPath copy];
@@ -140,6 +145,7 @@ enum {
 {
     CASCameraController* camera = self.windowController.selectedCameraController;
     self.camera = camera.camera.deviceName;
+    self.filterWheel = camera.filterWheel.filterWheel.deviceName;
 
     // yuk - this should be associated with the camera controller
     SXIOCameraWindowController* window = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:camera];
@@ -162,8 +168,14 @@ enum {
     if (self.camera){
         self.status = [self.status stringByAppendingString:self.camera];
     }
+    if (self.filterWheel){
+        if (self.status.length > 0){
+            self.status = [self.status stringByAppendingString:@", "];
+        }
+        self.status = [self.status stringByAppendingString:self.filterWheel];
+    }
     if (self.mountName){
-        if (self.status){
+        if (self.status.length > 0){
             self.status = [self.status stringByAppendingString:@", "];
         }
         self.status = [self.status stringByAppendingString:self.mountName];
@@ -207,6 +219,7 @@ enum {
                 return;
             }
             
+            // select the first matching camera controller
             self.windowController.selectedCameraController = cameras.firstObject;
             
             [self performNextState:StateCamera error:nil];
@@ -223,11 +236,11 @@ enum {
                 }]];
                 
                 void (^completeWithMount)(CASMountController*) = ^(CASMountController* mount) {
-                    // yuk - this should be associated with the camera controller
+                    // yuk - this should be associated with the camera controller (not updating the menu in the camera window)
                     SXIOCameraWindowController* window = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:self.windowController.selectedCameraController];
                     window.mountController = mount;
                     
-                    [self performNextState:StateMount error:nil];
+                    [self performNextState:StateFilterWheel error:nil];
                 };
                 
                 if (mounts.count > 0){
@@ -236,7 +249,7 @@ enum {
                 else {
                     [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:self.mountPath completion:^(NSError* error,CASMountController* mountController){
                         if (error){
-                            [self performNextState:StateMount error:error];
+                            [self performNextState:StateFilterWheel error:error];
                         }
                         else {
                             completeWithMount(mountController);
@@ -245,9 +258,36 @@ enum {
                 }
             }
             else {
-                [self performNextState:StateMount error:nil];
+                [self performNextState:StateFilterWheel error:nil];
             }
 
+        }
+            break;
+            
+        case StateFilterWheel: {
+            
+            if (!self.filterWheel){
+                [self performNextState:StateMount error:nil];
+            }
+            else {
+                
+                NSArray* filterWheels = [[[CASDeviceManager sharedManager] filterWheelControllers] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                    CASFilterWheelController* filterWheel = evaluatedObject;
+                    return [filterWheel.device.deviceName isEqualToString:self.filterWheel];
+                }]];
+                
+                if (filterWheels.count == 0){
+                    [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                 code:4
+                                                                             userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"No filter wheel matching the name '%@' was found",self.camera]}]];
+                    return;
+                }
+
+                // connect the camera to the filter wheel (not updating the menu in the camera window)
+                self.windowController.selectedCameraController.filterWheel = filterWheels.firstObject;
+
+                [self performNextState:StateMount error:nil];
+            }
         }
             break;
             
