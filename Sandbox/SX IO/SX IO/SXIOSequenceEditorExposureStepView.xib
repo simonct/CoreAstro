@@ -33,7 +33,7 @@
                     <rect key="frame" x="4" y="0.0" width="405" height="28"/>
                     <subviews>
                         <textField horizontalHuggingPriority="1000" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XbS-rq-Euh">
-                            <rect key="frame" x="-2" y="5.5" width="41" height="17"/>
+                            <rect key="frame" x="-2" y="5" width="41" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Count" id="NSa-DA-VfQ">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -41,7 +41,7 @@
                             </textFieldCell>
                         </textField>
                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7qo-fO-7l0">
-                            <rect key="frame" x="45" y="2.5" width="62" height="23"/>
+                            <rect key="frame" x="45" y="2" width="62" height="23"/>
                             <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" id="WB0-yd-idu">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -61,7 +61,7 @@
                             </connections>
                         </textField>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4Yo-zr-67h">
-                            <rect key="frame" x="113" y="5.5" width="66" height="17"/>
+                            <rect key="frame" x="113" y="5" width="66" height="17"/>
                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Seconds" id="2TG-ms-zZn">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -69,7 +69,7 @@
                             </textFieldCell>
                         </textField>
                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cWe-if-Gti">
-                            <rect key="frame" x="185" y="2.5" width="62" height="23"/>
+                            <rect key="frame" x="185" y="2" width="62" height="23"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="62" id="zF1-js-KJL"/>
                             </constraints>
