@@ -38,7 +38,6 @@
                 </textField>
             </subviews>
             <constraints>
-                <constraint firstItem="al7-HM-xzC" firstAttribute="leading" secondItem="XbS-rq-Euh" secondAttribute="trailing" constant="4" id="G1K-A0-odF"/>
                 <constraint firstItem="XbS-rq-Euh" firstAttribute="centerY" secondItem="4mP-az-EyK" secondAttribute="centerY" id="Tyq-OM-hdP"/>
                 <constraint firstAttribute="trailing" secondItem="al7-HM-xzC" secondAttribute="trailing" constant="4" id="mlG-TK-8rN"/>
                 <constraint firstItem="al7-HM-xzC" firstAttribute="centerY" secondItem="4mP-az-EyK" secondAttribute="centerY" id="nGO-Gi-gxe"/>
