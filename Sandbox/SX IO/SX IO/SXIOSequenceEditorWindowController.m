@@ -215,7 +215,10 @@ enum {
             if (cameras.count == 0){
                 [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
                                                           code:1
-                                                      userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"No camera matching the name '%@' was found",self.camera]}]];
+                                                      userInfo:@{
+                                                                 NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                 NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:NSLocalizedString(@"No camera matching the name '%@' was found", @"No camera matching the name '%@' was found"),self.camera]
+                                                                 }]];
                 return;
             }
             
@@ -279,7 +282,10 @@ enum {
                 if (filterWheels.count == 0){
                     [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
                                                                                  code:4
-                                                                             userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"No filter wheel matching the name '%@' was found",self.camera]}]];
+                                                                             userInfo:@{
+                                                                                        NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                        NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:NSLocalizedString(@"No filter wheel matching the name '%@' was found", @"No filter wheel matching the name '%@' was found"),self.camera]
+                                                                                        }]];
                     return;
                 }
 
@@ -760,15 +766,15 @@ static void* kvoContext;
     }]];
     
     void (^start)() = ^(){
+        NSError* error;
         
-        if (![self preflightSequence]){
-            completion(nil); // todo; pass error back
+        if (![self preflightSequence:&error]){
+            completion(error);
             return;
         }
         
         _stopped = NO;
         
-        NSError* error;
         if (![self.target prepareToStartSequenceWithError:&error]){
             completion(error);
             return;
@@ -850,40 +856,42 @@ static void* kvoContext;
     }
 }
 
-- (BOOL)preflightSequence // todo; this should probably just return an error
+- (BOOL)preflightSequence:(NSError**)error
 {
+    NSString* preflightFailed = NSLocalizedString(@"Preflight Failed", @"Preflight Failed");
+    
     for (CASSequenceStep* step in self.sequence.steps){
         
         if ([step isKindOfClass:[CASSequenceExposureStep class]]){
             
             if (!self.target.sequenceCameraController){
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Camera"
-                                                 defaultButton:@"OK"
-                                               alternateButton:nil
-                                                   otherButton:nil
-                                     informativeTextWithFormat:@"Please select a camera from the pop-up menu before running this sequence"];
-                [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                             code:1
+                                         userInfo:@{
+                                                    NSLocalizedDescriptionKey:preflightFailed,
+                                                    NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Please select a camera from the pop-up menu before running this sequence", @"Please select a camera from the pop-up menu before running this sequence")
+                                                    }];
                 return NO;
             }
             CASSequenceExposureStep* exposureStep = (CASSequenceExposureStep*)step;
             if ([exposureStep.filter length]){
                 CASFilterWheelController* filterWheel = self.target.sequenceCameraController.filterWheel;
                 if (!filterWheel){
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Select Filter Wheel"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"Please select a filter wheel in the camera window before running this sequence"];
-                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                                 code:1
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:preflightFailed,
+                                                        NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Please select a filter wheel in the camera window before running this sequence", @"Please select a filter wheel in the camera window before running this sequence")
+                                                        }];
                     return NO;
                 }
                 if (![filterWheel.filterNames.allValues containsObject:exposureStep.filter]){
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Unknown Filter"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"The filter '%@' isn't recognised by '%@'",exposureStep.filter,filterWheel.filterWheel.deviceName];
-                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                                 code:1
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:preflightFailed,
+                                                        NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:NSLocalizedString(@"The filter '%@' isn't recognised by '%@'", @"The filter '%@' isn't recognised by '%@'"),exposureStep.filter,filterWheel.filterWheel.deviceName]
+                                                        }];
                     return NO;
                 }
             }
@@ -892,23 +900,23 @@ static void* kvoContext;
             
             CASSequenceSlewStep* slewStep = (CASSequenceSlewStep*)step;
             if (!self.target.sequenceMountController){
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Select Mount"
-                                                 defaultButton:@"OK"
-                                               alternateButton:nil
-                                                   otherButton:nil
-                                     informativeTextWithFormat:@"Please connect to a mount before before running this sequence"];
-                [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                             code:1
+                                         userInfo:@{
+                                                    NSLocalizedDescriptionKey:preflightFailed,
+                                                    NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"Please connect to a mount before before running this sequence", @"Please connect to a mount before before running this sequence")
+                                                    }];
                 return NO;
             }
             if (slewStep.plateSolve){
                 CASPlateSolver* solver = [CASPlateSolver plateSolverWithIdentifier:nil];
                 if (![solver canSolveExposure:nil error:nil]){
-                    NSAlert* alert = [NSAlert alertWithMessageText:@"Plate Solve"
-                                                     defaultButton:@"OK"
-                                                   alternateButton:nil
-                                                       otherButton:nil
-                                         informativeTextWithFormat:@"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps"];
-                    [alert beginSheetModalForWindow:self.windowController.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
+                    *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                                 code:1
+                                             userInfo:@{
+                                                        NSLocalizedDescriptionKey:preflightFailed,
+                                                        NSLocalizedRecoverySuggestionErrorKey:NSLocalizedString(@"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps", @"The astrometry.net installer tools and indexes need to be installed for plate solved slew steps")
+                                                        }];
                     return NO;
                 }
             }
@@ -972,7 +980,7 @@ static void* kvoContext;
     if (![self.currentStep isValid]){
         [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                 code:2
-                                            userInfo:@{NSLocalizedFailureReasonErrorKey:@"Encountered an invalid step"}]];
+                                            userInfo:@{NSLocalizedFailureReasonErrorKey:NSLocalizedString(@"Encountered an invalid step", @"Encountered an invalid step")}]];
     }
     else {
         
@@ -988,7 +996,7 @@ static void* kvoContext;
         else {
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                     code:3
-                                                userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"Unknown sequence step %@",self.currentStep.type]}]];
+                                                userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:NSLocalizedString(@"Unknown sequence step %@", @"Unknown sequence step %@"),self.currentStep.type]}]];
         }
     }
 }
@@ -1012,14 +1020,14 @@ static void* kvoContext;
         if (!filterWheel){
             [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                     code:1
-                                                userInfo:@{NSLocalizedFailureReasonErrorKey:@"An exposure step has a filter setting but no filter wheel has been selected"}]];
+                                                userInfo:@{NSLocalizedFailureReasonErrorKey:NSLocalizedString(@"An exposure step has a filter setting but no filter wheel has been selected", @"An exposure step has a filter setting but no filter wheel has been selected")}]];
             return;
         }
         else {
             if (![filterWheel.filterNames.allValues containsObject:filter]){
                 [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                         code:2
-                                                    userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:@"Unrecognised filter '%@'",filter]}]];
+                                                    userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:NSLocalizedString(@"Unrecognised filter '%@'", @"Unrecognised filter '%@'"),filter]}]];
                 return;
             }
             filterWheel.currentFilterName = filter;
@@ -1394,7 +1402,7 @@ static void* kvoContext;
     NSParameterAssert([self.sequence.steps count] > 0);
 
     _stopped = NO;
-    self.startButton.title = @"Stop";
+    self.startButton.title = NSLocalizedString(@"Stop", @"Stop");
 
     [self waitForStartTimeWithCompletion:^{
         
@@ -1442,15 +1450,16 @@ static void* kvoContext;
             else {
                 _stopped = YES;
                 weakSelf.nextRunTime = nil;
-                weakSelf.startButton.title = @"Start";
+                weakSelf.startButton.title = NSLocalizedString(@"Start", @"Start");
             }
         };
         
         [self.sequenceRunner start:^(NSError *error) {
             if (error){
+                _stopped = YES;
                 self.sequenceRunner = nil;
                 self.nextRunTime = nil;
-                self.startButton.title = @"Start";
+                self.startButton.title = NSLocalizedString(@"Start", @"Start");
                 [NSApp presentError:error];
             }
         }];
@@ -1510,11 +1519,11 @@ static void* kvoContext;
 - (IBAction)cancel:(id)sender
 {
     if (self.sequenceRunner){
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Cancel Sequence"
-                                         defaultButton:@"OK"
-                                       alternateButton:@"Cancel"
+        NSAlert* alert = [NSAlert alertWithMessageText:NSLocalizedString(@"Cancel Sequence", @"Cancel Sequence")
+                                         defaultButton:NSLocalizedString(@"OK", @"OK")
+                                       alternateButton:NSLocalizedString(@"Cancel", @"Cancel")
                                            otherButton:nil
-                             informativeTextWithFormat:@"Are you sure you want to cancel the currently running sequence ?"];
+                             informativeTextWithFormat:NSLocalizedString(@"Are you sure you want to cancel the currently running sequence ?", @"Are you sure you want to cancel the currently running sequence ?")];
         [alert beginSheetModalForWindow:self.window modalDelegate:self didEndSelector:@selector(cancelSequenceAlertDidEnd:returnCode:contextInfo:) contextInfo:nil];
     }
     else {
@@ -1598,11 +1607,11 @@ static void* kvoContext;
     }
     else{
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSAlert* alert = [NSAlert alertWithMessageText:@"Can't open Sequence"
-                                             defaultButton:@"OK"
+            NSAlert* alert = [NSAlert alertWithMessageText:NSLocalizedString(@"Can't open Sequence", @"Can't open Sequence")
+                                             defaultButton:NSLocalizedString(@"OK", @"OK")
                                            alternateButton:nil
                                                otherButton:nil
-                                 informativeTextWithFormat:@"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+                                 informativeTextWithFormat:NSLocalizedString(@"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@.", @"There was an problem reading the sequence file. It may be corrupt or contain sequence steps not supported by this version of %@."),[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
             [alert beginSheetModalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
         });
         return NO;
