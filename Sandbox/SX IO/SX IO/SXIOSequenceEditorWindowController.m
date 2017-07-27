@@ -298,11 +298,68 @@ enum {
             break;
             
         case StateMount: {
+            
             // Connect PHD2
             if (self.preparePHD2){
                 
+                NSRunningApplication* app;
+                NSArray<NSRunningApplication *> *apps = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"org.openphdguiding.phd2"];
+                if (apps.count > 0){
+                    app = apps.firstObject;
+                }
+                else {
+                    // check it's installed
+                    NSURL* url = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"org.openphdguiding.phd2"];
+                    if (!url){
+                        [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                   code:5
+                                                                               userInfo:@{
+                                                                                          NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                          NSLocalizedRecoverySuggestionErrorKey:@"PHD2 does not appear to be installed",
+                                                                                          }]];
+                        return;
+                    }
+                    
+                    // launch/get existing instance
+                    NSError* error;
+                    NSRunningApplication* app = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:url options:NSWorkspaceLaunchDefault configuration:@{} error:nil];
+                    if (!app){
+                        [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                   code:6
+                                                                               userInfo:@{
+                                                                                          NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                          NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:@"There was an error launching PHD2: %@",error],
+                                                                                          }]];
+                        return;
+                    }
+                    
+                    // give it 10s to launch
+                    NSInteger waitLimit = 10;
+                    while (!app.finishedLaunching && waitLimit-- > 0) {
+                        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+                    }
+                }
+                
+                // attempt to connect and check state ?
+                CASPHD2Client* client = [[CASPHD2Client alloc] init];
+                [client connectWithCompletion:^{
+                    
+                    if (!client.connected){
+                        [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                   code:7
+                                                                               userInfo:@{
+                                                                                          NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                          NSLocalizedRecoverySuggestionErrorKey:@"It wasn't possible to establish a connection with PHD2",
+                                                                                          }]];
+                    }
+                    else {
+                        [self performNextState:StatePHD2 error:nil];
+                    }
+                }];
             }
-            [self performNextState:StatePHD2 error:nil];
+            else {
+                [self performNextState:StatePHD2 error:nil];
+            }
         }
             break;
             

@@ -65,6 +65,9 @@
                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="smallSystem"/>
                             </buttonCell>
+                            <connections>
+                                <binding destination="5Zq-Z6-Rt2" name="value" keyPath="selection.step.preparePHD2" id="dgp-OK-Tli"/>
+                            </connections>
                         </button>
                     </subviews>
                     <visibilityPriorities>
