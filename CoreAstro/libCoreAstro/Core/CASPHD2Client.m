@@ -26,8 +26,6 @@ static void* kvoContext;
 
 - (void)dealloc
 {
-    [_client removeObserver:self forKeyPath:@"error" context:&kvoContext];
-    [_client removeObserver:self forKeyPath:@"connected" context:&kvoContext];
     [self disconnect];
 }
 
