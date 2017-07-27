@@ -463,18 +463,18 @@ static void* kvoContext;
     
     // check for something that looks like an ra/dec
     NSString* text = self.searchString;
-    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"(-?[0-9])+" options:0 error:nil];
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"(-?[\\d])+" options:0 error:nil];
     NSArray<NSTextCheckingResult*>* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
-    if (matches.count == 6){
+    if (matches.count >= 4){
         
         self.targetRA = @(15*([[text substringWithRange:matches[0].range] doubleValue] +
                               [[text substringWithRange:matches[1].range] doubleValue]/60.0 +
                               [[text substringWithRange:matches[2].range] doubleValue]/3600.0));
         
         const double decDegrees = [[text substringWithRange:matches[3].range] doubleValue];
-        self.targetDec = @((decDegrees < 0 ? -1 : 1) * (fabs(decDegrees) +
-                                                        [[text substringWithRange:matches[4].range] doubleValue]/60.0 +
-                                                        [[text substringWithRange:matches[5].range] doubleValue]/3600));
+        const double decMinutes = matches.count > 4 ? [[text substringWithRange:matches[4].range] doubleValue] : 0;
+        const double decSeconds = matches.count > 5 ? [[text substringWithRange:matches[5].range] doubleValue] : 0;
+        self.targetDec = @((decDegrees < 0 ? -1 : 1) * (fabs(decDegrees) + decMinutes/60.0 + decSeconds/3600));
         
         return;
     }
