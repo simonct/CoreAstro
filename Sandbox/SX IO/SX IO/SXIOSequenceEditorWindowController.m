@@ -207,23 +207,27 @@ enum {
             
         case StateNone:{
             
-            NSArray* cameras = [[[CASDeviceManager sharedManager] cameraControllers] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-                CASCameraController* camera = evaluatedObject;
-                return [camera.device.deviceName isEqualToString:self.camera];
-            }]];
-            
-            if (cameras.count == 0){
-                [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
-                                                          code:1
-                                                      userInfo:@{
-                                                                 NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
-                                                                 NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:NSLocalizedString(@"No camera matching the name '%@' was found", @"No camera matching the name '%@' was found"),self.camera]
-                                                                 }]];
-                return;
+            if (self.camera){
+                
+                NSArray* cameras = [[[CASDeviceManager sharedManager] cameraControllers] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                    CASCameraController* camera = evaluatedObject;
+                    return [camera.device.deviceName isEqualToString:self.camera];
+                }]];
+                
+                if (cameras.count == 0){
+                    [self performNextState:StateCamera error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                 code:1
+                                                                             userInfo:@{
+                                                                                        NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                        NSLocalizedRecoverySuggestionErrorKey:[NSString stringWithFormat:NSLocalizedString(@"No camera matching the name '%@' was found", @"No camera matching the name '%@' was found"),self.camera]
+                                                                                        }]];
+                    return;
+                }
+                
+                // select the first matching camera controller
+                self.windowController.selectedCameraController = cameras.firstObject;
             }
             
-            // select the first matching camera controller
-            self.windowController.selectedCameraController = cameras.firstObject;
             
             [self performNextState:StateCamera error:nil];
         }
