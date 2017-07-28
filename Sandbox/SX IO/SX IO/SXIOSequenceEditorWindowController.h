@@ -33,7 +33,7 @@
 @property (nonatomic,weak) id<SXIOSequenceTarget> target;
 @property (nonatomic,readonly) BOOL stopped;
 
-- (BOOL)openURL:(NSURL*)url;
+- (BOOL)openURL:(NSURL*)url doubleClicked:(BOOL)doubleClicked;
 
 + (instancetype)sharedWindowController;
 

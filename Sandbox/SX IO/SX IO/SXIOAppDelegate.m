@@ -199,8 +199,8 @@ static void* kvoContext;
     if ([extension isEqualToString:@"sxioSequence"]){
         
         SXIOSequenceEditorWindowController* editor = [SXIOSequenceEditorWindowController sharedWindowController];
-        if (editor.stopped){
-            result = [editor openURL:[NSURL fileURLWithPath:filename]];
+        if (editor.stopped){ // just count steps ?
+            result = [editor openURL:[NSURL fileURLWithPath:filename] doubleClicked:YES];
         }
     }
     else if ([extension isEqualToString:@"fit"] || [extension isEqualToString:@"fits"]){

@@ -1663,11 +1663,16 @@ static void* kvoContext;
     return [NSSet setWithArray:@[@"stepsController.arrangedObjects"]];
 }
 
-- (BOOL)openURL:(NSURL*)url
+- (BOOL)openURL:(NSURL*)url doubleClicked:(BOOL)doubleClicked
 {
     if ([self openSequenceWithURL:url]){
         CASSaveUrlToDefaults(url,kSXIOSequenceEditorWindowControllerBookmarkKey);
         [self.window makeKeyAndOrderFront:nil];
+        if (doubleClicked && self.sequence.autoStart){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self start:nil];
+            });
+        }
         return YES;
     }
     else{
@@ -1705,11 +1710,6 @@ static void* kvoContext;
             self.sequence = sequence;
             [self updateWindowRepresentedURL:url];
             success = YES;
-            if (self.sequence.autoStart){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self start:nil];
-                });
-            }
         }
     }
     return success;
@@ -1723,7 +1723,7 @@ static void* kvoContext;
     
     [open beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton){
-            [self openURL:open.URL];
+            [self openURL:open.URL doubleClicked:NO];
         }
     }];
 }
