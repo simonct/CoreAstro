@@ -730,6 +730,7 @@ enum {
 @property (nonatomic,strong) NSDate* startTime;
 @property BOOL repeat;
 @property NSInteger repeatHoursInterval;
+@property BOOL autoStart;
 @end
 
 @implementation CASSequence
@@ -756,6 +757,7 @@ enum {
         self.startTime = [coder decodeObjectOfClass:[NSDate class] forKey:@"startTime"];
         self.repeat = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"repeat"] boolValue];
         self.repeatHoursInterval = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"repeatHoursInterval"] integerValue];
+        self.autoStart = [[coder decodeObjectOfClass:[NSNumber class] forKey:@"autoStart"] boolValue];
     }
     return self;
 }
@@ -772,6 +774,8 @@ enum {
 
     [aCoder encodeObject:@(self.repeat) forKey:@"repeat"];
     [aCoder encodeObject:@(self.repeatHoursInterval) forKey:@"repeatHoursInterval"];
+    
+    [aCoder encodeObject:@(self.autoStart) forKey:@"autoStart"];
 }
 
 - (void)setStartTime:(NSDate *)startTime
@@ -1701,6 +1705,11 @@ static void* kvoContext;
             self.sequence = sequence;
             [self updateWindowRepresentedURL:url];
             success = YES;
+            if (self.sequence.autoStart){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self start:nil];
+                });
+            }
         }
     }
     return success;

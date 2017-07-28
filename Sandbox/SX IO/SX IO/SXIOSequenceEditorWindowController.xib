@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
@@ -22,22 +22,22 @@
         <window title="Sequence" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="480" height="417"/>
+            <rect key="contentRect" x="196" y="240" width="480" height="445"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="minSize" type="size" width="480" height="270"/>
             <value key="maxSize" type="size" width="480" height="1024"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="480" height="417"/>
+                <rect key="frame" x="0.0" y="0.0" width="480" height="445"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="26" horizontalPageScroll="10" verticalLineScroll="26" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgJ-KU-VDA">
-                        <rect key="frame" x="-1" y="168" width="482" height="216"/>
+                        <rect key="frame" x="-1" y="179" width="482" height="233"/>
                         <clipView key="contentView" drawsBackground="NO" id="iZY-Zb-Rcn">
-                            <rect key="frame" x="1" y="1" width="480" height="214"/>
+                            <rect key="frame" x="1" y="1" width="480" height="231"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="20" viewBased="YES" id="loe-Z3-bYl">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="214"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="231"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="6"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -81,7 +81,7 @@
                         </scroller>
                     </scrollView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n5x-Ed-FFK">
-                        <rect key="frame" x="-2" y="142" width="484" height="14"/>
+                        <rect key="frame" x="-2" y="153" width="484" height="14"/>
                         <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Temperature, dither and save location and name are taken from the camera window" id="lQf-l5-PwG">
                             <font key="font" metaFont="systemSemibold" size="11"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -89,7 +89,7 @@
                         </textFieldCell>
                     </textField>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ee5-Kn-Y8u">
-                        <rect key="frame" x="61" y="387" width="76" height="26"/>
+                        <rect key="frame" x="61" y="415" width="76" height="26"/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="KuU-FY-pNx" id="4cQ-E9-BJL">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
@@ -117,7 +117,7 @@
                         </connections>
                     </popUpButton>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jpa-Un-Byf">
-                        <rect key="frame" x="6" y="392" width="51" height="17"/>
+                        <rect key="frame" x="6" y="420" width="51" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Camera" id="rwq-rO-ENP">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -230,13 +230,13 @@ Gw
                         </buttonCell>
                     </button>
                     <box autoresizesSubviews="NO" borderType="line" title="Schedule" translatesAutoresizingMaskIntoConstraints="NO" id="6l4-po-YNw">
-                        <rect key="frame" x="5" y="46" width="471" height="88"/>
+                        <rect key="frame" x="5" y="46" width="471" height="99"/>
                         <view key="contentView" id="gQx-Gv-c9e">
-                            <rect key="frame" x="1" y="1" width="469" height="72"/>
+                            <rect key="frame" x="1" y="1" width="469" height="83"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button translatesAutoresizingMaskIntoConstraints="NO" id="cUO-6T-Lk6">
-                                    <rect key="frame" x="18" y="16" width="102" height="18"/>
+                                    <rect key="frame" x="18" y="8" width="102" height="18"/>
                                     <buttonCell key="cell" type="check" title="Repeat every" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="5nx-cn-VGZ">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -246,7 +246,7 @@ Gw
                                     </connections>
                                 </button>
                                 <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ly7-1l-fxc">
-                                    <rect key="frame" x="126" y="14" width="47" height="22"/>
+                                    <rect key="frame" x="126" y="6" width="47" height="22"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="47" id="GSb-cO-wAu"/>
                                     </constraints>
@@ -268,7 +268,7 @@ Gw
                                     </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KTv-j4-JML">
-                                    <rect key="frame" x="179" y="17" width="39" height="17"/>
+                                    <rect key="frame" x="179" y="9" width="39" height="17"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="hours" id="rDp-XE-aq6">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -276,7 +276,7 @@ Gw
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u7Y-EF-D0d">
-                                    <rect key="frame" x="222" y="18" width="201" height="14"/>
+                                    <rect key="frame" x="222" y="10" width="201" height="14"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(sequence window must be left open)" id="XWc-5X-kGk">
                                         <font key="font" metaFont="smallSystem"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -284,7 +284,7 @@ Gw
                                     </textFieldCell>
                                 </textField>
                                 <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lbN-bA-yUr">
-                                    <rect key="frame" x="125" y="39" width="143" height="27"/>
+                                    <rect key="frame" x="125" y="31" width="143" height="27"/>
                                     <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="s5G-oZ-gnF">
                                         <font key="font" metaFont="system"/>
                                         <date key="date" timeIntervalSinceReferenceDate="-595929600">
@@ -299,7 +299,7 @@ Gw
                                     </connections>
                                 </datePicker>
                                 <button translatesAutoresizingMaskIntoConstraints="NO" id="SBW-2z-ltf">
-                                    <rect key="frame" x="18" y="41" width="68" height="18"/>
+                                    <rect key="frame" x="18" y="33" width="68" height="18"/>
                                     <buttonCell key="cell" type="check" title="Start at" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="VVT-SL-YqQ">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -308,15 +308,27 @@ Gw
                                         <binding destination="-2" name="value" keyPath="sequence.hasStartTime" id="ECp-la-v07"/>
                                     </connections>
                                 </button>
+                                <button translatesAutoresizingMaskIntoConstraints="NO" id="i1A-ZN-o97">
+                                    <rect key="frame" x="18" y="57" width="136" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Start automatically" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="hra-C7-McF">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <binding destination="-2" name="value" keyPath="sequence.autoStart" id="Za1-Qu-g8O"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="ly7-1l-fxc" firstAttribute="leading" secondItem="cUO-6T-Lk6" secondAttribute="trailing" constant="8" id="0ei-j4-09r"/>
                                 <constraint firstItem="lbN-bA-yUr" firstAttribute="leading" secondItem="SBW-2z-ltf" secondAttribute="trailing" constant="41" id="1gk-0h-V7T"/>
                                 <constraint firstItem="u7Y-EF-D0d" firstAttribute="leading" secondItem="KTv-j4-JML" secondAttribute="trailing" constant="8" id="6fe-c5-rDT"/>
                                 <constraint firstItem="SBW-2z-ltf" firstAttribute="leading" secondItem="gQx-Gv-c9e" secondAttribute="leading" constant="20" id="DJt-qO-r6U"/>
+                                <constraint firstItem="i1A-ZN-o97" firstAttribute="top" secondItem="gQx-Gv-c9e" secondAttribute="top" constant="10" id="FR7-uj-Ayy"/>
                                 <constraint firstItem="ly7-1l-fxc" firstAttribute="centerY" secondItem="KTv-j4-JML" secondAttribute="centerY" id="Jdq-qv-TYl"/>
-                                <constraint firstItem="SBW-2z-ltf" firstAttribute="top" secondItem="gQx-Gv-c9e" secondAttribute="top" constant="15" id="NMM-eq-DGb"/>
                                 <constraint firstItem="SBW-2z-ltf" firstAttribute="leading" secondItem="cUO-6T-Lk6" secondAttribute="leading" id="UCI-L0-0uf"/>
+                                <constraint firstItem="SBW-2z-ltf" firstAttribute="top" secondItem="i1A-ZN-o97" secondAttribute="bottom" constant="10" id="WcV-3K-MsW"/>
+                                <constraint firstItem="i1A-ZN-o97" firstAttribute="leading" secondItem="SBW-2z-ltf" secondAttribute="leading" id="X5Z-Ov-YeA"/>
                                 <constraint firstItem="cUO-6T-Lk6" firstAttribute="centerY" secondItem="ly7-1l-fxc" secondAttribute="centerY" id="azl-4R-rWH"/>
                                 <constraint firstItem="cUO-6T-Lk6" firstAttribute="top" secondItem="SBW-2z-ltf" secondAttribute="bottom" constant="11" id="l7W-fq-e9l"/>
                                 <constraint firstItem="SBW-2z-ltf" firstAttribute="centerY" secondItem="lbN-bA-yUr" secondAttribute="centerY" id="myr-Rc-B8K"/>
@@ -325,11 +337,11 @@ Gw
                             </constraints>
                         </view>
                         <constraints>
-                            <constraint firstAttribute="height" constant="84" id="eF0-u3-29F"/>
+                            <constraint firstAttribute="height" constant="95" id="eF0-u3-29F"/>
                         </constraints>
                     </box>
                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="nZL-CE-zdQ">
-                        <rect key="frame" x="456" y="393" width="16" height="16"/>
+                        <rect key="frame" x="456" y="421" width="16" height="16"/>
                         <connections>
                             <binding destination="-2" name="animate" keyPath="nextRunTime" id="okk-sf-svb">
                                 <dictionary key="options">
@@ -339,7 +351,7 @@ Gw
                         </connections>
                     </progressIndicator>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RUs-GD-lpp">
-                        <rect key="frame" x="285" y="392" width="165" height="17"/>
+                        <rect key="frame" x="285" y="420" width="165" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Waiting for next run time..." id="3hW-2t-9uO">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -388,7 +400,7 @@ Gw
                 </constraints>
             </view>
             <contentBorderThickness minY="32"/>
-            <point key="canvasLocation" x="-3719" y="-1639"/>
+            <point key="canvasLocation" x="-3719" y="-1625.5"/>
         </window>
         <arrayController objectClassName="CASSequenceStep" avoidsEmptySelection="NO" id="gGE-tq-u0q" customClass="SXIOSequenceEditorWindowControllerStepsController">
             <connections>
