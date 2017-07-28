@@ -1636,7 +1636,7 @@ static void* kvoContext;
         }
     };
     
-    if (/*self.sequenceURL*/0){ // tmp, getting permissions erros when saving
+    if (self.sequenceURL && ([NSEvent modifierFlags] & NSEventModifierFlagOption) == 0){
         archiveToURL(self.sequenceURL);
     }
     else {
@@ -1703,10 +1703,10 @@ static void* kvoContext;
         @catch (NSException *exception) {
             NSLog(@"Exception opening sequence archive: %@",exception);
         }
-        @finally{
-            [url stopAccessingSecurityScopedResource];
-        }
         if ([sequence isKindOfClass:[CASSequence class]]){
+            if (self.sequenceURL){
+                [self.sequenceURL stopAccessingSecurityScopedResource];
+            }
             self.sequence = sequence;
             [self updateWindowRepresentedURL:url];
             success = YES;
