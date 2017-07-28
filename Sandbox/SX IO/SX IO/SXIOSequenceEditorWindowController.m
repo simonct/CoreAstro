@@ -1668,7 +1668,7 @@ static void* kvoContext;
     if ([self openSequenceWithURL:url]){
         CASSaveUrlToDefaults(url,kSXIOSequenceEditorWindowControllerBookmarkKey);
         [self.window makeKeyAndOrderFront:nil];
-        if (doubleClicked && self.sequence.autoStart){
+        if (doubleClicked && self.sequence.autoStart && ([NSEvent modifierFlags] & NSEventModifierFlagOption) == 0){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self start:nil];
             });
