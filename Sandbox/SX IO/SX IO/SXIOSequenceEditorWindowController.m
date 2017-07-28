@@ -1455,12 +1455,7 @@ static void* kvoContext;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(completeWaitForStartTime) object:nil];
 
     if (self.sequenceRunner || self.nextRunTime){
-        _stopped = YES;
-        // button is in Stop mode
-        [self.sequenceRunner stopWithError:nil];
-        self.sequenceRunner = nil;
-        self.nextRunTime = nil;
-        NSLog(@"Stopped");
+        [self cancel:sender];
         return;
     }
     
@@ -1629,32 +1624,38 @@ static void* kvoContext;
 #endif
 }
 
+- (void)archiveToURL:(NSURL*)url
+{
+    NSError* error;
+    if ([[NSKeyedArchiver archivedDataWithRootObject:self.sequence] writeToURL:url options:NSDataWritingAtomic error:&error]){
+        [self updateWindowRepresentedURL:url];
+    }
+    else if (error) {
+        [NSApp presentError:error];
+    }
+}
+
+- (IBAction)saveAs:(id)sender
+{
+    NSSavePanel* save = [NSSavePanel savePanel];
+    
+    save.allowedFileTypes = @[@"sxioSequence"];
+    save.canCreateDirectories = YES;
+    
+    [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result == NSFileHandlingPanelOKButton){
+            [self archiveToURL:save.URL];
+        }
+    }];
+}
+
 - (IBAction)save:(id)sender
 {
-    void (^archiveToURL)(NSURL*) = ^(NSURL* url){
-        NSError* error;
-        if ([[NSKeyedArchiver archivedDataWithRootObject:self.sequence] writeToURL:url options:NSDataWritingAtomic error:&error]){
-            [self updateWindowRepresentedURL:url];
-        }
-        else if (error) {
-            [NSApp presentError:error];
-        }
-    };
-    
     if (self.sequenceURL && ([NSEvent modifierFlags] & NSEventModifierFlagOption) == 0){
-        archiveToURL(self.sequenceURL);
+        [self archiveToURL:self.sequenceURL];
     }
     else {
-        NSSavePanel* save = [NSSavePanel savePanel];
-        
-        save.allowedFileTypes = @[@"sxioSequence"];
-        save.canCreateDirectories = YES;
-        
-        [save beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-            if (result == NSFileHandlingPanelOKButton){
-                archiveToURL(save.URL);
-            }
-        }];
+        [self saveAs:sender];
     }
 }
 
@@ -1718,6 +1719,11 @@ static void* kvoContext;
         }
     }
     return success;
+}
+
+- (IBAction)openDocument:(id)sender
+{
+    [self open:sender];
 }
 
 - (IBAction)open:(id)sender

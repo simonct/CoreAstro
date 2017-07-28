@@ -172,7 +172,10 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jm5-Wb-FH0">
-                        <rect key="frame" x="408" y="-2" width="70" height="32"/>
+                        <rect key="frame" x="366" y="-2" width="112" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="sAm-2B-exD"/>
+                        </constraints>
                         <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KdN-wr-u9S">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -184,50 +187,6 @@
                             <action selector="start:" target="-2" id="de5-ik-eWJ"/>
                             <binding destination="-2" name="enabled" keyPath="canStart" id="ZhN-zN-HY2"/>
                         </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="90h-M2-bGc">
-                        <rect key="frame" x="139" y="-1" width="81" height="32"/>
-                        <buttonCell key="cell" type="push" title="Save..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ke6-m3-gGe">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="save:" target="-2" id="9Wl-nD-Xkx"/>
-                            <binding destination="-2" name="enabled" keyPath="canSave" id="1ia-7Q-vwJ"/>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0kq-Tx-Ixy">
-                        <rect key="frame" x="58" y="-1" width="85" height="32"/>
-                        <buttonCell key="cell" type="push" title="Open..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uiz-5v-Sy7">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="open:" target="-2" id="NA5-ft-S44"/>
-                            <binding destination="-2" name="enabled" keyPath="canOpen" id="eZx-o3-UXn"/>
-                            <binding destination="-2" name="enabled2" keyPath="sequenceRunner" previousBinding="eZx-o3-UXn" id="XXn-FU-6Xj">
-                                <dictionary key="options">
-                                    <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                    <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                    <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                    <integer key="NSNullPlaceholder" value="-1"/>
-                                    <string key="NSValueTransformerName">NSIsNil</string>
-                                </dictionary>
-                            </binding>
-                        </connections>
-                    </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uLq-dk-P9Z">
-                        <rect key="frame" x="337" y="-2" width="75" height="32"/>
-                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bLu-93-uDS">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                            <connections>
-                                <action selector="cancel:" target="-2" id="mBB-fZ-j3J"/>
-                            </connections>
-                        </buttonCell>
                     </button>
                     <box autoresizesSubviews="NO" borderType="line" title="Schedule" translatesAutoresizingMaskIntoConstraints="NO" id="6l4-po-YNw">
                         <rect key="frame" x="5" y="46" width="471" height="99"/>
@@ -365,14 +324,25 @@ Gw
                             </binding>
                         </connections>
                     </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="90h-M2-bGc">
+                        <rect key="frame" x="57" y="-1" width="112" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="Iia-FI-nr5"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Save..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ke6-m3-gGe">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="save:" target="-2" id="9Wl-nD-Xkx"/>
+                            <binding destination="-2" name="enabled" keyPath="canSave" id="1ia-7Q-vwJ"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="n5x-Ed-FFK" firstAttribute="top" secondItem="OgJ-KU-VDA" secondAttribute="bottom" constant="12" id="04i-uQ-FzZ"/>
                     <constraint firstItem="nZL-CE-zdQ" firstAttribute="leading" secondItem="RUs-GD-lpp" secondAttribute="trailing" constant="8" id="7Ww-3j-9f1"/>
-                    <constraint firstAttribute="bottom" secondItem="uLq-dk-P9Z" secondAttribute="bottom" constant="5" id="7YA-Zm-NXf"/>
                     <constraint firstAttribute="bottom" secondItem="90h-M2-bGc" secondAttribute="bottom" constant="6" id="9AO-B3-b2n"/>
-                    <constraint firstAttribute="bottom" secondItem="0kq-Tx-Ixy" secondAttribute="bottom" constant="6" id="F8l-xV-AgL"/>
-                    <constraint firstItem="jm5-Wb-FH0" firstAttribute="leading" secondItem="uLq-dk-P9Z" secondAttribute="trailing" constant="8" id="HYi-GZ-lXL"/>
                     <constraint firstAttribute="trailing" secondItem="nZL-CE-zdQ" secondAttribute="trailing" constant="8" id="M9Y-0P-YLf"/>
                     <constraint firstItem="6l4-po-YNw" firstAttribute="top" secondItem="n5x-Ed-FFK" secondAttribute="bottom" constant="8" id="NQx-qv-dqT"/>
                     <constraint firstItem="Ee5-Kn-Y8u" firstAttribute="centerY" secondItem="jpa-Un-Byf" secondAttribute="centerY" id="Rqh-It-nMM"/>
@@ -384,12 +354,11 @@ Gw
                     <constraint firstItem="n5x-Ed-FFK" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="dnj-rb-CAq"/>
                     <constraint firstItem="RUs-GD-lpp" firstAttribute="centerY" secondItem="nZL-CE-zdQ" secondAttribute="centerY" id="g54-eB-vHh"/>
                     <constraint firstItem="jpa-Un-Byf" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="8" id="gqa-OC-xAe"/>
-                    <constraint firstItem="90h-M2-bGc" firstAttribute="leading" secondItem="0kq-Tx-Ixy" secondAttribute="trailing" constant="8" id="hrW-wi-Zm2"/>
                     <constraint firstAttribute="trailing" secondItem="OgJ-KU-VDA" secondAttribute="trailing" constant="-1" id="i0Q-hv-bj9"/>
                     <constraint firstItem="6l4-po-YNw" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="8" id="ids-zS-IO4"/>
+                    <constraint firstItem="90h-M2-bGc" firstAttribute="leading" secondItem="DbS-ay-4mf" secondAttribute="trailing" constant="7" id="iv8-3O-vAr"/>
                     <constraint firstAttribute="trailing" secondItem="jm5-Wb-FH0" secondAttribute="trailing" constant="8" id="j3l-lr-NEh"/>
                     <constraint firstItem="jpa-Un-Byf" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="8" id="osm-4g-Uq1"/>
-                    <constraint firstItem="0kq-Tx-Ixy" firstAttribute="leading" secondItem="DbS-ay-4mf" secondAttribute="trailing" constant="8" id="pyo-Mr-C4J"/>
                     <constraint firstAttribute="bottom" secondItem="jm5-Wb-FH0" secondAttribute="bottom" constant="5" id="qWG-MI-j8c"/>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="-1" id="uu6-oq-Zef"/>
                     <constraint firstItem="OgJ-KU-VDA" firstAttribute="top" secondItem="jpa-Un-Byf" secondAttribute="bottom" constant="8" id="v1R-Gx-XA3"/>
