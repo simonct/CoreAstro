@@ -1616,9 +1616,14 @@ static void* kvoContext;
 - (void)updateWindowRepresentedURL:(NSURL*)url
 {
     self.sequenceURL = url; // this isn't being shown while it's a sheet
-    self.window.representedURL = url; // need scoped bookmark data ?
-    NSString* name = [url isFileURL] ? [[NSFileManager defaultManager] displayNameAtPath:url.path] : [url lastPathComponent];
-    [self.window setTitleWithRepresentedFilename:name]; // and the window menu item ?
+    
+    if (url.isFileURL){
+        [self.window setTitleWithRepresentedFilename:url.path];
+    }
+    else {
+        self.window.representedURL = url;
+    }
+    
 #if defined(SXIO) || defined(CCDIO)
     [[SXIOAppDelegate sharedInstance] updateWindowInWindowMenu:self];
 #endif
