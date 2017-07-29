@@ -75,6 +75,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 @property (nonatomic,copy) NSString* mountName;
 @property (nonatomic,copy) NSString* mountPath;
 @property (nonatomic,copy) NSString* status;
+@property (strong) CASPHD2Client* client;
 @property BOOL preparePHD2;
 @property (copy) void (^completion)(NSError *);
 @end
@@ -309,10 +310,10 @@ enum {
                 void (^completeConnect)(NSRunningApplication*) = ^(NSRunningApplication* app){
                     
                     // attempt to connect and check state ?
-                    CASPHD2Client* client = [[CASPHD2Client alloc] init];
-                    [client connectWithCompletion:^{
+                    self.client = [[CASPHD2Client alloc] init];
+                    [self.client connectWithCompletion:^{
                         
-                        if (!client.connected){
+                        if (!self.client.connected){
                             
                             // todo; retry a couple of times as the system may still be in the process of releasing the server socket
                             
@@ -322,12 +323,26 @@ enum {
                                                                                               NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
                                                                                               NSLocalizedRecoverySuggestionErrorKey:@"It wasn't possible to establish a connection with PHD2",
                                                                                               }]];
+                            self.client = nil;
                         }
                         else {
-                            
-                            // set config
-                            
-                            [self performNextState:StatePHD2 error:nil];
+
+                            [self.client connectDevicesWithCompletion:^(NSError *error) {
+                                
+                                if (error){
+                                    [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                               code:8
+                                                                                           userInfo:@{
+                                                                                                      NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                                      NSLocalizedRecoverySuggestionErrorKey:@"PHD2 couldn't connect to the currently selected devices.",
+                                                                                                      }]];
+                                }
+                                else {
+                                    [self performNextState:StatePHD2 error:nil];
+                                }
+                                
+                                self.client = nil;
+                            }];
                         }
                     }];
                 };
