@@ -1815,7 +1815,7 @@ static void* kvoContext;
     // check to see if the exposure failed - if it did stop capture, tracking and guiding
     if (error){
         [self stopEverything:[NSString stringWithFormat:@"Capture error: %@",error.localizedDescription]];
-        [NSApp presentError:error];
+        [self captureCompletedWithError:error];
         return;
     }
     
@@ -2305,6 +2305,9 @@ static void* kvoContext;
     if (self.captureCompletion){
         self.captureCompletion(error);
         self.captureCompletion = nil;
+    }
+    else if (error) {
+        [NSApp presentError:error];
     }
 }
 
