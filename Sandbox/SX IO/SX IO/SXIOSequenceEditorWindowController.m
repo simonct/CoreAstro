@@ -306,10 +306,37 @@ enum {
             // Connect PHD2
             if (self.preparePHD2){
                 
+                void (^completeConnect)(NSRunningApplication*) = ^(NSRunningApplication* app){
+                    
+                    // attempt to connect and check state ?
+                    CASPHD2Client* client = [[CASPHD2Client alloc] init];
+                    [client connectWithCompletion:^{
+                        
+                        if (!client.connected){
+                            
+                            // todo; retry a couple of times as the system may still be in the process of releasing the server socket
+                            
+                            [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                                                       code:7
+                                                                                   userInfo:@{
+                                                                                              NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
+                                                                                              NSLocalizedRecoverySuggestionErrorKey:@"It wasn't possible to establish a connection with PHD2",
+                                                                                              }]];
+                        }
+                        else {
+                            
+                            // set config
+                            
+                            [self performNextState:StatePHD2 error:nil];
+                        }
+                    }];
+                };
+                
                 NSRunningApplication* app;
                 NSArray<NSRunningApplication *> *apps = [NSRunningApplication runningApplicationsWithBundleIdentifier:@"org.openphdguiding.phd2"];
                 if (apps.count > 0){
                     app = apps.firstObject;
+                    completeConnect(app);
                 }
                 else {
                     // check it's installed
@@ -342,24 +369,12 @@ enum {
                     while (!app.finishedLaunching && waitLimit-- > 0) {
                         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
                     }
-                }
-                
-                // attempt to connect and check state ?
-                CASPHD2Client* client = [[CASPHD2Client alloc] init];
-                [client connectWithCompletion:^{
                     
-                    if (!client.connected){
-                        [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
-                                                                                   code:7
-                                                                               userInfo:@{
-                                                                                          NSLocalizedDescriptionKey:NSLocalizedString(@"Preflight Failed", @"Preflight Failed"),
-                                                                                          NSLocalizedRecoverySuggestionErrorKey:@"It wasn't possible to establish a connection with PHD2",
-                                                                                          }]];
-                    }
-                    else {
-                        [self performNextState:StatePHD2 error:nil];
-                    }
-                }];
+                    // and another couple of seconds to open the socket
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        completeConnect(app);
+                    });
+                }
             }
             else {
                 [self performNextState:StatePHD2 error:nil];
@@ -1042,6 +1057,13 @@ static void* kvoContext;
 
 - (void)executeCurrentStep
 {
+    // start step log, each step logs pertinant info (e.g mount position), we log time of execution and success/error
+    
+    if ([self.currentStep isKindOfClass:[CASSequencePreflightStep class]]){
+        [self stepCompletedWithError:nil];
+        return;
+    }
+    
     if (![self.currentStep isValid]){
         [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                 code:2
