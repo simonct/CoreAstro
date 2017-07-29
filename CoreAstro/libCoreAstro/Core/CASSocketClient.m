@@ -126,6 +126,8 @@
     }
     
     [_queue removeAllObjects];
+    
+    [self disconnected];
 }
 
 - (BOOL)connected
@@ -188,6 +190,11 @@
             break;
     }
 //    NSLog(@"%@: %@",aStream,name);
+}
+
+- (void)disconnected
+{
+    // subclasses
 }
 
 - (void)enqueueRequest:(CASSocketClientRequest*)request
@@ -465,6 +472,11 @@ static const char CRLF[] = "\r\n";
             }
         }
     }
+}
+
+- (void)disconnected
+{
+    [self.delegate clientDisconnected:self];
 }
 
 @end

@@ -32,6 +32,7 @@
 @class CASJSONRPCSocketClient;
 
 @protocol CASJSONRPCSocketClientDelegate <NSObject>
+- (void)clientDisconnected:(CASJSONRPCSocketClient*)client;
 - (void)client:(CASJSONRPCSocketClient*)client receivedNotification:(NSDictionary*)message;
 @end
 
