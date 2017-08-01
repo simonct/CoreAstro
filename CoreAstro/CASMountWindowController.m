@@ -195,6 +195,15 @@ static void* kvoContext;
     [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
 }
 
+- (void)setSearchString:(NSString *)searchString
+{
+    if (searchString != _searchString){
+        _searchString = [searchString copy];
+        self.targetRA = nil;
+        self.targetDec = nil;
+    }
+}
+
 - (void)findLocationAndSlew:(BOOL)slew // todo; check the mount is in its last park position
 {
     if (!self.cameraController){
