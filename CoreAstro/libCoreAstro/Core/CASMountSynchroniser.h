@@ -14,6 +14,8 @@
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCaptureExposure:(CASCCDExposure*)exposure;
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didSolveExposure:(CASPlateSolveSolution*)solution;
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error;
+@optional
+- (void)mountSynchroniserDidSyncMount:(CASMountSynchroniser*)mountSynchroniser;
 @end
 
 @interface CASMountSynchroniser : NSObject

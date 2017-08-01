@@ -613,6 +613,12 @@ static void* kvoContext;
     self.synchroniser = nil;
 }
 
+- (void)mountSynchroniserDidSyncMount:(CASMountSynchroniser*)mountSynchroniser
+{
+    // or should this just be a state on the mount controller ?
+    self.synced = true;
+}
+
 #pragma mark - Popover delegate
 
 - (void)popoverDidClose:(NSNotification *)notification

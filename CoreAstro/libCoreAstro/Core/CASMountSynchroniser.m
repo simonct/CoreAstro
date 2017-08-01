@@ -104,6 +104,9 @@
                             }
                             else {
                                 NSLog(@"Synchronised mount to RA: %f, Dec: %f",ra,dec);
+                                if ([self.delegate respondsToSelector:@selector(mountSynchroniserDidSyncMount:)]){
+                                    [self.delegate mountSynchroniserDidSyncMount:self];
+                                }
                                 [self completeWithError:nil];
                             }
                         }];
