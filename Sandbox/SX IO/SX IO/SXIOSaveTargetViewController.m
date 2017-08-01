@@ -52,7 +52,7 @@ NSString* const kSavedImageSequenceDefaultsKey = @"SavedImageSequence";
 
 - (NSString*)keyWithCameraID:(NSString*)key
 {
-    return self.cameraController ? [key stringByAppendingString:self.cameraController.camera.uniqueID] : key;
+    return self.cameraController.camera.uniqueID ? [key stringByAppendingString:self.cameraController.camera.uniqueID] : key;
 }
 
 - (NSString*)saveImagesKey
