@@ -70,7 +70,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext){
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateMountConfiguration];
+//            [self updateMountConfiguration]; // this generally breaks the button rate
         });
     }
     else {
