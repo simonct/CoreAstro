@@ -201,6 +201,15 @@ static void* kvoContext;
         _searchString = [searchString copy];
         self.targetRA = nil;
         self.targetDec = nil;
+        if (_searchString.length){
+            CASObjectLookup* lookup = [CASObjectLookup new];
+            [lookup cachedLookupObject:_searchString withCompletion:^(CASObjectLookupResult *result) {
+                if (result.foundIt && [_searchString isEqualToString:searchString]){
+                    self.targetRA = @(result.ra);
+                    self.targetDec = @(result.dec);
+                }
+            }];
+        }
     }
 }
 
@@ -491,7 +500,7 @@ static void* kvoContext;
     [self.lookupSpinner startAnimation:nil];
     
     self.lookup = [CASObjectLookup new];
-    [self.lookup lookupObject:self.searchString withCompletion:^(BOOL success, NSString* objectName, double ra, double dec) {
+    [self.lookup lookupObject:self.searchString withCompletion:^(CASObjectLookupResult* result) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -499,14 +508,14 @@ static void* kvoContext;
             
             [self.lookupSpinner stopAnimation:nil];
             
-            if (!success){
+            if (!result.foundIt){
                 [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
             }
             else {
-                NSLog(@"Found %@",objectName);
+                NSLog(@"Found %@",result.object);
                 self.lastSearchString = self.searchString;
-                self.targetRA = @(ra);
-                self.targetDec = @(dec);
+                self.targetRA = @(result.ra);
+                self.targetDec = @(result.dec);
             }
         });
     }];

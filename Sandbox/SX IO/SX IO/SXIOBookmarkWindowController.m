@@ -228,7 +228,7 @@ static void* context;
     [self.lookupSpinner startAnimation:nil];
     
     self.lookup = [CASObjectLookup new];
-    [self.lookup lookupObject:self.lookupString withCompletion:^(BOOL success, NSString* objectName, double ra, double dec) {
+    [self.lookup lookupObject:self.lookupString withCompletion:^(CASObjectLookupResult* result) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -236,13 +236,13 @@ static void* context;
             
             [self.lookupSpinner stopAnimation:nil];
             
-            if (!success){
+            if (!result.foundIt){
                 [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
             }
             else {
-                NSLog(@"Found %@",objectName);
+                NSLog(@"Found %@",result.object);
                 //[self willChangeValueForKey:@"bookmarks"];
-                [CASBookmarks.sharedInstance addBookmark:self.lookupString ra:ra dec:dec];
+                [CASBookmarks.sharedInstance addBookmark:self.lookupString ra:result.ra dec:result.dec];
                 //[self didChangeValueForKey:@"bookmarks"];
             }
         });

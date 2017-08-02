@@ -8,8 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@interface CASObjectLookupResult : NSObject
+@property BOOL foundIt;
+@property (copy) NSString* object;
+@property double ra, dec;
+@end
+
 @interface CASObjectLookup : NSObject
 
-- (void)lookupObject:(NSString*)name withCompletion:(void(^)(BOOL success,NSString*objectName,double ra,double dec))completion;
+- (void)cachedLookupObject:(NSString*)name withCompletion:(void(^)(CASObjectLookupResult* result))completion;
+- (void)lookupObject:(NSString*)name withCompletion:(void(^)(CASObjectLookupResult* result))completion;
 
 @end

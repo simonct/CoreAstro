@@ -731,8 +731,8 @@ static NSMutableArray* gRecentExposures;
     
     [command suspendExecution];
     
-    [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
-        if (!success){
+    [[CASObjectLookup new] lookupObject:object withCompletion:^(CASObjectLookupResult* result) {
+        if (!result.foundIt){
             command.scriptErrorNumber = paramErr;
             command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
             [command resumeExecutionWithResult:nil];
@@ -742,13 +742,13 @@ static NSMutableArray* gRecentExposures;
             NSNumber* rise;
             NSNumber* set;
             NSNumber* transit;
-            NSDictionary* coords = @{@"ra":@(ra),@"dec":@(dec)};
+            NSDictionary* coords = @{@"ra":@(result.ra),@"dec":@(result.dec)};
 
             NSNumber* siteLatitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
             NSNumber* siteLongitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
             if (siteLatitude && siteLongitude){
                 CASNova* nova = [[CASNova alloc] initWithObserverLatitude:siteLatitude.doubleValue longitude:siteLongitude.doubleValue];
-                const CASRST rst = [nova rstForObjectRA:ra dec:dec jd:[CASNova today]];
+                const CASRST rst = [nova rstForObjectRA:result.ra dec:result.dec jd:[CASNova today]];
                 rise = @(rst.rise);
                 set = @(rst.set);
                 transit = @(rst.transit);

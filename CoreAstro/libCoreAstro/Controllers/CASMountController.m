@@ -442,14 +442,14 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         }
     }
     else {
-        [[CASObjectLookup new] lookupObject:object withCompletion:^(BOOL success, NSString *objectName, double ra, double dec) {
-            if (!success){
+        [[CASObjectLookup new] lookupObject:object withCompletion:^(CASObjectLookupResult* result) {
+            if (!result.foundIt){
                 command.scriptErrorNumber = paramErr;
                 command.scriptErrorString = [NSString stringWithFormat:NSLocalizedString(@"Couldn't locate the object '%@'", nil),object];
                 [command resumeExecutionWithResult:nil];
             }
             else {
-                slew(ra,dec);
+                slew(result.ra,result.dec);
             }
         }];
     }
