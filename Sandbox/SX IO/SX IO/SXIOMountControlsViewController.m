@@ -42,6 +42,26 @@
     }
 }
 
+- (id)selectedObject
+{
+    return self.selectedObjects.firstObject;
+}
+
+- (void)setSelectedObject:(id)object
+{
+    if (object){
+        self.selectedObjects = @[object];
+    }
+    else {
+        self.selectedObjects = @[];
+    }
+}
+
++ (NSSet*)keyPathsForValuesAffectingSelectedObject
+{
+    return [NSSet setWithObject:@"selectedObjects"];
+}
+
 @end
 
 @interface SXIOMountControlsNameTransformer : NSValueTransformer
@@ -90,8 +110,6 @@
 @implementation SXIOMountControlsViewController {
 }
 
-static void* kvoContext;
-
 + (void)initialize
 {
     if (self == [SXIOMountControlsViewController class]){
@@ -99,30 +117,19 @@ static void* kvoContext;
     }
 }
 
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    
-    [self.mountsArrayController addObserver:self forKeyPath:@"selectionIndex" options:0 context:&kvoContext];
-}
-
 - (void)dealloc
 {
-    [self.mountsArrayController removeObserver:self forKeyPath:@"selectionIndex" context:&kvoContext];
+    self.mountControllerHost = nil;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void)setMountControllerHost:(id<SXIOMountControllerHost>)mountControllerHost
 {
-    if (context == &kvoContext) {
-        CASMountController* mountController = (CASMountController*)self.mountsArrayController.selectedObjects.firstObject;
-        if ([mountController isKindOfClass:[CASMountController class]]){
-            self.mountControllerHost.mountController = mountController;
+    if (_mountControllerHost != mountControllerHost){
+        [self.mountsArrayController unbind:@"selectedObject"];
+        _mountControllerHost = mountControllerHost;
+        if (_mountControllerHost){
+            [self.mountsArrayController bind:@"selectedObject" toObject:_mountControllerHost withKeyPath:@"mountController" options:nil];
         }
-        else {
-            self.mountControllerHost.mountController = nil;
-        }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
@@ -133,7 +140,6 @@ static void* kvoContext;
 
 - (NSArray<CASMountController*>*)mountControllers
 {
-    // todo; need a None item
     return self.deviceManager.mountControllers;
 }
 

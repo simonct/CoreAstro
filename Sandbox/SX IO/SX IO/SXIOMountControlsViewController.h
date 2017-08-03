@@ -32,5 +32,5 @@
 @end
 
 @interface SXIOMountControlsViewController : NSViewController
-@property (weak) id<SXIOMountControllerHost> mountControllerHost;
+@property (nonatomic,weak) NSObject<SXIOMountControllerHost>* mountControllerHost;
 @end
