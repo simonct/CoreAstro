@@ -317,7 +317,7 @@ static void* kvoContext;
             [_cameraController removeObserver:self forKeyPath:@"state" context:&kvoContext];
             [_cameraController removeObserver:self forKeyPath:@"progress" context:&kvoContext];
             if (!cameraController) {
-                self.window.title = [NSString stringWithFormat:@"%@ (Disconnected)",self.cameraController.camera.deviceName];
+                self.window.title = [NSString stringWithFormat:NSLocalizedString(@"%@ (Disconnected)", @"%@ (Disconnected)"),self.cameraController.camera.deviceName];
             }
         }
         _cameraController = cameraController;
@@ -494,7 +494,7 @@ static void* kvoContext;
         if (error){
             *error = [NSError errorWithDomain:NSStringFromClass([self class])
                                          code:1
-                                     userInfo:@{NSLocalizedDescriptionKey:@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again"}];
+                                     userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"The selected filter wheel is currently moving. Please wait until it's stopped before trying again", @"The selected filter wheel is currently moving. Please wait until it's stopped before trying again")}];
         }
         return NO;
     }
@@ -503,7 +503,7 @@ static void* kvoContext;
         if (error){
             *error = [NSError errorWithDomain:NSStringFromClass([self class])
                                          code:2
-                                     userInfo:@{NSLocalizedDescriptionKey:@"You need to specify a folder to save the images into"}];
+                                     userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"You need to specify a folder to save the images into", @"You need to specify a folder to save the images into")}];
         }
         return NO;
     }
@@ -523,11 +523,11 @@ static void* kvoContext;
     // pop a sleep warning alert
     if (![[NSUserDefaults standardUserDefaults] boolForKey:kSXIOCameraWindowControllerDisplayedSleepWarningKey]){
         
-        NSAlert* alert = [NSAlert alertWithMessageText:@"System Sleep"
-                                         defaultButton:@"OK"
-                                       alternateButton:@"Cancel"
+        NSAlert* alert = [NSAlert alertWithMessageText:NSLocalizedString(@"System Sleep", @"System Sleep")
+                                         defaultButton:NSLocalizedString(@"OK", @"OK")
+                                       alternateButton:NSLocalizedString(@"Cancel", @"Cancel")
                                            otherButton:nil
-                             informativeTextWithFormat:@"%@ prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source.",[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
+                             informativeTextWithFormat:NSLocalizedString(@"%@ prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source.", @"%@ prevents your Mac from sleeping during exposures. Please ensure that your Mac has sufficient battery power to complete the session or is plugged into a power source."),[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
         alert.showsSuppressionButton = YES;
         if ([alert runModal] != NSOKButton){
             return;
@@ -935,8 +935,8 @@ static void* kvoContext;
     }
     
     if (!ra || !dec){
-        [self presentAlertWithTitle:@"Failed to Slew Mount"
-                            message:@"There is no current locked solution and the mount position is not available so the mount cannot be flipped"];
+        [self presentAlertWithTitle:NSLocalizedString(@"Failed to Slew Mount", @"Failed to Slew Mount")
+                            message:NSLocalizedString(@"There is no current locked solution and the mount position is not available so the mount cannot be flipped", @"There is no current locked solution and the mount position is not available so the mount cannot be flipped")];
     }
     else {
         
@@ -944,8 +944,8 @@ static void* kvoContext;
         // todo; 30s beeping countdown alert ?
         // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
         
-        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping mount"
-                                                        subtitle:@"Mount has passed meridian while capturing, triggering flip"];
+        [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Flipping mount", @"Flipping mount")
+                                                        subtitle:NSLocalizedString(@"Mount has passed meridian while capturing, triggering flip", @"Mount has passed meridian while capturing, triggering flip")];
         
         // captures current mount state, suspends capture and stops guiding
         [self prepareForMountSlewHandling];
@@ -985,13 +985,13 @@ static void* kvoContext;
     void (^failWithAlert)(NSString*,NSString*) = ^(NSString* title,NSString* message){
         [self completeMountSlewHandling];
         [self presentAlertWithTitle:title message:message];
-        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming capture failed" subtitle:message];
+        [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Resuming capture failed", @"Resuming capture failed") subtitle:message];
     };
 
     // final block to be called, dismiss the progress sheet and restart capturing
     void (^restartCapturing)() = ^(){
         if (self.mountState.capturingWhenSlewStarted){
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming capture" subtitle:nil];
+            [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Resuming capture", @"Resuming capture") subtitle:nil];
             [self startCapture]; // does this reset the camera controller's capture count ? - this probably resets the capture index so it'll start again
         }
         [self completeMountSlewHandling]; // call after checking the capturingWhenSlewStarted flag as this clears the mount state object
@@ -999,10 +999,10 @@ static void* kvoContext;
 
     // restart guiding, then capturing
     void (^restartGuiding)() = ^(){
-        [[CASLocalNotifier sharedInstance] postLocalNotification:@"Resuming guiding" subtitle:nil];
+        [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Resuming guiding", @"Resuming guiding") subtitle:nil];
         [self.cameraController.phd2Client guideWithCompletion:^(BOOL success) {
             if (!success){
-                failWithAlert(@"Guide Failed",@"Failed to restart guiding");
+                failWithAlert(NSLocalizedString(@"Guide Failed", @"Guide Failed"),NSLocalizedString(@"Failed to restart guiding", @"Failed to restart guiding"));
             }
             else {
                 restartCapturing();
@@ -1022,10 +1022,10 @@ static void* kvoContext;
                     break;
                 case 1:
                 {
-                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Flipping guide calibration" subtitle:nil];
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Flipping guide calibration", @"Flipping guide calibration") subtitle:nil];
                     [self.cameraController.phd2Client flipWithCompletion:^(BOOL success) {
                         if (!success){
-                            failWithAlert(@"Guide Failed",@"Failed to flip guide calibration");
+                            failWithAlert(NSLocalizedString(@"Guide Failed", @"Guide Failed"),NSLocalizedString(@"Failed to flip guide calibration", @"Failed to flip guide calibration"));
                         }
                         else {
                             restartGuiding();
@@ -1035,10 +1035,10 @@ static void* kvoContext;
                     break;
                 case 2:
                 {
-                    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Clearing guide calibration" subtitle:nil];
+                    [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Clearing guide calibration", @"Clearing guide calibration") subtitle:nil];
                     [self.cameraController.phd2Client clearWithCompletion:^(BOOL success) {
                         if (!success){
-                            failWithAlert(@"Guide Failed",@"Failed to clear guide calibration");
+                            failWithAlert(NSLocalizedString(@"Guide Failed", @"Guide Failed"),NSLocalizedString(@"Failed to clear guide calibration", @"Failed to clear guide calibration"));
                         }
                         else {
                             restartGuiding();
@@ -1067,10 +1067,10 @@ static void* kvoContext;
         [self.cameraController.phd2Client connectWithCompletion:^{
             
             if (!self.cameraController.phd2Client.connected){
-                failWithAlert(@"Guide Failed",@"Failed to reconnect to PHD2");
+                failWithAlert(NSLocalizedString(@"Guide Failed", @"Guide Failed"),NSLocalizedString(@"Failed to reconnect to PHD2", @"Failed to reconnect to PHD2"));
             }
             else {
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Connected to PHD2" subtitle:nil];
+                [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Connected to PHD2", @"Connected to PHD2") subtitle:nil];
                 restartGuidingWithFlipped(flipped);
             }
         }];
@@ -1165,7 +1165,7 @@ static void* kvoContext;
                 
                 NSLog(@"Mount slew started but being triggered externally so just cancel capture and guiding");
 
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew started" subtitle:@"External slew, cancelling capture and guiding"];
+                [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Mount slew started", @"Mount slew started") subtitle:NSLocalizedString(@"External slew, cancelling capture and guiding", @"External slew, cancelling capture and guiding")];
                 
                 if (self.mountState.capturingWhenSlewStarted){
                     [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Waiting for mount to stop...", @"Progress sheet status label")];
@@ -1191,7 +1191,7 @@ static void* kvoContext;
                 
                 NSLog(@"Mount slew ended but we didn't start it so cleanup and complete");
 
-                [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount slew ended" subtitle:@"Externally triggered slew completed, capture and guiding not restarted"];
+                [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Mount slew ended", @"Mount slew ended") subtitle:NSLocalizedString(@"Externally triggered slew completed, capture and guiding not restarted", @"Externally triggered slew completed, capture and guiding not restarted")];
                 
                 [self completeMountSlewHandling];
             }
@@ -1515,17 +1515,17 @@ static void* kvoContext;
             break;
             
         case CASCameraControllerStateWaitingForTemperature:{
-            commonShowProgressSetup(@"Waiting for °C...",NO);
+            commonShowProgressSetup(NSLocalizedString(@"Waiting for °C...", @"Waiting for °C..."),NO);
         }
             break;
             
         case CASCameraControllerStateWaitingForGuider:{
-            commonShowProgressSetup(@"Waiting for PHD2...",NO);
+            commonShowProgressSetup(NSLocalizedString(@"Waiting for PHD2...", @"Waiting for PHD2..."),NO);
         }
             break;
 
         case CASCameraControllerStateWaitingForNextExposure:{
-            commonShowProgressSetup(@"Waiting...",NO);
+            commonShowProgressSetup(NSLocalizedString(@"Waiting...", @"Waiting..."),NO);
         }
             break;
             
@@ -1533,15 +1533,15 @@ static void* kvoContext;
             commonShowProgressSetup(nil,YES);
             if (self.cameraController.progress >= 1){
                 self.progressIndicator.indeterminate = YES;
-                [self setProgressStatusTextValue:@"Downloading image..."];
+                [self setProgressStatusTextValue:NSLocalizedString(@"Downloading image...", @"Downloading image...")];
             }
             else {
                 NSString* statusText;
                 if (self.cameraController.settings.captureCount > 1 && !self.cameraController.settings.continuous){
-                    statusText = [NSString stringWithFormat:@"Capturing %ld of %ld...",self.cameraController.settings.currentCaptureIndex+1,self.cameraController.settings.captureCount];
+                    statusText = [NSString stringWithFormat:NSLocalizedString(@"Capturing %ld of %ld...", @"Capturing %ld of %ld..."),self.cameraController.settings.currentCaptureIndex+1,self.cameraController.settings.captureCount];
                 }
                 else {
-                    statusText = @"Capturing...";
+                    statusText = NSLocalizedString(@"Capturing...", @"Capturing...");
                 }
                 if (self.cameraController.settings.exposureUnits == 0){
                     const NSTimeInterval timeRemaining = self.cameraController.settings.exposureDuration - [[NSDate date] timeIntervalSinceDate:self.cameraController.exposureStart];
@@ -1555,7 +1555,7 @@ static void* kvoContext;
             break;
             
         case CASCameraControllerStateDithering:{
-            commonShowProgressSetup(@"Dithering...",NO);
+            commonShowProgressSetup(NSLocalizedString(@"Dithering...", @"Dithering..."),NO);
             self.progressIndicator.indeterminate = YES;
         }
     }
@@ -1767,7 +1767,7 @@ static void* kvoContext;
     }
     
     if (!self.saveTargetControlsViewController.saveImages || !_targetFolder){
-        [self presentAlertWithTitle:@"Save Folder" message:@"You need to specify a folder to save the images into"];
+        [self presentAlertWithTitle:NSLocalizedString(@"Save Folder", @"Save Folder") message:NSLocalizedString(@"You need to specify a folder to save the images into", @"You need to specify a folder to save the images into")];
         return;
     }
     
@@ -1815,11 +1815,11 @@ static void* kvoContext;
         return;
     }
     
-    NSString* const passedMeridianMessage = @"Mount has passed meridian so stopping tracking";
+    NSString* const passedMeridianMessage = NSLocalizedString(@"Mount has passed meridian so stopping tracking", @"Mount has passed meridian so stopping tracking");
     
     // check to see if the exposure failed - if it did stop capture, tracking and guiding
     if (error){
-        [self stopEverything:[NSString stringWithFormat:@"Capture error: %@",error.localizedDescription]];
+        [self stopEverything:[NSString stringWithFormat:NSLocalizedString(@"Capture error: %@", @"Capture error: %@"),error.localizedDescription]];
         [self captureCompletedWithError:error];
         return;
     }
@@ -1905,7 +1905,7 @@ static void* kvoContext;
         // check to see if the mount is now pointing below the local horizon
         CASDevice<CASMount>* mount = self.mountController.mount;
         if (mount && ![mount horizonCheckRA:mount.ra.doubleValue dec:mount.dec.doubleValue]) {
-            [self stopEverything:[NSString stringWithFormat:@"Mount is pointing below the local horizon"]];
+            [self stopEverything:[NSString stringWithFormat:NSLocalizedString(@"Mount is pointing below the local horizon", @"Mount is pointing below the local horizon")]];
             return;
         }
         
@@ -2002,8 +2002,8 @@ static void* kvoContext;
     if ([@"ZoomInOut" isEqualToString:itemIdentifier]){
         
         item = [self toolbarItemWithIdentifier:itemIdentifier
-                                         label:@"Zoom"
-                                   paleteLabel:@"Zoom"
+                                         label:NSLocalizedString(@"Zoom", @"Zoom")
+                                   paleteLabel:NSLocalizedString(@"Zoom", @"Zoom")
                                        toolTip:nil
                                         target:self
                                    itemContent:self.zoomControl
@@ -2014,8 +2014,8 @@ static void* kvoContext;
     if ([@"ZoomFit" isEqualToString:itemIdentifier]){
         
         item = [self toolbarItemWithIdentifier:itemIdentifier
-                                         label:@"Fit"
-                                   paleteLabel:@"Fit"
+                                         label:NSLocalizedString(@"Fit", @"Fit")
+                                   paleteLabel:NSLocalizedString(@"Fit", @"Fit")
                                        toolTip:nil
                                         target:self
                                    itemContent:self.zoomFitControl
@@ -2026,8 +2026,8 @@ static void* kvoContext;
     if ([@"Selection" isEqualToString:itemIdentifier]){
         
         item = [self toolbarItemWithIdentifier:itemIdentifier
-                                         label:@"Selection"
-                                   paleteLabel:@"Selection"
+                                         label:NSLocalizedString(@"Selection", @"Selection")
+                                   paleteLabel:NSLocalizedString(@"Selection", @"Selection")
                                        toolTip:nil
                                         target:self
                                    itemContent:self.selectionControl
@@ -2038,8 +2038,8 @@ static void* kvoContext;
     if ([@"Navigation" isEqualToString:itemIdentifier]){
         
         item = [self toolbarItemWithIdentifier:itemIdentifier
-                                         label:@"Navigation"
-                                   paleteLabel:@"Navigation"
+                                         label:NSLocalizedString(@"Navigation", @"Navigation")
+                                   paleteLabel:NSLocalizedString(@"Navigation", @"Navigation")
                                        toolTip:nil
                                         target:self
                                    itemContent:self.navigationControl
@@ -2168,10 +2168,10 @@ static void* kvoContext;
             
         case 11103: // Lock Solution
             if (self.exposureView.lockedPlateSolveSolution){
-                item.title = @"Unlock Solution"; // add locked solution exposure name ?
+                item.title = NSLocalizedString(@"Unlock Solution", @"Unlock Solution"); // add locked solution exposure name ?
             }
             else {
-                item.title = @"Lock Solution";
+                item.title = NSLocalizedString(@"Lock Solution", @"Lock Solution");
                 enabled = (self.exposureView.plateSolveSolution != nil);
             }
             break;
@@ -2268,10 +2268,10 @@ static void* kvoContext;
                 NSString* title = NSLocalizedString(@"Capture Complete", @"Notification title");
                 NSString* exposureUnits = (self.cameraController.settings.exposureUnits == 0) ? @"s" : @"ms";
                 if (self.cameraController.settings.captureCount == 1){
-                    subtitle = [NSString stringWithFormat:@"%ld exposure of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                    subtitle = [NSString stringWithFormat:NSLocalizedString(@"%ld exposure of %ld%@", @"%ld exposure of %ld%@"),(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
                 else {
-                    subtitle = [NSString stringWithFormat:@"%ld exposures of %ld%@",(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
+                    subtitle = [NSString stringWithFormat:NSLocalizedString(@"%ld exposures of %ld%@", @"%ld exposures of %ld%@"),(long)self.cameraController.settings.captureCount,self.cameraController.settings.exposureDuration,exposureUnits];
                 }
                 [[CASLocalNotifier sharedInstance] postLocalNotification:title subtitle:subtitle];
             }
@@ -2333,7 +2333,7 @@ static void* kvoContext;
 
 - (void)stopEverything:(NSString*)message
 {
-    [[CASLocalNotifier sharedInstance] postLocalNotification:@"Stopping capture, guiding and tracking"
+    [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Stopping capture, guiding and tracking", @"Stopping capture, guiding and tracking")
                                                     subtitle:message];
     
     [self.mountController stop]; // todo; option to park
@@ -2376,7 +2376,7 @@ static void* kvoContext;
             
             NSLog(@"Mount sync failed with error %@",error);
             
-            [[CASLocalNotifier sharedInstance] postLocalNotification:@"Mount pointing failed" subtitle:error.localizedDescription];
+            [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Mount pointing failed", @"Mount pointing failed") subtitle:error.localizedDescription];
             
             // get rid of the mount slewing sheet
             [self completeMountSlewHandling];
@@ -2404,7 +2404,7 @@ static void* kvoContext;
                 // pop a temporary alert to confirm the slew completed
                 [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(dismissModal) object:nil];
                 [self performSelector:@selector(dismissModal) withObject:nil afterDelay:5 inModes:@[NSRunLoopCommonModes]];
-                [self presentAlertWithTitle:@"Slew Complete" message:@"The mount successfully synced to the target"];
+                [self presentAlertWithTitle:NSLocalizedString(@"Slew Complete", @"Slew Complete") message:NSLocalizedString(@"The mount successfully synced to the target", @"The mount successfully synced to the target")];
             }
         }
         
