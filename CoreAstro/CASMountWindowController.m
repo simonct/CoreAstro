@@ -192,7 +192,11 @@ static void* kvoContext;
 
 - (void)presentAlertWithMessage:(NSString*)message
 {
-    [[NSAlert alertWithMessageText:nil defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"%@",message] runModal];
+    [[NSAlert alertWithMessageText:nil
+                     defaultButton:NSLocalizedString(@"OK", @"OK")
+                   alternateButton:nil
+                       otherButton:nil
+         informativeTextWithFormat:@"%@",message] runModal];
 }
 
 - (void)setSearchString:(NSString *)searchString
@@ -254,7 +258,7 @@ static void* kvoContext;
     [solutions enumerateObjectsUsingBlock:^(CASPlateSolveSolution * _Nonnull solution, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary* solutionDictionary = solution.solutionDictionary;
         if (solutionDictionary){
-            NSString* name = [NSString stringWithFormat:@"Current Solution (%@, %@)",solution.displayCentreRA,solution.displayCentreDec];
+            NSString* name = [NSString stringWithFormat:NSLocalizedString(@"Current Solution (%@, %@)", @"Current Solution (%@, %@)"),solution.displayCentreRA,solution.displayCentreDec];
             NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solutionDictionary};
             [bookmarks insertObject:bookmark atIndex:0];
             [bookmarks insertObject:@{CASBookmarks.nameKey:@"<separator>"} atIndex:1];
@@ -353,10 +357,10 @@ static void* kvoContext;
     [super flagsChanged:event];
     
     if ((event.modifierFlags & NSEventModifierFlagOption) != 0){
-        [self.syncButton setTitle:@"Auto"];
+        [self.syncButton setTitle:NSLocalizedString(@"Auto", @"Auto")];
     }
     else {
-        [self.syncButton setTitle:@"Sync"];
+        [self.syncButton setTitle:NSLocalizedString(@"Sync", @"Sync")];
     }
 }
 
@@ -428,11 +432,11 @@ static void* kvoContext;
         
         // check can slew without sync flag
         
-        const NSInteger response = [[NSAlert alertWithMessageText:@"Sync Mount"
-                                                    defaultButton:@"Sync"
-                                                  alternateButton:@"Slew"
-                                                      otherButton:@"Cancel"
-                                        informativeTextWithFormat:@"The mount should be synced before slewing. Press OK to sync the mount first."] runModal];
+        const NSInteger response = [[NSAlert alertWithMessageText:NSLocalizedString(@"Sync Mount", @"Sync Mount")
+                                                    defaultButton:NSLocalizedString(@"Sync", @"Sync")
+                                                  alternateButton:NSLocalizedString(@"Slew", @"Slew")
+                                                      otherButton:NSLocalizedString(@"Cancel", @"Cancel")
+                                        informativeTextWithFormat:NSLocalizedString(@"The mount should be synced before slewing. Press Sync to sync the mount first.", @"The mount should be synced before slewing. Press Sync to sync the mount first.")] runModal];
         if (response == -1){
             return;
         }
@@ -511,7 +515,11 @@ static void* kvoContext;
             [self.lookupSpinner stopAnimation:nil];
             
             if (!result.foundIt){
-                [[NSAlert alertWithMessageText:@"Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Target couldn't be found"] runModal];
+                [[NSAlert alertWithMessageText:NSLocalizedString(@"Not Found", @"Not Found")
+                                 defaultButton:NSLocalizedString(@"OK", @"OK")
+                               alternateButton:nil
+                                   otherButton:nil
+                     informativeTextWithFormat:NSLocalizedString(@"Target couldn't be found", @"Target couldn't be found")] runModal];
             }
             else {
                 NSLog(@"Found %@",result.object);
@@ -543,7 +551,11 @@ static void* kvoContext;
         [self didChangeValueForKey:@"bookmarks"];
     }
     else {
-        [[NSAlert alertWithMessageText:@"No Target Set" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"No mount target has been set via a successful lookup"] runModal];
+        [[NSAlert alertWithMessageText:NSLocalizedString(@"No Target Set", @"No Target Set")
+                         defaultButton:NSLocalizedString(@"OK", @"OK")
+                       alternateButton:nil
+                           otherButton:nil
+             informativeTextWithFormat:NSLocalizedString(@"No mount target has been set via a successful lookup", @"No mount target has been set via a successful lookup")] runModal];
     }
 }
 
@@ -586,7 +598,7 @@ static void* kvoContext;
 {
     NSViewController* configure = self.mount.configurationViewController;
     if (!configure){
-        [self presentAlertWithMessage:@"This mount doesn't provide a configuration UI"];
+        [self presentAlertWithMessage:NSLocalizedString(@"This mount doesn't provide a configuration UI", @"This mount doesn't provide a configuration UI")];
     }
     else {
         self.mountPopover = [[NSPopover alloc] init];
@@ -615,8 +627,6 @@ static void* kvoContext;
 
 - (void)mountSynchroniser:(CASMountSynchroniser*)mountSynchroniser didCompleteWithError:(NSError*)error
 {
-    NSLog(@"mountSynchroniser:didCompleteWithError: %@",error);
-    
     if (error){
         [NSApp presentError:error];
     }
@@ -626,7 +636,7 @@ static void* kvoContext;
             [self slew:nil];
         }
         else {
-            [self presentAlertWithMessage:@"The mount is now synced to the sky"];
+            [self presentAlertWithMessage:NSLocalizedString(@"The mount is now synced to the sky", @"The mount is now synced to the sky")];
         }
     }
     
@@ -694,19 +704,25 @@ static void* kvoContext;
     NSParameterAssert(completion);
     
     if (!port){
-        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"No serial port has been selected"}]);
+        completion([NSError errorWithDomain:NSStringFromClass([self class])
+                                       code:5
+                                   userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"No serial port has been selected", @"No serial port has been selected")}]);
         return;
     }
     
     if (port.isOpen){
-        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:5 userInfo:@{NSLocalizedDescriptionKey:@"Selected serial port is already open"}]);
+        completion([NSError errorWithDomain:NSStringFromClass([self class])
+                                       code:5
+                                   userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"Selected serial port is already open", @"Selected serial port is already open")}]);
         return;
     }
     
     CASMount* mount = [[CASAPGTOMount alloc] initWithSerialPort:port];
     
     if (mount.slewing){
-        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:6 userInfo:@{NSLocalizedDescriptionKey:@"Mount is slewing. Please try again when it's stopped"}]);
+        completion([NSError errorWithDomain:NSStringFromClass([self class])
+                                       code:6
+                                   userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"Mount is slewing. Please try again when it's stopped", @"Mount is slewing. Please try again when it's stopped")}]);
         return;
     }
     
@@ -780,14 +796,18 @@ static void* kvoContext;
     
     // enforce a single mount connected policy
     if (self.mountController.mount){
-        NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:8 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"The mount window is already connected to the mount '%@'",self.mountController.mount.deviceName]}];
+        NSError* error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                             code:8
+                                         userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:NSLocalizedString(@"The mount window is already connected to the mount '%@'", @"The mount window is already connected to the mount '%@'"),self.mountController.mount.deviceName]}];
         completion(error,nil);
         return;
     }
     
     ORSSerialPort* port = [[ORSSerialPortManager sharedSerialPortManager].availablePorts filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"path == %@",path]].firstObject;
     if (!port){
-        completion([NSError errorWithDomain:NSStringFromClass([self class]) code:7 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"There is no serial port with the path '%@'",path]}],nil);
+        completion([NSError errorWithDomain:NSStringFromClass([self class])
+                                       code:7
+                                   userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:NSLocalizedString(@"There is no serial port with the path '%@'", @"There is no serial port with the path '%@'"),path]}],nil);
     }
     else {
         [self connectToMountWithPort:port completion:^(NSError* error) {
@@ -810,7 +830,7 @@ static void* kvoContext;
             // this is a rather arbitrary delay to allow the park mode command to make it to the mount and have an effect
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [weakSelf disconnectButtonPressed:nil];
-                [weakSelf presentAlertWithMessage:@"The mount is now parked"]; // this blocks, want it to auto-dismiss
+                [weakSelf presentAlertWithMessage:NSLocalizedString(@"The mount is now parked", @"The mount is now parked")]; // this blocks, want it to auto-dismiss
                 completion(error);
             });
         }
