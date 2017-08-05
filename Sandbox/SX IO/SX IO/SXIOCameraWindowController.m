@@ -157,6 +157,7 @@ static void* kvoContext;
     // drop shadow
     [CASShadowView attachToView:self.exposureView.enclosingScrollView.superview edge:NSMaxXEdge];
 
+    // todo; NSStackView 10.9+
     NSView* container = [[CASControlsInnerContainerView alloc] initWithFrame:CGRectZero];
     
     // slot the camera controls into the controls container view todo; make this layout code part of the container view or its controller
@@ -1810,6 +1811,10 @@ static void* kvoContext;
 
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error
 {
+    if (self.cameraController.cancelled) {
+        return;
+    }
+    
     NSString* const passedMeridianMessage = @"Mount has passed meridian so stopping tracking";
     
     // check to see if the exposure failed - if it did stop capture, tracking and guiding
@@ -2357,6 +2362,7 @@ static void* kvoContext;
 - (void)mountSolvedSyncExposure:(NSNotification*)note
 {
     if (note.object == self.mountController){
+        self.showPlateSolution = YES;
         self.exposureView.plateSolveSolution = note.userInfo[@"solution"];
     }
 }
@@ -2380,7 +2386,7 @@ static void* kvoContext;
                 [self captureCompletedWithError:error];
             }
             
-            [self presentAlertWithTitle:@"Slew Failed" message:[error localizedDescription]];
+            [NSApp presentError:error];
         }
         else {
             
