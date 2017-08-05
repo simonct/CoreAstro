@@ -368,28 +368,30 @@ static void* kvoContext;
         [self findLocationAndSlew:NO];
     }
     else {
-        NSNumber* ra = self.mount.ra;
-        NSNumber* dec = self.mount.dec;
+        
+        // get the selected bookmark
+        NSNumber* ra = self.targetRA;
+        NSNumber* dec = self.targetDec;
         if (ra && dec){
-            const NSModalResponse response = [[NSAlert alertWithMessageText:@"Confirm Sync"
-                                                              defaultButton:@"Sync"
-                                                            alternateButton:@"Cancel"
+            const NSModalResponse response = [[NSAlert alertWithMessageText:NSLocalizedString(@"Confirm Sync", @"Confirm Sync")
+                                                              defaultButton:NSLocalizedString(@"Sync", @"Sync")
+                                                            alternateButton:NSLocalizedString(@"Cancel", @"Cancel")
                                                                 otherButton:nil
-                                                  informativeTextWithFormat:@"Confirm that you want to sync the mount to this target"] runModal];
+                                                  informativeTextWithFormat:NSLocalizedString(@"Confirm that you want to sync the mount to this target", @"Confirm that you want to sync the mount to this target")] runModal];
             if (response == NSOKButton){
                 [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
                     if (error != CASMountSlewErrorNone){
-                        [self presentAlertWithMessage:@"Failed to sync the mount"];
+                        [self presentAlertWithMessage:NSLocalizedString(@"Failed to sync the mount", @"Failed to sync the mount")];
                     }
                     else {
                         self.synced = YES;
-                        [self presentAlertWithMessage:@"The mount is now synced to the sky"];
+                        [self presentAlertWithMessage:NSLocalizedString(@"The mount is now synced to the sky", @"The mount is now synced to the sky")];
                     }
                 }];
             }
         }
         else {
-            [self presentAlertWithMessage:@"The mount is not currently reporting a positon so cannot be synced"];
+            [self presentAlertWithMessage:NSLocalizedString(@"You must select a bookmark or perform a lookup before syncing the mount", @"You must select a bookmark or perform a lookup before syncing the mount")];
         }
     }
 }
