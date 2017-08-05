@@ -74,7 +74,8 @@ static void* kvoContext;
          @"SXIONoDevicesAlertOnStartup":@YES,
          @"SXIOAutoContrastStretch":@NO,
          @"SXIOCloseCameraWindowsOnDisconnect":@YES,
-         @"SXIOSetMountLocationAndDateTimeOnConnect":@YES
+         @"SXIOSetMountLocationAndDateTimeOnConnect":@YES,
+         @"SXIOScanForDevicesOnStartup":@YES
          }];
     }
 }
@@ -127,7 +128,9 @@ static void* kvoContext;
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         
-        [[CASDeviceManager sharedManager] scan];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOScanForDevicesOnStartup"]){
+            [[CASDeviceManager sharedManager] scan];
+        }
         
         [[CASUpdateCheck sharedUpdateCheck] checkForUpdate];
         
@@ -601,6 +604,11 @@ static void* kvoContext;
             });
         }
     }];
+}
+
+- (IBAction)scanForDevices:(id)sender
+{
+    [[CASDeviceManager sharedManager] scan];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)item
