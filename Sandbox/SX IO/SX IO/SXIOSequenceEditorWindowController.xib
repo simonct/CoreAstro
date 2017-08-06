@@ -376,7 +376,7 @@
                 <outlet property="windowController" destination="-2" id="vHM-NG-dDb"/>
             </connections>
         </arrayController>
-        <arrayController objectClassName="CASCameraController" id="gdZ-KH-tco" userLabel="Cameras Controller" customClass="CASNilableArrayController">
+        <arrayController objectClassName="CASCameraController" selectsInsertedObjects="NO" avoidsEmptySelection="NO" id="gdZ-KH-tco" userLabel="Cameras Controller" customClass="CASNilableArrayController">
             <connections>
                 <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="dih-xA-Ixt"/>
             </connections>

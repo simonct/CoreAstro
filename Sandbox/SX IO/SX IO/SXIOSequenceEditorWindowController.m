@@ -82,6 +82,7 @@ static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSe
 
 enum {
     StateNone = 0,
+    StateScanned,
     StateCamera,
     StateFilterWheel,
     StateMount,
@@ -206,7 +207,21 @@ enum {
     
     switch (_state) {
             
-        case StateNone:{
+        case StateNone: {
+            
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOScanForDevicesOnStartup"]){
+                [self performNextState:StateScanned error:nil];
+            }
+            else {
+                [[CASDeviceManager sharedManager] scan];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self performNextState:StateScanned error:nil];
+                });
+            }
+        }
+            break;
+            
+        case StateScanned:{
             
             if (self.camera){
                 
@@ -860,7 +875,7 @@ static void* kvoContext;
         return [evaluatedObject isKindOfClass:[CASSequencePreflightStep class]];
     }]];
     
-    void (^start)() = ^(){
+    void (^startSequence)() = ^(){
         NSError* error;
         
         if (![self preflightSequence:&error]){
@@ -887,18 +902,20 @@ static void* kvoContext;
     };
     
     if (preflight.count == 0){
-        start();
+        startSequence();
     }
     else {
         CASSequencePreflightStep* step = preflight.firstObject; // just run the first, ignore any others
         step.windowController = self.windowController;
+        step.active = YES;
         [step preflight:^(NSError * error) {
+            step.active = NO;
             if (error){
                 completion(error);
             }
             else {
                 self.target = self.windowController.target;
-                start();
+                startSequence();
             }
         }];
     }
@@ -1083,23 +1100,22 @@ static void* kvoContext;
         [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
                                                 code:2
                                             userInfo:@{NSLocalizedFailureReasonErrorKey:NSLocalizedString(@"Encountered an invalid step", @"Encountered an invalid step")}]];
+        return;
+    }
+    
+    if ([self.currentStep conformsToProtocol:@protocol(SequenceExecutable)]){
+        id<SequenceExecutable> executable = (id<SequenceExecutable>)self.currentStep;
+        [executable execute:self.target completion:^(NSError* error) {
+            [self stepCompletedWithError:error];
+        }];
+    }
+    else if ([self.currentStep.type isEqualToString:@"exposure"]){
+        [self executeExposureStep:(CASSequenceExposureStep*)self.currentStep];
     }
     else {
-        
-        if ([self.currentStep conformsToProtocol:@protocol(SequenceExecutable)]){
-            id<SequenceExecutable> executable = (id<SequenceExecutable>)self.currentStep;
-            [executable execute:self.target completion:^(NSError* error) {
-                [self stepCompletedWithError:error];
-            }];
-        }
-        else if ([self.currentStep.type isEqualToString:@"exposure"]){
-            [self executeExposureStep:(CASSequenceExposureStep*)self.currentStep];
-        }
-        else {
-            [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
-                                                    code:3
-                                                userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:NSLocalizedString(@"Unknown sequence step %@", @"Unknown sequence step %@"),self.currentStep.type]}]];
-        }
+        [self stopWithError:[NSError errorWithDomain:NSStringFromClass([self class])
+                                                code:3
+                                            userInfo:@{NSLocalizedFailureReasonErrorKey:[NSString stringWithFormat:NSLocalizedString(@"Unknown sequence step %@", @"Unknown sequence step %@"),self.currentStep.type]}]];
     }
 }
 
@@ -1386,6 +1402,10 @@ static void* kvoContext;
         
     self.window.delegate = self;
     [self.window registerForDraggedTypes:@[(id)NSFilenamesPboardType]];
+    
+    // need to make sure these are off for the preflight step otherwise if the underlying array changes we get an exception when settnig the selected camera
+    NSAssert(self.camerasController.avoidsEmptySelection == NO, @"self.camerasController.avoidsEmptySelection != NO");
+    NSAssert(self.camerasController.selectsInsertedObjects == NO, @"self.camerasController.selectsInsertedObjects != NO");
 }
 
 - (void)dealloc
@@ -1429,6 +1449,11 @@ static void* kvoContext;
     return self.deviceManager.cameraControllers;
 }
 
++ (NSSet*)keyPathsForValuesAffectingCameraControllers
+{
+    return [NSSet setWithObject:@"deviceManager.cameraControllers"];
+}
+
 - (CASCameraController*)selectedCameraController
 {
     return self.camerasController.selectedObjects.firstObject;
@@ -1438,11 +1463,6 @@ static void* kvoContext;
 {
     self.camerasController.selectedObjects = selectedCameraController ? @[selectedCameraController] : nil;
     self.target = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:selectedCameraController];
-}
-
-+ (NSSet*)keyPathsForValuesAffectingCameraControllers
-{
-    return [NSSet setWithObject:@"deviceManager.cameraControllers"];
 }
 
 - (void)close
