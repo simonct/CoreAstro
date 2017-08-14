@@ -107,7 +107,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 
 @property (nonatomic,strong) CASImageDebayer* imageDebayer;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
-@property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm; // used for star detection - todo; probably put into image metrics
 
 @property (assign) BOOL calibrate;
 
@@ -146,7 +145,7 @@ static void* kvoContext;
     // set up some helpers
     self.imageDebayer = [CASImageDebayer imageDebayerWithIdentifier:nil];
     self.exposureView.imageProcessor = self.imageProcessor = [CASImageProcessor imageProcessorWithIdentifier:nil];
-    self.exposureView.guideAlgorithm = self.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];;
+    self.exposureView.guideAlgorithm = [CASGuideAlgorithm guideAlgorithmWithIdentifier:nil];;
 
     // set up the toolbar
     self.toolbar.displayMode = NSToolbarDisplayModeIconOnly;
@@ -246,12 +245,8 @@ static void* kvoContext;
 
 - (void)dealloc
 {
-    if (_targetFolder){
-        [_targetFolder stopAccessingSecurityScopedResource];
-    }
-    self.mountController = nil; // unobserve status
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
+    NSLog(@"[SXIOCameraWindowController dealloc]");
+    // assuming all the cleanup has been done in -close
 }
 
 - (void)close
@@ -260,15 +255,22 @@ static void* kvoContext;
     self.cameraController = nil;
     self.mountController = nil;
     
+    self.mountControlsViewController.mountControllerHost = nil; // this clears bindings which otherwise assert when this deallocs
+    
     [self.cameraControlsViewController unbind:@"exposure"];
     [self.cameraControlsViewController unbind:@"cameraController"];
     [self.saveTargetControlsViewController unbind:@"cameraController"];
     [self.filterWheelControlsViewController unbind:@"cameraController"];
+    
     [self.saveTargetControlsViewController removeObserver:self forKeyPath:@"saveFolderURL" context:&kvoContext];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
+
+    if (_targetFolder){
+        [_targetFolder stopAccessingSecurityScopedResource];
+    }
 
     [super close];
 }
@@ -332,6 +334,7 @@ static void* kvoContext;
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     if (_cameraController != cameraController){
+        
         if (_cameraController){
             [_cameraController removeObserver:self forKeyPath:@"state" context:&kvoContext];
             [_cameraController removeObserver:self forKeyPath:@"progress" context:&kvoContext];
@@ -339,7 +342,9 @@ static void* kvoContext;
                 self.window.title = [NSString stringWithFormat:NSLocalizedString(@"%@ (Disconnected)", @"%@ (Disconnected)"),self.cameraController.camera.deviceName];
             }
         }
+        
         _cameraController = cameraController;
+        
         if (_cameraController){
             [_cameraController addObserver:self forKeyPath:@"state" options:0 context:&kvoContext];
             [_cameraController addObserver:self forKeyPath:@"progress" options:0 context:&kvoContext];

@@ -43,7 +43,7 @@ typedef enum {
 @property (nonatomic,assign) CGFloat progress;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;
-@property (nonatomic,strong) id<CASExposureViewDelegate> exposureViewDelegate;
+@property (nonatomic,weak) id<CASExposureViewDelegate> exposureViewDelegate;
 @property (nonatomic,assign) CGRect selectionRect;
 @property (nonatomic,strong) CASPlateSolveSolution* plateSolveSolution;
 @property (nonatomic,strong) CASPlateSolveSolution* lockedPlateSolveSolution;
