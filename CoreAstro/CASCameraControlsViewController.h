@@ -29,6 +29,6 @@
 @class CASCameraController;
 
 @interface CASCameraControlsViewController : NSViewController
-@property (nonatomic,strong) CASCCDExposure* exposure;
-@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,strong) CASCCDExposure* exposure; // strong ?
+@property (nonatomic,weak) CASCameraController* cameraController;
 @end

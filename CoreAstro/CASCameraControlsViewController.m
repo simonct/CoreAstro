@@ -39,14 +39,15 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 @property (weak) IBOutlet NSMatrix *binningRadioButtons;
 @property (weak) IBOutlet NSTextField *subframeDisplay;
 @property (weak) IBOutlet NSPopUpButton *captureMenu;
-@property (strong) IBOutlet NSViewController *otherCountViewController;
-@property (strong) IBOutlet NSUserDefaultsController *sharedDefaultsController;
-@property (nonatomic,assign) BOOL ditherInPHD;
+@property (weak) IBOutlet NSViewController *otherCountViewController;
+@property (weak) IBOutlet NSUserDefaultsController *sharedDefaultsController;
+@property (weak) IBOutlet NSTextField *exposureCompletionLabel;
+@property (weak) IBOutlet NSTextField *phdEventLabel;
+
+@property (assign) BOOL ditherInPHD;
 @property (nonatomic,assign) NSInteger ditherInPHDAmount;
 @property (nonatomic,assign) NSUInteger captureMenuSelectedIndex;
 @property (nonatomic,assign) NSInteger otherExposureCount;
-@property (weak) IBOutlet NSTextField *exposureCompletionLabel;
-@property (weak) IBOutlet NSTextField *phdEventLabel;
 @end
 
 @implementation CASCameraControlsViewController
