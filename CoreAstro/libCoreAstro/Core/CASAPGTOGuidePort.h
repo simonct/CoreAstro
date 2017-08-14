@@ -9,7 +9,7 @@
 #import "CASMount.h"
 
 @protocol CASAPGTOGuidePortDelegate <NSObject>
-- (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
+- (BOOL)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms;
 @end
 
 @class CASAPGTOMount;

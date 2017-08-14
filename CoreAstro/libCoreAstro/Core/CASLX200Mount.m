@@ -388,7 +388,7 @@
     }];
 }
 
-- (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
+- (BOOL)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
 {
     NSString* command;
     
@@ -415,6 +415,8 @@
     NSLog(@"pulseInDirection: %@",command);
     
     [self sendCommand:command completion:nil];
+    
+    return YES;
 }
 
 - (void)setPierSide:(CASMountPierSide)pierSide

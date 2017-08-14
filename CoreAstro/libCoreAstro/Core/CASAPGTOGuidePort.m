@@ -431,22 +431,29 @@ static const char* path = "/var/tmp/org.coreastro.sxio/apgto-guider.socket";
             }
             else{
                 
+                BOOL success = false;
                 NSString* direction = [message substringWithRange:[obj rangeAtIndex:1]];
                 const NSInteger milliseconds = [[message substringWithRange:[obj rangeAtIndex:2]] integerValue];
                 if ([direction caseInsensitiveCompare:@"N"] == NSOrderedSame) {
-                    [self.delegate pulseInDirection:CASMountDirectionNorth ms:milliseconds];
+                    success = [self.delegate pulseInDirection:CASMountDirectionNorth ms:milliseconds];
                 }
                 else if ([direction caseInsensitiveCompare:@"S"] == NSOrderedSame) {
-                    [self.delegate pulseInDirection:CASMountDirectionSouth ms:milliseconds];
+                    success = [self.delegate pulseInDirection:CASMountDirectionSouth ms:milliseconds];
                 }
                 else if ([direction caseInsensitiveCompare:@"E"] == NSOrderedSame) {
-                    [self.delegate pulseInDirection:CASMountDirectionEast ms:milliseconds];
+                    success = [self.delegate pulseInDirection:CASMountDirectionEast ms:milliseconds];
                 }
                 else if ([direction caseInsensitiveCompare:@"W"] == NSOrderedSame) {
-                    [self.delegate pulseInDirection:CASMountDirectionWest ms:milliseconds];
+                    success = [self.delegate pulseInDirection:CASMountDirectionWest ms:milliseconds];
                 }
                 else {
                     NSLog(@"CASAPGTOGuidePort: Unrecognised guide direction: %@",direction);
+                }
+                if (success){
+                    [self writeMessage:@"ok"];
+                }
+                else {
+                    [self writeMessage:@"error"];
                 }
             }
         }];
