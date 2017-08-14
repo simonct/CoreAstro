@@ -29,7 +29,7 @@
 @class CASCameraController;
 
 @interface SXIOSaveTargetViewController : NSViewController
-@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic) BOOL saveImages;
 @property (nonatomic,copy) NSURL* saveFolderURL;
 @property (nonatomic,copy) NSData* saveFolderBookmark;
