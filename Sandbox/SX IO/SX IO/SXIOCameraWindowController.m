@@ -254,6 +254,25 @@ static void* kvoContext;
     [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
 }
 
+- (void)close
+{
+    self.cameraController.sink = nil;
+    self.cameraController = nil;
+    self.mountController = nil;
+    
+    [self.cameraControlsViewController unbind:@"exposure"];
+    [self.cameraControlsViewController unbind:@"cameraController"];
+    [self.saveTargetControlsViewController unbind:@"cameraController"];
+    [self.filterWheelControlsViewController unbind:@"cameraController"];
+    [self.saveTargetControlsViewController removeObserver:self forKeyPath:@"saveFolderURL" context:&kvoContext];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [[CASDeviceManager sharedManager] removeObserver:self forKeyPath:@"mountControllers" context:&kvoContext];
+
+    [super close];
+}
+
 - (void)hideWindow:sender
 {
     if (self.cameraController){
