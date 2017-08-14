@@ -18,7 +18,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="381" height="446"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="2">
                 <rect key="frame" x="0.0" y="0.0" width="381" height="446"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -352,7 +352,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="-38.5" y="143"/>
+            <point key="canvasLocation" x="27" y="144"/>
         </window>
         <userDefaultsController id="wka-tB-REe"/>
         <userDefaultsController representsSharedInstance="YES" id="idZ-j4-bsR"/>
