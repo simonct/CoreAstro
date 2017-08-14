@@ -18,7 +18,6 @@
 #import "SXIOCameraWindowController.h"
 #endif
 #import <CoreAstro/CoreAstro.h>
-#import <CoreAstro/ORSSerialPortManager.h>
 
 // todo; AP-specific options:
 // Force recal, sidereal diff to use

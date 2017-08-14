@@ -72,3 +72,5 @@
 #import <CoreAstro/CASNova.h>
 #import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/CASCaptureCoordinator.h>
+#import <CoreAstro/ORSSerialPortManager.h>
+
