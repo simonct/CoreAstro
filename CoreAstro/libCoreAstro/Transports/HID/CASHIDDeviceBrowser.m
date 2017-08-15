@@ -28,7 +28,6 @@
 #import "HID_Utilities_External.h"
 
 @interface CASHIDDeviceBrowser ()
-@property (nonatomic,assign) BOOL scanned;
 - (void)deviceAdded:(IOHIDDeviceRef)device;
 - (void)deviceRemoved:(IOHIDDeviceRef)device;
 @end
@@ -146,11 +145,7 @@ static void CASIOHIDDeviceMatchedCallback (void *                  context,
 }
 
 - (void)scan {
-    
-    if (!self.scanned){
-        self.scanned = YES;
-        [self scanForDevices];
-    }
+    [self scanForDevices];
 }
 
 - (CASIOTransport*)createTransportWithDevice:(CASDevice*)device {

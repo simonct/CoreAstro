@@ -34,7 +34,6 @@
 #import "BusProberSharedFunctions.h"
 
 @interface CASUSBDeviceBrowser ()
-@property (nonatomic,assign) BOOL scanned;
 @property (nonatomic,assign) IONotificationPortRef notifyPort;
 @property (nonatomic,assign) IONotificationPortRef terminatePort;
 - (io_iterator_t)registerForNotifications;
@@ -42,7 +41,7 @@
 
 @implementation CASUSBDeviceBrowser
 
-@synthesize notifyPort, terminatePort, deviceAdded, deviceRemoved, scanned;
+@synthesize notifyPort, terminatePort, deviceAdded, deviceRemoved;
 
 static void DeviceAdded(void *refCon, io_iterator_t iterator) {
         
@@ -179,16 +178,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
 }
 
 - (void)scan {
-    
-    if (!self.scanned){
-        self.scanned = YES;
-        [self scanForDevices];   
-    }
-    
-    io_iterator_t iterator = [self registerForNotifications];
-    if (iterator){
-        DeviceAdded((__bridge void*)self,iterator);
-    }
+    [self scanForDevices];
 }
 
 - (CASIOTransport*)createTransportWithDevice:(CASDevice*)device {

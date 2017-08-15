@@ -143,10 +143,9 @@ static void* kvoContext;
 }
 
 - (void)scan {
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
 
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
         // enumerate the installed transport browsers; todo - can this be expressed as a form of external SDK ?
         [self.pluginManager.browsers enumerateObjectsUsingBlock:^(id<CASDeviceBrowser> browser, NSUInteger idx, BOOL * _Nonnull stop) {
             
