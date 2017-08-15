@@ -26,14 +26,22 @@
 #import <Foundation/Foundation.h>
 
 @class CASMountController;
+@class CASCameraController;
+@class CASFilterWheelController;
+@class CASGuiderController;
 
 @interface CASDeviceManager : NSObject
 
 @property (nonatomic,readonly) NSArray* devices;
 
 @property (nonatomic,readonly) NSArray* cameraControllers;
+- (void)removeCameraController:(CASCameraController*)controller;
+
 @property (nonatomic,readonly) NSArray* guiderControllers;
+- (void)removeGuiderController:(CASGuiderController*)controller;
+
 @property (nonatomic,readonly) NSArray* filterWheelControllers;
+- (void)removeFilterWheelController:(CASFilterWheelController*)controller;
 
 // mounts are almost always added manually
 - (void)addMountController:(CASMountController*)controller;

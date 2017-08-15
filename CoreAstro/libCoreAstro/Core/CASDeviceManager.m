@@ -48,6 +48,8 @@
     NSMutableArray* _mountControllers;
 }
 
+static void* kvoContext;
+
 + (CASDeviceManager*)sharedManager {
     static CASDeviceManager* manager = nil;
     static dispatch_once_t onceToken;
@@ -79,6 +81,38 @@
     return [_cameraControllers copy]; // ensure we return an immutable copy to clients
 }
 
+- (void)removeCameraController:(CASCameraController*)controller {
+    if (controller){
+        id device = controller.device;
+        [[self mutableCameraControllers] removeObject:controller];
+        if (device){
+            [[self mutableDevices] removeObject:device];
+        }
+    }
+}
+
+- (void)removeFilterWheelController:(CASFilterWheelController*)controller
+{
+    if (controller){
+        id device = controller.device;
+        [[self mutableFilterWheelControllers] removeObject:controller];
+        if (device){
+            [[self mutableDevices] removeObject:device];
+        }
+    }
+}
+
+- (void)removeGuiderController:(CASGuiderController*)controller
+{
+    if (controller){
+        id device = controller.device;
+        [[self mutableGuiderControllers] removeObject:controller];
+        if (device){
+            [[self mutableDevices] removeObject:device];
+        }
+    }
+}
+
 - (NSArray*) guiderControllers {
     return [_guiderControllers copy]; // ensure we return an immutable copy to clients
 }
@@ -101,10 +135,9 @@
 }
 
 - (NSMutableArray*)createDevices {
-    
     if (!_devices){
         _devices = [[NSMutableArray alloc] initWithCapacity:10];
-        [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:nil];
+        [self addObserver:self forKeyPath:@"devices" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionOld context:&kvoContext];
     }
     return _devices;
 }
@@ -146,7 +179,7 @@
                                     }
                                     else {
                                         NSLog(@"Added device %@@%@",device.deviceName,device.deviceLocation);
-                                        [[self mutableArrayValueForKey:@"devices"] addObject:device];
+                                        [[self mutableDevices] addObject:device];
                                     }
                                 }
                                 break;
@@ -162,7 +195,7 @@
                     CASDevice* device = [self deviceWithPath:path];
                     if (device){
                         NSLog(@"Removed device %@",device);
-                        [[self mutableArrayValueForKey:@"devices"] removeObject:device];
+                        [[self mutableDevices] removeObject:device];
                     }
                     
                     return (CASDevice*)nil;
@@ -193,7 +226,7 @@
                         
                         // add the device to the array
                         NSLog(@"SDK %@ added device %@@%@",NSStringFromClass([weakSDK class]),device.deviceName,device.deviceLocation);
-                        [[self mutableArrayValueForKey:@"devices"] addObject:device];
+                        [[self mutableDevices] addObject:device];
                     }
                 };
                 
@@ -202,7 +235,7 @@
                     
                     if (device && [self deviceWithPath:path]){
                         NSLog(@"SDK %@ removed device %@",NSStringFromClass([weakSDK class]),device);
-                        [[self mutableArrayValueForKey:@"devices"] removeObject:device];
+                        [[self mutableDevices] removeObject:device];
                     }
                 };
                 
@@ -253,6 +286,11 @@
         }
     }
     return nil;
+}
+
+- (NSMutableArray*)mutableDevices
+{
+    return [self mutableArrayValueForKey:@"devices"];
 }
 
 - (NSMutableArray*)mutableCameraControllers
@@ -349,7 +387,6 @@
     }
 }
 
-// todo; most of this should probably be in the device manager
 - (void)processDevices:(NSArray*)devices
 {
     for (CASDevice* device in devices){
@@ -361,7 +398,7 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == nil) {
+    if (context == &kvoContext) {
         
         switch ([[change objectForKey:NSKeyValueChangeKindKey] integerValue]) {
                 
@@ -423,7 +460,11 @@
 - (void)removeMountController:(CASMountController*)controller
 {
     if (controller){
+        id device = controller.device;
         [[self mutableMountControllers] removeObject:controller];
+        if (device){
+            [[self mutableDevices] removeObject:device];
+        }
     }
 }
 
