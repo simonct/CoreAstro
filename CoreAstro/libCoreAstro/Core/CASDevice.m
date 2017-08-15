@@ -101,6 +101,7 @@
 }
 
 - (void)disconnect {
+    [self.transport disconnect];
     self.transport = nil;
 }
 
