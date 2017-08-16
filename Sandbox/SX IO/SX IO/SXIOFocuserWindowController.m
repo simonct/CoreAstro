@@ -93,7 +93,7 @@
     [super windowDidLoad];
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] addWindowToMenus:self];
 #endif
 
     NSButton* close = [self.window standardWindowButton:NSWindowCloseButton];
@@ -141,7 +141,7 @@
 - (void)closeWindow:sender
 {
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
     if (!self.cameraController.sink){

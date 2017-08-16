@@ -1419,7 +1419,7 @@ static void* kvoContext;
     [super showWindow:sender];
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self]; // todo; check already in it ?
+    [[SXIOAppDelegate sharedInstance] addWindowToMenus:self]; // todo; check already in it ?
 #endif
 }
 
@@ -1433,7 +1433,7 @@ static void* kvoContext;
     }
 
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
     [self close];
@@ -1677,7 +1677,7 @@ static void* kvoContext;
     }
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] updateWindowInWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] updateWindowInMenus:self];
 #endif
 }
 

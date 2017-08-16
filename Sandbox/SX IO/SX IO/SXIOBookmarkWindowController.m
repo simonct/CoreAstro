@@ -107,14 +107,14 @@ static void* context;
     [super showWindow:sender];
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self]; // todo; check already in it ?
+    [[SXIOAppDelegate sharedInstance] addWindowToMenus:self]; // todo; check already in it ?
 #endif
 }
 
 - (void)closeWindow:sender
 {
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
     [self ok:nil];

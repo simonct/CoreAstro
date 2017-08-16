@@ -144,7 +144,7 @@ static void* kvoContext;
 {
     if (context == &kvoContext) {
 #if defined(SXIO) || defined(CCDIO)
-        [[SXIOAppDelegate sharedInstance] updateWindowInWindowMenu:self];
+        [[SXIOAppDelegate sharedInstance] updateWindowInMenus:self];
 #endif
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -156,7 +156,7 @@ static void* kvoContext;
     [super showWindow:sender];
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] addWindowToWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] addWindowToMenus:self];
 #endif
 }
 
@@ -174,7 +174,7 @@ static void* kvoContext;
     }
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
     [self close];
@@ -186,6 +186,7 @@ static void* kvoContext;
     [self.mountController.mount disconnect];
     
     [[CASDeviceManager sharedManager] removeMountController:self.mountController];
+    
     self.mountController = nil;
 }
 
@@ -582,7 +583,7 @@ static void* kvoContext;
     }
     
 #if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromWindowMenu:self];
+    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
     [self cleanup];
