@@ -56,6 +56,7 @@
 @property (strong) SXIOImageAdjustmentWindowController *imageAdjustment;
 @property (strong) SXIOExportMovieWindowController *movieExportWindowController;
 @property (strong) SXIOPreferencesWindowController *preferencesWindowController;
+@property (weak) IBOutlet NSMenuItem *disconnectMenuItem;
 @end
 
 @implementation SXIOAppDelegate
@@ -163,6 +164,8 @@ static void* kvoContext;
     [NSApplication sharedApplication].windowsMenu = nil;
 
     [[NSApp mainMenu] insertItem:windowItem atIndex:[NSApp mainMenu].numberOfItems-1];
+    
+    self.disconnectMenuItem.enabled = NO;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -220,7 +223,7 @@ static void* kvoContext;
 #if DEBUG
             SXIOCameraWindowController* cameraWindow = [[SXIOCameraWindowController alloc] initWithWindowNibName:@"SXIOCameraWindowController"];
             [cameraWindow.window makeKeyAndOrderFront:nil];
-            [self addWindowToWindowMenu:cameraWindow];
+            [self addWindowToMenus:cameraWindow];
             result = [cameraWindow openExposureAtPath:filename];
 #endif
         }
@@ -313,7 +316,7 @@ static void* kvoContext;
                             [self.noDevicesHUD orderOut:nil];
                             [windowController setShouldCascadeWindows:YES];
                             [windowController.window makeKeyAndOrderFront:nil];
-                            [self addWindowToWindowMenu:windowController];
+                            [self addWindowToMenus:windowController];
                         }
                     }
                 }];
@@ -341,7 +344,7 @@ static void* kvoContext;
                         
                         if (closeWindow){
                             [window close];
-                            [self removeWindowFromWindowMenu:window];
+                            [self removeWindowFromMenus:window];
                         }
                     }
                 }];
@@ -364,7 +367,15 @@ static void* kvoContext;
     }
 }
 
-- (void)addWindowToWindowMenu:(NSWindowController*)windowController
+- (void)disconnectDevice:(NSMenuItem*)sender
+{
+    NSWindowController* window = sender.representedObject;
+    if ([window respondsToSelector:@selector(disconnect)]){
+        [(id)window disconnect];
+    }
+}
+
+- (void)addWindowToMenus:(NSWindowController*)windowController
 {
     NSParameterAssert(windowController);
     
@@ -384,9 +395,18 @@ static void* kvoContext;
     windowControllerItem.target = self;
     windowControllerItem.representedObject = windowController;
     [self.windowMenu addItem:windowControllerItem];
+    
+    // hook up the item to the -disconnectDevice: action
+    if ([windowController respondsToSelector:@selector(disconnect)]){
+        NSMenuItem* disconnectMenuItem = [[NSMenuItem alloc] initWithTitle:windowController.window.title action:@selector(disconnectDevice:) keyEquivalent:@""];
+        disconnectMenuItem.target = self;
+        disconnectMenuItem.representedObject = windowController;
+        [self.disconnectMenuItem.submenu addItem:disconnectMenuItem];
+        self.disconnectMenuItem.enabled = YES;
+    }
 }
 
-- (void)removeWindowFromWindowMenu:(NSWindowController*)windowController
+- (void)removeWindowFromMenus:(NSWindowController*)windowController
 {
     NSParameterAssert(windowController);
 
@@ -401,6 +421,16 @@ static void* kvoContext;
         }
     }
     
+    // remove from Disconnect menu
+    for (NSMenuItem* item in [self.disconnectMenuItem.submenu.itemArray copy]){
+        if (item.representedObject == windowController){
+            [self.disconnectMenuItem.submenu removeItem:item];
+        }
+    }
+    if (self.disconnectMenuItem.submenu.itemArray.count == 0){
+        self.disconnectMenuItem.enabled = NO;
+    }
+
     [_windows removeObject:windowController];
 
     // remove trailing separator
@@ -409,7 +439,7 @@ static void* kvoContext;
     }
 }
 
-- (void)updateWindowInWindowMenu:(NSWindowController*)windowController
+- (void)updateWindowInMenus:(NSWindowController*)windowController
 {
     for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
         if (item.representedObject == windowController){
@@ -629,7 +659,12 @@ static void* kvoContext;
         default:{
             NSWindowController* windowController = item.representedObject;
             if ([windowController isKindOfClass:[NSWindowController class]]){
-                item.state = (windowController.window == [NSApp mainWindow]);
+                if (item.parentItem == self.disconnectMenuItem){
+                    item.state = NSOffState;
+                }
+                else {
+                    item.state = (windowController.window == [NSApp mainWindow]);
+                }
             }
         }
             break;

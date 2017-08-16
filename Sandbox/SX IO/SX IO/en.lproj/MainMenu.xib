@@ -740,6 +740,10 @@
                                     <action selector="scanForDevices:" target="-1" id="QgV-2y-QZb"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Disconnct" id="1by-3x-XRY">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Disconnct" id="XIU-2X-97b"/>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="TMV-B0-99y"/>
                             <menuItem title="Invert Image" tag="10001" keyEquivalent="i" id="546">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES"/>
@@ -886,6 +890,7 @@
         </menu>
         <customObject id="494" customClass="SXIOAppDelegate">
             <connections>
+                <outlet property="disconnectMenuItem" destination="1by-3x-XRY" id="gc6-1W-GeI"/>
                 <outlet property="noDevicesHUD" destination="813" id="826"/>
             </connections>
         </customObject>
@@ -894,7 +899,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="283" y="305" width="472" height="91"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="814">
                 <rect key="frame" x="0.0" y="0.0" width="472" height="91"/>
                 <autoresizingMask key="autoresizingMask"/>

@@ -12,9 +12,9 @@
 
 @interface SXIOAppDelegate : NSObject <NSApplicationDelegate>
 
-- (void)addWindowToWindowMenu:(NSWindowController*)windowController;
-- (void)removeWindowFromWindowMenu:(NSWindowController*)windowController;
-- (void)updateWindowInWindowMenu:(NSWindowController*)windowController;
+- (void)addWindowToMenus:(NSWindowController*)windowController;
+- (void)removeWindowFromMenus:(NSWindowController*)windowController;
+- (void)updateWindowInMenus:(NSWindowController*)windowController;
 
 - (NSWindowController*)findDeviceWindowController:(CASDeviceController*)controller;
 
