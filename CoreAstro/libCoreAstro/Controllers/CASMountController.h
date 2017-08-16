@@ -15,6 +15,7 @@
 @interface CASMountController : CASDeviceController
 
 - (instancetype)initWithMount:(CASMount*)mount;
+- (void)disconnect;
 
 @property BOOL usePlateSolving;
 @property (nonatomic,readonly) BOOL busy;

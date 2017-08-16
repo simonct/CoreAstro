@@ -123,7 +123,7 @@ static void* kvoContext;
 - (void)disconnect
 {
     [self.camera disconnect];
-    self.camera = nil;
+    [[CASDeviceManager sharedManager] removeCameraController:self];
 }
 
 - (void)setState:(CASCameraControllerState)state

@@ -24,6 +24,7 @@
 //
 
 #import "CASFilterWheelController.h"
+#import "CASDeviceManager.h"
 #import "CASClassDefaults.h"
 
 NSString* const kCASFilterWheelControllerSelectedFilterNotification = @"kCASFilterWheelControllerSelectedFilterNotification";
@@ -67,7 +68,8 @@ NSString* const kCASFilterWheelControllerSelectedFilterNotification = @"kCASFilt
 
 - (void)disconnect
 {
-    self.filterWheel = nil;
+    [self.filterWheel disconnect];
+    [[CASDeviceManager sharedManager] removeFilterWheelController:self];
 }
 
 - (BOOL) moving

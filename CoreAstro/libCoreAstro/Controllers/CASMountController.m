@@ -46,6 +46,12 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     NSLog(@"[CASMountController dealloc]");
 }
 
+- (void)disconnect
+{
+    [self.mount disconnect];
+    [[CASDeviceManager sharedManager] removeMountController:self];
+}
+
 - (CASDevice*) device
 {
     return self.mount;
