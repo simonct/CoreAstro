@@ -160,6 +160,11 @@ static void* kvoContext;
 #endif
 }
 
+- (void)disconnect // called from the app delegate
+{
+    [self.mountController disconnect]; // this results in -close being called when the device is removed
+}
+
 - (void)hideWindow:sender
 {
     [self close];
@@ -177,6 +182,8 @@ static void* kvoContext;
     [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
 #endif
     
+    [self cleanup];
+
     [self close];
 }
 
@@ -576,21 +583,7 @@ static void* kvoContext;
 
 - (IBAction)disconnectButtonPressed:(id)sender
 {
-    if (self.mountController.synchronising){
-        // need a way of cancelling a solve
-        NSLog(@"Currently solving...");
-        return;
-    }
-    
-#if defined(SXIO) || defined(CCDIO)
-    [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
-#endif
-    
-    [self cleanup];
-    
-    // are bindings hanging onto the mount ?
-    
-    [self close];
+    [self closeWindow:sender];
 }
 
 // todo; we should really embed the config UI in the main window in the Mount section

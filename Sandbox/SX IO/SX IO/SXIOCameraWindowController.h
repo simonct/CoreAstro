@@ -17,4 +17,5 @@
 @property (nonatomic,weak) CASMountController* mountController;
 @property (nonatomic,copy,readonly) NSString* cameraDeviceID;
 - (BOOL)openExposureAtPath:(NSString*)path;
+- (void)disconnect; // todo; need a device window controller base class
 @end

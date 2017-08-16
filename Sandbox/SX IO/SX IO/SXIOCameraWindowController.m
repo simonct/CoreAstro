@@ -253,6 +253,7 @@ static void* kvoContext;
 {
     self.cameraController.sink = nil;
     self.cameraController = nil;
+    
     self.mountController = nil;
     
     self.mountControlsViewController.mountControllerHost = nil; // this clears bindings which otherwise assert when this deallocs
@@ -283,6 +284,11 @@ static void* kvoContext;
     else {
         [self close];
     }
+}
+
+- (void)disconnect // called from the app delegate
+{
+    [self.cameraController disconnect]; // this results in -close being called when the device is removed
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -2223,7 +2229,7 @@ static void* kvoContext;
         case 11109: // Edit Bookmarks...
             enabled = YES;
             break;
-}
+    }
     return enabled;
 }
 

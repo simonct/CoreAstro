@@ -36,9 +36,21 @@ static void* kvoContext;
     }
 }
 
+- (void)close
+{
+    self.filterWheelController = nil;
+    
+    [super close];
+}
+
 - (void)hideWindow:sender
 {
     [self.window orderOut:nil];
+}
+
+- (void)disconnect // called from the app delegate
+{
+    [self.filterWheelController disconnect]; // this results in -close being called when the device is removed
 }
 
 - (void)setFilterWheelController:(CASFilterWheelController *)filterWheelController

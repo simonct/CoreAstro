@@ -10,4 +10,5 @@
 
 @interface SXIOFilterWindowController : NSWindowController
 @property (nonatomic,strong) CASFilterWheelController* filterWheelController;
+- (void)disconnect;
 @end

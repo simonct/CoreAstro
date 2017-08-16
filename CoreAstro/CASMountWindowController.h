@@ -16,6 +16,7 @@
 @property (nonatomic,readonly) double separation;
 @property (nonatomic,strong) CASCameraController* cameraController;
 @property (nonatomic,strong,readonly) CASMountController* mountController;
+- (void)disconnect; // todo; need a device window controller base class
 @end
 
 @interface CASMountWindowController (Global)
