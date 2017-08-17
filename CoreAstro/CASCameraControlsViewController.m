@@ -78,7 +78,10 @@ static void* kvoContext;
 
     self.representedObject = cameraController;
     
-    if (self.cameraController){
+    if (!self.cameraController){
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateCompletionLabel) object:nil];
+    }
+    else{
         [self.cameraController addObserver:self forKeyPath:@"settings.subframe" options:0 context:&kvoContext];
         [self.cameraController addObserver:self forKeyPath:@"settings.captureCount" options:0 context:&kvoContext];
         [self.cameraController addObserver:self forKeyPath:@"settings.exposureDuration" options:0 context:&kvoContext];
@@ -126,11 +129,13 @@ static void* kvoContext;
 - (void)updateCompletionLabel
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:_cmd object:nil];
+    
     CASExposureSettings* settings = self.cameraController.settings;
     if (settings.exposureUnits != 0){
         self.exposureCompletionLabel.stringValue = @"";
     }
     else if (!self.cameraController.capturing) {
+        
         const double duration = (settings.captureCount * settings.exposureDuration) + (settings.exposureInterval * (settings.captureCount - 1));
         NSDate* completionDate = [NSDate dateWithTimeIntervalSinceNow:duration];
         NSDateFormatter* formatter = [NSDateFormatter new];
@@ -138,6 +143,7 @@ static void* kvoContext;
         formatter.timeStyle = NSDateFormatterShortStyle;
         formatter.doesRelativeDateFormatting = YES;
         self.exposureCompletionLabel.stringValue = [NSString stringWithFormat:@"ends ~ %@",[formatter stringFromDate:completionDate]];
+        
         [self performSelector:_cmd withObject:nil afterDelay:60]; // actually want to try an update on the minute...
     }
 }
