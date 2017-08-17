@@ -14,14 +14,13 @@
 
 @interface CASMountWindowController : NSWindowController
 @property (nonatomic,readonly) double separation;
-@property (nonatomic,strong) CASCameraController* cameraController;
-@property (nonatomic,strong,readonly) CASMountController* mountController;
+@property (nonatomic,weak,readonly) CASMountController* mountController;
 - (void)disconnect; // todo; need a device window controller base class
 @end
 
 @interface CASMountWindowController (Global)
-- (void)connectToMount:(void(^)())completion;
-- (void)connectToMountAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion;
+- (void)connect:(void(^)())completion;
+- (void)connectAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion;
 - (void)parkWithCompletion:(void(^)(NSError*))completion;
 + (instancetype)sharedMountWindowController;
 @end

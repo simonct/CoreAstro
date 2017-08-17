@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
@@ -22,7 +22,7 @@
         <userDefaultsController representsSharedInstance="YES" id="83E-JI-oE9"/>
         <arrayController id="Ps5-ee-7o7" userLabel="Cameras Array Controller">
             <connections>
-                <binding destination="-2" name="contentArray" keyPath="cameraControllers" id="N8z-Ha-l7V"/>
+                <binding destination="-3" name="contentArray" keyPath="cameraControllers" id="Gla-6Z-3qJ"/>
             </connections>
         </arrayController>
         <window title="More" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="9Jl-UB-2vZ" customClass="NSPanel">
@@ -867,14 +867,23 @@ Gw
                                         <menu key="menu" id="LY0-B8-4xg"/>
                                     </popUpButtonCell>
                                     <connections>
-                                        <binding destination="Ps5-ee-7o7" name="content" keyPath="arrangedObjects" id="Tm3-Se-50x"/>
-                                        <binding destination="Ps5-ee-7o7" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="Tm3-Se-50x" id="BnO-iP-UrG"/>
-                                        <binding destination="-2" name="selectedObject" keyPath="cameraController" previousBinding="BnO-iP-UrG" id="Jzu-qw-rtj"/>
+                                        <binding destination="Ps5-ee-7o7" name="content" keyPath="arrangedObjects" id="k43-Lc-Fhq">
+                                            <dictionary key="options">
+                                                <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="Ps5-ee-7o7" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="k43-Lc-Fhq" id="ubs-2p-sIn">
+                                            <dictionary key="options">
+                                                <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                                <string key="NSNullPlaceholder">None</string>
+                                            </dictionary>
+                                        </binding>
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="zqI-f2-41h">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
                                         </binding>
+                                        <binding destination="-2" name="selectedObject" keyPath="mountController.cameraController" previousBinding="ubs-2p-sIn" id="Op8-hM-xAw"/>
                                         <binding destination="-2" name="enabled2" keyPath="mountController.usePlateSolving" previousBinding="zqI-f2-41h" id="ne7-U6-Ua4">
                                             <dictionary key="options">
                                                 <integer key="NSMultipleValuesPlaceholder" value="-1"/>

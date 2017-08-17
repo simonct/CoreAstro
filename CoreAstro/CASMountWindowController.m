@@ -50,10 +50,9 @@
 
 @interface CASMountWindowController ()<NSWindowDelegate,NSPopoverDelegate,CASMountMountSynchroniserDelegate>
 @property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
-@property (nonatomic,strong) CASMountController* mountController;
+@property (nonatomic,weak) CASMountController* mountController;
 @property (nonatomic,copy) NSString* searchString;
 @property (nonatomic,copy) NSString* lastSearchString;
-@property (nonatomic,readonly) NSArray* cameraControllers;
 @property (strong) IBOutlet NSArrayController *camerasArrayController;
 @property (strong) IBOutlet NSPanel *morePanel;
 @property (strong) IBOutlet NSWindow *mountConnectWindow;
@@ -102,8 +101,6 @@
 @implementation CASMountWindowController
 
 static void* kvoContext;
-
-@synthesize cameraControllers = _cameraControllers;
 
 + (void)initialize
 {
@@ -162,7 +159,7 @@ static void* kvoContext;
 
 - (void)disconnect // called from the app delegate
 {
-    [self.mountController disconnect]; // this results in -close being called when the device is removed
+    [self disconnectButtonPressed:nil]; // this results in -close being called when the device is removed
 }
 
 - (void)hideWindow:sender
@@ -189,10 +186,9 @@ static void* kvoContext;
 
 - (void)cleanup
 {
-    // check this is being called...
-    [self.mountController.mount disconnect];
+    CASMountController* mountController = self.mountController;
     
-    [[CASDeviceManager sharedManager] removeMountController:self.mountController];
+    [mountController disconnect];
     
     self.mountController = nil;
 }
@@ -226,15 +222,14 @@ static void* kvoContext;
 
 - (void)findLocationAndSlew:(BOOL)slew // todo; check the mount is in its last park position
 {
-    if (!self.cameraController){
+    if (!self.mountController.cameraController){
         NSLog(@"Camera controller must be set before finding location");
         return;
     }
     self.slewAfterFindLocation = slew;
     self.synchroniser = [[CASMountSynchroniser alloc] init];
-    self.synchroniser.mount = self.mount;
+    self.synchroniser.mountController = self.mountController;
     self.synchroniser.delegate = self;
-    self.synchroniser.cameraController = self.cameraController;
     [self.synchroniser findLocation];
 }
 
@@ -242,7 +237,7 @@ static void* kvoContext;
 
 - (id)mount
 {
-    return self.mountController.mount;
+    return self.mountController.mount; // only called from bindings
 }
 
 + (NSSet*)keyPathsForValuesAffectingMount
@@ -325,12 +320,7 @@ static void* kvoContext;
 
 #pragma mark - Mount/Camera
 
-- (NSArray*)cameraControllers
-{
-    return [CASDeviceManager sharedManager].cameraControllers;
-}
-
-- (CASCameraController*)cameraController
+- (CASCameraController*)cameraController // this should only be used by bindings
 {
     return self.mountController.cameraController;
 }
@@ -338,11 +328,6 @@ static void* kvoContext;
 + (NSSet*)keyPathsForValuesAffectingCameraController
 {
     return [NSSet setWithObject:@"mountController.cameraController"];
-}
-
-- (void)setCameraController:(CASCameraController *)cameraController
-{
-    self.mountController.cameraController = cameraController;
 }
 
 - (void)startMoving:(CASMountDirection)direction
@@ -390,7 +375,7 @@ static void* kvoContext;
                                                                 otherButton:nil
                                                   informativeTextWithFormat:NSLocalizedString(@"Confirm that you want to sync the mount to this target", @"Confirm that you want to sync the mount to this target")] runModal];
             if (response == NSOKButton){
-                [self.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
+                [self.mountController.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
                     if (error != CASMountSlewErrorNone){
                         [self presentAlertWithMessage:NSLocalizedString(@"Failed to sync the mount", @"Failed to sync the mount")];
                     }
@@ -589,7 +574,7 @@ static void* kvoContext;
 // todo; we should really embed the config UI in the main window in the Mount section
 - (IBAction)mountButtonPressed:(NSButton*)sender
 {
-    NSViewController* configure = self.mount.configurationViewController;
+    NSViewController* configure = self.mountController.mount.configurationViewController;
     if (!configure){
         [self presentAlertWithMessage:NSLocalizedString(@"This mount doesn't provide a configuration UI", @"This mount doesn't provide a configuration UI")];
     }
@@ -727,15 +712,16 @@ static void* kvoContext;
             
             [self showWindow:nil];
             
-            self.mountController = [[CASMountController alloc] initWithMount:mount];
-            [[CASDeviceManager sharedManager] addMountController:self.mountController];
+            CASMountController* mountController = [[CASMountController alloc] initWithMount:mount];
+            [[CASDeviceManager sharedManager] addMountController:mountController];
+            self.mountController = mountController;
             
             completion(nil);
         }
     }];
 }
 
-- (void)connectToMount:(void(^)())completion
+- (void)connect:(void(^)())completion
 {
     NSParameterAssert(completion);
     
@@ -772,7 +758,7 @@ static void* kvoContext;
     }
 }
 
-- (void)connectToMountAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion
+- (void)connectAtPath:(NSString*)path completion:(void(^)(NSError*,CASMountController*))completion
 {
     NSParameterAssert(completion);
     
@@ -781,7 +767,7 @@ static void* kvoContext;
     //        ORSSerialPort* port = [self.mountController.mount valueForKey:@"port"];
     //        if ([port.path isEqualToString:path]){
     //            // completion(nil,self.mountController); // except this seems to cause the make applevent handler to be called again ?
-    //            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:9 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Mount '%@' already connected",self.mount.deviceName]}];
+    //            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class]) code:9 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Mount '%@' already connected",self.mountController.mount.deviceName]}];
     //            completion(error,nil);
     //        }
     //        return;
