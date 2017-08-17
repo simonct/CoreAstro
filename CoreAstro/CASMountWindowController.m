@@ -68,7 +68,7 @@
 @property (strong) CASObjectLookup* lookup;
 @property (strong) CASMountSlewObserver* slewObserver;
 @property (strong) NSPopover* mountPopover;
-@property CASMountSynchroniser* synchroniser;
+@property (strong) CASMountSynchroniser* synchroniser;
 @property BOOL synced;
 @property BOOL slewAfterFindLocation;
 @end
@@ -705,7 +705,7 @@ static void* kvoContext;
     
     if (port.isOpen){
         completion([NSError errorWithDomain:NSStringFromClass([self class])
-                                       code:5
+                                       code:9
                                    userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"Selected serial port is already open", @"Selected serial port is already open")}]);
         return;
     }
