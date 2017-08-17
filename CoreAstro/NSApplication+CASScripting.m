@@ -28,19 +28,34 @@
 
 @implementation NSApplication (CASScripting)
 
+- (CASDeviceManager*)deviceManager
+{
+    return [CASDeviceManager sharedManager];
+}
+
 - (NSArray*)cameraControllers
 {
-    return [CASDeviceManager sharedManager].cameraControllers;
+    return self.deviceManager.cameraControllers;
+}
+
++ (NSSet*)keyPathsForValuesAffectingCameraControllers
+{
+    return [NSSet setWithObject:@"deviceManager.cameraControllers"];
 }
 
 - (NSArray*)guiderControllers
 {
-    return [CASDeviceManager sharedManager].guiderControllers;
+    return self.deviceManager.guiderControllers;
 }
 
 - (NSArray*)filterWheelControllers
 {
-    return [CASDeviceManager sharedManager].filterWheelControllers;
+    return self.deviceManager.filterWheelControllers;
+}
+
++ (NSSet*)keyPathsForValuesAffectingFilterWheelControllers
+{
+    return [NSSet setWithObject:@"deviceManager.filterWheelControllers"];
 }
 
 - (NSArray*)focuserControllers
@@ -50,7 +65,12 @@
 
 - (NSArray*)mountControllers
 {
-    return [CASDeviceManager sharedManager].mountControllers;
+    return self.deviceManager.mountControllers;
+}
+
++ (NSSet*)keyPathsForValuesAffectingMountControllers
+{
+    return [NSSet setWithObject:@"deviceManager.mountControllers"];
 }
 
 @end
