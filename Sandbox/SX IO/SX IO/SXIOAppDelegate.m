@@ -539,7 +539,7 @@ static void* kvoContext;
 
 - (IBAction)connectToMount:(id)sender
 {
-    [[CASMountWindowController sharedMountWindowController] connectToMount:^{
+    [[CASMountWindowController sharedMountWindowController] connect:^{
         // connected
     }];
 }
@@ -753,7 +753,7 @@ static NSMutableArray* gRecentExposures;
         else {
             // todo; optional param of associated camera controller
             [command suspendExecution];
-            [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:devicePath completion:^(NSError* error,CASMountController* mountController){
+            [[CASMountWindowController sharedMountWindowController] connectAtPath:devicePath completion:^(NSError* error,CASMountController* mountController){
                 if (error){
                     command.scriptErrorNumber = error.code;
                     command.scriptErrorString = error.localizedDescription;
