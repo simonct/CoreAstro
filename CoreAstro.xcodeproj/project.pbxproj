@@ -415,6 +415,8 @@
 		F4EEF31F1606273700547009 /* SXCCDIOCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E539015A9D8240018DC75 /* SXCCDIOCommand.m */; };
 		F4EEF3201606273A00547009 /* SXCCDDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E537715A995F40018DC75 /* SXCCDDeviceFactory.m */; };
 		F4EEF323160629D800547009 /* CASSHGPUSBDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */; };
+		F4EFBAA11F45BB21007F6D40 /* CASSimulatedMount.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EFBA9F1F45BB21007F6D40 /* CASSimulatedMount.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4EFBAA21F45BB21007F6D40 /* CASSimulatedMount.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EFBAA01F45BB21007F6D40 /* CASSimulatedMount.m */; };
 		F4F2A4C11AED0EB200CCC40F /* CASMountSynchroniser.h in Headers */ = {isa = PBXBuildFile; fileRef = F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4F2A4C21AED0EB200CCC40F /* CASMountSynchroniser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */; };
 		F4F2A4C61AED0EDA00CCC40F /* CASMountWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4F2A4C31AED0EDA00CCC40F /* CASMountWindowController.xib */; };
@@ -1511,6 +1513,8 @@
 		F4EEF3091606233000547009 /* CASSHDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHDeviceFactory.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHDeviceFactory.m; sourceTree = SOURCE_ROOT; };
 		F4EEF321160629D800547009 /* CASSHGPUSBDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASSHGPUSBDevice.h; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.h; sourceTree = SOURCE_ROOT; };
 		F4EEF322160629D800547009 /* CASSHGPUSBDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CASSHGPUSBDevice.m; path = CoreAstro/libCoreAstro/Vendors/Shoestring/CASSHGPUSBDevice.m; sourceTree = SOURCE_ROOT; };
+		F4EFBA9F1F45BB21007F6D40 /* CASSimulatedMount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASSimulatedMount.h; sourceTree = "<group>"; };
+		F4EFBAA01F45BB21007F6D40 /* CASSimulatedMount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASSimulatedMount.m; sourceTree = "<group>"; };
 		F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASMountSynchroniser.h; sourceTree = "<group>"; };
 		F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASMountSynchroniser.m; sourceTree = "<group>"; };
 		F4F2A4C31AED0EDA00CCC40F /* CASMountWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CASMountWindowController.xib; sourceTree = "<group>"; };
@@ -2130,6 +2134,8 @@
 				F42445E11EDA06E00058BF45 /* CASAPGTOGuidePort.h */,
 				F42445E21EDA06E00058BF45 /* CASAPGTOGuidePort.m */,
 				F49A96481E3A0A07008321D4 /* CASAPGTOMount.storyboard */,
+				F4EFBA9F1F45BB21007F6D40 /* CASSimulatedMount.h */,
+				F4EFBAA01F45BB21007F6D40 /* CASSimulatedMount.m */,
 				F4F2A4BF1AED0EB200CCC40F /* CASMountSynchroniser.h */,
 				F4F2A4C01AED0EB200CCC40F /* CASMountSynchroniser.m */,
 				F4CA81A51B0915BB00BEEAA3 /* CASFocuser.h */,
@@ -3195,6 +3201,7 @@
 				F42445E31EDA06E00058BF45 /* CASAPGTOGuidePort.h in Headers */,
 				F4CA53C7169CC9FD00832CFF /* dualtree.h in Headers */,
 				F4F6E104182F884600ACBFB4 /* CASPowerMonitor.h in Headers */,
+				F4EFBAA11F45BB21007F6D40 /* CASSimulatedMount.h in Headers */,
 				F4CA53C8169CC9FD00832CFF /* dualtree_nearestneighbour.h in Headers */,
 				F4CA53C9169CC9FD00832CFF /* dualtree_rangesearch.h in Headers */,
 				F4CA53CA169CC9FD00832CFF /* errors.h in Headers */,
@@ -3822,6 +3829,7 @@
 				F48F79B318818E5E00DFB0F2 /* CASExposureSettings.m in Sources */,
 				F42445E41EDA06E00058BF45 /* CASAPGTOGuidePort.m in Sources */,
 				F40E9DC01798877D00DE1A56 /* CASSocketClient.m in Sources */,
+				F4EFBAA21F45BB21007F6D40 /* CASSimulatedMount.m in Sources */,
 				F4B099FE1BEE4DE4005BAAB5 /* CASNova.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
