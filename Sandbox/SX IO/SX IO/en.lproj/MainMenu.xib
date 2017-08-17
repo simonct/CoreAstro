@@ -740,9 +740,9 @@
                                     <action selector="scanForDevices:" target="-1" id="QgV-2y-QZb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Disconnct" id="1by-3x-XRY">
+                            <menuItem title="Disconnect" id="1by-3x-XRY">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Disconnct" id="XIU-2X-97b"/>
+                                <menu key="submenu" title="Disconnect" id="XIU-2X-97b"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="TMV-B0-99y"/>
                             <menuItem title="Invert Image" tag="10001" keyEquivalent="i" id="546">
