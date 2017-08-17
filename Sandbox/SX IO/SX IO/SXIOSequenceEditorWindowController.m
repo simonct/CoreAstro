@@ -11,6 +11,9 @@
 
 #if defined(SXIO) || defined(CCDIO)
 #import "SXIOAppDelegate.h"
+#import "SXIOCameraWindowController.h"
+#import "CASMountWindowController.h"
+#endif
 
 static NSString* const kSXIOSequenceEditorWindowControllerBookmarkKey = @"SXIOSequenceEditorWindowControllerBookmarkKey";
 
