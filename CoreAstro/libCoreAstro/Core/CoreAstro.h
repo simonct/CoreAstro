@@ -62,6 +62,7 @@
 #import <CoreAstro/CASLX200Mount.h>
 #import <CoreAstro/iEQMount.h>
 #import <CoreAstro/CASAPGTOMount.h>
+#import <CoreAstro/CASSimulatedMount.h>
 #import <CoreAstro/CASLX200Commands.h>
 #import <CoreAstro/CASCoordinateUtils.h>
 #import <CoreAstro/CASMountSynchroniser.h>
