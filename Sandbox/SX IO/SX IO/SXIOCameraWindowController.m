@@ -97,6 +97,8 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (strong) CASCCDExposure* latestExposure;
 @property (copy) NSString* currentExposureUUID;
 
+@property (nonatomic,weak,readonly) CASMountController* mountController;
+
 @property (copy) void(^captureCompletion)(NSError*);
 
 @property (strong) SXIOSaveTargetViewController *saveTargetControlsViewController;
@@ -189,7 +191,6 @@ static void* kvoContext;
     // mount controls view
     self.mountControlsViewController = [[SXIOMountControlsViewController alloc] initWithNibName:@"SXIOMountControlsViewController" bundle:nil];
     self.mountControlsViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.mountControlsViewController.mountControllerHost = (id<SXIOMountControllerHost>)self;
     [container addSubview:self.mountControlsViewController.view];
 
     // layout mount controls
@@ -216,7 +217,8 @@ static void* kvoContext;
     [self.cameraControlsViewController bind:@"exposure" toObject:self withKeyPath:@"currentExposure" options:nil];
     [self.saveTargetControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
     [self.filterWheelControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
-    
+    [self.mountControlsViewController bind:@"cameraController" toObject:self withKeyPath:@"cameraController" options:nil];
+
     // observe the save target vc for save url changes; get the initial one and request access to it
     [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     
@@ -253,16 +255,13 @@ static void* kvoContext;
 {
     self.cameraController.sink = nil;
     self.cameraController = nil;
-    
-    self.mountController = nil;
-    
-    self.mountControlsViewController.mountControllerHost = nil; // this clears bindings which otherwise assert when this deallocs
-    
+
     [self.cameraControlsViewController unbind:@"exposure"];
     [self.cameraControlsViewController unbind:@"cameraController"];
     [self.saveTargetControlsViewController unbind:@"cameraController"];
     [self.filterWheelControlsViewController unbind:@"cameraController"];
-    
+    [self.mountControlsViewController unbind:@"cameraController"];
+
     [self.saveTargetControlsViewController removeObserver:self forKeyPath:@"saveFolderURL" context:&kvoContext];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -314,20 +313,6 @@ static void* kvoContext;
                 NSString* status = self.mountController.status;
                 if (status){
                     self.mountSlewProgressSheet.label.stringValue = status;
-                }
-            }
-        }
-        
-        if (object == [CASDeviceManager sharedManager]) {
-            if ([change[NSKeyValueChangeKindKey] integerValue] == NSKeyValueChangeRemoval) {
-                NSArray* mountControllers = change[NSKeyValueChangeOldKey];
-                if ([mountControllers isKindOfClass:[NSArray class]]) {
-                    [mountControllers enumerateObjectsUsingBlock:^(CASMountController* mountController, NSUInteger idx, BOOL * _Nonnull stop) {
-                        if (mountController == self.mountController) {
-                            self.mountController = nil;
-                            // dismiss slew progress, etc ?
-                        }
-                    }];
                 }
             }
         }
@@ -430,13 +415,9 @@ static void* kvoContext;
     [self updateExposureIndicator];
 }
 
-- (void)setMountController:(CASMountController *)mountController
+- (CASMountController*)mountController
 {
-    if (mountController != _mountController){
-        [_mountController removeObserver:self forKeyPath:@"status" context:&kvoContext];
-        _mountController = mountController;
-        [_mountController addObserver:self forKeyPath:@"status" options:0 context:&kvoContext];
-    }
+    return self.cameraController.mountController;
 }
 
 - (void)presentAlertWithTitle:(NSString*)title message:(NSString*)message
@@ -918,7 +899,6 @@ static void* kvoContext;
     // keep things simple and have a single mount window across the app for now
     CASMountWindowController* mountWindowController = [CASMountWindowController sharedMountWindowController];
     
-    
     // if the singleton mount window controller already has a connected mount just show the window, the user will have
     // to disconnect from the current mount before connecting to a new one
     if (mountWindowController.mountController.mount.connected) {
@@ -927,11 +907,9 @@ static void* kvoContext;
     }
     
     // as the mount window to show the connect UI
-    [mountWindowController connectToMount:^{
+    [mountWindowController connect:^{
         
-        self.mountController = mountWindowController.mountController; // only set this once it's connected as it observes the mount controller status
-
-        mountWindowController.cameraController = self.cameraController; // set the mount and mount controller's camera to this camera conroller
+        mountWindowController.mountController.cameraController = self.cameraController;
         
         // if there's a current plate solution, set that as the current target - necessary? doesn't it appear in the popup now ?
         CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;

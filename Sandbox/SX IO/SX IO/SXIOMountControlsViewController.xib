@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
@@ -39,14 +39,18 @@
                         </menu>
                     </popUpButtonCell>
                     <connections>
-                        <binding destination="DyS-oA-lnd" name="content" keyPath="arrangedObjects" id="yRM-RY-IvQ">
+                        <binding destination="DyS-oA-lnd" name="content" keyPath="arrangedObjects" id="HgV-Op-8cV">
                             <dictionary key="options">
                                 <bool key="NSInsertsNullPlaceholder" value="YES"/>
                                 <string key="NSNullPlaceholder">None</string>
-                                <string key="NSValueTransformerName">SXIOMountControlsNameTransformer</string>
                             </dictionary>
                         </binding>
-                        <binding destination="DyS-oA-lnd" name="selectedIndex" keyPath="selectionIndex" previousBinding="yRM-RY-IvQ" id="EO9-Yc-GdU"/>
+                        <binding destination="DyS-oA-lnd" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="HgV-Op-8cV" id="Z1A-xb-rWV">
+                            <dictionary key="options">
+                                <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                            </dictionary>
+                        </binding>
+                        <binding destination="-2" name="selectedObject" keyPath="cameraController.mountController" previousBinding="Z1A-xb-rWV" id="aaV-sT-GIe"/>
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojs-E8-mZs">
@@ -76,7 +80,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="mountControllerHost.mountController.mount.ra" id="G5c-ZL-rLH">
+                        <binding destination="-2" name="value" keyPath="cameraController.mountController.mount.ra" id="MBL-bb-Ryr">
                             <dictionary key="options">
                                 <string key="NSValueTransformerName">CASLX200RATransformer</string>
                             </dictionary>
@@ -92,7 +96,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="mountControllerHost.mountController.mount.dec" id="TMf-wb-770">
+                        <binding destination="-2" name="value" keyPath="cameraController.mountController.mount.dec" id="x4L-rD-SxK">
                             <dictionary key="options">
                                 <string key="NSValueTransformerName">CASLX200DecTransformer</string>
                             </dictionary>
@@ -108,7 +112,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="mountControllerHost.mountController.mount.alt" id="Za6-UX-Tfh">
+                        <binding destination="-2" name="value" keyPath="cameraController.mountController.mount.alt" id="wJl-xC-HQd">
                             <dictionary key="options">
                                 <string key="NSValueTransformerName">CASLX200DecTransformer</string>
                             </dictionary>
@@ -124,7 +128,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="mountControllerHost.mountController.mount.az" id="MeU-CQ-4Px">
+                        <binding destination="-2" name="value" keyPath="cameraController.mountController.mount.az" id="9Zm-BK-e5E">
                             <dictionary key="options">
                                 <string key="NSValueTransformerName">CASLX200DecTransformer</string>
                             </dictionary>
@@ -157,9 +161,9 @@
             <point key="canvasLocation" x="-394" y="-366.5"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="622"/>
-        <arrayController objectClassName="CASMountController" avoidsEmptySelection="NO" id="DyS-oA-lnd" userLabel="Mounts Array Controller" customClass="CASNilableArrayController">
+        <arrayController objectClassName="CASMountController" avoidsEmptySelection="NO" id="DyS-oA-lnd" userLabel="Mounts Array Controller">
             <connections>
-                <binding destination="-2" name="contentArray" keyPath="mountControllers" id="4aH-ZS-XtX"/>
+                <binding destination="-3" name="contentArray" keyPath="mountControllers" id="dg4-85-qXC"/>
             </connections>
         </arrayController>
     </objects>

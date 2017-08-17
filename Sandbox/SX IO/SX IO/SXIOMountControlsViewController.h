@@ -25,12 +25,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class CASMountController;
-
-@protocol SXIOMountControllerHost <NSObject>
-@property (strong,nonatomic) CASMountController* mountController;
-@end
+@class CASCameraController;
 
 @interface SXIOMountControlsViewController : NSViewController
-@property (nonatomic,weak) NSObject<SXIOMountControllerHost>* mountControllerHost;
+@property (nonatomic,weak) CASCameraController* cameraController;
 @end
