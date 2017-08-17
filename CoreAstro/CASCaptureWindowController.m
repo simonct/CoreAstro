@@ -32,7 +32,7 @@
 @interface CASCaptureController : NSObject
 
 @property (nonatomic,strong) CASCaptureModel* model;
-@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASExposuresController* exposuresController;
 @property (nonatomic,readonly) BOOL cancelled;

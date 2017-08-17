@@ -57,7 +57,7 @@ enum {
 
 @interface CASCaptureWindowController : CASAuxWindowController
 @property (nonatomic,strong) CASCaptureModel* model;
-@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,weak) CASCameraController* cameraController;
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,weak) id<CASCaptureWindowControllerDelegate> delegate;
 
