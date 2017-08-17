@@ -32,6 +32,7 @@
 #import "CASClassDefaults.h"
 #import "CASPHD2Client.h"
 #import "CASDeviceManager.h"
+#import "CASMountController.h"
 
 @interface CASExposureSettings ()
 @property (nonatomic,assign) NSInteger currentCaptureIndex; // give the camera controller privileged access to this property
@@ -123,6 +124,7 @@ static void* kvoContext;
 - (void)disconnect
 {
     [self.camera disconnect];
+    self.mountController = nil;
     [[CASDeviceManager sharedManager] removeCameraController:self];
 }
 
@@ -657,11 +659,6 @@ static void* kvoContext;
     return _cancelled;
 }
 
-- (void)setGuider:(CASGuiderController*)guider
-{
-    _guider = guider;
-}
-
 - (BOOL)temperatureLock
 {
     return self.settings.temperatureLock;
@@ -802,6 +799,21 @@ static void* kvoContext;
     // todo; we should suspend and re-start when guiding resumes or give up after a limit
 
     [self.sink cameraController:self didCompleteExposure:nil error:error];
+}
+
+- (void)setMountController:(CASMountController *)mountController
+{
+    if (mountController != _mountController){
+        
+        CASMountController* oldMountController = _mountController;
+        
+        [self willChangeValueForKey:@"mountController"];
+        _mountController = mountController;
+        [self didChangeValueForKey:@"mountController"];
+        
+        oldMountController.cameraController = nil;
+        _mountController.cameraController = self;
+    }
 }
 
 @end

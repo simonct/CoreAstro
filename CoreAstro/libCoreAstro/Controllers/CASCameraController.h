@@ -34,6 +34,7 @@
 @class CASFilterWheelController;
 @class CASCameraController;
 @class CASPHD2Client; // tmp for flipping
+@class CASMountController;
 
 @protocol CASCameraControllerSink <NSObject>
 - (void)cameraController:(CASCameraController*)controller didCompleteExposure:(CASCCDExposure*)exposure error:(NSError*)error;
@@ -73,8 +74,9 @@ typedef NS_ENUM(NSInteger, CASCameraControllerRole) {
 
 @property (nonatomic,strong) CASCCDExposure* lastExposure;
 
-@property (nonatomic,strong) CASGuiderController* guider;
-@property (nonatomic,weak) CASFilterWheelController* filterWheel;
+@property (strong) CASGuiderController* guider;
+@property (weak) CASFilterWheelController* filterWheel;
+@property (nonatomic,weak) CASMountController* mountController;
 
 @property (nonatomic,strong) CASImageProcessor* imageProcessor;
 @property (nonatomic,strong) CASGuideAlgorithm* guideAlgorithm;

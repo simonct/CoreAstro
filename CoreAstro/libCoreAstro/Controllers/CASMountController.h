@@ -22,7 +22,7 @@
 @property (nonatomic,readonly) BOOL synchronising;
 @property (nonatomic,readonly,strong) CASDevice<CASMount>* mount;
 @property (nonatomic,readonly,copy) NSString* status;
-@property (nonatomic,strong) CASCameraController* cameraController;
+@property (nonatomic,weak) CASCameraController* cameraController;
 
 - (void)setTargetRA:(double)raDegs dec:(double)decDegs completion:(void(^)(NSError*))completion;
 - (void)slewToTargetWithCompletion:(void(^)(NSError*))completion;

@@ -32,8 +32,10 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 {
     self = [super init];
     if (self){
+        NSParameterAssert(mount);
         self.mount = mount;
         self.mountSynchroniser = [[CASMountSynchroniser alloc] init];
+        self.mountSynchroniser.mountController = self;
         self.mountSynchroniser.delegate = self;
         [self bind:@"status" toObject:self.mountSynchroniser withKeyPath:@"status" options:nil];
         // unbind ?
@@ -49,6 +51,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 - (void)disconnect
 {
     [self.mount disconnect];
+    self.cameraController = nil;
     [[CASDeviceManager sharedManager] removeMountController:self];
 }
 
@@ -65,6 +68,21 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 - (BOOL) synchronising
 {
     return self.mountSynchroniser.busy;
+}
+
+- (void)setCameraController:(CASCameraController *)cameraController
+{
+    if (cameraController != _cameraController){
+        
+        CASCameraController* oldCameraController = _cameraController;
+        
+        [self willChangeValueForKey:@"cameraController"];
+        _cameraController = cameraController;
+        [self didChangeValueForKey:@"cameraController"];
+        
+        oldCameraController.mountController = nil;
+        _cameraController.mountController = self;
+    }
 }
 
 #pragma mark - Mount Synchroniser delegate
@@ -179,9 +197,6 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             // ok, looks like we're plate solving so we need to set up the mount synchroniser
             [self.cameraController cancelCapture]; // todo; belongs in mountSynchroniser ?
             
-            self.mountSynchroniser.mount = self.mount; // redundant ?
-            self.mountSynchroniser.cameraController = self.cameraController;
-            
             [self.mountSynchroniser startSlewToRA:raInDegrees dec:decInDegrees]; // this calls its delegate on completion which calls the slew completion block
         }
     }
@@ -295,7 +310,7 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 
 - (void)stop
 {
-    if (self.mountSynchroniser.mount){
+    if (self.mountSynchroniser.mountController){
         [self.mountSynchroniser cancel];
     }
     else {
@@ -379,9 +394,6 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
             
             // save the command so that we can resume when the synchroniser completes
             self.slewCommand = command;
-            
-            self.mountSynchroniser.mount = self.mount;
-            self.mountSynchroniser.cameraController = self.cameraController;
             
             [self.mountSynchroniser startSlewToRA:ra dec:dec]; // this calls its delegate on completion which (todo;) needs to call the completion block
         }
@@ -525,8 +537,6 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     
     [self.findCommand suspendExecution];
 
-    self.mountSynchroniser.mount = self.mount;
-    self.mountSynchroniser.cameraController = self.cameraController;
     [self.mountSynchroniser findLocation];
 }
 
