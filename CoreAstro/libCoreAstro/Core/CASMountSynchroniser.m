@@ -43,9 +43,9 @@
 
 - (void)findLocation
 {
-    NSParameterAssert(self.mount);
-    NSParameterAssert(self.mount.connected);
-    NSParameterAssert(self.cameraController);
+    NSParameterAssert(self.mountController);
+    NSParameterAssert(self.mountController.mount.connected);
+    NSParameterAssert(self.mountController.cameraController);
     NSParameterAssert(!self.busy);
 
     const NSInteger slewDuration = [[NSUserDefaults standardUserDefaults] integerForKey:@"CASMountSlewControllerAutoSyncSlewDuration"]; // todo; this depends on the current slew speed, need to be able to save and restore the slew speed
@@ -54,7 +54,7 @@
     _cancelled = NO;
 
     // slew x seconds in both ra and dec to get out of park position
-    [self.mount startMoving:CASMountDirectionWest];
+    [self.mountController.mount startMoving:CASMountDirectionWest];
     
     // wait x seconds
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -64,14 +64,14 @@
         }
         
         // stop the slew
-        [self.mount stopMoving];
+        [self.mountController.mount stopMoving];
 
-        [self.mount startMoving:CASMountDirectionSouth];
+        [self.mountController.mount startMoving:CASMountDirectionSouth];
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(slewDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
             // stop the slew
-            [self.mount stopMoving];
+            [self.mountController.mount stopMoving];
 
             if (_cancelled){
                 return;
@@ -97,7 +97,7 @@
                     else {
                         
                         // sync the mount to this location
-                        [self.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
+                        [self.mountController.mount fullSyncToRA:ra dec:dec completion:^(CASMountSlewError slewError) {
                             
                             if (slewError != CASMountSlewErrorNone){
                                 [self completeWithErrorMessage:[NSString stringWithFormat:@"Sync failed with error %ld",slewError]];
@@ -128,9 +128,9 @@
 
 - (void)startSlewToRAImpl:(double)raInDegrees dec:(double)decInDegrees
 {
-    NSParameterAssert(self.mount);
-    NSParameterAssert(self.mount.connected);
-    NSParameterAssert(self.cameraController);
+    NSParameterAssert(self.mountController);
+    NSParameterAssert(self.mountController.mount.connected);
+    NSParameterAssert(self.mountController.cameraController);
     NSParameterAssert(raInDegrees >= 0 && raInDegrees <= 360);
     NSParameterAssert(decInDegrees >= -90 && decInDegrees <= 90);
 
@@ -144,7 +144,7 @@
     _decInDegrees = decInDegrees;
     
     __weak __typeof(self) weakSelf = self;
-    [self.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
+    [self.mountController.mount startSlewToRA:_raInDegrees dec:_decInDegrees completion:^(CASMountSlewError error,CASMountSlewObserver* observer) {
         
         if (error != CASMountSlewErrorNone){
             [self completeWithErrorMessage:[NSString stringWithFormat:@"Start slew failed with error %ld",error]];
@@ -200,10 +200,10 @@
 - (void)cancel
 {
     _cancelled = YES;
-    [self.cameraController cancelCapture];
+    [self.mountController.cameraController cancelCapture];
     [self.plateSolver cancel];
-    [self.mount stopMoving]; // in case we're location finding
-    [self.mount stopSlewing];
+    [self.mountController.mount stopMoving]; // in case we're location finding
+    [self.mountController.mount stopSlewing];
 }
 
 - (void)setStatus:(NSString *)status
@@ -259,9 +259,9 @@
     }
     else{
         _pushedSettings = NO;
-        [self.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
-        self.cameraController.temperatureLock = _saveTemperatureLock;
-        self.cameraController.sink = _savedSink;
+        [self.mountController.cameraController popSettings]; // causing exception about nil keys e.g. startGuiding?
+        self.mountController.cameraController.temperatureLock = _saveTemperatureLock;
+        self.mountController.cameraController.sink = _savedSink;
     }
 }
 
@@ -277,7 +277,7 @@
         completion(error,ra,dec);
     };
     
-    if (!self.cameraController){
+    if (!self.mountController.cameraController){
         callCompletion([self setErrorWithCode:1 message:@"No camera is connected"],0,0);
     }
     else {
@@ -290,20 +290,20 @@
         
         // turn off temp lock, not stored in settings so we have to stash it in an ivar
         _pushedSettings = YES;
-        _saveTemperatureLock = self.cameraController.temperatureLock;
-        self.cameraController.temperatureLock = NO;
+        _saveTemperatureLock = self.mountController.cameraController.temperatureLock;
+        self.mountController.cameraController.temperatureLock = NO;
         
         // turn off the controller's sink so that we don't save these intermediate pointing exposures
         // (todo; or could just pass a param identifying this as a pointing rather than capture exposure?)
-        _savedSink = self.cameraController.sink;
-        self.cameraController.sink = nil;
+        _savedSink = self.mountController.cameraController.sink;
+        self.mountController.cameraController.sink = nil;
         
-        [self.cameraController pushSettings:settings];
+        [self.mountController.cameraController pushSettings:settings];
         
-        self.status = [NSString stringWithFormat:@"Capturing from %@",self.cameraController.camera.deviceName];
+        self.status = [NSString stringWithFormat:@"Capturing from %@",self.mountController.cameraController.camera.deviceName];
         
         // grab an exposure
-        [self.cameraController captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
+        [self.mountController.cameraController captureWithBlock:^(NSError* error, CASCCDExposure* exposure) {
             
             if (error){
                 callCompletion(error,0,0);
@@ -312,7 +312,7 @@
                 
                 // check exposure intensity ? e.g. see if it's massively overexposed
                 
-                if (_cancelled || self.cameraController.cancelled){
+                if (_cancelled || self.mountController.cameraController.cancelled){
                     [self restoreCameraSettings];
                 }
                 else {
@@ -328,17 +328,17 @@
                     else {
                         
                         // grab the camera's focal length
-                        self.focalLength = self.cameraController.focalLength;
+                        self.focalLength = self.mountController.cameraController.focalLength;
 
                         // set optical params
                         if (self.focalLength > 0){
-                            self.plateSolver.fieldSizeDegrees = [self.cameraController fieldSizeForFocalLength:self.focalLength];
-                            self.plateSolver.arcsecsPerPixel = [self.cameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
+                            self.plateSolver.fieldSizeDegrees = [self.mountController.cameraController fieldSizeForFocalLength:self.focalLength];
+                            self.plateSolver.arcsecsPerPixel = [self.mountController.cameraController arcsecsPerPixelForFocalLength:self.focalLength].width;
                         }
                         
                         // set mount params
-                        NSNumber* ra = self.mount.ra;
-                        NSNumber* dec = self.mount.dec;
+                        NSNumber* ra = self.mountController.mount.ra;
+                        NSNumber* dec = self.mountController.mount.dec;
                         if (ra && dec){
                             self.plateSolver.searchRA = ra.floatValue;
                             self.plateSolver.searchDec = dec.floatValue;
@@ -414,7 +414,7 @@
                     self.status = [NSString stringWithFormat:@"Separation is %0.3f°, syncing mount and re-slewing",self.separation];
                     
                     // close but not yet good enough, sync scope to solution co-ordinates, repeat slew
-                    [self.mount syncToRA:actualRA dec:actualDec completion:^(CASMountSlewError slewError) {
+                    [self.mountController.mount syncToRA:actualRA dec:actualDec completion:^(CASMountSlewError slewError) {
                         
                         if (slewError != CASMountSlewErrorNone){
                             [self completeWithErrorMessage:[NSString stringWithFormat:@"Failed to sync with solved location: %ld",slewError]];

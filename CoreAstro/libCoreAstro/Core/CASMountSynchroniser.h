@@ -22,8 +22,7 @@
 @property (readonly) NSError* error;
 @property (readonly) BOOL busy;
 @property (readonly,nonatomic,copy) NSString* status;
-@property (strong) id<CASMount> mount;
-@property (strong) CASCameraController* cameraController;
+@property (weak) CASMountController* mountController;
 @property (weak) id<CASMountMountSynchroniserDelegate> delegate;
 - (void)findLocation;
 - (void)startSlewToRA:(double)raInDegrees dec:(double)decInDegrees;
