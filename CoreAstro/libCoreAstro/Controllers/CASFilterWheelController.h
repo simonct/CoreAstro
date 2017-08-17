@@ -32,7 +32,7 @@
 @property (nonatomic,strong) NSDictionary* filterNames;
 @property (nonatomic) NSString* currentFilterName;
 
-- (id)initWithFilterWheel:(CASDevice<CASFWDevice>*)guider;
+- (id)initWithFilterWheel:(CASDevice<CASFWDevice>*)filterWheel;
 
 - (void)connect:(void(^)(NSError*))block;
 - (void)disconnect;
