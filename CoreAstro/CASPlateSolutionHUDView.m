@@ -9,18 +9,21 @@
 #import "CASPlateSolutionHUDView.h"
 
 @interface CASPlateSolutionHUDView ()
+@property (weak) IBOutlet NSObjectController *solutionController;
 @end
 
 @implementation CASPlateSolutionHUDView
 
-- (void)setSolution:(CASPlateSolveSolution *)solution
+- (void)viewDidMoveToSuperview
 {
-    if (_solution != solution){
-        _solution = solution;
-        [self setNeedsDisplay:YES];
+    [super viewDidMoveToSuperview];
+    
+    if (![self superview]){
+        self.solutionController.content = nil;
+    }
+    else {
+        self.solutionController.content = self.solution;
     }
 }
-
-// display
 
 @end
