@@ -441,7 +441,13 @@ static void* kvoContext;
 
 - (void)updateWindowInMenus:(NSWindowController*)windowController
 {
-    for (NSMenuItem* item in [self.windowMenu.itemArray copy]){
+    for (NSMenuItem* item in self.windowMenu.itemArray){
+        if (item.representedObject == windowController){
+            item.title = windowController.window.title;
+        }
+    }
+
+    for (NSMenuItem* item in self.disconnectMenuItem.submenu.itemArray){
         if (item.representedObject == windowController){
             item.title = windowController.window.title;
         }
