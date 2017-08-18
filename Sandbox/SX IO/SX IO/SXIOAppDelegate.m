@@ -57,6 +57,7 @@
 @property (strong) SXIOExportMovieWindowController *movieExportWindowController;
 @property (strong) SXIOPreferencesWindowController *preferencesWindowController;
 @property (weak) IBOutlet NSMenuItem *disconnectMenuItem;
+@property (weak) IBOutlet NSMenuItem *connectToMountItem;
 @end
 
 @implementation SXIOAppDelegate
@@ -166,6 +167,10 @@ static void* kvoContext;
     [[NSApp mainMenu] insertItem:windowItem atIndex:[NSApp mainMenu].numberOfItems-1];
     
     self.disconnectMenuItem.enabled = NO;
+    
+#if !DEBUG
+    [self.connectToMountItem.menu removeItem:self.connectToMountItem];
+#endif
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender

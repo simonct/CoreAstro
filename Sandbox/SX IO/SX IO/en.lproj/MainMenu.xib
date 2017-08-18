@@ -890,6 +890,7 @@
         </menu>
         <customObject id="494" customClass="SXIOAppDelegate">
             <connections>
+                <outlet property="connectToMountItem" destination="8JL-Ar-HEd" id="QDR-CG-5yl"/>
                 <outlet property="disconnectMenuItem" destination="1by-3x-XRY" id="gc6-1W-GeI"/>
                 <outlet property="noDevicesHUD" destination="813" id="826"/>
             </connections>
