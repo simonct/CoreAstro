@@ -723,6 +723,7 @@ static void* kvoContext;
     
     [self connectToMount:mount completion:^(NSError* error) {
         if (error){
+            [port close];
             completion(error);
         }
         else {
