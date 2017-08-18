@@ -154,7 +154,7 @@
                     <constraint firstAttribute="trailing" secondItem="vG7-dk-w8X" secondAttribute="trailing" constant="20" id="zGY-zh-bvD"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-908" y="90"/>
+            <point key="canvasLocation" x="-908" y="284"/>
         </window>
         <arrayController editable="NO" id="zI2-pD-xa0" userLabel="Bookmarks Array Controller">
             <connections>
@@ -164,14 +164,14 @@
         <window title="Connect to Mount" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Conect to Mount" animationBehavior="default" id="dIP-qc-kdb">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="1107" width="369" height="127"/>
+            <rect key="contentRect" x="335" y="1107" width="369" height="154"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="9s1-4a-AEu">
-                <rect key="frame" x="0.0" y="0.0" width="369" height="127"/>
+                <rect key="frame" x="0.0" y="0.0" width="369" height="154"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rzn-48-RSo">
-                        <rect key="frame" x="91" y="84" width="261" height="26"/>
+                        <rect key="frame" x="91" y="111" width="261" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="ewe-UT-8Xj" id="mlw-aM-E02">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -190,10 +190,37 @@
                             <binding destination="-2" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="QiL-Cm-csb" id="m4f-w1-gkc"/>
                         </connections>
                     </popUpButton>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="giV-Zv-3bm">
-                        <rect key="frame" x="20" y="89" width="68" height="17"/>
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1m4-qy-HXS">
+                        <rect key="frame" x="91" y="80" width="261" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Serial Port" id="Esi-SK-AIY">
+                        <popUpButtonCell key="cell" type="push" title="AP GTO" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="70X-1E-uR0" id="fS2-9x-e08">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="u2P-2K-hmo">
+                                <items>
+                                    <menuItem title="AP GTO" state="on" id="70X-1E-uR0"/>
+                                    <menuItem title="iOptron" id="MiN-qW-nVB"/>
+                                    <menuItem title="Simulator" id="e74-lE-TiM"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="-2" name="selectedIndex" keyPath="selectedMountType" id="sXO-Ku-iq3"/>
+                        </connections>
+                    </popUpButton>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="giV-Zv-3bm">
+                        <rect key="frame" x="20" y="116" width="68" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Serial Port" id="Esi-SK-AIY">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zd0-Ig-Lwp">
+                        <rect key="frame" x="44" y="86" width="43" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Mount" id="UmJ-Kr-d4f">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -247,7 +274,7 @@ Gw
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-917" y="-111"/>
+            <point key="canvasLocation" x="-917.5" y="-98"/>
         </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="mjq-79-kKX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>

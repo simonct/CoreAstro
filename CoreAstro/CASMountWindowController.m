@@ -60,6 +60,7 @@
 @property (weak) IBOutlet NSButton *syncButton;
 @property (weak) ORSSerialPort* selectedSerialPort;
 @property (strong) ORSSerialPortManager* serialPortManager;
+@property NSInteger selectedMountType;
 @property (copy) void(^slewCompletion)(NSError*);
 @property BOOL hasCurrentSolutionBookmark;
 @property (strong) NSNumber* targetRA;
@@ -695,7 +696,23 @@ static void* kvoContext;
         return;
     }
     
-    CASMount* mount = [[CASAPGTOMount alloc] initWithSerialPort:port];
+    CASMount* mount;
+    switch (self.selectedMountType) {
+        case 0:
+            mount = [[CASAPGTOMount alloc] initWithSerialPort:port];
+            break;
+        case 1:
+            mount = [[iEQMount alloc] initWithSerialPort:port];
+            break;
+        case 2:
+            mount = [[CASSimulatedMount alloc] initWithSerialPort:port];
+            break;
+        default:
+            completion([NSError errorWithDomain:NSStringFromClass([self class])
+                                           code:10
+                                       userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"Unrecognised mount type", @"Unrecognised mount type")}]);
+            return;
+    }
     
     if (mount.slewing){
         completion([NSError errorWithDomain:NSStringFromClass([self class])
