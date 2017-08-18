@@ -13,17 +13,4 @@
 @end
 
 @implementation CASPlateSolutionHUDView
-
-- (void)viewDidMoveToSuperview
-{
-    [super viewDidMoveToSuperview];
-    
-    if (![self superview]){
-        self.solutionController.content = nil;
-    }
-    else {
-        self.solutionController.content = self.solution;
-    }
-}
-
 @end
