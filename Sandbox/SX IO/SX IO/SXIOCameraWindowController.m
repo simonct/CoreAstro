@@ -22,6 +22,7 @@
 #import "SXIOBookmarkWindowController.h"
 #import "SXIOPlateSolutionLookup.h"
 #import "SXIOPlateSolveController.h"
+#import "SXIOAppDelegate.h"
 
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
@@ -281,6 +282,7 @@ static void* kvoContext;
         [self.window orderOut:nil];
     }
     else {
+        [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
         [self close];
     }
 }
@@ -838,7 +840,7 @@ static void* kvoContext;
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
-    if (!self.showPlateSolution){
+    if (!self.showPlateSolution && self.cameraDeviceID){
         [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:nil forKey:self.cameraDeviceID];
     }
     [self resetAndRedisplayCurrentExposure];
@@ -1489,8 +1491,11 @@ static void* kvoContext;
         [self.window setFrameAutosaveName:cameraName];
     }
     else {
-        self.window.title = @"";
+        self.window.title = [[NSFileManager defaultManager] displayNameAtPath:path];
+        [self.window setRepresentedFilename:path];
     }
+    
+    [[SXIOAppDelegate sharedInstance] updateWindowInMenus:self];
 }
 
 - (void)setProgressStatusTextValue:(NSString*)text
