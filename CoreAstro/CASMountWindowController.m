@@ -62,7 +62,7 @@
 @property (strong) ORSSerialPortManager* serialPortManager;
 @property NSInteger selectedMountType;
 @property (copy) void(^slewCompletion)(NSError*);
-@property BOOL hasCurrentSolutionBookmark;
+@property NSInteger solutionBookmarkCount;
 @property (strong) NSNumber* targetRA;
 @property (strong) NSNumber* targetDec;
 @property (strong) CASObjectLookup* lookup;
@@ -136,6 +136,8 @@ static void* kvoContext;
     
     self.serialPortManager = [ORSSerialPortManager sharedSerialPortManager];
     self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bookmarksChanged:) name:CASPlateSolveSolutionRegisteryChangedNotification object:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -250,26 +252,30 @@ static void* kvoContext;
 
 - (NSArray*)bookmarks
 {
-    // this is only being called once when the window is first created...
-    
     NSMutableArray* bookmarks = [CASBookmarks.sharedInstance.bookmarks mutableCopy];
     
-    // if the delegate has a solution, add that as a temp bookmark (would be nice to be able to add a separator but we're using bindings atm)
-    // todo; pick up changes in the delegate's solution
-    __block BOOL hasCurrentSolutionBookmark = NO;
-    NSArray<CASPlateSolveSolution*>* solutions = [CASPlateSolveSolutionRegistery sharedRegistry].solutions;
-    [solutions enumerateObjectsUsingBlock:^(CASPlateSolveSolution * _Nonnull solution, NSUInteger idx, BOOL * _Nonnull stop) {
+    // gather all current solutions from the registry
+    NSMutableArray<CASPlateSolveSolution*>* solutions = [NSMutableArray array];
+    [[CASPlateSolveSolutionRegistery sharedRegistry].solutions enumerateObjectsUsingBlock:^(CASPlateSolveSolution * _Nonnull solution, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary* solutionDictionary = solution.solutionDictionary;
         if (solutionDictionary){
-            NSString* name = [NSString stringWithFormat:NSLocalizedString(@"Current Solution (%@, %@)", @"Current Solution (%@, %@)"),solution.displayCentreRA,solution.displayCentreDec];
-            NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solutionDictionary};
-            [bookmarks insertObject:bookmark atIndex:0];
-            [bookmarks insertObject:@{CASBookmarks.nameKey:@"<separator>"} atIndex:1];
-            hasCurrentSolutionBookmark = YES;
+            [solutions addObject:solution];
         }
     }];
-    
-    self.hasCurrentSolutionBookmark = hasCurrentSolutionBookmark;
+
+    // record the count
+    self.solutionBookmarkCount = solutions.count;
+
+    // prepend the bookmarks array with the solutions and add a separator
+    if (self.solutionBookmarkCount > 0){
+        // todo; use camera id rather than 'Solution'
+        [solutions enumerateObjectsUsingBlock:^(CASPlateSolveSolution* solution, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSString* name = [NSString stringWithFormat:NSLocalizedString(@"Solution (%@, %@)", @"Solution (%@, %@)"),solution.displayCentreRA,solution.displayCentreDec];
+            NSDictionary* bookmark = @{CASBookmarks.nameKey:name,CASBookmarks.solutionDictionaryKey:solution.solutionDictionary};
+            [bookmarks insertObject:bookmark atIndex:idx];
+        }];
+        [bookmarks insertObject:@{CASBookmarks.nameKey:@"<separator>"} atIndex:1];
+    }
     
     return [bookmarks copy];
 }
@@ -295,28 +301,30 @@ static void* kvoContext;
 
 - (void)selectBookmarkAtIndex:(NSInteger)index
 {
-    if (index != -1){
-        
-        // if items 0 and 1 are a current location bookmark, fixup the index into the bookmarks array
-        if (self.hasCurrentSolutionBookmark && index > 1){
-            index -= 2;
-        }
-        
-        NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
-        CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
-        if (solution){
-            self.targetRA = @(solution.centreRA);
-            self.targetDec = @(solution.centreDec);
-        }
-        else {
-            NSNumber* centreRA = bookmark[CASBookmarks.centreRaKey];
-            NSNumber* centreDec = bookmark[CASBookmarks.centreDecKey];
-            if (centreRA && centreDec){
-                self.targetRA = centreRA;
-                self.targetDec = centreDec;
-            }
+    if (index == -1){
+        return;
+    }
+    
+    NSDictionary* bookmark = [self.bookmarks objectAtIndex:index];
+    CASPlateSolveSolution* solution = [CASPlateSolveSolution solutionWithDictionary:bookmark[CASBookmarks.solutionDictionaryKey]];
+    if (solution){
+        self.targetRA = @(solution.centreRA);
+        self.targetDec = @(solution.centreDec);
+    }
+    else {
+        NSNumber* centreRA = bookmark[CASBookmarks.centreRaKey];
+        NSNumber* centreDec = bookmark[CASBookmarks.centreDecKey];
+        if (centreRA && centreDec){
+            self.targetRA = centreRA;
+            self.targetDec = centreDec;
         }
     }
+}
+
+- (void)bookmarksChanged:note
+{
+    [self willChangeValueForKey:@"bookmarks"];
+    [self didChangeValueForKey:@"bookmarks"];
 }
 
 #pragma mark - Mount/Camera
@@ -639,10 +647,9 @@ static void* kvoContext;
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    [self willChangeValueForKey:@"bookmarks"];
     // force the bookmarks menu to redraw in case the associated window controller has a current plate solution
     // todo; this is a workaround, we should bind to the mount window delegate somehow
-    [self didChangeValueForKey:@"bookmarks"];
+    [self bookmarksChanged:nil];
 }
 
 @end

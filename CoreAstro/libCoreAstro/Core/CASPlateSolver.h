@@ -53,6 +53,7 @@
 @property (nonatomic,readonly) NSArray<CASPlateSolveSolution*>* solutions;
 - (CASPlateSolveSolution*)solutionForKey:(NSString*)key;
 - (void)setSolution:(CASPlateSolveSolution*)solution forKey:(NSString*)key;
+extern NSString* CASPlateSolveSolutionRegisteryChangedNotification;
 @end
 
 @protocol CASPlateSolver <NSObject>

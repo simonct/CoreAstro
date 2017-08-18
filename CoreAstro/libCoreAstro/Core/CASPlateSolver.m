@@ -265,6 +265,8 @@
     NSMutableDictionary<NSString*,CASPlateSolveSolution*>* _registry;
 }
 
+NSString* CASPlateSolveSolutionRegisteryChangedNotification = @"CASPlateSolveSolutionRegisteryChangedNotification";
+
 + (instancetype)sharedRegistry
 {
     static CASPlateSolveSolutionRegistery* _shared;
@@ -306,6 +308,8 @@
     else {
         [_registry removeObjectForKey:key];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:CASPlateSolveSolutionRegisteryChangedNotification object:nil];
 }
 
 @end
