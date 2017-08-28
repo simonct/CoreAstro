@@ -88,9 +88,11 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
 }
 
 - (void)clearPipeStall:(UInt8)pipe {
-    const IOReturn result = (*self->interface)->ClearPipeStallBothEnds(self->interface,pipe);
-    if (result != kIOReturnSuccess){
-        NSLog(@"ClearPipeStallBothEnds %d: %08x (%s)",pipe,result,USBErrorToString(result));
+    if (self->interface){
+        const IOReturn result = (*self->interface)->ClearPipeStallBothEnds(self->interface,pipe);
+        if (result != kIOReturnSuccess){
+            NSLog(@"ClearPipeStallBothEnds %d: %08x (%s)",pipe,result,USBErrorToString(result));
+        }
     }
 }
 
