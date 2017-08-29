@@ -54,13 +54,6 @@ static NSString* const kCASCameraControlsOtherCountDefaultsKey = @"CASCameraCont
 
 static void* kvoContext;
 
-+ (void)initialize
-{
-    if (self == [CASCameraControlsViewController class]){
-        // register temp converter
-    }
-}
-
 - (CASCameraController*)cameraController
 {
     return self.representedObject;
