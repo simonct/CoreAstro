@@ -1028,7 +1028,8 @@ static void* kvoContext;
         else {
             switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianPHD2Behaviour"]) {
                 case 0:
-                    NSLog(@"No PHD2 meridian behaviour selected");
+                    NSLog(@"No PHD2 specific meridian behaviour selected, restarting guiding");
+                    restartGuiding();
                     break;
                 case 1:
                 {
