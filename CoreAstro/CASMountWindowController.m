@@ -454,10 +454,16 @@ static void* kvoContext;
         if (error){
             [NSApp presentError:error];
         }
-        else{
+        else {
+            const BOOL usePlateSolving = weakSelf.mountController.usePlateSolving;
             [weakSelf.mountController slewToTargetWithCompletion:^(NSError* error) {
                 if (error){
                     [NSApp presentError:error];
+                }
+                else {
+                    if (usePlateSolving){
+                        self.synced = YES;
+                    }
                 }
             }];
         }
@@ -633,7 +639,7 @@ static void* kvoContext;
 - (void)mountSynchroniserDidSyncMount:(CASMountSynchroniser*)mountSynchroniser
 {
     // or should this just be a state on the mount controller ?
-    self.synced = true;
+    self.synced = YES;
 }
 
 #pragma mark - Popover delegate
