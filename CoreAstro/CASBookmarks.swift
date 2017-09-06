@@ -68,7 +68,7 @@ open class CASBookmarks: NSObject {
     }
     
     open func storeDidChange(_ note: Notification) { // interestingly, can't be private otherwise the notification fails with selector not found
-        print("storeDidChange \((note as NSNotification).userInfo)")
+        print("storeDidChange \(String(describing: (note as NSNotification).userInfo))")
         if let changedKeys = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
             let reason = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
             let _ = changedKeys.index(of: CASBookmarks.defaultsKey){
