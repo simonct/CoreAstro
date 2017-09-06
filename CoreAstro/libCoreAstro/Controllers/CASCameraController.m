@@ -440,7 +440,8 @@ static void* kvoContext;
     
     switch (self.role) {
         case CASCameraControllerRoleMaster:{
-            // wait for slaves to complete the proceed with default behaviour
+            // wait for slaves to complete then proceed with default behaviour
+            // only call completion block when slaves have completed; to the caller, multiple cameras look like one
         }
             break;
         case CASCameraControllerRoleSlave:{
@@ -456,6 +457,7 @@ static void* kvoContext;
                 
                 self.state = CASCameraControllerStateDithering;
                 
+                // todo; lose the completion block, depend on the delegate callback ?
                 [self.phd2Client ditherByPixels:self.settings.ditherPixels inRAOnly:NO completion:^(BOOL success) {
                     if (success){
                         NSLog(@"Dither of %.1f pixels complete",self.settings.ditherPixels);
@@ -796,7 +798,7 @@ static void* kvoContext;
 
 - (void)guidingFailedWithError:(NSError*)error
 {
-    // todo; we should suspend and re-start when guiding resumes or give up after a limit
+    // todo; we should suspend and re-start when guiding resumes or give up after a limit ?
 
     [self.sink cameraController:self didCompleteExposure:nil error:error];
 }
