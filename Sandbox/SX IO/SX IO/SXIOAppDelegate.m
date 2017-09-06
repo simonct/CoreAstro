@@ -124,8 +124,8 @@ static void* kvoContext;
         }
 #endif
         
-        [CASBookmarks sharedInstance];
-        [CASLocalNotifier sharedInstance];
+        (void)[CASBookmarks sharedInstance];
+        (void)[CASLocalNotifier sharedInstance];
         
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"cameraControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
         [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"filterWheelControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
