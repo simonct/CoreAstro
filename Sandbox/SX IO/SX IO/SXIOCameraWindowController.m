@@ -289,7 +289,13 @@ static void* kvoContext;
 
 - (void)disconnect // called from the app delegate
 {
-    [self.cameraController disconnect]; // this results in -close being called when the device is removed
+    if (self.cameraController){
+        [self.cameraController disconnect]; // this results in -close being called when the device is removed
+    }
+    else {
+        [[SXIOAppDelegate sharedInstance] removeWindowFromMenus:self];
+        [self close];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
