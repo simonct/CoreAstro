@@ -1,3 +1,12 @@
+===============================================================================
+===============================================================================
+= NOTE:  This is the old version of the README.win32 file that was distributed
+= with CFITSIO up until version 3.35 in 2013.  These instruction may still work
+= with more recent versions of CFITSIO, however, users are strongly urged to 
+= use the CMake procedures that are now documented in the new README.win32 file.
+===============================================================================
+===============================================================================
+
      Instructions on using CFITSIO on Windows platforms for C programmers
 
 These instructions use a simple DOS-style command window. It is also possible
