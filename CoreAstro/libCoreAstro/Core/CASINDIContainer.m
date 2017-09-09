@@ -19,6 +19,7 @@
 @implementation CASINDIDevice {
     NSInteger _binning;
     NSInteger _exposureTime;
+    NSInteger _connected;
 }
 
 - (instancetype)init
@@ -83,6 +84,49 @@ NSString* const kCASINDIContainerAddedCameraNotification = @"kCASINDIContainerAd
     _binning = binning;
 }
 
+- (CGSize)size
+{
+    CASINDIVector* vector = self.vectors[@"CCD_INFO"];
+    if (vector){
+        CASINDIValue* width = vector.items[@"CCD_MAX_X"];
+        CASINDIValue* height = vector.items[@"CCD_MAX_Y"];
+        return CGSizeMake([width.value floatValue], [height.value floatValue]);
+    }
+    return CGSizeZero;
+}
+
+- (NSInteger) bpp
+{
+    CASINDIVector* vector = self.vectors[@"CCD_INFO"];
+    if (vector){
+        CASINDIValue* bpp = vector.items[@"CCD_BITSPERPIXEL"];
+        return [bpp.value integerValue];
+    }
+    return 0;
+}
+
+- (CGSize)sensorSize
+{
+    CASINDIVector* vector = self.vectors[@"CCD_FRAME"];
+    if (vector){
+        CASINDIValue* width = vector.items[@"WIDTH"];
+        CASINDIValue* height = vector.items[@"HEIGHT"];
+        return CGSizeMake([width.value floatValue], [height.value floatValue]);
+    }
+    return CGSizeZero;
+}
+
+- (CGSize)pixelSize
+{
+    CASINDIVector* vector = self.vectors[@"CCD_INFO"];
+    if (vector){
+        CASINDIValue* width = vector.items[@"CCD_PIXEL_SIZE_X"];
+        CASINDIValue* height = vector.items[@"CCD_PIXEL_SIZE_Y"];
+        return CGSizeMake([width.value floatValue], [height.value floatValue]);
+    }
+    return CGSizeZero;
+}
+
 - (void)captureWithCompletion:(void(^)(NSData* exposureData))completion
 {
     NSAssert(_binning > 0, @"_binning > 0");
@@ -93,23 +137,26 @@ NSString* const kCASINDIContainerAddedCameraNotification = @"kCASINDIContainerAd
     
     NSString* cmd = [NSString stringWithFormat:@"<enableBLOB device='%@'>Also</enableBLOB>",self.name];
     [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
-    NSLog(@"cmd: %@",cmd);
     
-    cmd = [NSString stringWithFormat:@"<newNumberVector device='%@' name='CCD_BINNING'><oneNumber name='HOR_BIN'>%ld</oneNumber><oneNumber name='VER_BIN'>%ld</oneNumber></newNumberVector>",self.name,(long)self.binning,(long)self.binning];
-    [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
-    NSLog(@"cmd: %@",cmd);
-
-    cmd = [NSString stringWithFormat:@"<newNumberVector device='%@' name='CCD_EXPOSURE'><oneNumber name='CCD_EXPOSURE_VALUE'>%ld</oneNumber></newNumberVector>",self.name,(long)self.exposureTime];
-    [self.container.client enqueue:[cmd dataUsingEncoding:NSUTF8StringEncoding]];
-    NSLog(@"cmd: %@",cmd);
+    [self.vectors[@"CCD_BINNING"] setValues:@[@"HOR_BIN",@"VER_BIN"] to:@[@(self.binning),@(self.binning)]];
+    [self.vectors[@"CCD_EXPOSURE"] setValue:@"CCD_EXPOSURE_VALUE" to:@(self.exposureTime)];
+//    [self.vectors[@"CCD_FRAME_TYPE"] setValue:@"FRAME_LIGHT" to:@YES];
+    
 }
 
 - (void)vectorDefined:(NSNotification*)note
 {
     CASINDIVector* vector = note.object;
-    if ([vector.name isEqualToString:@"CCD_EXPOSURE"]){
-        if (vector.device == self){
-            self.isCamera = YES;
+    
+    NSLog(@"vector: %@",vector.name);
+    [vector.items enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, CASINDIValue*  _Nonnull obj, BOOL * _Nonnull stop) {
+        NSLog(@"\t %@ | %@ | %@",obj.name,obj.label,obj.value);
+    }];
+    
+    if (vector.device == self){
+        NSArray* keys = self.vectors.allKeys;
+        self.isCamera = [keys containsObject:@"CCD_EXPOSURE"] && [keys containsObject:@"CCD_INFO"] && [keys containsObject:@"CCD_FRAME"];
+        if (self.isCamera){
             [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIContainerAddedCameraNotification object:nil userInfo:@{@"camera":self}];
         }
     }
@@ -119,20 +166,42 @@ NSString* const kCASINDIContainerAddedCameraNotification = @"kCASINDIContainerAd
 {
     CASINDIVector* vector = note.object;
     CASINDIValue* value = note.userInfo[@"value"];
+    
+    NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
+
     if ([vector.type isEqualToString:@"BLOB"]){
-        NSLog(@"vectorUpdated: %@.%@[%@=%ld]",vector.device.name,vector.name,value.name,value.value.length);
-        //if ([vector.state isEqualToString:@"Ok"]){
+        
         NSData* encodedData = [value.value dataUsingEncoding:NSASCIIStringEncoding];
         NSData* exposureData = [[NSData alloc] initWithBase64EncodedData:encodedData options:NSDataBase64DecodingIgnoreUnknownCharacters];
-        NSLog(@"read %ld bytes, decoded to %ld bytes",encodedData.length,exposureData.length);
+        // NSLog(@"read %ld bytes, decoded to %ld bytes",encodedData.length,exposureData.length);
         if (self.captureCompetion){
+            uint16_t* p = (uint16_t*)[exposureData bytes];
+            if (p){
+                for (NSInteger i = 0; i < [exposureData length] / sizeof(uint16_t); ++i){
+                    p[i] = CFSwapInt16(p[i]);
+                }
+            }
             self.captureCompetion(exposureData);
         }
-        //}
     }
     else if ([vector.name isEqualToString:@"CONNECTION"]){
-        if ([value.name isEqualToString:@"CONNECT"] && [value.value isEqualToString:@"On"]){
-            NSLog(@"Camera connected");
+        
+        if ([value.name isEqualToString:@"CONNECT"]){
+            
+            if ([value.value isEqualToString:@"On"]){
+                if (!_connected){
+                    _connected = YES;
+                    NSLog(@"Camera connected");
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIContainerCameraConnectedNotification object:self userInfo:@{@"camera":self}];
+                }
+            }
+            else {
+                if (_connected){
+                    _connected = NO;
+                    NSLog(@"Camera disconnected");
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kCASINDIContainerCameraDisconnectedNotification object:self userInfo:@{@"camera":self}];
+                }
+            }
         }
     }
     else {
@@ -275,28 +344,43 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
 // we're sending a value to the server to change the value of a vector - currently the caller does this but we should probably let our contaning device do it
 - (void)setValue:(NSString*)name to:(id)newValue
 {
-    CASINDIValue* value = self.items[name];
-    if (!value){
-        NSLog(@"No such value '%@'",name);
-    }
-    else {
-        const BOOL isSwitch = [self.type isEqualToString:@"Switch"];
-        NSMutableString* command = [[NSString stringWithFormat:@"<new%@Vector device='%@' name='%@'>",self.type,self.device.name,self.name] mutableCopy];
-        if (!isSwitch || [self.rule isEqualToString:@"OneOfMany"]){
-            [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,value.name,[self stringForValue:newValue],self.type];
+    [self setValues:@[name] to:@[newValue]];
+}
+
+- (void)setValues:(NSArray<NSString*>*)names to:(NSArray*)newValues
+{
+    NSParameterAssert(names.count == newValues.count);
+
+    NSMutableString* command = [[NSString stringWithFormat:@"<new%@Vector device='%@' name='%@'>",self.type,self.device.name,self.name] mutableCopy];
+    
+    for (NSInteger i = 0; i < names.count; ++i){
+
+        NSString* name = names[i];
+        id newValue = newValues[i];
+
+        CASINDIValue* value = self.items[name];
+        if (!value){
+            NSLog(@"No such value '%@'",name);
         }
         else {
-            NSString* const valueOn = [newValue boolValue] ? @"On" : @"Off";
-            NSString* const valueOff = [newValue boolValue] ? @"Off" : @"On";
-            [self.items enumerateKeysAndObjectsUsingBlock:^(id key, CASINDIValue* obj, BOOL *stop) {
-                NSString* onOff = ([name isEqualToString:obj.name]) ? valueOn : valueOff;
-                [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,obj.name,onOff,self.type];
-            }];
+            const BOOL isSwitch = [self.type isEqualToString:@"Switch"];
+            if (!isSwitch || [self.rule isEqualToString:@"OneOfMany"]){
+                [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,value.name,[self stringForValue:newValue],self.type];
+            }
+            else {
+                NSString* const valueOn = [newValue boolValue] ? @"On" : @"Off";
+                NSString* const valueOff = [newValue boolValue] ? @"Off" : @"On";
+                [self.items enumerateKeysAndObjectsUsingBlock:^(id key, CASINDIValue* obj, BOOL *stop) {
+                    NSString* onOff = ([name isEqualToString:obj.name]) ? valueOn : valueOff;
+                    [command appendFormat:@"<one%@ name='%@'>%@</one%@>",self.type,obj.name,onOff,self.type];
+                }];
+            }
         }
-        [command appendString:[NSString stringWithFormat:@"</new%@Vector>",self.type]];
-        
-        [self.device.container.client enqueue:[command dataUsingEncoding:NSASCIIStringEncoding]];
     }
+    
+    [command appendString:[NSString stringWithFormat:@"</new%@Vector>",self.type]];
+
+    [self.device.container.client enqueue:[command dataUsingEncoding:NSASCIIStringEncoding]];
 }
 
 @end
@@ -311,6 +395,8 @@ NSString* const kCASINDIDefinedVectorNotification = @"kCASINDIDefinedVectorNotif
 @implementation CASINDIContainer
 
 NSString* const kCASINDIContainerAddedDeviceNotification = @"kCASINDIContainerAddedDeviceNotification";
+NSString* const kCASINDIContainerCameraConnectedNotification = @"kCASINDIContainerCameraConnectedNotification";
+NSString* const kCASINDIContainerCameraDisconnectedNotification = @"kCASINDIContainerCameraDisconnectedNotification";
 
 - (instancetype)init
 {

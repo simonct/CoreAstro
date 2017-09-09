@@ -27,6 +27,12 @@
 @protocol CASINDICamera <CASINDIDevice>
 @property (nonatomic) NSInteger exposureTime;
 @property (nonatomic) NSInteger binning;
+@property (nonatomic,readonly) CGSize size;
+@property (nonatomic,readonly) CGSize pixelSize;
+@property (nonatomic,readonly) CGSize sensorSize;
+@property (nonatomic,readonly) NSInteger bpp;
+// target temperature
+// actual temperature
 - (void)captureWithCompletion:(void(^)(NSData* exposureData))completion;
 extern NSString* const kCASINDIContainerAddedCameraNotification;
 @end
@@ -43,6 +49,7 @@ extern NSString* const kCASINDIContainerAddedCameraNotification;
 @property (nonatomic,strong,readonly) NSMutableDictionary* items; // CASINDIValue
 - (instancetype)initWithXMLElement:(NSXMLElement*)xmlElement device:(CASINDIDevice*)device;
 - (void)setValue:(NSString*)name to:(id)newValue;
+- (void)setValues:(NSArray<NSString*>*)names to:(NSArray*)newValues;
 extern NSString* const kCASINDIDefinedVectorNotification;
 extern NSString* const kCASINDIUpdatedVectorNotification;
 @end
@@ -65,6 +72,8 @@ extern NSString* const kCASINDIUpdatedVectorNotification;
 @property (readonly) BOOL connected;
 - (BOOL)connect;
 extern NSString* const kCASINDIContainerAddedDeviceNotification;
+extern NSString* const kCASINDIContainerCameraConnectedNotification;
+extern NSString* const kCASINDIContainerCameraDisconnectedNotification;
 @end
 
 @class CASINDIServiceBrowser;

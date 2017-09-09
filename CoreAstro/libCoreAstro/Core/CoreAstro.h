@@ -69,6 +69,8 @@
 #import <CoreAstro/CASPHD2Client.h>
 #import <CoreAstro/CASFocuser.h>
 #import <CoreAstro/CASINDIContainer.h>
+#import <CoreAstro/CASINDICamera.h>
+#import <CoreAstro/CASINDIFactory.h>
 #import <CoreAstro/CASClassDefaults.h>
 #import <CoreAstro/CASNova.h>
 #import <CoreAstro/CASClassDefaults.h>
