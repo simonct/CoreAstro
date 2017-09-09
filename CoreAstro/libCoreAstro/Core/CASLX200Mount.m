@@ -82,7 +82,7 @@
     if (responseObject && !responseObject.inProgress){
         responseObject.inProgress = YES;
 //        NSLog(@"sending : %@",responseObject.command);
-        [self.port sendData:[responseObject.command dataUsingEncoding:NSASCIIStringEncoding]];
+        [self.port sendData:[responseObject.command dataUsingEncoding:NSASCIIStringEncoding]]; // this does an immediate write to the serial fd
         if (!responseObject.completion){
             [self.completionStack removeObject:responseObject];
         }
@@ -101,28 +101,31 @@
     //        return;
     //    }
     
-    if (self.logCommands){
-        NSLog(@"Command: %@",command);
+    @synchronized (self) {
+        
+        if (self.logCommands){
+            NSLog(@"Command: %@",command);
+        }
+        
+        CASLX200MountResponse* response = [CASLX200MountResponse new];
+        response.completion = completion;
+        response.readCount = readCount;
+        response.useTerminator = (readCount == 0);
+        response.command = command;
+        
+        if (!self.completionStack){
+            self.completionStack = [NSMutableArray arrayWithCapacity:3];
+        }
+        if (priority) {
+            [self.completionStack insertObject:response atIndex:0];
+        }
+        else {
+            [self.completionStack addObject:response];
+        }
+        //        NSLog(@"%ld commands in stack",[self.completionStack count]);
+        
+        [self sendNextCommand];
     }
-    
-    CASLX200MountResponse* response = [CASLX200MountResponse new];
-    response.completion = completion;
-    response.readCount = readCount;
-    response.useTerminator = (readCount == 0);
-    response.command = command;
-
-    if (!self.completionStack){
-        self.completionStack = [NSMutableArray arrayWithCapacity:3];
-    }
-    if (priority) {
-        [self.completionStack insertObject:response atIndex:0];
-    }
-    else {
-        [self.completionStack addObject:response];
-    }
-    //        NSLog(@"%ld commands in stack",[self.completionStack count]);
-    
-    [self sendNextCommand];
 }
 
 - (void)sendCommand:(NSString*)command readCount:(NSInteger)readCount completion:(void (^)(NSString*))completion
@@ -453,50 +456,53 @@
     // todo; see if we have to detect the trailling #
     // todo; check connected ?
     
-    NSString* response = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-    
-    //NSLog(@"didReceiveData: %@",response);
-
-    if (![response length]){
-        NSLog(@"Empty response, continuing to read");
-        return;
-    }
-    
-    if (!_input){
-        _input = [NSMutableString string];
-    }
-    [_input appendString:response];
-    
-    CASLX200MountResponse* responseObject = [self.completionStack firstObject];
-
-    if (responseObject.readCount > 0){
-        responseObject.readCount -= [response length];
+    @synchronized (self) {
+        
+        NSString* response = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        
+        //NSLog(@"didReceiveData: %@",response);
+        
+        if (![response length]){
+            NSLog(@"Empty response, continuing to read");
+            return;
+        }
+        
+        if (!_input){
+            _input = [NSMutableString string];
+        }
+        [_input appendString:response];
+        
+        CASLX200MountResponse* responseObject = [self.completionStack firstObject];
+        
         if (responseObject.readCount > 0){
-            //NSLog(@"%ld bytes remaining to read",responseObject.readCount);
-            return;
+            responseObject.readCount -= [response length];
+            if (responseObject.readCount > 0){
+                //NSLog(@"%ld bytes remaining to read",responseObject.readCount);
+                return;
+            }
+            response = _input;
         }
-        response = _input;
-    }
-    else if (responseObject.useTerminator) {
-        const NSRange range = [_input rangeOfString:@"#" options:NSBackwardsSearch];
-        if (range.location == NSNotFound){
-            //NSLog(@"No termination character, continuing to read");
-            return;
+        else if (responseObject.useTerminator) {
+            const NSRange range = [_input rangeOfString:@"#" options:NSBackwardsSearch];
+            if (range.location == NSNotFound){
+                //NSLog(@"No termination character, continuing to read");
+                return;
+            }
+            response = [_input substringToIndex:range.location];
+            [_input deleteCharactersInRange:NSMakeRange(0,[response length] + 1)];
         }
-        response = [_input substringToIndex:range.location];
-        [_input deleteCharactersInRange:NSMakeRange(0,[response length] + 1)];
+        
+        //    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
+        
+        void (^completion)(NSString*) = responseObject.completion;
+        [self.completionStack removeObject:responseObject];
+        if (completion){
+            completion(response);
+        }
+        _input = nil;
+        
+        [self sendNextCommand];
     }
-    
-//    NSLog(@"Read complete response %@ for command %@",response,responseObject.command);
-    
-    void (^completion)(NSString*) = responseObject.completion;
-    [self.completionStack removeObject:responseObject];
-    if (completion){
-        completion(response);
-    }
-    _input = nil;
-    
-    [self sendNextCommand];
 }
 
 - (void)serialPortWasRemovedFromSystem:(ORSSerialPort *)serialPort
