@@ -163,7 +163,9 @@
 #if !CAS_SLEW_AND_SYNC_TEST
                     [weakSelf syncAndSlew];
 #else
-                    NSLog(@"_testError: %f",_testError);
+                    
+                    __typeof(self) strongSelf = weakSelf;
+                    NSLog(@"_testError: %f",strongSelf->_testError);
                     
                     if (_testError < 0.125){
                         [weakSelf completeWithError:nil];
@@ -171,7 +173,7 @@
                     else{
                         
                         // sync to an imaginary position
-                        [weakSelf.mount syncToRA:_raInDegrees+_testError dec:_decInDegrees+_testError completion:^(CASMountSlewError slewError) {
+                        [weakSelf.mountController.mount syncToRA:_raInDegrees+_testError dec:_decInDegrees+_testError completion:^(CASMountSlewError slewError) {
                             
                             // reduce error
                             _testError /= 2;
@@ -184,7 +186,7 @@
                                 
                                 // slew
                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self startSlewToRAImpl:_raInDegrees dec:_decInDegrees];
+                                    [weakSelf startSlewToRAImpl:_raInDegrees dec:_decInDegrees];
                                 });
                             }
                         }];
