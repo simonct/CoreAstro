@@ -51,7 +51,7 @@
         float* pixelData = (float*)[_floatPixels bytes];
         float* contextData = CGBitmapContextGetData(context);
         if (pixelData && contextData){
-            memcpy(contextData, pixelData, [_floatPixels length]);
+            memcpy(contextData, pixelData, MIN([_floatPixels length], self.size.width*self.size.height*sizeof(float)));
         }
     }
     
