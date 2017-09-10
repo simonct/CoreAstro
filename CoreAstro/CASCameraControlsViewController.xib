@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
@@ -258,7 +258,7 @@
                 </popUpButton>
                 <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="19">
                     <rect key="frame" x="11" y="68" width="97" height="15"/>
-                    <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="100" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="61"/>
+                    <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="600" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="61"/>
                     <connections>
                         <binding destination="-2" name="enabled2" keyPath="cameraController" previousBinding="459" id="461">
                             <dictionary key="options">
