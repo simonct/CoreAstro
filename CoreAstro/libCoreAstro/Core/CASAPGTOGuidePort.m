@@ -218,6 +218,7 @@ static int SafeBindUnixDomainSocket(int sockFD, const char *socketPath)
 
 @implementation CASAPGTOGuidePort {
     int _socket;
+    NSInteger _guide_sequence;
 }
 
 static const char* path = "/var/tmp/org.coreastro.sxio/apgto-guider.socket";
@@ -230,7 +231,7 @@ static const char* path = "/var/tmp/org.coreastro.sxio/apgto-guider.socket";
         self.mount = mount;
         self.delegate = delegate;
         
-        self.regex = [NSRegularExpression regularExpressionWithPattern:@"([A-Z]) ([0-9]+)\\#" options:NSRegularExpressionCaseInsensitive error:nil];
+        self.regex = [NSRegularExpression regularExpressionWithPattern:@"(\\d+) ([A-Z]) ([0-9]+)\\#" options:NSRegularExpressionCaseInsensitive error:nil];
         if (!self.regex){
             return nil;
         }
@@ -317,8 +318,11 @@ static const char* path = "/var/tmp/org.coreastro.sxio/apgto-guider.socket";
                                                                    self.readHandle = nil;
                                                                }
                                                                
+                                                               _guide_sequence = 0;
                                                                self.readHandle = note.userInfo[NSFileHandleNotificationFileHandleItem];
                                                                [self.readHandle readInBackgroundAndNotifyForModes:@[NSRunLoopCommonModes,NSEventTrackingRunLoopMode,NSModalPanelRunLoopMode]];
+                                                               
+                                                               // todo; send hello message
                                                                
                                                                [self accept];
                                                            }];
@@ -426,34 +430,47 @@ static const char* path = "/var/tmp/org.coreastro.sxio/apgto-guider.socket";
         
         [matches enumerateObjectsUsingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
-            if (obj.numberOfRanges != 3) {
+            if (obj.numberOfRanges != 4) {
                 NSLog(@"CASAPGTOGuidePort: Badly formatted message '%@'",message);
             }
             else{
                 
+                NSLog(@"CASAPGTOGuidePort: Pulse command '%@'",message);
+
                 BOOL success = false;
-                NSString* direction = [message substringWithRange:[obj rangeAtIndex:1]];
-                const NSInteger milliseconds = [[message substringWithRange:[obj rangeAtIndex:2]] integerValue];
-                if ([direction caseInsensitiveCompare:@"N"] == NSOrderedSame) {
-                    success = [self.delegate pulseInDirection:CASMountDirectionNorth ms:milliseconds];
-                }
-                else if ([direction caseInsensitiveCompare:@"S"] == NSOrderedSame) {
-                    success = [self.delegate pulseInDirection:CASMountDirectionSouth ms:milliseconds];
-                }
-                else if ([direction caseInsensitiveCompare:@"E"] == NSOrderedSame) {
-                    success = [self.delegate pulseInDirection:CASMountDirectionEast ms:milliseconds];
-                }
-                else if ([direction caseInsensitiveCompare:@"W"] == NSOrderedSame) {
-                    success = [self.delegate pulseInDirection:CASMountDirectionWest ms:milliseconds];
+                NSString* index = [message substringWithRange:[obj rangeAtIndex:1]];
+                if (index.integerValue < _guide_sequence){
+                    
+                    NSLog(@"CASAPGTOGuidePort: Out of sequence guide command %@, expecting %ld",index,(long)_guide_sequence);
+                    [self writeMessage:@"error: out of sequence"];
                 }
                 else {
-                    NSLog(@"CASAPGTOGuidePort: Unrecognised guide direction: %@",direction);
-                }
-                if (success){
-                    [self writeMessage:@"ok"];
-                }
-                else {
-                    [self writeMessage:@"error"];
+                    
+                    _guide_sequence = index.integerValue;
+                    
+                    NSString* direction = [message substringWithRange:[obj rangeAtIndex:2]];
+                    const NSInteger milliseconds = [[message substringWithRange:[obj rangeAtIndex:3]] integerValue];
+                    if ([direction caseInsensitiveCompare:@"N"] == NSOrderedSame) {
+                        success = [self.delegate pulseInDirection:CASMountDirectionNorth ms:milliseconds];
+                    }
+                    else if ([direction caseInsensitiveCompare:@"S"] == NSOrderedSame) {
+                        success = [self.delegate pulseInDirection:CASMountDirectionSouth ms:milliseconds];
+                    }
+                    else if ([direction caseInsensitiveCompare:@"E"] == NSOrderedSame) {
+                        success = [self.delegate pulseInDirection:CASMountDirectionEast ms:milliseconds];
+                    }
+                    else if ([direction caseInsensitiveCompare:@"W"] == NSOrderedSame) {
+                        success = [self.delegate pulseInDirection:CASMountDirectionWest ms:milliseconds];
+                    }
+                    else {
+                        NSLog(@"CASAPGTOGuidePort: Unrecognised guide direction: %@",direction);
+                    }
+                    if (success){
+                        [self writeMessage:[NSString stringWithFormat:@"ok: %@",index]];
+                    }
+                    else {
+                        [self writeMessage:@"error: pulse failed"];
+                    }
                 }
             }
         }];
