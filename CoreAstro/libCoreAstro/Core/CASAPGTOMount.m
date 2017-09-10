@@ -847,23 +847,23 @@ struct ParkPosition {
     return @[@"Unknown",@"12x",@"64x",@"600x",@"1200x"];
 }
 
-- (void)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms
+- (BOOL)pulseInDirection:(CASMountDirection)direction ms:(NSInteger)ms // todo; may need a completion block instead
 {
     if (!self.connected){
         NSLog(@"APGTO: Attempt to pulse guide while not connected");
-        return;
+        return NO;
     }
     
     if (ms < 1){
         NSLog(@"APGTO: Pulse guide duration of %ld is < 1, ignoring",ms);
-        return;
+        return NO;
     }
     
     // filter out excessively long pulse commands
-    const NSInteger maxDuration = 5000;
-    if (ms > maxDuration){
-        NSLog(@"APGTO: Pulse guide duration of %ld is > %ld, ignoring",ms,maxDuration);
-        return;
+    const NSInteger maxAbsoluteDuration = 999;
+    if (ms > maxAbsoluteDuration){
+        NSLog(@"APGTO: Pulse guide duration of %ld is > %ld, ignoring",ms,maxAbsoluteDuration);
+        return NO;
     }
     
     // break pulses down into 999ms increments
@@ -897,12 +897,9 @@ struct ParkPosition {
         }
         
         ms -= duration;
-        
-        // wait for 'duration' ms if we have a follow-on pulse (todo; this could be blocking the main thread, need a comms queue)
-        if (ms > 0) {
-            [NSThread sleepForTimeInterval:duration/1000.0];
-        }
     }
+    
+    return YES;
 }
 
 - (NSArray<NSString*>*)configurationDefaultsKeys
