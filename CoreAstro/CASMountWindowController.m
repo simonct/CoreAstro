@@ -71,6 +71,7 @@
 @property (strong) CASMountSynchroniser* synchroniser;
 @property BOOL synced;
 @property BOOL slewAfterFindLocation;
+@property (weak) IBOutlet NSButton *lookupButton;
 @end
 
 // todo;
@@ -359,9 +360,11 @@ static void* kvoContext;
     
     if ((event.modifierFlags & NSEventModifierFlagOption) != 0){
         [self.syncButton setTitle:NSLocalizedString(@"Auto", @"Auto")];
+        [self.lookupButton setTitle:NSLocalizedString(@"Orbit", @"Orbit")];
     }
     else {
         [self.syncButton setTitle:NSLocalizedString(@"Sync", @"Sync")];
+        [self.lookupButton setTitle:NSLocalizedString(@"Lookup", @"Lookup")];
     }
 }
 
@@ -484,6 +487,11 @@ static void* kvoContext;
 
 - (IBAction)lookup:(id)sender
 {
+    if (([[NSApp currentEvent] modifierFlags] & NSEventModifierFlagOption) != 0){
+        // show orbital elements window
+        return;
+    }
+    
     if (![self.searchString length] || self.lookup){
         NSBeep();
         return;

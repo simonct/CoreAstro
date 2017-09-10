@@ -10,6 +10,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="CASMountWindowController">
             <connections>
                 <outlet property="camerasArrayController" destination="Ps5-ee-7o7" id="Nyv-nW-e4F"/>
+                <outlet property="lookupButton" destination="cBS-hD-Biu" id="cNe-e4-Oow"/>
                 <outlet property="lookupSpinner" destination="3qC-bE-egp" id="pyo-AX-TGz"/>
                 <outlet property="morePanel" destination="9Jl-UB-2vZ" id="1nb-ZV-X5n"/>
                 <outlet property="mountConnectWindow" destination="dIP-qc-kdb" id="nCf-Zn-xsP"/>
@@ -29,7 +30,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="172" width="388" height="108"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="t9Q-bh-yGD">
                 <rect key="frame" x="0.0" y="0.0" width="388" height="108"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -154,7 +155,7 @@
                     <constraint firstAttribute="trailing" secondItem="vG7-dk-w8X" secondAttribute="trailing" constant="20" id="zGY-zh-bvD"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-908" y="284"/>
+            <point key="canvasLocation" x="-1150" y="-186"/>
         </window>
         <arrayController editable="NO" id="zI2-pD-xa0" userLabel="Bookmarks Array Controller">
             <connections>
@@ -165,7 +166,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="1107" width="369" height="154"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="9s1-4a-AEu">
                 <rect key="frame" x="0.0" y="0.0" width="369" height="154"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -274,13 +275,13 @@ Gw
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-917.5" y="-98"/>
+            <point key="canvasLocation" x="-1159" y="-396"/>
         </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="mjq-79-kKX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="120" y="64" width="423" height="575"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="xyv-uk-NCw">
                 <rect key="frame" x="0.0" y="0.0" width="423" height="575"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -484,7 +485,7 @@ Gw
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="o0e-3o-Msm">
-                                    <rect key="frame" x="198" y="29" width="28" height="17"/>
+                                    <rect key="frame" x="196" y="29" width="28" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="HA:" id="KRf-24-eJf">
                                         <font key="font" metaFont="system"/>
@@ -668,7 +669,7 @@ Gw
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0cn-8Z-J0A">
-                                    <rect key="frame" x="57" y="63" width="225" height="17"/>
+                                    <rect key="frame" x="57" y="63" width="221" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="ck4-eq-AcG">
                                         <font key="font" metaFont="system"/>
@@ -693,7 +694,7 @@ Gw
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UB5-38-O6T">
-                                    <rect key="frame" x="57" y="44" width="224" height="17"/>
+                                    <rect key="frame" x="57" y="44" width="221" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;&gt;" id="QhJ-Dz-9DL">
                                         <font key="font" metaFont="system"/>
@@ -744,48 +745,6 @@ Gw
                                         </binding>
                                     </connections>
                                 </popUpButton>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PHc-ui-kz9">
-                                    <rect key="frame" x="288" y="14" width="87" height="32"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <buttonCell key="cell" type="push" title="Slew" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0jI-f9-VUL">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="slew:" target="-2" id="uqS-oW-Gf4"/>
-                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="fRp-bG-rzU" id="ih7-Ok-xLy">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="gPL-vJ-nJC">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="enabled3" keyPath="targetDec" previousBinding="0tN-PT-L8O" id="fRp-bG-rzU">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
-                                                <string key="NSValueTransformerName">NSIsNotNil</string>
-                                            </dictionary>
-                                        </binding>
-                                        <binding destination="-2" name="enabled2" keyPath="targetRA" previousBinding="gPL-vJ-nJC" id="0tN-PT-L8O">
-                                            <dictionary key="options">
-                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                                <integer key="NSNullPlaceholder" value="-1"/>
-                                                <string key="NSValueTransformerName">NSIsNotNil</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </button>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Fv-Bv-XJR">
                                     <rect key="frame" x="288" y="47" width="87" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -844,6 +803,48 @@ Gw
                                         <binding destination="-2" name="enabled" keyPath="mount.slewing" id="T30-tg-8Ph">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PHc-ui-kz9">
+                                    <rect key="frame" x="288" y="8" width="87" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="push" title="Slew" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0jI-f9-VUL">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="slew:" target="-2" id="uqS-oW-Gf4"/>
+                                        <binding destination="-2" name="enabled4" keyPath="mount.connected" previousBinding="fRp-bG-rzU" id="ih7-Ok-xLy">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="enabled" keyPath="mount.slewing" id="gPL-vJ-nJC">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="enabled3" keyPath="targetDec" previousBinding="0tN-PT-L8O" id="fRp-bG-rzU">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                                <string key="NSValueTransformerName">NSIsNotNil</string>
+                                            </dictionary>
+                                        </binding>
+                                        <binding destination="-2" name="enabled2" keyPath="targetRA" previousBinding="gPL-vJ-nJC" id="0tN-PT-L8O">
+                                            <dictionary key="options">
+                                                <integer key="NSMultipleValuesPlaceholder" value="-1"/>
+                                                <integer key="NSNoSelectionPlaceholder" value="-1"/>
+                                                <integer key="NSNotApplicablePlaceholder" value="-1"/>
+                                                <integer key="NSNullPlaceholder" value="-1"/>
+                                                <string key="NSValueTransformerName">NSIsNotNil</string>
                                             </dictionary>
                                         </binding>
                                     </connections>
