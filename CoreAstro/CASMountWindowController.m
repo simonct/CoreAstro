@@ -48,6 +48,26 @@
 
 @end
 
+@interface CASBooleanTransformer : NSValueTransformer
+@end
+
+@implementation CASBooleanTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    if ([value boolValue]) {
+        return @"Yes";
+    }
+    return @"No";
+}
+
+@end
+
 @interface CASMountWindowController ()<NSWindowDelegate,NSPopoverDelegate,CASMountMountSynchroniserDelegate>
 @property (nonatomic,readonly) CASMount* mount; // bindings convenience accessor
 @property (nonatomic,weak) CASMountController* mountController;
@@ -109,6 +129,7 @@ static void* kvoContext;
     [NSValueTransformer setValueTransformer:[CASLX200RATransformer new] forName:@"CASLX200RATransformer"];
     [NSValueTransformer setValueTransformer:[CASLX200DecTransformer new] forName:@"CASLX200DecTransformer"];
     [NSValueTransformer setValueTransformer:[CASPierSideTransformer new] forName:@"CASPierSideTransformer"];
+    [NSValueTransformer setValueTransformer:[CASBooleanTransformer new] forName:@"CASBooleanTransformer"];
     [NSValueTransformer setValueTransformer:[CASNumberStringTransformer new] forName:@"CASNumberStringTransformer"];
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountWindowControllerBinning":@(4),
