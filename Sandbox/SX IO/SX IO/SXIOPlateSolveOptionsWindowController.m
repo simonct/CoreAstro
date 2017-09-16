@@ -108,9 +108,10 @@ static void* kvoContext;
     }
 }
 
+static NSString* const key = @"SXIOPlateSolverFocalLength";
+
 + (NSString*)focalLengthWithCameraKey:(CASCameraController*)cameraController
 {
-    NSString* const key = @"SXIOPlateSolverFocalLength";
     return [NSString stringWithFormat:@"%@%@",key,cameraController.camera.uniqueID];
 }
 
@@ -121,7 +122,15 @@ static void* kvoContext;
 
 - (float)focalLength
 {
-    return [[NSUserDefaults standardUserDefaults] floatForKey:[self focalLengthKey]];
+    NSNumber* focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:[self focalLengthKey]];
+    if ([focalLength isKindOfClass:[NSNumber class]]){
+        return [focalLength floatValue];
+    }
+    focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    if ([focalLength isKindOfClass:[NSNumber class]]){
+        return [focalLength floatValue];
+    }
+    return 0;
 }
 
 - (void)setFocalLength:(float)focalLength
