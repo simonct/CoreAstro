@@ -17,14 +17,14 @@
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="381" height="446"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="contentRect" x="196" y="240" width="381" height="556"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="381" height="446"/>
+                <rect key="frame" x="0.0" y="0.0" width="381" height="556"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <box autoresizesSubviews="NO" borderType="line" title="General" translatesAutoresizingMaskIntoConstraints="NO" id="Hvl-qu-FV9">
-                        <rect key="frame" x="17" y="312" width="347" height="114"/>
+                        <rect key="frame" x="17" y="422" width="347" height="114"/>
                         <view key="contentView" id="6EU-QA-yny">
                             <rect key="frame" x="1" y="1" width="345" height="98"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,7 +80,7 @@
                         </constraints>
                     </box>
                     <box autoresizesSubviews="NO" borderType="line" title="Image file format" translatesAutoresizingMaskIntoConstraints="NO" id="9HO-tb-tcW">
-                        <rect key="frame" x="17" y="252" width="347" height="56"/>
+                        <rect key="frame" x="17" y="362" width="347" height="56"/>
                         <view key="contentView" id="I1r-hh-Rn4">
                             <rect key="frame" x="1" y="1" width="345" height="40"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -122,6 +122,100 @@
                             <constraint firstAttribute="height" constant="52" id="DVQ-2K-u6Y"/>
                             <constraint firstItem="iIJ-zr-SGL" firstAttribute="leading" secondItem="9HO-tb-tcW" secondAttribute="leading" constant="16" id="geS-Ix-OFX"/>
                             <constraint firstAttribute="bottom" secondItem="iIJ-zr-SGL" secondAttribute="bottom" constant="9" id="myz-ak-3eb"/>
+                        </constraints>
+                    </box>
+                    <box autoresizesSubviews="NO" borderType="line" title="FITS headers" translatesAutoresizingMaskIntoConstraints="NO" id="2da-tP-Kfa">
+                        <rect key="frame" x="17" y="252" width="347" height="106"/>
+                        <view key="contentView" id="7b2-jz-ch6">
+                            <rect key="frame" x="1" y="1" width="345" height="90"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cVl-oV-F1y">
+                                    <rect key="frame" x="139" y="35" width="186" height="19"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="RMo-ZC-VlH">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="idZ-j4-bsR" name="value" keyPath="values.SXIOFitsHeaderTelescope" id="wgo-pe-qeR">
+                                            <dictionary key="options">
+                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                <bool key="NSValidatesImmediately" value="YES"/>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g4o-EG-Ry9">
+                                    <rect key="frame" x="63" y="36" width="70" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Telescope:" id="nk5-Bj-l2V">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NdA-F4-DPt">
+                                    <rect key="frame" x="139" y="11" width="186" height="19"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="fFa-F9-H7u">
+                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="309" maximumFractionDigits="3" id="6Wy-Ct-hvm">
+                                            <real key="minimum" value="0.0"/>
+                                            <real key="maximum" value="10000"/>
+                                        </numberFormatter>
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="idZ-j4-bsR" name="value" keyPath="values.SXIOPlateSolverFocalLength" id="Gcb-rT-sg5">
+                                            <dictionary key="options">
+                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                <bool key="NSValidatesImmediately" value="YES"/>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0ZN-CK-Amf">
+                                    <rect key="frame" x="12" y="12" width="121" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Focal Length (mm):" id="mJP-Pr-E0Y">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xQI-1s-Eto">
+                                    <rect key="frame" x="139" y="61" width="186" height="19"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" continuous="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="hJL-Bz-d2Z">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="idZ-j4-bsR" name="value" keyPath="values.SXIOFitsHeaderObserver" id="zCf-3h-ng5">
+                                            <dictionary key="options">
+                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                <bool key="NSValidatesImmediately" value="YES"/>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W68-IH-Ts9">
+                                    <rect key="frame" x="69" y="62" width="64" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Observer:" id="pjn-WU-AH8">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                            </subviews>
+                        </view>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="102" id="l1Y-u7-Y5n"/>
                         </constraints>
                     </box>
                     <box autoresizesSubviews="NO" borderType="line" title="astrometry.net plate solving" translatesAutoresizingMaskIntoConstraints="NO" id="Se7-kA-RSO">
@@ -334,16 +428,19 @@
                 <constraints>
                     <constraint firstItem="3hc-b5-eck" firstAttribute="trailing" secondItem="bxs-o6-ywP" secondAttribute="trailing" id="2LH-87-qu3"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="trailing" secondItem="Se7-kA-RSO" secondAttribute="trailing" id="4Hg-Bx-O3K"/>
+                    <constraint firstItem="Se7-kA-RSO" firstAttribute="top" secondItem="2da-tP-Kfa" secondAttribute="bottom" constant="8" id="6eR-x6-mkl"/>
+                    <constraint firstItem="2da-tP-Kfa" firstAttribute="top" secondItem="9HO-tb-tcW" secondAttribute="bottom" constant="8" id="92v-IP-nmi"/>
+                    <constraint firstAttribute="trailing" secondItem="2da-tP-Kfa" secondAttribute="trailing" constant="20" id="95m-Uc-0Hy"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="20" symbolic="YES" id="9Jz-I2-v1p"/>
                     <constraint firstItem="bxs-o6-ywP" firstAttribute="top" secondItem="Se7-kA-RSO" secondAttribute="bottom" constant="8" symbolic="YES" id="Cvq-Mw-lXA"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="leading" secondItem="Se7-kA-RSO" secondAttribute="leading" id="FGg-UZ-ZgN"/>
                     <constraint firstItem="bxs-o6-ywP" firstAttribute="trailing" secondItem="Se7-kA-RSO" secondAttribute="trailing" id="Lq1-UF-bXK"/>
-                    <constraint firstItem="Se7-kA-RSO" firstAttribute="top" secondItem="9HO-tb-tcW" secondAttribute="bottom" constant="8" symbolic="YES" id="LrT-b4-75I"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="top" secondItem="Hvl-qu-FV9" secondAttribute="bottom" constant="8" symbolic="YES" id="Odm-aN-nhN"/>
                     <constraint firstItem="bxs-o6-ywP" firstAttribute="leading" secondItem="Se7-kA-RSO" secondAttribute="leading" id="ddM-Gb-hCC"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="trailing" secondItem="Hvl-qu-FV9" secondAttribute="trailing" id="emg-d1-hZ7"/>
                     <constraint firstItem="9HO-tb-tcW" firstAttribute="leading" secondItem="Hvl-qu-FV9" secondAttribute="leading" id="f0D-dX-20t"/>
                     <constraint firstAttribute="trailing" secondItem="9HO-tb-tcW" secondAttribute="trailing" constant="20" symbolic="YES" id="iJA-Ko-Hlt"/>
+                    <constraint firstItem="2da-tP-Kfa" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="20" id="mPx-TK-n3z"/>
                     <constraint firstItem="3hc-b5-eck" firstAttribute="top" secondItem="bxs-o6-ywP" secondAttribute="bottom" constant="8" symbolic="YES" id="qiD-9X-Cxm"/>
                     <constraint firstItem="3hc-b5-eck" firstAttribute="leading" secondItem="bxs-o6-ywP" secondAttribute="leading" id="vBI-o8-IDX"/>
                     <constraint firstItem="Hvl-qu-FV9" firstAttribute="top" secondItem="2" secondAttribute="top" constant="20" symbolic="YES" id="vVQ-mS-qSD"/>
@@ -352,7 +449,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="4"/>
             </connections>
-            <point key="canvasLocation" x="27" y="144"/>
+            <point key="canvasLocation" x="-103.5" y="4"/>
         </window>
         <userDefaultsController id="wka-tB-REe"/>
         <userDefaultsController representsSharedInstance="YES" id="idZ-j4-bsR"/>

@@ -1881,14 +1881,35 @@ static void* kvoContext;
                     exposure.meta = [meta copy];
                 }
                 
-//                NSNumber* ra = self.mount.ra;
-//                NSNumber* dec = self.mount.dec;
-//                if (ra && dec){
-//                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-//                    meta[@"ra"] = ra;
-//                    meta[@"dec"] = dec;
-//                    exposure.meta = [meta copy];
-//                }
+                NSNumber* ra = self.mountController.mount.ra;
+                NSNumber* dec = self.mountController.mount.dec;
+                if (ra && dec){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"centre-ra"] = ra;
+                    meta[@"centre-dec"] = dec;
+                    exposure.meta = [meta copy];
+                }
+                
+                id focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOPlateSolverFocalLength"];
+                if (focalLength){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"focal-length"] = focalLength;
+                    exposure.meta = [meta copy];
+                }
+
+                id observer = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderObserver"];
+                if (observer){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"observer"] = observer;
+                    exposure.meta = [meta copy];
+                }
+
+                id telescope = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderTelescope"];
+                if (telescope){
+                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+                    meta[@"telescope"] = telescope;
+                    exposure.meta = [meta copy];
+                }
 
                 if (![CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error]){
                     NSLog(@"Failed to write exposure to %@",[finalUrl path]);
