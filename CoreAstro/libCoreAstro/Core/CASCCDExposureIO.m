@@ -25,6 +25,7 @@
 
 #import "CASCCDExposureIO.h"
 #import "CASFITSUtilities.h"
+#import "CASCoordinateUtils.h"
 #import <Accelerate/Accelerate.h>
 
 #if CAS_ENABLE_FITS
@@ -181,13 +182,13 @@
             thumbName = [[wrappers objectForKey:[self thumbKey]] filename];
         }
         if (!metaName){
-            metaName = [wrapper addRegularFileWithContents:nil preferredFilename:[self metaKey]];
+            metaName = [wrapper addRegularFileWithContents:[NSData data] preferredFilename:[self metaKey]];
         }
         if (!samplesName){
-            samplesName = [wrapper addRegularFileWithContents:nil preferredFilename:[self pixelsKey]];
+            samplesName = [wrapper addRegularFileWithContents:[NSData data] preferredFilename:[self pixelsKey]];
         }
         if (!thumbName){
-            thumbName = [wrapper addRegularFileWithContents:nil preferredFilename:[self thumbKey]];
+            thumbName = [wrapper addRegularFileWithContents:[NSData data] preferredFilename:[self thumbKey]];
         }
         
         // write samples and metadata
@@ -339,22 +340,24 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
     if (!_utcDateFormatter){
         _utcDateFormatter = [[NSDateFormatter alloc] init];
         _utcDateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-        [_utcDateFormatter setDateFormat:@"yyyy'.'M'.'dd'T'HH':'mm':'ss'.'SSS"];
+        [_utcDateFormatter setDateFormat:@"yyyy'-'M'-'dd'T'HH':'mm':'ss'.'SSS"]; // CCYY-MM-DDThh:mm:ss.sss
     }
     return _utcDateFormatter;
 }
 
 - (NSString*)stringForCoordinate:(float)coord
 {
-    // SDD MM SS.SSS
+    // SDD MM SS
+    const CASDMSAngle dms = CASDMSAngleFromDegrees(coord);
     const char sign = coord < 0 ? '-' : '+';
-    
-    const float degs = fabsf(truncf(coord));
-    const float mins1 = (fabsf(coord) - degs)*60;
-    const float mins = truncf(mins1);
-    const float secs = (mins1 - mins)*60;
-    
-    return [NSString stringWithFormat:@"%c%02d %02d %0.3f",sign,(int)degs,(int)mins,secs];
+    return [NSString stringWithFormat:@"%c%02d %02d %02d",sign,(int)labs(dms.d),dms.m,dms.s];
+}
+
+- (NSString*)hmsStringForCoordinate:(float)coord
+{
+    // HH MM SS
+    const CASHMSAngle hms = CASHMSAngleFromDegrees(coord);
+    return [NSString stringWithFormat:@"%02d %02d %02d",hms.h,hms.m,hms.s];
 }
 
 - (void)addStringHeader:(const char*)header comment:(const char*)comment withValue:(id)value toFile:(fitsfile*)fptr
@@ -454,7 +457,7 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                     
                     NSDate* date = exposure.date;
                     if (date){
-                        // yyyy.mm.ddThh:mm:ss[.sss]
+                        
                         NSString* dateStr = [self.utcDateFormatter stringFromDate:date];
                         if ([dateStr length]){
                             const char* s = [dateStr cStringUsingEncoding:NSASCIIStringEncoding];
@@ -464,16 +467,54 @@ static NSError* (^createFITSError)(NSInteger,NSString*) = ^(NSInteger status,NSS
                         }
                     }
                     
+                    id focalLength = exposure.meta[@"focal-length"];
+                    if (focalLength){
+                        const unsigned short fl = [focalLength shortValue];
+                        fits_update_key(fptr, TUSHORT, "FOCALLEN", (void*)&fl, "Telescope focal length", &status);
+                    }
+                    
+                    id observer = exposure.meta[@"observer"];
+                    if (observer){
+                        [self addStringHeader:"OBSERVER" comment:"observer" withValue:observer toFile:fptr];
+                    }
+
+                    id telescope = exposure.meta[@"telescope"];
+                    if (telescope){
+                        [self addStringHeader:"TELESCOP" comment:"telescope" withValue:telescope toFile:fptr];
+                    }
+
+                    NSNumber* ra = exposure.meta[@"centre-ra"];
+                    NSNumber* dec = exposure.meta[@"centre-dec"];
+                    if ([ra isKindOfClass:[NSNumber class]] && [dec isKindOfClass:[NSNumber class]]){
+                                                
+                        [self addStringHeader:"OBJCTRA" comment:"image center right ascension" withValue:[self hmsStringForCoordinate:[ra doubleValue]] toFile:fptr];
+
+                        [self addStringHeader:"OBJCTDEC" comment:"image center right ascension" withValue:[self stringForCoordinate:[dec doubleValue]] toFile:fptr];
+                    }
+
                     // leave this as the host app version and have a new key to identify CAS ?
-                    // SWCREATE ?
                     const char* version = [[NSString stringWithFormat:@"CoreAstro %@",[[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"]] UTF8String];
                     fits_update_key(fptr, TSTRING, "CREATOR", (void*)version, "CoreAstro version", &status);
 
-                    unsigned short xbin = exposure.params.bin.width;
-                    fits_update_key(fptr, TUSHORT, "XBINNING", (void*)&xbin, "X Binning", &status);
-                    unsigned short ybin = exposure.params.bin.height;
-                    fits_update_key(fptr, TUSHORT, "YBINNING", (void*)&ybin, "Y Binning", &status);
+                    const char* creator = [[NSString stringWithFormat:@"%@ %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"],[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]] UTF8String];
+                    fits_update_key(fptr, TSTRING, "SWCREATE", (void*)creator, "software", &status);
 
+                    const unsigned short xbin = exposure.params.bin.width;
+                    fits_update_key(fptr, TUSHORT, "XBINNING", (void*)&xbin, "X Binning", &status);
+                    const unsigned short ybin = exposure.params.bin.height;
+                    fits_update_key(fptr, TUSHORT, "YBINNING", (void*)&ybin, "Y Binning", &status);
+                    
+                    NSString* pixelSize = exposure.meta[@"device"][@"params"][@"pixelSize"]; // non-sx cameras ?
+                    if ([pixelSize isKindOfClass:[NSString class]]){
+                        
+                        const CGSize size = NSSizeFromString(pixelSize);
+                        const float xsize = size.width / xbin;
+                        const float ysize = size.height / ybin;
+                        fits_update_key(fptr, TFLOAT, "XPIXSZ", (void*)&xsize, "X pixel size including binning", &status);
+                        fits_update_key(fptr, TFLOAT, "YPIXSZ", (void*)&ysize, "Y pixel size including binning", &status);
+
+                    }
+                    
 //                    if (exposure.params.origin.x != 0 || exposure.params.origin.y != 0){
 //                        long orx = exposure.params.origin.x;
 //                        fits_update_key(fptr, TLONG, "XORGSUBF", (void*)&orx, "X origin of subframe", &status);
