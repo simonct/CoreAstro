@@ -179,6 +179,9 @@
 
 - (void)disconnect
 {
+    if (!self.connected){
+        return;
+    }
     [self stopConnectionTimeout];
     [self.port close];
     self.connected = NO;
@@ -536,9 +539,7 @@
 {
     NSLog(@"serialPortWasClosed");
 
-    [self stopConnectionTimeout];
-
-    self.connected = NO;
+    [self disconnect];
 }
 
 @end

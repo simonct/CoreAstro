@@ -13,6 +13,8 @@
 #import "CASMountSynchroniser.h"
 #import <CoreAstro/CoreAstro-Swift.h>
 
+NSString* kCASMountControllerMountDisconnectedNotification = @"kCASMountControllerMountDisconnectedNotification";
+
 NSString* kCASMountControllerCapturedSyncExposureNotification = @"kCASMountControllerCapturedSyncExposureNotification";
 NSString* kCASMountControllerSolvedSyncExposureNotification = @"kCASMountControllerSolvedSyncExposureNotification";
 NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCompletedSyncNotification";
@@ -26,7 +28,11 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 @property (strong) NSScriptCommand* findCommand;
 @end
 
-@implementation CASMountController
+@implementation CASMountController {
+    BOOL _disconnecting;
+}
+
+static void* kvoContext;
 
 - (id)initWithMount:(CASMount*)mount
 {
@@ -46,10 +52,12 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
 - (void)dealloc
 {
     NSLog(@"[CASMountController dealloc]");
+    self.mount = nil;
 }
 
 - (void)disconnect
 {
+    _disconnecting = YES;
     [self.mount disconnect];
     self.cameraController = nil;
     [[CASDeviceManager sharedManager] removeMountController:self];
@@ -70,6 +78,15 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
     return self.mountSynchroniser.busy;
 }
 
+- (void)setMount:(CASMount *)mount
+{
+    if (mount != _mount){
+        [_mount removeObserver:self forKeyPath:@"connected" context:&kvoContext];
+        _mount = mount;
+        [_mount addObserver:self forKeyPath:@"connected" options:0 context:&kvoContext];
+    }
+}
+
 - (void)setCameraController:(CASCameraController *)cameraController
 {
     if (cameraController != _cameraController){
@@ -82,6 +99,23 @@ NSString* kCASMountControllerCompletedSyncNotification = @"kCASMountControllerCo
         
         oldCameraController.mountController = nil;
         _cameraController.mountController = self;
+    }
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (context == &kvoContext) {
+        if (object == self.mount){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (!_disconnecting && !self.mount.connected){
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kCASMountControllerMountDisconnectedNotification object:self userInfo:nil];
+                }
+            });
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 

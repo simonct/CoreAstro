@@ -32,6 +32,8 @@
 
 - (void)stop;
 
+extern NSString* kCASMountControllerMountDisconnectedNotification;
+
 extern NSString* kCASMountControllerCapturedSyncExposureNotification;
 extern NSString* kCASMountControllerSolvedSyncExposureNotification;
 extern NSString* kCASMountControllerCompletedSyncNotification;

@@ -232,6 +232,9 @@ static void* kvoContext;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountSolvedSyncExposure:) name:kCASMountControllerSolvedSyncExposureNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountCompletedSync:) name:kCASMountControllerCompletedSyncNotification object:nil];
 
+    // listen for mount disconncted notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountDisconnected:) name:kCASMountControllerMountDisconnectedNotification object:nil];
+
     // listen for mount removed notifications
     [[CASDeviceManager sharedManager] addObserver:self forKeyPath:@"mountControllers" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld|NSKeyValueObservingOptionInitial context:&kvoContext];
 
@@ -2450,6 +2453,18 @@ static void* kvoContext;
         }
         
         // todo; check to see if this is running a sequence step and call the completion block if it is (doing that now?)
+    }
+}
+
+- (void)mountDisconnected:(NSNotification*)note
+{
+    if (note.object == self.mountController){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSError* error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                         code:20
+                                     userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"The mount unexpectedly disconncted", @"The mount unexpectedly disconncted")}];
+            [self cameraController:self.cameraController didCompleteExposure:nil error:error];
+        });
     }
 }
 

@@ -160,6 +160,7 @@ static void* kvoContext;
     self.selectedSerialPort = [self.serialPortManager.availablePorts firstObject];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bookmarksChanged:) name:CASPlateSolveSolutionRegisteryChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mountDisconnected:) name:kCASMountControllerMountDisconnectedNotification object:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -347,6 +348,15 @@ static void* kvoContext;
 {
     [self willChangeValueForKey:@"bookmarks"];
     [self didChangeValueForKey:@"bookmarks"];
+}
+
+- (void)mountDisconnected:(NSNotification*)note
+{
+    if (note.object == self.mountController){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self disconnectButtonPressed:nil];
+        });
+    }
 }
 
 #pragma mark - Mount/Camera
