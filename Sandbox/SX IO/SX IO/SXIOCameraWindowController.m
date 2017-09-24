@@ -938,7 +938,7 @@ static void* kvoContext;
 //
 // Called when a capture has completed and the mount has crossed the meridian and needs flipping
 //
-- (void)startMountMeridianFlip
+- (BOOL)startMountMeridianFlip:(NSError**)error
 {
     // grab the current locked solution or, if there is none, the current mount position
     NSNumber* ra, *dec;
@@ -954,43 +954,48 @@ static void* kvoContext;
     }
     
     if (!ra || !dec){
-        [self presentAlertWithTitle:NSLocalizedString(@"Failed to Slew Mount", @"Failed to Slew Mount")
-                            message:NSLocalizedString(@"There is no current locked solution and the mount position is not available so the mount cannot be flipped", @"There is no current locked solution and the mount position is not available so the mount cannot be flipped")];
-    }
-    else {
         
-        // todo; put in an 'at least' param for ap mounts
-        // todo; 30s beeping countdown alert ?
-        // todo; capture mount co-ordinates here and avoid the need for a locked solution ? e.g. slewToMountCurrentPosition
-        
-        [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Flipping mount", @"Flipping mount")
-                                                        subtitle:NSLocalizedString(@"Mount has passed meridian while capturing, triggering flip", @"Mount has passed meridian while capturing, triggering flip")];
-        
-        // captures current mount state, suspends capture and stops guiding
-        [self prepareForMountSlewHandling];
-        
-        // set the restore on complete flag; this is the *only* place we do this (this is cleared in -completeMountSlewHandling which nils out the state object)
-        self.mountState.restoreStateWhenComplete = YES;
-        
-        // pop the slew sheet so that we can set the label text to something specific
-        [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+        NSString* message = NSLocalizedString(@"There is no current locked solution and the mount position is not available so the mount cannot be flipped", @"There is no current locked solution and the mount position is not available so the mount cannot be flipped");
 
-        self.mountController.cameraController = self.cameraController;
-        self.mountController.usePlateSolving = YES;
+        *error = [NSError errorWithDomain:NSStringFromClass([self class])
+                                     code:21
+                                 userInfo:@{NSLocalizedDescriptionKey:message}];
         
-        __weak __typeof(self) weakSelf = self;
-        [self.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
-            if (error){
-                [weakSelf completeMountSlewHandling]; // clear the saved mount state, dismisses the progress sheet
-                [NSApp presentError:error];
-            }
-            else {
-                [weakSelf.mountController slewToTargetWithCompletion:^(NSError* _) {
-                    // actual completion handling done in -mountCompletedSync:
-                }];
-            }
-        }];
+        return NO;
     }
+    
+    // todo; put in an 'at least' param for ap mounts
+    // todo; 30s beeping countdown alert ?
+    
+    [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Flipping mount", @"Flipping mount")
+                                                    subtitle:NSLocalizedString(@"Mount has passed meridian while capturing, triggering flip", @"Mount has passed meridian while capturing, triggering flip")];
+    
+    // captures current mount state, suspends capture and stops guiding
+    [self prepareForMountSlewHandling];
+    
+    // set the restore on complete flag; this is the *only* place we do this (this is cleared in -completeMountSlewHandling which nils out the state object)
+    self.mountState.restoreStateWhenComplete = YES;
+    
+    // pop the slew sheet so that we can set the label text to something specific
+    [self presentMountSlewSheetWithLabel:NSLocalizedString(@"Flipping mount...", @"Progress sheet status label")];
+    
+    self.mountController.cameraController = self.cameraController;
+    self.mountController.usePlateSolving = YES;
+    
+    __weak __typeof(self) weakSelf = self;
+    [self.mountController setTargetRA:ra.doubleValue dec:dec.doubleValue completion:^(NSError* error) {
+        if (error){
+            [weakSelf completeMountSlewHandling]; // clear the saved mount state, dismisses the progress sheet
+            [NSApp presentError:error];
+        }
+        else {
+            [weakSelf.mountController slewToTargetWithCompletion:^(NSError* _) {
+                // actual completion handling done in -mountCompletedSync:
+            }];
+        }
+    }];
+    
+    return YES;
 }
 
 // Restart guiding and/or capturing.
@@ -1838,8 +1843,6 @@ static void* kvoContext;
         return;
     }
     
-    NSString* const passedMeridianMessage = NSLocalizedString(@"Mount has passed meridian so stopping tracking", @"Mount has passed meridian so stopping tracking");
-    
     // check to see if the exposure failed - if it did stop capture, tracking and guiding
     if (error){
         [self stopEverything:[NSString stringWithFormat:NSLocalizedString(@"Capture error: %@", @"Capture error: %@"),error.localizedDescription]];
@@ -1847,148 +1850,172 @@ static void* kvoContext;
         return;
     }
     
-    if (exposure){
+    if (!exposure){
+        return;
+    }
+    
+    // save a reference to it (this is holding the pixels in memory though, may be better to store in a tmp file)
+    self.latestExposure = exposure;
+    
+    NSURL* finalUrl;
+    
+    // check we have somewhere to save the file, a prefix and a sequence number
+    const BOOL saveToFile = (self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
+    if (saveToFile){
+        finalUrl = [self saveURLForExposure:exposure showType:NO];
+    }
+    
+    // display the exposure
+    const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
+    [self setCurrentExposure:exposure resetDisplay:resetDisplay];
+    _capturedFirstImage = YES;
+    
+    // save the exposure to a file
+    if (finalUrl){
+        [self saveExposure:exposure toURL:finalUrl];
+    }
+    
+    // check to see if the mount is now pointing below the local horizon
+    CASDevice<CASMount>* mount = self.mountController.mount;
+    if (mount && ![mount horizonCheckRA:mount.ra.doubleValue dec:mount.dec.doubleValue]) {
+        [self stopEverything:[NSString stringWithFormat:NSLocalizedString(@"Mount is pointing below the local horizon", @"Mount is pointing below the local horizon")]];
+        return;
+    }
+    
+    // check to see if we crossed the meridian during the exposure
+    if (self.mountController.mount.weightsHigh){
         
-        // save a reference to it (this is holding the pixels in memory though, may be better to store in a tmp file)
-        self.latestExposure = exposure;
+        NSString* const passedMeridianMessage = NSLocalizedString(@"Mount has passed meridian so stopping tracking", @"Mount has passed meridian so stopping tracking");
         
-        NSURL* finalUrl;
-        
-        // check we have somewhere to save the file, a prefix and a sequence number
-        const BOOL saveToFile = (self.saveTargetControlsViewController.saveImages) && !self.cameraController.settings.continuous;
-        if (saveToFile){
-            finalUrl = [self saveURLForExposure:exposure showType:NO];
-        }
-        
-        // display the exposure
-        const BOOL resetDisplay = !_capturedFirstImage || [self.exposureView shouldResetDisplayForExposure:exposure];
-        [self setCurrentExposure:exposure resetDisplay:resetDisplay];
-        _capturedFirstImage = YES;
-        
-        // save the file
-        if (finalUrl){
-            
-            // todo; incorporate into CASCCDExposureIO ?
-            if ([@"png" isEqualToString:[[finalUrl path] pathExtension]]){
-                exposure.pngURL = finalUrl;
-                [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
-            }
-            else {
+        switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
                 
-                NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
-                NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
-                if (latitude && longitude){
-                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-                    meta[@"latitude"] = latitude;
-                    meta[@"longitude"] = longitude;
-                    exposure.meta = [meta copy];
-                }
+            case 0:
+                NSLog(@"Mount crossed meridian but selected behaviour is to keep tracking");
+                break;
                 
-                NSNumber* ra = self.mountController.mount.ra;
-                NSNumber* dec = self.mountController.mount.dec;
-                if (ra && dec){
-                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-                    meta[@"centre-ra"] = ra;
-                    meta[@"centre-dec"] = dec;
-                    exposure.meta = [meta copy];
-                }
-                
-                id focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOPlateSolverFocalLength"];
-                if (focalLength){
-                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-                    meta[@"focal-length"] = focalLength;
-                    exposure.meta = [meta copy];
-                }
+            case 1:
+                if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
+                    
+                    // flip the mount if we have more exposures to go in this session
+                    NSLog(@"Mount crossed meridian - flipping mount after %ld out of %ld exposures",controller.settings.currentCaptureIndex,controller.settings.captureCount);
 
-                id observer = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderObserver"];
-                if (observer){
-                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-                    meta[@"observer"] = observer;
-                    exposure.meta = [meta copy];
-                }
-
-                id telescope = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderTelescope"];
-                if (telescope){
-                    NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
-                    meta[@"telescope"] = telescope;
-                    exposure.meta = [meta copy];
-                }
-
-                if (![CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error]){
-                    NSLog(@"Failed to write exposure to %@",[finalUrl path]);
+                    NSError* error;
+                    if (![self startMountMeridianFlip:&error]){
+                        [self stopEverything:error.localizedDescription];
+                        [self captureCompletedWithError:error];
+                    }
                 }
                 else {
-                    NSLog(@"Wrote exposure to %@",[finalUrl path]);
-                    [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
-                    [self.cameraController addRecentURL:finalUrl];
-                    // todo; run any user-defined post-processing scripts e.g. NSUserAppleScriptTask
-                }
-                
-                /*
-                if (self.calibrate && self.calibratedExposure){
-                    NSString* ext = [finalUrl pathExtension];
-                    NSString* filename = [[[finalUrl lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:@"_calibrated"];
-                    NSString* calibratedPath = [[[[finalUrl path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:filename] stringByAppendingPathExtension:ext];
                     
-                    // todo; this is being written out as floating point...
+                    // otherwise just stop tracking
+                    NSLog(@"Mount crossed meridian and completed all exposures - stopping tracking");
                     
-                    if (![CASCCDExposureIO writeExposure:self.calibratedExposure toPath:calibratedPath error:&error]){
-                        NSLog(@"Failed to write calibrated exposure to %@",[finalUrl path]);
-                    }
-                    else {
-                        NSLog(@"Wrote calibrated exposure to %@",[finalUrl path]);
-                    }
-                }
-                */
-            }
-            
-            // clear any calibrated exposure set in the display code
-            self.calibratedExposure = nil;
-        }
-        
-        // check to see if the mount is now pointing below the local horizon
-        CASDevice<CASMount>* mount = self.mountController.mount;
-        if (mount && ![mount horizonCheckRA:mount.ra.doubleValue dec:mount.dec.doubleValue]) {
-            [self stopEverything:[NSString stringWithFormat:NSLocalizedString(@"Mount is pointing below the local horizon", @"Mount is pointing below the local horizon")]];
-            return;
-        }
-        
-        // check to see if we crossed the meridian during the exposure
-        if (self.mountController.mount.weightsHigh){
-            
-            switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"SXIOMeridianMountBehaviour"]) {
-                case 0:
-                    NSLog(@"Mount crossed meridian but selected behaviour is to keep tracking");
-                    break;
-                    
-                case 1:
-                    if (controller.settings.currentCaptureIndex < controller.settings.captureCount - 1){
-                        
-                        NSLog(@"Mount crossed meridian - flipping mount after %ld out of %ld exposures",controller.settings.currentCaptureIndex,controller.settings.captureCount);
-                        
-                        // todo; stop exposures, etc
-                        // todo; start flip spoken countdown
-                        // todo; flip the mount
-                        
-                        // start the slew to the flipped position
-                        [self startMountMeridianFlip];
-                    }
-                    else {
-                        
-                        NSLog(@"Mount crossed meridian and completed all exposures - stopping tracking");
-                        [self stopEverything:passedMeridianMessage];
-                    }
-                    break;
-                    
-                case 2:
-                default:
-                    NSLog(@"Mount crossed meridian - stopping tracking");
                     [self stopEverything:passedMeridianMessage];
-                    break;
-            }
+                }
+                break;
+                
+            case 2:
+            default:
+                NSLog(@"Mount crossed meridian - selected behaviour is to stop tracking");
+                [self stopEverything:passedMeridianMessage];
+                break;
+        }
+    }
+    
+    // optionally park mount (do this in -captureCompletedWithError: ?)
+    if (controller.settings.currentCaptureIndex == controller.settings.captureCount - 1 &&
+        self.mountController &&
+        [[NSUserDefaults standardUserDefaults] boolForKey:@"SXIOParkMountWhenComplete"]) {
+        NSLog(@"Exposures complete, parking mount...");
+        [self parkMountWithCompletion:^(NSError *error) {
+            NSLog(@"Mount parked: %@",error);
+        }];
+    }
+
+    // todo; kick off a background plate solve for this exposure
+    
+    // todo; check lock position, ask mountController to slew to lock and sync if required (this is to support tracking object using their orbital elements by updating the lock position)
+}
+
+- (void)saveExposure:(CASCCDExposure*)exposure toURL:(NSURL*)finalUrl
+{
+    // todo; incorporate into CASCCDExposureIO ?
+    if ([@"png" isEqualToString:[[finalUrl path] pathExtension]]){
+        exposure.pngURL = finalUrl;
+        [self saveCIImage:[self.exposureView filteredCIImage] toPath:[finalUrl path] type:(id)kUTTypePNG properties:nil];
+    }
+    else {
+        
+        NSNumber* latitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLatitude"];
+        NSNumber* longitude = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOSiteLongitude"];
+        if (latitude && longitude){
+            NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+            meta[@"latitude"] = latitude;
+            meta[@"longitude"] = longitude;
+            exposure.meta = [meta copy];
         }
         
-        // todo; kick off a background plate solve for this exposure
+        NSNumber* ra = self.mountController.mount.ra;
+        NSNumber* dec = self.mountController.mount.dec;
+        if (ra && dec){
+            NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+            meta[@"centre-ra"] = ra;
+            meta[@"centre-dec"] = dec;
+            exposure.meta = [meta copy];
+        }
+        
+        // todo; get camera-specific one ?
+        id focalLength = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOPlateSolverFocalLength"];
+        if (focalLength){
+            NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+            meta[@"focal-length"] = focalLength;
+            exposure.meta = [meta copy];
+        }
+        
+        id observer = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderObserver"];
+        if (observer){
+            NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+            meta[@"observer"] = observer;
+            exposure.meta = [meta copy];
+        }
+        
+        id telescope = [[NSUserDefaults standardUserDefaults] objectForKey:@"SXIOFitsHeaderTelescope"];
+        if (telescope){
+            NSMutableDictionary* meta = [NSMutableDictionary dictionaryWithDictionary:exposure.meta];
+            meta[@"telescope"] = telescope;
+            exposure.meta = [meta copy];
+        }
+        
+        NSError* error;
+        if (![CASCCDExposureIO writeExposure:exposure toPath:[finalUrl path] error:&error]){
+            NSLog(@"Failed to write exposure to %@",[finalUrl path]);
+        }
+        else {
+            NSLog(@"Wrote exposure to %@",[finalUrl path]);
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:finalUrl];
+            [self.cameraController addRecentURL:finalUrl];
+            // todo; run any user-defined post-processing scripts e.g. NSUserAppleScriptTask
+        }
+        
+        /*
+         if (self.calibrate && self.calibratedExposure){
+         NSString* ext = [finalUrl pathExtension];
+         NSString* filename = [[[finalUrl lastPathComponent] stringByDeletingPathExtension] stringByAppendingString:@"_calibrated"];
+         NSString* calibratedPath = [[[[finalUrl path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:filename] stringByAppendingPathExtension:ext];
+         
+         // todo; this is being written out as floating point...
+         
+         if (![CASCCDExposureIO writeExposure:self.calibratedExposure toPath:calibratedPath error:&error]){
+         NSLog(@"Failed to write calibrated exposure to %@",[finalUrl path]);
+         }
+         else {
+         NSLog(@"Wrote calibrated exposure to %@",[finalUrl path]);
+         }
+         }
+         */
+        
+        // clear any calibrated exposure set in the display code
+        self.calibratedExposure = nil;
     }
 }
 
