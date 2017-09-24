@@ -15,11 +15,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="478">
-            <rect key="frame" x="0.0" y="0.0" width="212" height="105"/>
+            <rect key="frame" x="0.0" y="0.0" width="212" height="128"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="595">
-                    <rect key="frame" x="9" y="83" width="43" height="17"/>
+                    <rect key="frame" x="9" y="106" width="43" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Mount" id="596">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -27,7 +27,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QIi-eI-Dus">
-                    <rect key="frame" x="8" y="51" width="187" height="22"/>
+                    <rect key="frame" x="8" y="74" width="187" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="04v-6R-IRH" id="MLh-9L-zV3">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -54,7 +54,7 @@
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ojs-E8-mZs">
-                    <rect key="frame" x="12" y="32" width="25" height="14"/>
+                    <rect key="frame" x="12" y="55" width="25" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="RA:" id="tUQ-Wz-UTe">
                         <font key="font" metaFont="smallSystem"/>
@@ -63,7 +63,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zlQ-zB-Wiv">
-                    <rect key="frame" x="9" y="10" width="28" height="14"/>
+                    <rect key="frame" x="9" y="33" width="28" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Dec:" id="dtM-NY-SOQ">
                         <font key="font" metaFont="smallSystem"/>
@@ -72,7 +72,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sth-fi-BRt">
-                    <rect key="frame" x="35" y="32" width="66" height="14"/>
+                    <rect key="frame" x="35" y="55" width="66" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;ra&gt;" id="Vnn-2N-gaT">
                         <font key="font" metaFont="smallSystem"/>
@@ -88,7 +88,7 @@
                     </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2by-IO-tEl">
-                    <rect key="frame" x="35" y="10" width="66" height="14"/>
+                    <rect key="frame" x="35" y="33" width="66" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;dec&gt;" id="Z34-eJ-hpS">
                         <font key="font" metaFont="smallSystem"/>
@@ -104,7 +104,7 @@
                     </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZG8-ZE-WlQ">
-                    <rect key="frame" x="122" y="32" width="66" height="14"/>
+                    <rect key="frame" x="122" y="55" width="66" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;alt&gt;" id="Dcd-My-ITQ">
                         <font key="font" metaFont="smallSystem"/>
@@ -120,7 +120,7 @@
                     </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="K1q-w5-KzP">
-                    <rect key="frame" x="122" y="10" width="66" height="14"/>
+                    <rect key="frame" x="122" y="33" width="66" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;az&gt;" id="xpr-Nn-Bie">
                         <font key="font" metaFont="smallSystem"/>
@@ -136,7 +136,7 @@
                     </connections>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OgC-Nh-rqp">
-                    <rect key="frame" x="99" y="32" width="25" height="14"/>
+                    <rect key="frame" x="99" y="55" width="25" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Alt:" id="PSP-y4-ead">
                         <font key="font" metaFont="smallSystem"/>
@@ -145,7 +145,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jjd-PK-HAa">
-                    <rect key="frame" x="103" y="10" width="21" height="14"/>
+                    <rect key="frame" x="103" y="33" width="21" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Az:" id="DB4-xY-t7j">
                         <font key="font" metaFont="smallSystem"/>
@@ -153,12 +153,28 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oLu-SX-YZB">
+                    <rect key="frame" x="17" y="8" width="146" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Park when complete" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="m8Y-Ne-tzJ">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="enabled" keyPath="cameraController.mountController" id="19F-m4-i5L">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">NSIsNotNil</string>
+                            </dictionary>
+                        </binding>
+                        <binding destination="622" name="value" keyPath="values.SXIOParkMountWhenComplete" id="oqF-2F-23M"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="595" firstAttribute="top" secondItem="478" secondAttribute="top" constant="5" id="598"/>
                 <constraint firstItem="595" firstAttribute="leading" secondItem="478" secondAttribute="leading" constant="11" id="626"/>
             </constraints>
-            <point key="canvasLocation" x="-394" y="-366.5"/>
+            <point key="canvasLocation" x="-394" y="-355"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="622"/>
         <arrayController objectClassName="CASMountController" avoidsEmptySelection="NO" id="DyS-oA-lnd" userLabel="Mounts Array Controller">

@@ -198,7 +198,7 @@ static void* kvoContext;
     id mountControlsViewController1 = self.mountControlsViewController.view;
     viewNames = NSDictionaryOfVariableBindings(filterWheelControlsViewController1,mountControlsViewController1);
     [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mountControlsViewController1]|" options:0 metrics:nil views:viewNames]];
-    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][mountControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.saveTargetControlsViewController.view.frame.size.height)} views:viewNames]];
+    [container addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[filterWheelControlsViewController1][mountControlsViewController1(==height)]" options:NSLayoutFormatAlignAllCenterX metrics:@{@"height":@(self.mountControlsViewController.view.frame.size.height)} views:viewNames]];
 
     // layout save target controls
     id saveTargetControlsViewController1 = self.saveTargetControlsViewController.view;
