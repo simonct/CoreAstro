@@ -7,16 +7,20 @@
 //
 
 #import "CASMountWindowController.h"
+
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #import "SXIOAppDelegate.h"
 #elif defined(CCDIO)
 #import "CCD_IO-Swift.h"
 #endif
+
 #if defined(SXIO) || defined(CCDIO)
 #import "SXIOAppDelegate.h"
 #import "SXIOCameraWindowController.h"
 #endif
+
+#import "CASSkyMapView.h"
 #import <CoreAstro/CoreAstro.h>
 
 // todo; AP-specific options:
