@@ -15,10 +15,10 @@ open class CASBookmarks: NSObject {
     
     static fileprivate let defaultsKey = "CASBookmarks"
     
-    open static let nameKey = "name"
-    open static let centreRaKey = "centreRa"
-    open static let centreDecKey = "centreDec"
-    open static let solutionDictionaryKey = "solutionDictionary"
+    @objc open static let nameKey = "name"
+    @objc open static let centreRaKey = "centreRa"
+    @objc open static let centreDecKey = "centreDec"
+    @objc open static let solutionDictionaryKey = "solutionDictionary"
     
     @objc open static let sharedInstance = CASBookmarks()
     
@@ -35,7 +35,7 @@ open class CASBookmarks: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
     
-    open var bookmarks: [NSDictionary] {
+    @objc open var bookmarks: [NSDictionary] {
         get {
             return UserDefaults.standard.object(forKey: CASBookmarks.defaultsKey) as? [NSDictionary] ?? []
         }
@@ -61,7 +61,7 @@ open class CASBookmarks: NSObject {
         }
     }
     
-    open func addBookmark(_ name: String, ra: Double, dec: Double) {
+    @objc open func addBookmark(_ name: String, ra: Double, dec: Double) {
         if (!name.isEmpty){
             appendBookmark(NSDictionary(objects:[name,ra,dec],forKeys:[CASBookmarks.nameKey as NSCopying,CASBookmarks.centreRaKey as NSCopying,CASBookmarks.centreDecKey as NSCopying]));
         }
