@@ -3515,7 +3515,7 @@
 				TargetAttributes = {
 					F44EDEF915FCC385003B1B4C = {
 						DevelopmentTeam = D8EQ3MVHHB;
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0920;
 					};
 					F498A51815FE7F96006E8376 = {
 						LastSwiftMigration = 0820;
@@ -4170,7 +4170,8 @@
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -4207,7 +4208,8 @@
 				);
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
