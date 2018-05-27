@@ -20,7 +20,7 @@ open class CASBookmarks: NSObject {
     open static let centreDecKey = "centreDec"
     open static let solutionDictionaryKey = "solutionDictionary"
     
-    open static let sharedInstance = CASBookmarks()
+    @objc open static let sharedInstance = CASBookmarks()
     
     override init() {
         super.init()

@@ -28,7 +28,7 @@ extension CASCameraController {
 
 class CASLocalNotifier: NSObject {
 
-    static var sharedInstance = CASLocalNotifier()
+    @objc static var sharedInstance = CASLocalNotifier()
     
     var postLocalNotifications: Bool = true
     
