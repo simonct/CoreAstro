@@ -81,6 +81,12 @@ static void* kvoContext;
     return [_cameraControllers copy]; // ensure we return an immutable copy to clients
 }
 
+- (void)addCameraController:(CASCameraController*)controller {
+    if (controller && ![self.cameraControllers containsObject:controller]){
+        [self.mutableCameraControllers addObject:controller];
+    }
+}
+
 - (void)removeCameraController:(CASCameraController*)controller {
     if (controller){
         id device = controller.device;

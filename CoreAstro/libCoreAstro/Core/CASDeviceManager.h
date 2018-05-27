@@ -35,6 +35,7 @@
 @property (nonatomic,readonly) NSArray* devices;
 
 @property (nonatomic,readonly) NSArray* cameraControllers;
+- (void)addCameraController:(CASCameraController*)controller;
 - (void)removeCameraController:(CASCameraController*)controller;
 
 @property (nonatomic,readonly) NSArray* guiderControllers;
