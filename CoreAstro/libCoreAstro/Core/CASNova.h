@@ -39,4 +39,9 @@ typedef struct {
 } CASRaDec;
 - (CASRaDec)objectRADecFromAltAz:(double)alt dec:(double)az;
 
+@property double timeOffset;
+
+- (CASRaDec)lunarPosition;
+- (CASRaDec)solarPosition;
+
 @end

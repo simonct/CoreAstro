@@ -80,10 +80,15 @@
     return fmod(ln_get_mean_sidereal_time(now) + longitude/15.0 + 24, 24);
 }
 
+- (double)jdOffset
+{
+    return self.timeOffset / 86400.0;
+}
+
 - (CASAltAz)objectAltAzFromRA:(double)ra dec:(double)dec;
 {
-    const double now = [[self class] now];
-    
+    const double now = [[self class] now] + self.jdOffset;
+        
     struct ln_equ_posn object = {
         .ra = ra,
         .dec = dec
@@ -104,7 +109,7 @@
 
 - (CASRaDec)objectRADecFromAltAz:(double)alt dec:(double)az
 {
-    const double now = [[self class] now];
+    const double now = [[self class] now] + self.jdOffset;
     
     struct ln_hrz_posn object = {
         .alt = alt,
@@ -121,6 +126,34 @@
     const CASRaDec result = {
         .ra = radec.ra,
         .dec = radec.dec
+    };
+    return result;
+}
+
+- (CASRaDec)lunarPosition
+{
+    const double now = [[self class] now] + self.jdOffset;
+
+    struct ln_equ_posn equ;
+    ln_get_lunar_equ_coords(now, &equ);
+    
+    const CASRaDec result = {
+        .ra = equ.ra,
+        .dec = equ.dec
+    };
+    return result;
+}
+
+- (CASRaDec)solarPosition
+{
+    const double now = [[self class] now] + self.jdOffset;
+    
+    struct ln_equ_posn equ;
+    ln_get_solar_equ_coords(now, &equ);
+
+    const CASRaDec result = {
+        .ra = equ.ra,
+        .dec = equ.dec
     };
     return result;
 }
