@@ -521,7 +521,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
         }
     }
     @finally {
-        [progress endSheetWithCode:NSOKButton];
+        [progress endSheetWithCode:NSModalResponseOK];
     }
 }
 
@@ -621,7 +621,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
 
 - (void)confirmClearDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
-    if (returnCode != NSOKButton){
+    if (returnCode != NSModalResponseOK){
         return;
     }
     
@@ -653,7 +653,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [progress endSheetWithCode:NSOKButton];
+                [progress endSheetWithCode:NSModalResponseOK];
             });
         });
     });
@@ -697,7 +697,7 @@ static void CASFSEventStreamCallback(ConstFSEventStreamRef streamRef, void *clie
                 if (error){
                     [NSApp presentError:error];
                 }
-                [progress endSheetWithCode:NSOKButton];
+                [progress endSheetWithCode:NSModalResponseOK];
             });
         }];
     });

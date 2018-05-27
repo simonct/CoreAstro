@@ -137,7 +137,7 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    [progress endSheetWithCode:NSOKButton];
+                    [progress endSheetWithCode:NSModalResponseOK];
                     
                     if (!progress.cancelled) {
                         [self.delegate plateSolver:self completedWithSolution:results[@"solution"] error:error];
@@ -177,7 +177,7 @@
             self.plateSolveOptionsWindowController.exposure = exposure;
             self.plateSolveOptionsWindowController.cameraController = self.cameraController;
             [self.plateSolveOptionsWindowController beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-                if (result == NSOKButton) {
+                if (result == NSModalResponseOK) {
                     const CGSize fieldSize = self.plateSolveOptionsWindowController.enableFieldSize ? self.plateSolveOptionsWindowController.fieldSizeDegrees : CGSizeZero;
                     const float arcsecsPerPixel = self.plateSolveOptionsWindowController.enablePixelSize ? self.plateSolveOptionsWindowController.arcsecsPerPixel: 0;
                     [self plateSolveExposure:exposure withFieldSize:fieldSize arcsecsPerPixel:arcsecsPerPixel];

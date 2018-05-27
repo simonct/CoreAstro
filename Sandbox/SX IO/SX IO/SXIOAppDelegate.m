@@ -528,7 +528,7 @@ static void* kvoContext;
                                            alternateButton:@"Cancel"
                                                otherButton:nil
                                  informativeTextWithFormat:@"Open the output movie ?",nil];
-            if ([alert runModal] == NSOKButton){
+            if ([alert runModal] == NSModalResponseOK){
                 [[NSWorkspace sharedWorkspace] openURL:movieURL];
             }
         }
@@ -581,7 +581,7 @@ static void* kvoContext;
         
         alert.showsSuppressionButton = YES;
         
-        if ([alert runModal] == NSOKButton){
+        if ([alert runModal] == NSModalResponseOK){
             
             if ([[alert suppressionButton] state]){
                 [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"SXIOFixupM25CExplainerDisplayed"];
@@ -638,7 +638,7 @@ static void* kvoContext;
                 }];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [progress endSheetWithCode:NSOKButton];
+                    [progress endSheetWithCode:NSModalResponseOK];
                     
                     NSAlert* alert = [[NSAlert alloc] init];
                     alert.messageText = [NSString stringWithFormat:@"Fixed %ld out of %ld exposures",count,openPanel.URLs.count];

@@ -215,7 +215,7 @@ static void* context;
     
     self.sharedBookmarks.bookmarks = bookmarks;
     
-    [self endSheetWithCode:NSOKButton];
+    [self endSheetWithCode:NSModalResponseOK];
 }
 
 - (IBAction)lookupTapped:(id)sender

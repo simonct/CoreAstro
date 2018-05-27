@@ -92,7 +92,7 @@
                                                                alternateButton:@"Cancel"
                                                                    otherButton:nil
                                                      informativeTextWithFormat:@"An update for %@ is available. Click Open in Browser to download it using your default web browser.",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
-                                if ([alert runModal] == NSOKButton){
+                                if ([alert runModal] == NSModalResponseOK){
                                     [[NSWorkspace sharedWorkspace] openURL:url];
                                 }
                             }

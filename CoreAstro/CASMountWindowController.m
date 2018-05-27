@@ -421,7 +421,7 @@ static void* kvoContext;
                                                             alternateButton:NSLocalizedString(@"Cancel", @"Cancel")
                                                                 otherButton:nil
                                                   informativeTextWithFormat:NSLocalizedString(@"Confirm that you want to sync the mount to this target", @"Confirm that you want to sync the mount to this target")] runModal];
-            if (response == NSOKButton){
+            if (response == NSModalResponseOK){
                 [self.mountController.mount fullSyncToRA:ra.doubleValue dec:dec.doubleValue completion:^(CASMountSlewError error) {
                     if (error != CASMountSlewErrorNone){
                         [self presentAlertWithMessage:NSLocalizedString(@"Failed to sync the mount", @"Failed to sync the mount")];

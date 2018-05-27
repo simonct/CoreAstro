@@ -87,12 +87,12 @@
 
 - (IBAction)ok:(id)sender
 {
-    [self endSheetWithCode:NSOKButton];
+    [self endSheetWithCode:NSModalResponseOK];
 }
 
 - (IBAction)cancel:(id)sender
 {
-    [self endSheetWithCode:NSCancelButton];
+    [self endSheetWithCode:NSModalResponseCancel];
 }
 
 - (void)presentRelativeToWindow:(NSWindow*)window
@@ -103,7 +103,7 @@
     
     [self beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
         
-        if (result == NSOKButton){
+        if (result == NSModalResponseOK){
             
             self.captureController = [CASCaptureController captureControllerWithWindowController:self];
             if (self.captureController){
@@ -159,7 +159,7 @@
                         }
                     }
                     
-                    [progress endSheetWithCode:NSOKButton];
+                    [progress endSheetWithCode:NSModalResponseOK];
                     
                     [self.delegate captureWindowDidComplete:self];
                     

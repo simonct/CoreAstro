@@ -221,7 +221,7 @@ static NSString* const key = @"SXIOPlateSolverFocalLength";
 //    if (self.completion){
 //        self.completion(YES);
 //    }
-    [self endSheetWithCode:NSOKButton];
+    [self endSheetWithCode:NSModalResponseOK];
 }
 
 - (IBAction)cancel:(id)sender
@@ -229,7 +229,7 @@ static NSString* const key = @"SXIOPlateSolverFocalLength";
 //    if (self.completion){
 //        self.completion(NO);
 //    }
-    [self endSheetWithCode:NSCancelButton];
+    [self endSheetWithCode:NSModalResponseCancel];
 }
 
 @end
