@@ -24,9 +24,9 @@ open class CASBookmarks: NSObject {
     
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(CASBookmarks.storeDidChange(_:)), name: NSUbiquitousKeyValueStore.didChangeExternallyNotification, object: NSUbiquitousKeyValueStore.default())
-        NSUbiquitousKeyValueStore.default().synchronize()
-        if let bookmarks = NSUbiquitousKeyValueStore.default().dictionaryRepresentation[CASBookmarks.defaultsKey] as? Array<NSDictionary> {
+        NotificationCenter.default.addObserver(self, selector: #selector(CASBookmarks.storeDidChange(_:)), name: NSUbiquitousKeyValueStore.didChangeExternallyNotification, object: NSUbiquitousKeyValueStore.default)
+        NSUbiquitousKeyValueStore.default.synchronize()
+        if let bookmarks = NSUbiquitousKeyValueStore.default.dictionaryRepresentation[CASBookmarks.defaultsKey] as? Array<NSDictionary> {
             print("CASBookmarks.init, \(bookmarks.count) bookmark(s) in iCloud")
         }
     }
@@ -41,7 +41,7 @@ open class CASBookmarks: NSObject {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: CASBookmarks.defaultsKey)
-            NSUbiquitousKeyValueStore.default().set(newValue, forKey: CASBookmarks.defaultsKey)
+            NSUbiquitousKeyValueStore.default.set(newValue, forKey: CASBookmarks.defaultsKey)
         }
     }
     
@@ -67,14 +67,14 @@ open class CASBookmarks: NSObject {
         }
     }
     
-    open func storeDidChange(_ note: Notification) { // interestingly, can't be private otherwise the notification fails with selector not found
+    @objc open func storeDidChange(_ note: Notification) { // interestingly, can't be private otherwise the notification fails with selector not found
         print("storeDidChange \(String(describing: (note as NSNotification).userInfo))")
         if let changedKeys = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangedKeysKey] as? Array<String>,
             let reason = (note as NSNotification).userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int,
             let _ = changedKeys.index(of: CASBookmarks.defaultsKey){
                 switch(reason){
                 case NSUbiquitousKeyValueStoreServerChange, NSUbiquitousKeyValueStoreInitialSyncChange, NSUbiquitousKeyValueStoreAccountChange:
-                    if let bookmarks = NSUbiquitousKeyValueStore.default().array(forKey: CASBookmarks.defaultsKey) {
+                    if let bookmarks = NSUbiquitousKeyValueStore.default.array(forKey: CASBookmarks.defaultsKey) {
                         UserDefaults.standard.set(bookmarks, forKey: CASBookmarks.defaultsKey)
                     }
                     else {

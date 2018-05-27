@@ -61,7 +61,7 @@ class CASLocalNotifier: NSObject {
 //        print(message)
     }
     
-    func exposureStarted(_ note: Notification) {
+    @objc func exposureStarted(_ note: Notification) {
         var subtitle: String?
         if let camera = note.object as? CASCameraController {
             if camera.settings.continuous || camera.settings.exposureType != kCASCCDExposureLightType {
@@ -72,7 +72,7 @@ class CASLocalNotifier: NSObject {
         postLocalNotification("Exposure started", subtitle: subtitle)
     }
 
-    func exposureCompleted(_ note: Notification) {
+    @objc func exposureCompleted(_ note: Notification) {
         var subtitle: String?
         if let _ = (note as NSNotification).userInfo?["error"] as? NSError {
             postLocalNotification("Exposure failed")
@@ -88,7 +88,7 @@ class CASLocalNotifier: NSObject {
         }
     }
     
-    func filterSelected(_ note: Notification) {
+    @objc func filterSelected(_ note: Notification) {
         if let filter = (note as NSNotification).userInfo?["filter"] as? String {
             postLocalNotification("Filter \(filter) selected")
         }
