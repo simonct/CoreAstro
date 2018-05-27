@@ -38,6 +38,7 @@
 #import "CASMountWindowController.h"
 #import "SXIOSequenceEditorWindowController.h"
 #import "SXIOBookmarkWindowController.h"
+#import "SXIOSkyMapWindowController.h"
 #if defined(SXIO)
 #import "SX_IO-Swift.h"
 #else
@@ -547,6 +548,11 @@ static void* kvoContext;
     [[CASMountWindowController sharedMountWindowController] connect:^{
         // connected
     }];
+}
+
+- (IBAction)showSkyMap:(id)sender
+{
+    [[SXIOSkyMapWindowController sharedController] showWindow:nil];
 }
 
 - (IBAction)sequence:(id)sender

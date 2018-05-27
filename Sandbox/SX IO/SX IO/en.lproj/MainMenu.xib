@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -807,6 +807,12 @@
                                     <action selector="sequence:" target="-1" id="911"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Sky Map" id="00X-OK-tHe">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showSkyMap:" target="-1" id="ZEe-oS-MNS"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="1yr-ki-X2q"/>
                             <menuItem title="Connect to Mount..." tag="11106" keyEquivalent="m" id="8JL-Ar-HEd">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
@@ -900,7 +906,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="283" y="305" width="472" height="91"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="814">
                 <rect key="frame" x="0.0" y="0.0" width="472" height="91"/>
                 <autoresizingMask key="autoresizingMask"/>
