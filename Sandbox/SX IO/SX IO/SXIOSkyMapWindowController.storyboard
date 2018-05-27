@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="PQY-yn-24r">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Window Controller-->
+        <scene sceneID="Qdk-LM-eYa">
+            <objects>
+                <windowController showSeguePresentationStyle="single" id="PQY-yn-24r" customClass="SXIOSkyMapWindowController" sceneMemberID="viewController">
+                    <window key="window" title="Sky Map" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="SkyMap" animationBehavior="default" id="n1r-Nh-OO0">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="425" y="461" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+                        <value key="minSize" type="size" width="480" height="270"/>
+                        <connections>
+                            <outlet property="delegate" destination="PQY-yn-24r" id="ePI-By-t8h"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="N52-bU-JFg" kind="relationship" relationship="window.shadowedContentViewController" id="7KI-We-LU6"/>
+                    </connections>
+                </windowController>
+                <customObject id="O5F-bJ-9r9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-418" y="-254"/>
+        </scene>
+        <!--iO Sky Map View Controller-->
+        <scene sceneID="9IL-Br-BgX">
+            <objects>
+                <viewController id="N52-bU-JFg" customClass="SXIOSkyMapViewController" sceneMemberID="viewController">
+                    <view key="view" id="9Rw-hN-ZQq">
+                        <rect key="frame" x="0.0" y="0.0" width="670" height="540"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="OA7-97-2BC" customClass="CASSkyMapView">
+                                <rect key="frame" x="20" y="108" width="630" height="412"/>
+                            </customView>
+                            <box title="Mount" translatesAutoresizingMaskIntoConstraints="NO" id="ZEe-PU-idc">
+                                <rect key="frame" x="17" y="16" width="636" height="84"/>
+                                <view key="contentView" id="1N1-rM-Sm4">
+                                    <rect key="frame" x="2" y="2" width="632" height="67"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t43-3j-WxU">
+                                            <rect key="frame" x="17" y="33" width="187" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Usb-X1-iEU" id="RrV-Qb-u7H">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <menu key="menu" id="XPt-wo-cnI">
+                                                    <items>
+                                                        <menuItem title="None" state="on" id="Usb-X1-iEU"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="roI-NF-diP" name="content" keyPath="arrangedObjects" id="ZOX-QZ-IBp">
+                                                    <dictionary key="options">
+                                                        <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                                        <string key="NSNullPlaceholder">None</string>
+                                                    </dictionary>
+                                                </binding>
+                                                <binding destination="roI-NF-diP" name="contentValues" keyPath="arrangedObjects.device.deviceName" previousBinding="ZOX-QZ-IBp" id="iRF-Zt-tws">
+                                                    <dictionary key="options">
+                                                        <bool key="NSInsertsNullPlaceholder" value="YES"/>
+                                                        <string key="NSNullPlaceholder">None</string>
+                                                    </dictionary>
+                                                </binding>
+                                                <binding destination="N52-bU-JFg" name="selectedObject" keyPath="selectedMountController" previousBinding="iRF-Zt-tws" id="AMm-D7-7A1"/>
+                                            </connections>
+                                        </popUpButton>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CpQ-aN-NBg">
+                                            <rect key="frame" x="210" y="38" width="25" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="RA:" id="1AK-eM-KAz">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hq4-8P-ShU">
+                                            <rect key="frame" x="207" y="16" width="28" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Dec:" id="vuN-jP-Z6Z">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r2J-dh-OHc">
+                                            <rect key="frame" x="233" y="38" width="66" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;ra&gt;" id="TtV-jw-RDz">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <binding destination="N52-bU-JFg" name="value" keyPath="selectedMountController.mount.ra" id="SCq-W7-BBK">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">CASLX200RATransformer</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="izP-4E-yXe">
+                                            <rect key="frame" x="233" y="16" width="66" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;dec&gt;" id="c7N-jq-mnj">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <binding destination="N52-bU-JFg" name="value" keyPath="selectedMountController.mount.dec" id="vJg-f6-MRH">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">CASLX200DecTransformer</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2fv-nY-mRf">
+                                            <rect key="frame" x="320" y="38" width="66" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;alt&gt;" id="z7v-Y2-RZc">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <binding destination="N52-bU-JFg" name="value" keyPath="selectedMountController.mount.alt" id="AAl-j9-JdJ">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">CASLX200DecTransformer</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4e1-cC-hcY">
+                                            <rect key="frame" x="320" y="16" width="66" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;az&gt;" id="F98-FK-X86">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <binding destination="N52-bU-JFg" name="value" keyPath="selectedMountController.mount.az" id="fDf-uZ-kfc">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">CASLX200DecTransformer</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ia1-3e-ZGq">
+                                            <rect key="frame" x="297" y="38" width="25" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Alt:" id="Iob-yd-a5L">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cLz-Fr-73E">
+                                            <rect key="frame" x="301" y="16" width="21" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Az:" id="2dn-F0-FTD">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="UDs-K3-g7a"/>
+                                </constraints>
+                            </box>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="ZEe-PU-idc" firstAttribute="leading" secondItem="OA7-97-2BC" secondAttribute="leading" id="2My-4K-rFq"/>
+                            <constraint firstItem="ZEe-PU-idc" firstAttribute="top" secondItem="OA7-97-2BC" secondAttribute="bottom" constant="8" id="NhX-TY-Kmw"/>
+                            <constraint firstItem="OA7-97-2BC" firstAttribute="leading" secondItem="9Rw-hN-ZQq" secondAttribute="leading" constant="20" id="X0J-j1-Q2E"/>
+                            <constraint firstItem="ZEe-PU-idc" firstAttribute="trailing" secondItem="OA7-97-2BC" secondAttribute="trailing" id="cU3-ZW-lbw"/>
+                            <constraint firstAttribute="trailing" secondItem="OA7-97-2BC" secondAttribute="trailing" constant="20" id="lPF-Zv-ffg"/>
+                            <constraint firstAttribute="bottom" secondItem="ZEe-PU-idc" secondAttribute="bottom" constant="20" id="mvy-g6-iPm"/>
+                            <constraint firstItem="OA7-97-2BC" firstAttribute="top" secondItem="9Rw-hN-ZQq" secondAttribute="top" constant="20" id="nej-10-eMv"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="mountsController" destination="roI-NF-diP" id="sEU-M8-d2u"/>
+                        <outlet property="skyMapView" destination="OA7-97-2BC" id="Zcf-iY-2eO"/>
+                    </connections>
+                </viewController>
+                <customObject id="7wO-66-apU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <arrayController objectClassName="CASMountController" avoidsEmptySelection="NO" id="roI-NF-diP" userLabel="Mounts Array Controller">
+                    <connections>
+                        <binding destination="N52-bU-JFg" name="contentArray" keyPath="mountControllers" id="Ti3-VI-cBb"/>
+                    </connections>
+                </arrayController>
+            </objects>
+            <point key="canvasLocation" x="-323" y="425"/>
+        </scene>
+    </scenes>
+</document>
