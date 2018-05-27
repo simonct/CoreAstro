@@ -26,7 +26,7 @@ extension CASCameraController {
         }
     }
         
-    var recentURLs: [URL] {
+    @objc var recentURLs: [URL] {
         get {
             var recents = defaultsDomain["RecentURLs"] as? [NSString]
             if recents == nil {
@@ -43,7 +43,7 @@ extension CASCameraController {
         }
     }
     
-    func addRecentURL(_ url: URL?) {
+    @objc func addRecentURL(_ url: URL?) {
         if url != nil {
             var recent = recentURLs
             if recent.count >= 100 {

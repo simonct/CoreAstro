@@ -45,7 +45,7 @@ class CASLocalNotifier: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func postLocalNotification(_ title: String, subtitle: String? = nil) {
+    @objc func postLocalNotification(_ title: String, subtitle: String? = nil) {
         if (!postLocalNotifications){
             return
         }
