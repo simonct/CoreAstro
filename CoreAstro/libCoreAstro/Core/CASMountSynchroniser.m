@@ -36,7 +36,7 @@
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"CASMountSlewControllerBinning":@(4),
                                                               @"CASMountSlewControllerDuration":@(5),
-                                                              @"CASMountSlewControllerConvergence":@(0.005), // relate to camera pixel size ?
+                                                              @"CASMountSlewControllerConvergence":@(0.0025), // relate to camera pixel size ?
                                                               @"CASMountSlewControllerSearchRadius":@(5),
                                                               @"CASMountSlewControllerAutoSyncSlewDuration":@(10)}];
 }
