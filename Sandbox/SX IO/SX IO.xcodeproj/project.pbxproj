@@ -219,6 +219,8 @@
 		F4C7E91B1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C7E91A1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m */; };
 		F4C7E91C1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4C7E91A1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m */; };
 		F4C878621F305C0500EC5824 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4C878611F305C0500EC5824 /* CloudKit.framework */; };
+		F4CFDAA820BD893A007BBA80 /* CASAlertFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CFDAA620BD8939007BBA80 /* CASAlertFactory.m */; };
+		F4CFDAA920BD893A007BBA80 /* CASAlertFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CFDAA620BD8939007BBA80 /* CASAlertFactory.m */; };
 		F4D0650E17CA0B0B00A214C0 /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */; };
 		F4D3CE07179BC55500B42D04 /* SXDevicesPlugin.casPlugin in Copy SXDevices plugin */ = {isa = PBXBuildFile; fileRef = F4FD2334179B31360049F5B5 /* SXDevicesPlugin.casPlugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F4D3CE15179BD10400B42D04 /* SXIOCameraWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */; };
@@ -648,6 +650,8 @@
 		F4C7E9191F7F9FC8003FB514 /* SXIOSkyMapWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SXIOSkyMapWindowController.h; sourceTree = "<group>"; };
 		F4C7E91A1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SXIOSkyMapWindowController.m; sourceTree = "<group>"; };
 		F4C878611F305C0500EC5824 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		F4CFDAA620BD8939007BBA80 /* CASAlertFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASAlertFactory.m; sourceTree = "<group>"; };
+		F4CFDAA720BD893A007BBA80 /* CASAlertFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASAlertFactory.h; sourceTree = "<group>"; };
 		F4D0650D17CA0B0A00A214C0 /* libcfitsio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcfitsio.dylib; path = ../../External/cfitsio/build/Release/libcfitsio.dylib; sourceTree = "<group>"; };
 		F4D3CE12179BD10400B42D04 /* SXIOCameraWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SXIOCameraWindowController.h; sourceTree = "<group>"; };
 		F4D3CE13179BD10400B42D04 /* SXIOCameraWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SXIOCameraWindowController.m; sourceTree = "<group>"; };
@@ -1163,6 +1167,8 @@
 				F4C7E9191F7F9FC8003FB514 /* SXIOSkyMapWindowController.h */,
 				F4C7E91A1F7F9FC8003FB514 /* SXIOSkyMapWindowController.m */,
 				F4C7E9161F7F9FAD003FB514 /* SXIOSkyMapWindowController.storyboard */,
+				F4CFDAA720BD893A007BBA80 /* CASAlertFactory.h */,
+				F4CFDAA620BD8939007BBA80 /* CASAlertFactory.m */,
 				F4BDF8E417B657A300749F4B /* SMDoubleSlider */,
 				F4A25861179BBFE30013D220 /* CoreAstro */,
 				F4FD2309179B30D60049F5B5 /* Supporting Files */,
@@ -1777,6 +1783,7 @@
 				F42446361EE3448B0058BF45 /* CASLabelHUDView.m in Sources */,
 				F40D5B501849EC5E00977FA9 /* CASCaptureWindowController.m in Sources */,
 				F40D5B511849EC5E00977FA9 /* SXIOCalibrationWindowController.m in Sources */,
+				F4CFDAA920BD893A007BBA80 /* CASAlertFactory.m in Sources */,
 				F42446071EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,
 				F4DE8A791E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
@@ -1875,6 +1882,7 @@
 				F42446351EE3448B0058BF45 /* CASLabelHUDView.m in Sources */,
 				F4415B4B17CBAF7D00D1233C /* CASCaptureWindowController.m in Sources */,
 				F48534F417D23C7700C5EE8C /* SXIOCalibrationWindowController.m in Sources */,
+				F4CFDAA820BD893A007BBA80 /* CASAlertFactory.m in Sources */,
 				F42446061EDC7DF50058BF45 /* SXIOPlateSolutionLookup.m in Sources */,
 				F4DE8A781E574BC1005A9B78 /* SXIOMountControlsViewController.m in Sources */,
 			);
