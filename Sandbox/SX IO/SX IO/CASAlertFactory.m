@@ -30,13 +30,13 @@
     return alert;
 }
 
-+ (NSInteger)runModalAlertTitle:(NSString*)title message:(NSString*)message
++ (NSInteger)runModalAlertTitle:(NSString*_Nullable)title message:(NSString*_Nullable)message
 {
     return [[CASAlertFactory alertWithMessageText:title
                                     defaultButton:@"OK"
                                   alternateButton:nil
                                       otherButton:nil
-                        informativeTextWithFormat:message] runModal];
+                        informativeTextWithFormat:@"%@", message] runModal];
 }
 
 @end

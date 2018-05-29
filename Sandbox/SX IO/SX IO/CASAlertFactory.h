@@ -12,6 +12,6 @@
 
 + (NSAlert *_Nullable)alertWithMessageText:(nullable NSString *)message defaultButton:(nullable NSString *)defaultButton alternateButton:(nullable NSString *)alternateButton otherButton:(nullable NSString *)otherButton informativeTextWithFormat:(NSString *_Nullable)format, ... NS_FORMAT_FUNCTION(5,6);
 
-+ (NSInteger)runModalAlertTitle:(NSString*)title message:(NSString*)message;
++ (NSInteger)runModalAlertTitle:(NSString*_Nullable)title message:(NSString*_Nullable)message;
 
 @end
