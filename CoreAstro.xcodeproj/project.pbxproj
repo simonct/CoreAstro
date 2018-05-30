@@ -1816,8 +1816,7 @@
 				F44EDEF615FCC385003B1B4C /* Frameworks */,
 				F44EDEF715FCC385003B1B4C /* Headers */,
 				F44EDEF815FCC385003B1B4C /* Resources */,
-				F498A53D15FE8754006E8376 /* ShellScript */,
-				F4CA556F169CCA2100832CFF /* ShellScript */,
+				F498A53D15FE8754006E8376 /* Make Links */,
 				F456A2B91621FFE2008DBD3F /* CopyFiles */,
 			);
 			buildRules = (
@@ -2150,13 +2149,14 @@
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
-		F498A53D15FE8754006E8376 /* ShellScript */ = {
+		F498A53D15FE8754006E8376 /* Make Links */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Make Links";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2175,19 +2175,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-		F4CA556F169CCA2100832CFF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "shared_support=\"$TARGET_BUILD_DIR/CoreAstro.framework/Versions/A/SharedSupport\"\nmkdir -p \"$shared_support\"\nditto \"$SRCROOT/External/astrometry.net/astrometry\" \"$shared_support/astrometry\"\nditto \"$SRCROOT/External/astrometry.net/support\" \"$shared_support/support\"\nfind \"$shared_support\" -name \"*.a\" -exec rm -rf {} \\;\nfind \"$shared_support\" -name \"*.la\" -exec rm -rf {} \\;\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
