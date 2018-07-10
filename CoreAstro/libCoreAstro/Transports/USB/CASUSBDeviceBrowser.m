@@ -137,7 +137,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
                                                (__bridge void*)self,				// refCon
                                                &iterator			// notification
                                                );		
-        verify_noerr(err);
+//        verify_noerr(err);
         
         while (IOIteratorNext(iterator)) {}; // leaks ?
         
@@ -158,7 +158,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
                                               DeviceRemoved,
                                               (__bridge void*)self,         // refCon/contextInfo
                                               &iterator);
-    verify_noerr(err);
+//    verify_noerr(err);
 
     while (IOIteratorNext(iterator)) {}; // leaks ?
     
@@ -170,7 +170,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
     NSMutableDictionary* matchingDictionary = (__bridge NSMutableDictionary*)IOServiceMatching(kIOUSBDeviceClassName);
     
     io_iterator_t iterator = 0;
-    verify_noerr(IOServiceGetMatchingServices(kIOMasterPortDefault, (__bridge CFDictionaryRef)matchingDictionary, &iterator));
+    IOServiceGetMatchingServices(kIOMasterPortDefault, (__bridge CFDictionaryRef)matchingDictionary, &iterator);
     matchingDictionary = nil; // this was consumed by the IOServiceGetMatchingServices call so make sure we don't use it again (even if there's an error ?)
     
     if (iterator){
@@ -204,7 +204,7 @@ static void DeviceRemoved(void *refCon, io_iterator_t iterator) {
     interfaceRequest.bInterfaceProtocol = kIOUSBFindInterfaceDontCare;	// requested protocol
     interfaceRequest.bAlternateSetting = kIOUSBFindInterfaceDontCare;	// requested alt setting
     
-    verify_noerr( (*deviceRef)->CreateInterfaceIterator(deviceRef, &interfaceRequest, &iterator) );
+    (*deviceRef)->CreateInterfaceIterator(deviceRef, &interfaceRequest, &iterator);
     if (iterator){
         
         io_service_t usbInterfaceRef;

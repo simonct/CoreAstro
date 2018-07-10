@@ -107,17 +107,17 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
         
         IOUSBInterfaceRef intf = nil;
         result = (*self.plugin)->QueryInterface(self.plugin, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID300), (LPVOID)&intf);
-        verify_noerr( result );
+//        verify_noerr( result );
         if (result == kIOReturnSuccess){
             
             UInt8 numPipes;
             result = (*intf)->GetNumEndpoints(intf, &numPipes);
-            verify_noerr( result );
+//            verify_noerr( result );
             
             if (result == kIOReturnSuccess && numPipes > 0){
                 
                 result = (*intf)->USBInterfaceOpen(intf);
-                verify_noerr( result );
+//                verify_noerr( result );
                 
                 if (result == kIOReturnSuccess){
                     
@@ -126,7 +126,7 @@ NSString* const kCASIOUSBTransportCompletionTimeoutDefaultsKey = @"CASIOUSBTrans
                         UInt16 maxPacketSize;
                         UInt8 direction, number, transferType, interval;
                         IOReturn result = (*intf)->GetPipeProperties(intf, i, &direction, &number, &transferType, &maxPacketSize, &interval);
-                        verify_noerr( result );
+//                        verify_noerr( result );
                         
                         if (result == kIOReturnSuccess){
                             
