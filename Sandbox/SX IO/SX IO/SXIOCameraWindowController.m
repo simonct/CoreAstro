@@ -96,7 +96,6 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) CASCCDExposure *currentExposure;
 @property (strong) CASCCDExposure *calibratedExposure;
 @property (strong) CASCCDExposure* latestExposure;
-@property (copy) NSString* currentExposureUUID;
 
 @property (nonatomic,weak,readonly) CASMountController* mountController;
 
@@ -117,8 +116,12 @@ static NSString* const kSXIOCameraWindowControllerDisplayedSleepWarningKey = @"S
 @property (nonatomic,strong) SXIOPlateSolveOptionsWindowController* plateSolveOptionsWindowController;
 @property (nonatomic,strong) SXIOSequenceEditorWindowController* sequenceEditorWindowController;
 
+// plate solving
 @property (assign) BOOL showPlateSolution;
+@property (copy) NSString* currentExposureUUID;
 @property (strong) SXIOPlateSolveController* plateSolveController;
+@property (strong,nonatomic) CASPlateSolveSolution* plateSolveSolution;
+@property (strong,nonatomic) CASPlateSolveSolution* lockedPlateSolveSolution;
 
 @property (copy) NSString* cameraDeviceID;
 
@@ -849,10 +852,9 @@ static void* kvoContext;
 - (IBAction)toggleShowPlateSolution:(id)sender
 {
     self.showPlateSolution = !self.showPlateSolution;
-    if (!self.showPlateSolution && self.cameraDeviceID){
-        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:nil forKey:self.cameraDeviceID];
-    }
-    [self resetAndRedisplayCurrentExposure];
+    
+    [self updatePlateSolutionDisplay];
+    
     [self.cameraController.camera setDefaultsObject:@(self.showPlateSolution) forKey:@"SXIODisplayShowPlateSolution"];
 }
 
@@ -923,7 +925,7 @@ static void* kvoContext;
         mountWindowController.mountController.cameraController = self.cameraController;
         
         // if there's a current plate solution, set that as the current target - necessary? doesn't it appear in the popup now ?
-        CASPlateSolveSolution* solution = self.exposureView.plateSolveSolution;
+        CASPlateSolveSolution* solution = self.plateSolveSolution;
         if (solution){
             [self.mountController setTargetRA:solution.centreRA dec:solution.centreDec completion:^(NSError* error) {
                 if (error){
@@ -942,7 +944,7 @@ static void* kvoContext;
 {
     // grab the current locked solution or, if there is none, the current mount position
     NSNumber* ra, *dec;
-    CASPlateSolveSolution* lockedSolution = self.exposureView.lockedPlateSolveSolution;
+    CASPlateSolveSolution* lockedSolution = self.lockedPlateSolveSolution;
     if (lockedSolution){
         ra = @(lockedSolution.centreRA);
         dec = @(lockedSolution.centreDec);
@@ -1226,6 +1228,37 @@ static void* kvoContext;
 
 #pragma mark - Plate Solving
 
+- (void)setPlateSolveSolution:(CASPlateSolveSolution *)plateSolveSolution
+{
+    if (plateSolveSolution != _plateSolveSolution){
+        _plateSolveSolution = plateSolveSolution;
+        [self updatePlateSolutionDisplay];
+    }
+}
+
+- (void)setLockedPlateSolveSolution:(CASPlateSolveSolution *)lockedPlateSolveSolution
+{
+    if (lockedPlateSolveSolution != _lockedPlateSolveSolution){
+        _lockedPlateSolveSolution = lockedPlateSolveSolution;
+        [self updatePlateSolutionDisplay];
+    }
+}
+
+- (void)updatePlateSolutionDisplay
+{
+    if (self.showPlateSolution && self.exposureView.currentExposure) {
+        self.exposureView.plateSolveSolution = self.plateSolveSolution;
+        self.exposureView.lockedPlateSolveSolution = self.lockedPlateSolveSolution;
+    }
+    else {
+        self.exposureView.plateSolveSolution = nil;
+        self.exposureView.lockedPlateSolveSolution = nil;
+    }
+    if (self.cameraDeviceID){
+        [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
+    }
+}
+
 - (void)plateSolver:(SXIOPlateSolveController*)plateSolver didStartSolvingExposure:(CASCCDExposure*)exposure
 {
     self.exposureView.showSolving = YES;
@@ -1240,11 +1273,7 @@ static void* kvoContext;
     }
     else {
         self.showPlateSolution = YES;
-        self.exposureView.plateSolveSolution = solution;
-        // no longer resetting display as that then immediately nils out the solution
-        if (self.cameraDeviceID){
-            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:solution forKey:self.cameraDeviceID];
-        }
+        self.plateSolveSolution = solution;
     }
 }
 
@@ -1261,17 +1290,13 @@ static void* kvoContext;
 
 - (IBAction)lockSolution:sender
 {
-    if (self.exposureView.lockedPlateSolveSolution){
-        self.exposureView.lockedPlateSolveSolution = nil;
-        if (self.cameraDeviceID){
-            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.plateSolveSolution forKey:self.cameraDeviceID];
-        }
+    if (self.lockedPlateSolveSolution){
+        // unlock
+        self.lockedPlateSolveSolution = nil;
     }
     else {
-        self.exposureView.lockedPlateSolveSolution = self.exposureView.plateSolveSolution;
-        if (self.cameraDeviceID){
-            [[CASPlateSolveSolutionRegistery sharedRegistry] setSolution:self.exposureView.lockedPlateSolveSolution forKey:self.cameraDeviceID];
-        }
+        // lock current solution
+        self.lockedPlateSolveSolution = self.plateSolveSolution;
     }
 }
 
@@ -1288,7 +1313,7 @@ static void* kvoContext;
 
 - (IBAction)addBookmark:sender
 {
-    [self openBookmarksWithSolution:self.exposureView.plateSolveSolution];
+    [self openBookmarksWithSolution:self.plateSolveSolution];
 }
 
 - (IBAction)editBookmarks:sender
@@ -1620,12 +1645,7 @@ static void* kvoContext;
 {
     if (!exposure){
         self.exposureView.currentExposure = nil;
-        self.exposureView.plateSolveSolution = nil;
-        return;
-    }
-    
-    // check image view is actually visible before bothering to display it
-    if (self.exposureView.isHiddenOrHasHiddenAncestor){
+        [self updatePlateSolutionDisplay];
         return;
     }
     
@@ -1636,14 +1656,14 @@ static void* kvoContext;
         self.currentExposureUUID = exposure.uuid;
         
         // clear any plate solution
-        self.exposureView.plateSolveSolution = nil;
+        self.plateSolveSolution = nil;
         
         if (self.showPlateSolution){
             
             // lookup any solution, this runs asynchronously so we need to track the current image uuid for when it completes
             [[SXIOPlateSolutionLookup sharedLookup] lookupSolutionForExposure:exposure completion:^(CASCCDExposure *solutionExposure, CASPlateSolveSolution *solution) {
                 if (self.showPlateSolution && [solutionExposure.uuid isEqualToString:self.currentExposureUUID]){
-                    self.exposureView.plateSolveSolution = solution;
+                    self.plateSolveSolution = solution;
                 }
             }];
         }
@@ -1714,6 +1734,10 @@ static void* kvoContext;
         [self willChangeValueForKey:@"currentExposure"];
         
         @try {
+            
+            // clear any current solution
+            self.plateSolveSolution = self.lockedPlateSolveSolution = nil;
+            
             // unload the current exposure's pixels
             [_currentExposure reset];
             
@@ -2238,12 +2262,12 @@ static void* kvoContext;
             break;
             
         case 11103: // Lock Solution
-            if (self.exposureView.lockedPlateSolveSolution){
+            if (self.lockedPlateSolveSolution){
                 item.title = NSLocalizedString(@"Unlock Solution", @"Unlock Solution"); // add locked solution exposure name ?
             }
             else {
                 item.title = NSLocalizedString(@"Lock Solution", @"Lock Solution");
-                enabled = (self.exposureView.plateSolveSolution != nil);
+                enabled = (self.plateSolveSolution != nil);
             }
             break;
             
@@ -2264,7 +2288,7 @@ static void* kvoContext;
             break;
             
         case 11108: // Add Bookmark...
-            enabled = (self.exposureView.plateSolveSolution != nil);
+            enabled = (self.plateSolveSolution != nil);
             break;
 
         case 11109: // Edit Bookmarks...
@@ -2434,7 +2458,7 @@ static void* kvoContext;
 {
     if (note.object == self.mountController){
         self.showPlateSolution = YES;
-        self.exposureView.plateSolveSolution = note.userInfo[@"solution"];
+        self.plateSolveSolution = note.userInfo[@"solution"];
     }
 }
 
