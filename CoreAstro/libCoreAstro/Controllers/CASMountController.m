@@ -352,6 +352,12 @@ static void* kvoContext;
     }
 }
 
+- (void)allStop
+{
+    [self stop];
+    [self.mount stopTracking];
+}
+
 @end
 
 #pragma mark - Scripting

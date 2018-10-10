@@ -31,6 +31,7 @@
 - (void)parkMountWithCompletion:(void(^)(NSError*))completion;
 
 - (void)stop;
+- (void)allStop;
 
 extern NSString* kCASMountControllerMountDisconnectedNotification;
 
