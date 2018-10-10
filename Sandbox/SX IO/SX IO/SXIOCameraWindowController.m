@@ -2407,7 +2407,7 @@ static void* kvoContext;
     [[CASLocalNotifier sharedInstance] postLocalNotification:NSLocalizedString(@"Stopping capture, guiding and tracking", @"Stopping capture, guiding and tracking")
                                                     subtitle:message];
     
-    [self.mountController stop]; // todo; option to park
+    [self.mountController allStop];
     
     [self.cameraController cancelCapture];
     
