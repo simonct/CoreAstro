@@ -355,6 +355,7 @@ static void* kvoContext;
         }
         response = [mutableResponse copy];
 
+        self.ra = updatedRA;
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
@@ -696,6 +697,7 @@ struct ParkPosition {
 - (void)stopTracking
 {
     [self stopMoving];
+    self.trackingRate = CASAPGTOMountTrackingRateZero; // stop slewing and set tracking rate to zero
 }
 
 - (void)stopSlewing
