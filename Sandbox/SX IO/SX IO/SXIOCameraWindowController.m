@@ -246,6 +246,12 @@ static void* kvoContext;
     [close setTarget:self];
     [close setAction:@selector(hideWindow:)];
     
+    // switch off tabs
+    if([self.window respondsToSelector:@selector(setTabbingMode:)]) {
+        // this particular window doesn't support tabbing in Sierra.
+        [self.window setTabbingMode:NSWindowTabbingModeDisallowed];
+    }
+    
     // create a plate solver
     self.plateSolveController = [[SXIOPlateSolveController alloc] init];
     self.plateSolveController.window = self.window;
