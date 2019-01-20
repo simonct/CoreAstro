@@ -264,7 +264,6 @@ enum {
                 void (^completeWithMount)(CASMountController*) = ^(CASMountController* mount) {
                     // yuk - this should be associated with the camera controller (not updating the menu in the camera window)
                     SXIOCameraWindowController* window = (SXIOCameraWindowController*)[[SXIOAppDelegate sharedInstance] findDeviceWindowController:self.windowController.selectedCameraController];
-                    window.mountController = mount;
                     
                     [self performNextState:StateFilterWheel error:nil];
                 };
@@ -273,7 +272,7 @@ enum {
                     completeWithMount(mounts.firstObject);
                 }
                 else {
-                    [[CASMountWindowController sharedMountWindowController] connectToMountAtPath:self.mountPath completion:^(NSError* error,CASMountController* mountController){
+                    [[CASMountWindowController sharedMountWindowController] connectAtPath:self.mountPath completion:^(NSError* error,CASMountController* mountController){
                         if (error){
                             [self performNextState:StateFilterWheel error:error];
                         }
@@ -345,7 +344,7 @@ enum {
                         }
                         else {
 
-                            [self.client connectDevicesWithCompletion:^(NSError *error) {
+                            [self.client connectWithCompletion:^(NSError *error) {
                                 
                                 if (error){
                                     [self performNextState:StatePHD2 error:[NSError errorWithDomain:NSStringFromClass([self class])
@@ -740,9 +739,8 @@ enum {
 {
     // identical to mount controller
     self.synchroniser = [[CASMountSynchroniser alloc] init];
-    self.synchroniser.mount = [self.target sequenceMountController].mount;
+    self.synchroniser.mountController = [self.target sequenceMountController];
     self.synchroniser.delegate = self;
-    self.synchroniser.cameraController = [self.target sequenceCameraController];
     [self.synchroniser findLocation];
 }
 
