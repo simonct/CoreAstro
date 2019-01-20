@@ -536,6 +536,7 @@ static void* kvoContext;
         _contrastStretch = contrastStretch;
         [self resetFilteredImage];
     }
+    [[NSUserDefaults standardUserDefaults] setBool:_contrastStretch forKey:@"SXIODisplayContrastStretch"];
 }
 
 - (float)stretchMin
@@ -555,6 +556,7 @@ static void* kvoContext;
             [self resetFilteredImage];
         }
     }
+    [[NSUserDefaults standardUserDefaults] setFloat:_stretchMin forKey:@"SXIODisplayContrastStretchMin"];
 }
 
 - (float)stretchMax
@@ -574,6 +576,7 @@ static void* kvoContext;
             [self resetFilteredImage];
         }
     }
+    [[NSUserDefaults standardUserDefaults] setFloat:_stretchMax forKey:@"SXIODisplayContrastStretchMax"];
 }
 
 - (BOOL)debayer
@@ -643,6 +646,7 @@ static void* kvoContext;
         _stretchGamma = stretchGamma;
         [self resetFilteredImage];
     }
+    [[NSUserDefaults standardUserDefaults] setFloat:_stretchGamma forKey:@"SXIODisplayContrastStretchGamma"];
 }
 
 - (BOOL)flipVertical

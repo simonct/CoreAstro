@@ -227,6 +227,10 @@ static void* kvoContext;
     [self.saveTargetControlsViewController addObserver:self forKeyPath:@"saveFolderURL" options:NSKeyValueObservingOptionInitial context:&kvoContext];
     
     // bind the exposure view's auto contrast stretch flag to the defaults controlled by the menu view
+    [self.exposureView bind:@"contrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIODisplayContrastStretch" options:nil];
+    [self.exposureView bind:@"stretchMin" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIODisplayContrastStretchMin" options:nil];
+    [self.exposureView bind:@"stretchMax" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIODisplayContrastStretchMax" options:nil];
+    [self.exposureView bind:@"stretchGamma" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIODisplayContrastStretchGamma" options:nil];
     [self.exposureView bind:@"autoContrastStretch" toObject:[NSUserDefaults standardUserDefaults] withKeyPath:@"SXIOAutoContrastStretch" options:nil];
     
     // listen to mount flipped notifications (todo; put in camera controller/capture controller?)
@@ -415,7 +419,6 @@ static void* kvoContext;
         
         self.exposureView.invert = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayInvert"] boolValue];
         self.exposureView.medianFilter = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayMedian"] boolValue];
-        self.exposureView.contrastStretch = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayContrastStretch"] boolValue];
         self.exposureView.showHistogram = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowHistogram"] boolValue];
         self.exposureView.showReticle = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowReticle"] boolValue];
         self.exposureView.showStarProfile = [[self.cameraController.camera defaultsObjectForKey:@"SXIODisplayShowStarProfile"] boolValue];
