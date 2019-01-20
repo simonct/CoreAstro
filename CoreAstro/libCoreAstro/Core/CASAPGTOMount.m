@@ -355,7 +355,6 @@ static void* kvoContext;
         }
         response = [mutableResponse copy];
 
-        self.ra = updatedRA;
         self.dec = @([CASLX200Commands fromDecString:response]);
 
         if (currentRa && currentDec){
