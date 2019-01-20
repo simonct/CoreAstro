@@ -7,3 +7,12 @@
 #endif
 
 #define CAS_ENABLE_FITS 1
+
+#ifndef verify
+#define verify(x) {__typeof(x) __x = (x); if (__x != 0) fprintf(stderr,"Warning: %d %s:%d",__x,__FILE__,__LINE__);}
+#endif
+
+#ifndef verify_noerr
+#define verify_noerr(x) {__typeof(x) __x = (x); if (__x != 0) NSLog(@"Error: %d %s:%d",__x,__FILE__,__LINE__);}
+#endif
+
