@@ -41,7 +41,6 @@
 		F4175A6116A749550032954F /* loop.png in Resources */ = {isa = PBXBuildFile; fileRef = F4175A6016A749550032954F /* loop.png */; };
 		F4198F9C1635DDC7009164B0 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = F4198F9B1635DDC7009164B0 /* dsa_pub.pem */; };
 		F41AAC431BDB8D5B003757C7 /* liblibnova.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F41AAC401BDB8D22003757C7 /* liblibnova.dylib */; };
-		F41AAC441BDB8DAD003757C7 /* liblibnova.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F41AAC401BDB8D22003757C7 /* liblibnova.dylib */; };
 		F42445E31EDA06E00058BF45 /* CASAPGTOGuidePort.h in Headers */ = {isa = PBXBuildFile; fileRef = F42445E11EDA06E00058BF45 /* CASAPGTOGuidePort.h */; };
 		F42445E41EDA06E00058BF45 /* CASAPGTOGuidePort.m in Sources */ = {isa = PBXBuildFile; fileRef = F42445E21EDA06E00058BF45 /* CASAPGTOGuidePort.m */; };
 		F42446281EE342CC0058BF45 /* CASLabelHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = F42446271EE342CC0058BF45 /* CASLabelHUDView.m */; };
@@ -133,7 +132,6 @@
 		F4554E081C4178B5003C60F7 /* CASMountController.h in Headers */ = {isa = PBXBuildFile; fileRef = F4554E061C4178B5003C60F7 /* CASMountController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4554E091C4178B5003C60F7 /* CASMountController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4554E071C4178B5003C60F7 /* CASMountController.m */; };
 		F456A2B81621FFD7008DBD3F /* libcfitsio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
-		F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = F456A2B51621FFCA008DBD3F /* libcfitsio.dylib */; };
 		F4587242183EA98700CB53D1 /* CASImageMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587240183EA98700CB53D1 /* CASImageMetrics.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F4587243183EA98700CB53D1 /* CASImageMetrics.mm in Sources */ = {isa = PBXBuildFile; fileRef = F4587241183EA98700CB53D1 /* CASImageMetrics.mm */; };
 		F4587249183EAAC800CB53D1 /* CASHalfFluxDiameter.h in Headers */ = {isa = PBXBuildFile; fileRef = F4587247183EAAC800CB53D1 /* CASHalfFluxDiameter.h */; };
@@ -422,17 +420,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		F456A2B91621FFE2008DBD3F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F41AAC441BDB8DAD003757C7 /* liblibnova.dylib in CopyFiles */,
-				F456A2BA1621FFEA008DBD3F /* libcfitsio.dylib in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F459640E15EA42D50041AF7D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1817,7 +1804,6 @@
 				F44EDEF715FCC385003B1B4C /* Headers */,
 				F44EDEF815FCC385003B1B4C /* Resources */,
 				F498A53D15FE8754006E8376 /* Make Links */,
-				F456A2B91621FFE2008DBD3F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1965,6 +1951,7 @@
 					F44EDEF915FCC385003B1B4C = {
 						DevelopmentTeam = D8EQ3MVHHB;
 						LastSwiftMigration = 0920;
+						ProvisioningStyle = Automatic;
 					};
 					F498A51815FE7F96006E8376 = {
 						LastSwiftMigration = 0820;
@@ -2574,8 +2561,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
@@ -2603,6 +2593,7 @@
 				);
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				WRAPPER_EXTENSION = framework;
@@ -2616,8 +2607,11 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
@@ -2641,6 +2635,7 @@
 				);
 				MODULE_NAME = CoreAstro;
 				PRODUCT_NAME = CoreAstro;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				WRAPPER_EXTENSION = framework;
 			};
