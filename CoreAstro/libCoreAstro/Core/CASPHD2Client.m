@@ -123,6 +123,10 @@ static void* kvoContext;
     }
 }
 
+- (void)clientDisconnected:(CASJSONRPCSocketClient *)client {
+    NSLog(@"clientDisconnected");
+}
+
 - (void)client:(CASJSONRPCSocketClient*)client receivedNotification:(NSDictionary*)message
 {
     if (client != self.client){
